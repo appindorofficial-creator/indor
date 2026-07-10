@@ -12,5 +12,12 @@ public static class UiTranslations
             UiTranslationsHome.Entries,
             UiTranslationsProveedor.Entries,
             UiTranslationsRealtor.Entries,
-            UiTranslationsFlows.Entries);
+            UiTranslationsFlows.Entries,
+            UiTranslationsPropietarioServices.Entries,
+            UiTranslationsMovingSetup.Entries,
+            UiTranslationsInspeccionesEmergency.Entries,
+            UiTranslationsServiceWizards.Entries,
+            UiTranslationsValidation.Entries,
+            UiTranslationsRemaining.Entries,
+            UiTranslationsFinal.Entries);
 }

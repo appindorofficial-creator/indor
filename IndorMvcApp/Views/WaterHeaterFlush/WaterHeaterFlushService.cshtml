@@ -1,7 +1,7 @@
-@model IndorMvcApp.ViewModels.WaterHeaterFlushServiceViewModel
+﻿@model IndorMvcApp.ViewModels.WaterHeaterFlushServiceViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 4;
@@ -11,21 +11,21 @@
 @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
     {
         <div class="hero-wrap">
-            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@Model.LandingTitulo" class="hero-img" />
+            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@L.Catalog(Model.LandingTitulo)" class="hero-img" />
             <span class="hvac-hero-icon"><i class="fas fa-droplet"></i></span>
         </div>
     }
 
     <div class="title-row">
         <div class="left">
-            <h1 class="page-heading" style="margin-bottom:4px;font-size:1.2rem;">@Model.LandingTitulo</h1>
+            <h1 class="page-heading" style="margin-bottom:4px;font-size:1.2rem;">@L.Catalog(Model.LandingTitulo)</h1>
             @if (!string.IsNullOrWhiteSpace(Model.LandingTagline))
             {
-                <div class="tagline">@Model.LandingTagline</div>
+                <div class="tagline">@L.Catalog(Model.LandingTagline)</div>
             }
         </div>
     </div>
-    <p class="page-lead">@Model.LandingSubtitulo</p>
+    <p class="page-lead">@L.Catalog(Model.LandingSubtitulo)</p>
 
     @if (Model.BenefitItems.Count > 0)
     {
@@ -34,7 +34,7 @@
             {
                 <div class="whf-benefit-card">
                     <i class="fas @item.Icon"></i>
-                    <span>@item.Text</span>
+                    <span>@L.Catalog(item.Text)</span>
                 </div>
             }
         </div>
@@ -58,7 +58,7 @@
             <div class="preview-grid">
                 @foreach (var item in Model.PreviewItems)
                 {
-                    <div class="preview-chip"><i class="fas @item.Icon"></i><span>@item.Text</span></div>
+                    <div class="preview-chip"><i class="fas @item.Icon"></i><span>@L.Catalog(item.Text)</span></div>
                 }
             </div>
         </div>
@@ -70,6 +70,6 @@
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="SolicitudId" />
         <button type="submit" name="action" value="continue" class="btn-primary">
-            @Model.CtaTexto <i class="fas fa-chevron-right"></i>
+            @L.Catalog(Model.CtaTexto) <i class="fas fa-chevron-right"></i>
         </button>
     </form>

@@ -1,4 +1,6 @@
-namespace IndorMvcApp.Services;
+﻿namespace IndorMvcApp.Services;
+
+// Localized via DisplayLabelsLocalization.L
 
 public static class PowerWashPricingService
 {
@@ -11,47 +13,47 @@ public static class PowerWashDisplayLabels
 {
     public static string FormatArea(string code) => code switch
     {
-        "FrontOnly" => "Front only",
-        "BackOnly" => "Back only",
-        "Driveway" => "Driveway",
-        "PatioDeck" => "Patio / deck",
-        "Fence" => "Fence",
+        "FrontOnly" => DisplayLabelsLocalization.L("Front only"),
+        "BackOnly" => DisplayLabelsLocalization.L("Back only"),
+        "Driveway" => DisplayLabelsLocalization.L("Driveway"),
+        "PatioDeck" => DisplayLabelsLocalization.L("Patio / deck"),
+        "Fence" => DisplayLabelsLocalization.L("Fence"),
         _ => "Full exterior"
     };
 
     public static string FormatMaterial(string? code) => code switch
     {
-        "Brick" => "Brick",
-        "Stucco" => "Stucco",
-        "FiberCement" => "Fiber cement",
-        "PaintedWood" => "Painted wood",
-        "NotSure" => "Not sure",
+        "Brick" => DisplayLabelsLocalization.L("Brick"),
+        "Stucco" => DisplayLabelsLocalization.L("Stucco"),
+        "FiberCement" => DisplayLabelsLocalization.L("Fiber cement"),
+        "PaintedWood" => DisplayLabelsLocalization.L("Painted wood"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => "Vinyl siding"
     };
 
     public static string FormatStories(string? code) => code switch
     {
-        "One" => "1",
-        "ThreePlus" => "3+",
+        "One" => DisplayLabelsLocalization.L("1"),
+        "ThreePlus" => DisplayLabelsLocalization.L("3+"),
         _ => "2"
     };
 
     public static string FormatIssue(string code) => code switch
     {
-        "LightDirt" => "Light dirt",
-        "HeavyDirt" => "Heavy dirt",
-        "MoldAlgae" => "Mold / algae",
-        "Pollen" => "Pollen",
-        "RustStains" => "Rust stains",
+        "LightDirt" => DisplayLabelsLocalization.L("Light dirt"),
+        "HeavyDirt" => DisplayLabelsLocalization.L("Heavy dirt"),
+        "MoldAlgae" => DisplayLabelsLocalization.L("Mold / algae"),
+        "Pollen" => DisplayLabelsLocalization.L("Pollen"),
+        "RustStains" => DisplayLabelsLocalization.L("Rust stains"),
         _ => code
     };
 
     public static string FormatDelicateArea(string code) => code switch
     {
-        "LoosePaint" => "Loose paint",
-        "CrackedSiding" => "Cracked siding",
-        "OldCaulking" => "Old caulking",
-        "None" => "None",
+        "LoosePaint" => DisplayLabelsLocalization.L("Loose paint"),
+        "CrackedSiding" => DisplayLabelsLocalization.L("Cracked siding"),
+        "OldCaulking" => DisplayLabelsLocalization.L("Old caulking"),
+        "None" => DisplayLabelsLocalization.L("None"),
         _ => code
     };
 
@@ -60,15 +62,15 @@ public static class PowerWashDisplayLabels
 
     public static string FormatTiming(string? code) => code switch
     {
-        "ThisMonth" => "This month",
-        "Flexible" => "Flexible",
+        "ThisMonth" => DisplayLabelsLocalization.L("This month"),
+        "Flexible" => DisplayLabelsLocalization.L("Flexible"),
         _ => "Next week"
     };
 
     public static string FormatTimeWindow(string? code) => code switch
     {
-        "Midday" => "Midday",
-        "Afternoon" => "Afternoon",
+        "Midday" => DisplayLabelsLocalization.L("Midday"),
+        "Afternoon" => DisplayLabelsLocalization.L("Afternoon"),
         _ => "Morning"
     };
 

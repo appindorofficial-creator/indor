@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.RealtorPropertyFileSuccessViewModel
+@using IndorMvcApp.Helpers
 @{
     Layout = "_RealtorLayout";
     ViewData["Title"] = L["Property File Created"];
@@ -17,16 +18,16 @@
     </section>
 
     <div class="rl-success-card">
-        <p><strong>@Model.FilePhaseLabel</strong> @L["created for"] <strong class="rl-success-name">@Model.PropertyDisplay</strong></p>
+        <p><strong>@L[Model.FilePhaseLabel]</strong> @L["created for"] <strong class="rl-success-name">@Model.PropertyDisplay</strong></p>
         <div class="rl-success-detail"><i class="fas fa-house"></i> @Model.PropertyDisplay</div>
         @if (!string.IsNullOrWhiteSpace(Model.ClientName))
         {
             <div class="rl-success-detail"><i class="fas fa-user"></i> @Model.ClientName</div>
         }
-        <div class="rl-success-detail"><i class="fas fa-file"></i> Added now: @Model.AddedNowLabel</div>
+        <div class="rl-success-detail"><i class="fas fa-file"></i> @L["Added now:"] @L[Model.AddedNowLabel]</div>
         <div class="rl-success-detail">
             <i class="fas fa-circle-check"></i>
-            <span class="rl-card-status rl-card-status--active">@Model.StatusLabel</span>
+            <span class="rl-card-status rl-card-status--active">@L[Model.StatusLabel]</span>
         </div>
     </div>
 
@@ -45,12 +46,12 @@
     <div class="rl-include-grid rl-include-grid--success">
         @foreach (var cat in IndorMvcApp.Models.RealtorPropertyFileCategoryTypes.All)
         {
-            <div class="rl-include-item"><i class="fas @cat.Icon"></i><span>@cat.Label.Split(' ')[0]</span></div>
+            <div class="rl-include-item"><i class="fas @cat.Icon"></i><span>@RealtorDisplayLocalization.CategoryShortLabel(L, cat.Label)</span></div>
         }
     </div>
 
     <div class="rl-info-banner rl-info-banner--success">
-        <i class="fas fa-circle-check"></i> Saved under Active Files
+        <i class="fas fa-circle-check"></i> @L["Saved under Active Files"]
     </div>
 
     <a asp-controller="RealtorPropertyFile" asp-action="View" asp-route-id="@Model.PropertyFileId" class="ob-btn ob-btn-primary rl-done-btn">@L["Open File"]</a>

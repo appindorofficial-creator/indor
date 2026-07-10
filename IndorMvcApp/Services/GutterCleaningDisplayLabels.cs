@@ -1,68 +1,70 @@
-namespace IndorMvcApp.Services;
+﻿namespace IndorMvcApp.Services;
+
+// Localized via DisplayLabelsLocalization.L
 
 public static class GutterCleaningDisplayLabels
 {
     public static string FormatInitialAction(string? code) => code switch
     {
-        "ScheduleService" => "Schedule service",
-        "AlreadyDone" => "Already done",
+        "ScheduleService" => DisplayLabelsLocalization.L("Schedule service"),
+        "AlreadyDone" => DisplayLabelsLocalization.L("Already done"),
         _ => "Reminder"
     };
 
     public static string FormatStories(string? code) => code switch
     {
-        "One" => "1 story",
-        "ThreePlus" => "3+ stories",
+        "One" => DisplayLabelsLocalization.L("1 story"),
+        "ThreePlus" => DisplayLabelsLocalization.L("3+ stories"),
         _ => "2 stories"
     };
 
     public static string FormatGutterType(string? code) => code switch
     {
-        "Vinyl" => "Vinyl",
-        "Copper" => "Copper",
-        "NotSure" => "Not sure",
+        "Vinyl" => DisplayLabelsLocalization.L("Vinyl"),
+        "Copper" => DisplayLabelsLocalization.L("Copper"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => "Aluminum"
     };
 
     public static string FormatYesNoNotSure(string? code) => code switch
     {
-        "Yes" => "Yes",
-        "No" => "No",
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "No" => DisplayLabelsLocalization.L("No"),
         _ => "Not sure"
     };
 
     public static string FormatLastCleaned(string? code) => code switch
     {
-        "LessThan6Months" => "< 6 months",
-        "SixToTwelveMonths" => "6–12 months",
-        "OnePlusYear" => "1+ year",
+        "LessThan6Months" => DisplayLabelsLocalization.L("< 6 months"),
+        "SixToTwelveMonths" => DisplayLabelsLocalization.L("6â€“12 months"),
+        "OnePlusYear" => DisplayLabelsLocalization.L("1+ year"),
         _ => "Not sure"
     };
 
     public static string FormatIssue(string code) => code switch
     {
-        "LeavesDebris" => "Leaves / debris",
-        "OverflowingWater" => "Overflowing water",
-        "PlantsGrowing" => "Plants growing",
-        "SaggingSections" => "Sagging sections",
-        "DownspoutClogged" => "Downspout clogged",
-        "NoVisibleIssues" => "No visible issues",
+        "LeavesDebris" => DisplayLabelsLocalization.L("Leaves / debris"),
+        "OverflowingWater" => DisplayLabelsLocalization.L("Overflowing water"),
+        "PlantsGrowing" => DisplayLabelsLocalization.L("Plants growing"),
+        "SaggingSections" => DisplayLabelsLocalization.L("Sagging sections"),
+        "DownspoutClogged" => DisplayLabelsLocalization.L("Downspout clogged"),
+        "NoVisibleIssues" => DisplayLabelsLocalization.L("No visible issues"),
         _ => code
     };
 
     public static string FormatProblemArea(string? code) => code switch
     {
-        "FrontOnly" => "Front only",
-        "BackOnly" => "Back only",
-        "OneSideOnly" => "One side only",
-        "NotSure" => "Not sure",
+        "FrontOnly" => DisplayLabelsLocalization.L("Front only"),
+        "BackOnly" => DisplayLabelsLocalization.L("Back only"),
+        "OneSideOnly" => DisplayLabelsLocalization.L("One side only"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => "Whole house"
     };
 
     public static string FormatTodayGoal(string? code) => code switch
     {
-        "ReminderOnly" => "Reminder only",
-        "CleaningEstimate" => "Cleaning estimate",
+        "ReminderOnly" => DisplayLabelsLocalization.L("Reminder only"),
+        "CleaningEstimate" => DisplayLabelsLocalization.L("Cleaning estimate"),
         _ => "Schedule service"
     };
 

@@ -1,4 +1,5 @@
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
@@ -11,7 +12,8 @@ public class RealtorInviteClientService(
     AppDbContext db,
     IHttpContextAccessor httpContextAccessor,
     IRealtorRegistrationService registration,
-    IInvitationEmailSender emailSender) : IRealtorInviteClientService
+    IInvitationEmailSender emailSender,
+    IIndorLocalizer localizer) : IRealtorInviteClientService
 {
     private const string InviteIdSessionKey = "RealtorInviteId";
 
@@ -693,30 +695,30 @@ public class RealtorInviteClientService(
         || model.AccessProjectUpdates
         || model.AccessPayments;
 
-    private static string BuildAccessSummary(IndorRealtorInvitation inv)
+    private string BuildAccessSummary(IndorRealtorInvitation inv)
     {
         var parts = new List<string>();
-        if (inv.AccessPropertyOverview) parts.Add("Property Overview");
-        if (inv.AccessFilesReports) parts.Add("Files & Reports");
-        if (inv.AccessQuotesEstimates) parts.Add("Quotes & Estimates");
-        if (inv.AccessMessages) parts.Add("Messages");
-        if (inv.AccessProjectUpdates) parts.Add("Project Updates");
-        if (inv.AccessPayments) parts.Add("Payments");
+        if (inv.AccessPropertyOverview) parts.Add(localizer.T("Property Overview"));
+        if (inv.AccessFilesReports) parts.Add(localizer.T("Files & Reports"));
+        if (inv.AccessQuotesEstimates) parts.Add(localizer.T("Quotes & Estimates"));
+        if (inv.AccessMessages) parts.Add(localizer.T("Messages"));
+        if (inv.AccessProjectUpdates) parts.Add(localizer.T("Project Updates"));
+        if (inv.AccessPayments) parts.Add(localizer.T("Payments"));
         return string.Join(", ", parts);
     }
 
-    private static string FormatCollaboration(string level) => level switch
+    private string FormatCollaboration(string level) => level switch
     {
-        RealtorCollaborationLevels.ViewOnly => "View Only",
-        RealtorCollaborationLevels.CanUpload => "Can Upload / Collaborate",
-        _ => "Can Comment"
+        RealtorCollaborationLevels.ViewOnly => localizer.T("View Only"),
+        RealtorCollaborationLevels.CanUpload => localizer.T("Can Upload / Collaborate"),
+        _ => localizer.T("Can Comment")
     };
 
-    private static string FormatDelivery(IndorRealtorInvitation inv) => inv.DeliveryEmail switch
+    private string FormatDelivery(IndorRealtorInvitation inv) => inv.DeliveryEmail switch
     {
-        true when inv.DeliveryText => "Email + Text Message",
-        true => "Email",
-        _ => "Text Message"
+        true when inv.DeliveryText => localizer.T("Email + Text Message"),
+        true => localizer.T("Email"),
+        _ => localizer.T("Text Message")
     };
 
     private static RealtorInvitationCardViewModel MapPendingCard(IndorRealtorInvitation inv)

@@ -18,7 +18,7 @@
             <i class="fas fa-chevron-left"></i>
         </a>
         <div class="rl-listing-detail-head-copy">
-            <h1>@(Model.IsOwned ? "My Listing" : "Property Details")</h1>
+            <h1>@(Model.IsOwned ? L["My Listing"] : L["Property Details"])</h1>
             <p>@L["Nearby Network"]</p>
         </div>
     </header>
@@ -98,7 +98,7 @@
             <div class="rl-listing-detail-highlights">
                 @foreach (var highlight in Model.HighlightLabels)
                 {
-                    <span class="rl-listing-detail-highlight">@highlight</span>
+                    <span class="rl-listing-detail-highlight">@UiDisplayLocalization.Localize(L, highlight)</span>
                 }
             </div>
         </section>
@@ -122,7 +122,7 @@
         <section class="rl-listing-detail-card">
             <h3>@L["Photo gallery"]</h3>
             <a href="@Model.PhotoGalleryLink" target="_blank" rel="noopener" class="rl-listing-detail-link">
-                <i class="fas fa-images"></i> View full gallery
+                <i class="fas fa-images"></i> @L["View full gallery"]
             </a>
         </section>
     }
@@ -132,7 +132,7 @@
         <section class="rl-listing-detail-card">
             <h3>@L["Property brochure"]</h3>
             <a href="@Model.PhotoPdfUrl" target="_blank" rel="noopener" class="rl-listing-detail-link">
-                <i class="fas fa-file-pdf"></i> @(Model.PhotoPdfFileName ?? "Download PDF")
+                <i class="fas fa-file-pdf"></i> @(Model.PhotoPdfFileName ?? L["Download PDF"])
             </a>
         </section>
     }
@@ -148,7 +148,7 @@
                      data-lng="@Model.Longitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)"></div>
             }
             <a href="https://www.google.com/maps/search/?api=1&query=@mapsQuery" target="_blank" rel="noopener" class="rl-listing-detail-link">
-                <i class="fas fa-map-location-dot"></i> Open in Google Maps
+                <i class="fas fa-map-location-dot"></i> @L["Open in Google Maps"]
             </a>
         </section>
     }
@@ -157,13 +157,13 @@
         @if (Model.IsOwned)
         {
             <a asp-action="EditNetworkListing" asp-route-id="@Model.ItemId" class="rl-btn-primary rl-btn-primary--sm">
-                <i class="fas fa-pen"></i> Edit Listing
+                <i class="fas fa-pen"></i> @L["Edit Listing"]
             </a>
         }
         else
         {
             <a href="@Model.ExpressInterestUrl" class="rl-btn-primary rl-btn-primary--sm">
-                <i class="fas fa-handshake"></i> I'm Interested
+                <i class="fas fa-handshake"></i> @L["I'm Interested"]
             </a>
         }
         @if (Model.InterestSent)

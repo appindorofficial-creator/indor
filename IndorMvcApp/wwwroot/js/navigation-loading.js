@@ -87,7 +87,9 @@
 
     function getLoadingText() {
         var meta = document.querySelector('meta[name="indor-loading-text"]');
-        return meta && meta.content ? meta.content : "Loading";
+        if (meta && meta.content) return meta.content;
+        var lang = (document.documentElement.lang || '').toLowerCase();
+        return lang.indexOf('es') === 0 ? 'Cargando...' : 'Loading';
     }
 
     function ensureOverlay() {

@@ -1,26 +1,26 @@
-@model IndorMvcApp.ViewModels.CleaningServiceViewModel
+﻿@model IndorMvcApp.ViewModels.CleaningServiceViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 }
 
 @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
 {
-    <img src="@Model.ImagenUrl" alt="@Model.LandingTitulo" class="cl-landing-hero" />
+    <img src="@Model.ImagenUrl" alt="@L.Catalog(Model.LandingTitulo)" class="cl-landing-hero" />
 }
 
 <div class="title-row">
     <div class="left">
-        <h1 class="page-heading" style="margin-bottom:4px;"><i class="fas fa-sparkles" style="color:#0066CC;font-size:1rem;margin-right:6px;"></i>@Model.LandingTitulo</h1>
+        <h1 class="page-heading" style="margin-bottom:4px;"><i class="fas fa-sparkles" style="color:#0066CC;font-size:1rem;margin-right:6px;"></i>@L.Catalog(Model.LandingTitulo)</h1>
         @if (!string.IsNullOrWhiteSpace(Model.LandingTagline))
         {
-            <div class="tagline">@Model.LandingTagline</div>
+            <div class="tagline">@L.Catalog(Model.LandingTagline)</div>
         }
     </div>
-    <div class="price-from">Starting at $@Model.PrecioDesde.ToString("0")</div>
+    <div class="price-from">@L["Starting at"] $@Model.PrecioDesde.ToString("0")</div>
 </div>
-<p class="page-lead">@Model.LandingSubtitulo</p>
+<p class="page-lead">@L.Catalog(Model.LandingSubtitulo)</p>
 
 <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
@@ -37,7 +37,7 @@
             <div class="included-inline">
                 @foreach (var item in Model.IncludedItems)
                 {
-                    <span><i class="fas @item.Icon"></i> @item.Text</span>
+                    <span><i class="fas @item.Icon"></i> @L.Catalog(item.Text)</span>
                 }
             </div>
         </div>
@@ -61,7 +61,7 @@
             <i class="fas fa-circle-info"></i>
             <div>
                 <strong>@Model.InfoBoxTitulo</strong><br />
-                @Model.InfoBoxTexto
+                @L.Catalog(Model.InfoBoxTexto)
             </div>
         </div>
     }

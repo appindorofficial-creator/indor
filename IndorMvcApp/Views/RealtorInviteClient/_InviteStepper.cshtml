@@ -5,14 +5,14 @@
 @await Html.PartialAsync("~/Views/Realtor/_RealtorTopbar.cshtml", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel { HideNotifications = true })
 
 <div class="rl-invite-head">
-    <h1>@Model.Title</h1>
+    <h1>@L[Model.Title]</h1>
     @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
     {
-        <p>@Model.Subtitle</p>
+        <p>@L[Model.Subtitle]</p>
     }
 </div>
 
-<nav class="rl-invite-stepper" aria-label="Invite client progress">
+<nav class="rl-invite-stepper" aria-label="@L["Invite client progress"]">
     @for (var i = 0; i < steps.Length; i++)
     {
         var stepNum = i + 1;
@@ -26,7 +26,7 @@
             {
                 <span>@stepNum</span>
             }
-            <small>@steps[i]</small>
+            <small>@L[steps[i]]</small>
         </div>
         @if (i < steps.Length - 1)
         {

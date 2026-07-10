@@ -33,7 +33,7 @@
                         <p>@L["Tap to add (JPG, PNG, HEIC)"]</p>
                     </div>
                     <button type="button" class="photo-camera-btn" id="safeAirCameraBtn">
-                        <i class="fas fa-camera"></i> Take photo
+                        <i class="fas fa-camera"></i> @L["Take photo"]
                     </button>
                     <div class="photo-selected-list" id="safeAirPhotoList" hidden></div>
                 </div>
@@ -104,7 +104,7 @@
         <div class="summary-inline">
             <i class="fas fa-clipboard-list main"></i>
             <div>
-                <div class="line"><strong>@L["Service:"]</strong> @Model.NombreServicio</div>
+                <div class="line"><strong>@L["Service:"]</strong> @L.Catalog(Model.NombreServicio)</div>
                 <div class="line"><strong>@L["Filters:"]</strong> @Model.CantidadFiltrosLabel</div>
                 <div class="line"><strong>@L["Size:"]</strong> @Model.FiltroTamanioLabel</div>
                 @if (Model.ShowScheduleOptions)
@@ -116,7 +116,7 @@
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
-            <i class="fas fa-calendar-plus"></i> Confirm request
+            <i class="fas fa-calendar-plus"></i> @L["Confirm request"]
         </button>
         <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
     </form>

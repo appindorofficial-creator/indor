@@ -31,7 +31,7 @@ public partial class ProviderProDataService
             CompletedSections = completed,
             Sections = sections,
             ContinueAction = next?.Action,
-            ContinueLabel = next == null ? null : "Continue Setup",
+            ContinueLabel = next == null ? null : ProviderProDisplayLocalization.L("Continue Setup"),
             NextStepTitle = next?.Title,
             NextStepAction = next?.Action
         };
@@ -362,13 +362,13 @@ public partial class ProviderProDataService
 
         return
         [
-            MakeSection("basic", "Basic Information", "Add your business details and contact info", "fa-circle-info", basicComplete, false, "Edit", "/Proveedor/ProfileBusiness"),
-            MakeSection("services", "Services Offered", "Tell homeowners what you specialize in", "fa-wrench", servicesComplete, false, "Edit", "/Proveedor/ProfileBusiness#services"),
-            MakeSection("areas", "Service Areas", "Define the areas you serve", "fa-map-location-dot", areasComplete, false, "Edit", "/Proveedor/ProfileBusiness#areas"),
-            MakeSection("license", "License", "Upload or verify your business license", "fa-id-card", licenseComplete, IsLicensePending(proveedor, docMeta, HasDoc(ProviderDocumentTypes.License)), licenseComplete ? "Edit" : "Complete", "/Proveedor/ProfileDocuments?section=license"),
-            MakeSection("insurance", "Insurance & COI", "Add proof of insurance and COI", "fa-shield-halved", insuranceComplete, IsInsurancePending(proveedor, docMeta, HasDoc(ProviderDocumentTypes.Insurance)), insuranceComplete ? "Edit" : "Upload", "/Proveedor/ProfileDocuments?section=insurance"),
-            MakeSection("w9", "W-9", "Upload your tax form", "fa-file-invoice", w9Complete, IsW9Pending(docMeta, HasDoc(ProviderDocumentTypes.W9)), w9Complete ? "Edit" : "Upload", "/Proveedor/ProfileDocuments?section=w9"),
-            MakeSection("background", "Background Check", "Complete trust and safety review", "fa-user-shield", backgroundComplete, IsBackgroundPending(proveedor, docMeta), backgroundComplete ? "Edit" : "Complete", "/Proveedor/ProfileDocuments?section=background")
+            MakeSection("basic", ProviderProDisplayLocalization.L("Basic Information"), ProviderProDisplayLocalization.L("Add your business details and contact info"), "fa-circle-info", basicComplete, false, ProviderProDisplayLocalization.L("Edit"), "/Proveedor/ProfileBusiness"),
+            MakeSection("services", ProviderProDisplayLocalization.L("Services Offered"), ProviderProDisplayLocalization.L("Tell homeowners what you specialize in"), "fa-wrench", servicesComplete, false, ProviderProDisplayLocalization.L("Edit"), "/Proveedor/ProfileBusiness#services"),
+            MakeSection("areas", ProviderProDisplayLocalization.L("Service Areas"), ProviderProDisplayLocalization.L("Define the areas you serve"), "fa-map-location-dot", areasComplete, false, ProviderProDisplayLocalization.L("Edit"), "/Proveedor/ProfileBusiness#areas"),
+            MakeSection("license", ProviderProDisplayLocalization.L("License"), ProviderProDisplayLocalization.L("Upload or verify your business license"), "fa-id-card", licenseComplete, IsLicensePending(proveedor, docMeta, HasDoc(ProviderDocumentTypes.License)), licenseComplete ? ProviderProDisplayLocalization.L("Edit") : ProviderProDisplayLocalization.L("Complete"), "/Proveedor/ProfileDocuments?section=license"),
+            MakeSection("insurance", ProviderProDisplayLocalization.L("Insurance & COI"), ProviderProDisplayLocalization.L("Add proof of insurance and COI"), "fa-shield-halved", insuranceComplete, IsInsurancePending(proveedor, docMeta, HasDoc(ProviderDocumentTypes.Insurance)), insuranceComplete ? ProviderProDisplayLocalization.L("Edit") : ProviderProDisplayLocalization.L("Upload"), "/Proveedor/ProfileDocuments?section=insurance"),
+            MakeSection("w9", ProviderProDisplayLocalization.L("W-9"), ProviderProDisplayLocalization.L("Upload your tax form"), "fa-file-invoice", w9Complete, IsW9Pending(docMeta, HasDoc(ProviderDocumentTypes.W9)), w9Complete ? ProviderProDisplayLocalization.L("Edit") : ProviderProDisplayLocalization.L("Upload"), "/Proveedor/ProfileDocuments?section=w9"),
+            MakeSection("background", ProviderProDisplayLocalization.L("Background Check"), ProviderProDisplayLocalization.L("Complete trust and safety review"), "fa-user-shield", backgroundComplete, IsBackgroundPending(proveedor, docMeta), backgroundComplete ? ProviderProDisplayLocalization.L("Edit") : ProviderProDisplayLocalization.L("Complete"), "/Proveedor/ProfileDocuments?section=background")
         ];
 
         ProviderProfileSectionViewModel MakeSection(
@@ -392,25 +392,8 @@ public partial class ProviderProDataService
         }
     }
 
-    private static (string Kind, string Label) ResolveSectionStatus(string id, bool complete, bool pendingReview)
-    {
-        if (complete)
-        {
-            return ("complete", "Complete");
-        }
-
-        if (pendingReview)
-        {
-            return ("pending", "Pending Review");
-        }
-
-        if (id is "insurance" or "w9")
-        {
-            return ("missing", "Missing");
-        }
-
-        return ("incomplete", "Incomplete");
-    }
+    private static (string Kind, string Label) ResolveSectionStatus(string id, bool complete, bool pendingReview) =>
+        ProviderProDisplayLocalization.SectionStatus(id, complete, pendingReview);
 
     private static bool IsBasicInfoComplete(IndorProveedor p) =>
         (!string.IsNullOrWhiteSpace(p.BusinessName) || !string.IsNullOrWhiteSpace(p.DbaName))

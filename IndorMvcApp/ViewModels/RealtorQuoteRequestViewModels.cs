@@ -49,6 +49,7 @@ public class RealtorQuoteProviderCardViewModel
     public string? BadgeLabel { get; set; }
     public bool IsVerified { get; set; }
     public bool Selected { get; set; }
+    public string DistanceLabel { get; set; } = "";
 }
 
 public class RealtorQuoteRequestProvidersViewModel : RealtorQuoteRequestStepViewModel

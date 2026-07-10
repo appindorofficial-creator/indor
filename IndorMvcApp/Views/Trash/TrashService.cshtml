@@ -1,28 +1,28 @@
-@model IndorMvcApp.ViewModels.TrashServiceViewModel
+﻿@model IndorMvcApp.ViewModels.TrashServiceViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home", new { fragment = "home-care-essentials" });
 }
 
 @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
     {
         <div class="hero-wrap">
-            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@Model.LandingTitulo" class="hero-img" />
+            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@L.Catalog(Model.LandingTitulo)" class="hero-img" />
             <span class="tr-hero-icon"><i class="fas fa-trash-can"></i></span>
         </div>
     }
 
     <div class="title-row">
         <div class="left">
-            <h1 class="page-heading" style="margin-bottom:4px;font-size:1.2rem;">@Model.LandingTitulo</h1>
+            <h1 class="page-heading" style="margin-bottom:4px;font-size:1.2rem;">@L.Catalog(Model.LandingTitulo)</h1>
             @if (!string.IsNullOrWhiteSpace(Model.LandingTagline))
             {
-                <div class="tagline">@Model.LandingTagline</div>
+                <div class="tagline">@L.Catalog(Model.LandingTagline)</div>
             }
         </div>
     </div>
-    <p class="page-lead">@Model.LandingSubtitulo</p>
+    <p class="page-lead">@L.Catalog(Model.LandingSubtitulo)</p>
 
     @if (Model.IncludedItems.Count > 0)
     {
@@ -31,7 +31,7 @@
             <ul style="list-style:none;padding:0;margin:0;">
                 @foreach (var item in Model.IncludedItems)
                 {
-                    <li style="display:flex;align-items:center;gap:8px;font-size:0.82rem;font-weight:600;padding:4px 0;"><i class="fas @item.Icon" style="color:#0066CC;font-size:0.72rem;"></i><span>@item.Text</span></li>
+                    <li style="display:flex;align-items:center;gap:8px;font-size:0.82rem;font-weight:600;padding:4px 0;"><i class="fas @item.Icon" style="color:#0066CC;font-size:0.72rem;"></i><span>@L.Catalog(item.Text)</span></li>
                 }
             </ul>
         </div>
@@ -40,7 +40,7 @@
     @if (!string.IsNullOrWhiteSpace(Model.PrecioTexto))
     {
         <div style="display:flex;align-items:baseline;gap:6px;margin-bottom:14px;font-weight:700;color:#0066CC;">
-            <i class="fas fa-tag"></i> @Model.PrecioTexto
+            <i class="fas fa-tag"></i> @L.Catalog(Model.PrecioTexto)
         </div>
     }
 
@@ -50,6 +50,6 @@
         <input type="hidden" asp-for="MicroservicioId" />
         <input type="hidden" asp-for="SolicitudId" />
         <button type="submit" name="action" value="continue" class="btn-primary">
-            <i class="fas fa-bolt"></i> @Model.CtaTexto <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-bolt"></i> @L.Catalog(Model.CtaTexto) <i class="fas fa-chevron-right"></i>
         </button>
     </form>

@@ -1,102 +1,104 @@
-namespace IndorMvcApp.Services;
+﻿namespace IndorMvcApp.Services;
+
+// Localized via DisplayLabelsLocalization.L
 
 public static class TvWallMountingDisplayLabels
 {
     public static string FormatRequestType(string? value) => value switch
     {
-        "MountTv" => "Mount TV",
-        "DismountTv" => "Dismount TV",
-        "RemountTv" => "Re-mount existing TV",
-        "AddSoundbar" => "Add soundbar",
-        _ => value ?? "—"
+        "MountTv" => DisplayLabelsLocalization.L("Mount TV"),
+        "DismountTv" => DisplayLabelsLocalization.L("Dismount TV"),
+        "RemountTv" => DisplayLabelsLocalization.L("Re-mount existing TV"),
+        "AddSoundbar" => DisplayLabelsLocalization.L("Add soundbar"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatTvSize(string? value) => value switch
     {
-        "Under43" => "Under 43\"",
-        "Size43_55" => "43-55\"",
-        "Size56_64" => "56-64\"",
-        "Size65_75" => "65-75\"",
-        "Size75Plus" => "75\"+",
-        _ => value ?? "—"
+        "Under43" => DisplayLabelsLocalization.L("Under 43\""),
+        "Size43_55" => DisplayLabelsLocalization.L("43-55\""),
+        "Size56_64" => DisplayLabelsLocalization.L("56-64\""),
+        "Size65_75" => DisplayLabelsLocalization.L("65-75\""),
+        "Size75Plus" => DisplayLabelsLocalization.L("75\"+"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatTvCount(string? value) => value switch
     {
-        "One" => "1 TV",
-        "Two" => "2 TVs",
-        "ThreePlus" => "3+ TVs",
-        _ => value ?? "—"
+        "One" => DisplayLabelsLocalization.L("1 TV"),
+        "Two" => DisplayLabelsLocalization.L("2 TVs"),
+        "ThreePlus" => DisplayLabelsLocalization.L("3+ TVs"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatRoom(string? value) => value switch
     {
-        "LivingRoom" => "Living room",
-        "Bedroom" => "Bedroom",
-        "Office" => "Office",
-        "OtherRoom" => "Other room",
-        _ => value ?? "—"
+        "LivingRoom" => DisplayLabelsLocalization.L("Living room"),
+        "Bedroom" => DisplayLabelsLocalization.L("Bedroom"),
+        "Office" => DisplayLabelsLocalization.L("Office"),
+        "OtherRoom" => DisplayLabelsLocalization.L("Other room"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatWallType(string? value) => value switch
     {
-        "Drywall" => "Drywall",
-        "Brick" => "Brick",
-        "Concrete" => "Concrete",
-        "NotSure" => "Not sure",
-        _ => value ?? "—"
+        "Drywall" => DisplayLabelsLocalization.L("Drywall"),
+        "Brick" => DisplayLabelsLocalization.L("Brick"),
+        "Concrete" => DisplayLabelsLocalization.L("Concrete"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatWallMount(string? value) => value switch
     {
-        "YesHaveIt" => "Customer has wall mount",
-        "NeedProvided" => "Need one provided",
-        "NotSure" => "Not sure",
-        _ => value ?? "—"
+        "YesHaveIt" => DisplayLabelsLocalization.L("Customer has wall mount"),
+        "NeedProvided" => DisplayLabelsLocalization.L("Need one provided"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatCableSetup(string? value) => value switch
     {
-        "BasicVisible" => "Basic visible cables",
-        "HideInCover" => "Hide cables in cover",
-        "InWallConcealment" => "In-wall concealment",
-        "NotSure" => "Not sure",
-        _ => value ?? "—"
+        "BasicVisible" => DisplayLabelsLocalization.L("Basic visible cables"),
+        "HideInCover" => DisplayLabelsLocalization.L("Hide cables in cover"),
+        "InWallConcealment" => DisplayLabelsLocalization.L("In-wall concealment"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatYesNoNotSure(string? value) => value switch
     {
-        "Yes" => "Yes",
-        "No" => "No",
-        "NotSure" => "Not sure",
-        _ => value ?? "—"
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "No" => DisplayLabelsLocalization.L("No"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatAccess(string? value) => value switch
     {
-        "GroundFloor" => "Ground floor",
-        "Stairs" => "Stairs",
-        "Elevator" => "Elevator",
-        "ParkingLimited" => "Parking limited",
-        _ => value ?? "—"
+        "GroundFloor" => DisplayLabelsLocalization.L("Ground floor"),
+        "Stairs" => DisplayLabelsLocalization.L("Stairs"),
+        "Elevator" => DisplayLabelsLocalization.L("Elevator"),
+        "ParkingLimited" => DisplayLabelsLocalization.L("Parking limited"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatArrival(string? value) => value switch
     {
-        "Morning" => "Morning",
-        "Afternoon" => "Afternoon",
-        "Evening" => "Evening",
-        "AsSoonAsPossible" => "As soon as possible",
-        _ => value ?? "—"
+        "Morning" => DisplayLabelsLocalization.L("Morning"),
+        "Afternoon" => DisplayLabelsLocalization.L("Afternoon"),
+        "Evening" => DisplayLabelsLocalization.L("Evening"),
+        "AsSoonAsPossible" => DisplayLabelsLocalization.L("As soon as possible"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatTimeShort(string? value) => value switch
     {
-        "Morning" => "10:00 AM",
-        "Afternoon" => "2:00 PM",
-        "Evening" => "6:00 PM",
-        "AsSoonAsPossible" => "ASAP",
-        _ => "2:00 PM"
+        "Morning" => DisplayLabelsLocalization.L("10:00 AM"),
+        "Afternoon" => DisplayLabelsLocalization.L("2:00 PM"),
+        "Evening" => DisplayLabelsLocalization.L("6:00 PM"),
+        "AsSoonAsPossible" => DisplayLabelsLocalization.L("ASAP"),
+        _ => DisplayLabelsLocalization.L("2:00 PM")
     };
 
     public static string FormatDate(DateTime? date) =>

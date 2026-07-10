@@ -14,7 +14,7 @@
         <span>@L["Property"]</span>
         <strong>@Model.PropertyDisplay</strong>
         <span>@L["File Type"]</span>
-        <strong>@Model.FilePhaseLabel</strong>
+        <strong>@L[Model.FilePhaseLabel]</strong>
     </div>
 </div>
 
@@ -45,8 +45,8 @@
             <label class="rl-category-card @(cat.Selected ? "is-selected" : "")">
                 <input type="checkbox" name="categoryTypes" value="@cat.CategoryType" @(cat.Selected ? "checked" : null) />
                 <i class="fas @cat.Icon"></i>
-                <strong>@cat.Label</strong>
-                <span>@cat.Description</span>
+                <strong>@L[cat.Label]</strong>
+                <span>@L[cat.Description]</span>
                 @if (cat.Selected) { <i class="fas fa-circle-check rl-collab-check"></i> }
             </label>
         }

@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.RealtorPropertyFileStepViewModel
+@using IndorMvcApp.Helpers
 @{
     var steps = new[] { "Details", "Add Items", "Review", "Create" };
     var activeStep = Model.DisplayStep switch
@@ -12,10 +13,10 @@
 @await Html.PartialAsync("~/Views/Realtor/_RealtorTopbar.cshtml", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel { HideNotifications = true })
 
 <div class="rl-invite-head">
-    <h1>@Model.Title</h1>
+    <h1>@L[Model.Title]</h1>
     @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
     {
-        <p>@Model.Subtitle</p>
+        <p>@L[Model.Subtitle]</p>
     }
 </div>
 
@@ -33,7 +34,7 @@
             {
                 <span>@stepNum</span>
             }
-            <small>@steps[i]</small>
+            <small>@L[steps[i]]</small>
         </div>
         @if (i < steps.Length - 1)
         {

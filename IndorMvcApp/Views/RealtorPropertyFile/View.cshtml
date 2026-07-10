@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.RealtorPropertyFileViewViewModel
+@using IndorMvcApp.Helpers
 @{
     Layout = "_RealtorLayout";
     ViewData["Title"] = L["Property File"];
@@ -25,17 +26,17 @@
             {
                 <span class="rl-premium-client"><i class="fas fa-user"></i> @Model.ClientName</span>
             }
-            <span class="rl-file-code">File ID: @Model.FileCode</span>
+            <span class="rl-file-code">@L.T("File ID: {0}", Model.FileCode)</span>
             <span class="rl-phase-badge rl-phase-badge--pre-closing">@Model.FilePhaseLabel</span>
             <span class="rl-status-pill rl-status-pill--@Model.StatusCss">@Model.StatusBadge</span>
             <span class="rl-premium-muted">@Model.UpdatedLabel</span>
             @if (Model.RepairItemsCount > 0)
             {
-                <span class="rl-premium-muted">Repair items: @Model.RepairItemsCount</span>
+                <span class="rl-premium-muted">@L.T("Repair items: {0}", Model.RepairItemsCount)</span>
             }
             @if (Model.QuotesReceivedCount > 0)
             {
-                <span class="rl-premium-muted">Quotes received: @Model.QuotesReceivedCount</span>
+                <span class="rl-premium-muted">@L.T("Quotes received: {0}", Model.QuotesReceivedCount)</span>
             }
         </div>
     </div>
@@ -57,7 +58,7 @@
     @if (Model.Sections.Count == 0)
     {
         <div class="rl-dash-empty">
-            @if (string.Equals(Model.PrimaryActionLabel, "Continue Inspection", StringComparison.Ordinal))
+            @if (Model.PrimaryActionUrl?.Contains("RealtorInspectionUpload/Continue", StringComparison.OrdinalIgnoreCase) == true)
             {
                 <span>@L["Inspection report uploaded. Continue analysis to add findings to this file."]</span>
             }
@@ -98,8 +99,8 @@
                                 <button type="button"
                                         class="rl-btn-outline rl-btn-outline--sm rl-file-open-btn"
                                         data-file-url="@fileOpenUrl"
-                                        aria-label="@L["Open @item.ItemLabel"]">
-                                    Open <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                                        aria-label="@L.T("Open {0}", item.ItemLabel)">
+                                    @L["Open"] <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
                                 </button>
                             }
                         </li>

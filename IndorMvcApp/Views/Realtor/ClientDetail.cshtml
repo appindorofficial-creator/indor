@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.RealtorClientDetailViewModel
+@using IndorMvcApp.Helpers
 @{
     ViewData["Title"] = Model.FullName;
     Layout = "_RealtorLayout";
@@ -11,7 +12,7 @@
     <div class="rl-page-header rl-page-header--stack">
         <a asp-controller="Realtor" asp-action="Clients" class="rl-back-link"><i class="fas fa-chevron-left"></i> @L["Clients"]</a>
         <h1 class="rl-page-title">@Model.FullName</h1>
-        <p class="rl-page-subtitle">@Model.ClientRole client profile</p>
+        <p class="rl-page-subtitle">@L.T("{0} client profile", RealtorDisplayLocalization.ClientRole(L, Model.ClientRole))</p>
     </div>
 
     <div class="rl-client-detail-hero">
@@ -26,8 +27,8 @@
             }
             <div class="rl-client-detail-identity">
                 <strong>@Model.FullName</strong>
-                <span class="rl-role-label">@Model.ClientRole</span>
-                <span class="rl-status-pill rl-status-pill--@Model.StatusCss">@Model.StatusBadge</span>
+                <span class="rl-role-label">@RealtorDisplayLocalization.ClientRole(L, Model.ClientRole)</span>
+                <span class="rl-status-pill rl-status-pill--@Model.StatusCss">@UiDisplayLocalization.Localize(L, Model.StatusBadge)</span>
             </div>
         </div>
         <div class="rl-client-detail-meta">

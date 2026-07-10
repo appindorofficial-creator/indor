@@ -1,41 +1,43 @@
-namespace IndorMvcApp.Services;
+﻿namespace IndorMvcApp.Services;
+
+// Localized via DisplayLabelsLocalization.L
 
 public static class InspeccionDisplayLabels
 {
     public static string MotivoRevision(string? value) => value switch
     {
-        "BuyingHome" => "Buying a home",
-        "SafetyCheck" => "Safety check",
-        "IssueAtHome" => "Issue at home",
-        "InspectionFollowUp" => "Inspection follow-up",
-        _ => "General review"
+        "BuyingHome" => DisplayLabelsLocalization.L("Buying a home"),
+        "SafetyCheck" => DisplayLabelsLocalization.L("Safety check"),
+        "IssueAtHome" => DisplayLabelsLocalization.L("Issue at home"),
+        "InspectionFollowUp" => DisplayLabelsLocalization.L("Inspection follow-up"),
+        _ => DisplayLabelsLocalization.L("General review")
     };
 
     public static string PreocupacionPrincipal(string? value) => value switch
     {
-        "BreakerTrips" => "Breaker trips",
-        "LightsFlicker" => "Lights flicker",
-        "OutletsNotWorking" => "Outlets not working",
-        "OldPanel" => "Old panel",
-        "BurningSmell" => "Burning smell",
-        "GeneralReview" => "General electrical review",
-        _ => "General electrical review"
+        "BreakerTrips" => DisplayLabelsLocalization.L("Breaker trips"),
+        "LightsFlicker" => DisplayLabelsLocalization.L("Lights flicker"),
+        "OutletsNotWorking" => DisplayLabelsLocalization.L("Outlets not working"),
+        "OldPanel" => DisplayLabelsLocalization.L("Old panel"),
+        "BurningSmell" => DisplayLabelsLocalization.L("Burning smell"),
+        "GeneralReview" => DisplayLabelsLocalization.L("General electrical review"),
+        _ => DisplayLabelsLocalization.L("General electrical review")
     };
 
     public static string ObjetivoPrincipal(string? value) => value switch
     {
-        "BuyWithConfidence" => "Buy with confidence",
-        "UnderstandRepairRisks" => "Understand repair risks",
-        "NegotiateRepairs" => "Negotiate repairs",
-        "SecondOpinion" => "Second opinion",
-        _ => "Home purchase review"
+        "BuyWithConfidence" => DisplayLabelsLocalization.L("Buy with confidence"),
+        "UnderstandRepairRisks" => DisplayLabelsLocalization.L("Understand repair risks"),
+        "NegotiateRepairs" => DisplayLabelsLocalization.L("Negotiate repairs"),
+        "SecondOpinion" => DisplayLabelsLocalization.L("Second opinion"),
+        _ => DisplayLabelsLocalization.L("Home purchase review")
     };
 
     public static string RolComprador(string? value) => value switch
     {
-        "Buyer" => "Buyer",
-        "Realtor" => "Realtor",
-        "Investor" => "Investor",
+        "Buyer" => DisplayLabelsLocalization.L("Buyer"),
+        "Realtor" => DisplayLabelsLocalization.L("Realtor"),
+        "Investor" => DisplayLabelsLocalization.L("Investor"),
         _ => value ?? "Buyer"
     };
 
@@ -55,7 +57,7 @@ public static class InspeccionDisplayLabels
                 trimmed = trimmed[..57] + "...";
             }
 
-            return $"{summary} — {trimmed}";
+            return $"{summary} â€” {trimmed}";
         }
 
         return $"{summary} ({RolComprador(rol)})";
@@ -79,22 +81,22 @@ public static class InspeccionDisplayLabels
 
     public static string MotivoInspeccionCompleta(string? value) => value switch
     {
-        "BuyingHome" => "Buying a home",
-        "AnnualReview" => "Annual review",
-        "SellingHome" => "Selling a home",
-        "InspectionFollowUp" => "Inspection follow-up",
-        _ => "Home review"
+        "BuyingHome" => DisplayLabelsLocalization.L("Buying a home"),
+        "AnnualReview" => DisplayLabelsLocalization.L("Annual review"),
+        "SellingHome" => DisplayLabelsLocalization.L("Selling a home"),
+        "InspectionFollowUp" => DisplayLabelsLocalization.L("Inspection follow-up"),
+        _ => DisplayLabelsLocalization.L("Home review")
     };
 
     public static string AreaEnfoque(string? value) => value switch
     {
-        "Electrical" => "Electrical",
-        "HVAC" => "HVAC",
-        "GeneralStructure" => "General structure",
-        "Plumbing" => "Plumbing",
-        "Roof" => "Roof",
-        "Moisture" => "Moisture",
-        "Safety" => "Safety",
+        "Electrical" => DisplayLabelsLocalization.L("Electrical"),
+        "HVAC" => DisplayLabelsLocalization.L("HVAC"),
+        "GeneralStructure" => DisplayLabelsLocalization.L("General structure"),
+        "Plumbing" => DisplayLabelsLocalization.L("Plumbing"),
+        "Roof" => DisplayLabelsLocalization.L("Roof"),
+        "Moisture" => DisplayLabelsLocalization.L("Moisture"),
+        "Safety" => DisplayLabelsLocalization.L("Safety"),
         _ => value ?? string.Empty
     };
 
@@ -102,7 +104,7 @@ public static class InspeccionDisplayLabels
     {
         if (string.IsNullOrWhiteSpace(areasPipeSeparated))
         {
-            return "General structure";
+            return DisplayLabelsLocalization.L("General structure");
         }
 
         return string.Join(" / ",
@@ -113,47 +115,47 @@ public static class InspeccionDisplayLabels
 
     public static string TipoProblemaPlomeria(string? value) => value switch
     {
-        "BathroomIssue" => "Bathroom issue",
-        "KitchenIssue" => "Kitchen leak",
-        "Toilet" => "Toilet issue",
-        "FaucetSink" => "Faucet / sink",
-        "ShowerTub" => "Shower / tub",
-        "WaterSupplyLine" => "Water supply line",
-        "DrainLineClog" => "Drain line / clog",
-        "MainWaterLine" => "Main water line",
-        "MainShutoffValve" => "Main shutoff valve",
-        "LeakDetection" => "Leak detection",
-        "LowWaterPressure" => "Low water pressure",
-        "SewerMainDrain" => "Sewer / main drain",
-        "ExteriorHoseBib" => "Exterior hose bib",
-        "GeneralReview" => "General review",
-        _ => "Plumbing issue"
+        "BathroomIssue" => DisplayLabelsLocalization.L("Bathroom issue"),
+        "KitchenIssue" => DisplayLabelsLocalization.L("Kitchen leak"),
+        "Toilet" => DisplayLabelsLocalization.L("Toilet issue"),
+        "FaucetSink" => DisplayLabelsLocalization.L("Faucet / sink"),
+        "ShowerTub" => DisplayLabelsLocalization.L("Shower / tub"),
+        "WaterSupplyLine" => DisplayLabelsLocalization.L("Water supply line"),
+        "DrainLineClog" => DisplayLabelsLocalization.L("Drain line / clog"),
+        "MainWaterLine" => DisplayLabelsLocalization.L("Main water line"),
+        "MainShutoffValve" => DisplayLabelsLocalization.L("Main shutoff valve"),
+        "LeakDetection" => DisplayLabelsLocalization.L("Leak detection"),
+        "LowWaterPressure" => DisplayLabelsLocalization.L("Low water pressure"),
+        "SewerMainDrain" => DisplayLabelsLocalization.L("Sewer / main drain"),
+        "ExteriorHoseBib" => DisplayLabelsLocalization.L("Exterior hose bib"),
+        "GeneralReview" => DisplayLabelsLocalization.L("General review"),
+        _ => DisplayLabelsLocalization.L("Plumbing issue")
     };
 
     public static string UbicacionProblemaPlomeria(string? value) => value switch
     {
-        "Kitchen" => "Kitchen",
-        "Bathroom" => "Bathroom",
-        "Laundry" => "Laundry",
-        "CrawlSpace" => "Crawl space",
-        "Basement" => "Basement",
-        "Exterior" => "Exterior",
-        "WholeHouse" => "Whole house",
+        "Kitchen" => DisplayLabelsLocalization.L("Kitchen"),
+        "Bathroom" => DisplayLabelsLocalization.L("Bathroom"),
+        "Laundry" => DisplayLabelsLocalization.L("Laundry"),
+        "CrawlSpace" => DisplayLabelsLocalization.L("Crawl space"),
+        "Basement" => DisplayLabelsLocalization.L("Basement"),
+        "Exterior" => DisplayLabelsLocalization.L("Exterior"),
+        "WholeHouse" => DisplayLabelsLocalization.L("Whole house"),
         _ => value ?? "Unknown area"
     };
 
     public static string SituacionPlomeria(string? value) => value switch
     {
-        "LeakUnderSink" => "Leak under sink",
-        "SlowDrain" => "Slow drain",
-        "ClogBackup" => "Clog / backup",
-        "PipeNoise" => "Pipe noise",
-        "WaterStain" => "Water stain",
-        "NoHotWater" => "No hot water",
-        "ToiletRunning" => "Toilet running",
-        "BadSmell" => "Bad smell",
-        "FixtureLoose" => "Fixture loose",
-        "LowPressure" => "Low pressure",
+        "LeakUnderSink" => DisplayLabelsLocalization.L("Leak under sink"),
+        "SlowDrain" => DisplayLabelsLocalization.L("Slow drain"),
+        "ClogBackup" => DisplayLabelsLocalization.L("Clog / backup"),
+        "PipeNoise" => DisplayLabelsLocalization.L("Pipe noise"),
+        "WaterStain" => DisplayLabelsLocalization.L("Water stain"),
+        "NoHotWater" => DisplayLabelsLocalization.L("No hot water"),
+        "ToiletRunning" => DisplayLabelsLocalization.L("Toilet running"),
+        "BadSmell" => DisplayLabelsLocalization.L("Bad smell"),
+        "FixtureLoose" => DisplayLabelsLocalization.L("Fixture loose"),
+        "LowPressure" => DisplayLabelsLocalization.L("Low pressure"),
         _ => value ?? string.Empty
     };
 
@@ -161,8 +163,8 @@ public static class InspeccionDisplayLabels
     {
         var detail = tipo switch
         {
-            "KitchenIssue" => "drain issue",
-            "DrainLineClog" => "drain issue",
+            "KitchenIssue" => DisplayLabelsLocalization.L("drain issue"),
+            "DrainLineClog" => DisplayLabelsLocalization.L("drain issue"),
             _ => UbicacionProblemaPlomeria(ubicacion).ToLowerInvariant() + " issue"
         };
 
@@ -177,10 +179,10 @@ public static class InspeccionDisplayLabels
         var firstSituacion = GetFirstPipeValue(situacionesPipe);
         var detail = firstSituacion switch
         {
-            "ClogBackup" => "drain issue",
+            "ClogBackup" => DisplayLabelsLocalization.L("drain issue"),
             null or "" => tipo switch
             {
-                "KitchenIssue" => "drain issue",
+                "KitchenIssue" => DisplayLabelsLocalization.L("drain issue"),
                 _ => UbicacionProblemaPlomeria(ubicacion).ToLowerInvariant() + " issue"
             },
             _ => SituacionPlomeria(firstSituacion).ToLowerInvariant()
@@ -191,43 +193,43 @@ public static class InspeccionDisplayLabels
 
     public static string TipoProblemaHvac(string? value) => value switch
     {
-        "NotCooling" => "Not cooling",
-        "NotHeating" => "Not heating",
-        "NoAirflow" => "No airflow",
-        "WeakAirflow" => "Weak airflow",
-        "StrangeNoise" => "Strange noise",
-        "BadSmell" => "Bad smell",
-        "WaterLeak" => "Water leak",
-        "FrozenCoil" => "Frozen coil",
-        "ThermostatIssue" => "Thermostat issue",
-        "FilterIssue" => "Filter issue",
-        "HighEnergyBill" => "High energy bill",
-        "AnnualMaintenance" => "Annual maintenance",
-        "GeneralReview" => "General review",
-        _ => "HVAC issue"
+        "NotCooling" => DisplayLabelsLocalization.L("Not cooling"),
+        "NotHeating" => DisplayLabelsLocalization.L("Not heating"),
+        "NoAirflow" => DisplayLabelsLocalization.L("No airflow"),
+        "WeakAirflow" => DisplayLabelsLocalization.L("Weak airflow"),
+        "StrangeNoise" => DisplayLabelsLocalization.L("Strange noise"),
+        "BadSmell" => DisplayLabelsLocalization.L("Bad smell"),
+        "WaterLeak" => DisplayLabelsLocalization.L("Water leak"),
+        "FrozenCoil" => DisplayLabelsLocalization.L("Frozen coil"),
+        "ThermostatIssue" => DisplayLabelsLocalization.L("Thermostat issue"),
+        "FilterIssue" => DisplayLabelsLocalization.L("Filter issue"),
+        "HighEnergyBill" => DisplayLabelsLocalization.L("High energy bill"),
+        "AnnualMaintenance" => DisplayLabelsLocalization.L("Annual maintenance"),
+        "GeneralReview" => DisplayLabelsLocalization.L("General review"),
+        _ => DisplayLabelsLocalization.L("HVAC issue")
     };
 
     public static string ParteAtencionHvac(string? value) => value switch
     {
-        "OutdoorUnit" => "Outdoor unit",
-        "IndoorUnit" => "Indoor unit",
-        "FurnaceAirHandler" => "Furnace / air handler",
-        "Thermostat" => "Thermostat",
-        "AirFilter" => "Air filter",
-        "DuctVents" => "Duct / vents",
-        "WholeSystem" => "Whole system",
+        "OutdoorUnit" => DisplayLabelsLocalization.L("Outdoor unit"),
+        "IndoorUnit" => DisplayLabelsLocalization.L("Indoor unit"),
+        "FurnaceAirHandler" => DisplayLabelsLocalization.L("Furnace / air handler"),
+        "Thermostat" => DisplayLabelsLocalization.L("Thermostat"),
+        "AirFilter" => DisplayLabelsLocalization.L("Air filter"),
+        "DuctVents" => DisplayLabelsLocalization.L("Duct / vents"),
+        "WholeSystem" => DisplayLabelsLocalization.L("Whole system"),
         _ => value ?? "Whole system"
     };
 
     public static string ComponenteHvac(string? value) => value switch
     {
-        "OutdoorCondenser" => "Outdoor unit",
-        "IndoorCoil" => "Indoor unit",
-        "Furnace" => "Furnace",
-        "Thermostat" => "Thermostat",
-        "Filters" => "Filter",
-        "Ductwork" => "Ductwork",
-        "DrainLine" => "Drain line",
+        "OutdoorCondenser" => DisplayLabelsLocalization.L("Outdoor unit"),
+        "IndoorCoil" => DisplayLabelsLocalization.L("Indoor unit"),
+        "Furnace" => DisplayLabelsLocalization.L("Furnace"),
+        "Thermostat" => DisplayLabelsLocalization.L("Thermostat"),
+        "Filters" => DisplayLabelsLocalization.L("Filter"),
+        "Ductwork" => DisplayLabelsLocalization.L("Ductwork"),
+        "DrainLine" => DisplayLabelsLocalization.L("Drain line"),
         _ => value ?? string.Empty
     };
 
@@ -235,9 +237,9 @@ public static class InspeccionDisplayLabels
     {
         var detail = tipo switch
         {
-            "NotCooling" => "weak airflow",
+            "NotCooling" => DisplayLabelsLocalization.L("weak airflow"),
             "WeakAirflow" => ParteAtencionHvac(parte).ToLowerInvariant(),
-            "NoAirflow" => "no airflow",
+            "NoAirflow" => DisplayLabelsLocalization.L("no airflow"),
             _ => ParteAtencionHvac(parte).ToLowerInvariant()
         };
 
@@ -253,7 +255,7 @@ public static class InspeccionDisplayLabels
     {
         if (string.IsNullOrWhiteSpace(componentesPipe))
         {
-            return "Outdoor unit, indoor unit, thermostat, filter";
+            return DisplayLabelsLocalization.L("Outdoor unit, indoor unit, thermostat, filter");
         }
 
         return string.Join(", ",
@@ -265,162 +267,162 @@ public static class InspeccionDisplayLabels
 
     public static string MotivoRevisionStructural(string? value) => value switch
     {
-        "BeforePurchase" or "BuyingHome" => "Before purchase",
-        "AfterDamage" => "After seeing damage",
-        "Remodeling" or "RemodelPlanning" => "Remodeling",
-        "AnnualReview" => "Annual review",
-        "InsuranceClaim" => "Insurance / claim",
-        "SecondOpinion" => "Second opinion",
-        "SafetyCheck" => "Safety check",
-        "VisibleIssue" => "Visible issue",
-        "InspectionFollowUp" => "Inspection follow-up",
-        _ => "Structural review"
+        "BeforePurchase" or "BuyingHome" => DisplayLabelsLocalization.L("Before purchase"),
+        "AfterDamage" => DisplayLabelsLocalization.L("After seeing damage"),
+        "Remodeling" or "RemodelPlanning" => DisplayLabelsLocalization.L("Remodeling"),
+        "AnnualReview" => DisplayLabelsLocalization.L("Annual review"),
+        "InsuranceClaim" => DisplayLabelsLocalization.L("Insurance / claim"),
+        "SecondOpinion" => DisplayLabelsLocalization.L("Second opinion"),
+        "SafetyCheck" => DisplayLabelsLocalization.L("Safety check"),
+        "VisibleIssue" => DisplayLabelsLocalization.L("Visible issue"),
+        "InspectionFollowUp" => DisplayLabelsLocalization.L("Inspection follow-up"),
+        _ => DisplayLabelsLocalization.L("Structural review")
     };
 
     public static string TipoPreocupacionStructural(string? value) => value switch
     {
-        "FoundationCrack" => "Foundation crack",
-        "WallCrack" => "Wall crack",
-        "FloorSloping" or "FloorUneven" => "Floor sloping",
-        "SettlementSigns" => "Settlement signs",
-        "SaggingFloor" => "Sagging floor",
-        "SaggingRoof" or "RoofSagging" => "Sagging roof",
-        "DoorWindowSticking" => "Door / window sticking",
-        "SupportColumn" => "Support column",
-        "BeamConcern" => "Beam concern",
-        "CrawlSpaceIssue" => "Crawl space issue",
-        "ChimneyCrack" => "Chimney crack",
-        "MoistureDamage" => "Moisture damage",
-        "GeneralReview" => "General review",
-        _ => "Structural concern"
+        "FoundationCrack" => DisplayLabelsLocalization.L("Foundation crack"),
+        "WallCrack" => DisplayLabelsLocalization.L("Wall crack"),
+        "FloorSloping" or "FloorUneven" => DisplayLabelsLocalization.L("Floor sloping"),
+        "SettlementSigns" => DisplayLabelsLocalization.L("Settlement signs"),
+        "SaggingFloor" => DisplayLabelsLocalization.L("Sagging floor"),
+        "SaggingRoof" or "RoofSagging" => DisplayLabelsLocalization.L("Sagging roof"),
+        "DoorWindowSticking" => DisplayLabelsLocalization.L("Door / window sticking"),
+        "SupportColumn" => DisplayLabelsLocalization.L("Support column"),
+        "BeamConcern" => DisplayLabelsLocalization.L("Beam concern"),
+        "CrawlSpaceIssue" => DisplayLabelsLocalization.L("Crawl space issue"),
+        "ChimneyCrack" => DisplayLabelsLocalization.L("Chimney crack"),
+        "MoistureDamage" => DisplayLabelsLocalization.L("Moisture damage"),
+        "GeneralReview" => DisplayLabelsLocalization.L("General review"),
+        _ => DisplayLabelsLocalization.L("Structural concern")
     };
 
     public static string AreaPreocupacionStructural(string? value) => value switch
     {
-        "Foundation" => "Foundation",
-        "InteriorWall" => "Interior wall",
-        "ExteriorWall" => "Exterior wall",
-        "Walls" => "Walls",
-        "Floor" or "Floors" => "Floor",
-        "CeilingRoof" or "Roof" => "Ceiling / roof",
-        "CrawlSpace" => "Crawl space",
-        "GarageSlab" => "Garage slab",
-        "Basement" => "Basement",
-        "Exterior" => "Exterior",
-        "WholeHouse" or "WholeStructure" => "Whole house",
+        "Foundation" => DisplayLabelsLocalization.L("Foundation"),
+        "InteriorWall" => DisplayLabelsLocalization.L("Interior wall"),
+        "ExteriorWall" => DisplayLabelsLocalization.L("Exterior wall"),
+        "Walls" => DisplayLabelsLocalization.L("Walls"),
+        "Floor" or "Floors" => DisplayLabelsLocalization.L("Floor"),
+        "CeilingRoof" or "Roof" => DisplayLabelsLocalization.L("Ceiling / roof"),
+        "CrawlSpace" => DisplayLabelsLocalization.L("Crawl space"),
+        "GarageSlab" => DisplayLabelsLocalization.L("Garage slab"),
+        "Basement" => DisplayLabelsLocalization.L("Basement"),
+        "Exterior" => DisplayLabelsLocalization.L("Exterior"),
+        "WholeHouse" or "WholeStructure" => DisplayLabelsLocalization.L("Whole house"),
         _ => value ?? "Structure"
     };
 
     public static string AreaEnfoqueStructural(string? value) => value switch
     {
-        "Foundation" => "Foundation",
-        "Walls" => "Walls",
-        "Floors" or "Floor" => "Floors",
-        "Roof" => "Roof",
-        "CrawlSpace" => "Crawl space",
-        "Basement" => "Basement",
-        "Exterior" => "Exterior",
+        "Foundation" => DisplayLabelsLocalization.L("Foundation"),
+        "Walls" => DisplayLabelsLocalization.L("Walls"),
+        "Floors" or "Floor" => DisplayLabelsLocalization.L("Floors"),
+        "Roof" => DisplayLabelsLocalization.L("Roof"),
+        "CrawlSpace" => DisplayLabelsLocalization.L("Crawl space"),
+        "Basement" => DisplayLabelsLocalization.L("Basement"),
+        "Exterior" => DisplayLabelsLocalization.L("Exterior"),
         _ => value ?? string.Empty
     };
 
     public static string SignoVisibleStructural(string? value) => value switch
     {
-        "HairlineCrack" => "Hairline crack",
-        "StairStepCrack" => "Stair-step crack",
-        "HorizontalCrack" => "Horizontal crack",
-        "VerticalCrack" => "Vertical crack",
-        "WideCrack" => "Wide crack",
-        "SeparationGap" => "Separation gap",
-        "UnevenFloor" => "Uneven floor",
-        "BouncyFloor" => "Bouncy floor",
-        "WallBulging" => "Wall bulging",
-        "CeilingCrack" => "Ceiling crack",
-        "DoorSticking" => "Door sticking",
-        "WindowNotClosing" => "Window not closing",
-        "WaterIntrusion" => "Water intrusion",
-        "CrawlSpaceMoisture" => "Crawl space moisture",
-        "RotDecay" => "Rot or decay",
-        "RustedSupport" => "Rusted support",
-        "FoundationSettlement" => "Foundation settlement",
-        "RoofSaggingSign" => "Roof sagging",
+        "HairlineCrack" => DisplayLabelsLocalization.L("Hairline crack"),
+        "StairStepCrack" => DisplayLabelsLocalization.L("Stair-step crack"),
+        "HorizontalCrack" => DisplayLabelsLocalization.L("Horizontal crack"),
+        "VerticalCrack" => DisplayLabelsLocalization.L("Vertical crack"),
+        "WideCrack" => DisplayLabelsLocalization.L("Wide crack"),
+        "SeparationGap" => DisplayLabelsLocalization.L("Separation gap"),
+        "UnevenFloor" => DisplayLabelsLocalization.L("Uneven floor"),
+        "BouncyFloor" => DisplayLabelsLocalization.L("Bouncy floor"),
+        "WallBulging" => DisplayLabelsLocalization.L("Wall bulging"),
+        "CeilingCrack" => DisplayLabelsLocalization.L("Ceiling crack"),
+        "DoorSticking" => DisplayLabelsLocalization.L("Door sticking"),
+        "WindowNotClosing" => DisplayLabelsLocalization.L("Window not closing"),
+        "WaterIntrusion" => DisplayLabelsLocalization.L("Water intrusion"),
+        "CrawlSpaceMoisture" => DisplayLabelsLocalization.L("Crawl space moisture"),
+        "RotDecay" => DisplayLabelsLocalization.L("Rot or decay"),
+        "RustedSupport" => DisplayLabelsLocalization.L("Rusted support"),
+        "FoundationSettlement" => DisplayLabelsLocalization.L("Foundation settlement"),
+        "RoofSaggingSign" => DisplayLabelsLocalization.L("Roof sagging"),
         _ => value ?? string.Empty
     };
 
     public static string SeveridadStructural(string? value) => value switch
     {
-        "Mild" => "Mild",
-        "Moderate" => "Moderate",
-        "Severe" => "Severe",
+        "Mild" => DisplayLabelsLocalization.L("Mild"),
+        "Moderate" => DisplayLabelsLocalization.L("Moderate"),
+        "Severe" => DisplayLabelsLocalization.L("Severe"),
         _ => value ?? "Moderate"
     };
 
     public static string DuracionProblemaStructural(string? value) => value switch
     {
-        "LessThanWeek" => "Less than a week",
-        "OneToThreeMonths" => "1–3 months",
-        "ThreeToTwelveMonths" => "3–12 months",
-        "MoreThanYear" => "More than a year",
-        "NotSure" => "Not sure",
+        "LessThanWeek" => DisplayLabelsLocalization.L("Less than a week"),
+        "OneToThreeMonths" => DisplayLabelsLocalization.L("1â€“3 months"),
+        "ThreeToTwelveMonths" => DisplayLabelsLocalization.L("3â€“12 months"),
+        "MoreThanYear" => DisplayLabelsLocalization.L("More than a year"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Not sure"
     };
 
     public static string UrgenciaStructural(string? value) => value switch
     {
-        "Normal" => "Within 30 days",
-        "Priority" => "Within 2 weeks",
-        "Emergency" => "ASAP",
+        "Normal" => DisplayLabelsLocalization.L("Within 30 days"),
+        "Priority" => DisplayLabelsLocalization.L("Within 2 weeks"),
+        "Emergency" => DisplayLabelsLocalization.L("ASAP"),
         _ => value ?? "Within 30 days"
     };
 
     public static string TipoPropiedadStructural(string? value) => value switch
     {
-        "SingleFamily" => "Single-family home",
-        "Townhome" => "Townhome",
-        "Duplex" => "Duplex",
-        "Condo" => "Condo",
+        "SingleFamily" => DisplayLabelsLocalization.L("Single-family home"),
+        "Townhome" => DisplayLabelsLocalization.L("Townhome"),
+        "Duplex" => DisplayLabelsLocalization.L("Duplex"),
+        "Condo" => DisplayLabelsLocalization.L("Condo"),
         _ => value ?? "Single-family home"
     };
 
     public static string TipoFundacionStructural(string? value) => value switch
     {
-        "CrawlSpace" => "Crawl space",
-        "Slab" => "Slab-on-grade",
-        "Basement" => "Basement",
-        "NotSure" => "Not sure",
+        "CrawlSpace" => DisplayLabelsLocalization.L("Crawl space"),
+        "Slab" => DisplayLabelsLocalization.L("Slab-on-grade"),
+        "Basement" => DisplayLabelsLocalization.L("Basement"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Not sure"
     };
 
     public static string AccesoPreferidoStructural(string? value) => value switch
     {
-        "SomeoneHome" => "Someone home",
-        "Lockbox" => "Lockbox",
-        "RealtorAccess" => "Realtor access",
-        "Vacant" => "Vacant",
+        "SomeoneHome" => DisplayLabelsLocalization.L("Someone home"),
+        "Lockbox" => DisplayLabelsLocalization.L("Lockbox"),
+        "RealtorAccess" => DisplayLabelsLocalization.L("Realtor access"),
+        "Vacant" => DisplayLabelsLocalization.L("Vacant"),
         _ => value ?? "Someone home"
     };
 
     public static string MejorHorarioVisitaStructural(string? value) => value switch
     {
-        "Morning" => "Morning",
-        "Afternoon" => "Afternoon",
-        "FirstAvailable" => "First available",
+        "Morning" => DisplayLabelsLocalization.L("Morning"),
+        "Afternoon" => DisplayLabelsLocalization.L("Afternoon"),
+        "FirstAvailable" => DisplayLabelsLocalization.L("First available"),
         _ => value ?? "First available"
     };
 
     public static string ReparacionesPreviasStructural(string? value) => value switch
     {
-        "Yes" => "Yes",
-        "No" => "No",
-        "NotSure" => "Not sure",
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "No" => DisplayLabelsLocalization.L("No"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "No"
     };
 
     public static string EdadPropiedadStructural(string? value) => value switch
     {
-        "LessThan10" => "Less than 10 years",
-        "TenTo30" => "10–30 years",
-        "ThirtyPlus" => "30+ years",
-        "NotSure" => "Not sure",
+        "LessThan10" => DisplayLabelsLocalization.L("Less than 10 years"),
+        "TenTo30" => DisplayLabelsLocalization.L("10â€“30 years"),
+        "ThirtyPlus" => DisplayLabelsLocalization.L("30+ years"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Not sure"
     };
 
@@ -456,8 +458,8 @@ public static class InspeccionDisplayLabels
     {
         var detail = tipo switch
         {
-            "FoundationCrack" => "settlement signs",
-            "SettlementSigns" => "settlement signs",
+            "FoundationCrack" => DisplayLabelsLocalization.L("settlement signs"),
+            "SettlementSigns" => DisplayLabelsLocalization.L("settlement signs"),
             _ => AreaPreocupacionStructural(area).ToLowerInvariant() + " concern"
         };
 
@@ -473,7 +475,7 @@ public static class InspeccionDisplayLabels
     {
         if (string.IsNullOrWhiteSpace(areasPipe))
         {
-            return "Foundation, walls, floors, crawl space";
+            return DisplayLabelsLocalization.L("Foundation, walls, floors, crawl space");
         }
 
         return string.Join(", ",
@@ -484,51 +486,51 @@ public static class InspeccionDisplayLabels
 
     public static string TipoProblemaTecho(string? value) => value switch
     {
-        "ActiveLeak" => "Active leak",
-        "MissingShingles" => "Missing shingles",
-        "StormDamage" => "Storm damage",
-        "CeilingStain" => "Ceiling stain",
-        "GutterIssue" => "Gutter issue",
-        "GeneralReview" => "General review",
+        "ActiveLeak" => DisplayLabelsLocalization.L("Active leak"),
+        "MissingShingles" => DisplayLabelsLocalization.L("Missing shingles"),
+        "StormDamage" => DisplayLabelsLocalization.L("Storm damage"),
+        "CeilingStain" => DisplayLabelsLocalization.L("Ceiling stain"),
+        "GutterIssue" => DisplayLabelsLocalization.L("Gutter issue"),
+        "GeneralReview" => DisplayLabelsLocalization.L("General review"),
         _ => value ?? "General review"
     };
 
     public static string UbicacionProblemaTecho(string? value) => value switch
     {
-        "MainRoof" => "Main roof",
-        "AroundChimney" => "Around chimney",
-        "AroundVent" => "Around vent",
-        "GutterEdge" => "Gutter / edge",
-        "AtticCeiling" => "Attic / ceiling",
-        "NotSure" => "Not sure",
+        "MainRoof" => DisplayLabelsLocalization.L("Main roof"),
+        "AroundChimney" => DisplayLabelsLocalization.L("Around chimney"),
+        "AroundVent" => DisplayLabelsLocalization.L("Around vent"),
+        "GutterEdge" => DisplayLabelsLocalization.L("Gutter / edge"),
+        "AtticCeiling" => DisplayLabelsLocalization.L("Attic / ceiling"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Main roof"
     };
 
     public static string MotivoRevisionTecho(string? value) => value switch
     {
-        "LeakConcern" => "Leak concern",
-        "AfterStorm" => "After storm",
-        "AnnualReview" => "Annual review",
-        "BeforePurchase" => "Before purchase",
-        "InsuranceClaim" => "Insurance claim",
+        "LeakConcern" => DisplayLabelsLocalization.L("Leak concern"),
+        "AfterStorm" => DisplayLabelsLocalization.L("After storm"),
+        "AnnualReview" => DisplayLabelsLocalization.L("Annual review"),
+        "BeforePurchase" => DisplayLabelsLocalization.L("Before purchase"),
+        "InsuranceClaim" => DisplayLabelsLocalization.L("Insurance claim"),
         _ => value ?? "Leak concern"
     };
 
     public static string NumeroPisosTecho(string? value) => value switch
     {
-        "One" => "1 story",
-        "Two" => "2 story",
-        "ThreePlus" => "3+ story",
+        "One" => DisplayLabelsLocalization.L("1 story"),
+        "Two" => DisplayLabelsLocalization.L("2 story"),
+        "ThreePlus" => DisplayLabelsLocalization.L("3+ story"),
         _ => value ?? "2 story"
     };
 
     public static string MaterialTecho(string? value) => value switch
     {
-        "AsphaltShingles" => "Asphalt shingles",
-        "Metal" => "Metal",
-        "Tile" => "Tile",
-        "Flat" => "Flat",
-        "NotSure" => "Not sure",
+        "AsphaltShingles" => DisplayLabelsLocalization.L("Asphalt shingles"),
+        "Metal" => DisplayLabelsLocalization.L("Metal"),
+        "Tile" => DisplayLabelsLocalization.L("Tile"),
+        "Flat" => DisplayLabelsLocalization.L("Flat"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Asphalt shingles"
     };
 
@@ -563,12 +565,12 @@ public static class InspeccionDisplayLabels
 
         var detail = ubicacion switch
         {
-            "AroundChimney" => "flashing concern",
-            "AroundVent" => "vent flashing concern",
-            "GutterEdge" => "edge / gutter concern",
-            "AtticCeiling" => "attic stain concern",
+            "AroundChimney" => DisplayLabelsLocalization.L("flashing concern"),
+            "AroundVent" => DisplayLabelsLocalization.L("vent flashing concern"),
+            "GutterEdge" => DisplayLabelsLocalization.L("edge / gutter concern"),
+            "AtticCeiling" => DisplayLabelsLocalization.L("attic stain concern"),
             "StormDamage" or _ when string.Equals(tipo, "StormDamage", StringComparison.OrdinalIgnoreCase) => "storm damage concern",
-            _ => "roof concern"
+            _ => DisplayLabelsLocalization.L("roof concern")
         };
 
         return $"{primary.ToLowerInvariant()} / {detail}";
@@ -576,7 +578,7 @@ public static class InspeccionDisplayLabels
 
     public static string FormatRoofPropertySummary(string? tipoPropiedad, string? numeroPisos, string? material)
     {
-        return string.Join(" • ",
+        return string.Join(" â€¢ ",
             new[]
             {
                 TipoPropiedadStructural(tipoPropiedad),
@@ -624,7 +626,7 @@ public static class InspeccionDisplayLabels
 
         if (parts.Count == 0)
         {
-            return "chimney, valley, attic stain, gutters";
+            return DisplayLabelsLocalization.L("chimney, valley, attic stain, gutters");
         }
 
         return string.Join(", ", parts.Distinct(StringComparer.OrdinalIgnoreCase));
@@ -632,51 +634,51 @@ public static class InspeccionDisplayLabels
 
     public static string TipoProblemaMoldMoisture(string? value) => value switch
     {
-        "MustySmell" => "Musty smell",
-        "VisibleMold" => "Visible mold",
-        "WaterStain" => "Water stain",
-        "ActiveLeak" => "Active leak",
-        "Condensation" => "Condensation",
-        "CrawlSpaceHumidity" => "Crawl space humidity",
-        "BathroomMoisture" => "Bathroom moisture",
-        "AtticMoisture" => "Attic moisture",
-        "HvacMoisture" => "HVAC moisture",
-        "GeneralReview" => "General review",
+        "MustySmell" => DisplayLabelsLocalization.L("Musty smell"),
+        "VisibleMold" => DisplayLabelsLocalization.L("Visible mold"),
+        "WaterStain" => DisplayLabelsLocalization.L("Water stain"),
+        "ActiveLeak" => DisplayLabelsLocalization.L("Active leak"),
+        "Condensation" => DisplayLabelsLocalization.L("Condensation"),
+        "CrawlSpaceHumidity" => DisplayLabelsLocalization.L("Crawl space humidity"),
+        "BathroomMoisture" => DisplayLabelsLocalization.L("Bathroom moisture"),
+        "AtticMoisture" => DisplayLabelsLocalization.L("Attic moisture"),
+        "HvacMoisture" => DisplayLabelsLocalization.L("HVAC moisture"),
+        "GeneralReview" => DisplayLabelsLocalization.L("General review"),
         _ => value ?? "General review"
     };
 
     public static string UbicacionMoldMoisture(string? value) => value switch
     {
-        "Bathroom" => "Bathroom",
-        "Kitchen" => "Kitchen",
-        "Ceiling" => "Ceiling",
-        "Wall" => "Wall",
-        "CrawlSpace" => "Crawl space",
-        "Attic" => "Attic",
-        "Basement" => "Basement",
-        "HvacCloset" => "HVAC closet",
-        "AroundWindow" => "Around window",
-        "NotSure" => "Not sure",
+        "Bathroom" => DisplayLabelsLocalization.L("Bathroom"),
+        "Kitchen" => DisplayLabelsLocalization.L("Kitchen"),
+        "Ceiling" => DisplayLabelsLocalization.L("Ceiling"),
+        "Wall" => DisplayLabelsLocalization.L("Wall"),
+        "CrawlSpace" => DisplayLabelsLocalization.L("Crawl space"),
+        "Attic" => DisplayLabelsLocalization.L("Attic"),
+        "Basement" => DisplayLabelsLocalization.L("Basement"),
+        "HvacCloset" => DisplayLabelsLocalization.L("HVAC closet"),
+        "AroundWindow" => DisplayLabelsLocalization.L("Around window"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Bathroom"
     };
 
     public static string MotivoRevisionMoldMoisture(string? value) => value switch
     {
-        "MustySmellConcern" => "Musty smell concern",
-        "AfterWaterLeak" => "After water leak",
-        "BeforePurchase" => "Before purchase",
-        "HealthConcern" => "Health concern",
-        "AnnualReview" => "Annual review",
-        "SecondOpinion" => "Second opinion",
+        "MustySmellConcern" => DisplayLabelsLocalization.L("Musty smell concern"),
+        "AfterWaterLeak" => DisplayLabelsLocalization.L("After water leak"),
+        "BeforePurchase" => DisplayLabelsLocalization.L("Before purchase"),
+        "HealthConcern" => DisplayLabelsLocalization.L("Health concern"),
+        "AnnualReview" => DisplayLabelsLocalization.L("Annual review"),
+        "SecondOpinion" => DisplayLabelsLocalization.L("Second opinion"),
         _ => value ?? "Musty smell concern"
     };
 
     public static string TipoPropiedadMoldMoisture(string? value) => value switch
     {
-        "SingleFamily" => "Single-family",
-        "Townhome" => "Townhome",
-        "Condo" => "Condo",
-        "Apartment" => "Apartment",
+        "SingleFamily" => DisplayLabelsLocalization.L("Single-family"),
+        "Townhome" => DisplayLabelsLocalization.L("Townhome"),
+        "Condo" => DisplayLabelsLocalization.L("Condo"),
+        "Apartment" => DisplayLabelsLocalization.L("Apartment"),
         _ => value ?? "Single-family"
     };
 
@@ -722,13 +724,13 @@ public static class InspeccionDisplayLabels
 
         var detail = ubicacion switch
         {
-            "Ceiling" => "ceiling moisture",
-            "Bathroom" => "bathroom moisture",
-            "Attic" => "attic moisture",
-            "CrawlSpace" => "crawl space moisture",
-            "HvacCloset" => "HVAC moisture",
-            "Wall" => "wall moisture",
-            _ => "moisture concern"
+            "Ceiling" => DisplayLabelsLocalization.L("ceiling moisture"),
+            "Bathroom" => DisplayLabelsLocalization.L("bathroom moisture"),
+            "Attic" => DisplayLabelsLocalization.L("attic moisture"),
+            "CrawlSpace" => DisplayLabelsLocalization.L("crawl space moisture"),
+            "HvacCloset" => DisplayLabelsLocalization.L("HVAC moisture"),
+            "Wall" => DisplayLabelsLocalization.L("wall moisture"),
+            _ => DisplayLabelsLocalization.L("moisture concern")
         };
 
         return $"{primary.ToLowerInvariant()} / {detail}";
@@ -755,7 +757,7 @@ public static class InspeccionDisplayLabels
         var location = UbicacionMoldMoisture(ubicacionPrincipal ?? ubicacionProblema);
         if (string.IsNullOrWhiteSpace(location) || string.Equals(location, "Not sure", StringComparison.OrdinalIgnoreCase))
         {
-            return "bathroom, ceiling, vent area";
+            return DisplayLabelsLocalization.L("bathroom, ceiling, vent area");
         }
 
         var parts = new List<string> { location.ToLowerInvariant() };
@@ -771,86 +773,86 @@ public static class InspeccionDisplayLabels
 
     public static string TipoProblemaWindowsInsulation(string? value) => value switch
     {
-        "DraftAir" => "Draft / air coming in",
-        "HighEnergyBill" => "High energy bill",
-        "ColdRoom" => "Cold room",
-        "HotRoom" => "Hot room",
-        "WindowCondensation" => "Window condensation",
-        "WindowSealing" => "Window sealing issue",
-        "DamagedInsulation" => "Damaged insulation",
-        "AtticInsulation" => "Attic insulation",
-        "WallInsulation" => "Wall insulation",
-        "MoistureAroundWindow" => "Moisture around window",
-        "WholeHouseReview" => "Whole-house review",
-        "NotSure" => "Not sure",
+        "DraftAir" => DisplayLabelsLocalization.L("Draft / air coming in"),
+        "HighEnergyBill" => DisplayLabelsLocalization.L("High energy bill"),
+        "ColdRoom" => DisplayLabelsLocalization.L("Cold room"),
+        "HotRoom" => DisplayLabelsLocalization.L("Hot room"),
+        "WindowCondensation" => DisplayLabelsLocalization.L("Window condensation"),
+        "WindowSealing" => DisplayLabelsLocalization.L("Window sealing issue"),
+        "DamagedInsulation" => DisplayLabelsLocalization.L("Damaged insulation"),
+        "AtticInsulation" => DisplayLabelsLocalization.L("Attic insulation"),
+        "WallInsulation" => DisplayLabelsLocalization.L("Wall insulation"),
+        "MoistureAroundWindow" => DisplayLabelsLocalization.L("Moisture around window"),
+        "WholeHouseReview" => DisplayLabelsLocalization.L("Whole-house review"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Draft / air coming in"
     };
 
     public static string AreaAtencionWindowsInsulation(string? value) => value switch
     {
-        "LivingRoom" => "Living room",
-        "Bedroom" => "Bedroom",
-        "Attic" => "Attic",
-        "CrawlSpace" => "Crawl space",
-        "AroundWindows" => "Around windows",
-        "ExteriorWall" => "Exterior wall",
-        "WholeHouse" => "Whole house",
-        "NotSure" => "Not sure",
+        "LivingRoom" => DisplayLabelsLocalization.L("Living room"),
+        "Bedroom" => DisplayLabelsLocalization.L("Bedroom"),
+        "Attic" => DisplayLabelsLocalization.L("Attic"),
+        "CrawlSpace" => DisplayLabelsLocalization.L("Crawl space"),
+        "AroundWindows" => DisplayLabelsLocalization.L("Around windows"),
+        "ExteriorWall" => DisplayLabelsLocalization.L("Exterior wall"),
+        "WholeHouse" => DisplayLabelsLocalization.L("Whole house"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Living room"
     };
 
     public static string MotivoRevisionWindowsInsulation(string? value) => value switch
     {
-        "HighUtilityBill" => "High utility bill",
-        "ComfortIssue" => "Comfort issue",
-        "BeforePurchase" => "Before purchase",
-        "AfterRemodel" => "After remodel",
-        "AnnualReview" => "Annual review",
-        "MoistureConcern" => "Moisture concern",
-        "SecondOpinion" => "Second opinion",
+        "HighUtilityBill" => DisplayLabelsLocalization.L("High utility bill"),
+        "ComfortIssue" => DisplayLabelsLocalization.L("Comfort issue"),
+        "BeforePurchase" => DisplayLabelsLocalization.L("Before purchase"),
+        "AfterRemodel" => DisplayLabelsLocalization.L("After remodel"),
+        "AnnualReview" => DisplayLabelsLocalization.L("Annual review"),
+        "MoistureConcern" => DisplayLabelsLocalization.L("Moisture concern"),
+        "SecondOpinion" => DisplayLabelsLocalization.L("Second opinion"),
         _ => value ?? "High utility bill"
     };
 
     public static string NumeroPisosWindowsInsulation(string? value) => value switch
     {
-        "OneStory" => "1 story",
-        "TwoStory" => "2 story",
-        "ThreePlus" => "3+ story",
+        "OneStory" => DisplayLabelsLocalization.L("1 story"),
+        "TwoStory" => DisplayLabelsLocalization.L("2 story"),
+        "ThreePlus" => DisplayLabelsLocalization.L("3+ story"),
         _ => value ?? "2 story"
     };
 
     public static string AreaEnfoqueWindowsInsulation(string? value) => value switch
     {
-        "Windows" => "Windows",
-        "AtticInsulation" => "Attic insulation",
-        "Doors" => "Doors",
-        "CrawlSpaceInsulation" => "Crawl space insulation",
-        "ExteriorWalls" => "Exterior walls",
-        "WholeHouse" => "Whole house",
+        "Windows" => DisplayLabelsLocalization.L("Windows"),
+        "AtticInsulation" => DisplayLabelsLocalization.L("Attic insulation"),
+        "Doors" => DisplayLabelsLocalization.L("Doors"),
+        "CrawlSpaceInsulation" => DisplayLabelsLocalization.L("Crawl space insulation"),
+        "ExteriorWalls" => DisplayLabelsLocalization.L("Exterior walls"),
+        "WholeHouse" => DisplayLabelsLocalization.L("Whole house"),
         _ => value ?? "Windows"
     };
 
     public static string TipoVentanaWindowsInsulation(string? value) => value switch
     {
-        "DoublePane" => "Double-pane windows",
-        "SinglePane" => "Single-pane windows",
-        "NotSure" => "Window type not sure",
+        "DoublePane" => DisplayLabelsLocalization.L("Double-pane windows"),
+        "SinglePane" => DisplayLabelsLocalization.L("Single-pane windows"),
+        "NotSure" => DisplayLabelsLocalization.L("Window type not sure"),
         _ => value ?? "Double-pane windows"
     };
 
     public static string DanoHumedadVisibleWindowsInsulation(string? value) => value switch
     {
-        "Yes" => "Yes",
-        "No" => "No",
-        "NotSure" => "Not sure",
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "No" => DisplayLabelsLocalization.L("No"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "No"
     };
 
     public static string UrgenciaWindowsInsulation(string? value) => value switch
     {
-        "Normal" => "Normal",
-        "Priority" => "Priority",
-        "NotSure" => "Not sure",
+        "Normal" => DisplayLabelsLocalization.L("Normal"),
+        "Priority" => DisplayLabelsLocalization.L("Priority"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Normal"
     };
 
@@ -941,7 +943,7 @@ public static class InspeccionDisplayLabels
         var list = archivos.ToList();
         if (list.Count == 0)
         {
-            return "No files uploaded";
+            return DisplayLabelsLocalization.L("No files uploaded");
         }
 
         var photos = list.Count(a =>
@@ -974,71 +976,71 @@ public static class InspeccionDisplayLabels
 
     public static string TipoProblemaHomeSafety(string? value) => value switch
     {
-        "SmokeDetectorConcern" => "Smoke detector concern",
-        "CoDetectorConcern" => "CO detector concern",
-        "NoDetectors" => "No detectors",
-        "ChirpingAlarm" => "Chirping alarm",
-        "FireExtinguisherConcern" => "Fire extinguisher concern",
-        "TripFallHazard" => "Trip / fall hazard",
-        "StairRailingConcern" => "Stair / railing concern",
-        "DoorLockSafety" => "Door / lock safety",
-        "OutletBasicHazard" => "Outlet / basic hazard",
-        "ChildSafetyConcern" => "Child safety concern",
-        "GeneralSafetyReview" => "General safety review",
-        "NotSure" => "Not sure",
+        "SmokeDetectorConcern" => DisplayLabelsLocalization.L("Smoke detector concern"),
+        "CoDetectorConcern" => DisplayLabelsLocalization.L("CO detector concern"),
+        "NoDetectors" => DisplayLabelsLocalization.L("No detectors"),
+        "ChirpingAlarm" => DisplayLabelsLocalization.L("Chirping alarm"),
+        "FireExtinguisherConcern" => DisplayLabelsLocalization.L("Fire extinguisher concern"),
+        "TripFallHazard" => DisplayLabelsLocalization.L("Trip / fall hazard"),
+        "StairRailingConcern" => DisplayLabelsLocalization.L("Stair / railing concern"),
+        "DoorLockSafety" => DisplayLabelsLocalization.L("Door / lock safety"),
+        "OutletBasicHazard" => DisplayLabelsLocalization.L("Outlet / basic hazard"),
+        "ChildSafetyConcern" => DisplayLabelsLocalization.L("Child safety concern"),
+        "GeneralSafetyReview" => DisplayLabelsLocalization.L("General safety review"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Smoke detector concern"
     };
 
     public static string AreaAtencionHomeSafety(string? value) => value switch
     {
-        "Hallway" => "Hallway",
-        "Bedroom" => "Bedroom",
-        "Kitchen" => "Kitchen",
-        "Garage" => "Garage",
-        "Stairway" => "Stairway",
-        "Basement" => "Basement",
-        "Exterior" => "Exterior",
-        "WholeHouse" => "Whole house",
-        "Laundry" => "Laundry",
-        "NotSure" => "Not sure",
+        "Hallway" => DisplayLabelsLocalization.L("Hallway"),
+        "Bedroom" => DisplayLabelsLocalization.L("Bedroom"),
+        "Kitchen" => DisplayLabelsLocalization.L("Kitchen"),
+        "Garage" => DisplayLabelsLocalization.L("Garage"),
+        "Stairway" => DisplayLabelsLocalization.L("Stairway"),
+        "Basement" => DisplayLabelsLocalization.L("Basement"),
+        "Exterior" => DisplayLabelsLocalization.L("Exterior"),
+        "WholeHouse" => DisplayLabelsLocalization.L("Whole house"),
+        "Laundry" => DisplayLabelsLocalization.L("Laundry"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Hallway"
     };
 
     public static string MotivoRevisionHomeSafety(string? value) => value switch
     {
-        "AnnualReview" => "Annual review",
-        "ChildrenAtHome" => "Children at home",
-        "BeforePurchase" => "Before purchase",
-        "ElderlySafety" => "Elderly safety",
-        "SecondOpinion" => "Second opinion",
+        "AnnualReview" => DisplayLabelsLocalization.L("Annual review"),
+        "ChildrenAtHome" => DisplayLabelsLocalization.L("Children at home"),
+        "BeforePurchase" => DisplayLabelsLocalization.L("Before purchase"),
+        "ElderlySafety" => DisplayLabelsLocalization.L("Elderly safety"),
+        "SecondOpinion" => DisplayLabelsLocalization.L("Second opinion"),
         _ => value ?? "Annual review"
     };
 
     public static string AreaEnfoqueHomeSafety(string? value) => value switch
     {
-        "SmokeCoDetectors" => "Smoke / CO detectors",
-        "WholeHouse" => "Whole house",
-        "StairsRailings" => "Stairs & railings",
-        "DoorsExits" => "Doors & exits",
-        "GarageSafety" => "Garage safety",
-        "KitchenSafety" => "Kitchen safety",
+        "SmokeCoDetectors" => DisplayLabelsLocalization.L("Smoke / CO detectors"),
+        "WholeHouse" => DisplayLabelsLocalization.L("Whole house"),
+        "StairsRailings" => DisplayLabelsLocalization.L("Stairs & railings"),
+        "DoorsExits" => DisplayLabelsLocalization.L("Doors & exits"),
+        "GarageSafety" => DisplayLabelsLocalization.L("Garage safety"),
+        "KitchenSafety" => DisplayLabelsLocalization.L("Kitchen safety"),
         _ => value ?? "Smoke / CO detectors"
     };
 
     public static string OcupanteHomeSafety(string? value) => value switch
     {
-        "Children" => "Children",
-        "Adults" => "Adults",
-        "Seniors" => "Seniors",
-        "Pets" => "Pets",
+        "Children" => DisplayLabelsLocalization.L("Children"),
+        "Adults" => DisplayLabelsLocalization.L("Adults"),
+        "Seniors" => DisplayLabelsLocalization.L("Seniors"),
+        "Pets" => DisplayLabelsLocalization.L("Pets"),
         _ => value ?? "Children"
     };
 
     public static string RiesgoActivoHomeSafety(string? value) => value switch
     {
-        "Yes" => "Yes",
-        "No" => "No",
-        "NotSure" => "Not sure",
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "No" => DisplayLabelsLocalization.L("No"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "No"
     };
 
@@ -1120,7 +1122,7 @@ public static class InspeccionDisplayLabels
         var list = archivos.ToList();
         if (list.Count == 0)
         {
-            return "No files uploaded";
+            return DisplayLabelsLocalization.L("No files uploaded");
         }
 
         var photos = list.Count(a =>
@@ -1152,64 +1154,64 @@ public static class InspeccionDisplayLabels
 
     public static string TipoInversionInvestor(string? value) => value switch
     {
-        "Flip" => "Flip",
-        "RentalProperty" => "Rental property",
-        "BuyAndHold" => "Buy and hold",
-        "BRRRR" => "BRRRR",
-        "BeforeOffer" => "Before offer",
-        "BeforeClosing" => "Before closing",
+        "Flip" => DisplayLabelsLocalization.L("Flip"),
+        "RentalProperty" => DisplayLabelsLocalization.L("Rental property"),
+        "BuyAndHold" => DisplayLabelsLocalization.L("Buy and hold"),
+        "BRRRR" => DisplayLabelsLocalization.L("BRRRR"),
+        "BeforeOffer" => DisplayLabelsLocalization.L("Before offer"),
+        "BeforeClosing" => DisplayLabelsLocalization.L("Before closing"),
         _ => value ?? "Flip"
     };
 
     public static string EnfoqueInversionInvestor(string? value) => value switch
     {
-        "GeneralAssessment" => "General assessment",
-        "RepairRisk" => "Repair risk",
-        "RehabBudget" => "Rehab evaluation",
-        "RentReadiness" => "Rent readiness",
-        "ResalePotential" => "Resale potential",
-        "NegotiationSupport" => "Negotiation support",
+        "GeneralAssessment" => DisplayLabelsLocalization.L("General assessment"),
+        "RepairRisk" => DisplayLabelsLocalization.L("Repair risk"),
+        "RehabBudget" => DisplayLabelsLocalization.L("Rehab evaluation"),
+        "RentReadiness" => DisplayLabelsLocalization.L("Rent readiness"),
+        "ResalePotential" => DisplayLabelsLocalization.L("Resale potential"),
+        "NegotiationSupport" => DisplayLabelsLocalization.L("Negotiation support"),
         _ => value ?? "Rehab evaluation"
     };
 
     public static string TipoPropiedadInvestor(string? value) => value switch
     {
-        "SingleFamily" => "Single-family",
-        "Duplex" => "Duplex",
-        "Triplex" => "Triplex",
-        "Condo" => "Condo",
-        "SmallMultifamily" => "Small multifamily",
+        "SingleFamily" => DisplayLabelsLocalization.L("Single-family"),
+        "Duplex" => DisplayLabelsLocalization.L("Duplex"),
+        "Triplex" => DisplayLabelsLocalization.L("Triplex"),
+        "Condo" => DisplayLabelsLocalization.L("Condo"),
+        "SmallMultifamily" => DisplayLabelsLocalization.L("Small multifamily"),
         _ => value ?? "Single-family"
     };
 
     public static string OcupacionInvestor(string? value) => value switch
     {
-        "TenantOccupied" => "Tenant occupied",
-        "Vacant" => "Vacant",
-        "OwnerOccupied" => "Owner occupied",
-        "NotSure" => "Not sure",
+        "TenantOccupied" => DisplayLabelsLocalization.L("Tenant occupied"),
+        "Vacant" => DisplayLabelsLocalization.L("Vacant"),
+        "OwnerOccupied" => DisplayLabelsLocalization.L("Owner occupied"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Tenant occupied"
     };
 
     public static string NivelRehabInvestor(string? value) => value switch
     {
-        "Light" => "Light",
-        "Medium" => "Medium",
-        "Heavy" => "Heavy",
-        "NotSure" => "Not sure",
+        "Light" => DisplayLabelsLocalization.L("Light"),
+        "Medium" => DisplayLabelsLocalization.L("Medium"),
+        "Heavy" => DisplayLabelsLocalization.L("Heavy"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Light"
     };
 
     public static string AreaRevisionInvestor(string? value) => value switch
     {
-        "Roof" => "Roof",
-        "Hvac" => "HVAC",
-        "Plumbing" => "Plumbing",
-        "Electrical" => "Electrical",
-        "Foundation" => "Foundation",
-        "Moisture" => "Moisture",
-        "Safety" => "Safety",
-        "Cosmetic" => "Cosmetic",
+        "Roof" => DisplayLabelsLocalization.L("Roof"),
+        "Hvac" => DisplayLabelsLocalization.L("HVAC"),
+        "Plumbing" => DisplayLabelsLocalization.L("Plumbing"),
+        "Electrical" => DisplayLabelsLocalization.L("Electrical"),
+        "Foundation" => DisplayLabelsLocalization.L("Foundation"),
+        "Moisture" => DisplayLabelsLocalization.L("Moisture"),
+        "Safety" => DisplayLabelsLocalization.L("Safety"),
+        "Cosmetic" => DisplayLabelsLocalization.L("Cosmetic"),
         _ => value ?? string.Empty
     };
 
@@ -1236,7 +1238,7 @@ public static class InspeccionDisplayLabels
         var property = TipoPropiedadInvestor(tipoPropiedad);
         if (string.Equals(tipoPropiedad, "SingleFamily", StringComparison.OrdinalIgnoreCase))
         {
-            return "Single-family home";
+            return DisplayLabelsLocalization.L("Single-family home");
         }
 
         var occupancy = OcupacionInvestor(ocupacion);
@@ -1245,7 +1247,7 @@ public static class InspeccionDisplayLabels
             return property;
         }
 
-        return $"{property} · {occupancy.ToLowerInvariant()}";
+        return $"{property} Â· {occupancy.ToLowerInvariant()}";
     }
 
     public static string FormatInvestorFilesSummary(IEnumerable<(string? CategoriaArchivo, string? NombreArchivo)> archivos)
@@ -1253,7 +1255,7 @@ public static class InspeccionDisplayLabels
         var list = archivos.ToList();
         if (list.Count == 0)
         {
-            return "No files uploaded";
+            return DisplayLabelsLocalization.L("No files uploaded");
         }
 
         var photos = list.Count(a =>

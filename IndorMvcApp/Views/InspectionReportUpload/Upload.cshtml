@@ -1,10 +1,12 @@
 @model IndorMvcApp.ViewModels.UploadInspectionReportViewModel
+@using IndorMvcApp.Localization
+@inject IIndorLocalizer L
 @{
-    ViewData["Title"] = "Upload Inspection Report";
+    ViewData["Title"] = L["Upload Inspection Report"];
     Layout = null;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -18,14 +20,14 @@
 <body>
 <div class="hvac-page">
     <div class="hvac-top">
-        <a asp-controller="Home" asp-action="Index" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
-        <div class="hvac-title">Upload Inspection Report</div>
+        <a asp-controller="Home" asp-action="Index" class="hvac-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
+        <div class="hvac-title">@L["Upload Inspection Report"]</div>
         <div style="width:40px;"></div>
     </div>
 
     <div class="hvac-content">
         <div class="hvac-prop-card">
-            <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Your home" />
+            <img src="@Url.Content($"~{Model.ImageUrl}")" alt="@L["Your home"]" />
             <p>@Model.Address</p>
         </div>
         @if (TempData["UploadError"] is string uploadError)
@@ -38,17 +40,17 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
 
             <div class="ir-upload-panel">
-                <p class="ir-upload-lead">Keep your home records up to date.</p>
+                <p class="ir-upload-lead">@L["Keep your home records up to date."]</p>
 
-                <div class="ir-dropzone @(string.IsNullOrEmpty(Model.SelectedFileName) ? "" : "has-file")" id="dropzone" role="button" tabindex="0" aria-label="Select inspection report file">
+                <div class="ir-dropzone @(string.IsNullOrEmpty(Model.SelectedFileName) ? "" : "has-file")" id="dropzone" role="button" tabindex="0" aria-label="@L["Select inspection report file"]">
                     <div class="ir-dropzone-icon"><i class="fas fa-file-arrow-up"></i></div>
-                    <strong id="dropzoneTitle">@(string.IsNullOrEmpty(Model.SelectedFileName) ? "Drag or select your inspection report" : Model.SelectedFileName)</strong>
-                    <span id="dropzoneSub">@(string.IsNullOrEmpty(Model.SelectedFileName) ? "PDF, JPG, or PNG" : Model.SelectedFileSizeLabel)</span>
+                    <strong id="dropzoneTitle">@(string.IsNullOrEmpty(Model.SelectedFileName) ? L["Drag or select your inspection report"] : Model.SelectedFileName)</strong>
+                    <span id="dropzoneSub">@(string.IsNullOrEmpty(Model.SelectedFileName) ? L["PDF, JPG, or PNG"] : Model.SelectedFileSizeLabel)</span>
                 </div>
 
                 <div class="ir-file-actions">
-                    <button type="button" class="ir-file-btn" id="takePhotoBtn"><i class="fas fa-camera"></i> Take Photo</button>
-                    <button type="button" class="ir-file-btn" id="chooseFileBtn"><i class="fas fa-folder-open"></i> Choose File</button>
+                    <button type="button" class="ir-file-btn" id="takePhotoBtn"><i class="fas fa-camera"></i> @L["Take Photo"]</button>
+                    <button type="button" class="ir-file-btn" id="chooseFileBtn"><i class="fas fa-folder-open"></i> @L["Choose File"]</button>
                 </div>
             </div>
 
@@ -57,32 +59,32 @@
 
             <div class="hvac-form-card">
                 <div class="ir-field">
-                    <label asp-for="Title">Document title</label>
-                    <input asp-for="Title" class="hvac-input" placeholder="Annual Home Inspection Report" />
+                    <label asp-for="Title">@L["Document title"]</label>
+                    <input asp-for="Title" class="hvac-input" placeholder="@L["Annual Home Inspection Report"]" />
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
 
                 <div class="ir-field">
-                    <label asp-for="InspectionDate">Inspection date</label>
-                    <input asp-for="InspectionDate" type="date" class="hvac-input" placeholder="Select date" />
+                    <label asp-for="InspectionDate">@L["Inspection date"]</label>
+                    <input asp-for="InspectionDate" type="date" class="hvac-input" placeholder="@L["Select date"]" />
                     <span asp-validation-for="InspectionDate" class="text-danger"></span>
                 </div>
 
                 <div class="ir-field">
-                    <label asp-for="Category">Document category</label>
+                    <label asp-for="Category">@L["Document category"]</label>
                     <select asp-for="Category" class="hvac-select">
-                        <option value="Inspections">Inspection Report</option>
+                        <option value="Inspections">@L["Inspection Report"]</option>
                     </select>
                 </div>
 
                 <div class="ir-field">
-                    <label asp-for="Notes">Notes (optional)</label>
-                    <textarea asp-for="Notes" maxlength="300" placeholder="Add any notes about this report..." id="notesField"></textarea>
+                    <label asp-for="Notes">@L["Notes (optional)"]</label>
+                    <textarea asp-for="Notes" maxlength="300" placeholder="@L["Add any notes about this report..."]" id="notesField"></textarea>
                     <div class="ir-char-count"><span id="notesCount">0</span>/300</div>
                 </div>
             </div>
 
-            <button type="submit" class="hvac-save-btn">Continue</button>
+            <button type="submit" class="hvac-save-btn">@L["Continue"]</button>
         </form>
     </div>
 

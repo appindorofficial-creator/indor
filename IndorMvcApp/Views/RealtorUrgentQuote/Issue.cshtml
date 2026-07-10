@@ -36,7 +36,7 @@
 
                 <i class="fas @(svc switch { "HVAC" => "fa-fan", "Plumbing" => "fa-faucet-drip", "Electrical" => "fa-bolt", "Roof" => "fa-house-chimney", _ => "fa-wrench" })"></i>
 
-                <span>@svc</span>
+                <span>@L[svc]</span>
 
             </label>
 
@@ -60,7 +60,7 @@
 
                 <input type="radio" name="urgencyLevel" value="@urg.Value" @(selected ? "checked" : null) />
 
-                <i class="fas @urg.Icon"></i> @urg.Label
+                <i class="fas @urg.Icon"></i> @L[urg.Label]
 
             </label>
 
@@ -90,7 +90,7 @@
 
                 <input type="radio" name="requestTypeTag" value="@tag.Value" @(selected ? "checked" : null) />
 
-                <i class="fas @tag.Icon"></i> @tag.Label
+                <i class="fas @tag.Icon"></i> @L[tag.Label]
 
             </label>
 

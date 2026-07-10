@@ -1,4 +1,6 @@
-namespace IndorMvcApp.Services;
+﻿namespace IndorMvcApp.Services;
+
+// Localized via DisplayLabelsLocalization.L
 
 public static class CrawlspaceCheckPricingService
 {
@@ -11,40 +13,40 @@ public static class CrawlspaceCheckDisplayLabels
 {
     public static string FormatYesNoNotSure(string? code) => code switch
     {
-        "Yes" => "Yes",
-        "No" => "No",
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "No" => DisplayLabelsLocalization.L("No"),
         _ => "Not sure"
     };
 
     public static string FormatAccessType(string? code) => code switch
     {
-        "ExteriorDoor" => "Exterior door",
-        "NotSure" => "Not sure",
+        "ExteriorDoor" => DisplayLabelsLocalization.L("Exterior door"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => "Interior hatch"
     };
 
     public static string FormatLastCheck(string? code) => code switch
     {
-        "Within1Year" => "Within 1 year",
-        "OneToTwoYears" => "1–2 years",
-        "TwoPlusYears" => "2+ years",
+        "Within1Year" => DisplayLabelsLocalization.L("Within 1 year"),
+        "OneToTwoYears" => DisplayLabelsLocalization.L("1â€“2 years"),
+        "TwoPlusYears" => DisplayLabelsLocalization.L("2+ years"),
         _ => "Not sure"
     };
 
     public static string FormatConcern(string code) => code switch
     {
-        "Moisture" => "Moisture",
-        "Encapsulation" => "Encapsulation",
-        "Insulation" => "Insulation",
-        "Pests" => "Pests",
-        "StandingWater" => "Standing water",
-        "MustyOdor" => "Musty odor",
-        "MoldMildew" => "Mold / mildew",
-        "AirLeaks" => "Air leaks",
-        "PestSigns" => "Pest signs",
-        "Cracks" => "Cracks",
-        "PipeLeaks" => "Pipe leaks",
-        "DamagedDucts" => "Damaged ducts",
+        "Moisture" => DisplayLabelsLocalization.L("Moisture"),
+        "Encapsulation" => DisplayLabelsLocalization.L("Encapsulation"),
+        "Insulation" => DisplayLabelsLocalization.L("Insulation"),
+        "Pests" => DisplayLabelsLocalization.L("Pests"),
+        "StandingWater" => DisplayLabelsLocalization.L("Standing water"),
+        "MustyOdor" => DisplayLabelsLocalization.L("Musty odor"),
+        "MoldMildew" => DisplayLabelsLocalization.L("Mold / mildew"),
+        "AirLeaks" => DisplayLabelsLocalization.L("Air leaks"),
+        "PestSigns" => DisplayLabelsLocalization.L("Pest signs"),
+        "Cracks" => DisplayLabelsLocalization.L("Cracks"),
+        "PipeLeaks" => DisplayLabelsLocalization.L("Pipe leaks"),
+        "DamagedDucts" => DisplayLabelsLocalization.L("Damaged ducts"),
         _ => code
     };
 
@@ -59,7 +61,7 @@ public static class CrawlspaceCheckDisplayLabels
             ? "Yearly reminder"
             : code switch
             {
-                "ThisMonth" => "This month",
+                "ThisMonth" => DisplayLabelsLocalization.L("This month"),
                 _ => "As soon as possible"
             };
 

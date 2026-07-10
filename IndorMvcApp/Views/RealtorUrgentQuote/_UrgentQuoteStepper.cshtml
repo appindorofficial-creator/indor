@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.RealtorUrgentQuoteStepViewModel
+@using IndorMvcApp.Helpers
 
 @{
 
@@ -26,13 +27,13 @@
 
 <div class="rl-invite-head">
 
-    <h1>@Model.Title</h1>
+    <h1>@L[Model.Title]</h1>
 
     @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
 
     {
 
-        <p>@Model.Subtitle</p>
+        <p>@L[Model.Subtitle]</p>
 
     }
 
@@ -40,7 +41,7 @@
 
 
 
-<nav class="rl-invite-stepper" aria-label="@L["Urgente quote progress"]">
+<nav class="rl-invite-stepper" aria-label="@L["Urgent quote progress"]">
 
     @for (var i = 0; i < steps.Length; i++)
 
@@ -68,7 +69,7 @@
 
             }
 
-            <small>@steps[i]</small>
+            <small>@RealtorDisplayLocalization.UrgentQuoteStepLabel(L, steps[i])</small>
 
         </div>
 

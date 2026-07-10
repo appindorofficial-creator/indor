@@ -42,8 +42,11 @@
                     ? Url.Action(itemAction, "Inspecciones", new { id = item.Id })
                     : string.Empty;
                 var cardClass = $"emergency-card{(isActive ? " active" : "")}";
-                var featuresData = string.Join("|", item.Caracteristicas.Select(c => $"{c.Icon}:{c.Text}"));
-                var displayLabel = item.TituloEmergencia;
+                var featuresData = string.Join("|", item.Caracteristicas.Select(c => $"{c.Icon}:{L.Catalog(c.Text)}"));
+                var displayLabel = L.Catalog(item.TituloEmergencia);
+                var displayDesc = L.Catalog(item.Descripcion);
+                var displayBadge = L.Catalog(item.BadgeTexto);
+                var displayCta = L.Catalog(item.CtaTexto);
 
                 if (!string.IsNullOrWhiteSpace(startUrl))
                 {
@@ -53,12 +56,12 @@
                        data-id="@item.Id"
                        data-nombre="@item.Nombre"
                        data-start-url="@startUrl"
-                       data-title="@item.TituloEmergencia"
-                       data-desc="@item.Descripcion"
+                       data-title="@displayLabel"
+                       data-desc="@displayDesc"
                        data-arrival="@item.TiempoLlegadaMinutos"
                        data-icon="@item.IconoClase"
-                       data-badge="@(item.BadgeTexto ?? "")"
-                       data-cta="@(item.CtaTexto ?? requestHelpLabel)"
+                       data-badge="@(displayBadge ?? "")"
+                       data-cta="@(displayCta ?? requestHelpLabel)"
                        data-features="@featuresData">
                         <div class="emergency-card-media">
                             @if (!string.IsNullOrWhiteSpace(imgSrc))
@@ -85,12 +88,12 @@
                             data-id="@item.Id"
                             data-nombre="@item.Nombre"
                             data-start-url=""
-                            data-title="@item.TituloEmergencia"
-                            data-desc="@item.Descripcion"
+                            data-title="@displayLabel"
+                            data-desc="@displayDesc"
                             data-arrival="@item.TiempoLlegadaMinutos"
                             data-icon="@item.IconoClase"
-                            data-badge="@(item.BadgeTexto ?? "")"
-                            data-cta="@(item.CtaTexto ?? requestHelpLabel)"
+                            data-badge="@(displayBadge ?? "")"
+                            data-cta="@(displayCta ?? requestHelpLabel)"
                             data-features="@featuresData">
                         <div class="emergency-card-media">
                             @if (!string.IsNullOrWhiteSpace(imgSrc))
@@ -125,14 +128,14 @@
                         <div class="emergency-detail-copy">
                             @if (!string.IsNullOrWhiteSpace(selected?.BadgeTexto))
                             {
-                                <span class="emergency-detail-badge" data-emergency-detail-badge>@selected.BadgeTexto</span>
+                                <span class="emergency-detail-badge" data-emergency-detail-badge>@L.Catalog(selected.BadgeTexto)</span>
                             }
                             else
                             {
                                 <span class="emergency-detail-badge hidden" data-emergency-detail-badge></span>
                             }
-                            <div class="emergency-detail-title" data-emergency-detail-title>@(selected?.TituloEmergencia ?? "")</div>
-                            <div class="emergency-detail-desc" data-emergency-detail-desc>@(selected?.Descripcion ?? "")</div>
+                            <div class="emergency-detail-title" data-emergency-detail-title>@L.Catalog(selected?.TituloEmergencia)</div>
+                            <div class="emergency-detail-desc" data-emergency-detail-desc>@L.Catalog(selected?.Descripcion)</div>
                         </div>
                         <div class="emergency-detail-arrival">
                             <span class="arrival-label">@L["Avg. arrival"]</span>
@@ -147,7 +150,7 @@
                             {
                                 <div class="emergency-feature">
                                     <i class="fas @feature.Icon"></i>
-                                    <span>@feature.Text</span>
+                                    <span>@L.Catalog(feature.Text)</span>
                                 </div>
                             }
                         }
@@ -159,7 +162,7 @@
                             data-start-url="@selectedStartUrl"
                             data-target="section-more"
                             data-default-cta="@requestHelpLabel">
-                        <i class="fas fa-paper-plane"></i> @(selected?.CtaTexto ?? requestHelpLabel)
+                        <i class="fas fa-paper-plane"></i> @(L.Catalog(selected?.CtaTexto) ?? requestHelpLabel)
                     </button>
                 </div>
             </div>

@@ -1,10 +1,10 @@
 @model IndorMvcApp.ViewModels.RealtorNetworkListingFormViewModel
 @{
-    ViewData["Title"] = Model.IsEdit ? "Edit Listing" : "Post Listing with INDOR";
+    ViewData["Title"] = Model.IsEdit ? L["Edit Listing"] : L["Post Listing with INDOR"];
     ViewBag.ListingHideChrome = true;
     var startStep = Model.IsEdit ? 2 : 1;
     var feedUrl = Url.Action("Network", "Realtor", new { filter = "Homes", scope = "mine" });
-    var steps = new[] { "Why INDOR", "Listing Basics", "Property Details", "Review & Publish" };
+    var steps = new[] { L["Why INDOR"], L["Listing Basics"], L["Property Details"], L["Review & Publish"] };
 }
 
 <div class="rl-lw" id="rlListingWizard" data-start-step="@startStep" data-feed-url="@feedUrl">
@@ -345,10 +345,10 @@
 
             <div class="rl-lw-actions rl-lw-actions--stack">
                 <button type="submit" class="rl-listing-btn-primary rl-lw-publish">
-                    <i class="fas fa-rocket"></i> @(Model.IsEdit ? "Save Listing" : "Publish Listing")
+                    <i class="fas fa-rocket"></i> @(Model.IsEdit ? L["Save Listing"] : L["Publish Listing"])
                 </button>
                 <button type="submit" name="SaveAsDraft" value="true" class="rl-listing-btn-secondary">
-                    <i class="fas fa-floppy-disk"></i> Save Draft
+                    <i class="fas fa-floppy-disk"></i> @L["Save Draft"]
                 </button>
                 @if (Model.IsEdit)
                 {
@@ -363,6 +363,20 @@
     <partial name="_ValidationScriptsPartial" />
     <script src="@Url.Content("~/js/realtor-network-listing-wizard.js")" asp-append-version="true"></script>
     <script>
+    <script>
+        window.rlListingWizardSteps = {
+            1: { title: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Post Listing with INDOR"])), sub: '' },
+            2: { title: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Create Your Listing"])), sub: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Add key details to showcase your property."])) },
+            3: { title: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Property Details"])), sub: '' },
+            4: { title: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Review & Publish"])), sub: '' }
+        };
+        window.rlListingWizardLabels = {
+            forSale: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["For Sale"])),
+            forRent: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["For Rent"])),
+            addressNotSet: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Address not set"])),
+            removePhoto: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Remove photo"])),
+            propertyPhotosPdf: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Property photos.pdf"]))
+        };
         window.rlListingWizardInit({
             initialPhoto: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ImageUrl ?? "")),
             extraPhotos: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.AdditionalPhotoUrls ?? "")),

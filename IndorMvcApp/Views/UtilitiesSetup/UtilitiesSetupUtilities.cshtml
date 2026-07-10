@@ -72,7 +72,7 @@ string PhoneHref(string? phone)
 
     <form asp-action="UtilitiesSetupUtilities" method="post">
         <input type="hidden" name="id" value="@Model.SolicitudId" />
-        <button type="submit" name="action" value="continue" class="btn-primary">Continue</button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        <button type="submit" name="action" value="continue" class="btn-primary">@L["Continue"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
     </form>
 </div>

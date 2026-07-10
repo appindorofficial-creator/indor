@@ -26,7 +26,7 @@
 
         <span>@Model.AnalysisProgress%</span>
 
-        <small>@(Model.AnalysisStatus == IndorMvcApp.Models.RealtorInspectionAnalysisStatuses.Failed ? "Stopped" : "Analyzing")</small>
+        <small>@(Model.AnalysisStatus == IndorMvcApp.Models.RealtorInspectionAnalysisStatuses.Failed ? L["Stopped"] : L["Analyzing"])</small>
 
     </div>
 
@@ -68,9 +68,8 @@
 
             <span>
 
-                <strong>@task.Label</strong>
-
-                <small>@task.Detail</small>
+                <strong>@L[task.Label]</strong>
+                <small>@L[task.Detail]</small>
 
             </span>
 
@@ -120,7 +119,7 @@
     {
         <div class="rl-info-box rl-info-box--warn" id="analyzeErrorBox">
             <i class="fas fa-triangle-exclamation"></i>
-            <p>@(string.IsNullOrWhiteSpace(Model.AnalysisSummary) ? "Analysis could not be completed." : Model.AnalysisSummary)</p>
+            <p>@(string.IsNullOrWhiteSpace(Model.AnalysisSummary) ? L["Analysis could not be completed."] : Model.AnalysisSummary)</p>
         </div>
         <button type="button" id="analyzeRetryBtn" class="ob-btn ob-btn-primary rl-analyze-btn rl-analyze-btn--full">
             <strong><i class="fas fa-rotate-right"></i> @L["Retry analysis"]</strong>
@@ -165,7 +164,7 @@
                     ring.style.setProperty('--progress', progress);
                 }
                 if (label) label.textContent = progress + '%';
-                if (status) status.textContent = 'Analyzing';
+                if (status) status.textContent = '@L["Analyzing"]';
             }
 
             function showRunningState() {

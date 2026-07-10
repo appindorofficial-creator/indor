@@ -34,7 +34,7 @@
     }
 
     <a asp-controller="Home" asp-action="Index" class="btn-primary">
-        Back to Home Care Guide <i class="fas fa-chevron-right"></i>
+        @L["Back to Home Care Guide"] <i class="fas fa-chevron-right"></i>
     </a>
     <a asp-controller="PestControl" asp-action="PestControlPlan" asp-route-id="@Model.SolicitudId" class="btn-outline" style="margin-top:10px;">
         Edit plan

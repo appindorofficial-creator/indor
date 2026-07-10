@@ -8,11 +8,11 @@ var reminderDate = Model.FechaProximoRecordatorio?.ToString("MMMM d, yyyy") ?? D
 <div class="success-wrap">
         <div class="success-icon"><i class="fas fa-check"></i></div>
         <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">@L["You're all set"]</h1>
-        <p class="page-lead" style="text-align:center;margin-bottom:16px;">Your @Model.NombreServicio request has been saved.</p>
+        <p class="page-lead" style="text-align:center;margin-bottom:16px;">@L.T("Your {0} request has been saved.", L.Catalog(Model.NombreServicio))</p>
     </div>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-wind"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-wind"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.NombreServicio)</div></div></div>
         <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Visit"]</div><div class="summary-value">@Model.VisitaLabel</div></div></div>
         <div class="summary-row"><i class="fas fa-ruler-combined"></i><div><div class="summary-label">@L["Filter size"]</div><div class="summary-value">@Model.FiltroTamanioLabel</div></div></div>
         <div class="summary-row"><i class="fas fa-user-gear"></i><div><div class="summary-label">@L["Provider"]</div><div class="summary-value">@Model.ProveedorLabel</div></div></div>
@@ -25,7 +25,7 @@ var reminderDate = Model.FechaProximoRecordatorio?.ToString("MMMM d, yyyy") ?? D
             <i class="fas fa-bell"></i>
             <div>
                 <strong>@L["Next reminder scheduled in 3 months"]</strong><br />
-                We'll remind you again around @reminderDate.
+                @L.T("We'll remind you again around {0}.", reminderDate)
             </div>
         </div>
     }

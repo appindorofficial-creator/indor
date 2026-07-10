@@ -24,7 +24,7 @@
     @if (TempData["ProfileSaved"] is true)
     {
         <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success">
-            <i class="fas fa-circle-check"></i> Saved successfully.
+            <i class="fas fa-circle-check"></i> @L["Saved successfully."]
         </div>
     }
     @if (TempData["ProfileSectionError"] is string sectionError)
@@ -75,7 +75,7 @@
                 @await Html.PartialAsync("_ProfileDocumentSectionForm", activeSection)
                 <footer class="prv-flow-detail-actions">
                     <button type="submit" name="SaveMode" value="save" class="prv-pro-btn prv-pro-btn--primary">
-                        <i class="fas fa-floppy-disk"></i> Save section
+                        <i class="fas fa-floppy-disk"></i> @L["Save section"]
                     </button>
                 </footer>
             </section>
@@ -84,13 +84,13 @@
 
     <p class="prv-flow-tip">
         <i class="fas fa-circle-info"></i>
-        Your progress is saved automatically. You can return to any section at any time.
+        @L["Your progress is saved automatically. You can return to any section at any time."]
     </p>
 
     @if (!string.IsNullOrWhiteSpace(Model.ContinueAction))
     {
         <a href="@Model.ContinueAction" class="prv-pro-btn prv-pro-btn--primary prv-flow-continue">
-            <i class="fas fa-wand-magic-sparkles"></i> Continue Setup
+            <i class="fas fa-wand-magic-sparkles"></i> @L["Continue Setup"]
         </a>
     }
 

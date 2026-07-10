@@ -124,7 +124,7 @@
             unknownHidden.value = active ? 'true' : 'false';
             sizeInputs.style.opacity = active ? '0.45' : '1';
             sizeInputs.querySelectorAll('input').forEach(i => i.disabled = active);
-            unknownBtn.textContent = active ? 'Enter size manually' : "I don't know";
+            unknownBtn.textContent = active ? '@L["Enter size manually"]' : '@L["I don't know"]';
         }
 
         unknownBtn.addEventListener('click', () => setUnknown(unknownHidden.value !== 'true'));
@@ -145,8 +145,8 @@
         initSingle('providerGroup', '.provider-card', 'ProveedorFiltro', '@Model.ProveedorFiltro');
         updateSections();
 
-        const sizeInvalidMessage = 'Please enter a number.';
-        const sizeRangeMessage = 'Enter a realistic size in inches (e.g. 20 x 25 x 1). Each side must be between 0.25 and 99.99.';
+        const sizeInvalidMessage = '@L["Please enter a number."]';
+        const sizeRangeMessage = '@L["Enter a realistic size in inches (e.g. 20 x 25 x 1). Each side must be between 0.25 and 99.99."]';
         const sizePattern = /^\d+(\.\d+)?$/;
         const sizeMin = 0.25;
         const sizeMax = 99.99;
@@ -160,7 +160,7 @@
                 return false;
             }
             const n = parseFloat(trimmed);
-            return !Number.isNaN(n) && n >@L["= sizeMin && n"] <= sizeMax;
+            return !Number.isNaN(n) && n >= sizeMin && n <= sizeMax;
         }
 
         function filterSizeErrorMessage(value) {

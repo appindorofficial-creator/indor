@@ -105,7 +105,7 @@
             <div class="rl-file-drop-body">
                 <i class="fas fa-cloud-arrow-up" id="rlFileDropIcon"></i>
                 <strong id="rlFileDropTitle">@L["Tap to choose your inspection report"]</strong>
-                <span id="rlFileDropHint">PDF recommended • Up to @maxFileLabel</span>
+                <span id="rlFileDropHint">@L.T("PDF recommended • Up to {0}", maxFileLabel)</span>
                 <span id="rlFileDropName" class="rl-file-drop-name" hidden></span>
             </div>
         </label>
@@ -122,7 +122,7 @@
     <div class="rl-invite-actions">
         <button type="button" class="rl-invite-cancel" id="inspCancelBtn">@L["Cancel"]</button>
         <button type="submit" id="inspContinueBtn" class="ob-btn ob-btn-primary">
-            Continue <i class="fas fa-chevron-right"></i>
+            @L["Continue"] <i class="fas fa-chevron-right"></i>
         </button>
     </div>
 </form>
@@ -132,6 +132,20 @@
 </form>
 
 @section Scripts {
+<div id="inspUploadI18n" hidden
+     data-pdf-title="@L["Tap to choose your inspection report"]"
+     data-pdf-hint="@L.T("PDF recommended • Up to {0}", maxFileLabel)"
+     data-scan-title="@L["Tap to scan a page with your camera"]"
+     data-scan-hint="@L.T("Use your rear camera • Up to {0}", maxFileLabel)"
+     data-photos-title="@L["Tap to add report photos"]"
+     data-photos-hint="@L.T("Select one or more images • Up to {0}", maxFileLabel)"
+     data-files-selected="@L["{0} files selected"]"
+     data-mb-selected="@L["{0} MB selected"]"
+     data-error-property="@L["Select a property or enter the property address to continue."]"
+     data-error-file="@L["Add an inspection report PDF or image to continue."]"
+     data-error-size="@L["The file is too large. Maximum size is {0}."]"
+     data-uploading="@L["Uploading..."]"
+     data-continue="@L["Continue"]"></div>
 <script>
     (function () {
         const form = document.getElementById('inspUploadForm');
@@ -151,20 +165,21 @@
         const methodRadios = form.querySelectorAll('.rl-upload-method--picker input[type=radio]');
         const maxFileBytes = @maxFileBytes;
         const maxFileLabel = '@maxFileLabel';
+        const i18n = document.getElementById('inspUploadI18n')?.dataset || {};
         const methodCopy = {
             Pdf: {
-                title: 'Tap to choose your inspection report',
-                hint: `PDF recommended • Up to ${maxFileLabel}`,
+                title: i18n.pdfTitle || 'Tap to choose your inspection report',
+                hint: (i18n.pdfHint || 'PDF recommended • Up to {0}').replace('{0}', maxFileLabel),
                 icon: 'fa-cloud-arrow-up'
             },
             Scan: {
-                title: 'Tap to scan a page with your camera',
-                hint: `Use your rear camera • Up to ${maxFileLabel}`,
+                title: i18n.scanTitle || 'Tap to scan a page with your camera',
+                hint: (i18n.scanHint || 'Use your rear camera • Up to {0}').replace('{0}', maxFileLabel),
                 icon: 'fa-camera'
             },
             Photos: {
-                title: 'Tap to add report photos',
-                hint: `Select one or more images • Up to ${maxFileLabel}`,
+                title: i18n.photosTitle || 'Tap to add report photos',
+                hint: (i18n.photosHint || 'Select one or more images • Up to {0}').replace('{0}', maxFileLabel),
                 icon: 'fa-image'
             }
         };
@@ -218,12 +233,12 @@
             const file = files?.[0];
             if (file) {
                 if (files.length > 1) {
-                    fileNameEl.textContent = `${files.length} files selected`;
+                    fileNameEl.textContent = (i18n.filesSelected || '{0} files selected').replace('{0}', files.length);
                     const totalBytes = Array.from(files).reduce((sum, f) => sum + f.size, 0);
-                    fileHintEl.textContent = `${(totalBytes / (1024 * 1024)).toFixed(1)} MB selected`;
+                    fileHintEl.textContent = (i18n.mbSelected || '{0} MB selected').replace('{0}', (totalBytes / (1024 * 1024)).toFixed(1));
                 } else {
                     fileNameEl.textContent = file.name;
-                    fileHintEl.textContent = `${(file.size / (1024 * 1024)).toFixed(1)} MB selected`;
+                    fileHintEl.textContent = (i18n.mbSelected || '{0} MB selected').replace('{0}', (file.size / (1024 * 1024)).toFixed(1));
                 }
                 fileNameEl.hidden = false;
                 document.getElementById('rlFileDrop')?.classList.add('has-file');
@@ -307,25 +322,25 @@
 
             if (!hasProperty && !hasNewAddress) {
                 e.preventDefault();
-                showClientError('Select a property or enter the property address to continue.');
+                showClientError(i18n.errorProperty || 'Select a property or enter the property address to continue.');
                 return;
             }
 
             if (!hasFile) {
                 e.preventDefault();
-                showClientError('Add an inspection report PDF or image to continue.');
+                showClientError(i18n.errorFile || 'Add an inspection report PDF or image to continue.');
                 return;
             }
 
             const oversized = Array.from(fileInput.files).some(f => f.size > maxFileBytes);
             if (oversized) {
                 e.preventDefault();
-                showClientError(`The file is too large. Maximum size is ${maxFileLabel}.`);
+                showClientError((i18n.errorSize || 'The file is too large. Maximum size is {0}.').replace('{0}', maxFileLabel));
                 return;
             }
 
             continueBtn.disabled = true;
-            continueBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+            continueBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (i18n.uploading || 'Uploading...');
         });
 
         updateFileAccept();

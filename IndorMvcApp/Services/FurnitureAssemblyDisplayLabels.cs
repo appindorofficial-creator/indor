@@ -1,88 +1,90 @@
-namespace IndorMvcApp.Services;
+﻿namespace IndorMvcApp.Services;
+
+// Localized via DisplayLabelsLocalization.L
 
 public static class FurnitureAssemblyDisplayLabels
 {
     public static string FormatFurnitureType(string value) => value switch
     {
-        "BedFrame" => "Bed frame",
-        "Dresser" => "Dresser",
-        "Desk" => "Desk",
-        "DiningTable" => "Dining table",
-        "Bookshelf" => "Bookshelf",
-        "TvStand" => "TV stand",
-        "OfficeChair" => "Office chair",
-        "Shelving" => "Shelving",
-        "MultipleItems" => "Multiple items",
+        "BedFrame" => DisplayLabelsLocalization.L("Bed frame"),
+        "Dresser" => DisplayLabelsLocalization.L("Dresser"),
+        "Desk" => DisplayLabelsLocalization.L("Desk"),
+        "DiningTable" => DisplayLabelsLocalization.L("Dining table"),
+        "Bookshelf" => DisplayLabelsLocalization.L("Bookshelf"),
+        "TvStand" => DisplayLabelsLocalization.L("TV stand"),
+        "OfficeChair" => DisplayLabelsLocalization.L("Office chair"),
+        "Shelving" => DisplayLabelsLocalization.L("Shelving"),
+        "MultipleItems" => DisplayLabelsLocalization.L("Multiple items"),
         _ => value
     };
 
     public static string FormatItemCount(string? value) => value switch
     {
-        "One" => "1",
-        "Two" => "2",
-        "Three" => "3",
-        "FourPlus" => "4+",
-        _ => value ?? "—"
+        "One" => DisplayLabelsLocalization.L("1"),
+        "Two" => DisplayLabelsLocalization.L("2"),
+        "Three" => DisplayLabelsLocalization.L("3"),
+        "FourPlus" => DisplayLabelsLocalization.L("4+"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatCondition(string? value) => value switch
     {
-        "NewInBox" => "New in box",
-        "PartiallyAssembled" => "Partially assembled",
-        "NeedsReassembly" => "Needs re-assembly",
-        "NotSure" => "Not sure",
-        _ => value ?? "—"
+        "NewInBox" => DisplayLabelsLocalization.L("New in box"),
+        "PartiallyAssembled" => DisplayLabelsLocalization.L("Partially assembled"),
+        "NeedsReassembly" => DisplayLabelsLocalization.L("Needs re-assembly"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatWallAnchor(string? value) => value switch
     {
-        "Yes" => "Yes",
-        "No" => "No",
-        "NotSure" => "Not sure",
-        _ => value ?? "—"
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "No" => DisplayLabelsLocalization.L("No"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatRoom(string? value) => value switch
     {
-        "LivingRoom" => "Living room",
-        "Bedroom" => "Bedroom",
-        "Office" => "Office",
-        "DiningRoom" => "Dining room",
-        "Patio" => "Patio",
-        "MultipleRooms" => "Multiple rooms",
-        _ => value ?? "—"
+        "LivingRoom" => DisplayLabelsLocalization.L("Living room"),
+        "Bedroom" => DisplayLabelsLocalization.L("Bedroom"),
+        "Office" => DisplayLabelsLocalization.L("Office"),
+        "DiningRoom" => DisplayLabelsLocalization.L("Dining room"),
+        "Patio" => DisplayLabelsLocalization.L("Patio"),
+        "MultipleRooms" => DisplayLabelsLocalization.L("Multiple rooms"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatAccess(string value) => value switch
     {
-        "FirstFloor" => "1st floor",
-        "Stairs" => "Stairs",
-        "Elevator" => "Elevator",
-        "ParkingNearby" => "Parking nearby",
+        "FirstFloor" => DisplayLabelsLocalization.L("1st floor"),
+        "Stairs" => DisplayLabelsLocalization.L("Stairs"),
+        "Elevator" => DisplayLabelsLocalization.L("Elevator"),
+        "ParkingNearby" => DisplayLabelsLocalization.L("Parking nearby"),
         _ => value
     };
 
     public static string FormatMovingHelp(string? value) => value switch
     {
-        "Yes" => "Yes",
-        "No" => "No",
-        "NotSure" => "Not sure",
-        _ => value ?? "—"
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "No" => DisplayLabelsLocalization.L("No"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatTimeWindow(string? value) => value switch
     {
-        "Morning" => "8:00 AM - 12:00 PM",
-        "Afternoon" => "12:00 PM - 5:00 PM",
-        "Evening" => "5:00 PM - 8:00 PM",
-        _ => value ?? "—"
+        "Morning" => DisplayLabelsLocalization.L("8:00 AM - 12:00 PM"),
+        "Afternoon" => DisplayLabelsLocalization.L("12:00 PM - 5:00 PM"),
+        "Evening" => DisplayLabelsLocalization.L("5:00 PM - 8:00 PM"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatTimeShort(string? value) => value switch
     {
-        "Morning" => "10:00 AM",
-        "Afternoon" => "2:00 PM",
-        "Evening" => "6:00 PM",
+        "Morning" => DisplayLabelsLocalization.L("10:00 AM"),
+        "Afternoon" => DisplayLabelsLocalization.L("2:00 PM"),
+        "Evening" => DisplayLabelsLocalization.L("6:00 PM"),
         _ => "2:00 PM"
     };
 
@@ -96,7 +98,7 @@ public static class FurnitureAssemblyDisplayLabels
     {
         if (string.IsNullOrWhiteSpace(pipe))
         {
-            return "—";
+            return DisplayLabelsLocalization.L("â€”");
         }
 
         return string.Join(", ", pipe
@@ -107,13 +109,13 @@ public static class FurnitureAssemblyDisplayLabels
     public static string FormatItemsSummary(string? types, string? count)
     {
         var list = FormatPipeList(types, FormatFurnitureType);
-        if (list == "—")
+        if (list == "â€”")
         {
-            return "—";
+            return DisplayLabelsLocalization.L("â€”");
         }
 
         var qty = FormatItemCount(count);
-        return qty == "—" ? list : $"{list} ({qty} items)";
+        return qty == "â€”" ? list : $"{list} ({qty} items)";
     }
 
     public static decimal CalculateEstimate(

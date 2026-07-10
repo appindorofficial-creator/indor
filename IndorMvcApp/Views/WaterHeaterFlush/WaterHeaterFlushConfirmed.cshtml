@@ -38,12 +38,12 @@
     @if (Model.PropiedadId.HasValue)
     {
         <a asp-controller="MyHome" asp-action="Maintenance" asp-route-id="@Model.PropiedadId" class="btn-outline" style="margin-top:10px;">
-            <i class="fas fa-house"></i> View in My Home
+            <i class="fas fa-house"></i> @L["View in My Home"]
         </a>
     }
     else
     {
         <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="btn-outline" style="margin-top:10px;">
-            <i class="fas fa-house"></i> View in My Home
+            <i class="fas fa-house"></i> @L["View in My Home"]
         </a>
     }

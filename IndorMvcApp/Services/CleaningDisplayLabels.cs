@@ -1,39 +1,41 @@
-namespace IndorMvcApp.Services;
+﻿namespace IndorMvcApp.Services;
+
+// Localized via DisplayLabelsLocalization.L
 
 public static class CleaningDisplayLabels
 {
     public static string FormatCleaningType(string? value) => value switch
     {
-        "MoveIn" => "Move-In Cleaning",
-        "MoveOut" => "Move-Out Cleaning",
-        "Both" => "Move-In & Move-Out Cleaning",
-        _ => value ?? "—"
+        "MoveIn" => DisplayLabelsLocalization.L("Move-In Cleaning"),
+        "MoveOut" => DisplayLabelsLocalization.L("Move-Out Cleaning"),
+        "Both" => DisplayLabelsLocalization.L("Move-In & Move-Out Cleaning"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatPropertyType(string? value) => value switch
     {
-        "Apartment" => "Apartment",
-        "House" => "House",
-        "Condo" => "Condo",
-        "Townhome" => "Townhome",
-        _ => value ?? "—"
+        "Apartment" => DisplayLabelsLocalization.L("Apartment"),
+        "House" => DisplayLabelsLocalization.L("House"),
+        "Condo" => DisplayLabelsLocalization.L("Condo"),
+        "Townhome" => DisplayLabelsLocalization.L("Townhome"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatBedrooms(string? value) => value switch
     {
-        "One" => "1 bed",
-        "Two" => "2 bed",
-        "Three" => "3 bed",
-        "FourPlus" => "4+ bed",
-        _ => value ?? "—"
+        "One" => DisplayLabelsLocalization.L("1 bed"),
+        "Two" => DisplayLabelsLocalization.L("2 bed"),
+        "Three" => DisplayLabelsLocalization.L("3 bed"),
+        "FourPlus" => DisplayLabelsLocalization.L("4+ bed"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatBathrooms(string? value) => value switch
     {
-        "One" => "1 bath",
-        "Two" => "2 bath",
-        "ThreePlus" => "3+ bath",
-        _ => value ?? "—"
+        "One" => DisplayLabelsLocalization.L("1 bath"),
+        "Two" => DisplayLabelsLocalization.L("2 bath"),
+        "ThreePlus" => DisplayLabelsLocalization.L("3+ bath"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatHomeSize(string? beds, string? baths) =>
@@ -41,18 +43,18 @@ public static class CleaningDisplayLabels
 
     public static string FormatCondition(string? value) => value switch
     {
-        "Empty" => "Empty property",
-        "LightlyFurnished" => "Lightly furnished",
-        "Occupied" => "Occupied",
-        _ => value ?? "—"
+        "Empty" => DisplayLabelsLocalization.L("Empty property"),
+        "LightlyFurnished" => DisplayLabelsLocalization.L("Lightly furnished"),
+        "Occupied" => DisplayLabelsLocalization.L("Occupied"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatTimeWindow(string? value) => value switch
     {
-        "Morning" => "10:00 AM - 12:00 PM",
-        "MidMorning" => "12:00 PM - 2:00 PM",
-        "Afternoon" => "2:00 PM - 4:00 PM",
-        "Evening" => "4:00 PM - 6:00 PM",
+        "Morning" => DisplayLabelsLocalization.L("10:00 AM - 12:00 PM"),
+        "MidMorning" => DisplayLabelsLocalization.L("12:00 PM - 2:00 PM"),
+        "Afternoon" => DisplayLabelsLocalization.L("2:00 PM - 4:00 PM"),
+        "Evening" => DisplayLabelsLocalization.L("4:00 PM - 6:00 PM"),
         _ => string.IsNullOrWhiteSpace(value) ? "To be scheduled" : value
     };
 
@@ -61,43 +63,43 @@ public static class CleaningDisplayLabels
 
     public static string FormatSupplies(string? value) => value switch
     {
-        "Yes" => "Yes",
-        "No" => "No",
-        "NotSure" => "Not sure",
-        _ => value ?? "—"
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "No" => DisplayLabelsLocalization.L("No"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => value ?? "â€”"
     };
 
     public static string FormatAccessMethod(string? value) => value switch
     {
-        "Lockbox" => "Lockbox",
-        "SomeoneHome" => "Someone will be home",
-        "Doorman" => "Doorman / front desk",
+        "Lockbox" => DisplayLabelsLocalization.L("Lockbox"),
+        "SomeoneHome" => DisplayLabelsLocalization.L("Someone will be home"),
+        "Doorman" => DisplayLabelsLocalization.L("Doorman / front desk"),
         _ => value ?? "Lockbox"
     };
 
     public static string FormatPriorityArea(string value) => value switch
     {
-        "Kitchen" => "Kitchen",
-        "Bathrooms" => "Bathrooms",
-        "Floors" => "Floors",
-        "Bedrooms" => "Bedrooms",
-        "LivingRoom" => "Living room",
-        "Closets" => "Closets",
+        "Kitchen" => DisplayLabelsLocalization.L("Kitchen"),
+        "Bathrooms" => DisplayLabelsLocalization.L("Bathrooms"),
+        "Floors" => DisplayLabelsLocalization.L("Floors"),
+        "Bedrooms" => DisplayLabelsLocalization.L("Bedrooms"),
+        "LivingRoom" => DisplayLabelsLocalization.L("Living room"),
+        "Closets" => DisplayLabelsLocalization.L("Closets"),
         _ => value
     };
 
     public static string FormatExtraTask(string value) => value switch
     {
-        "InsideFridge" => "Inside fridge",
-        "InsideOven" => "Inside oven",
-        "InsideCabinets" => "Inside cabinets",
-        "InteriorWindows" => "Interior windows",
-        "Baseboards" => "Baseboards",
-        "LaundryRoom" => "Laundry room",
-        "Garage" => "Garage",
-        "BalconyPatio" => "Balcony / patio",
-        "TrashLeftBehind" => "Trash left behind",
-        "PetHair" => "Pet hair",
+        "InsideFridge" => DisplayLabelsLocalization.L("Inside fridge"),
+        "InsideOven" => DisplayLabelsLocalization.L("Inside oven"),
+        "InsideCabinets" => DisplayLabelsLocalization.L("Inside cabinets"),
+        "InteriorWindows" => DisplayLabelsLocalization.L("Interior windows"),
+        "Baseboards" => DisplayLabelsLocalization.L("Baseboards"),
+        "LaundryRoom" => DisplayLabelsLocalization.L("Laundry room"),
+        "Garage" => DisplayLabelsLocalization.L("Garage"),
+        "BalconyPatio" => DisplayLabelsLocalization.L("Balcony / patio"),
+        "TrashLeftBehind" => DisplayLabelsLocalization.L("Trash left behind"),
+        "PetHair" => DisplayLabelsLocalization.L("Pet hair"),
         _ => value
     };
 
@@ -105,7 +107,7 @@ public static class CleaningDisplayLabels
     {
         if (string.IsNullOrWhiteSpace(pipe))
         {
-            return "—";
+            return DisplayLabelsLocalization.L("â€”");
         }
 
         return string.Join(", ", pipe

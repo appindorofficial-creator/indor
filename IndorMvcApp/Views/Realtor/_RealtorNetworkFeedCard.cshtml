@@ -28,7 +28,7 @@
                 <div class="rl-network-card-side">
                     @if (!string.IsNullOrWhiteSpace(Model.StatusBadge))
                     {
-                        <span class="rl-network-status rl-network-status--@Model.StatusCss">@UiDisplayLocalization.Localize(L, Model.StatusBadge)</span>
+                        <span class="rl-network-status rl-network-status--@Model.StatusCss">@Model.StatusBadge</span>
                     }
                 </div>
             </div>
@@ -40,7 +40,7 @@
                 }
                 else
                 {
-                    <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@UiDisplayLocalization.Localize(L, Model.PrimaryActionLabel)</a>
+                    <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@Model.PrimaryActionLabel</a>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionLabel))
                 {
@@ -64,7 +64,7 @@
                     }
                     else
                     {
-                        <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@UiDisplayLocalization.Localize(L, Model.SecondaryActionLabel)</a>
+                        <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@Model.SecondaryActionLabel</a>
                     }
                 }
             </div>
@@ -138,7 +138,7 @@ else
                 }
                 else
                 {
-                    <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@UiDisplayLocalization.Localize(L, Model.PrimaryActionLabel)</a>
+                    <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@Model.PrimaryActionLabel</a>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionLabel))
                 {
@@ -162,7 +162,7 @@ else
                     }
                     else
                     {
-                        <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@UiDisplayLocalization.Localize(L, Model.SecondaryActionLabel)</a>
+                        <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@Model.SecondaryActionLabel</a>
                     }
                 }
             </div>

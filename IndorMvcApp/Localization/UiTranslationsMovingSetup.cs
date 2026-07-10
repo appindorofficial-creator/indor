@@ -1,0 +1,146 @@
+namespace IndorMvcApp.Localization;
+
+/// <summary>Moving setup section and 7 moving-related service flows.</summary>
+public static class UiTranslationsMovingSetup
+{
+    public static IEnumerable<KeyValuePair<string, string>> Entries =>
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["{0} moving service for your home"] = "{0} servicio de mudanza para tu hogar",
+            ["{0} moving services for your home"] = "{0} servicios de mudanza para tu hogar",
+            ["Quick links"] = "Enlaces rápidos",
+
+            // Moving — landing
+            ["Moving Service"] = "Servicio de mudanza",
+            ["Moving Help"] = "Ayuda con mudanza",
+            ["Book moving help for move-in, move-out, or full relocation."] =
+                "Reserva ayuda de mudanza para entrada, salida o reubicación completa.",
+            ["Loading & unloading"] = "Carga y descarga",
+            ["Room-to-room moving"] = "Mudanza de habitación en habitación",
+            ["Furniture protection & wrapping"] = "Protección y embalaje de muebles",
+            ["Optional disassembly & reassembly"] = "Desmontaje y remontaje opcional",
+            ["Estimated time"] = "Tiempo estimado",
+            ["2-6 hours"] = "2-6 horas",
+            ["Based on home size"] = "Según el tamaño del hogar",
+            ["Best for"] = "Ideal para",
+            ["Apartment & House Moves"] = "Mudanzas de apartamento y casa",
+            ["Small to large homes"] = "Hogares pequeños y grandes",
+            ["Move-In"] = "Entrada",
+            ["Move-Out"] = "Salida",
+            ["Local Move"] = "Mudanza local",
+            ["Full Move"] = "Mudanza completa",
+            ["Get estimate"] = "Obtener estimado",
+            ["Final pricing may vary based on onsite assessment and actual service needs."] =
+                "El precio final puede variar según la evaluación en sitio y las necesidades reales del servicio.",
+
+            // Moving — wizard steps
+            ["Move details"] = "Detalles de la mudanza",
+            ["What are you moving?"] = "¿Qué vas a mudar?",
+            ["Where are you moving?"] = "¿A dónde te mudas?",
+            ["When do you need help?"] = "¿Cuándo necesitas ayuda?",
+            ["Review your move"] = "Revisa tu mudanza",
+            ["Move confirmed"] = "Mudanza confirmada",
+            ["Property type"] = "Tipo de propiedad",
+            ["Home size"] = "Tamaño del hogar",
+            ["Move size"] = "Tamaño de la mudanza",
+            ["Origin address"] = "Dirección de origen",
+            ["Destination address"] = "Dirección de destino",
+            ["Move date"] = "Fecha de mudanza",
+            ["Preferred time window"] = "Horario preferido",
+            ["Service type"] = "Tipo de servicio",
+            ["Movers only"] = "Solo mudadores",
+            ["Truck + Movers"] = "Camión + mudadores",
+            ["Items to move"] = "Artículos a mover",
+            ["Access conditions"] = "Condiciones de acceso",
+            ["Assembly needed?"] = "¿Necesitas montaje?",
+            ["Short note"] = "Nota breve",
+            ["Estimated price range"] = "Rango de precio estimado",
+            ["Estimated duration"] = "Duración estimada",
+            ["9:00 AM – 11:00 AM"] = "9:00 a. m. – 11:00 a. m.",
+            ["11:00 AM – 1:00 PM"] = "11:00 a. m. – 1:00 p. m.",
+            ["2:00 PM – 4:00 PM"] = "2:00 p. m. – 4:00 p. m.",
+            ["4:00 PM – 6:00 PM"] = "4:00 p. m. – 6:00 p. m.",
+            ["Condo"] = "Condominio",
+            ["Townhome"] = "Casa adosada",
+            ["Few items"] = "Pocos artículos",
+            ["1-2 Bedroom"] = "1-2 habitaciones",
+            ["3+ Bedroom"] = "3+ habitaciones",
+            ["1-2 Bedrooms"] = "1-2 habitaciones",
+            ["3+ Bedrooms"] = "3+ habitaciones",
+            ["Sofa"] = "Sofá",
+            ["Mattress"] = "Colchón",
+            ["Dining table"] = "Mesa de comedor",
+            ["Appliances"] = "Electrodomésticos",
+            ["Boxes"] = "Cajas",
+            ["Office desk"] = "Escritorio",
+            ["Stairs"] = "Escaleras",
+            ["Elevator"] = "Elevador",
+            ["Long walk"] = "Camino largo",
+            ["Tight hallway"] = "Pasillo estrecho",
+            ["Parking issue"] = "Problema de estacionamiento",
+            ["{0} – {1} hours"] = "{0} – {1} horas",
+
+            // Packing
+            ["Packing Help"] = "Ayuda con empaque",
+            ["Get help packing before your move."] = "Obtén ayuda para empacar antes de tu mudanza.",
+            ["Partial packing"] = "Empaque parcial",
+            ["Full packing"] = "Empaque completo",
+            ["Fragile items only"] = "Solo artículos frágiles",
+            ["Best timing"] = "Mejor momento",
+            ["Upload inventory"] = "Subir inventario",
+            ["Before move day"] = "Antes del día de mudanza",
+            ["Packing supplies included"] = "Materiales de empaque incluidos",
+            ["Labeling & organization"] = "Etiquetado y organización",
+            ["Fragile item care"] = "Cuidado de artículos frágiles",
+
+            // Cleaning (move-out/in)
+            ["Move-Out Cleaning"] = "Limpieza de salida",
+            ["Move-In Cleaning"] = "Limpieza de entrada",
+            ["Deep clean for your new or old home."] = "Limpieza profunda para tu hogar nuevo o anterior.",
+            ["Kitchen & bathrooms"] = "Cocina y baños",
+            ["Floors & surfaces"] = "Pisos y superficies",
+            ["Inside cabinets (optional)"] = "Interior de gabinetes (opcional)",
+            ["Appliance wipe-down"] = "Limpieza de electrodomésticos",
+
+            // Furniture assembly
+            ["Furniture Assembly"] = "Ensamblaje de muebles",
+            ["Professional assembly for beds, desks, and more."] = "Ensamblaje profesional de camas, escritorios y más.",
+            ["What needs assembly?"] = "¿Qué necesita ensamblaje?",
+            ["Assembly preferences"] = "Preferencias de ensamblaje",
+            ["Number of items"] = "Cantidad de artículos",
+            ["Assembly location"] = "Lugar de ensamblaje",
+            ["Bed frame"] = "Marco de cama",
+            ["Desk"] = "Escritorio",
+            ["Bookshelf"] = "Estantería",
+            ["TV stand"] = "Mueble para TV",
+            ["Outdoor furniture"] = "Muebles de exterior",
+
+            // TV wall mounting
+            ["TV Wall Mounting"] = "Montaje de TV en pared",
+            ["Secure professional TV mounting."] = "Montaje profesional y seguro de TV.",
+            ["TV size"] = "Tamaño de TV",
+            ["Wall type"] = "Tipo de pared",
+            ["Mount type"] = "Tipo de soporte",
+            ["Cable concealment"] = "Ocultamiento de cables",
+
+            // Utilities setup
+            ["Utilities Setup"] = "Configuración de servicios",
+            ["Set up electricity, water, internet, and more."] = "Configura electricidad, agua, internet y más.",
+            ["Service address"] = "Dirección del servicio",
+            ["Move-in date"] = "Fecha de entrada",
+            ["Utilities needed"] = "Servicios necesarios",
+            ["Electricity"] = "Electricidad",
+            ["Water"] = "Agua",
+            ["Gas"] = "Gas",
+            ["Internet"] = "Internet",
+            ["Trash service"] = "Servicio de basura",
+
+            // General help
+            ["General Help"] = "Ayuda general",
+            ["Describe what you need help with during your move."] = "Describe con qué necesitas ayuda durante tu mudanza.",
+            ["What do you need help with?"] = "¿Con qué necesitas ayuda?",
+            ["Describe your request"] = "Describe tu solicitud",
+            ["When do you need help?"] = "¿Cuándo necesitas ayuda?",
+            ["Preferred contact method"] = "Método de contacto preferido",
+        };
+}

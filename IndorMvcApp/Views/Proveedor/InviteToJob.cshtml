@@ -4,7 +4,7 @@
     Layout = "_ProviderProLayout";
     ViewData["ProviderProExtraCss"] = "provider-requests.css";
     ViewBag.NavActive = "jobs";
-    var timings = new[] { ("Urgent", "Urgent", "fa-bolt"), ("ThisWeek", "This Week", "fa-calendar-day"), ("Flexible", "Flexible", "fa-clock") };
+    var timings = new[] { ("Urgent", L["Urgent"], "fa-bolt"), ("ThisWeek", L["This Week"], "fa-calendar-day"), ("Flexible", L["Flexible"], "fa-clock") };
 }
 
 <div class="prv-req-shell">
@@ -48,7 +48,7 @@
 
             <div class="prv-inv-row">
                 <div class="prv-inv-row-head"><i class="fas fa-screwdriver-wrench"></i> <span>@L["Service Category"]</span></div>
-                <div class="prv-inv-value">@(Model.ServiceCategory ?? "General")</div>
+                <div class="prv-inv-value">@(Model.ServiceCategory ?? L["General"])</div>
             </div>
 
             <div class="prv-inv-row prv-inv-row--stack">
@@ -60,10 +60,10 @@
                 <div class="prv-inv-row-head"><i class="fas fa-calendar"></i> <span>@L["Schedule"]</span></div>
                 <div class="prv-inv-schedule">
                     <label class="prv-inv-seg @(Model.ScheduleToday ? "is-active" : "")">
-                        <input type="radio" name="ScheduleToday" value="true" @(Model.ScheduleToday ? "checked" : "") /> Today
+                        <input type="radio" name="ScheduleToday" value="true" @(Model.ScheduleToday ? "checked" : "") /> @L["Today"]
                     </label>
                     <label class="prv-inv-seg @(!Model.ScheduleToday ? "is-active" : "")">
-                        <input type="radio" name="ScheduleToday" value="false" @(!Model.ScheduleToday ? "checked" : "") /> Select Date
+                        <input type="radio" name="ScheduleToday" value="false" @(!Model.ScheduleToday ? "checked" : "") /> @L["Select Date"]
                     </label>
                     <input type="date" name="ScheduleDate" value="@Model.ScheduleDate" class="prv-inv-date" />
                 </div>

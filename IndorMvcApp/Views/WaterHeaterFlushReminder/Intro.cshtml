@@ -71,7 +71,7 @@
             <span>Sediment can build up inside the tank, making the unit work harder and increasing wear over time.</span>
         </div>
 
-        <a asp-action="Setup" asp-route-id="@Model.PropiedadId" class="hvac-save-btn" style="text-decoration:none;text-align:center;">Continue</a>
+        <a asp-action="Setup" asp-route-id="@Model.PropiedadId" class="hvac-save-btn" style="text-decoration:none;text-align:center;">@L["Continue"]</a>
     </div>
 
     @await Html.PartialAsync("_AppBottomNav", "home")

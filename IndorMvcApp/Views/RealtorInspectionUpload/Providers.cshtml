@@ -20,7 +20,7 @@
 
         <a asp-action="Providers" asp-route-trade="@(chip == "All" ? null : chip)"
 
-           class="rl-filter-chip @(Model.ActiveTradeFilter == chip ? "is-active" : null)">@(chip == "All" ? "All trades" : chip)</a>
+           class="rl-filter-chip @(Model.ActiveTradeFilter == chip ? "is-active" : null)">@(chip == "All" ? L["All trades"] : chip)</a>
 
     }
 

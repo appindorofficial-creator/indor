@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.MovingSetupSectionViewModel
 @{
-    ViewData["Title"] = Model.Titulo;
-    ViewData["WizardTitle"] = Model.Titulo;
+    ViewData["Title"] = L.Catalog(Model.Titulo);
+    ViewData["WizardTitle"] = L.Catalog(Model.Titulo);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home", new { fragment = "section-services" });
 
 }
@@ -10,7 +10,7 @@
 <div class="ms-page">
 @if (!string.IsNullOrWhiteSpace(Model.Subtitulo))
     {
-        <p class="ms-sub">@Model.Subtitulo</p>
+        <p class="ms-sub">@L.Catalog(Model.Subtitulo)</p>
     }
 
     <div class="moving-setup-section">
@@ -21,7 +21,7 @@
                 <a href="@href" class="moving-setup-grid-item">
                     <span class="moving-setup-grid-order">@item.Orden</span>
                     <span class="moving-setup-grid-icon"><i class="fas @(string.IsNullOrWhiteSpace(item.IconoClase) ? "fa-cube" : item.IconoClase)"></i></span>
-                    <span class="moving-setup-grid-label">@item.Nombre</span>
+                    <span class="moving-setup-grid-label">@L.Catalog(item.Nombre)</span>
                 </a>
             }
         </div>
@@ -38,15 +38,15 @@
                 }
             </div>
             <div class="moving-setup-featured-body">
-                <span class="moving-setup-featured-badge">@Model.FeaturedEtiqueta</span>
-                <div class="moving-setup-featured-title">@Model.FeaturedTitulo</div>
-                <div class="moving-setup-featured-desc">@Model.FeaturedDescripcion</div>
+                <span class="moving-setup-featured-badge">@L.Catalog(Model.FeaturedEtiqueta)</span>
+                <div class="moving-setup-featured-title">@L.Catalog(Model.FeaturedTitulo)</div>
+                <div class="moving-setup-featured-desc">@L.Catalog(Model.FeaturedDescripcion)</div>
                 @if (Model.FeaturedCaracteristicas.Count > 0)
                 {
                     <div class="moving-setup-featured-tags">
                         @foreach (var feature in Model.FeaturedCaracteristicas)
                         {
-                            <span class="moving-setup-tag"><i class="fas @feature.Icon"></i> @feature.Text</span>
+                            <span class="moving-setup-tag"><i class="fas @feature.Icon"></i> @L.Catalog(feature.Text)</span>
                         }
                     </div>
                 }
@@ -56,20 +56,20 @@
         @if (!string.IsNullOrWhiteSpace(Model.FeaturedCtaUrl))
         {
             <a href="@Model.FeaturedCtaUrl" class="moving-setup-cta">
-                <i class="fas fa-paper-plane"></i> @Model.FeaturedCtaTexto
+                <i class="fas fa-paper-plane"></i> @L.Catalog(Model.FeaturedCtaTexto)
             </a>
         }
 
         @if (Model.EnlacesRapidos.Count > 0)
         {
-            <div class="ms-quick-heading">Quick links</div>
+            <div class="ms-quick-heading">@L["Quick links"]</div>
             <div class="moving-setup-quick-links">
                 @foreach (var link in Model.EnlacesRapidos)
                 {
                     var href = !string.IsNullOrWhiteSpace(link.Url) ? link.Url : "#";
                     <a href="@href" class="moving-setup-quick-link">
                         <i class="fas @(string.IsNullOrWhiteSpace(link.IconoClase) ? "fa-link" : link.IconoClase)"></i>
-                        <span>@link.Nombre</span>
+                        <span>@L.Catalog(link.Nombre)</span>
                     </a>
                 }
             </div>

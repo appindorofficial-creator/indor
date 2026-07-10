@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.RealtorFilesViewModel
+@using IndorMvcApp.Helpers
 @{
     ViewData["Title"] = L["Property Files"];
     Layout = "_RealtorLayout";
@@ -20,7 +21,7 @@
                class="rl-btn-primary rl-btn-primary--sm rl-page-hero-btn"
                id="rlFilesAddBtn"
                aria-label="@L["Create new property file"]">
-                <i class="fas fa-plus" aria-hidden="true"></i> New File
+                <i class="fas fa-plus" aria-hidden="true"></i> @L["New File"]
             </a>
         </div>
 
@@ -37,7 +38,7 @@
                     {
                         <a asp-action="Files" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
                            class="rl-filter-menu-item @(Model.ActiveFilter == chip ? "is-active" : null)" role="menuitem">
-                            <span>@chip</span>
+                            <span>@RealtorDisplayLocalization.FileFilterLabel(L, chip)</span>
                             @if (Model.ActiveFilter == chip)
                             {
                                 <i class="fas fa-check"></i>
@@ -51,7 +52,7 @@
             @foreach (var chip in Model.Filters)
             {
                 <a asp-action="Files" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
-                   class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@chip</a>
+                   class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@RealtorDisplayLocalization.FileFilterLabel(L, chip)</a>
             }
         </div>
     </form>
@@ -84,18 +85,18 @@
             }
             else if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
             {
-                <div class="rl-dash-empty">No files match &ldquo;@Model.SearchQuery&rdquo;.</div>
+                <div class="rl-dash-empty">@L.T("No files match \"{0}\".", Model.SearchQuery)</div>
             }
             else
             {
                 var emptyMessage = Model.ActiveFilter switch
                 {
-                    "Active" => "No active files right now. Files in progress will show up here.",
-                    "Inspection" => "No files in the inspection stage yet.",
-                    "Quotes" => "No files with quotes in progress.",
-                    "Shared" => "No shared packages yet. Share a file to see it here.",
-                    "Closed" => "No closed files yet.",
-                    _ => "No files match your filters."
+                    "Active" => L["No active files right now. Files in progress will show up here."],
+                    "Inspection" => L["No files in the inspection stage yet."],
+                    "Quotes" => L["No files with quotes in progress."],
+                    "Shared" => L["No shared packages yet. Share a file to see it here."],
+                    "Closed" => L["No closed files yet."],
+                    _ => L["No files match your filters."]
                 };
                 <div class="rl-dash-empty">@emptyMessage</div>
             }
@@ -120,20 +121,20 @@
                                 <a href="@file.ActionUrl" class="rl-card-menu-item" role="menuitem"><i class="fas fa-folder-open"></i> @L["Open file"]</a>
                                 <button type="button" class="rl-card-menu-item" data-copy="@file.FileCode" role="menuitem"><i class="fas fa-copy"></i> @L["Copy File ID"]</button>
                             </div>
-                            <span class="rl-status-pill rl-status-pill--@file.StatusCss">@file.StatusBadge</span>
+                            <span class="rl-status-pill rl-status-pill--@file.StatusCss">@UiDisplayLocalization.Localize(L, file.StatusBadge)</span>
                         </div>
                         @if (!string.IsNullOrWhiteSpace(file.ClientName))
                         {
                             <span class="rl-premium-client"><i class="fas fa-user"></i> @file.ClientName</span>
                         }
-                        <span class="rl-file-code">File ID: @file.FileCode</span>
+                        <span class="rl-file-code">@L.T("File ID: {0}", file.FileCode)</span>
                         @if (!string.IsNullOrWhiteSpace(file.DetailNote))
                         {
-                            <span class="rl-premium-muted">@file.DetailNote</span>
+                            <span class="rl-premium-muted">@UiDisplayLocalization.Localize(L, file.DetailNote)</span>
                         }
-                        <span class="rl-file-updated">@file.UpdatedLabel</span>
+                        <span class="rl-file-updated">@UiDisplayLocalization.Localize(L, file.UpdatedLabel)</span>
                     </div>
-                    <a href="@file.ActionUrl" class="rl-btn-outline rl-btn-outline--sm">@file.ActionLabel</a>
+                    <a href="@file.ActionUrl" class="rl-btn-outline rl-btn-outline--sm">@UiDisplayLocalization.Localize(L, file.ActionLabel)</a>
                 </article>
             }
         }
@@ -150,7 +151,7 @@
                 {
                     <div class="rl-insight-chip rl-insight-chip--@insight.ColorClass">
                         <span class="rl-insight-icon rl-insight-icon--@insight.ColorClass"><i class="fas @insight.Icon"></i></span>
-                        <span>@insight.Text</span>
+                        <span>@UiDisplayLocalization.Localize(L, insight.Text)</span>
                         <i class="fas fa-chevron-right"></i>
                     </div>
                 }
@@ -158,7 +159,8 @@
         </section>
     }
 
-    <div class="rl-toast" id="rlFilesToast" role="status" aria-live="polite" hidden></div>
+    <div class="rl-toast" id="rlFilesToast" role="status" aria-live="polite" hidden
+         data-copy-template="@L.T("File ID copied: {0}", "{0}")"></div>
 </div>
 
 @section Scripts {
@@ -221,9 +223,9 @@
                 var value = item.getAttribute('data-copy') || '';
                 try {
                     await navigator.clipboard.writeText(value);
-                    showToast('File ID copied: ' + value);
+                    showToast((toast.getAttribute('data-copy-template') || 'File ID copied: {0}').replace('{0}', value));
                 } catch (_) {
-                    window.prompt('Copy File ID:', value);
+                    window.prompt('@L["Copy File ID"]:', value);
                 }
                 closeAllMenus(null);
             });

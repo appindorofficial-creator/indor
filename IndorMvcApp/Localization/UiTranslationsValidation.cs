@@ -1,0 +1,40 @@
+namespace IndorMvcApp.Localization;
+
+/// <summary>DataAnnotations and manual validation error messages (English keys).</summary>
+public static class UiTranslationsValidation
+{
+    public static IEnumerable<KeyValuePair<string, string>> Entries =>
+        new Dictionary<string, string>(StringComparer.Ordinal)
+        {
+            ["Full name is required."] = "El nombre completo es obligatorio.",
+            ["Full name must be at least 2 characters."] = "El nombre completo debe tener al menos 2 caracteres.",
+            ["Enter a valid full name using letters (e.g. John Smith)."] = "Ingresa un nombre válido con letras (ej. Juan Pérez).",
+            ["Full name cannot contain only numbers."] = "El nombre completo no puede contener solo números.",
+            ["Enter the client's first and last name."] = "Ingresa el nombre y apellido del cliente.",
+            ["Email address is required."] = "El correo electrónico es obligatorio.",
+            ["Enter a valid email address."] = "Ingresa un correo electrónico válido.",
+            ["Enter a valid email address with a complete domain (e.g. name@email.com)."] = "Ingresa un correo válido con un dominio completo (ej. nombre@correo.com).",
+            ["Phone number is required."] = "El número de teléfono es obligatorio.",
+            ["Enter a valid 10-digit US phone number (e.g. 555 123 4567)."] = "Ingresa un número válido de 10 dígitos (EE. UU.) (ej. 555 123 4567).",
+            ["Please select a client role."] = "Selecciona un rol de cliente.",
+            ["Property address is required."] = "La dirección de la propiedad es obligatoria.",
+            ["City is required."] = "La ciudad es obligatoria.",
+            ["State is required."] = "El estado es obligatorio.",
+            ["ZIP code is required."] = "El código postal es obligatorio.",
+            ["Enter a valid 5-digit ZIP code (e.g. 77002)."] = "Ingresa un código postal válido de 5 dígitos (ej. 77002).",
+            ["Enter a complete street address."] = "Ingresa una dirección completa.",
+            ["Enter a valid street address with a street name."] = "Ingresa una dirección válida con nombre de calle.",
+            ["Address cannot contain only numbers."] = "La dirección no puede contener solo números.",
+            ["Enter a complete street address (e.g. 123 Main St, Charlotte, NC)."] = "Ingresa una dirección completa (ej. 123 Main St, Charlotte, NC).",
+            ["Enter a street number (e.g. 123 Main St)."] = "Ingresa un número de calle (ej. 123 Main St).",
+            ["Please enter a valid street address."] = "Ingresa una dirección válida.",
+            ["License number is required."] = "El número de licencia es obligatorio.",
+            ["License number can only contain letters and numbers (no spaces or symbols)."] = "El número de licencia solo puede contener letras y números (sin espacios ni símbolos).",
+            ["License number must include at least one letter (cannot be only numbers)."] = "El número de licencia debe incluir al menos una letra (no puede ser solo números).",
+            ["Select at least one language."] = "Selecciona al menos un idioma.",
+            ["Only English and Spanish are supported."] = "Solo se admiten inglés y español.",
+            ["Use only letters, numbers, and hyphens."] = "Usa solo letras, números y guiones.",
+            ["Serial number must include at least one letter and one number."] = "El número de serie debe incluir al menos una letra y un número.",
+            ["Brokerage Name is required."] = "El nombre de la correduría es obligatorio.",
+        };
+}

@@ -84,7 +84,7 @@
             <label class="rl-file-type-option @(selected ? "is-selected" : "")">
                 <input type="radio" name="filePhase" value="@opt.Value" @(selected ? "checked" : null) />
                 <i class="fas @opt.Icon"></i>
-                <span>@opt.Label</span>
+                <span>@L[opt.Label]</span>
             </label>
         }
     </div>
@@ -93,7 +93,7 @@
     <div class="rl-include-grid">
         @foreach (var cat in IndorMvcApp.Models.RealtorPropertyFileCategoryTypes.All)
         {
-            <div class="rl-include-item"><i class="fas @cat.Icon"></i><span>@cat.Label</span></div>
+            <div class="rl-include-item"><i class="fas @cat.Icon"></i><span>@L[cat.Label]</span></div>
         }
     </div>
 

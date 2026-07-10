@@ -1,7 +1,7 @@
-@model IndorMvcApp.ViewModels.CrawlspaceCheckServiceViewModel
+﻿@model IndorMvcApp.ViewModels.CrawlspaceCheckServiceViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 4;
@@ -12,21 +12,21 @@
 @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
     {
         <div class="hero-wrap">
-            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@Model.LandingTitulo" class="hero-img" />
+            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@L.Catalog(Model.LandingTitulo)" class="hero-img" />
             <span class="hvac-hero-icon"><i class="fas fa-warehouse"></i></span>
         </div>
     }
 
     <div class="title-row">
         <div class="left">
-            <h1 class="page-heading" style="margin-bottom:4px;font-size:1.2rem;">@Model.LandingTitulo</h1>
+            <h1 class="page-heading" style="margin-bottom:4px;font-size:1.2rem;">@L.Catalog(Model.LandingTitulo)</h1>
             @if (!string.IsNullOrWhiteSpace(Model.LandingTagline))
             {
-                <div class="tagline">@Model.LandingTagline</div>
+                <div class="tagline">@L.Catalog(Model.LandingTagline)</div>
             }
         </div>
     </div>
-    <p class="page-lead">@Model.LandingSubtitulo</p>
+    <p class="page-lead">@L.Catalog(Model.LandingSubtitulo)</p>
 
     @if (Model.CheckItems.Count > 0)
     {
@@ -39,7 +39,7 @@
                     <button type="button" class="csc-check-item" data-check="@item.Value" aria-pressed="false">
                         <span class="check"><i class="fas fa-check" aria-hidden="true"></i></span>
                         <i class="fas @item.Icon main" aria-hidden="true"></i>
-                        <span class="label">@item.Text</span>
+                        <span class="label">@L.Catalog(item.Text)</span>
                     </button>
                 }
             </div>
@@ -66,7 +66,7 @@
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="CheckAreasSeleccionadas" id="CheckAreasSeleccionadas" />
         <button type="submit" name="action" value="continue" class="btn-primary">
-            @Model.CtaTexto <i class="fas fa-chevron-right"></i>
+            @L.Catalog(Model.CtaTexto) <i class="fas fa-chevron-right"></i>
         </button>
     </form>
 </div>

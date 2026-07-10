@@ -43,7 +43,7 @@
                 <div class="rl-home-badge-row">
                     <span class="rl-dash-badge @(Model.IsVerified ? "is-verified" : null)">
                         <i class="fas @(Model.IsVerified ? "fa-circle-check" : "fa-star")"></i>
-                        @Model.BadgeLabel
+                        @L[Model.BadgeLabel]
                     </span>
                     @if (!Model.IsVerified)
                     {
@@ -58,7 +58,7 @@
                 <div class="rl-profile-stat">
                     <span class="rl-stat-icon rl-stat-icon--@stat.ColorClass"><i class="fas @stat.Icon"></i></span>
                     <strong>@stat.Count</strong>
-                    <span>@stat.Label</span>
+                    <span>@L[stat.Label]</span>
                 </div>
             }
         </div>

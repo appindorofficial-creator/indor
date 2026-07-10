@@ -4,7 +4,7 @@
 
     Layout = "_RealtorLayout";
 
-    ViewData["Title"] = L["Urgente Quote Sent"];
+    ViewData["Title"] = L["Urgent Quote Sent"];
 
     ViewBag.NavActive = "quotes";
 
@@ -26,9 +26,11 @@
 
         </div>
 
-        <h1>@L["Urgente Quote Sent"]</h1>
+        <h1>@L["Urgent Quote Sent"]</h1>
 
-        <p>Your urgent request was sent to @Model.ProviderCount provider@(Model.ProviderCount == 1 ? "" : "s").</p>
+        <p>@(Model.ProviderCount == 1
+            ? L.T("Your urgent request was sent to {0} provider.", Model.ProviderCount)
+            : L.T("Your urgent request was sent to {0} providers.", Model.ProviderCount))</p>
 
     </section>
 
@@ -61,4 +63,3 @@
     <a asp-controller="Realtor" asp-action="Dashboard" class="rl-later-link">@L["Done"]</a>
 
 </div>
-

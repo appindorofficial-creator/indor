@@ -38,39 +38,14 @@ public class RealtorInspectionAnalyzeViewModel : RealtorInspectionUploadStepView
     public int ReportPageCount { get; set; }
     public string UploadedLabel { get; set; } = "";
     public string UploadMethod { get; set; } = "Pdf";
+    public string ReportCountLabel { get; set; } = "";
     public int AnalysisProgress { get; set; }
     public string AnalysisStatus { get; set; } = "";
     public string? AnalysisSummary { get; set; }
+    public string AnalysisIntroMessage { get; set; } = "";
+    public string AnalysisRunningMessage { get; set; } = "";
     public List<RealtorInspectionAnalyzeTaskViewModel> Tasks { get; set; } = [];
     public List<RealtorInspectionCategoryChipViewModel> DetectedCategories { get; set; } = [];
-
-    public string AnalysisIntroMessage => UploadMethod switch
-    {
-        "Scan" => "OpenAI is analyzing your scanned inspection pages. Keep this screen open while we extract findings from your camera capture.",
-        "Photos" => "OpenAI is analyzing your inspection photos. Keep this screen open while we extract findings from the images you uploaded.",
-        _ => "OpenAI is analyzing your real inspection report. Large PDFs (like 74 pages) are processed in sections and may take several minutes — keep this screen open."
-    };
-
-    public string AnalysisRunningMessage => UploadMethod switch
-    {
-        "Scan" => "OpenAI is reading your scanned pages and extracting repair issues by trade and urgency…",
-        "Photos" => "OpenAI is reading your report photos and extracting repair issues by trade and urgency…",
-        _ => "OpenAI is reading your PDF and extracting repair issues by trade and urgency…"
-    };
-
-    public string ReportCountLabel
-    {
-        get
-        {
-            var count = ReportPageCount > 0 ? ReportPageCount : 1;
-            return UploadMethod switch
-            {
-                "Scan" => count == 1 ? "1 scanned page" : $"{count} scanned pages",
-                "Photos" => count == 1 ? "1 photo" : $"{count} photos",
-                _ => count == 1 ? "1 page" : $"{count} pages"
-            };
-        }
-    }
 }
 
 public class RealtorInspectionAnalyzeTaskViewModel

@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
@@ -12,7 +13,8 @@ public class RealtorInspectionUploadWizardService(
     IRealtorRegistrationService registration,
     IWebHostEnvironment env,
     IRealtorProviderBridgeService providerBridge,
-    IServiceScopeFactory scopeFactory) : IRealtorInspectionUploadWizardService
+    IServiceScopeFactory scopeFactory,
+    IIndorLocalizer localizer) : IRealtorInspectionUploadWizardService
 {
     private const string DraftIdSessionKey = "RealtorInspectionUploadDraftId";
     private static readonly ConcurrentDictionary<int, byte> ActiveAnalyses = new();
@@ -385,20 +387,27 @@ public class RealtorInspectionUploadWizardService(
         var findingCount = await db.IndorRealtorInspectionUploadFindings
             .CountAsync(f => f.DraftId == draft.Id, cancellationToken);
 
+        var uploadMethod = string.IsNullOrWhiteSpace(draft.UploadMethod) ? "Pdf" : draft.UploadMethod;
+        var pageCount = draft.ReportPageCount > 0 ? draft.ReportPageCount : 1;
+        var culture = CultureInfo.CurrentCulture;
+
         return new RealtorInspectionAnalyzeViewModel
         {
             DisplayStep = 2,
-            Title = "AI Analysis",
-            Subtitle = "INDOR AI scans the inspection report to find, organize, and prioritize findings automatically.",
+            Title = localizer.T("AI Analysis"),
+            Subtitle = localizer.T("INDOR AI scans the inspection report to find, organize, and prioritize findings automatically."),
             PropertyDisplay = FormatDisplayAddress(draft.Address ?? "", draft.CityRegion),
-            ReportFileName = draft.ReportFileName ?? "Home Inspection Report",
-            ReportPageCount = draft.ReportPageCount > 0 ? draft.ReportPageCount : 1,
-            UploadedLabel = $"Uploaded {draft.FechaCreacion.ToLocalTime():MMM d, yyyy}",
-            UploadMethod = string.IsNullOrWhiteSpace(draft.UploadMethod) ? "Pdf" : draft.UploadMethod,
+            ReportFileName = draft.ReportFileName ?? localizer.T("Home Inspection Report"),
+            ReportPageCount = pageCount,
+            UploadMethod = uploadMethod,
+            UploadedLabel = localizer.T("Uploaded {0}", draft.FechaCreacion.ToLocalTime().ToString("d", culture)),
+            ReportCountLabel = FormatReportCountLabel(pageCount, uploadMethod),
             AnalysisProgress = progress,
             AnalysisStatus = status,
             AnalysisSummary = draft.AnalysisSummary,
-            Tasks = BuildAnalysisTasks(progress, status, draft.ReportPageCount, findingCount, draft.UploadMethod),
+            AnalysisIntroMessage = FormatAnalysisIntroMessage(uploadMethod),
+            AnalysisRunningMessage = FormatAnalysisRunningMessage(uploadMethod),
+            Tasks = BuildAnalysisTasks(progress, status, pageCount, findingCount, uploadMethod),
             DetectedCategories = await BuildDetectedCategoriesAsync(progress, draft.Id, cancellationToken)
         };
     }
@@ -1250,48 +1259,99 @@ public class RealtorInspectionUploadWizardService(
         };
     }
 
-    private static List<RealtorInspectionAnalyzeTaskViewModel> BuildAnalysisTasks(
+    private List<RealtorInspectionAnalyzeTaskViewModel> BuildAnalysisTasks(
         int progress, string status, int pageCount, int findingCount, string? uploadMethod)
     {
         var pages = pageCount > 0 ? pageCount : 1;
         var pagesRead = progress >= 20 ? pages : Math.Max(1, (int)(pages * progress / 20.0));
         var method = string.IsNullOrWhiteSpace(uploadMethod) ? "Pdf" : uploadMethod;
-        var (readLabel, unit) = method switch
+        var readLabel = method switch
         {
-            "Scan" => ("Reading scanned pages", pages == 1 ? "page" : "pages"),
-            "Photos" => ("Reading report photos", pages == 1 ? "photo" : "photos"),
-            _ => ("Reading report pages", pages == 1 ? "page" : "pages")
+            "Scan" => localizer.T("Reading scanned pages"),
+            "Photos" => localizer.T("Reading report photos"),
+            _ => localizer.T("Reading report pages")
+        };
+        var unitDetail = method switch
+        {
+            "Scan" => pages == 1
+                ? localizer.T("{0} / {1} page", pagesRead, pages)
+                : localizer.T("{0} / {1} pages", pagesRead, pages),
+            "Photos" => pages == 1
+                ? localizer.T("{0} / {1} photo", pagesRead, pages)
+                : localizer.T("{0} / {1} photos", pagesRead, pages),
+            _ => pages == 1
+                ? localizer.T("{0} / {1} page", pagesRead, pages)
+                : localizer.T("{0} / {1} pages", pagesRead, pages)
         };
         return
         [
             new()
             {
                 Label = readLabel,
-                Detail = $"{pagesRead} / {pages} {unit}",
+                Detail = unitDetail,
                 Status = progress >= 20 ? "Done" : progress >= 8 ? "InProgress" : "Pending"
             },
             new()
             {
-                Label = "Extracting repair findings",
-                Detail = findingCount > 0 ? $"{findingCount} findings" : "Analyzing with OpenAI",
+                Label = localizer.T("Extracting repair findings"),
+                Detail = findingCount > 0
+                    ? (findingCount == 1
+                        ? localizer.T("{0} finding", findingCount)
+                        : localizer.T("{0} findings", findingCount))
+                    : localizer.T("Analyzing with OpenAI"),
                 Status = progress >= 50 ? "Done" : progress >= 20 ? "InProgress" : "Pending"
             },
             new()
             {
-                Label = "Classifying by trade",
+                Label = localizer.T("Classifying by trade"),
                 Detail = status == RealtorInspectionAnalysisStatuses.Complete
-                    ? "Trades assigned from AI"
-                    : progress >= 30 ? "OpenAI classifying trades" : "Waiting for AI",
+                    ? localizer.T("Trades assigned from AI")
+                    : progress >= 30
+                        ? localizer.T("OpenAI classifying trades")
+                        : localizer.T("Waiting for AI"),
                 Status = progress >= 75 ? "Done" : progress >= 30 ? "InProgress" : "Pending"
             },
             new()
             {
-                Label = "Scoring urgency",
-                Detail = status == RealtorInspectionAnalysisStatuses.Complete ? "Complete" : "In progress",
+                Label = localizer.T("Scoring urgency"),
+                Detail = status == RealtorInspectionAnalysisStatuses.Complete
+                    ? localizer.T("Complete")
+                    : localizer.T("In progress"),
                 Status = status == RealtorInspectionAnalysisStatuses.Complete ? "Done" : progress >= 75 ? "InProgress" : "Pending"
             }
         ];
     }
+
+    private string FormatReportCountLabel(int pageCount, string uploadMethod)
+    {
+        var count = pageCount > 0 ? pageCount : 1;
+        return uploadMethod switch
+        {
+            "Scan" => count == 1
+                ? localizer.T("1 scanned page")
+                : localizer.T("{0} scanned pages", count),
+            "Photos" => count == 1
+                ? localizer.T("1 photo")
+                : localizer.T("{0} photos", count),
+            _ => count == 1
+                ? localizer.T("1 page")
+                : localizer.T("{0} pages", count)
+        };
+    }
+
+    private string FormatAnalysisIntroMessage(string uploadMethod) => uploadMethod switch
+    {
+        "Scan" => localizer.T("OpenAI is analyzing your scanned inspection pages. Keep this screen open while we extract findings from your camera capture."),
+        "Photos" => localizer.T("OpenAI is analyzing your inspection photos. Keep this screen open while we extract findings from the images you uploaded."),
+        _ => localizer.T("OpenAI is analyzing your real inspection report. Large PDFs (like 74 pages) are processed in sections and may take several minutes — keep this screen open.")
+    };
+
+    private string FormatAnalysisRunningMessage(string uploadMethod) => uploadMethod switch
+    {
+        "Scan" => localizer.T("OpenAI is reading your scanned pages and extracting repair issues by trade and urgency…"),
+        "Photos" => localizer.T("OpenAI is reading your report photos and extracting repair issues by trade and urgency…"),
+        _ => localizer.T("OpenAI is reading your PDF and extracting repair issues by trade and urgency…")
+    };
 
     private async Task<List<RealtorInspectionCategoryChipViewModel>> BuildDetectedCategoriesAsync(
         int progress, int draftId, CancellationToken cancellationToken)

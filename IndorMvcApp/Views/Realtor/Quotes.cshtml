@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.RealtorQuotesViewModel
+@using IndorMvcApp.Helpers
 @{
     ViewData["Title"] = L["Quotes"];
     Layout = "_RealtorLayout";
@@ -20,7 +21,7 @@
                class="rl-btn-primary rl-btn-primary--sm rl-page-hero-btn"
                id="rlQuotesAddBtn"
                aria-label="@L["Request a new quote"]">
-                <i class="fas fa-plus" aria-hidden="true"></i> Request Quote
+                <i class="fas fa-plus" aria-hidden="true"></i> @L["Request Quote"]
             </a>
         </div>
 
@@ -37,7 +38,7 @@
                         {
                             <a asp-action="Quotes" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
                                class="rl-filter-menu-item @(Model.ActiveFilter == chip ? "is-active" : null)" role="menuitem">
-                                <span>@chip</span>
+                                <span>@RealtorDisplayLocalization.Localize(L, chip)</span>
                                 @if (Model.ActiveFilter == chip)
                                 {
                                     <i class="fas fa-check"></i>
@@ -51,7 +52,7 @@
                 @foreach (var chip in Model.Filters)
                 {
                     <a asp-action="Quotes" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
-                       class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@chip</a>
+                       class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@RealtorDisplayLocalization.Localize(L, chip)</a>
                 }
             </div>
         </form>

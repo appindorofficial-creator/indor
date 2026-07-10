@@ -141,12 +141,7 @@ public partial class ProviderProDataService(
 
         var upcomingCalendar = calendarDays.Select(d => new ProviderProCalendarDayViewModel
         {
-            DayLabel = d.Offset switch
-            {
-                0 => "Today",
-                1 => $"Tomorrow, {d.Day:MMM d}",
-                _ => $"{d.Day:dddd, MMM d}"
-            },
+            DayLabel = ProviderProDisplayLocalization.DayLabel(d.Offset, d.Day),
             DateIso = d.Day.ToString("yyyy-MM-dd"),
             JobCount = calendarCounts.FirstOrDefault(c => c.Day == d.Day)?.Count ?? 0
         }).ToList();
@@ -535,7 +530,7 @@ public partial class ProviderProDataService(
             UrgencyIcon = urgencyIcon,
             IsHighUrgency = isHigh,
             DistanceLabel = lead.DistanceMiles.HasValue ? $"{lead.DistanceMiles:0.#} miles away" : null,
-            StatusLabel = lead.Status == ProviderLeadStatuses.Accepted ? "Accepted" : "New",
+            StatusLabel = lead.Status == ProviderLeadStatuses.Accepted ? ProviderProDisplayLocalization.L("Accepted") : ProviderProDisplayLocalization.L("New"),
             StatusClass = lead.Status == ProviderLeadStatuses.Accepted ? "accepted" : "new",
             ImageUrl = string.IsNullOrWhiteSpace(lead.ImageUrl) ? "/welcome-house.png" : lead.ImageUrl,
             CanAccept = lead.Status == ProviderLeadStatuses.New,
@@ -590,7 +585,7 @@ public partial class ProviderProDataService(
             Address = lead.Address,
             CustomerName = lead.CustomerName ?? "",
             TimeLabel = FormatTimeLabel(lead.FechaCreacion),
-            StatusLabel = "Lead",
+            StatusLabel = ProviderProDisplayLocalization.L("Lead"),
             StatusClass = "lead",
             SecondaryBadge = isUrgent ? lead.Urgency : null,
             SecondaryBadgeClass = "urgency",
@@ -724,7 +719,7 @@ public partial class ProviderProDataService(
             DistanceLabel = lead.DistanceMiles.HasValue ? $"{lead.DistanceMiles:0.#} miles away" : null,
             TimelineNote = lead.TimelineNote,
             ImageUrl = string.IsNullOrWhiteSpace(lead.ImageUrl) ? "/welcome-house.png" : lead.ImageUrl,
-            CustomerName = lead.CustomerName ?? "Homeowner",
+            CustomerName = lead.CustomerName ?? ProviderProDisplayLocalization.L("Homeowner"),
             CustomerInitials = BuildInitials(lead.CustomerName ?? "Homeowner"),
             IsHomeownerVerified = lead.IsHomeownerVerified,
             CustomerPhone = lead.CustomerPhone,
@@ -974,7 +969,7 @@ public partial class ProviderProDataService(
             DistanceLabel = lead.DistanceMiles.HasValue ? $"{lead.DistanceMiles:0.#} miles away" : null,
             TimelineNote = lead.TimelineNote,
             ImageUrl = string.IsNullOrWhiteSpace(lead.ImageUrl) ? "/welcome-house.png" : lead.ImageUrl,
-            CustomerName = lead.CustomerName ?? "Homeowner",
+            CustomerName = lead.CustomerName ?? ProviderProDisplayLocalization.L("Homeowner"),
             CustomerInitials = BuildInitials(lead.CustomerName ?? "Homeowner"),
             IsHomeownerVerified = lead.IsHomeownerVerified,
             CustomerPhone = lead.CustomerPhone,
@@ -2011,7 +2006,7 @@ public partial class ProviderProDataService(
             IsHighUrgency = lead.Urgency.Contains("High", StringComparison.OrdinalIgnoreCase),
             DistanceLabel = lead.DistanceMiles.HasValue ? $"{lead.DistanceMiles:0.#} miles away" : null,
             ImageUrl = string.IsNullOrWhiteSpace(lead.ImageUrl) ? "/welcome-house.png" : lead.ImageUrl,
-            CustomerName = lead.CustomerName ?? "Homeowner",
+            CustomerName = lead.CustomerName ?? ProviderProDisplayLocalization.L("Homeowner"),
             CustomerInitials = BuildInitials(lead.CustomerName ?? "Homeowner"),
             IsHomeownerVerified = lead.IsHomeownerVerified,
             CustomerPhone = lead.CustomerPhone,
@@ -2951,14 +2946,7 @@ public partial class ProviderProDataService(
         return local.ToString("h:mm tt");
     }
 
-    private static string MapJobStatusLabel(string status) => status switch
-    {
-        ProviderJobStatuses.InProgress => "On Site",
-        ProviderJobStatuses.Completed => "Completed",
-        ProviderJobStatuses.Confirmed => "Confirmed",
-        ProviderJobStatuses.WaitingOnMaterials => "Waiting",
-        _ => "Scheduled"
-    };
+    private static string MapJobStatusLabel(string status) => ProviderProDisplayLocalization.MapJobStatus(status);
 
     private static (string Icon, string Tone) DeriveHomeJobPresentation(string title, string? serviceType, string status)
     {

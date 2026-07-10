@@ -19,6 +19,9 @@ public static class ProfileDisplayService
     /// <summary>Paid membership signup is disabled (e.g. iOS App Store — no in-app subscriptions).</summary>
     public const bool PaidMembershipEnabled = false;
 
+    /// <summary>INDOR PRO provider insurance plan upsell on the home dashboard.</summary>
+    public const bool ProviderInsuranceSalesEnabled = true;
+
     public static MoreProfileViewModel Build(
         ApplicationUser? user,
         MembresiaUsuario? membresia,

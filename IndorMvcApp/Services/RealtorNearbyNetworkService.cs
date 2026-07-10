@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,8 @@ public class RealtorNearbyNetworkService(
     RealtorPortalService portalService,
     IAddressLookupService addressLookup,
     IOptions<GoogleMapsOptions> googleMapsOptions,
-    IWebHostEnvironment webHostEnvironment)
+    IWebHostEnvironment webHostEnvironment,
+    IIndorLocalizer localizer)
 {
     private readonly GoogleMapsOptions _googleMaps = googleMapsOptions.Value;
     private const long MaxListingPhotoPdfBytes = 15 * 1024 * 1024;
@@ -65,12 +67,14 @@ public class RealtorNearbyNetworkService(
             ActiveFilter = activeFilter,
             SearchQuery = search,
             Filters = FilterChips,
+            PageTitle = localizer.T("Nearby Network"),
             RadiusLabel = BuildRadiusLabel(settings, useDeviceLocation),
             QuickActions = BuildQuickActions(),
             FeedCards = cards,
             MapPins = mapPins,
             MapProviders = mapProviders,
-            MapCenterLabel = useDeviceLocation ? "Your location" : settings.CenterLabel,
+            MapCenterLabel = useDeviceLocation ? localizer.T("Your location") : settings.CenterLabel,
+            MapNearbyMetaLabel = localizer.T("{0} mi radius · {1} nearby", radiusMiles.ToString("0.#", CultureInfo.InvariantCulture), mapProviders.Count + listingPinCount),
             CenterLatitude = ToDouble(settings.CenterLatitude, _googleMaps.DefaultLatitude),
             CenterLongitude = ToDouble(settings.CenterLongitude, _googleMaps.DefaultLongitude),
             RadiusMiles = (double)settings.RadiusMiles,
@@ -282,17 +286,19 @@ public class RealtorNearbyNetworkService(
             ItemId = item.Id,
             IsOwned = isOwned,
             IsOpenHouse = isOpenHouse,
-            ListingBadgeLabel = ResolveListingBadgeLabel(item, isOwned),
+            ListingBadgeLabel = localizer.T(ResolveListingBadgeLabel(item, isOwned)),
             ListingBadgeCss = item.BadgeCss,
-            StatusBadge = item.StatusBadge ?? "",
+            StatusBadge = string.IsNullOrWhiteSpace(item.StatusBadge) ? "" : localizer.T(item.StatusBadge),
             StatusCss = item.StatusCss,
             PriceLabel = item.Price is > 0 ? FormatCurrency(item.Price.Value) : item.Title,
             Title = item.Title,
             Address = item.Subtitle ?? "",
-            SpecsLabel = item.SpecsLabel,
-            DistanceLabel = item.DistanceMiles is > 0 ? $"{item.DistanceMiles:0.#} mi away" : null,
-            ListingTypeLabel = extras.ListingType == "rent" ? "For Rent" : "For Sale",
-            PropertySubtypeLabel = ResolvePropertySubtypeLabel(extras.PropertySubtype),
+            SpecsLabel = RealtorDisplayLocalization.PropertySpecsSummary(localizer, item.Bedrooms, item.Bathrooms, item.SquareFeet, extras.YearBuilt),
+            DistanceLabel = item.DistanceMiles is > 0
+                ? RealtorDisplayLocalization.DistanceMilesAway(localizer, (double)item.DistanceMiles.Value)
+                : localizer.T("Nearby"),
+            ListingTypeLabel = extras.ListingType == "rent" ? localizer.T("For Rent") : localizer.T("For Sale"),
+            PropertySubtypeLabel = RealtorDisplayLocalization.PropertySubtypeLabel(localizer, extras.PropertySubtype),
             Description = extras.Description,
             OpenHouseMeta = item.MetaLabel,
             PhotoUrls = photos,
@@ -349,15 +355,17 @@ public class RealtorNearbyNetworkService(
             Subtitle = item.Subtitle,
             SpecsLabel = item.SpecsLabel,
             MetaLabel = item.MetaLabel,
-            StatusBadge = item.StatusBadge ?? "LEAD REQUEST",
+            StatusBadge = string.IsNullOrWhiteSpace(item.StatusBadge) ? "" : localizer.T(item.StatusBadge),
             StatusCss = item.StatusCss ?? "lead",
-            DistanceLabel = item.DistanceMiles is > 0 ? $"{item.DistanceMiles:0.#} mi away" : "Nearby",
+            DistanceLabel = item.DistanceMiles is > 0
+                ? RealtorDisplayLocalization.DistanceMilesAway(localizer, (double)item.DistanceMiles.Value)
+                : localizer.T("Nearby"),
             ShowContactPanel = showContact,
             RelatedClientId = item.RelatedClientId,
             BuyerName = client?.FullName,
             BuyerEmail = client?.Email,
             ContactUrl = contactUrl,
-            ContactActionLabel = canContact ? "Email Buyer" : "Contact Buyer",
+            ContactActionLabel = canContact ? localizer.T("Email Buyer") : localizer.T("Contact Buyer"),
             CanContactBuyer = canContact || item.RelatedClientId is > 0,
             InterestRecorded = interestRecorded || alreadyContacted
         };
@@ -784,7 +792,7 @@ public class RealtorNearbyNetworkService(
     private static bool NeedsActionUrl(string? url) =>
         string.IsNullOrWhiteSpace(url) || url == "#";
 
-    private static RealtorNetworkFeedCardViewModel MapToCard(IndorNearbyNetworkItem item, int currentRealtorId)
+    private RealtorNetworkFeedCardViewModel MapToCard(IndorNearbyNetworkItem item, int currentRealtorId)
     {
         var cardType = item.CardType.ToLowerInvariant() switch
         {
@@ -799,7 +807,7 @@ public class RealtorNearbyNetworkService(
         var isOwned = item.OwnerRealtorId == currentRealtorId && item.IsOwnedListing;
         var (primaryUrl, secondaryUrl) = ResolveFeedActionUrls(item, cardType, isOwned);
         var (primaryLabel, secondaryLabel) = ResolveFeedActionLabels(item, cardType, isOwned);
-        var badgeLabel = ResolveListingBadgeLabel(item, isOwned);
+        var badgeLabel = localizer.T(ResolveListingBadgeLabel(item, isOwned));
 
         var imageUrl = NearbyNetworkImageResolver.ResolveFeedImage(item);
         if (cardType is "lead" or "emergency")
@@ -822,17 +830,17 @@ public class RealtorNearbyNetworkService(
                 ? FormatCurrency(item.Price.Value)
                 : null,
             Subtitle = item.Subtitle,
-            SpecsLabel = item.SpecsLabel ?? BuildSpecsLabel(item.Bedrooms, item.Bathrooms, item.SquareFeet),
+            SpecsLabel = item.SpecsLabel ?? RealtorDisplayLocalization.PropertySpecsSummary(localizer, item.Bedrooms, item.Bathrooms, item.SquareFeet),
             MetaLabel = item.MetaLabel,
             Tags = ParseTags(item.TagsJson),
             DistanceLabel = item.DistanceMiles is > 0
-                ? $"{item.DistanceMiles:0.#} mi away"
-                : "Nearby",
-            StatusBadge = item.StatusBadge,
+                ? RealtorDisplayLocalization.DistanceMilesAway(localizer, (double)item.DistanceMiles.Value)
+                : localizer.T("Nearby"),
+            StatusBadge = string.IsNullOrWhiteSpace(item.StatusBadge) ? "" : localizer.T(item.StatusBadge),
             StatusCss = item.StatusCss ?? "active",
-            PrimaryActionLabel = primaryLabel,
+            PrimaryActionLabel = localizer.T(primaryLabel),
             PrimaryActionUrl = primaryUrl,
-            SecondaryActionLabel = secondaryLabel,
+            SecondaryActionLabel = string.IsNullOrWhiteSpace(secondaryLabel) ? null : localizer.T(secondaryLabel),
             SecondaryActionUrl = secondaryUrl,
             SecondaryActionOpensShare = cardType == "openhouse"
         };
@@ -855,12 +863,12 @@ public class RealtorNearbyNetworkService(
         }
     }
 
-    private static string BuildRadiusLabel(IndorNearbyNetworkSetting settings, bool useDeviceLocation)
+    private string BuildRadiusLabel(IndorNearbyNetworkSetting settings, bool useDeviceLocation)
     {
         var radius = settings.RadiusMiles.ToString("0.#", CultureInfo.InvariantCulture);
         return useDeviceLocation
-            ? $"{radius} miles around you"
-            : $"{radius} miles around {settings.CenterLabel}";
+            ? localizer.T("{0} miles around you", radius)
+            : localizer.T("{0} miles around {1}", radius, settings.CenterLabel);
     }
 
     private async Task<List<RealtorNetworkMapProviderViewModel>> LoadNearbyProvidersAsync(

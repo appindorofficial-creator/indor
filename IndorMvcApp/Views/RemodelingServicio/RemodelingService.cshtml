@@ -1,7 +1,7 @@
-@model IndorMvcApp.ViewModels.RemodelingServiceViewModel
+﻿@model IndorMvcApp.ViewModels.RemodelingServiceViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = HomeNavigationUrls.ServicesTab(Url, "services");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 4;
@@ -12,14 +12,14 @@
 @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
     {
         <div class="hero-wrap">
-            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@Model.LandingTitulo" class="hero-img" />
+            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@L.Catalog(Model.LandingTitulo)" class="hero-img" />
         </div>
     }
 
-    <h1 class="page-heading" style="font-size:1.2rem;margin-bottom:4px;">@Model.LandingTitulo</h1>
+    <h1 class="page-heading" style="font-size:1.2rem;margin-bottom:4px;">@L.Catalog(Model.LandingTitulo)</h1>
     @if (!string.IsNullOrWhiteSpace(Model.LandingSubtitulo))
     {
-        <p class="page-lead">@Model.LandingSubtitulo</p>
+        <p class="page-lead">@L.Catalog(Model.LandingSubtitulo)</p>
     }
 
     @if (Model.IncludedItems.Count > 0)
@@ -42,6 +42,6 @@
     <form asp-action="RemodelingService" method="post">
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="ServicioId" />
-        <button type="submit" name="action" value="continue" class="btn-primary"><i class="fas fa-arrow-right"></i> @Model.CtaTexto</button>
+        <button type="submit" name="action" value="continue" class="btn-primary"><i class="fas fa-arrow-right"></i> @L.Catalog(Model.CtaTexto)</button>
         <button type="submit" name="action" value="back" class="btn-outline">@L["Back to Services"]</button>
     </form>

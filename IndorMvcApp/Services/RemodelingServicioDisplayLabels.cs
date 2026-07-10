@@ -1,39 +1,41 @@
-namespace IndorMvcApp.Services;
+﻿namespace IndorMvcApp.Services;
+
+// Localized via DisplayLabelsLocalization.L
 
 public static class RemodelingServicioDisplayLabels
 {
     public static string FormatScope(string? code) => code switch
     {
-        "FullRemodel" => "Full remodel",
-        "PartialUpdate" => "Partial update",
-        "DesignConsult" => "Design consultation only",
-        _ => "Full remodel"
+        "FullRemodel" => DisplayLabelsLocalization.L("Full remodel"),
+        "PartialUpdate" => DisplayLabelsLocalization.L("Partial update"),
+        "DesignConsult" => DisplayLabelsLocalization.L("Design consultation only"),
+        _ => DisplayLabelsLocalization.L("Full remodel")
     };
 
     public static string FormatTiming(string? code) => code switch
     {
-        "ASAP" => "As soon as possible",
-        "OneToThreeMonths" => "1–3 months",
-        "ThreeToSixMonths" => "3–6 months",
-        "Flexible" => "Flexible",
-        _ => "Flexible"
+        "ASAP" => DisplayLabelsLocalization.L("As soon as possible"),
+        "OneToThreeMonths" => DisplayLabelsLocalization.L("1â€“3 months"),
+        "ThreeToSixMonths" => DisplayLabelsLocalization.L("3â€“6 months"),
+        "Flexible" => DisplayLabelsLocalization.L("Flexible"),
+        _ => DisplayLabelsLocalization.L("Flexible")
     };
 
     public static string FormatBudget(string? code) => code switch
     {
-        "Under5k" => "Under $5,000",
-        "5kTo15k" => "$5,000 – $15,000",
-        "15kTo50k" => "$15,000 – $50,000",
-        "Over50k" => "Over $50,000",
-        "NotSure" => "Not sure yet",
-        _ => "Not sure yet"
+        "Under5k" => DisplayLabelsLocalization.L("Under $5,000"),
+        "5kTo15k" => DisplayLabelsLocalization.L("$5,000 â€“ $15,000"),
+        "15kTo50k" => DisplayLabelsLocalization.L("$15,000 â€“ $50,000"),
+        "Over50k" => DisplayLabelsLocalization.L("Over $50,000"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure yet"),
+        _ => DisplayLabelsLocalization.L("Not sure yet")
     };
 
     public static string FormatContact(string? code) => code switch
     {
-        "Call" => "Phone call",
-        "Text" => "Text message",
-        "Email" => "Email",
-        _ => "Text message"
+        "Call" => DisplayLabelsLocalization.L("Phone call"),
+        "Text" => DisplayLabelsLocalization.L("Text message"),
+        "Email" => DisplayLabelsLocalization.L("Email"),
+        _ => DisplayLabelsLocalization.L("Text message")
     };
 }

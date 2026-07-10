@@ -1,5 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProDashboardViewModel
 @using System.Globalization
+@using IndorMvcApp.Services
 @{
     ViewData["Title"] = L["INDOR PRO"];
     Layout = "_ProviderProLayout";
@@ -127,6 +128,8 @@
         </div>
     </section>
 
+    @if (ProfileDisplayService.ProviderInsuranceSalesEnabled)
+    {
     <section class="prv-pro-ins" aria-labelledby="prvInsTitle">
         <div class="prv-pro-ins-card">
             <div class="prv-pro-ins-head">
@@ -149,14 +152,14 @@
 
             <div class="prv-pro-ins-body">
                 <ul class="prv-pro-ins-benefits">
-                    <li><span class="prv-pro-ins-bic"><i class="fas fa-house"></i></span> Property damage claim support</li>
-                    <li><span class="prv-pro-ins-bic"><i class="fas fa-people-group"></i></span> More trust with customers</li>
-                    <li><span class="prv-pro-ins-bic"><i class="fas fa-user"></i></span> Third-party injury claim support</li>
-                    <li><span class="prv-pro-ins-bic"><i class="fas fa-briefcase"></i></span> More job opportunities through INDOR</li>
-                    <li><span class="prv-pro-ins-bic"><i class="fas fa-gavel"></i></span> Legal defense support</li>
-                    <li><span class="prv-pro-ins-bic"><i class="fas fa-hand-holding-dollar"></i></span> Lower out-of-pocket risk</li>
-                    <li><span class="prv-pro-ins-bic"><i class="fas fa-file-shield"></i></span> COI / proof of insurance support</li>
-                    <li><span class="prv-pro-ins-bic"><i class="fas fa-building"></i></span> Stronger professional business presence</li>
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-house"></i></span> @L["Property damage claim support"]</li>
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-people-group"></i></span> @L["More trust with customers"]</li>
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-user"></i></span> @L["Third-party injury claim support"]</li>
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-briefcase"></i></span> @L["More job opportunities through INDOR"]</li>
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-gavel"></i></span> @L["Legal defense support"]</li>
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-hand-holding-dollar"></i></span> @L["Lower out-of-pocket risk"]</li>
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-file-shield"></i></span> @L["COI / proof of insurance support"]</li>
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-building"></i></span> @L["Stronger professional business presence"]</li>
                 </ul>
                 <img src="~/images/insurance/ins-certificate.png" alt="" class="prv-pro-ins-illus" asp-append-version="true" />
             </div>
@@ -176,7 +179,7 @@
                         <i class="fas fa-shield-halved prv-pro-ins-plan-shield prv-pro-ins-plan-shield--blue"></i>
                     </div>
                     <div class="prv-pro-ins-plan-price">$@pBasic.Monthly.ToString("0")<span>/mo</span></div>
-                    <div class="prv-pro-ins-plan-down">Down payment $@pBasic.PayToday.ToString("0")</div>
+                    <div class="prv-pro-ins-plan-down">@L["Down payment"] $@pBasic.PayToday.ToString("0")</div>
                     <ul class="prv-pro-ins-plan-feats">
                         <li><i class="fas fa-circle-check"></i> @L["Claims support"]</li>
                         <li><i class="fas fa-circle-check"></i> @L["COI help"]</li>
@@ -194,7 +197,7 @@
                         <i class="fas fa-shield-halved prv-pro-ins-plan-shield prv-pro-ins-plan-shield--green"></i>
                     </div>
                     <div class="prv-pro-ins-plan-price">$@pStandard.Monthly.ToString("0")<span>/mo</span></div>
-                    <div class="prv-pro-ins-plan-down">Down payment $@pStandard.PayToday.ToString("0")</div>
+                    <div class="prv-pro-ins-plan-down">@L["Down payment"] $@pStandard.PayToday.ToString("0")</div>
                     <ul class="prv-pro-ins-plan-feats prv-pro-ins-plan-feats--green">
                         <li><i class="fas fa-circle-check"></i> @L["Everything in Basic"]</li>
                         <li><i class="fas fa-circle-check"></i> @L["Priority COI support"]</li>
@@ -212,7 +215,7 @@
                         <i class="fas fa-shield-halved prv-pro-ins-plan-shield prv-pro-ins-plan-shield--purple"></i>
                     </div>
                     <div class="prv-pro-ins-plan-price">$@pPremium.Monthly.ToString("0")<span>/mo</span></div>
-                    <div class="prv-pro-ins-plan-down">Down payment $@pPremium.PayToday.ToString("0")</div>
+                    <div class="prv-pro-ins-plan-down">@L["Down payment"] $@pPremium.PayToday.ToString("0")</div>
                     <ul class="prv-pro-ins-plan-feats prv-pro-ins-plan-feats--purple">
                         <li><i class="fas fa-circle-check"></i> @L["Everything in Standard"]</li>
                         <li><i class="fas fa-circle-check"></i> @L["Top visibility"]</li>
@@ -228,6 +231,7 @@
             </div>
         </div>
     </section>
+    }
 
     <section class="prv-pro-home-jobs">
         <div class="prv-pro-home-jobs-head">
@@ -246,16 +250,16 @@
                 <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@job.Id" class="prv-pro-home-job-row">
                     <span class="prv-pro-home-job-icon prv-pro-home-job-icon--@job.IconTone"><i class="fas @job.IconClass"></i></span>
                     <div class="prv-pro-home-job-body">
-                        <strong>@job.Title</strong>
-                        <small>@job.TimeLabel@if (!string.IsNullOrWhiteSpace(job.Address)) { <text> &bull; @job.Address</text> }</small>
+                        <strong>@UiDisplayLocalization.Localize(L, job.Title)</strong>
+                        <small>@UiDisplayLocalization.Localize(L, job.TimeLabel)@if (!string.IsNullOrWhiteSpace(job.Address)) { <text> &bull; @job.Address</text> }</small>
                     </div>
-                    <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@job.Status</span>
+                    <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@UiDisplayLocalization.Localize(L, job.Status)</span>
                 </a>
             }
         }
         <div class="prv-pro-home-jobs-actions">
             <a asp-controller="Proveedor" asp-action="DaySchedule" asp-route-date="@todayIso" asp-route-from="home" class="prv-pro-home-jobs-action prv-pro-home-jobs-action--schedule">
-                View all <i class="fas fa-chevron-right"></i>
+                @L["View all"] <i class="fas fa-chevron-right"></i>
             </a>
             <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="home" class="prv-pro-home-jobs-action prv-pro-home-jobs-action--new">
                 <i class="fas fa-plus"></i> @L["New job"]</a>

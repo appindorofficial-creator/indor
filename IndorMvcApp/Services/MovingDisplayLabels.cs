@@ -1,79 +1,86 @@
+using System.Globalization;
+using IndorMvcApp.Localization;
+
 namespace IndorMvcApp.Services;
 
 public static class MovingDisplayLabels
 {
+    private static bool IsSpanish => UiCulture.IsSpanish(CultureInfo.CurrentUICulture.Name);
+
+    private static string L(string english) => CatalogText.PickWithUiFallback(english, null, IsSpanish);
+
     public static string FormatMoveType(string? value) => value switch
     {
-        "MoveIn" => "Move-In",
-        "MoveOut" => "Move-Out",
-        "LocalMove" => "Local Move",
-        "FullMove" => "Full Move",
+        "MoveIn" => L("Move-In"),
+        "MoveOut" => L("Move-Out"),
+        "LocalMove" => L("Local Move"),
+        "FullMove" => L("Full Move"),
         _ => value ?? "—"
     };
 
     public static string FormatPropertyType(string? value) => value switch
     {
-        "Apartment" => "Apartment",
-        "House" => "House",
-        "Condo" => "Condo",
-        "Townhome" => "Townhome",
+        "Apartment" => L("Apartment"),
+        "House" => L("House"),
+        "Condo" => L("Condo"),
+        "Townhome" => L("Townhome"),
         _ => value ?? "—"
     };
 
     public static string FormatHomeSize(string? value) => value switch
     {
-        "Studio" => "Studio",
-        "OneTwoBedrooms" => "1-2 Bedrooms",
-        "ThreePlusBedrooms" => "3+ Bedrooms",
+        "Studio" => L("Studio"),
+        "OneTwoBedrooms" => L("1-2 Bedrooms"),
+        "ThreePlusBedrooms" => L("3+ Bedrooms"),
         _ => value ?? "—"
     };
 
     public static string FormatMoveSize(string? value) => value switch
     {
-        "FewItems" => "Few items",
-        "Studio" => "Studio",
-        "OneTwoBedroom" => "1-2 Bedroom",
-        "ThreePlusBedroom" => "3+ Bedroom",
+        "FewItems" => L("Few items"),
+        "Studio" => L("Studio"),
+        "OneTwoBedroom" => L("1-2 Bedroom"),
+        "ThreePlusBedroom" => L("3+ Bedroom"),
         _ => value ?? "—"
     };
 
     public static string FormatServiceType(string? value) => value switch
     {
-        "MoversOnly" => "Movers only",
-        "TruckAndMovers" => "Truck + Movers",
+        "MoversOnly" => L("Movers only"),
+        "TruckAndMovers" => L("Truck + Movers"),
         _ => value ?? "—"
     };
 
     public static string FormatTimeWindow(string? value) => value switch
     {
-        "Morning" => "9:00 AM – 11:00 AM",
-        "MidMorning" => "11:00 AM – 1:00 PM",
-        "Afternoon" => "2:00 PM – 4:00 PM",
-        "Evening" => "4:00 PM – 6:00 PM",
+        "Morning" => L("9:00 AM – 11:00 AM"),
+        "MidMorning" => L("11:00 AM – 1:00 PM"),
+        "Afternoon" => L("2:00 PM – 4:00 PM"),
+        "Evening" => L("4:00 PM – 6:00 PM"),
         _ => value ?? "—"
     };
 
     public static string FormatItem(string value) => value switch
     {
-        "Sofa" => "Sofa",
-        "Bed" => "Bed",
-        "Mattress" => "Mattress",
-        "DiningTable" => "Dining table",
-        "Appliances" => "Appliances",
-        "Boxes" => "Boxes",
-        "OfficeDesk" => "Office desk",
-        "Other" => "Other",
-        _ => value
+        "Sofa" => L("Sofa"),
+        "Bed" => L("Bed"),
+        "Mattress" => L("Mattress"),
+        "DiningTable" => L("Dining table"),
+        "Appliances" => L("Appliances"),
+        "Boxes" => L("Boxes"),
+        "OfficeDesk" => L("Office desk"),
+        "Other" => L("Other"),
+        _ => L(value)
     };
 
     public static string FormatAccessCondition(string value) => value switch
     {
-        "Stairs" => "Stairs",
-        "Elevator" => "Elevator",
-        "LongWalk" => "Long walk",
-        "TightHallway" => "Tight hallway",
-        "ParkingIssue" => "Parking issue",
-        _ => value
+        "Stairs" => L("Stairs"),
+        "Elevator" => L("Elevator"),
+        "LongWalk" => L("Long walk"),
+        "TightHallway" => L("Tight hallway"),
+        "ParkingIssue" => L("Parking issue"),
+        _ => L(value)
     };
 
     public static string FormatPipeList(string? pipe, Func<string, string> formatter)
@@ -89,16 +96,16 @@ public static class MovingDisplayLabels
     }
 
     public static string FormatYesNo(string? value) =>
-        string.Equals(value, "Yes", StringComparison.OrdinalIgnoreCase) ? "Yes" : "No";
+        string.Equals(value, "Yes", StringComparison.OrdinalIgnoreCase) ? L("Yes") : L("No");
 
     public static string FormatDate(DateTime? date) =>
-        date?.ToString("MMMM d, yyyy") ?? "—";
+        date?.ToString("MMMM d, yyyy", CultureInfo.CurrentCulture) ?? "—";
 
     public static string FormatPriceRange(decimal min, decimal max) =>
         $"${min:0} – ${max:0}";
 
     public static string FormatDurationRange(int minHours, int maxHours) =>
-        $"{minHours} – {maxHours} hours";
+        L("{0} – {1} hours").Replace("{0}", minHours.ToString()).Replace("{1}", maxHours.ToString());
 
     public static (decimal Min, decimal Max, int DurMin, int DurMax) CalculateEstimate(
         string? tamanoHogar,

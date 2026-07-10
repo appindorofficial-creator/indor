@@ -1,4 +1,5 @@
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,6 +51,9 @@ public class LawnCatalogService(AppDbContext db)
         return group.FirstOrDefault(o => o.Code == code);
     }
 
+    public static string PickLabel(LawnCatalogOption option) =>
+        CatalogText.PickWithUiFallback(option.LabelEn, option.LabelEs, DisplayLabelsLocalization.IsSpanishUi);
+
     public async Task<string> GetLabelAsync(
         int microservicioId,
         string optionGroup,
@@ -57,7 +61,7 @@ public class LawnCatalogService(AppDbContext db)
         CancellationToken ct = default)
     {
         var option = await FindOptionAsync(microservicioId, optionGroup, code, ct);
-        return option?.LabelEn ?? code ?? "—";
+        return option != null ? PickLabel(option) : code ?? "—";
     }
 
     public async Task<decimal> GetBasePriceAsync(int microservicioId, string? areaCode, CancellationToken ct = default)

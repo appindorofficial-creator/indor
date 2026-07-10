@@ -1,7 +1,7 @@
-@model IndorMvcApp.ViewModels.RoofInspectionServiceViewModel
+﻿@model IndorMvcApp.ViewModels.RoofInspectionServiceViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
@@ -12,13 +12,13 @@
     @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
     {
         <div class="hero-wrap">
-            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@Model.LandingTitulo" class="hero-img" />
+            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@L.Catalog(Model.LandingTitulo)" class="hero-img" />
             <span class="hvac-hero-icon"><i class="fas fa-house-chimney"></i></span>
         </div>
     }
 
-    <h1 class="page-heading" style="font-size:1.2rem;margin-bottom:8px;">@Model.LandingTitulo</h1>
-    <p class="page-lead">@Model.LandingSubtitulo</p>
+    <h1 class="page-heading" style="font-size:1.2rem;margin-bottom:8px;">@L.Catalog(Model.LandingTitulo)</h1>
+    <p class="page-lead">@L.Catalog(Model.LandingSubtitulo)</p>
 
     @if (Model.RecommendationItems.Count > 0)
     {
@@ -28,7 +28,7 @@
             {
                 <details class="roof-rec-item">
                     <summary class="roof-rec-row">
-                        <div class="left"><i class="fas @item.Icon"></i><span>@item.Text</span></div>
+                        <div class="left"><i class="fas @item.Icon"></i><span>@L.Catalog(item.Text)</span></div>
                         <div class="right" aria-hidden="true"><i class="fas fa-chevron-right"></i></div>
                     </summary>
                     @if (!string.IsNullOrWhiteSpace(item.Subtext))
@@ -47,7 +47,7 @@
             <div class="check-grid-3">
                 @foreach (var item in Model.CheckItems)
                 {
-                    <div class="check-item"><i class="fas @item.Icon"></i><span>@item.Text</span></div>
+                    <div class="check-item"><i class="fas @item.Icon"></i><span>@L.Catalog(item.Text)</span></div>
                 }
             </div>
         </div>
@@ -59,7 +59,7 @@
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="SolicitudId" />
         <button type="submit" name="action" value="continue" class="btn-primary">
-            <i class="fas fa-calendar-plus"></i> @Model.CtaTexto <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-calendar-plus"></i> @L.Catalog(Model.CtaTexto) <i class="fas fa-chevron-right"></i>
         </button>
     </form>
 

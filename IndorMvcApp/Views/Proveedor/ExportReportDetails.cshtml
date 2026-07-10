@@ -45,7 +45,7 @@
                     <select name="reportCategory">
                         @foreach (var c in categories)
                         {
-                            <option value="@c" selected="@(d.Category == c)">@c</option>
+                            <option value="@c" selected="@(d.Category == c)">@L[c]</option>
                         }
                     </select>
                 </label>
@@ -58,7 +58,7 @@
                     <select name="priority">
                         @foreach (var p in priorities)
                         {
-                            <option value="@p" selected="@(d.Priority == p || (string.IsNullOrEmpty(d.Priority) && p == "Medium"))">@p</option>
+                            <option value="@p" selected="@(d.Priority == p || (string.IsNullOrEmpty(d.Priority) && p == "Medium"))">@L[p]</option>
                         }
                     </select>
                 </label>
@@ -67,7 +67,7 @@
                     <select name="weather">
                         @foreach (var w in weathers)
                         {
-                            <option value="@w" selected="@(d.Weather == w || (string.IsNullOrEmpty(d.Weather) && w == "Clear"))">@w</option>
+                            <option value="@w" selected="@(d.Weather == w || (string.IsNullOrEmpty(d.Weather) && w == "Clear"))">@L[w]</option>
                         }
                     </select>
                 </label>
@@ -86,7 +86,7 @@
                 {
                     <label class="exr-chip">
                         <input type="radio" name="category" value="@chip" checked="@(chip == selectedChip)" />
-                        <span>@chip</span>
+                        <span>@L[chip]</span>
                     </label>
                 }
             </div>

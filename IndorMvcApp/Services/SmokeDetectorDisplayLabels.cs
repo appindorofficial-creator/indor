@@ -1,80 +1,82 @@
-namespace IndorMvcApp.Services;
+﻿namespace IndorMvcApp.Services;
+
+// Localized via DisplayLabelsLocalization.L
 
 public static class SmokeDetectorDisplayLabels
 {
     public static string FormatAlarmCount(string? code) => code switch
     {
-        "One" => "1 alarm",
-        "Two" => "2 alarms",
-        "Three" => "3 alarms",
-        "Four" => "4 alarms",
-        "FivePlus" => "5+ alarms",
-        _ => "Unknown count"
+        "One" => DisplayLabelsLocalization.L("1 alarm"),
+        "Two" => DisplayLabelsLocalization.L("2 alarms"),
+        "Three" => DisplayLabelsLocalization.L("3 alarms"),
+        "Four" => DisplayLabelsLocalization.L("4 alarms"),
+        "FivePlus" => DisplayLabelsLocalization.L("5+ alarms"),
+        _ => DisplayLabelsLocalization.L("Unknown count")
     };
 
     public static string FormatAlarmCountShort(string? code) => code switch
     {
-        "One" => "1",
-        "Two" => "2",
-        "Three" => "3",
-        "Four" => "4",
-        "FivePlus" => "5+",
-        _ => "?"
+        "One" => DisplayLabelsLocalization.L("1"),
+        "Two" => DisplayLabelsLocalization.L("2"),
+        "Three" => DisplayLabelsLocalization.L("3"),
+        "Four" => DisplayLabelsLocalization.L("4"),
+        "FivePlus" => DisplayLabelsLocalization.L("5+"),
+        _ => DisplayLabelsLocalization.L("?")
     };
 
     public static string FormatLocation(string code) => code switch
     {
-        "Bedrooms" => "Bedrooms",
-        "Hallway" => "Hallway",
-        "LivingRoom" => "Living room",
-        "Basement" => "Basement",
-        "UpstairsLanding" => "Upstairs landing",
-        "DontKnow" => "Unknown location",
+        "Bedrooms" => DisplayLabelsLocalization.L("Bedrooms"),
+        "Hallway" => DisplayLabelsLocalization.L("Hallway"),
+        "LivingRoom" => DisplayLabelsLocalization.L("Living room"),
+        "Basement" => DisplayLabelsLocalization.L("Basement"),
+        "UpstairsLanding" => DisplayLabelsLocalization.L("Upstairs landing"),
+        "DontKnow" => DisplayLabelsLocalization.L("Unknown location"),
         _ => code
     };
 
     public static string FormatAlarmType(string code) => code switch
     {
-        "Battery" => "Battery",
-        "Hardwired" => "Hardwired",
-        "TenYearSealed" => "10-year sealed",
-        "SmokeCoCombo" => "Smoke / CO combo",
-        "DontKnow" => "Unknown type",
+        "Battery" => DisplayLabelsLocalization.L("Battery"),
+        "Hardwired" => DisplayLabelsLocalization.L("Hardwired"),
+        "TenYearSealed" => DisplayLabelsLocalization.L("10-year sealed"),
+        "SmokeCoCombo" => DisplayLabelsLocalization.L("Smoke / CO combo"),
+        "DontKnow" => DisplayLabelsLocalization.L("Unknown type"),
         _ => code
     };
 
     public static string FormatPrimaryAlarmType(string? pipe)
     {
-        if (string.IsNullOrWhiteSpace(pipe)) return "Smoke alarm";
+        if (string.IsNullOrWhiteSpace(pipe)) return DisplayLabelsLocalization.L("Smoke alarm");
         var items = pipe.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        if (items.Contains("SmokeCoCombo")) return "Smoke / CO combo";
+        if (items.Contains("SmokeCoCombo")) return DisplayLabelsLocalization.L("Smoke / CO combo");
         if (items.Length == 1) return FormatAlarmType(items[0]);
         return string.Join(", ", items.Select(FormatAlarmType));
     }
 
     public static string FormatLastTest(string? code) => code switch
     {
-        "WithinLastMonth" => "Within last month",
-        "OneToSixMonths" => "1–6 months ago",
-        "MoreThanSixMonths" => "More than 6 months ago",
-        _ => "Unknown"
+        "WithinLastMonth" => DisplayLabelsLocalization.L("Within last month"),
+        "OneToSixMonths" => DisplayLabelsLocalization.L("1â€“6 months ago"),
+        "MoreThanSixMonths" => DisplayLabelsLocalization.L("More than 6 months ago"),
+        _ => DisplayLabelsLocalization.L("Unknown")
     };
 
     public static string FormatLastBatteryChange(string? code) => code switch
     {
-        "WithinLast6Months" => "Within last 6 months",
-        "SixToTwelveMonths" => "6–12 months ago",
-        "MoreThan12Months" => "More than 12 months ago",
-        _ => "Unknown"
+        "WithinLast6Months" => DisplayLabelsLocalization.L("Within last 6 months"),
+        "SixToTwelveMonths" => DisplayLabelsLocalization.L("6â€“12 months ago"),
+        "MoreThan12Months" => DisplayLabelsLocalization.L("More than 12 months ago"),
+        _ => DisplayLabelsLocalization.L("Unknown")
     };
 
     public static string FormatIssue(string code) => code switch
     {
-        "Chirping" => "Chirping",
-        "MissingBattery" => "Missing battery",
-        "NotSure" => "Not sure",
-        "AllWorking" => "All working",
-        "DontKnow" => "Unknown",
+        "Chirping" => DisplayLabelsLocalization.L("Chirping"),
+        "MissingBattery" => DisplayLabelsLocalization.L("Missing battery"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        "AllWorking" => DisplayLabelsLocalization.L("All working"),
+        "DontKnow" => DisplayLabelsLocalization.L("Unknown"),
         _ => code
     };
 

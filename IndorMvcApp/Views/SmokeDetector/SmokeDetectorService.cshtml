@@ -1,15 +1,15 @@
-@model IndorMvcApp.ViewModels.SmokeDetectorServiceViewModel
+﻿@model IndorMvcApp.ViewModels.SmokeDetectorServiceViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 4;
 }
 
 
-<h1 class="page-heading" style="font-size:1.15rem;margin-bottom:8px;">@Model.LandingTitulo</h1>
-    <p class="page-lead" style="margin-bottom:14px;">@Model.LandingSubtitulo</p>
+<h1 class="page-heading" style="font-size:1.15rem;margin-bottom:8px;">@L.Catalog(Model.LandingTitulo)</h1>
+    <p class="page-lead" style="margin-bottom:14px;">@L.Catalog(Model.LandingSubtitulo)</p>
 
     @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
     {
@@ -28,7 +28,7 @@
                 {
                     <div class="track-card">
                         <i class="fas @item.Icon"></i>
-                        <strong>@item.Text</strong>
+                        <strong>@L.Catalog(item.Text)</strong>
                         @if (!string.IsNullOrWhiteSpace(item.Subtext))
                         {
                             <span>@item.Subtext</span>
@@ -45,7 +45,7 @@
         <div class="where-grid">
             @foreach (var item in Model.WhereTrackItems)
             {
-                <span class="where-pill"><i class="fas @item.Icon"></i> @item.Text</span>
+                <span class="where-pill"><i class="fas @item.Icon"></i> @L.Catalog(item.Text)</span>
             }
         </div>
     }
@@ -54,7 +54,7 @@
     {
         <div class="indor-banner">
             <i class="fas fa-shield-halved"></i>
-            <span>@Model.ReminderBannerTexto</span>
+            <span>@L.Catalog(Model.ReminderBannerTexto)</span>
         </div>
     }
 
@@ -64,6 +64,6 @@
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="SolicitudId" />
         <button type="submit" name="action" value="continue" class="btn-primary">
-            <i class="fas fa-calendar-plus"></i> @Model.CtaTexto <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-calendar-plus"></i> @L.Catalog(Model.CtaTexto) <i class="fas fa-chevron-right"></i>
         </button>
     </form>

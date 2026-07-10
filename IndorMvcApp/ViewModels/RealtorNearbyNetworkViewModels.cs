@@ -14,6 +14,7 @@ public class RealtorNearbyNetworkViewModel : RealtorPortalShellViewModel
     public List<RealtorNetworkFeedCardViewModel> FeedCards { get; set; } = [];
     public List<RealtorNetworkMapPinViewModel> MapPins { get; set; } = [];
     public string MapCenterLabel { get; set; } = "Your service area";
+    public string MapNearbyMetaLabel { get; set; } = "";
     public double CenterLatitude { get; set; }
     public double CenterLongitude { get; set; }
     public double RadiusMiles { get; set; } = 3;

@@ -1,17 +1,17 @@
 @model IndorMvcApp.ViewModels.MovingServiceViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("Index", "MovingSetup");
 }
 
 @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
 {
-    <img src="@Model.ImagenUrl" alt="@Model.LandingTitulo" class="cl-landing-hero" />
+    <img src="@Model.ImagenUrl" alt="@L.Catalog(Model.LandingTitulo)" class="cl-landing-hero" />
 }
 
-<h1 class="page-heading">@Model.LandingTitulo</h1>
-<p class="page-lead">@Model.LandingSubtitulo</p>
+<h1 class="page-heading">@L.Catalog(Model.LandingTitulo)</h1>
+<p class="page-lead">@L.Catalog(Model.LandingSubtitulo)</p>
 
 <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
@@ -37,7 +37,7 @@
         @foreach (var moveType in Model.MoveTypes)
         {
             <button type="button" class="chip-btn @(moveType.Value == Model.TipoMovimiento ? "active" : "")" data-value="@moveType.Value">
-                <i class="fas @moveType.Icon"></i> @moveType.Label
+                <i class="fas @moveType.Icon"></i> @L.Catalog(moveType.Label)
             </button>
         }
     </div>
@@ -50,7 +50,7 @@
             {
                 <div class="included-row">
                     <i class="fas @item.Icon"></i>
-                    <span>@item.Text</span>
+                    <span>@L.Catalog(item.Text)</span>
                 </div>
             }
         </div>
@@ -59,29 +59,29 @@
     <div class="info-cards">
         <div class="info-card">
             <i class="fas fa-clock"></i>
-            <div class="label">@Model.EstimatedTimeLabel</div>
-            <div class="value">@Model.EstimatedTimeValue</div>
+            <div class="label">@L.Catalog(Model.EstimatedTimeLabel)</div>
+            <div class="value">@L.Catalog(Model.EstimatedTimeValue)</div>
             @if (!string.IsNullOrWhiteSpace(Model.EstimatedTimeNote))
             {
-                <div class="note">@Model.EstimatedTimeNote</div>
+                <div class="note">@L.Catalog(Model.EstimatedTimeNote)</div>
             }
         </div>
         <div class="info-card">
             <i class="fas fa-house"></i>
-            <div class="label">@Model.BestForLabel</div>
-            <div class="value">@Model.BestForValue</div>
+            <div class="label">@L.Catalog(Model.BestForLabel)</div>
+            <div class="value">@L.Catalog(Model.BestForValue)</div>
             @if (!string.IsNullOrWhiteSpace(Model.BestForNote))
             {
-                <div class="note">@Model.BestForNote</div>
+                <div class="note">@L.Catalog(Model.BestForNote)</div>
             }
         </div>
     </div>
 
     <div class="sticky-footer">
         <button type="submit" name="action" value="continue" class="btn-primary">
-            @Model.CtaContinueTexto <i class="fas fa-chevron-right"></i>
+            @L.Catalog(Model.CtaContinueTexto) <i class="fas fa-chevron-right"></i>
         </button>
-        <button type="submit" name="action" value="estimate" class="btn-outline">@Model.CtaEstimateTexto</button>
+        <button type="submit" name="action" value="estimate" class="btn-outline">@L.Catalog(Model.CtaEstimateTexto)</button>
     </div>
 </form>
 

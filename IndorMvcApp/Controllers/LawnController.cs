@@ -1,4 +1,5 @@
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -349,13 +350,13 @@ public class LawnController(
             FrequencyOptions = freqOptions.Select(o => new LawnOptionCardViewModel
             {
                 Code = o.Code,
-                Label = o.LabelEn,
+                Label = LawnCatalogService.PickLabel(o),
                 Icon = o.IconClass
             }).ToList(),
             AreaOptions = areaOptions.Select(o => new LawnAreaCardViewModel
             {
                 Code = o.Code,
-                Label = o.LabelEn,
+                Label = LawnCatalogService.PickLabel(o),
                 Price = o.Price,
                 Icon = o.IconClass,
                 IsCustomQuote = o.RequiresQuote
@@ -363,7 +364,7 @@ public class LawnController(
             AddonOptions = addonOptions.Select(o => new LawnAddonCardViewModel
             {
                 Code = o.Code,
-                Label = o.LabelEn,
+                Label = LawnCatalogService.PickLabel(o),
                 Price = o.Price,
                 Icon = o.IconClass,
                 Selected = selectedAddons.Contains(o.Code)
@@ -407,19 +408,19 @@ public class LawnController(
             TimeWindowOptions = timeWindows.Select(o => new LawnOptionCardViewModel
             {
                 Code = o.Code,
-                Label = o.LabelEn,
+                Label = LawnCatalogService.PickLabel(o),
                 Icon = o.IconClass
             }).ToList(),
             ReminderLeadOptions = reminderLeads.Select(o => new LawnOptionCardViewModel
             {
                 Code = o.Code,
-                Label = o.LabelEn,
+                Label = LawnCatalogService.PickLabel(o),
                 Icon = o.IconClass
             }).ToList(),
             ReminderChannelOptions = reminderChannels.Select(o => new LawnOptionCardViewModel
             {
                 Code = o.Code,
-                Label = o.LabelEn,
+                Label = LawnCatalogService.PickLabel(o),
                 Icon = o.IconClass
             }).ToList()
         };
@@ -433,10 +434,10 @@ public class LawnController(
         var areaLabel = await catalog.GetLabelAsync(solicitud.MicroservicioId, LawnCatalogGroups.Area, solicitud.AreaServicio, ct);
         var timeLabel = await catalog.GetLabelAsync(solicitud.MicroservicioId, LawnCatalogGroups.TimeWindow, solicitud.VentanaHorario, ct);
         var addonLabels = (await catalog.ParseAddonsAsync(solicitud.MicroservicioId, solicitud.AddonsSeleccionados, ct))
-            .Select(a => a.LabelEn);
+            .Select(a => LawnCatalogService.PickLabel(a));
 
         var channelLabels = (await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.ReminderChannel, ct))
-            .ToDictionary(c => c.Code, c => c.LabelEn);
+            .ToDictionary(c => c.Code, c => LawnCatalogService.PickLabel(c));
 
         return new LawnReviewViewModel
         {
@@ -461,7 +462,7 @@ public class LawnController(
             PrecioTotal = solicitud.PrecioTotal ?? await catalog.CalculateTotalAsync(
                 solicitud.MicroservicioId, solicitud.Frecuencia, solicitud.AreaServicio, solicitud.AddonsSeleccionados, ct),
             AddonLines = (await catalog.ParseAddonsAsync(solicitud.MicroservicioId, solicitud.AddonsSeleccionados, ct))
-                .Select(a => new LawnLineItemViewModel { Label = a.LabelEn, Amount = a.Price, Icon = a.IconClass })
+                .Select(a => new LawnLineItemViewModel { Label = LawnCatalogService.PickLabel(a), Amount = a.Price, Icon = a.IconClass })
                 .ToList()
         };
     }
@@ -471,9 +472,9 @@ public class LawnController(
         var areaLabel = await catalog.GetLabelAsync(solicitud.MicroservicioId, LawnCatalogGroups.Area, solicitud.AreaServicio, ct);
         var timeLabel = await catalog.GetLabelAsync(solicitud.MicroservicioId, LawnCatalogGroups.TimeWindow, solicitud.VentanaHorario, ct);
         var addonLabels = (await catalog.ParseAddonsAsync(solicitud.MicroservicioId, solicitud.AddonsSeleccionados, ct))
-            .Select(a => a.LabelEn);
+            .Select(a => LawnCatalogService.PickLabel(a));
         var channelLabels = (await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.ReminderChannel, ct))
-            .ToDictionary(c => c.Code, c => c.LabelEn);
+            .ToDictionary(c => c.Code, c => LawnCatalogService.PickLabel(c));
 
         return new LawnConfirmedViewModel
         {

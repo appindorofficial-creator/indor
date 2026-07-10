@@ -1,5 +1,6 @@
 window.rlListingWizardInit = function (config) {
     config = config || {};
+    var uiLabels = window.rlListingWizardLabels || {};
 
     var photoGrid = document.getElementById('rlListingPhotoGrid');
     var photoAdd = document.getElementById('rlListingPhotoAdd');
@@ -79,7 +80,7 @@ window.rlListingWizardInit = function (config) {
             thumb.className = 'rl-listing-photo-thumb';
             thumb.innerHTML =
                 '<img src="' + escapeAttr(url) + '" alt="" />' +
-                '<button type="button" class="rl-listing-photo-remove" data-index="' + index + '" aria-label="Remove photo">&times;</button>';
+                '<button type="button" class="rl-listing-photo-remove" data-index="' + index + '" aria-label="' + escapeAttr(uiLabels.removePhoto || 'Remove photo') + '">&times;</button>';
             photoGrid.appendChild(thumb);
         });
 
@@ -117,7 +118,7 @@ window.rlListingWizardInit = function (config) {
 
         pdfCurrent.classList.remove('is-hidden');
         if (pdfCurrentLink) {
-            pdfCurrentLink.textContent = name || 'Property photos.pdf';
+            pdfCurrentLink.textContent = name || (uiLabels.propertyPhotosPdf || 'Property photos.pdf');
             pdfCurrentLink.href = url || '#';
         }
     }
@@ -309,7 +310,7 @@ window.rlListingWizardInit = function (config) {
         var totalSteps = stepSections.length || 4;
         var currentStep = minStep;
 
-        var stepMeta = {
+        var stepMeta = window.rlListingWizardSteps || {
             1: { title: 'Post Listing with INDOR', sub: '' },
             2: { title: 'Create Your Listing', sub: 'Add key details to showcase your property.' },
             3: { title: 'Property Details', sub: '' },
@@ -337,9 +338,9 @@ window.rlListingWizardInit = function (config) {
                 photoEl.src = photos[0] || defaultPlaceholder;
             }
             var typeRadio = document.querySelector('[name="ListingType"]:checked');
-            setText('rlRvType', typeRadio && typeRadio.value === 'rent' ? 'For Rent' : 'For Sale');
+            setText('rlRvType', typeRadio && typeRadio.value === 'rent' ? (uiLabels.forRent || 'For Rent') : (uiLabels.forSale || 'For Sale'));
             setText('rlRvPrice', formatMoney(priceInput && priceInput.value));
-            setText('rlRvAddress', (addressInput && addressInput.value.trim()) || 'Address not set');
+            setText('rlRvAddress', (addressInput && addressInput.value.trim()) || (uiLabels.addressNotSet || 'Address not set'));
 
             function statValue(name) {
                 var el = document.querySelector('[name="' + name + '"]');

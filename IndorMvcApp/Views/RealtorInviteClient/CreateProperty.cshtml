@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.RealtorInviteCreatePropertyViewModel
+@using IndorMvcApp.Helpers
 @{
     string FieldError(string key) => ViewData.ModelState[key]?.Errors.FirstOrDefault()?.ErrorMessage ?? "";
     var addressError = FieldError("Address");
@@ -20,11 +21,11 @@
     <div class="rl-error-banner @(formErrors.Count == 0 ? "is-hidden" : null)" role="alert" id="createPropertyFormErrors">
         <i class="fas fa-circle-exclamation"></i>
         <div>
-            <strong>Please fix the following to continue:</strong>
+            <strong>@L["Please fix the following to continue:"]</strong>
             <ul class="rl-error-list" id="createPropertyFormErrorList">
                 @foreach (var msg in formErrors)
                 {
-                    <li>@msg</li>
+                    <li>@L[msg]</li>
                 }
             </ul>
         </div>
@@ -32,59 +33,59 @@
 
     <div class="rl-cp-card">
         <div class="rl-cp-field rl-cp-field--address @(addressError.Length > 0 ? "is-error" : null)">
-            <label for="cp-address">Property address <span class="rl-cp-req">*</span></label>
-            <div class="rl-cp-input"><i class="fas fa-location-dot"></i><input type="text" id="cp-address" name="Address" value="@Model.Address" placeholder="House number and street name" autocomplete="address-line1" data-address-autocomplete data-ac-street-only="true" data-ac-city="cp-city" data-ac-state="cp-state" data-ac-zip="cp-postal-code" aria-required="true" aria-invalid="@(addressError.Length > 0)" /></div>
-            <span class="rl-field-error" id="addressError" data-client-error="Address">@addressError</span>
+            <label for="cp-address">@L["Property address"] <span class="rl-cp-req">*</span></label>
+            <div class="rl-cp-input"><i class="fas fa-location-dot"></i><input type="text" id="cp-address" name="Address" value="@Model.Address" placeholder="@L["House number and street name"]" autocomplete="address-line1" data-address-autocomplete data-ac-street-only="true" data-ac-city="cp-city" data-ac-state="cp-state" data-ac-zip="cp-postal-code" aria-required="true" aria-invalid="@(addressError.Length > 0)" /></div>
+            <span class="rl-field-error" id="addressError" data-client-error="Address">@L[addressError]</span>
         </div>
 
         <div class="rl-cp-field">
-            <label for="cp-unit">Unit / Apt <small>(optional)</small></label>
-            <div class="rl-cp-input"><input type="text" id="cp-unit" name="Unit" value="@Model.Unit" placeholder="Unit, Apt, Suite, etc." /></div>
+            <label for="cp-unit">@L["Unit / Apt"] <small>(@L["optional"])</small></label>
+            <div class="rl-cp-input"><input type="text" id="cp-unit" name="Unit" value="@Model.Unit" placeholder="@L["Unit, Apt, Suite, etc."]" /></div>
         </div>
 
         <div class="rl-cp-grid">
             <div class="rl-cp-field @(cityError.Length > 0 ? "is-error" : null)">
-                <label for="cp-city">City <span class="rl-cp-req">*</span></label>
-                <div class="rl-cp-input"><input type="text" id="cp-city" name="City" value="@Model.City" placeholder="City" autocomplete="off" data-city-autocomplete data-ac-state="cp-state" data-ac-zip="cp-postal-code" aria-required="true" aria-invalid="@(cityError.Length > 0)" /></div>
-                <span class="rl-field-error" id="cityError" data-client-error="City">@cityError</span>
+                <label for="cp-city">@L["City"] <span class="rl-cp-req">*</span></label>
+                <div class="rl-cp-input"><input type="text" id="cp-city" name="City" value="@Model.City" placeholder="@L["City"]" autocomplete="off" data-city-autocomplete data-ac-state="cp-state" data-ac-zip="cp-postal-code" aria-required="true" aria-invalid="@(cityError.Length > 0)" /></div>
+                <span class="rl-field-error" id="cityError" data-client-error="City">@L[cityError]</span>
             </div>
             <div class="rl-cp-field @(stateError.Length > 0 ? "is-error" : null)">
-                <label for="cp-state">State <span class="rl-cp-req">*</span></label>
+                <label for="cp-state">@L["State"] <span class="rl-cp-req">*</span></label>
                 <div class="rl-cp-input rl-cp-input--select">
                     <select id="cp-state" name="StateCode" data-ac-zip="cp-postal-code" data-ac-city="cp-city" data-ac-address="cp-address" aria-required="true" aria-invalid="@(stateError.Length > 0)">
-                        <option value="">Select state</option>
+                        <option value="">@L["Select state"]</option>
                         @foreach (var state in Model.States)
                         {
                             <option value="@state" selected="@(Model.StateCode == state)">@state</option>
                         }
                     </select>
                 </div>
-                <span class="rl-field-error" id="stateError" data-client-error="StateCode">@stateError</span>
+                <span class="rl-field-error" id="stateError" data-client-error="StateCode">@L[stateError]</span>
             </div>
         </div>
 
         <div class="rl-cp-grid">
             <div class="rl-cp-field @(zipError.Length > 0 ? "is-error" : null)">
-                <label for="cp-postal-code">ZIP code <span class="rl-cp-req">*</span></label>
-                <div class="rl-cp-input"><input type="text" id="cp-postal-code" name="PostalCode" value="@Model.PostalCode" placeholder="Enter 5-digit ZIP code" inputmode="numeric" autocomplete="postal-code" maxlength="10" minlength="5" pattern="\d{5}(-\d{4})?" data-zip-input aria-required="true" aria-invalid="@(zipError.Length > 0)" /></div>
-                <span class="rl-field-hint" id="cp-zip-hint" data-ac-zip-hint-for="cp-postal-code" hidden>Suggested from city and state when you select a state. Change it if your property uses a different ZIP.</span>
-                <span class="rl-field-error" id="postalCodeError" data-client-error="PostalCode">@zipError</span>
+                <label for="cp-postal-code">@L["ZIP code"] <span class="rl-cp-req">*</span></label>
+                <div class="rl-cp-input"><input type="text" id="cp-postal-code" name="PostalCode" value="@Model.PostalCode" placeholder="@L["Enter 5-digit ZIP code"]" inputmode="numeric" autocomplete="postal-code" maxlength="10" minlength="5" pattern="\d{5}(-\d{4})?" data-zip-input aria-required="true" aria-invalid="@(zipError.Length > 0)" /></div>
+                <span class="rl-field-hint" id="cp-zip-hint" data-ac-zip-hint-for="cp-postal-code" hidden>@L["Suggested from city and state when you select a state. Change it if your property uses a different ZIP."]</span>
+                <span class="rl-field-error" id="postalCodeError" data-client-error="PostalCode">@L[zipError]</span>
             </div>
             <div class="rl-cp-field">
-                <label for="cp-nickname">Property nickname <small>(optional)</small></label>
-                <div class="rl-cp-input"><input type="text" id="cp-nickname" name="Nickname" value="@Model.Nickname" placeholder="e.g., Main House, Investment Property" /></div>
+                <label for="cp-nickname">@L["Property nickname"] <small>(@L["optional"])</small></label>
+                <div class="rl-cp-input"><input type="text" id="cp-nickname" name="Nickname" value="@Model.Nickname" placeholder="@L["e.g., Main House, Investment Property"]" /></div>
             </div>
         </div>
 
         <div class="rl-cp-field">
-            <label>Property type <span class="rl-cp-req">*</span></label>
+            <label>@L["Property type"] <span class="rl-cp-req">*</span></label>
             <div class="rl-cp-type-grid">
                 @foreach (var type in Model.PropertyTypes)
                 {
                     <label class="rl-cp-type @(Model.PropertyType == type.Value ? "is-selected" : "")">
                         <input type="radio" name="PropertyType" value="@type.Value" @(Model.PropertyType == type.Value ? "checked" : null) />
                         <i class="fas @type.Icon"></i>
-                        <span>@type.Label</span>
+                        <span>@L[type.Label]</span>
                     </label>
                 }
             </div>
@@ -93,32 +94,32 @@
         <label class="rl-cp-check">
             <input type="checkbox" name="SelectForClient" value="true" @(Model.SelectForClient ? "checked" : null) />
             <span>
-                <strong>Select this property for this client</strong>
-                <small>This property will be selected automatically for this invitation.</small>
+                <strong>@L["Select this property for this client"]</strong>
+                <small>@L["This property will be selected automatically for this invitation."]</small>
             </span>
         </label>
     </div>
 
     <div class="rl-info-box">
         <i class="fas fa-shield-halved"></i>
-        <p>Once saved, this property will be added to the list and selected automatically for this invitation.</p>
+        <p>@L["Once saved, this property will be added to the list and selected automatically for this invitation."]</p>
     </div>
 
     <div class="rl-cp-next">
         <span class="rl-cp-next-icon"><i class="fas fa-list-check"></i></span>
         <div>
-            <strong>What happens next</strong>
+            <strong>@L["What happens next"]</strong>
             <ol class="rl-cp-next-steps">
-                <li>Property is created</li>
-                <li>It appears in the property list</li>
-                <li>It is selected for this client invite</li>
+                <li>@L["Property is created"]</li>
+                <li>@L["It appears in the property list"]</li>
+                <li>@L["It is selected for this client invite"]</li>
             </ol>
         </div>
     </div>
 
     <div class="rl-invite-actions">
-        <a asp-action="BackToProperty" class="rl-invite-cancel">Back</a>
-        <button type="submit" id="createPropertySubmitBtn" class="ob-btn ob-btn-primary">Save &amp; Add Property</button>
+        <a asp-action="BackToProperty" class="rl-invite-cancel">@L["Back"]</a>
+        <button type="submit" id="createPropertySubmitBtn" class="ob-btn ob-btn-primary">@L["Save & Add Property"]</button>
     </div>
 </form>
 

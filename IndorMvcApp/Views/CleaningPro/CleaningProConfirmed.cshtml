@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = L["Cleaning Confirmed - INDOR"];
 var scheduledParts = (Model.ScheduledLabel ?? string.Empty).Split('\n', 2);
-    ViewData["WizardTitle"] = Model.NombreServicio;
+    ViewData["WizardTitle"] = L.Catalog(Model.NombreServicio);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
@@ -11,7 +11,7 @@ var scheduledParts = (Model.ScheduledLabel ?? string.Empty).Split('\n', 2);
 <div class="success-wrap" style="text-align:center;margin-bottom:16px;">
         <div class="success-icon"><i class="fas fa-check"></i></div>
         <h1 class="page-heading" style="font-size:1.1rem;margin-bottom:6px;">@L["Cleaning request confirmed!"]</h1>
-        <p class="page-lead" style="text-align:center;">Your @Model.NombreServicio service is all set.</p>
+        <p class="page-lead" style="text-align:center;">@L.T("Your {0} service is all set.", L.Catalog(Model.NombreServicio))</p>
     </div>
 
     <div class="summary-card">

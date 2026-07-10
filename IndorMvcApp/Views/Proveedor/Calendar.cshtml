@@ -3,8 +3,8 @@
     ViewData["Title"] = L["Calendar Overview - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "jobs";
-    var views = new[] { ("day", "Day"), ("week", "Week"), ("month", "Month") };
-    var filters = new[] { ("all", "All", ""), ("jobs", "Jobs", "fa-briefcase"), ("visits", "Visits", "fa-user"), ("followups", "Follow-ups", "fa-phone"), ("blocked", "Blocked Time", "fa-lock") };
+    var views = new[] { ("day", L["Day"]), ("week", L["Week"]), ("month", L["Month"]) };
+    var filters = new[] { ("all", L["All"], ""), ("jobs", L["Jobs"], "fa-briefcase"), ("visits", L["Visits"], "fa-user"), ("followups", L["Follow-ups"], "fa-phone"), ("blocked", L["Blocked Time"], "fa-lock") };
 }
 
 <div class="prv-pro-shell prv-pro-shell--calendar">
@@ -17,7 +17,7 @@
             <h1><i class="fas fa-calendar-week"></i> @L["Calendar Overview"]</h1>
             <small>@Model.WeekRangeLabel</small>
         </div>
-        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+        <span class="prv-pro-step-badge">@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</span>
     </header>
 
     <div class="prv-pro-calendar-toolbar">
@@ -78,7 +78,7 @@
             <i class="fas fa-calendar-check"></i>
             <div>
                 <strong>@L["This Week Summary"]</strong>
-                <span>@Model.WeekEventCount Events Scheduled • @Model.EstimatedWorkLabel Estimated Work Time</span>
+                <span>@Model.WeekEventCount @L["Events Scheduled"] • @Model.EstimatedWorkLabel @L["Estimated Work Time"]</span>
             </div>
         </article>
         <article>

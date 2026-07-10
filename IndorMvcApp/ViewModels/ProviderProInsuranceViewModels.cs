@@ -123,9 +123,9 @@ public static class InsuranceCatalog
     public static (decimal PayToday, decimal Monthly) Pricing(string? plan) =>
         (plan?.Trim().ToLowerInvariant()) switch
         {
-            "standard" => (325m, 183m),
-            "premium" => (325m, 203m),
-            _ => (325m, 163m)
+            "standard" => (0m, 0m),
+            "premium" => (0m, 0m),
+            _ => (0m, 0m)
         };
 
     public static readonly (string Value, string Icon)[] Trades =

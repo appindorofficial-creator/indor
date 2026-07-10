@@ -1,4 +1,5 @@
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,8 @@ namespace IndorMvcApp.Services;
 public class RealtorPropertyFileWizardService(
     AppDbContext db,
     IHttpContextAccessor httpContextAccessor,
-    IRealtorRegistrationService registration) : IRealtorPropertyFileWizardService
+    IRealtorRegistrationService registration,
+    IIndorLocalizer localizer) : IRealtorPropertyFileWizardService
 {
     private const string DraftIdSessionKey = "RealtorPropertyFileDraftId";
 
@@ -547,8 +549,8 @@ public class RealtorPropertyFileWizardService(
             FullDisplayName = realtor.DisplayName ?? firstName,
             ProfilePhotoUrl = string.IsNullOrWhiteSpace(realtor.ProfilePhotoUrl) ? null : realtor.ProfilePhotoUrl,
             BadgeLabel = realtor.RegistrationStatus == RealtorRegistrationStatuses.Verified
-                ? "Verified Realtor"
-                : "Realtor Basic",
+                ? localizer.T("Verified Realtor")
+                : localizer.T("Realtor Basic"),
             IsVerified = realtor.RegistrationStatus == RealtorRegistrationStatuses.Verified,
             PropertyFileId = file.Id,
             FileCode = $"PF-{file.Id}",
@@ -556,17 +558,28 @@ public class RealtorPropertyFileWizardService(
             CityRegion = file.CityRegion ?? "",
             PhotoUrl = string.IsNullOrWhiteSpace(file.PhotoUrl) ? "/welcome-house.png" : file.PhotoUrl,
             ClientName = file.ClientName ?? "",
-            FilePhaseLabel = FormatFilePhaseLabel(file.FilePhase),
-            StatusBadge = badge,
+            FilePhaseLabel = RealtorDisplayLocalization.FilePhaseLabel(localizer, file.FilePhase),
+            StatusBadge = localizer.T(badge),
             StatusCss = css,
             RepairItemsCount = file.RepairItemsCount,
             QuotesReceivedCount = file.QuotesReceivedCount,
-            UpdatedLabel = $"Last updated {FormatRelativeTime(file.UpdatedUtc ?? file.FechaCreacion)}",
-            PrimaryActionLabel = primaryLabel,
+            UpdatedLabel = localizer.T("Last updated {0}", FormatRelativeTime(file.UpdatedUtc ?? file.FechaCreacion)),
+            PrimaryActionLabel = string.IsNullOrWhiteSpace(primaryLabel) ? "" : localizer.T(primaryLabel),
             PrimaryActionUrl = primaryUrl,
-            SecondaryActionLabel = secondaryLabel,
+            SecondaryActionLabel = string.IsNullOrWhiteSpace(secondaryLabel) ? null : localizer.T(secondaryLabel),
             SecondaryActionUrl = secondaryUrl,
-            Sections = sections
+            Sections = sections.Select(section => new RealtorPropertyFileViewSectionViewModel
+            {
+                Label = localizer.T(section.Label),
+                Icon = section.Icon,
+                Items = section.Items.Select(item => new RealtorPropertyFileViewItemViewModel
+                {
+                    ItemLabel = item.ItemLabel,
+                    FileUrl = item.FileUrl,
+                    NoteText = item.NoteText,
+                    MetaLabel = item.MetaLabel
+                }).ToList()
+            }).ToList()
         };
     }
 

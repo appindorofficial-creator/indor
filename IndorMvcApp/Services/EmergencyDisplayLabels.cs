@@ -1,51 +1,53 @@
-namespace IndorMvcApp.Services;
+﻿namespace IndorMvcApp.Services;
+
+// Localized via DisplayLabelsLocalization.L
 
 public static class EmergencyDisplayLabels
 {
     public static string TipoProblemaPlomeria(string? value) => value switch
     {
-        "BurstPipe" => "Burst pipe",
-        "LeakDripping" => "Leak / dripping",
-        "CloggedDrain" => "Clogged drain",
-        "ToiletOverflow" => "Toilet overflow",
-        "MainShutoff" => "Main shutoff",
-        "WaterHeaterLeak" => "Water heater leak",
-        "SewerBackup" => "Sewer backup",
-        "Other" => "Other",
-        _ => "Plumbing emergency"
+        "BurstPipe" => DisplayLabelsLocalization.L("Burst pipe"),
+        "LeakDripping" => DisplayLabelsLocalization.L("Leak / dripping"),
+        "CloggedDrain" => DisplayLabelsLocalization.L("Clogged drain"),
+        "ToiletOverflow" => DisplayLabelsLocalization.L("Toilet overflow"),
+        "MainShutoff" => DisplayLabelsLocalization.L("Main shutoff"),
+        "WaterHeaterLeak" => DisplayLabelsLocalization.L("Water heater leak"),
+        "SewerBackup" => DisplayLabelsLocalization.L("Sewer backup"),
+        "Other" => DisplayLabelsLocalization.L("Other"),
+        _ => DisplayLabelsLocalization.L("Plumbing emergency")
     };
 
     public static string AguaFluyendo(string? value) => value switch
     {
-        "Yes" => "Water actively flowing",
-        "No" => "Water not actively flowing",
-        "NotSure" => "Water flow unknown",
-        _ => "Water status unknown"
+        "Yes" => DisplayLabelsLocalization.L("Water actively flowing"),
+        "No" => DisplayLabelsLocalization.L("Water not actively flowing"),
+        "NotSure" => DisplayLabelsLocalization.L("Water flow unknown"),
+        _ => DisplayLabelsLocalization.L("Water status unknown")
     };
 
     public static string PuedeCerrarAgua(string? value) => value switch
     {
-        "Yes" => "Can shut off water",
-        "No" => "Unable to shut off water",
-        "NeedHelp" => "Needs help shutting off water",
-        _ => "Shutoff status unknown"
+        "Yes" => DisplayLabelsLocalization.L("Can shut off water"),
+        "No" => DisplayLabelsLocalization.L("Unable to shut off water"),
+        "NeedHelp" => DisplayLabelsLocalization.L("Needs help shutting off water"),
+        _ => DisplayLabelsLocalization.L("Shutoff status unknown")
     };
 
     public static string UrgenciaEmergencia(string? value) => value switch
     {
-        "Emergency" => "Emergency",
-        "Priority" => "Priority",
-        "Today" => "Today",
-        "Normal" => "Normal",
+        "Emergency" => DisplayLabelsLocalization.L("Emergency"),
+        "Priority" => DisplayLabelsLocalization.L("Priority"),
+        "Today" => DisplayLabelsLocalization.L("Today"),
+        "Normal" => DisplayLabelsLocalization.L("Normal"),
         _ => value ?? "Emergency"
     };
 
     public static string AccesoSiAusente(string? value) => value switch
     {
-        "Yes" => "Yes, enter if not home",
-        "No" => "No, do not enter",
-        "CallFirst" => "Call first before entering",
-        _ => "Not specified"
+        "Yes" => DisplayLabelsLocalization.L("Yes, enter if not home"),
+        "No" => DisplayLabelsLocalization.L("No, do not enter"),
+        "CallFirst" => DisplayLabelsLocalization.L("Call first before entering"),
+        _ => DisplayLabelsLocalization.L("Not specified")
     };
 
     public static string FormatPlumbingProblem(string? tipoProblema, string? aguaFluyendo)
@@ -82,39 +84,39 @@ public static class EmergencyDisplayLabels
 
     public static string TipoProblemaHvac(string? value) => value switch
     {
-        "NotCooling" => "Not cooling",
-        "NoHeat" => "No heat",
-        "WontTurnOn" => "Won't turn on",
-        "WaterLeak" => "Water leak",
-        "ThermostatIssue" => "Thermostat issue",
-        "BurningSmell" => "Burning smell / smoke",
-        "WeakAirflow" => "Weak airflow",
-        "StrangeNoise" => "Strange noise",
-        _ => "HVAC issue"
+        "NotCooling" => DisplayLabelsLocalization.L("Not cooling"),
+        "NoHeat" => DisplayLabelsLocalization.L("No heat"),
+        "WontTurnOn" => DisplayLabelsLocalization.L("Won't turn on"),
+        "WaterLeak" => DisplayLabelsLocalization.L("Water leak"),
+        "ThermostatIssue" => DisplayLabelsLocalization.L("Thermostat issue"),
+        "BurningSmell" => DisplayLabelsLocalization.L("Burning smell / smoke"),
+        "WeakAirflow" => DisplayLabelsLocalization.L("Weak airflow"),
+        "StrangeNoise" => DisplayLabelsLocalization.L("Strange noise"),
+        _ => DisplayLabelsLocalization.L("HVAC issue")
     };
 
     public static string SucedeAhora(string? value) => value switch
     {
-        "Yes" => "Happening now",
-        "No" => "Not happening now",
-        "Intermittent" => "Intermittent",
-        _ => "Status unknown"
+        "Yes" => DisplayLabelsLocalization.L("Happening now"),
+        "No" => DisplayLabelsLocalization.L("Not happening now"),
+        "Intermittent" => DisplayLabelsLocalization.L("Intermittent"),
+        _ => DisplayLabelsLocalization.L("Status unknown")
     };
 
     public static string PuedeLlamarYa(string? value) => value switch
     {
-        "Yes" => "Yes, call right away",
-        "No" => "Do not call yet",
-        "CallFirst" => "Call first",
-        _ => "Not specified"
+        "Yes" => DisplayLabelsLocalization.L("Yes, call right away"),
+        "No" => DisplayLabelsLocalization.L("Do not call yet"),
+        "CallFirst" => DisplayLabelsLocalization.L("Call first"),
+        _ => DisplayLabelsLocalization.L("Not specified")
     };
 
     public static string EnCasaAhora(string? value) => value switch
     {
-        "Yes" => "Home now",
-        "No" => "Not home",
-        "OnMyWay" => "On my way",
-        _ => "Not specified"
+        "Yes" => DisplayLabelsLocalization.L("Home now"),
+        "No" => DisplayLabelsLocalization.L("Not home"),
+        "OnMyWay" => DisplayLabelsLocalization.L("On my way"),
+        _ => DisplayLabelsLocalization.L("Not specified")
     };
 
     public static string UrgenciaEmergenciaCss(string? value) =>
@@ -122,56 +124,56 @@ public static class EmergencyDisplayLabels
 
     public static string TipoProblemaWaterHeater(string? value) => value switch
     {
-        "NoHotWater" => "No hot water",
-        "LeakingTank" => "Leaking tank",
-        "WaterAroundUnit" => "Water around unit",
-        "PilotLight" => "Pilot light / ignition",
-        "ErrorCode" => "Error code",
-        "StrangeNoise" => "Strange noise",
-        "SmellOfGas" => "Smell of gas",
-        "PressureReliefValve" => "Pressure relief valve",
-        "NotSure" => "Not sure",
-        _ => "Water heater issue"
+        "NoHotWater" => DisplayLabelsLocalization.L("No hot water"),
+        "LeakingTank" => DisplayLabelsLocalization.L("Leaking tank"),
+        "WaterAroundUnit" => DisplayLabelsLocalization.L("Water around unit"),
+        "PilotLight" => DisplayLabelsLocalization.L("Pilot light / ignition"),
+        "ErrorCode" => DisplayLabelsLocalization.L("Error code"),
+        "StrangeNoise" => DisplayLabelsLocalization.L("Strange noise"),
+        "SmellOfGas" => DisplayLabelsLocalization.L("Smell of gas"),
+        "PressureReliefValve" => DisplayLabelsLocalization.L("Pressure relief valve"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => DisplayLabelsLocalization.L("Water heater issue")
     };
 
     public static string UnidadFuncionando(string? value) => value switch
     {
-        "Yes" => "Yes",
-        "No" => "No",
-        "NotSure" => "Not sure",
-        _ => "Not sure"
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "No" => DisplayLabelsLocalization.L("No"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => DisplayLabelsLocalization.L("Not sure")
     };
 
     public static string UbicacionWaterHeater(string? value) => value switch
     {
-        "Garage" => "Garage",
-        "Closet" => "Closet",
-        "Attic" => "Attic",
-        "Basement" => "Basement",
-        "Outside" => "Outside",
-        "UtilityRoom" => "Utility room",
+        "Garage" => DisplayLabelsLocalization.L("Garage"),
+        "Closet" => DisplayLabelsLocalization.L("Closet"),
+        "Attic" => DisplayLabelsLocalization.L("Attic"),
+        "Basement" => DisplayLabelsLocalization.L("Basement"),
+        "Outside" => DisplayLabelsLocalization.L("Outside"),
+        "UtilityRoom" => DisplayLabelsLocalization.L("Utility room"),
         _ => value ?? "Garage"
     };
 
     public static string TipoUnidadWaterHeater(string? value) => value switch
     {
-        "Gas" => "Gas",
-        "Electric" => "Electric",
-        "Tankless" => "Tankless",
-        "NotSure" => "Not sure",
+        "Gas" => DisplayLabelsLocalization.L("Gas"),
+        "Electric" => DisplayLabelsLocalization.L("Electric"),
+        "Tankless" => DisplayLabelsLocalization.L("Tankless"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Not sure"
     };
 
     public static string SintomaWaterHeater(string? value) => value switch
     {
-        "WaterLeaking" => "Water leaking",
-        "RustyWater" => "Rusty water",
-        "NoHotWater" => "No hot water",
-        "WarmOnly" => "Warm only",
-        "LowPressureNearby" => "Low pressure nearby",
-        "ErrorCode" => "Error code",
-        "BurnerWontStayOn" => "Burner won't stay on",
-        "PoppingNoise" => "Popping noise",
+        "WaterLeaking" => DisplayLabelsLocalization.L("Water leaking"),
+        "RustyWater" => DisplayLabelsLocalization.L("Rusty water"),
+        "NoHotWater" => DisplayLabelsLocalization.L("No hot water"),
+        "WarmOnly" => DisplayLabelsLocalization.L("Warm only"),
+        "LowPressureNearby" => DisplayLabelsLocalization.L("Low pressure nearby"),
+        "ErrorCode" => DisplayLabelsLocalization.L("Error code"),
+        "BurnerWontStayOn" => DisplayLabelsLocalization.L("Burner won't stay on"),
+        "PoppingNoise" => DisplayLabelsLocalization.L("Popping noise"),
         _ => value ?? string.Empty
     };
 
@@ -218,80 +220,80 @@ public static class EmergencyDisplayLabels
 
     public static string EstadoWaterHeaterConfirmado(string? estado) => estado switch
     {
-        "Submitted" => "Confirmed",
+        "Submitted" => DisplayLabelsLocalization.L("Confirmed"),
         _ => EstadoSolicitud(estado)
     };
 
     public static string EstadoSolicitud(string? estado) => estado switch
     {
-        "Submitted" => "Searching for provider",
-        "PhotosCompleted" => "Review pending",
-        "SafetyCompleted" => "Photos pending",
-        "LocationCompleted" => "Callback pending",
-        "ProblemCompleted" => "Location pending",
-        "DescribeCompleted" => "Next step pending",
-        "DetailsCompleted" => "Submit pending",
-        "YourInfoCompleted" => "Review pending",
-        "ContactCompleted" => "Review pending",
-        "IssueCompleted" => "Details pending",
-        "InProgress" => "In progress",
+        "Submitted" => DisplayLabelsLocalization.L("Searching for provider"),
+        "PhotosCompleted" => DisplayLabelsLocalization.L("Review pending"),
+        "SafetyCompleted" => DisplayLabelsLocalization.L("Photos pending"),
+        "LocationCompleted" => DisplayLabelsLocalization.L("Callback pending"),
+        "ProblemCompleted" => DisplayLabelsLocalization.L("Location pending"),
+        "DescribeCompleted" => DisplayLabelsLocalization.L("Next step pending"),
+        "DetailsCompleted" => DisplayLabelsLocalization.L("Submit pending"),
+        "YourInfoCompleted" => DisplayLabelsLocalization.L("Review pending"),
+        "ContactCompleted" => DisplayLabelsLocalization.L("Review pending"),
+        "IssueCompleted" => DisplayLabelsLocalization.L("Details pending"),
+        "InProgress" => DisplayLabelsLocalization.L("In progress"),
         _ => estado ?? "In progress"
     };
 
     public static string CausaAguaFlood(string? value) => value switch
     {
-        "BurstPipe" => "Burst pipe",
-        "WaterHeater" => "Water heater",
-        "ApplianceLeak" => "Appliance leak",
-        "ToiletOverflow" => "Toilet overflow",
-        "RoofCeilingLeak" => "Roof / ceiling leak",
-        "UnknownSource" => "Unknown / being investigated",
-        _ => "Unknown / being investigated"
+        "BurstPipe" => DisplayLabelsLocalization.L("Burst pipe"),
+        "WaterHeater" => DisplayLabelsLocalization.L("Water heater"),
+        "ApplianceLeak" => DisplayLabelsLocalization.L("Appliance leak"),
+        "ToiletOverflow" => DisplayLabelsLocalization.L("Toilet overflow"),
+        "RoofCeilingLeak" => DisplayLabelsLocalization.L("Roof / ceiling leak"),
+        "UnknownSource" => DisplayLabelsLocalization.L("Unknown / being investigated"),
+        _ => DisplayLabelsLocalization.L("Unknown / being investigated")
     };
 
     public static string UbicacionAguaFlood(string? value) => value switch
     {
-        "Basement" => "Basement",
-        "FirstFloor" => "1st floor",
-        "SecondFloor" => "2nd floor",
-        "Bathroom" => "Bathroom",
-        "Kitchen" => "Kitchen",
-        "Laundry" => "Laundry",
-        "Garage" => "Garage",
-        "CrawlSpace" => "Crawl space",
+        "Basement" => DisplayLabelsLocalization.L("Basement"),
+        "FirstFloor" => DisplayLabelsLocalization.L("1st floor"),
+        "SecondFloor" => DisplayLabelsLocalization.L("2nd floor"),
+        "Bathroom" => DisplayLabelsLocalization.L("Bathroom"),
+        "Kitchen" => DisplayLabelsLocalization.L("Kitchen"),
+        "Laundry" => DisplayLabelsLocalization.L("Laundry"),
+        "Garage" => DisplayLabelsLocalization.L("Garage"),
+        "CrawlSpace" => DisplayLabelsLocalization.L("Crawl space"),
         _ => value ?? "Unknown area"
     };
 
     public static string AguaActivaFlood(string? value) => value switch
     {
-        "Yes" => "Water still active",
-        "No" => "Water not active",
-        "NotSure" => "Active status unknown",
-        _ => "Active status unknown"
+        "Yes" => DisplayLabelsLocalization.L("Water still active"),
+        "No" => DisplayLabelsLocalization.L("Water not active"),
+        "NotSure" => DisplayLabelsLocalization.L("Active status unknown"),
+        _ => DisplayLabelsLocalization.L("Active status unknown")
     };
 
     public static string UbicacionCierreAguaFlood(string? value) => value switch
     {
-        "InsideHome" => "Inside home",
-        "Outside" => "Outside",
-        "DontKnow" => "Don't know",
-        _ => "Don't know"
+        "InsideHome" => DisplayLabelsLocalization.L("Inside home"),
+        "Outside" => DisplayLabelsLocalization.L("Outside"),
+        "DontKnow" => DisplayLabelsLocalization.L("Don't know"),
+        _ => DisplayLabelsLocalization.L("Don't know")
     };
 
     public static string PuedeApagarElectricidadFlood(string? value) => value switch
     {
-        "Yes" => "Can turn off power",
-        "No" => "Cannot turn off power",
-        "NeedHelp" => "Needs help with power",
-        "NotSure" => "Not sure",
-        _ => "Not sure"
+        "Yes" => DisplayLabelsLocalization.L("Can turn off power"),
+        "No" => DisplayLabelsLocalization.L("Cannot turn off power"),
+        "NeedHelp" => DisplayLabelsLocalization.L("Needs help with power"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => DisplayLabelsLocalization.L("Not sure")
     };
 
     public static string CantidadAguaFlood(string? value) => value switch
     {
-        "SmallArea" => "Small area",
-        "OneRoom" => "One room",
-        "SeveralRooms" => "Several rooms",
+        "SmallArea" => DisplayLabelsLocalization.L("Small area"),
+        "OneRoom" => DisplayLabelsLocalization.L("One room"),
+        "SeveralRooms" => DisplayLabelsLocalization.L("Several rooms"),
         _ => value ?? "One room"
     };
 
@@ -304,7 +306,7 @@ public static class EmergencyDisplayLabels
             return $"{location} ({amount.ToLowerInvariant()})";
         }
 
-        return $"{location} — {amount.ToLowerInvariant()}";
+        return $"{location} â€” {amount.ToLowerInvariant()}";
     }
 
     public static string TiempoLlegadaRango(int minutos)
@@ -318,32 +320,32 @@ public static class EmergencyDisplayLabels
     {
         var low = Math.Max(30, minutos);
         var high = minutos + 15;
-        return $"{low}–{high} min";
+        return $"{low}â€“{high} min";
     }
 
     public static string TipoProblemaElectrical(string? value) => value switch
     {
-        "NoPower" => "No power",
-        "PartialOutage" => "Partial outage",
-        "BreakerTripping" => "Breaker keeps tripping",
-        "OutletSwitch" => "Outlet / switch issue",
-        "SparksBurning" => "Sparks or burning smell",
-        "PanelIssue" => "Panel issue",
-        "ExposedWire" => "Exposed wire",
-        "Other" => "Other",
-        _ => "Electrical issue"
+        "NoPower" => DisplayLabelsLocalization.L("No power"),
+        "PartialOutage" => DisplayLabelsLocalization.L("Partial outage"),
+        "BreakerTripping" => DisplayLabelsLocalization.L("Breaker keeps tripping"),
+        "OutletSwitch" => DisplayLabelsLocalization.L("Outlet / switch issue"),
+        "SparksBurning" => DisplayLabelsLocalization.L("Sparks or burning smell"),
+        "PanelIssue" => DisplayLabelsLocalization.L("Panel issue"),
+        "ExposedWire" => DisplayLabelsLocalization.L("Exposed wire"),
+        "Other" => DisplayLabelsLocalization.L("Other"),
+        _ => DisplayLabelsLocalization.L("Electrical issue")
     };
 
     public static string UbicacionElectrical(string? value) => value switch
     {
-        "WholeHouse" => "Whole house",
-        "Kitchen" => "Kitchen",
-        "LivingRoom" => "Living room",
-        "Bedroom" => "Bedroom",
-        "Bathroom" => "Bathroom",
-        "Garage" => "Garage",
-        "Outside" => "Outside",
-        "ElectricalPanel" => "Electrical panel",
+        "WholeHouse" => DisplayLabelsLocalization.L("Whole house"),
+        "Kitchen" => DisplayLabelsLocalization.L("Kitchen"),
+        "LivingRoom" => DisplayLabelsLocalization.L("Living room"),
+        "Bedroom" => DisplayLabelsLocalization.L("Bedroom"),
+        "Bathroom" => DisplayLabelsLocalization.L("Bathroom"),
+        "Garage" => DisplayLabelsLocalization.L("Garage"),
+        "Outside" => DisplayLabelsLocalization.L("Outside"),
+        "ElectricalPanel" => DisplayLabelsLocalization.L("Electrical panel"),
         _ => value ?? "Unknown area"
     };
 
@@ -361,12 +363,12 @@ public static class EmergencyDisplayLabels
 
     public static string SintomaElectrical(string? value) => value switch
     {
-        "NoPower" => "No power",
-        "Sparks" => "Sparks",
-        "BurningSmell" => "Burning smell",
-        "WarmOutlet" => "Warm outlet",
-        "Buzzing" => "Buzzing",
-        "LightsFlickering" => "Lights flickering",
+        "NoPower" => DisplayLabelsLocalization.L("No power"),
+        "Sparks" => DisplayLabelsLocalization.L("Sparks"),
+        "BurningSmell" => DisplayLabelsLocalization.L("Burning smell"),
+        "WarmOutlet" => DisplayLabelsLocalization.L("Warm outlet"),
+        "Buzzing" => DisplayLabelsLocalization.L("Buzzing"),
+        "LightsFlickering" => DisplayLabelsLocalization.L("Lights flickering"),
         _ => value ?? string.Empty
     };
 
@@ -385,61 +387,61 @@ public static class EmergencyDisplayLabels
 
     public static string EnergiaEncendidaElectrical(string? value) => value switch
     {
-        "Yes" => "Still on",
-        "No" => "Off",
-        "NotSure" => "Not sure",
-        _ => "Not sure"
+        "Yes" => DisplayLabelsLocalization.L("Still on"),
+        "No" => DisplayLabelsLocalization.L("Off"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => DisplayLabelsLocalization.L("Not sure")
     };
 
     public static string PuedeApagarBreakerElectrical(string? value) => value switch
     {
-        "Yes" => "Yes",
-        "No" => "No",
-        "NotSure" => "Not sure",
-        _ => "Not sure"
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "No" => DisplayLabelsLocalization.L("No"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => DisplayLabelsLocalization.L("Not sure")
     };
 
     public static string PuedeAlejarseElectrical(string? value) => value switch
     {
-        "Yes" => "Yes",
-        "NeedHelp" => "Need help",
-        _ => "Not specified"
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "NeedHelp" => DisplayLabelsLocalization.L("Need help"),
+        _ => DisplayLabelsLocalization.L("Not specified")
     };
 
     public static string UrgenciaElectrical(string? value) => value switch
     {
-        "Emergency" => "Emergency",
-        "Urgent" => "Urgent",
-        "Priority" => "Priority",
+        "Emergency" => DisplayLabelsLocalization.L("Emergency"),
+        "Urgent" => DisplayLabelsLocalization.L("Urgent"),
+        "Priority" => DisplayLabelsLocalization.L("Priority"),
         _ => value ?? "Emergency"
     };
 
     public static string EstadoElectricalConfirmado(string? estado) => estado switch
     {
-        "Submitted" => "Dispatching",
+        "Submitted" => DisplayLabelsLocalization.L("Dispatching"),
         _ => EstadoSolicitud(estado)
     };
 
     public static string TipoProblemaTreeDamage(string? value) => value switch
     {
-        "TreeOnRoof" => "Tree on roof",
-        "FallenBranch" => "Fallen branch",
-        "BlockedDriveway" => "Blocked driveway",
-        "FenceDamage" => "Fence damage",
-        "TreeLeaning" => "Tree leaning",
-        "DebrisCleanup" => "Debris cleanup",
-        "Other" => "Other",
-        _ => "Tree damage"
+        "TreeOnRoof" => DisplayLabelsLocalization.L("Tree on roof"),
+        "FallenBranch" => DisplayLabelsLocalization.L("Fallen branch"),
+        "BlockedDriveway" => DisplayLabelsLocalization.L("Blocked driveway"),
+        "FenceDamage" => DisplayLabelsLocalization.L("Fence damage"),
+        "TreeLeaning" => DisplayLabelsLocalization.L("Tree leaning"),
+        "DebrisCleanup" => DisplayLabelsLocalization.L("Debris cleanup"),
+        "Other" => DisplayLabelsLocalization.L("Other"),
+        _ => DisplayLabelsLocalization.L("Tree damage")
     };
 
     public static string UbicacionTreeDamage(string? value) => value switch
     {
-        "FrontYard" => "Front yard",
-        "BackYard" => "Back yard",
-        "Roof" => "Roof",
-        "Driveway" => "Driveway",
-        "Street" => "Street",
-        "SideOfHouse" => "Side of house",
+        "FrontYard" => DisplayLabelsLocalization.L("Front yard"),
+        "BackYard" => DisplayLabelsLocalization.L("Back yard"),
+        "Roof" => DisplayLabelsLocalization.L("Roof"),
+        "Driveway" => DisplayLabelsLocalization.L("Driveway"),
+        "Street" => DisplayLabelsLocalization.L("Street"),
+        "SideOfHouse" => DisplayLabelsLocalization.L("Side of house"),
         _ => value ?? "Unknown area"
     };
 
@@ -469,55 +471,55 @@ public static class EmergencyDisplayLabels
 
     public static string PeligroInmediatoTreeDamage(string? value) => value switch
     {
-        "Yes" => "Yes",
-        "No" => "No",
-        "NotSure" => "Not sure",
-        _ => "Not sure"
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "No" => DisplayLabelsLocalization.L("No"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => DisplayLabelsLocalization.L("Not sure")
     };
 
     public static string RiesgoUtilidadTreeDamage(string? value) => value switch
     {
-        "NearPowerLine" => "Near power line",
-        "NearGasMeter" => "Near gas meter",
-        "NoUtilityRisk" => "No utility risk",
-        "NotSure" => "Not sure",
-        _ => "Not sure"
+        "NearPowerLine" => DisplayLabelsLocalization.L("Near power line"),
+        "NearGasMeter" => DisplayLabelsLocalization.L("Near gas meter"),
+        "NoUtilityRisk" => DisplayLabelsLocalization.L("No utility risk"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => DisplayLabelsLocalization.L("Not sure")
     };
 
     public static string AccesoCasaTreeDamage(string? value) => value switch
     {
-        "Yes" => "Full",
-        "Partially" => "Partial",
-        "No" => "No access",
+        "Yes" => DisplayLabelsLocalization.L("Full"),
+        "Partially" => DisplayLabelsLocalization.L("Partial"),
+        "No" => DisplayLabelsLocalization.L("No access"),
         _ => value ?? "Not specified"
     };
 
     public static string EntradaBloqueadaTreeDamage(string? value) => value switch
     {
-        "Yes" => "Yes",
-        "No" => "No",
-        "NotSure" => "Not sure",
-        _ => "Not sure"
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "No" => DisplayLabelsLocalization.L("No"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => DisplayLabelsLocalization.L("Not sure")
     };
 
     public static string PuedeAlejarseTreeDamage(string? value) => value switch
     {
-        "Yes" => "Yes",
-        "NeedHelp" => "Need help",
-        "NotSure" => "Not sure",
-        _ => "Not sure"
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "NeedHelp" => DisplayLabelsLocalization.L("Need help"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
+        _ => DisplayLabelsLocalization.L("Not sure")
     };
 
     public static string TiempoLlegadaRangoTreeDamage(int minutos)
     {
         var low = Math.Max(30, minutos);
         var high = minutos + 45;
-        return $"{low}–{high} min";
+        return $"{low}â€“{high} min";
     }
 
     public static string EstadoTreeDamageConfirmado(string? estado) => estado switch
     {
-        "Submitted" => "Dispatching",
+        "Submitted" => DisplayLabelsLocalization.L("Dispatching"),
         _ => EstadoSolicitud(estado)
     };
 
@@ -533,23 +535,23 @@ public static class EmergencyDisplayLabels
 
     public static string TipoProblemaRoofLeak(string? value) => value switch
     {
-        "ActiveDripping" => "Active dripping",
-        "CeilingStain" => "Ceiling stain",
-        "WaterNearChimney" => "Water near chimney",
-        "WaterNearSkylight" => "Water near skylight",
-        "MissingShingles" => "Missing shingles",
-        "StormDamage" => "Storm damage",
-        _ => "Roof leak"
+        "ActiveDripping" => DisplayLabelsLocalization.L("Active dripping"),
+        "CeilingStain" => DisplayLabelsLocalization.L("Ceiling stain"),
+        "WaterNearChimney" => DisplayLabelsLocalization.L("Water near chimney"),
+        "WaterNearSkylight" => DisplayLabelsLocalization.L("Water near skylight"),
+        "MissingShingles" => DisplayLabelsLocalization.L("Missing shingles"),
+        "StormDamage" => DisplayLabelsLocalization.L("Storm damage"),
+        _ => DisplayLabelsLocalization.L("Roof leak")
     };
 
     public static string UbicacionRoofLeak(string? value) => value switch
     {
-        "Attic" => "Attic",
-        "Ceiling" => "Ceiling",
-        "Wall" => "Wall",
-        "NearWindow" => "Near window",
-        "GutterEdge" => "Gutter / edge",
-        "Unknown" => "Unknown",
+        "Attic" => DisplayLabelsLocalization.L("Attic"),
+        "Ceiling" => DisplayLabelsLocalization.L("Ceiling"),
+        "Wall" => DisplayLabelsLocalization.L("Wall"),
+        "NearWindow" => DisplayLabelsLocalization.L("Near window"),
+        "GutterEdge" => DisplayLabelsLocalization.L("Gutter / edge"),
+        "Unknown" => DisplayLabelsLocalization.L("Unknown"),
         _ => value ?? "Unknown area"
     };
 
@@ -559,7 +561,7 @@ public static class EmergencyDisplayLabels
         if (string.Equals(tipo, "ActiveDripping", StringComparison.OrdinalIgnoreCase)
             && string.Equals(ubicacion, "Ceiling", StringComparison.OrdinalIgnoreCase))
         {
-            return "Active dripping / ceiling leak";
+            return DisplayLabelsLocalization.L("Active dripping / ceiling leak");
         }
 
         return problem;
@@ -578,22 +580,22 @@ public static class EmergencyDisplayLabels
 
     public static string PuedeColocarCubetaRoofLeak(string? value) => value switch
     {
-        "Yes" => "Yes",
-        "No" => "No",
-        "AlreadyDone" => "Already done",
-        _ => "Not specified"
+        "Yes" => DisplayLabelsLocalization.L("Yes"),
+        "No" => DisplayLabelsLocalization.L("No"),
+        "AlreadyDone" => DisplayLabelsLocalization.L("Already done"),
+        _ => DisplayLabelsLocalization.L("Not specified")
     };
 
     public static string TiempoLlegadaRangoRoofLeak(int minutos)
     {
         var low = Math.Max(30, minutos);
         var high = minutos + 15;
-        return $"{low}–{high} min";
+        return $"{low}â€“{high} min";
     }
 
     public static string EstadoRoofLeakConfirmado(string? estado) => estado switch
     {
-        "Submitted" => "Dispatching",
+        "Submitted" => DisplayLabelsLocalization.L("Dispatching"),
         _ => EstadoSolicitud(estado)
     };
 
@@ -609,51 +611,51 @@ public static class EmergencyDisplayLabels
 
     public static string TipoProblemaSmokeDetector(string? value) => value switch
     {
-        "SmokeDetectorBeeping" => "Smoke detector beeping",
-        "SmokeDetectorNotWorking" => "Smoke detector not working",
-        "CoDetectorAlert" => "CO detector alert",
-        "LowBatteryChirp" => "Low battery chirp",
-        "SmellOfGas" => "Smell of gas",
-        "NeedDetectorCheck" => "Need detector check",
+        "SmokeDetectorBeeping" => DisplayLabelsLocalization.L("Smoke detector beeping"),
+        "SmokeDetectorNotWorking" => DisplayLabelsLocalization.L("Smoke detector not working"),
+        "CoDetectorAlert" => DisplayLabelsLocalization.L("CO detector alert"),
+        "LowBatteryChirp" => DisplayLabelsLocalization.L("Low battery chirp"),
+        "SmellOfGas" => DisplayLabelsLocalization.L("Smell of gas"),
+        "NeedDetectorCheck" => DisplayLabelsLocalization.L("Need detector check"),
         _ => value ?? "Smoke detector concern"
     };
 
     public static string UbicacionSmokeDetector(string? value) => value switch
     {
-        "Bedroom" => "Bedroom",
-        "LivingRoom" => "Living room",
-        "Hallway" => "Hallway",
-        "Kitchen" => "Kitchen",
-        "CommonArea" => "Common area",
-        "Basement" => "Basement",
+        "Bedroom" => DisplayLabelsLocalization.L("Bedroom"),
+        "LivingRoom" => DisplayLabelsLocalization.L("Living room"),
+        "Hallway" => DisplayLabelsLocalization.L("Hallway"),
+        "Kitchen" => DisplayLabelsLocalization.L("Kitchen"),
+        "CommonArea" => DisplayLabelsLocalization.L("Common area"),
+        "Basement" => DisplayLabelsLocalization.L("Basement"),
         _ => value ?? "Unknown"
     };
 
     public static string SituacionActualSmokeDetector(string? value) => value switch
     {
-        "AlarmSounding" => "Alarm sounding",
-        "NoSound" => "No sound",
-        "IntermittentChirp" => "Intermittent chirp",
-        "GasSmell" => "Gas smell",
-        "NotSure" => "Not sure",
+        "AlarmSounding" => DisplayLabelsLocalization.L("Alarm sounding"),
+        "NoSound" => DisplayLabelsLocalization.L("No sound"),
+        "IntermittentChirp" => DisplayLabelsLocalization.L("Intermittent chirp"),
+        "GasSmell" => DisplayLabelsLocalization.L("Gas smell"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Not sure"
     };
 
     public static string PuedePermanecerAdentroSmokeDetector(string? value) => value switch
     {
-        "Yes" => "Yes, it is safe to stay inside",
-        "No" => "No, it is not safe to stay inside",
-        "NotSure" => "Not sure it is safe to stay inside",
-        _ => "Not sure it is safe to stay inside"
+        "Yes" => DisplayLabelsLocalization.L("Yes, it is safe to stay inside"),
+        "No" => DisplayLabelsLocalization.L("No, it is not safe to stay inside"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure it is safe to stay inside"),
+        _ => DisplayLabelsLocalization.L("Not sure it is safe to stay inside")
     };
 
     public static string AccesoPropiedadSmokeDetector(string? value) => value switch
     {
-        "AdultHomeNow" => "Adult home now",
-        "ChildrenHome" => "Children home now",
-        "NoOneHome" => "No one home",
-        "SomeoneArriving" => "Someone arriving soon",
-        "NotSure" => "Not sure",
+        "AdultHomeNow" => DisplayLabelsLocalization.L("Adult home now"),
+        "ChildrenHome" => DisplayLabelsLocalization.L("Children home now"),
+        "NoOneHome" => DisplayLabelsLocalization.L("No one home"),
+        "SomeoneArriving" => DisplayLabelsLocalization.L("Someone arriving soon"),
+        "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Adult home now"
     };
 
@@ -661,7 +663,7 @@ public static class EmergencyDisplayLabels
     {
         if (string.IsNullOrWhiteSpace(csv))
         {
-            return "Smoke detector concern";
+            return DisplayLabelsLocalization.L("Smoke detector concern");
         }
 
         var labels = csv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -677,7 +679,7 @@ public static class EmergencyDisplayLabels
     {
         if (string.IsNullOrWhiteSpace(csv))
         {
-            return "Unknown";
+            return DisplayLabelsLocalization.L("Unknown");
         }
 
         var labels = csv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -702,22 +704,22 @@ public static class EmergencyDisplayLabels
             || string.Equals(situacionActual, "GasSmell", StringComparison.OrdinalIgnoreCase)
             || ContainsCsvValue(tiposProblema, "SmellOfGas"))
         {
-            return "Smoke alarm / CO safety concern";
+            return DisplayLabelsLocalization.L("Smoke alarm / CO safety concern");
         }
 
-        return "Smoke alarm safety concern";
+        return DisplayLabelsLocalization.L("Smoke alarm safety concern");
     }
 
     public static string TiempoCallbackRangoSmokeDetector(int minutos)
     {
         var low = Math.Max(10, minutos / 4);
         var high = Math.Max(15, minutos / 3);
-        return $"{low}–{high} min";
+        return $"{low}â€“{high} min";
     }
 
     public static string EstadoSmokeDetectorConfirmado(string? estado) => estado switch
     {
-        "Submitted" => "Provider search in progress",
+        "Submitted" => DisplayLabelsLocalization.L("Provider search in progress"),
         _ => EstadoSolicitud(estado)
     };
 
