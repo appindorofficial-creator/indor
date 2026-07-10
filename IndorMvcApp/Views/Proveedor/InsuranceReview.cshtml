@@ -10,7 +10,7 @@
     string OrDash(string? v) => string.IsNullOrWhiteSpace(v) ? "—" : v;
     var includes = IndorMvcApp.ViewModels.InsuranceCatalog.ReviewIncludesFor(Model.Plan);
     var confirmError = TempData["InsuranceConfirmError"] as string;
-    var empDisplay = string.IsNullOrWhiteSpace(d.NumberOfEmployees) ? "—" : d.NumberOfEmployees;
+    var empDisplay = string.IsNullOrWhiteSpace(d.NumberOfEmployees) ? "—" : UiDisplayLocalization.Localize(L, d.NumberOfEmployees);
 }
 
 <div class="prv-pro-shell ins-wiz@(Model.IsPremium ? " ins-wiz--premium" : "")">
@@ -37,7 +37,7 @@
         </div>
 
         <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-circle-check"></i></span><span class="ins-rv-k">@L["Coverage"]</span><span class="ins-rv-v">@Model.Coverage</span></div>
-        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-briefcase"></i></span><span class="ins-rv-k">@L["Trade"]</span><span class="ins-rv-v">@OrDash(d.Trade)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-briefcase"></i></span><span class="ins-rv-k">@L["Trade"]</span><span class="ins-rv-v">@(string.IsNullOrWhiteSpace(d.Trade) ? "—" : UiDisplayLocalization.Localize(L, d.Trade))</span></div>
         <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-building"></i></span><span class="ins-rv-k">@L["Business Name"]</span><span class="ins-rv-v">@OrDash(d.BusinessName)</span></div>
         <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-location-dot"></i></span><span class="ins-rv-k">@L["Address"]</span><span class="ins-rv-v">@OrDash(d.FullAddress)</span></div>
         <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-user"></i></span><span class="ins-rv-k">@L["Owner"]</span><span class="ins-rv-v">@OrDash(d.OwnerName)</span></div>

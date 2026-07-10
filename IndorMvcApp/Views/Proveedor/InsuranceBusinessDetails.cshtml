@@ -48,7 +48,7 @@
                             <option value="">@L["Select number"]</option>
                             @foreach (var e in IndorMvcApp.ViewModels.InsuranceCatalog.EmployeeOptions)
                             {
-                                <option value="@e" selected="@(Model.NumberOfEmployees == e)">@e</option>
+                                <option value="@e" selected="@(Model.NumberOfEmployees == e)">@UiDisplayLocalization.Localize(L, e)</option>
                             }
                         </select>
                         <i class="fas fa-chevron-down ins-bx-caret"></i>
@@ -76,7 +76,7 @@
                         <option value="">@L["Select years"]</option>
                         @foreach (var y in IndorMvcApp.ViewModels.InsuranceCatalog.YearsOptions)
                         {
-                            <option value="@y" selected="@(Model.YearsInBusiness == y)">@y</option>
+                            <option value="@y" selected="@(Model.YearsInBusiness == y)">@UiDisplayLocalization.Localize(L, y)</option>
                         }
                     </select>
                     <i class="fas fa-chevron-down ins-bx-caret"></i>

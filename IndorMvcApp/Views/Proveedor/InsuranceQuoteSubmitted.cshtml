@@ -28,7 +28,7 @@
     @await Html.PartialAsync("_InsuranceStepper", 6)
 
     <div class="ins-fc ins-success">
-        <span class="ins-status-badge ins-status-badge--corner">@Model.Status</span>
+        <span class="ins-status-badge ins-status-badge--corner">@UiDisplayLocalization.Localize(L, Model.Status)</span>
         <img src="~/images/insurance/ins-success-cert.png" alt="" class="ins-success-img" asp-append-version="true" />
         <div class="ins-success-body">
             <h2>@Model.PlanDisplayName</h2>
