@@ -761,5 +761,9 @@ public static class UiTranslationsFinal
             ["OFF"] = "DESACTIVADO",
             ["We couldn't save your business profile. Please try again."] = "No pudimos guardar tu perfil de negocio. Inténtalo de nuevo.",
             ["Account"] = "Cuenta",
+            ["That document type is not supported."] = "Ese tipo de documento no es compatible.",
+            ["Document must be JPG, PNG, WEBP, or PDF."] = "El documento debe ser JPG, PNG, WEBP o PDF.",
+            ["Document must be 10 MB or less."] = "El documento debe ser de 10 MB o menos.",
+            ["Notification preferences saved."] = "Preferencias de notificaciones guardadas.",
         };
 }
