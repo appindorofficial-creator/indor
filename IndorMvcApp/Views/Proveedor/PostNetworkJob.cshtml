@@ -93,15 +93,15 @@
             <div class="prv-net-optionchips prv-net-optionchips--3">
                 <label class="prv-net-optionchip">
                     <input type="radio" name="Urgency" value="ASAP" checked="@(Model.Urgency == "ASAP")" />
-                    <span><i class="fas fa-clock"></i> ASAP</span>
+                    <span><i class="fas fa-clock"></i> @L["ASAP"]</span>
                 </label>
                 <label class="prv-net-optionchip">
                     <input type="radio" name="Urgency" value="ThisWeek" checked="@(Model.Urgency == "ThisWeek")" />
-                    <span><i class="fas fa-calendar-day"></i> This Week</span>
+                    <span><i class="fas fa-calendar-day"></i> @L["This Week"]</span>
                 </label>
                 <label class="prv-net-optionchip">
                     <input type="radio" name="Urgency" value="Flexible" checked="@(Model.Urgency == "Flexible")" />
-                    <span><i class="fas fa-clock-rotate-left"></i> Flexible</span>
+                    <span><i class="fas fa-clock-rotate-left"></i> @L["Flexible"]</span>
                 </label>
             </div>
         </div>

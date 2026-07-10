@@ -30,7 +30,7 @@
 
         <dl class="tpl-summary">
             <div><dt>@L["Template Name"]</dt><dd>@Model.Name</dd></div>
-            <div><dt>@L["Includes"]</dt><dd>@Model.Sections.Count sections</dd></div>
+            <div><dt>@L["Includes"]</dt><dd>@L.T("{0} sections", Model.Sections.Count)</dd></div>
             <div><dt>@L["Category"]</dt><dd>@Model.Category</dd></div>
             <div><dt>@L["Saved To"]</dt><dd>@Model.SavedTo</dd></div>
         </dl>
@@ -42,8 +42,8 @@
     </div>
 
     <div class="tpl-actions">
-        <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-fresh="true" class="tpl-btn tpl-btn--primary"><i class="fas fa-file-circle-plus"></i> Create Report</a>
-        <a asp-controller="Proveedor" asp-action="TemplateDetails" asp-route-key="@Model.Key" class="tpl-btn tpl-btn--outline"><i class="fas fa-pen"></i> Edit Template</a>
+        <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-fresh="true" class="tpl-btn tpl-btn--primary"><i class="fas fa-file-circle-plus"></i> @L["Create Report"]</a>
+        <a asp-controller="Proveedor" asp-action="TemplateDetails" asp-route-key="@Model.Key" class="tpl-btn tpl-btn--outline"><i class="fas fa-pen"></i> @L["Edit Template"]</a>
         <a asp-controller="Proveedor" asp-action="Templates" class="tpl-btn-text">@L["Back to Templates"]</a>
     </div>
 </div>

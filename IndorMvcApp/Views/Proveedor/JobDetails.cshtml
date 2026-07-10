@@ -24,7 +24,7 @@
             <h1>@L["Job Details"]</h1>
             @if (!string.IsNullOrWhiteSpace(Model.EstimateCode))
             {
-                <small>Estimate @Model.EstimateCode</small>
+                <small>@L.T("Estimate {0}", Model.EstimateCode)</small>
             }
         </div>
         <button type="button" class="prv-pro-lead-share" aria-label="@L["Share"]"><i class="fas fa-share-nodes"></i></button>

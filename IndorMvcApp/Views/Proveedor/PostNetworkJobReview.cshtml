@@ -61,10 +61,10 @@
         <span class="prv-net-review-ic prv-net-review-ic--blue"><i class="fas fa-location-dot"></i></span>
         <div class="prv-net-review-body">
             <span class="prv-net-review-label">@L["Location"]</span>
-            <strong>@(string.IsNullOrWhiteSpace(Model.Location) ? "Not set" : Model.Location)</strong>
+            <strong>@(string.IsNullOrWhiteSpace(Model.Location) ? L["Not set"].ToString() : Model.Location)</strong>
             @if (!string.IsNullOrWhiteSpace(Model.PropertyTypeLabel))
             {
-                <p class="prv-net-review-muted">Property Type: @Model.PropertyTypeLabel</p>
+                <p class="prv-net-review-muted">@L.T("Property Type: {0}", UiDisplayLocalization.Localize(L, Model.PropertyTypeLabel))</p>
             }
         </div>
         <i class="fas fa-chevron-right prv-net-review-arrow"></i>
@@ -74,16 +74,16 @@
         <span class="prv-net-review-ic prv-net-review-ic--green"><i class="fas fa-dollar-sign"></i></span>
         <div class="prv-net-review-body">
             <span class="prv-net-review-label">@L["Budget"]</span>
-            <strong>@(string.IsNullOrWhiteSpace(Model.BudgetRange) ? "Not set" : Model.BudgetRange)</strong>
+            <strong>@(string.IsNullOrWhiteSpace(Model.BudgetRange) ? L["Not set"].ToString() : Model.BudgetRange)</strong>
             <p class="prv-net-review-meta">
                 @if (!string.IsNullOrWhiteSpace(Model.QuoteTypeLabel))
                 {
-                    <span><i class="fas fa-tag"></i> Quote type: @Model.QuoteTypeLabel</span>
+                    <span><i class="fas fa-tag"></i> @L.T("Quote type: {0}", UiDisplayLocalization.Localize(L, Model.QuoteTypeLabel))</span>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.UrgencyLabel))
                 {
                     <span class="prv-net-review-dot">&bull;</span>
-                    <span><i class="fas fa-clock"></i> When needed: @Model.UrgencyLabel</span>
+                    <span><i class="fas fa-clock"></i> @L.T("When needed: {0}", UiDisplayLocalization.Localize(L, Model.UrgencyLabel))</span>
                 }
             </p>
         </div>
@@ -113,7 +113,7 @@
     <form method="post" asp-controller="Proveedor" asp-action="PublishNetworkJob" class="prv-net-wizard-form">
         @Html.AntiForgeryToken()
         <input type="hidden" name="id" value="@Model.DraftId" />
-        <button type="submit" class="prv-net-btn prv-net-btn--primary prv-net-btn--wizard"><i class="fas fa-paper-plane"></i> Post Job</button>
+        <button type="submit" class="prv-net-btn prv-net-btn--primary prv-net-btn--wizard"><i class="fas fa-paper-plane"></i> @L["Post Job"]</button>
     </form>
     <a asp-controller="Proveedor" asp-action="PostNetworkJobLocation" asp-route-id="@Model.DraftId" class="prv-net-back-link">@L["Back"]</a>
 </div>

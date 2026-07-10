@@ -65,7 +65,7 @@
                     <strong>@Model.CustomerName</strong>
                     @if (Model.IsHomeownerVerified)
                     {
-                        <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> Verified Homeowner</span>
+                        <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> @L["Verified Homeowner"]</span>
                     }
                     @if (!string.IsNullOrWhiteSpace(Model.CustomerPhone))
                     {
@@ -87,13 +87,13 @@
     @if (!string.IsNullOrWhiteSpace(Model.SourceBadge))
     {
         <section class="prv-pro-lead-section">
-            <h3><i class="fas fa-file-lines"></i> Inspection Report</h3>
-            <p class="prv-pro-lead-hint">@Model.SourceBadge</p>
+            <h3><i class="fas fa-file-lines"></i> @L["Inspection Report"]</h3>
+            <p class="prv-pro-lead-hint">@UiDisplayLocalization.Localize(L, Model.SourceBadge)</p>
             @if (!string.IsNullOrWhiteSpace(Model.InspectionReportUrl))
             {
                 <a href="@Url.Content($"~{Model.InspectionReportUrl}")" target="_blank" rel="noopener"
                    class="prv-pro-btn prv-pro-btn--ghost prv-pro-inspection-pdf-btn">
-                    <i class="fas fa-file-pdf"></i> View Full Inspection Report PDF
+                    <i class="fas fa-file-pdf"></i> @L["View Full Inspection Report PDF"]
                 </a>
             }
         </section>
@@ -113,15 +113,15 @@
     @if (Model.FindingCount > 0)
     {
         <section class="prv-pro-lead-section">
-            <h3><i class="fas fa-list-check"></i> Inspection findings</h3>
-            <p class="prv-pro-lead-hint">@Model.FindingCount inspection finding@(Model.FindingCount == 1 ? "" : "s") extracted from the report.</p>
+            <h3><i class="fas fa-list-check"></i> @L["Inspection findings"]</h3>
+            <p class="prv-pro-lead-hint">@L.T(Model.FindingCount == 1 ? "{0} inspection finding extracted from the report." : "{0} inspection findings extracted from the report.", Model.FindingCount)</p>
         </section>
     }
 
     @if (!string.IsNullOrWhiteSpace(Model.ProblemDescription))
     {
         <section class="prv-pro-lead-section">
-            <h3><i class="fas fa-circle-info"></i> Problem Description</h3>
+            <h3><i class="fas fa-circle-info"></i> @L["Problem Description"]</h3>
             <p class="prv-pro-lead-description">@Model.ProblemDescription</p>
             @if (Model.PhotoUrls.Count > 0)
             {
@@ -130,7 +130,7 @@
                     {
                         <img src="@Url.Content($"~{photo}")" alt="Damage photo" />
                     }
-                    <div class="prv-pro-lead-photos-count">@Model.PhotoUrls.Count Photo@(Model.PhotoUrls.Count == 1 ? "" : "s")</div>
+                    <div class="prv-pro-lead-photos-count">@L.T(Model.PhotoUrls.Count == 1 ? "{0} Photo" : "{0} Photos", Model.PhotoUrls.Count)</div>
                 </div>
             }
         </section>
@@ -164,7 +164,7 @@
     @if (!string.IsNullOrWhiteSpace(Model.AccessNotes))
     {
         <section class="prv-pro-lead-section">
-            <h3><i class="fas fa-clipboard"></i> Notes &amp; Access Instructions</h3>
+            <h3><i class="fas fa-clipboard"></i> @L["Notes & Access Instructions"]</h3>
             <p class="prv-pro-lead-description">@Model.AccessNotes</p>
         </section>
     }
@@ -173,7 +173,7 @@
         @if (Model.CanCreateEstimate || Model.CanScheduleVisit)
         {
             <p class="prv-pro-lead-decision">
-                If the photos and information are enough, send a quick estimate. If not, schedule a verification visit.
+                @L["If the photos and information are enough, send a quick estimate. If not, schedule a verification visit."]
             </p>
         }
 
@@ -181,14 +181,14 @@
         {
             <a asp-controller="Proveedor" asp-action="InspectionFindings" asp-route-id="@Model.LeadId"
                class="prv-pro-btn prv-pro-btn--primary prv-pro-lead-action-btn prv-pro-lead-action-btn--full">
-                <i class="fas fa-list-check"></i> Review Inspection Findings
+                <i class="fas fa-list-check"></i> @L["Review Inspection Findings"]
             </a>
         }
         else if (Model.CanCreateEstimate)
         {
             <a asp-controller="Proveedor" asp-action="QuickEstimate" asp-route-id="@Model.LeadId"
                class="prv-pro-btn prv-pro-btn--primary prv-pro-lead-action-btn prv-pro-lead-action-btn--full">
-                <i class="fas fa-file-circle-plus"></i> Create Quick Estimate
+                <i class="fas fa-file-circle-plus"></i> @L["Create Quick Estimate"]
             </a>
         }
 
@@ -196,12 +196,12 @@
         {
             <a asp-controller="Proveedor" asp-action="ScheduleVisit" asp-route-id="@Model.LeadId" asp-route-kind="verification"
                class="prv-pro-btn prv-pro-btn--teal prv-pro-lead-action-btn prv-pro-lead-action-btn--full">
-                <i class="fas fa-calendar-check"></i> Schedule Verification Visit
+                <i class="fas fa-calendar-check"></i> @L["Schedule Verification Visit"]
             </a>
         }
 
         <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-lead-action-btn prv-pro-lead-action-btn--full prv-pro-lead-message-btn">
-            <i class="fas fa-message"></i> Message Homeowner
+            <i class="fas fa-message"></i> @L["Message Homeowner"]
         </button>
 
         @if (Model.CanDecline)
