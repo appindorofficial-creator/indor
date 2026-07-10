@@ -1,11 +1,11 @@
 @model IndorMvcApp.ViewModels.RealtorInvitePropertyViewModel
-@using IndorMvcApp.Helpers
 @{
     var formErrors = ViewData.ModelState
         .Where(x => x.Value?.Errors.Count > 0)
         .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
         .Where(m => !string.IsNullOrWhiteSpace(m))
         .Distinct()
+        .Select(m => UiDisplayLocalization.Localize(L, m))
         .ToList();
 }
 
@@ -22,7 +22,7 @@
             <ul class="rl-error-list" id="invitePropertyFormErrorList">
                 @foreach (var msg in formErrors)
                 {
-                    <li>@L[msg]</li>
+                    <li>@msg</li>
                 }
             </ul>
         </div>
@@ -39,14 +39,14 @@
                enterkeyhint="search" />
     </label>
     <span class="rl-field-error" id="invitePropertySearchError" role="alert"></span>
-    <p class="rl-field-hint">@L["Type an address and tap Next to create a new property, or pick one from the list below."]</p>
+    <p class="rl-field-hint">@L["Type an address and tap"] <strong>@L["Next"]</strong> @L["to create a new property, or pick one from the list below."]</p>
 
     @if (Model.Properties.Count == 0)
     {
         <div class="rl-dash-empty">
             @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
             {
-                <p>@L["No matching properties found for"] <strong>@Model.SearchQuery</strong>.</p>
+                <p>@L.T("No matching properties found for {0}.", Model.SearchQuery)</p>
                 <p>@L["Create a new property with this address to continue."]</p>
                 <a asp-action="CreateProperty" asp-route-address="@Model.SearchQuery" class="ob-btn ob-btn-primary rl-invite-create-from-search">
                     @L["Create property for this address"]
@@ -68,7 +68,7 @@
                 <span class="rl-property-pick-icon"><i class="fas @prop.Icon"></i></span>
                 <span class="rl-property-pick-body">
                     <strong>@prop.Address</strong>
-                    <span>@prop.Label</span>
+                    <span>@UiDisplayLocalization.Localize(L, prop.Label)</span>
                     @if (!string.IsNullOrWhiteSpace(prop.CityRegion))
                     {
                         <span>@prop.CityRegion</span>

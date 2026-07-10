@@ -43,7 +43,7 @@
                 <div class="rl-home-badge-row">
                     <span class="rl-dash-badge @(Model.IsVerified ? "is-verified" : null)">
                         <i class="fas @(Model.IsVerified ? "fa-circle-check" : "fa-star")"></i>
-                        @L[Model.BadgeLabel]
+                        @UiDisplayLocalization.Localize(L, Model.BadgeLabel)
                     </span>
                     @if (!Model.IsVerified)
                     {
@@ -58,7 +58,7 @@
                 <div class="rl-profile-stat">
                     <span class="rl-stat-icon rl-stat-icon--@stat.ColorClass"><i class="fas @stat.Icon"></i></span>
                     <strong>@stat.Count</strong>
-                    <span>@L[stat.Label]</span>
+                    <span>@UiDisplayLocalization.Localize(L, stat.Label)</span>
                 </div>
             }
         </div>
@@ -166,8 +166,8 @@
             <div class="rl-perf-row">
                 <span>@L["Response Time"]</span>
                 <div>
-                    <strong>@Model.ResponseTimeLabel</strong>
-                    <span class="rl-perf-good">@Model.ResponseTimeStatus</span>
+                    <strong>@UiDisplayLocalization.Localize(L, Model.ResponseTimeLabel)</strong>
+                    <span class="rl-perf-good">@UiDisplayLocalization.Localize(L, Model.ResponseTimeStatus)</span>
                 </div>
             </div>
             <div class="rl-perf-row">
@@ -176,7 +176,7 @@
                     <strong>@Model.FilesThisMonth</strong>
                     @if (!string.IsNullOrWhiteSpace(Model.FilesTrendLabel))
                     {
-                        <span class="rl-perf-good">@Model.FilesTrendLabel</span>
+                        <span class="rl-perf-good">@UiDisplayLocalization.Localize(L, Model.FilesTrendLabel)</span>
                     }
                 </div>
             </div>
@@ -186,7 +186,7 @@
                     <strong>@Model.ClientConnections</strong>
                     @if (!string.IsNullOrWhiteSpace(Model.ClientsTrendLabel))
                     {
-                        <span class="rl-perf-good">@Model.ClientsTrendLabel</span>
+                        <span class="rl-perf-good">@UiDisplayLocalization.Localize(L, Model.ClientsTrendLabel)</span>
                     }
                 </div>
             </div>
@@ -195,7 +195,7 @@
                 {
                     <div class="rl-perf-insight">
                         <i class="fas @insight.Icon"></i>
-                        <span>@insight.Text</span>
+                        <span>@UiDisplayLocalization.Localize(L, insight.Text)</span>
                     </div>
                 }
             </div>
@@ -230,7 +230,7 @@
         <a asp-controller="Realtor" asp-action="SupportAccount" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-headset"></i></span>
             <div>
-                <strong>@L["Support &amp; Account"]</strong>
+                <strong>@L["Support & Account"]</strong>
                 <span class="rl-profile-nav-desc">@L["Get help, manage your subscription and account."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
@@ -266,8 +266,10 @@
 </div>
 
 @section Scripts {
+@await Html.PartialAsync("_RealtorProfileI18n")
 <script>
     (function () {
+        var i18n = window.IndorRealtorProfileI18n || {};
         var toast = document.getElementById('rlToast');
         var toastTimer = null;
         function showToast(message) {
@@ -292,7 +294,7 @@
             shareBtn.addEventListener('click', async function () {
                 var payload = {
                     title: '@Model.FullName - INDOR',
-                    text: 'View my realtor profile on INDOR',
+                    text: i18n['View my realtor profile on INDOR'] || 'View my realtor profile on INDOR',
                     url: shareUrl
                 };
                 if (navigator.share) {
@@ -300,7 +302,7 @@
                 }
                 try {
                     await navigator.clipboard.writeText(shareUrl);
-                    showToast('Profile link copied to clipboard.');
+                    showToast(i18n['Profile link copied to clipboard.'] || 'Profile link copied to clipboard.');
                 } catch (_) {
                     window.prompt('Copy profile link:', shareUrl);
                 }
@@ -316,7 +318,9 @@
                 toggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
                 details.hidden = expanded;
                 if (label) {
-                    label.textContent = expanded ? 'View full insights' : 'Hide insights';
+                    label.textContent = expanded
+                        ? (i18n['View full insights'] || 'View full insights')
+                        : (i18n['Hide insights'] || 'Hide insights');
                 }
             });
         }
@@ -354,7 +358,7 @@
                     notifyForm.prepend(msg);
                 }
             }
-            msg.textContent = 'Notification preferences saved.';
+            msg.textContent = i18n['Notification preferences saved.'] || 'Notification preferences saved.';
             msg.hidden = false;
             if (savedTimer) {
                 clearTimeout(savedTimer);

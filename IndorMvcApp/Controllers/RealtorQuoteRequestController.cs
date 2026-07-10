@@ -241,10 +241,21 @@ public class RealtorQuoteRequestController(
                 allowProviderQuestions, allowFullProjectQuote, allowItemizedQuote, optionalMessage);
             return RedirectToAction(nameof(Success), new { id = quoteId });
         }
-        catch
+        catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, "Unable to send quote request. Please try again.");
-            return View("Review", await quoteRequest.BuildReviewAsync());
+            ModelState.AddModelError(
+                string.Empty,
+                ex is InvalidOperationException ? ex.Message : "Unable to send quote request. Please try again.");
+
+            var vm = await quoteRequest.BuildReviewAsync();
+            vm.SendNow = sendNow;
+            vm.ScheduledSendUtc = scheduledSendUtc;
+            vm.ResponseDeadlineHours = responseDeadlineHours;
+            vm.AllowProviderQuestions = allowProviderQuestions;
+            vm.AllowFullProjectQuote = allowFullProjectQuote;
+            vm.AllowItemizedQuote = allowItemizedQuote;
+            vm.OptionalMessage = optionalMessage ?? "";
+            return View("Review", vm);
         }
     }
 

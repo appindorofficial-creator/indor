@@ -1,6 +1,12 @@
 @model IndorMvcApp.ViewModels.RealtorInviteReviewViewModel
-@using IndorMvcApp.Helpers
-
+@{
+    const string DefaultWelcomeMessageEnglish =
+        "Hi! I'd like to invite you to view project details and stay updated in INDOR. Let me know if you have any questions.";
+    var welcomeMessage = string.IsNullOrWhiteSpace(Model.WelcomeMessage)
+                         || Model.WelcomeMessage == DefaultWelcomeMessageEnglish
+        ? L[DefaultWelcomeMessageEnglish]
+        : Model.WelcomeMessage;
+}
 <div class="rl-invite-form">
     <h2 class="rl-invite-section-title">@L["Invitation Summary"]</h2>
 
@@ -9,7 +15,7 @@
             <span class="rl-review-label"><i class="fas fa-user"></i> @L["Client"]</span>
             <div>
                 <strong>@Model.FullName</strong>
-                <span class="rl-role-badge rl-role-badge--@Model.ClientRole.ToLowerInvariant()">@RealtorDisplayLocalization.ClientRole(L, Model.ClientRole)</span>
+                <span class="rl-role-badge rl-role-badge--@Model.ClientRole.ToLowerInvariant()">@UiDisplayLocalization.Localize(L, Model.ClientRole)</span>
                 <span>@Model.Email</span>
                 @if (!string.IsNullOrWhiteSpace(Model.Phone))
                 {
@@ -23,21 +29,21 @@
         </div>
         <div class="rl-review-row">
             <span class="rl-review-label"><i class="fas fa-lock-open"></i> @L["Access"]</span>
-            <span>@Model.AccessSummary</span>
+            <span>@UiDisplayLocalization.LocalizeCommaList(L, Model.AccessSummary)</span>
         </div>
         <div class="rl-review-row">
-            <span class="rl-review-label"><i class="fas fa-comments"></i> @L["Collaboration"]</span>
-            <span>@Model.CollaborationLabel</span>
+            <span class="rl-review-label"><i class="fas fa-comments"></i> @L["Collaboration Level"]</span>
+            <span>@UiDisplayLocalization.Localize(L, Model.CollaborationLabel)</span>
         </div>
         <div class="rl-review-row">
-            <span class="rl-review-label"><i class="fas fa-paper-plane"></i> @L["Delivery"]</span>
-            <span>@Model.DeliveryLabel</span>
+            <span class="rl-review-label"><i class="fas fa-paper-plane"></i> @L["Invitation Delivery"]</span>
+            <span>@UiDisplayLocalization.Localize(L, Model.DeliveryLabel)</span>
         </div>
-        @if (!string.IsNullOrWhiteSpace(Model.WelcomeMessage))
+        @if (!string.IsNullOrWhiteSpace(welcomeMessage))
         {
             <div class="rl-review-row">
                 <span class="rl-review-label"><i class="fas fa-note-sticky"></i> @L["Note"]</span>
-                <span>@Model.WelcomeMessage</span>
+                <span>@welcomeMessage</span>
             </div>
         }
     </div>

@@ -1,207 +1,133 @@
 @model IndorMvcApp.ViewModels.RealtorQuoteRequestReviewViewModel
-
-
-
-<form id="quoteReviewForm" asp-action="Send" method="post" class="rl-invite-form">
-
-    @Html.AntiForgeryToken()
-
-    <div asp-validation-summary="All" class="ob-summary"></div>
-
-
-
-    <div class="rl-review-card">
-
-        <div class="rl-review-row">
-
-            <span class="rl-review-label">@L["Property"]</span>
-
-            <strong>@Model.PropertyDisplay</strong>
-
-        </div>
-
-        <div class="rl-review-row">
-
-            <span class="rl-review-label">@L["Request Type"]</span>
-
-            <strong>@Model.RequestTypeLabel</strong>
-
-        </div>
-
-        <div class="rl-review-row">
-
-            <span class="rl-review-label">@L["Shared With Providers"]</span>
-
-            <span>@Model.SharedSummary</span>
-
-        </div>
-
-        <div class="rl-review-row">
-
-            <span class="rl-review-label">@L["Providers"]</span>
-
-            <strong>@Model.ProvidersSummary</strong>
-
-        </div>
-
-        <div class="rl-review-row">
-
-            <span class="rl-review-label">@L["Provider Selection"]</span>
-
-            <strong>@Model.ProviderSelectionLabel</strong>
-
-            <span>@L["You can also switch to INDOR Recommended"]</span>
-
-        </div>
-
-    </div>
-
-
-
-    <h2 class="rl-invite-section-title">@L["When should this be sent?"]</h2>
-
-    <div class="rl-file-type-list">
-
-        <label class="rl-file-type-option @(Model.SendNow ? "is-selected" : "")">
-
-            <input type="radio" name="sendNow" value="true" @(Model.SendNow ? "checked" : null) data-send-radio />
-
-            <span>
-
-                <strong>@L["Send Now"]</strong>
-
-                <small>@L["Send the request to providers right away."]</small>
-
-            </span>
-
-        </label>
-
-        <label class="rl-file-type-option @(!Model.SendNow ? "is-selected" : "")">
-
-            <input type="radio" name="sendNow" value="false" @(!Model.SendNow ? "checked" : null) data-send-radio />
-
-            <span>
-
-                <strong>@L["Schedule for Later"]</strong>
-
-                <small>@L["Choose a date and time to send this request."]</small>
-
-            </span>
-
-        </label>
-
-    </div>
-
-    <div id="scheduleField" class="@(Model.SendNow ? "rl-hidden" : "")">
-
-        <input type="datetime-local" name="scheduledSendUtc" class="rl-field-select rl-field-select--full" />
-
-    </div>
-
-
-
-    <h2 class="rl-invite-section-title">@L["Response preferences"]</h2>
-
-    <div class="rl-review-card">
-
-        <div class="rl-review-row">
-
-            <span class="rl-review-label">@L["Response deadline"]</span>
-
-            <select name="responseDeadlineHours" class="rl-field-select">
-
-                <option value="24" selected="@(Model.ResponseDeadlineHours == 24)">@L["24 hours"]</option>
-
-                <option value="48" selected="@(Model.ResponseDeadlineHours == 48)">@L["48 hours"]</option>
-
-                <option value="72" selected="@(Model.ResponseDeadlineHours == 72)">@L["72 hours"]</option>
-
-            </select>
-
-        </div>
-
-        <label class="rl-toggle-row rl-toggle-row--card">
-
-            <span>@L["Allow provider questions"]</span>
-
-            <input type="checkbox" name="allowProviderQuestions" value="true" @(Model.AllowProviderQuestions ? "checked" : null) />
-
-            <span class="rl-toggle"></span>
-
-        </label>
-
-        <label class="rl-toggle-row rl-toggle-row--card">
-
-            <span>@L["Allow full project quote"]</span>
-
-            <input type="checkbox" name="allowFullProjectQuote" value="true" @(Model.AllowFullProjectQuote ? "checked" : null) />
-
-            <span class="rl-toggle"></span>
-
-        </label>
-
-        <label class="rl-toggle-row rl-toggle-row--card">
-
-            <span>@L["Allow itemized quote"]</span>
-
-            <input type="checkbox" name="allowItemizedQuote" value="true" @(Model.AllowItemizedQuote ? "checked" : null) />
-
-            <span class="rl-toggle"></span>
-
-        </label>
-
-    </div>
-
-
-
-    <h2 class="rl-invite-section-title">@L["Optional message"]</h2>
-
-    <textarea name="optionalMessage" class="rl-note-area" maxlength="500" rows="4"
-              placeholder="@Model.OptionalMessagePlaceholder">@Model.OptionalMessage</textarea>
-
-    <div class="rl-char-count"><span id="msgCount">@Model.OptionalMessage.Length</span> / 500</div>
-
-</form>
-
-
-
-<div class="rl-invite-actions">
-
-    <a asp-action="BackToProviders" class="rl-invite-cancel">@L["Back"]</a>
-
-    <button type="submit" form="quoteReviewForm" class="ob-btn ob-btn-primary">@L["Send Request"]</button>
-
-</div>
-
-
-
-@section Scripts {
-
-<script>
-
-    const msgArea = document.querySelector('[name="optionalMessage"]');
-
-    const msgCount = document.getElementById('msgCount');
-
-    msgArea?.addEventListener('input', () => { msgCount.textContent = msgArea.value.length; });
-
-
-
-    document.querySelectorAll('[data-send-radio]').forEach(r => {
-
-        r.addEventListener('change', () => {
-
-            document.querySelectorAll('.rl-file-type-option').forEach(p => p.classList.remove('is-selected'));
-
-            r.closest('.rl-file-type-option')?.classList.add('is-selected');
-
-            document.getElementById('scheduleField')?.classList.toggle('rl-hidden', r.value === 'true');
-
-        });
-
-    });
-
-</script>
-
+@{
+    var formErrors = ViewData.ModelState
+        .Where(x => x.Value?.Errors.Count > 0)
+        .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
+        .Where(m => !string.IsNullOrWhiteSpace(m))
+        .Distinct()
+        .Select(m => UiDisplayLocalization.Localize(L, m))
+        .ToList();
 }
 
+<form id="quoteReviewForm" asp-action="Send" method="post" class="rl-invite-form">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
+
+    @if (formErrors.Count > 0)
+    {
+        <div class="rl-error-banner" role="alert">
+            <i class="fas fa-circle-exclamation"></i>
+            <div>
+                <strong>@L["Please fix the following to continue:"]</strong>
+                <ul class="rl-error-list">
+                    @foreach (var msg in formErrors)
+                    {
+                        <li>@msg</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+
+    <div class="rl-review-card">
+        <div class="rl-review-row">
+            <span class="rl-review-label">@L["Property"]</span>
+            <strong>@Model.PropertyDisplay</strong>
+        </div>
+        <div class="rl-review-row">
+            <span class="rl-review-label">@L["Request Type"]</span>
+            <strong>@UiDisplayLocalization.Localize(L, Model.RequestTypeLabel)</strong>
+        </div>
+        <div class="rl-review-row">
+            <span class="rl-review-label">@L["Shared With Providers"]</span>
+            <span>@UiDisplayLocalization.LocalizeCommaList(L, Model.SharedSummary)</span>
+        </div>
+        <div class="rl-review-row">
+            <span class="rl-review-label">@L["Providers"]</span>
+            <strong>@UiDisplayLocalization.Localize(L, Model.ProvidersSummary)</strong>
+        </div>
+        <div class="rl-review-row">
+            <span class="rl-review-label">@L["Provider Selection"]</span>
+            <strong>@UiDisplayLocalization.Localize(L, Model.ProviderSelectionLabel)</strong>
+            <span>@L["You can also switch to INDOR Recommended"]</span>
+        </div>
+    </div>
+
+    <h2 class="rl-invite-section-title">@L["When should this be sent?"]</h2>
+    <div class="rl-file-type-list">
+        <label class="rl-file-type-option @(Model.SendNow ? "is-selected" : "")">
+            <input type="radio" name="sendNow" value="true" @(Model.SendNow ? "checked" : null) data-send-radio />
+            <span>
+                <strong>@L["Send Now"]</strong>
+                <small>@L["Send the request to providers right away."]</small>
+            </span>
+        </label>
+        <label class="rl-file-type-option @(!Model.SendNow ? "is-selected" : "")">
+            <input type="radio" name="sendNow" value="false" @(!Model.SendNow ? "checked" : null) data-send-radio />
+            <span>
+                <strong>@L["Schedule for Later"]</strong>
+                <small>@L["Choose a date and time to send this request."]</small>
+            </span>
+        </label>
+    </div>
+    <div id="scheduleField" class="@(Model.SendNow ? "rl-hidden" : "")">
+        <input type="datetime-local"
+               name="scheduledSendUtc"
+               class="rl-field-select rl-field-select--full"
+               lang="en-US"
+               value="@(Model.ScheduledSendUtc?.ToString("yyyy-MM-ddTHH:mm", System.Globalization.CultureInfo.InvariantCulture))" />
+    </div>
+
+    <h2 class="rl-invite-section-title">@L["Response preferences"]</h2>
+    <div class="rl-review-card">
+        <div class="rl-review-row">
+            <span class="rl-review-label">@L["Response deadline"]</span>
+            <select name="responseDeadlineHours" class="rl-field-select">
+                <option value="24" selected="@(Model.ResponseDeadlineHours == 24)">@L["24 hours"]</option>
+                <option value="48" selected="@(Model.ResponseDeadlineHours == 48)">@L["48 hours"]</option>
+                <option value="72" selected="@(Model.ResponseDeadlineHours == 72)">@L["72 hours"]</option>
+            </select>
+        </div>
+        <label class="rl-toggle-row rl-toggle-row--card">
+            <span>@L["Allow provider questions"]</span>
+            <input type="checkbox" name="allowProviderQuestions" value="true" @(Model.AllowProviderQuestions ? "checked" : null) />
+            <span class="rl-toggle"></span>
+        </label>
+        <label class="rl-toggle-row rl-toggle-row--card">
+            <span>@L["Allow full project quote"]</span>
+            <input type="checkbox" name="allowFullProjectQuote" value="true" @(Model.AllowFullProjectQuote ? "checked" : null) />
+            <span class="rl-toggle"></span>
+        </label>
+        <label class="rl-toggle-row rl-toggle-row--card">
+            <span>@L["Allow itemized quote"]</span>
+            <input type="checkbox" name="allowItemizedQuote" value="true" @(Model.AllowItemizedQuote ? "checked" : null) />
+            <span class="rl-toggle"></span>
+        </label>
+    </div>
+
+    <h2 class="rl-invite-section-title">@L["Optional message"]</h2>
+    <textarea name="optionalMessage" class="rl-note-area" maxlength="500" rows="4"
+              placeholder="@UiDisplayLocalization.Localize(L, Model.OptionalMessagePlaceholder)">@Model.OptionalMessage</textarea>
+    <div class="rl-char-count"><span id="msgCount">@Model.OptionalMessage.Length</span> / 500</div>
+</form>
+
+<div class="rl-invite-actions">
+    <a asp-action="BackToProviders" class="rl-invite-cancel">@L["Back"]</a>
+    <button type="submit" form="quoteReviewForm" class="ob-btn ob-btn-primary">@L["Send Request"]</button>
+</div>
+
+@section Scripts {
+<script>
+    const msgArea = document.querySelector('[name="optionalMessage"]');
+    const msgCount = document.getElementById('msgCount');
+    msgArea?.addEventListener('input', () => { msgCount.textContent = msgArea.value.length; });
+
+    document.querySelectorAll('[data-send-radio]').forEach(r => {
+        r.addEventListener('change', () => {
+            document.querySelectorAll('.rl-file-type-option').forEach(p => p.classList.remove('is-selected'));
+            r.closest('.rl-file-type-option')?.classList.add('is-selected');
+            document.getElementById('scheduleField')?.classList.toggle('rl-hidden', r.value === 'true');
+        });
+    });
+</script>
+}

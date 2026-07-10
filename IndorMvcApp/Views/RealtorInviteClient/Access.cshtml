@@ -1,5 +1,4 @@
 @model IndorMvcApp.ViewModels.RealtorInviteAccessViewModel
-@using IndorMvcApp.Helpers
 @{
     string FieldError(string key) => ViewData.ModelState[key]?.Errors.FirstOrDefault()?.ErrorMessage ?? "";
     var collaborationError = FieldError("CollaborationLevel");
@@ -9,6 +8,12 @@
         .Where(m => !string.IsNullOrWhiteSpace(m))
         .Distinct()
         .ToList();
+    const string DefaultWelcomeMessageEnglish =
+        "Hi! I'd like to invite you to view project details and stay updated in INDOR. Let me know if you have any questions.";
+    var welcomeMessage = string.IsNullOrWhiteSpace(Model.WelcomeMessage)
+                         || Model.WelcomeMessage == DefaultWelcomeMessageEnglish
+        ? L[DefaultWelcomeMessageEnglish]
+        : Model.WelcomeMessage;
 }
 
 <form asp-action="Access" method="post" class="rl-invite-form" id="inviteAccessForm" novalidate>
@@ -24,7 +29,7 @@
                 <ul class="rl-error-list">
                     @foreach (var msg in formErrors)
                     {
-                        <li>@L[msg]</li>
+                        <li>@UiDisplayLocalization.Localize(L, msg)</li>
                     }
                 </ul>
             </div>
@@ -61,7 +66,7 @@
             <span class="rl-toggle"></span>
         </label>
         <label class="rl-toggle-row">
-            <span>@L["Payments"] <small>(@L["optional"])</small></span>
+            <span>@L["Payments"] <small>@L["(optional)"]</small></span>
             <input type="checkbox" name="AccessPayments" value="true" @(Model.AccessPayments ? "checked" : null) />
             <span class="rl-toggle"></span>
         </label>
@@ -75,14 +80,14 @@
             <label class="rl-collab-card @(selected ? "is-selected" : "")">
                 <input type="radio" name="CollaborationLevel" value="@opt.Value" @(selected ? "checked" : null) />
                 <i class="fas @opt.Icon"></i>
-                <span>@L[opt.Label]</span>
+                <span>@UiDisplayLocalization.Localize(L, opt.Label)</span>
                 @if (selected) { <i class="fas fa-circle-check rl-collab-check"></i> }
             </label>
         }
     </div>
     @if (!string.IsNullOrWhiteSpace(collaborationError))
     {
-        <span class="rl-field-error">@L[collaborationError]</span>
+        <span class="rl-field-error">@UiDisplayLocalization.Localize(L, collaborationError)</span>
     }
 
     <h2 class="rl-invite-section-title">@L["Invitation Delivery"] <span class="rl-cp-req">*</span></h2>
@@ -97,11 +102,11 @@
         </label>
     </div>
 
-    <h2 class="rl-invite-section-title">@L["Custom Welcome Message"] <small>(@L["optional"])</small></h2>
+    <h2 class="rl-invite-section-title">@L["Custom Welcome Message"] <small>@L["(optional)"]</small></h2>
     <label class="rl-field rl-field--textarea">
-        <textarea name="WelcomeMessage" maxlength="250" rows="4">@Model.WelcomeMessage</textarea>
+        <textarea name="WelcomeMessage" maxlength="250" rows="4">@welcomeMessage</textarea>
     </label>
-    <span class="rl-char-count">@Model.WelcomeMessage.Length/250</span>
+    <span class="rl-char-count">@welcomeMessage.Length/250</span>
 
     <div class="rl-info-box rl-info-box--muted">
         <i class="fas fa-circle-info"></i>

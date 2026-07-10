@@ -1,5 +1,4 @@
 @model IndorMvcApp.ViewModels.RealtorFilesViewModel
-@using IndorMvcApp.Helpers
 @{
     ViewData["Title"] = L["Property Files"];
     Layout = "_RealtorLayout";
@@ -38,7 +37,7 @@
                     {
                         <a asp-action="Files" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
                            class="rl-filter-menu-item @(Model.ActiveFilter == chip ? "is-active" : null)" role="menuitem">
-                            <span>@RealtorDisplayLocalization.FileFilterLabel(L, chip)</span>
+                            <span>@UiDisplayLocalization.Localize(L, chip)</span>
                             @if (Model.ActiveFilter == chip)
                             {
                                 <i class="fas fa-check"></i>
@@ -52,7 +51,7 @@
             @foreach (var chip in Model.Filters)
             {
                 <a asp-action="Files" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
-                   class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@RealtorDisplayLocalization.FileFilterLabel(L, chip)</a>
+                   class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@UiDisplayLocalization.Localize(L, chip)</a>
             }
         </div>
     </form>
@@ -127,7 +126,7 @@
                         {
                             <span class="rl-premium-client"><i class="fas fa-user"></i> @file.ClientName</span>
                         }
-                        <span class="rl-file-code">@L.T("File ID: {0}", file.FileCode)</span>
+                        <span class="rl-file-code">@L["File ID:"] @file.FileCode</span>
                         @if (!string.IsNullOrWhiteSpace(file.DetailNote))
                         {
                             <span class="rl-premium-muted">@UiDisplayLocalization.Localize(L, file.DetailNote)</span>
@@ -159,13 +158,15 @@
         </section>
     }
 
-    <div class="rl-toast" id="rlFilesToast" role="status" aria-live="polite" hidden
-         data-copy-template="@L.T("File ID copied: {0}", "{0}")"></div>
+    <div class="rl-toast" id="rlFilesToast" role="status" aria-live="polite" hidden></div>
 </div>
 
 @section Scripts {
 <script>
     (function () {
+        var fileIdCopiedTemplate = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["File ID copied: {0}"]));
+        var copyFileIdPrompt = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Copy File ID:"]));
+
         function closeAllMenus(except) {
             document.querySelectorAll('.rl-card-menu-dropdown:not([hidden]), #rlFilterMenu:not([hidden])').forEach(function (menu) {
                 if (menu === except) { return; }
@@ -223,9 +224,9 @@
                 var value = item.getAttribute('data-copy') || '';
                 try {
                     await navigator.clipboard.writeText(value);
-                    showToast((toast.getAttribute('data-copy-template') || 'File ID copied: {0}').replace('{0}', value));
+                    showToast(fileIdCopiedTemplate.replace('{0}', value));
                 } catch (_) {
-                    window.prompt('@L["Copy File ID"]:', value);
+                    window.prompt(copyFileIdPrompt, value);
                 }
                 closeAllMenus(null);
             });

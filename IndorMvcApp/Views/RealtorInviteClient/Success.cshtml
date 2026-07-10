@@ -34,7 +34,7 @@
         <a asp-controller="Realtor" asp-action="Clients" class="rl-success-link-row">
             <i class="fas fa-eye"></i> @L["View Pending Invitation"] <i class="fas fa-chevron-right"></i>
         </a>
-        <button type="button" class="rl-success-link-row" id="copyInviteLink" data-link="@Model.InviteLink">
+        <button type="button" class="rl-success-link-row" id="copyInviteLink" data-link="@Model.InviteLink" data-prompt="@L["Copy invite link:"]">
             <i class="fas fa-link"></i> @L["Copy Invite Link"] <i class="fas fa-chevron-right"></i>
         </button>
         <a asp-controller="RealtorInviteClient" asp-action="New" class="rl-success-link-row">
@@ -67,10 +67,11 @@
 <script>
     document.getElementById('copyInviteLink')?.addEventListener('click', async function () {
         const link = this.dataset.link;
+        const promptLabel = this.dataset.prompt || 'Copy invite link:';
         try {
             await navigator.clipboard.writeText(link);
             this.querySelector('i.fa-link').className = 'fas fa-check';
-        } catch { window.prompt('Copy invite link:', link); }
+        } catch { window.prompt(promptLabel, link); }
     });
 </script>
 }

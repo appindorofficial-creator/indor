@@ -1,6 +1,5 @@
 @model IndorMvcApp.ViewModels.RealtorNearbyNetworkViewModel
 @using System.Text.Json
-@using IndorMvcApp.Helpers
 @{
     ViewData["Title"] = L["Nearby Network"];
     Layout = "_RealtorLayout";
@@ -44,8 +43,8 @@
 
         <div class="rl-page-header rl-page-header--hero rl-network-head">
             <div class="rl-page-header-copy">
-                <h1 class="rl-page-title">@Model.PageTitle</h1>
-                <p class="rl-page-subtitle">@Model.RadiusLabel</p>
+                <h1 class="rl-page-title">@UiDisplayLocalization.Localize(L, Model.PageTitle)</h1>
+                <p class="rl-page-subtitle">@UiDisplayLocalization.Localize(L, Model.RadiusLabel)</p>
             </div>
             @if (!isMapView)
             {
@@ -82,7 +81,7 @@
                        asp-route-view="map"
                        asp-route-q="@Model.SearchQuery"
                        class="rl-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
-                        <i class="fas @chip.Icon"></i> @RealtorDisplayLocalization.NetworkFilterLabel(L, chip.Label)
+                        <i class="fas @chip.Icon"></i> @UiDisplayLocalization.Localize(L, chip.Label)
                     </a>
                 }
             </div>
@@ -108,7 +107,7 @@
                        asp-route-view="@Model.ActiveView"
                        asp-route-q="@Model.SearchQuery"
                        class="rl-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
-                        <i class="fas @chip.Icon"></i> @RealtorDisplayLocalization.NetworkFilterLabel(L, chip.Label)
+                        <i class="fas @chip.Icon"></i> @UiDisplayLocalization.Localize(L, chip.Label)
                     </a>
                 }
             </div>
@@ -141,8 +140,8 @@
 
                 <div class="rl-zillow-map-sheet" id="rlMapBottomSheet">
                     <div class="rl-zillow-map-sheet-handle"></div>
-                    <strong id="rl-map-location-label">@Model.MapCenterLabel</strong>
-                    <span id="rl-map-location-meta">@Model.MapNearbyMetaLabel</span>
+                    <strong id="rl-map-location-label">@UiDisplayLocalization.Localize(L, Model.MapCenterLabel)</strong>
+                    <span id="rl-map-location-meta">@L.T("{0} mi radius · {1} nearby", Model.RadiusMiles.ToString("0.#"), Model.MapNearbyCount)</span>
                 </div>
 
                 <script type="application/json" id="rl-network-map-data">@Html.Raw(mapConfigJson)</script>
@@ -159,8 +158,8 @@
                             <button type="button"
                                     class="rl-network-map-pin rl-network-map-pin--@pin.PinType"
                                     style="top:@pin.TopPercent;left:@pin.LeftPercent"
-                                    aria-label="@pin.Label"
-                                    title="@pin.Label">
+                                    aria-label="@UiDisplayLocalization.Localize(L, pin.Label)"
+                                    title="@UiDisplayLocalization.Localize(L, pin.Label)">
                                 <i class="fas @pin.IconClass"></i>
                             </button>
                         }
@@ -176,10 +175,10 @@
             {
                 <a href="@action.Url" class="rl-quick-action">
                     <span class="rl-quick-action-icon"><i class="fas @action.Icon"></i></span>
-                    <span class="rl-quick-action-label">@L[action.Label]</span>
+                    <span class="rl-quick-action-label">@UiDisplayLocalization.Localize(L, action.Label)</span>
                     @if (!string.IsNullOrWhiteSpace(action.Subtitle))
                     {
-                        <span class="rl-quick-action-sub">@L[action.Subtitle]</span>
+                        <span class="rl-quick-action-sub">@UiDisplayLocalization.Localize(L, action.Subtitle)</span>
                     }
                 </a>
             }

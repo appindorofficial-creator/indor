@@ -1,7 +1,7 @@
 @using IndorMvcApp.Localization
 @{
     var stepModel = Model as IndorMvcApp.ViewModels.RealtorQuoteRequestStepViewModel;
-    var pageTitle = stepModel?.Title ?? L["Request Quote"];
+    var pageTitle = UiDisplayLocalization.Localize(L, stepModel?.Title ?? "Request Quote");
 }
 <!DOCTYPE html>
 <html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
@@ -21,6 +21,7 @@
         @RenderBody()
     </div>
     @await Html.PartialAsync("~/Views/Realtor/_RealtorBottomNav.cshtml")
+    @await Html.PartialAsync("_QuoteRequestI18n")
     @RenderSection("Scripts", required: false)
 </body>
 </html>

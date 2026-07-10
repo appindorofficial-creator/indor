@@ -616,8 +616,17 @@ public class RealtorPropertyFileWizardService(
             ? draft.Address ?? ""
             : $"{draft.Address}, {draft.CityRegion}";
 
-    private static string FormatFilePhaseLabel(string? phase) =>
-        string.IsNullOrWhiteSpace(phase) ? "Property File" : $"{phase} File";
+    private static string FormatFilePhaseLabel(string? phase)
+    {
+        if (string.IsNullOrWhiteSpace(phase))
+        {
+            return "General Property File";
+        }
+
+        var opt = RealtorPropertyFilePhases.Options.FirstOrDefault(o =>
+            string.Equals(o.Value, phase, StringComparison.OrdinalIgnoreCase));
+        return opt.Label ?? $"{phase} File";
+    }
 
     private static string FormatFileSize(long bytes) =>
         bytes >= 1_000_000 ? $"{bytes / 1_000_000.0:0.#} MB" : $"{bytes / 1_000.0:0.#} KB";

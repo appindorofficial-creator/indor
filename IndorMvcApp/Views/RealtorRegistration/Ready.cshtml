@@ -1,4 +1,3 @@
-@using IndorMvcApp.Helpers
 @model IndorMvcApp.ViewModels.RealtorReadyViewModel
 @{
     ViewData["RealtorStep"] = new IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel
@@ -12,7 +11,7 @@
 <section class="rl-ready-hero">
     <h1>@L["Your profile is ready"]</h1>
     <p>@L["You can now enter as a Realtor."]</p>
-    <span class="rl-badge"><i class="fas fa-star"></i> @L[Model.BadgeLabel]</span>
+    <span class="rl-badge"><i class="fas fa-star"></i> @UiDisplayLocalization.Localize(L, Model.BadgeLabel)</span>
 </section>
 
 <ul class="rl-ready-checklist">

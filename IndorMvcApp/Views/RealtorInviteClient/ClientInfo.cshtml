@@ -1,5 +1,4 @@
 @model IndorMvcApp.ViewModels.RealtorInviteClientInfoViewModel
-@using IndorMvcApp.Helpers
 @{
     string FieldError(string key) => ViewData.ModelState[key]?.Errors.FirstOrDefault()?.ErrorMessage ?? "";
     var fullNameError = FieldError("fullName");
@@ -25,7 +24,7 @@
             <ul class="rl-error-list" id="inviteClientFormErrorList">
                 @foreach (var msg in formErrors)
                 {
-                    <li>@L[msg]</li>
+                    <li>@UiDisplayLocalization.Localize(L, msg)</li>
                 }
             </ul>
         </div>
@@ -45,7 +44,7 @@
                aria-invalid="@(fullNameError.Length > 0)"
                @(fullNameError.Length > 0 ? Html.Raw("aria-describedby=\"fullNameError\"") : null) />
     </label>
-    <span class="rl-field-error" id="fullNameError" data-client-error="fullName">@L[fullNameError]</span>
+    <span class="rl-field-error" id="fullNameError" data-client-error="fullName">@UiDisplayLocalization.Localize(L, fullNameError)</span>
 
     <label class="rl-field @(emailError.Length > 0 ? "is-error" : null)" for="inviteClientEmail">
         <i class="fas fa-envelope"></i>
@@ -60,7 +59,7 @@
                aria-invalid="@(emailError.Length > 0)"
                @(emailError.Length > 0 ? Html.Raw("aria-describedby=\"emailError\"") : null) />
     </label>
-    <span class="rl-field-error" id="emailError" data-client-error="email">@L[emailError]</span>
+    <span class="rl-field-error" id="emailError" data-client-error="email">@UiDisplayLocalization.Localize(L, emailError)</span>
 
     <label class="rl-field @(phoneError.Length > 0 ? "is-error" : null)" for="inviteClientPhone">
         <i class="fas fa-phone"></i>
@@ -79,7 +78,7 @@
                aria-invalid="@(phoneError.Length > 0)"
                @(phoneError.Length > 0 ? Html.Raw("aria-describedby=\"phoneError\"") : null) />
     </label>
-    <span class="rl-field-error" id="phoneError" data-client-error="phone">@L[phoneError]</span>
+    <span class="rl-field-error" id="phoneError" data-client-error="phone">@UiDisplayLocalization.Localize(L, phoneError)</span>
 
     <p class="rl-invite-section-title">@L["Client Role"] <span class="rl-required" aria-hidden="true">*</span></p>
     <div class="rl-role-pills">
@@ -87,13 +86,13 @@
         {
             <label class="rl-role-pill @(Model.ClientRole == role ? "is-selected" : "")">
                 <input type="radio" name="clientRole" value="@role" @(Model.ClientRole == role ? "checked" : null) />
-                <span>@RealtorDisplayLocalization.ClientRole(L, role)</span>
+                <span>@UiDisplayLocalization.Localize(L, role)</span>
             </label>
         }
     </div>
-    <span class="rl-field-error" id="clientRoleError" data-client-error="clientRole">@L[clientRoleError]</span>
+    <span class="rl-field-error" id="clientRoleError" data-client-error="clientRole">@UiDisplayLocalization.Localize(L, clientRoleError)</span>
 
-    <p class="rl-invite-section-title">@L["Quick Note"] <small>(@L["optional"])</small></p>
+    <p class="rl-invite-section-title">@L["Quick Note"] <small>@L["(optional)"]</small></p>
     <label class="rl-field rl-field--textarea">
         <i class="fas fa-note-sticky"></i>
         <textarea name="quickNote" maxlength="250" placeholder="@L["Add a note about this client..."]" rows="3">@Model.QuickNote</textarea>

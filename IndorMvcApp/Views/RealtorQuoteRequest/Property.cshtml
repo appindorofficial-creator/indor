@@ -1,7 +1,13 @@
 @model IndorMvcApp.ViewModels.RealtorQuoteRequestPropertyViewModel
-
-
-
+@{
+    var formErrors = ViewData.ModelState
+        .Where(x => x.Value?.Errors.Count > 0)
+        .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
+        .Where(m => !string.IsNullOrWhiteSpace(m))
+        .Distinct()
+        .Select(m => UiDisplayLocalization.Localize(L, m))
+        .ToList();
+}
 <form asp-action="Property" method="get" class="rl-search-form">
 
     <div class="rl-search-bar">
@@ -20,10 +26,23 @@
 
     @Html.AntiForgeryToken()
 
-    <div asp-validation-summary="All" class="ob-summary"></div>
+    <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
 
-
-
+    @if (formErrors.Count > 0)
+    {
+        <div class="rl-error-banner" role="alert">
+            <i class="fas fa-circle-exclamation"></i>
+            <div>
+                <strong>@L["Please fix the following to continue:"]</strong>
+                <ul class="rl-error-list">
+                    @foreach (var msg in formErrors)
+                    {
+                        <li>@msg</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
     @if (Model.Properties.Count == 0)
 
     {
@@ -62,7 +81,7 @@
 
                 </span>
 
-                <span class="rl-phase-badge rl-phase-badge--@prop.FilePhaseCss">@prop.FilePhase</span>
+                <span class="rl-phase-badge rl-phase-badge--@prop.FilePhaseCss">@L[prop.FilePhase]</span>
 
             </label>
 

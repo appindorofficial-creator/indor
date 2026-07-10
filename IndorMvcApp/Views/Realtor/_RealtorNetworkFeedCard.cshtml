@@ -21,7 +21,7 @@
                     @if (!string.IsNullOrWhiteSpace(Model.MetaLabel))
                     {
                         <span class="rl-network-card-meta rl-network-card-meta--address">
-                            <i class="fas fa-location-dot"></i> @Model.MetaLabel
+                            <i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.MetaLabel)
                         </span>
                     }
                 </div>
@@ -107,7 +107,7 @@ else
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.MetaLabel))
                 {
-                    <span class="rl-network-card-meta">@Model.MetaLabel</span>
+                    <span class="rl-network-card-meta">@UiDisplayLocalization.Localize(L, Model.MetaLabel)</span>
                 }
                 @if (Model.Tags.Count > 0)
                 {
@@ -126,7 +126,7 @@ else
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
                 {
-                    <span class="rl-network-distance"><i class="fas fa-location-dot"></i> @Model.DistanceLabel</span>
+                    <span class="rl-network-distance"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.DistanceLabel)</span>
                 }
             </div>
         </div>

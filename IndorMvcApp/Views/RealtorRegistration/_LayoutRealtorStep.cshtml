@@ -2,7 +2,7 @@
 @{
     var stepModel = Model as IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel
         ?? ViewData["RealtorStep"] as IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel;
-    var pageTitle = stepModel?.Title ?? ViewData["Title"] as string ?? L["Realtor Registration"];
+    var pageTitle = UiDisplayLocalization.Localize(L, stepModel?.Title ?? ViewData["Title"] as string ?? "Realtor Registration");
 }
 <!DOCTYPE html>
 <html lang="@UiCulture.HtmlLang(L.CurrentCulture)">

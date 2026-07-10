@@ -1,5 +1,4 @@
 @model IndorMvcApp.ViewModels.RealtorHomeViewModel
-@using IndorMvcApp.Helpers
 @{
     ViewData["Title"] = L["Home"];
     Layout = "_RealtorLayout";
@@ -24,7 +23,7 @@
                 <div class="rl-home-badge-row">
                     <span class="rl-dash-badge @(Model.IsVerified ? "is-verified" : null)">
                         <i class="fas @(Model.IsVerified ? "fa-circle-check" : "fa-star")"></i>
-                        @L[Model.BadgeLabel]
+                        @UiDisplayLocalization.Localize(L, Model.BadgeLabel)
                     </span>
                     @if (!Model.IsVerified)
                     {
@@ -40,7 +39,7 @@
         {
             <a href="@action.Url" class="rl-quick-action">
                 <span class="rl-quick-action-icon"><i class="fas @action.Icon"></i></span>
-                <span>@L[action.Label]</span>
+                <span>@UiDisplayLocalization.Localize(L, action.Label)</span>
             </a>
         }
     </section>
@@ -128,11 +127,11 @@
                             }
                             @if (!string.IsNullOrWhiteSpace(quote.RequestedLabel))
                             {
-                                <span class="rl-premium-muted">@quote.RequestedLabel</span>
+                                <span class="rl-premium-muted">@UiDisplayLocalization.Localize(L, quote.RequestedLabel)</span>
                             }
                             @if (!string.IsNullOrWhiteSpace(quote.DueLabel))
                             {
-                                <span class="rl-premium-muted">@quote.DueLabel</span>
+                                <span class="rl-premium-muted">@UiDisplayLocalization.Localize(L, quote.DueLabel)</span>
                             }
                             <a asp-controller="Realtor" asp-action="Quotes" class="rl-premium-link">@UiDisplayLocalization.Localize(L, quote.ActionLabel) <i class="fas fa-chevron-right"></i></a>
                         </div>
@@ -164,9 +163,9 @@
                             <span class="rl-status-pill rl-status-pill--@pkg.StatusCss">
                                 @if (pkg.StatusCss == "viewed") { <i class="fas fa-circle-check"></i> }
                                 else { <i class="fas fa-clock"></i> }
-                                @L[pkg.StatusLabel]
+                                @UiDisplayLocalization.Localize(L, pkg.StatusLabel)
                             </span>
-                            <span class="rl-premium-muted rl-premium-date">@pkg.SharedLabel</span>
+                            <span class="rl-premium-muted rl-premium-date">@UiDisplayLocalization.Localize(L, pkg.SharedLabel)</span>
                         </div>
                     </article>
                 }

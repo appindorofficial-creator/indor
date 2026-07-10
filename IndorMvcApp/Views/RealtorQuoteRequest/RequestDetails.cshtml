@@ -1,170 +1,110 @@
 @model IndorMvcApp.ViewModels.RealtorQuoteRequestDetailsViewModel
-
-
-
-<form id="quoteDetailsForm" asp-action="RequestDetails" method="post" class="rl-invite-form">
-
-    @Html.AntiForgeryToken()
-
-    <div asp-validation-summary="All" class="ob-summary"></div>
-
-
-
-    <h2 class="rl-invite-section-title">@L["How do you want to request quotes?"]</h2>
-
-    <div class="rl-file-type-list">
-
-        @foreach (var opt in Model.RequestTypeOptions)
-
-        {
-
-            var selected = Model.RequestType == opt.Value;
-
-            <label class="rl-file-type-option @(selected ? "is-selected" : "")">
-
-                <input type="radio" name="requestType" value="@opt.Value" @(selected ? "checked" : null) />
-
-                <i class="fas @opt.Icon"></i>
-
-                <span>
-
-                    <strong>@opt.Label</strong>
-
-                    <small>@opt.Description</small>
-
-                </span>
-
-            </label>
-
-        }
-
-    </div>
-
-
-
-    <h2 class="rl-invite-section-title">@L["What should providers receive?"]</h2>
-
-    <div class="rl-toggle-list">
-
-        <label class="rl-toggle-row">
-
-            <span><i class="fas fa-camera"></i> @L["Photos &amp; Videos"]</span>
-
-            <input type="checkbox" name="sharePhotosVideos" value="true" @(Model.SharePhotosVideos ? "checked" : null) />
-
-            <span class="rl-toggle"></span>
-
-        </label>
-
-        <label class="rl-toggle-row">
-
-            <span><i class="fas fa-file-lines"></i> @L["Inspection Report"]</span>
-
-            <input type="checkbox" name="shareInspectionReport" value="true" @(Model.ShareInspectionReport ? "checked" : null) />
-
-            <span class="rl-toggle"></span>
-
-        </label>
-
-        <label class="rl-toggle-row">
-
-            <span><i class="fas fa-wrench"></i> @L["Repair Items"]</span>
-
-            <input type="checkbox" name="shareRepairItems" value="true" @(Model.ShareRepairItems ? "checked" : null) />
-
-            <span class="rl-toggle"></span>
-
-        </label>
-
-        <label class="rl-toggle-row">
-
-            <span><i class="fas fa-note-sticky"></i> @L["Notes &amp; Documents"]</span>
-
-            <input type="checkbox" name="shareNotes" value="true" @(Model.ShareNotes ? "checked" : null) />
-
-            <span class="rl-toggle"></span>
-
-        </label>
-
-    </div>
-
-
-
-    <h2 class="rl-invite-section-title">@L["Response deadline"]</h2>
-
-    <div class="rl-deadline-row">
-
-        @foreach (var hours in Model.DeadlineOptions)
-
-        {
-
-            var selected = Model.ResponseDeadlineHours == hours;
-
-            <label class="rl-deadline-btn @(selected ? "is-selected" : "")">
-
-                <input type="radio" name="responseDeadlineHours" value="@hours" @(selected ? "checked" : null) />
-
-                @hours hours
-
-            </label>
-
-        }
-
-    </div>
-
-
-
-    <div class="rl-info-box">
-
-        <i class="fas fa-circle-info"></i>
-
-        <p>@L["Keep it simple: most realtors only need to choose full file or by item, what documents to share, and when they want responses."]</p>
-
-    </div>
-
-</form>
-
-
-
-<div class="rl-invite-actions">
-
-    <a asp-action="BackToProperty" class="rl-invite-cancel">@L["Back"]</a>
-
-    <button type="submit" form="quoteDetailsForm" class="ob-btn ob-btn-primary">@L["Next"]</button>
-
-</div>
-
-
-
-@section Scripts {
-
-<script>
-
-    document.querySelectorAll('.rl-file-type-option input').forEach(r => {
-
-        r.addEventListener('change', () => {
-
-            document.querySelectorAll('.rl-file-type-option').forEach(p => p.classList.remove('is-selected'));
-
-            r.closest('.rl-file-type-option')?.classList.add('is-selected');
-
-        });
-
-    });
-
-    document.querySelectorAll('.rl-deadline-btn input').forEach(r => {
-
-        r.addEventListener('change', () => {
-
-            document.querySelectorAll('.rl-deadline-btn').forEach(p => p.classList.remove('is-selected'));
-
-            r.closest('.rl-deadline-btn')?.classList.add('is-selected');
-
-        });
-
-    });
-
-</script>
-
+@{
+    var formErrors = ViewData.ModelState
+        .Where(x => x.Value?.Errors.Count > 0)
+        .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
+        .Where(m => !string.IsNullOrWhiteSpace(m))
+        .Distinct()
+        .Select(m => UiDisplayLocalization.Localize(L, m))
+        .ToList();
 }
 
+<form id="quoteDetailsForm" asp-action="RequestDetails" method="post" class="rl-invite-form">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
+
+    @if (formErrors.Count > 0)
+    {
+        <div class="rl-error-banner" role="alert">
+            <i class="fas fa-circle-exclamation"></i>
+            <div>
+                <strong>@L["Please fix the following to continue:"]</strong>
+                <ul class="rl-error-list">
+                    @foreach (var msg in formErrors)
+                    {
+                        <li>@msg</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+
+    <h2 class="rl-invite-section-title">@L["How do you want to request quotes?"]</h2>
+    <div class="rl-file-type-list">
+        @foreach (var opt in Model.RequestTypeOptions)
+        {
+            var selected = Model.RequestType == opt.Value;
+            <label class="rl-file-type-option @(selected ? "is-selected" : "")">
+                <input type="radio" name="requestType" value="@opt.Value" @(selected ? "checked" : null) />
+                <i class="fas @opt.Icon"></i>
+                <span>
+                    <strong>@UiDisplayLocalization.Localize(L, opt.Label)</strong>
+                    <small>@UiDisplayLocalization.Localize(L, opt.Description)</small>
+                </span>
+            </label>
+        }
+    </div>
+
+    <h2 class="rl-invite-section-title">@L["What should providers receive?"]</h2>
+    <div class="rl-toggle-list">
+        <label class="rl-toggle-row">
+            <span><i class="fas fa-camera"></i> @L["Photos & Videos"]</span>
+            <input type="checkbox" name="sharePhotosVideos" value="true" @(Model.SharePhotosVideos ? "checked" : null) />
+            <span class="rl-toggle"></span>
+        </label>
+        <label class="rl-toggle-row">
+            <span><i class="fas fa-file-lines"></i> @L["Inspection Report"]</span>
+            <input type="checkbox" name="shareInspectionReport" value="true" @(Model.ShareInspectionReport ? "checked" : null) />
+            <span class="rl-toggle"></span>
+        </label>
+        <label class="rl-toggle-row">
+            <span><i class="fas fa-wrench"></i> @L["Repair Items"]</span>
+            <input type="checkbox" name="shareRepairItems" value="true" @(Model.ShareRepairItems ? "checked" : null) />
+            <span class="rl-toggle"></span>
+        </label>
+        <label class="rl-toggle-row">
+            <span><i class="fas fa-note-sticky"></i> @L["Notes & Documents"]</span>
+            <input type="checkbox" name="shareNotes" value="true" @(Model.ShareNotes ? "checked" : null) />
+            <span class="rl-toggle"></span>
+        </label>
+    </div>
+
+    <h2 class="rl-invite-section-title">@L["Response deadline"]</h2>
+    <div class="rl-deadline-row">
+        @foreach (var hours in Model.DeadlineOptions)
+        {
+            var selected = Model.ResponseDeadlineHours == hours;
+            <label class="rl-deadline-btn @(selected ? "is-selected" : "")">
+                <input type="radio" name="responseDeadlineHours" value="@hours" @(selected ? "checked" : null) />
+                @L.T("{0} hours", hours)
+            </label>
+        }
+    </div>
+
+    <div class="rl-info-box">
+        <i class="fas fa-circle-info"></i>
+        <p>@L["Keep it simple: most realtors only need to choose full file or by item, what documents to share, and when they want responses."]</p>
+    </div>
+</form>
+
+<div class="rl-invite-actions">
+    <a asp-action="BackToProperty" class="rl-invite-cancel">@L["Back"]</a>
+    <button type="submit" form="quoteDetailsForm" class="ob-btn ob-btn-primary">@L["Next"]</button>
+</div>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('.rl-file-type-option input').forEach(r => {
+        r.addEventListener('change', () => {
+            document.querySelectorAll('.rl-file-type-option').forEach(p => p.classList.remove('is-selected'));
+            r.closest('.rl-file-type-option')?.classList.add('is-selected');
+        });
+    });
+    document.querySelectorAll('.rl-deadline-btn input').forEach(r => {
+        r.addEventListener('change', () => {
+            document.querySelectorAll('.rl-deadline-btn').forEach(p => p.classList.remove('is-selected'));
+            r.closest('.rl-deadline-btn')?.classList.add('is-selected');
+        });
+    });
+</script>
+}

@@ -440,9 +440,20 @@ public class RealtorQuoteRequestService(
             .Include(p => p.Provider)
             .LoadAsync(cancellationToken);
 
-        if (draft.PropertyFileId is not > 0 || draft.SelectedProviders.Count == 0)
+        if (draft.PropertyFileId is not > 0)
         {
-            throw new InvalidOperationException("Quote request is incomplete.");
+            throw new InvalidOperationException("Please select a property before sending the quote request.");
+        }
+
+        if (draft.SelectedProviders.Count == 0)
+        {
+            throw new InvalidOperationException(
+                "Step 3 (Providers): please select at least one provider before sending. Go back and choose providers manually, or adjust INDOR Recommended filters.");
+        }
+
+        if (!sendNow && !scheduledSendUtc.HasValue)
+        {
+            throw new InvalidOperationException("Please choose a schedule date and time or select Send Now.");
         }
 
         if (responseDeadlineHours is not (24 or 48 or 72))

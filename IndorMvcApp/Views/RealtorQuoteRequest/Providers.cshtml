@@ -1,338 +1,202 @@
 @model IndorMvcApp.ViewModels.RealtorQuoteRequestProvidersViewModel
-
 @{
-
     var isIndorMode = Model.ProviderSelectionMode == IndorMvcApp.Models.RealtorQuoteProviderSelectionModes.IndorRecommended;
-
+    var formErrors = ViewData.ModelState
+        .Where(x => x.Value?.Errors.Count > 0)
+        .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
+        .Where(m => !string.IsNullOrWhiteSpace(m))
+        .Distinct()
+        .Select(m => UiDisplayLocalization.Localize(L, m))
+        .ToList();
+    var providerCountLabel = Model.SelectedCount == 1
+        ? L.T("{0} provider selected", Model.SelectedCount)
+        : L.T("{0} providers selected", Model.SelectedCount);
 }
-
-
 
 <form id="quoteProvidersForm" asp-action="Providers" method="post" class="rl-invite-form">
-
     @Html.AntiForgeryToken()
-
     <input type="hidden" name="q" value="@Model.SearchQuery" />
-
     <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+    <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
 
-    <div asp-validation-summary="All" class="ob-summary"></div>
-
-
+    @if (formErrors.Count > 0)
+    {
+        <div class="rl-error-banner" role="alert">
+            <i class="fas fa-circle-exclamation"></i>
+            <div>
+                <strong>@L["Please fix the following to continue:"]</strong>
+                <ul class="rl-error-list">
+                    @foreach (var msg in formErrors)
+                    {
+                        <li>@msg</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
 
     <h2 class="rl-invite-section-title">@L["Who should choose the companies?"]</h2>
-
     <div class="rl-file-type-list">
-
         @foreach (var opt in Model.SelectionModeOptions)
-
         {
-
             var selected = Model.ProviderSelectionMode == opt.Value;
-
             <label class="rl-file-type-option @(selected ? "is-selected" : "")">
-
                 <input type="radio" name="providerSelectionMode" value="@opt.Value" @(selected ? "checked" : null) data-mode-radio />
-
                 <span>
-
-                    <strong>@opt.Label</strong>
-
-                    <small>@opt.Description</small>
-
+                    <strong>@UiDisplayLocalization.Localize(L, opt.Label)</strong>
+                    <small>@UiDisplayLocalization.Localize(L, opt.Description)</small>
                 </span>
-
             </label>
-
         }
-
     </div>
-
-
 
     <div id="manualProviderSection" class="@(isIndorMode ? "rl-hidden" : "")">
-
         <h2 class="rl-invite-section-title">@L["Search companies"]</h2>
-
         <div class="rl-search-bar rl-search-bar--inline">
-
             <i class="fas fa-magnifying-glass"></i>
-
             <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search company or service"]" formmethod="get" formaction="@Url.Action("Providers")" />
-
         </div>
-
         <div class="rl-filter-chips">
-
             @foreach (var chip in Model.ProviderFilters)
-
             {
-
                 <a asp-action="Providers" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
-
-                   class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@chip</a>
-
+                   class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@UiDisplayLocalization.Localize(L, chip)</a>
             }
-
         </div>
-
         <div class="rl-info-box rl-info-box--muted">
-
             <i class="fas fa-circle-info"></i>
-
             <p>@L["Recommended to send to 2–3 providers."]</p>
-
         </div>
-
     </div>
-
-
 
     <div id="indorProviderSection" class="@(isIndorMode ? "" : "rl-hidden")">
-
         <h2 class="rl-invite-section-title">@L["How should INDOR match providers?"]</h2>
-
         <div class="rl-review-card">
-
             <div class="rl-review-row">
-
                 <span class="rl-review-label"><i class="fas fa-wrench"></i> @L["Service Needed"]</span>
-
                 <select name="serviceType" class="rl-field-select">
-
                     @foreach (var svc in Model.ServiceTypes)
-
                     {
-
-                        <option value="@svc" selected="@(Model.ServiceType == svc)">@svc</option>
-
+                        <option value="@svc" selected="@(Model.ServiceType == svc)">@UiDisplayLocalization.Localize(L, svc)</option>
                     }
-
                 </select>
-
             </div>
-
             <div class="rl-review-row">
-
                 <span class="rl-review-label"><i class="fas fa-users"></i> @L["Send to"]</span>
-
                 <select name="providerCountTarget" class="rl-field-select">
-
                     <option value="2" selected="@(Model.ProviderCountTarget == 2)">@L["2 providers"]</option>
-
                     <option value="3" selected="@(Model.ProviderCountTarget == 3)">@L["2–3 providers"]</option>
-
                 </select>
-
             </div>
-
             <label class="rl-toggle-row rl-toggle-row--card">
-
                 <span>@L["Verified providers only"]</span>
-
                 <input type="checkbox" name="verifiedOnly" value="true" @(Model.VerifiedOnly ? "checked" : null) />
-
                 <span class="rl-toggle"></span>
-
             </label>
-
             <div class="rl-review-row">
-
                 <span class="rl-review-label">@L["Priority"]</span>
-
                 <div class="rl-filter-chips">
-
                     @foreach (var pri in Model.PriorityOptions)
-
                     {
-
                         <label class="rl-filter-chip @(Model.Priority == pri.Value ? "is-active" : "")">
-
                             <input type="radio" name="priority" value="@pri.Value" @(Model.Priority == pri.Value ? "checked" : null) />
-
-                            @pri.Label
-
+                            @UiDisplayLocalization.Localize(L, pri.Label)
                         </label>
-
                     }
-
                 </div>
-
             </div>
-
             <div class="rl-review-row">
-
                 <span class="rl-review-label"><i class="fas fa-location-dot"></i> @L["Coverage"]</span>
-
                 <select name="coverageMiles" class="rl-field-select">
-
                     <option value="10" selected="@(Model.CoverageMiles == 10)">@L["Within 10 miles"]</option>
-
                     <option value="25" selected="@(Model.CoverageMiles == 25)">@L["Within 25 miles"]</option>
-
                 </select>
-
             </div>
-
         </div>
-
     </div>
 
-
-
-    <h2 class="rl-invite-section-title">@(isIndorMode ? "Recommended Matches" : "Select Providers")</h2>
-
+    <h2 class="rl-invite-section-title">@(isIndorMode ? L["Recommended Matches"] : L["Select Providers"])</h2>
     @foreach (var provider in Model.Providers)
-
     {
-
         <label class="rl-provider-card @(provider.Selected ? "is-selected" : "")">
-
             <input type="checkbox" name="providerIds" value="@provider.Id"
-
                    @(provider.Selected ? "checked" : null)
-
                    @(isIndorMode ? "disabled" : null) />
-
             <span class="rl-provider-logo"><i class="fas fa-building"></i></span>
-
             <span class="rl-provider-body">
-
                 <strong>@provider.CompanyName</strong>
-
                 @if (!string.IsNullOrWhiteSpace(provider.BadgeLabel))
-
                 {
-
-                    <span class="rl-provider-badge">@provider.BadgeLabel</span>
-
+                    <span class="rl-provider-badge">@UiDisplayLocalization.Localize(L, provider.BadgeLabel)</span>
                 }
-
-                <span><i class="fas fa-star"></i> @provider.Rating.ToString("0.0") · @provider.Categories</span>
-
-                <span>@provider.DistanceMiles.ToString("0.0") mi</span>
-
+                <span><i class="fas fa-star"></i> @provider.Rating.ToString("0.0") · @UiDisplayLocalization.LocalizeCommaList(L, provider.Categories)</span>
+                <span>@UiDisplayLocalization.Localize(L, $"{provider.DistanceMiles:0.0} mi")</span>
             </span>
-
         </label>
-
     }
-
-
 
     @if (isIndorMode)
-
     {
-
         <div class="rl-info-box">
-
             <i class="fas fa-circle-info"></i>
-
             <p>@L["INDOR will send the request to the top matching providers based on your settings."]</p>
-
         </div>
-
     }
-
 </form>
 
-
-
 <div class="rl-provider-selected-count">
-
-    <i class="fas fa-users"></i> <span id="providerCountLabel">@Model.SelectedCount provider@(Model.SelectedCount == 1 ? "" : "s") selected</span>
-
+    <i class="fas fa-users"></i> <span id="providerCountLabel">@providerCountLabel</span>
 </div>
-
-
 
 <div class="rl-invite-actions">
-
     <a asp-action="BackToRequestDetails" class="rl-invite-cancel">@L["Back"]</a>
-
     <button type="submit" form="quoteProvidersForm" class="ob-btn ob-btn-primary">@L["Next"]</button>
-
 </div>
 
-
-
 @section Scripts {
-
 <script>
-
     const manualSection = document.getElementById('manualProviderSection');
-
     const indorSection = document.getElementById('indorProviderSection');
-
     const countLabel = document.getElementById('providerCountLabel');
+    const quoteI18n = window.IndorQuoteRequestI18n || {};
 
-
-
-    function updateMode() {
-
-        const mode = document.querySelector('[data-mode-radio]:checked')?.value;
-
-        const isIndor = mode === '@IndorMvcApp.Models.RealtorQuoteProviderSelectionModes.IndorRecommended';
-
-        manualSection?.classList.toggle('rl-hidden', isIndor);
-
-        indorSection?.classList.toggle('rl-hidden', !isIndor);
-
-        document.querySelectorAll('.rl-provider-card input').forEach(cb => {
-
-            cb.disabled = isIndor;
-
-        });
-
+    function formatProviderCount(count) {
+        const key = count === 1 ? '{0} provider selected' : '{0} providers selected';
+        const template = quoteI18n[key] || key;
+        return template.replace('{0}', count);
     }
 
-
+    function updateMode() {
+        const mode = document.querySelector('[data-mode-radio]:checked')?.value;
+        const isIndor = mode === '@IndorMvcApp.Models.RealtorQuoteProviderSelectionModes.IndorRecommended';
+        manualSection?.classList.toggle('rl-hidden', isIndor);
+        indorSection?.classList.toggle('rl-hidden', !isIndor);
+        document.querySelectorAll('.rl-provider-card input').forEach(cb => {
+            cb.disabled = isIndor;
+        });
+    }
 
     document.querySelectorAll('[data-mode-radio]').forEach(r => {
-
         r.addEventListener('change', () => {
-
             document.querySelectorAll('.rl-file-type-option').forEach(p => p.classList.remove('is-selected'));
-
             r.closest('.rl-file-type-option')?.classList.add('is-selected');
-
             updateMode();
-
         });
-
     });
-
-
 
     document.querySelectorAll('.rl-provider-card input').forEach(cb => {
-
         cb.addEventListener('change', () => {
-
             cb.closest('.rl-provider-card')?.classList.toggle('is-selected', cb.checked);
-
             const count = document.querySelectorAll('.rl-provider-card input:checked').length;
-
-            countLabel.textContent = count + ' provider' + (count === 1 ? '' : 's') + ' selected';
-
+            countLabel.textContent = formatProviderCount(count);
         });
-
     });
-
-
 
     document.querySelectorAll('.rl-filter-chip input').forEach(r => {
-
         r.addEventListener('change', () => {
-
             r.closest('.rl-filter-chips')?.querySelectorAll('.rl-filter-chip').forEach(c => c.classList.remove('is-active'));
-
             r.closest('.rl-filter-chip')?.classList.add('is-active');
-
         });
-
     });
-
 </script>
-
 }
-

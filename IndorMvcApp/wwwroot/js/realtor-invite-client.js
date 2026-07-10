@@ -7,6 +7,14 @@
         return /\p{L}/u.test(text);
     }
 
+    function inviteMsg(text) {
+        var i18n = window.IndorInviteClientI18n;
+        if (i18n && Object.prototype.hasOwnProperty.call(i18n, text)) {
+            return i18n[text];
+        }
+        return text;
+    }
+
     function setFormFieldError(formId, fieldKey, message) {
         var form = document.getElementById(formId);
         if (!form) {
@@ -57,7 +65,7 @@
             banner.setAttribute('role', 'alert');
             banner.innerHTML =
                 '<i class="fas fa-circle-exclamation"></i>' +
-                '<div><strong>Please fix the following to continue:</strong>' +
+                '<div><strong>' + inviteMsg('Please fix the following to continue:') + '</strong>' +
                 '<ul class="rl-error-list"></ul></div>';
 
             var summary = form.querySelector('.ob-summary');
@@ -79,20 +87,20 @@
     function validateFullName(value) {
         var name = (value || '').trim();
         if (!name) {
-            return 'Full name is required.';
+            return inviteMsg('Full name is required.');
         }
         if (name.length < 2) {
-            return 'Full name must be at least 2 characters.';
+            return inviteMsg('Full name must be at least 2 characters.');
         }
         if (!hasLetter(name)) {
-            return 'Enter a valid full name using letters (e.g. John Smith).';
+            return inviteMsg('Enter a valid full name using letters (e.g. John Smith).');
         }
         if (/^[\d\s]+$/.test(name)) {
-            return 'Full name cannot contain only numbers.';
+            return inviteMsg('Full name cannot contain only numbers.');
         }
         var parts = name.split(/\s+/).filter(Boolean);
         if (parts.length < 2 || parts.some(function (part) { return !hasLetter(part); })) {
-            return "Enter the client's first and last name.";
+            return inviteMsg("Enter the client's first and last name.");
         }
         return '';
     }
@@ -100,10 +108,10 @@
     function validateEmail(value) {
         var email = (value || '').trim();
         if (!email) {
-            return 'Email address is required.';
+            return inviteMsg('Email address is required.');
         }
         if (email.length > 254 || !emailFormatRegex.test(email)) {
-            return 'Enter a valid email address (e.g. name@email.com).';
+            return inviteMsg('Enter a valid email address (e.g. name@email.com).');
         }
         return '';
     }
@@ -113,24 +121,25 @@
             ? window.IndorPhoneInput.normalize(value)
             : (value || '').replace(/\D/g, '').slice(0, 10);
         if (!digits) {
-            return 'Phone number is required.';
+            return inviteMsg('Phone number is required.');
         }
         if (digits.length !== 10) {
-            return 'Enter a valid 10-digit US phone number (e.g. 555 123 4567).';
+            return inviteMsg('Enter a valid 10-digit US phone number (e.g. 555 123 4567).');
         }
         return '';
     }
 
     function validateZip(value) {
         if (window.IndorZipInput) {
-            return window.IndorZipInput.validateRequired(value);
+            var zipError = window.IndorZipInput.validateRequired(value);
+            return zipError ? inviteMsg(zipError) : '';
         }
         var zip = (value || '').trim();
         if (!zip) {
-            return 'ZIP code is required.';
+            return inviteMsg('ZIP code is required.');
         }
         if (!/^\d{5}(-\d{4})?$/.test(zip)) {
-            return 'Enter a valid 5-digit ZIP code (e.g. 77002).';
+            return inviteMsg('Enter a valid 5-digit ZIP code (e.g. 77002).');
         }
         return '';
     }
@@ -176,25 +185,25 @@
     function validateStreetAddress(value, requireStreetNumber) {
         var line = String(value || '').trim();
         if (!line) {
-            return 'Property address is required.';
+            return inviteMsg('Property address is required.');
         }
         if (line.length < 5) {
-            return 'Enter a complete street address.';
+            return inviteMsg('Enter a complete street address.');
         }
         if (!/[a-zA-Z]/.test(line)) {
-            return 'Enter a valid street address with a street name.';
+            return inviteMsg('Enter a valid street address with a street name.');
         }
         if (/^[\d\s.,#-]+$/.test(line)) {
-            return 'Address cannot contain only numbers.';
+            return inviteMsg('Address cannot contain only numbers.');
         }
 
         var tokens = line.split(/\s+/).filter(Boolean);
         var hasDigit = /\d/.test(line);
         if (requireStreetNumber && !hasDigit) {
-            return 'Enter a street number (e.g. 123 Main St).';
+            return inviteMsg('Enter a street number (e.g. 123 Main St).');
         }
         if (requireStreetNumber && !hasCompleteStreetLine(tokens)) {
-            return 'Enter a complete street address with street name and type (e.g. 123 Main St).';
+            return inviteMsg('Enter a complete street address with street name and type (e.g. 123 Main St).');
         }
         return '';
     }
@@ -211,7 +220,7 @@
         var fullNameError = validateFullName(fullNameInput ? fullNameInput.value : '');
         var emailError = validateEmail(emailInput ? emailInput.value : '');
         var phoneError = validatePhone(phoneInput ? phoneInput.value : '');
-        var roleError = roleInput ? '' : 'Please select a client role.';
+        var roleError = roleInput ? '' : inviteMsg('Please select a client role.');
 
         if (fullNameError) {
             setFormFieldError('inviteClientForm', 'fullName', fullNameError);
@@ -259,12 +268,12 @@
             'input[name="AccessPayments"]:checked'
         );
         if (!accessChecked) {
-            errors.push('Select at least one access permission.');
+            errors.push(inviteMsg('Select at least one access permission.'));
         }
 
         var collaboration = form.querySelector('input[name="CollaborationLevel"]:checked');
         if (!collaboration) {
-            errors.push('Select a collaboration level.');
+            errors.push(inviteMsg('Select a collaboration level.'));
             document.querySelector('.rl-collab-grid')?.classList.add('is-error');
         } else {
             document.querySelector('.rl-collab-grid')?.classList.remove('is-error');
@@ -274,7 +283,7 @@
             'input[name="DeliveryEmail"]:checked, input[name="DeliveryText"]:checked'
         );
         if (!deliveryChecked) {
-            errors.push('Select at least one invitation delivery method (email or text).');
+            errors.push(inviteMsg('Select at least one invitation delivery method (email or text).'));
         }
 
         if (errors.length) {
@@ -309,12 +318,14 @@
             errors.push(addressError);
         }
         if (!city) {
-            setFormFieldError('createPropertyForm', 'City', 'City is required.');
-            errors.push('City is required.');
+            var cityRequired = inviteMsg('City is required.');
+            setFormFieldError('createPropertyForm', 'City', cityRequired);
+            errors.push(cityRequired);
         }
         if (!state) {
-            setFormFieldError('createPropertyForm', 'StateCode', 'State is required.');
-            errors.push('State is required.');
+            var stateRequired = inviteMsg('State is required.');
+            setFormFieldError('createPropertyForm', 'StateCode', stateRequired);
+            errors.push(stateRequired);
         }
 
         var zipError = validateZip(zip);
@@ -380,9 +391,9 @@
 
         if (!selected && !query) {
             if (hasOptions) {
-                errors.push('Select a property from the list, or enter an address to create a new one.');
+                errors.push(inviteMsg('Select a property from the list, or enter an address to create a new one.'));
             } else {
-                errors.push('Enter an address and tap Next to create a new property.');
+                errors.push(inviteMsg('Enter an address and tap Next to create a new property.'));
             }
         }
 
@@ -495,7 +506,7 @@
         if (phoneInput && window.IndorPhoneInput) {
             window.IndorPhoneInput.attach(phoneInput, {
                 required: phoneInput.dataset.phoneRequired === 'true',
-                invalidMessage: 'Enter a valid 10-digit US phone number (e.g. 555 123 4567).'
+                invalidMessage: inviteMsg('Enter a valid 10-digit US phone number (e.g. 555 123 4567).')
             });
         }
 
@@ -592,7 +603,11 @@
         var zipInput = document.getElementById('cp-postal-code');
 
         if (zipInput && window.IndorZipInput) {
-            window.IndorZipInput.attach(zipInput, { required: true });
+            window.IndorZipInput.attach(zipInput, {
+                required: true,
+                requiredMessage: inviteMsg('ZIP code is required.'),
+                invalidMessage: inviteMsg('Enter a valid 5-digit ZIP code (e.g. 77002).')
+            });
         }
 
         if (form) {

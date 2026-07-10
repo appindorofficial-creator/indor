@@ -1,0 +1,11 @@
+@using System.Text.Json
+<script>
+window.IndorRealtorProfileI18n = @Html.Raw(JsonSerializer.Serialize(new Dictionary<string, string>
+{
+    ["View my realtor profile on INDOR"] = L["View my realtor profile on INDOR"],
+    ["Profile link copied to clipboard."] = L["Profile link copied to clipboard."],
+    ["View full insights"] = L["View full insights"],
+    ["Hide insights"] = L["Hide insights"],
+    ["Notification preferences saved."] = L["Notification preferences saved."]
+}));
+</script>

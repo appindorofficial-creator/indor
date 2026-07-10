@@ -1,150 +1,79 @@
 @model IndorMvcApp.ViewModels.RealtorQuoteRequestSuccessViewModel
-
 @{
-
     Layout = "_RealtorLayout";
-
     ViewData["Title"] = L["Quote Request Sent"];
-
     ViewBag.NavActive = "quotes";
-
+    var successSteps = new[] { L["Property"], L["Items & Details"], L["Providers"], L["Review & Send"] };
+    var sentToLabel = Model.ProviderCount == 1
+        ? L.T("Request sent to {0} provider", Model.ProviderCount)
+        : L.T("Request sent to {0} providers", Model.ProviderCount);
 }
 
-
-
 <div class="rl-dash-shell">
-
     @await Html.PartialAsync("~/Views/Realtor/_RealtorTopbar.cshtml", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel { HideNotifications = true })
 
-
-
     <section class="rl-success-hero">
-
         <div class="rl-success-icon-wrap">
-
             <span class="rl-success-icon"><i class="fas fa-check"></i></span>
-
         </div>
-
         <h1>@L["Quote Request Sent"]</h1>
-
         <p>@L["Your request was sent successfully."]</p>
-
     </section>
 
-
-
     <nav class="rl-invite-stepper rl-invite-stepper--success" aria-label="@L["Completed steps"]">
-
-        @foreach (var step in new[] { "Property", "Items & Details", "Providers", "Review & Send" })
-
+        @foreach (var step in successSteps)
         {
-
             <div class="rl-invite-step is-done">
-
                 <i class="fas fa-check"></i>
-
                 <small>@step</small>
-
             </div>
-
-            @if (step != "Review & Send")
-
+            @if (step != successSteps[^1])
             {
-
                 <div class="rl-invite-step-line is-done"></div>
-
             }
-
         }
-
     </nav>
 
-
-
     <div class="rl-success-card rl-success-card--quote">
-
         <div class="rl-success-quote-head">
-
             <i class="fas fa-circle-check"></i>
-
-            <strong>Request sent to @Model.ProviderCount provider@(Model.ProviderCount == 1 ? "" : "s")</strong>
-
+            <strong>@sentToLabel</strong>
         </div>
-
         <div class="rl-success-detail"><strong>@L["Property:"]</strong> @Model.PropertyAddress</div>
-
-        <div class="rl-success-detail"><strong>@L["Request Type:"]</strong> @Model.RequestTypeLabel</div>
-
+        <div class="rl-success-detail"><strong>@L["Request Type:"]</strong> @UiDisplayLocalization.Localize(L, Model.RequestTypeLabel)</div>
         <div class="rl-success-detail"><strong>@L["Sent To:"]</strong> @Model.ProvidersSummary</div>
-
-        <div class="rl-success-detail"><strong>@L["Sent When:"]</strong> @Model.SentWhenLabel</div>
-
-        <div class="rl-success-detail"><strong>@L["Response Deadline:"]</strong> @Model.ResponseDeadlineHours hours</div>
-
+        <div class="rl-success-detail"><strong>@L["Sent When:"]</strong> @UiDisplayLocalization.Localize(L, Model.SentWhenLabel)</div>
+        <div class="rl-success-detail"><strong>@L["Response Deadline:"]</strong> @L.T("{0} hours", Model.ResponseDeadlineHours)</div>
     </div>
-
-
 
     <div class="rl-review-card">
-
         <h2 class="rl-invite-section-title">@L["What happens next?"]</h2>
-
         <ol class="rl-next-steps">
-
             <li><span>1</span> @L["Providers receive the request in INDOR Pro."]</li>
-
             <li><span>2</span> @L["They review the file or selected repair items."]</li>
-
             <li><span>3</span> @L["They send a full quote or itemized quote back."]</li>
-
             <li><span>4</span> @L["You compare the quotes and choose the best one."]</li>
-
         </ol>
-
     </div>
-
-
 
     <div class="rl-review-card rl-provider-preview-card">
-
         <h2 class="rl-invite-section-title">@L["Provider view preview"]</h2>
-
         <div class="rl-open-quote-card">
-
             <img src="@Model.PhotoUrl" alt="" />
-
             <div>
-
                 <strong>@Model.PropertyAddress</strong>
-
-                <span>@Model.RequestTypeLabel</span>
-
+                <span>@UiDisplayLocalization.Localize(L, Model.RequestTypeLabel)</span>
                 @if (Model.ItemCount > 0)
-
                 {
-
-                    <span><i class="fas fa-box"></i> @Model.ItemCount items</span>
-
+                    <span><i class="fas fa-box"></i> @L.T("{0} items", Model.ItemCount)</span>
                 }
-
                 <span class="rl-status-badge rl-status-badge--pending">@L["New Request"]</span>
-
-                <span><i class="fas fa-clock"></i> Deadline @Model.ResponseDeadlineHours h</span>
-
+                <span><i class="fas fa-clock"></i> @L.T("Deadline {0} h", Model.ResponseDeadlineHours)</span>
             </div>
-
             <i class="fas fa-chevron-right rl-card-chevron"></i>
-
         </div>
-
     </div>
 
-
-
     <a asp-controller="Realtor" asp-action="Quotes" class="ob-btn ob-btn-primary rl-done-btn">@L["Track Quotes"]</a>
-
     <a asp-controller="Realtor" asp-action="Quotes" class="rl-later-link">@L["Done"]</a>
-
 </div>
-

@@ -9,7 +9,7 @@
                 <a href="@stat.DetailUrl" class="rl-stat-card rl-stat-card--link">
                     <span class="rl-stat-icon rl-stat-icon--@stat.ColorClass"><i class="fas @stat.Icon"></i></span>
                     <strong>@stat.Count</strong>
-                    <span class="rl-stat-label">@L[stat.Label]</span>
+                    <span class="rl-stat-label">@UiDisplayLocalization.Localize(L, stat.Label)</span>
                     <span class="rl-stat-detail-link">@L["View details"] <i class="fas fa-chevron-right"></i></span>
                 </a>
             }
@@ -18,7 +18,7 @@
                 <div class="rl-stat-card">
                     <span class="rl-stat-icon rl-stat-icon--@stat.ColorClass"><i class="fas @stat.Icon"></i></span>
                     <strong>@stat.Count</strong>
-                    <span class="rl-stat-label">@L[stat.Label]</span>
+                    <span class="rl-stat-label">@UiDisplayLocalization.Localize(L, stat.Label)</span>
                 </div>
             }
         }

@@ -1,7 +1,7 @@
 @using IndorMvcApp.Localization
 @{
     var stepModel = Model as IndorMvcApp.ViewModels.RealtorInviteStepViewModel;
-    var pageTitle = stepModel?.Title ?? "Invite Client";
+    var pageTitle = UiDisplayLocalization.Localize(L, stepModel?.Title ?? "Invite Client");
 }
 <!DOCTYPE html>
 <html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
@@ -23,6 +23,7 @@
     @await Html.PartialAsync("~/Views/Realtor/_RealtorBottomNav.cshtml")
     <script src="~/js/phone-input.js" asp-append-version="true"></script>
     <script src="~/js/zip-input.js" asp-append-version="true"></script>
+    @await Html.PartialAsync("_InviteClientI18n")
     <script src="~/js/realtor-invite-client.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>
