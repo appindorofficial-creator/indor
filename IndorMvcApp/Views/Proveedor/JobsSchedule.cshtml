@@ -50,7 +50,7 @@
                     <div class="prv-pro-schedule-row-body">
                         <strong>@job.Title</strong>
                         <small>@job.Address</small>
-                        <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@job.StatusLabel</span>
+                        <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@UiDisplayLocalization.Localize(L, job.StatusLabel)</span>
                     </div>
                     <i class="fas fa-eye prv-pro-schedule-row-view"></i>
                 </a>

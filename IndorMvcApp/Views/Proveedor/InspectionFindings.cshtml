@@ -13,7 +13,7 @@
         <a asp-controller="Proveedor" asp-action="LeadDetails" asp-route-id="@Model.LeadId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["Inspection Findings"]</h1>
-            <small>@Model.Address · @Model.ServiceType</small>
+            <small>@Model.Address · @UiDisplayLocalization.Localize(L, Model.ServiceType)</small>
         </div>
     </header>
 
@@ -54,7 +54,7 @@
                             {
                                 <span class="prv-pro-inspection-priority">@item.Priority</span>
                             }
-                            <strong>@item.Title</strong>
+                            <strong>@UiDisplayLocalization.Localize(L, item.Title)</strong>
                         </div>
                         @if (!string.IsNullOrWhiteSpace(item.ReportReference))
                         {

@@ -23,10 +23,10 @@
             <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Property" />
             <div>
                 <strong>@Model.Address</strong>
-                <small>@Model.ServiceType</small>
+                <small>@UiDisplayLocalization.Localize(L, Model.ServiceType)</small>
                 <strong class="prv-pro-estimate-sent-amount">@Model.TotalAmount.ToString("C0", money)</strong>
                 <span class="prv-pro-pill prv-pro-pill--@statusClass">
-                    <i class="fas @(Model.IsApproved ? "fa-circle-check" : "fa-hourglass-half")"></i> @Model.StatusLabel
+                    <i class="fas @(Model.IsApproved ? "fa-circle-check" : "fa-hourglass-half")"></i> @UiDisplayLocalization.Localize(L, Model.StatusLabel)
                 </span>
             </div>
         </div>
@@ -85,10 +85,10 @@
                 <div class="prv-pro-estimate-tracking-step prv-pro-estimate-tracking-step--@step.StateClass">
                     <span class="prv-pro-estimate-tracking-icon"><i class="fas @step.IconClass"></i></span>
                     <div>
-                        <strong>@step.Label</strong>
+                        <strong>@UiDisplayLocalization.Localize(L, step.Label)</strong>
                         @if (!string.IsNullOrWhiteSpace(step.Detail))
                         {
-                            <small>@step.Detail</small>
+                            <small>@UiDisplayLocalization.Localize(L, step.Detail)</small>
                         }
                     </div>
                 </div>

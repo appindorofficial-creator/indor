@@ -79,7 +79,7 @@
                             <strong>@job.Title</strong>
                             <span class="upp-job-addr">@job.Address</span>
                             <span class="upp-job-meta">
-                                <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@job.StatusLabel</span>
+                                <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@UiDisplayLocalization.Localize(L, job.StatusLabel)</span>
                                 <span class="upp-job-photos"><i class="fas fa-image"></i> @job.PhotosCount photos</span>
                             </span>
                         </span>

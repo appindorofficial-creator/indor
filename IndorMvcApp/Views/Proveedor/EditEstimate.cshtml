@@ -26,7 +26,7 @@
         </span>
         <div>
             <strong>@Model.Title</strong>
-            <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@Model.StatusLabel</span>
+            <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
             <small>@Model.CustomerName · @Model.Address</small>
         </div>
     </section>

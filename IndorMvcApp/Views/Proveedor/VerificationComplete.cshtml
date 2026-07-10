@@ -26,11 +26,11 @@
                 <div class="prv-vf-name prv-vf-name--lg">@Model.Name</div>
                 @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
                 {
-                    <div class="prv-vf-trade"><i class="fas fa-screwdriver-wrench"></i> @Model.TradeLabel</div>
+                    <div class="prv-vf-trade"><i class="fas fa-screwdriver-wrench"></i> @UiDisplayLocalization.Localize(L, Model.TradeLabel)</div>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
                 {
-                    <div class="prv-vf-loc"><i class="fas fa-location-dot"></i> @Model.LocationLabel</div>
+                    <div class="prv-vf-loc"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.LocationLabel)</div>
                 }
             </div>
             <span class="prv-vf-seal @(Model.IsReady ? "" : "is-muted")">

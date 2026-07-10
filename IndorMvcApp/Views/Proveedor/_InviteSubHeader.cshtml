@@ -21,16 +21,16 @@
             </div>
             @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
             {
-                <div class="prv-req-meta">@Model.TradeLabel</div>
+                <div class="prv-req-meta">@UiDisplayLocalization.Localize(L, Model.TradeLabel)</div>
             }
             <div class="prv-req-meta">
                 <i class="fas fa-location-dot"></i>
-                @Model.LocationLabel@(string.IsNullOrWhiteSpace(Model.DistanceLabel) ? "" : $" • {Model.DistanceLabel}")
+                @UiDisplayLocalization.Localize(L, Model.LocationLabel)@(string.IsNullOrWhiteSpace(Model.DistanceLabel) ? "" : $" • {UiDisplayLocalization.Localize(L, Model.DistanceLabel)}")
             </div>
         </div>
         @if (Model.IsAvailableNow)
         {
-            <span class="prv-inv-avail">@Model.AvailabilityLabel</span>
+            <span class="prv-inv-avail">@UiDisplayLocalization.Localize(L, Model.AvailabilityLabel)</span>
         }
     </div>
     <div class="prv-req-badges">

@@ -36,7 +36,7 @@
                     }
                     @if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
                     {
-                        <span class="prv-net-sub-dist">@Model.LocationLabel</span>
+                        <span class="prv-net-sub-dist">@UiDisplayLocalization.Localize(L, Model.LocationLabel)</span>
                     }
                 </div>
             </div>
@@ -57,17 +57,17 @@
             <div class="prv-net-summary-cell">
                 <i class="fas fa-screwdriver-wrench"></i>
                 <small>@L["Trade"]</small>
-                <strong>@Model.TradeSummary</strong>
+                <strong>@UiDisplayLocalization.Localize(L, Model.TradeSummary)</strong>
             </div>
             <div class="prv-net-summary-cell">
                 <i class="fas fa-dollar-sign"></i>
                 <small>@L["Budget"]</small>
-                <strong>@Model.BudgetRange</strong>
+                <strong>@UiDisplayLocalization.Localize(L, Model.BudgetRange)</strong>
             </div>
             <div class="prv-net-summary-cell">
                 <i class="fas fa-calendar"></i>
                 <small>@L["Start Date"]</small>
-                <strong>@Model.StartDateLabel</strong>
+                <strong>@UiDisplayLocalization.Localize(L, Model.StartDateLabel)</strong>
             </div>
         </div>
     </section>

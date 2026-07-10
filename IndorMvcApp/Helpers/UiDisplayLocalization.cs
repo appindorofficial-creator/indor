@@ -233,6 +233,21 @@ public static class UiDisplayLocalization
             return localizer.T("Please attach your {0} before continuing, or choose Skip for now.", docLabel);
         }
 
+        if (text.StartsWith("Sent ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Sent {0}", text["Sent ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Viewed ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Viewed {0}", text["Viewed ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Approved ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Approved {0}", text["Approved ".Length..].Trim());
+        }
+
         if (text.StartsWith("Requested ", StringComparison.OrdinalIgnoreCase))
         {
             return localizer.T("Requested {0}", text["Requested ".Length..].Trim());

@@ -74,7 +74,7 @@
                         </div>
                         <strong>@lead.Address</strong>
                         <div class="prv-pro-new-lead-tags">
-                            <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @lead.ServiceType</span>
+                            <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @UiDisplayLocalization.Localize(L, lead.ServiceType)</span>
                             @if (!string.IsNullOrWhiteSpace(lead.FindingSummary))
                             {
                                 <span class="prv-pro-pill prv-pro-pill--realtor"><i class="fas fa-list-check"></i> @UiDisplayLocalization.Localize(L, lead.FindingSummary)</span>

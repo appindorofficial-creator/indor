@@ -40,7 +40,7 @@
             <strong>@Model.Job.Title</strong>
             <span class="upp-job-addr">@Model.Job.Address</span>
             <span class="upp-job-meta">
-                <span class="prv-pro-pill prv-pro-pill--@Model.Job.StatusClass">@Model.Job.StatusLabel</span>
+                <span class="prv-pro-pill prv-pro-pill--@Model.Job.StatusClass">@UiDisplayLocalization.Localize(L, Model.Job.StatusLabel)</span>
                 <span class="upp-job-photos"><i class="fas fa-image"></i> @Model.TotalCount photos total</span>
             </span>
         </div>

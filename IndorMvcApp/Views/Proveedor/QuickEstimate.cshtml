@@ -27,7 +27,7 @@
         <div>
             <strong>@Model.Address</strong>
             <div class="prv-pro-lead-badges">
-                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @Model.ServiceType</span>
+                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @UiDisplayLocalization.Localize(L, Model.ServiceType)</span>
                 @if (Model.IsHighUrgency)
                 {
                     <span class="prv-pro-pill prv-pro-pill--urgency"><i class="fas fa-fire"></i> @Model.Urgency</span>

@@ -84,9 +84,9 @@
                     }
                     <div class="prv-pro-upload-report-job-body">
                         <strong>@job.Address</strong>
-                        <span><i class="fas @job.IconClass"></i> @job.ServiceType</span>
+                        <span><i class="fas @job.IconClass"></i> @UiDisplayLocalization.Localize(L, job.ServiceType)</span>
                         <span>@job.DateLabel · @job.JobCode</span>
-                        <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@job.StatusLabel</span>
+                        <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@UiDisplayLocalization.Localize(L, job.StatusLabel)</span>
                     </div>
                     <button type="submit" class="prv-pro-btn prv-pro-btn--outline">@L["Select"]</button>
                 </form>

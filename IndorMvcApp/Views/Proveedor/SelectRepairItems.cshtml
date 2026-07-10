@@ -28,7 +28,7 @@
                     <input type="checkbox" checked disabled />
                     <span class="prv-pro-repair-check-ui"></span>
                     <div>
-                        <strong>@item.Title</strong>
+                        <strong>@UiDisplayLocalization.Localize(L, item.Title)</strong>
                         @if (!string.IsNullOrWhiteSpace(item.Description))
                         {
                             <small>@item.Description</small>

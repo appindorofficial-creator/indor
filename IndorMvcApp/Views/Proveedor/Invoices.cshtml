@@ -145,7 +145,7 @@
                                 <small>@inv.Address</small>
                                 @if (!string.IsNullOrWhiteSpace(inv.ServiceType))
                                 {
-                                    <small class="prv-pro-invoice-service">@inv.ServiceType</small>
+                                    <small class="prv-pro-invoice-service">@UiDisplayLocalization.Localize(L, inv.ServiceType)</small>
                                 }
                                 @if (!string.IsNullOrWhiteSpace(inv.DueDateLabel))
                                 {

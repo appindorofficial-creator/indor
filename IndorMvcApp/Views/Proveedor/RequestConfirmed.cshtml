@@ -30,11 +30,11 @@
                 <div class="prv-req-title prv-req-title--lg">@Model.Title</div>
                 @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
                 {
-                    <div class="prv-req-meta"><i class="fas fa-screwdriver-wrench"></i> @Model.TradeLabel</div>
+                    <div class="prv-req-meta"><i class="fas fa-screwdriver-wrench"></i> @UiDisplayLocalization.Localize(L, Model.TradeLabel)</div>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
                 {
-                    <div class="prv-req-meta"><i class="fas fa-location-dot"></i> @Model.LocationLabel</div>
+                    <div class="prv-req-meta"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.LocationLabel)</div>
                 }
             </div>
             <span class="prv-req-pill prv-req-pill--hired"><i class="fas fa-circle-check"></i> @L["Hired"]</span>

@@ -34,7 +34,7 @@
             @foreach (var item in Model.LineItems)
             {
                 <div class="prv-pro-invoice-line">
-                    <span>@item.Label</span>
+                    <span>@UiDisplayLocalization.Localize(L, item.Label)</span>
                     <strong>@item.Amount.ToString("C2", money)</strong>
                 </div>
             }

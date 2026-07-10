@@ -30,7 +30,7 @@
         <div class="exr-summary-body">
             <strong>@Model.Job.Title</strong>
             <small>@Model.Job.Address</small>
-            <span class="exr-pill exr-pill--@Model.Job.StatusClass">@Model.Job.StatusLabel</span>
+            <span class="exr-pill exr-pill--@Model.Job.StatusClass">@UiDisplayLocalization.Localize(L, Model.Job.StatusLabel)</span>
         </div>
     </section>
 

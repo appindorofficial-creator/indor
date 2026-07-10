@@ -5,7 +5,7 @@
         var step = Model[i];
         <div class="prv-req-step is-@step.State">
             <span class="prv-req-step-dot"><i class="fas @step.IconClass"></i></span>
-            <span class="prv-req-step-label">@step.Label</span>
+            <span class="prv-req-step-label">@UiDisplayLocalization.Localize(L, step.Label)</span>
         </div>
         @if (i < Model.Count - 1)
         {

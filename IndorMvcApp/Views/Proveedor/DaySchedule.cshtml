@@ -74,8 +74,8 @@
                     <div class="prv-pro-day-timeline-time">@item.TimeLabel</div>
                     <div class="prv-pro-day-timeline-body">
                         <div class="prv-pro-day-timeline-head">
-                            <strong><i class="fas @item.IconClass"></i> @item.Title</strong>
-                            <span class="prv-pro-pill prv-pro-pill--@item.StatusClass">@item.StatusLabel</span>
+                            <strong><i class="fas @item.IconClass"></i> @UiDisplayLocalization.Localize(L, item.Title)</strong>
+                            <span class="prv-pro-pill prv-pro-pill--@item.StatusClass">@UiDisplayLocalization.Localize(L, item.StatusLabel)</span>
                         </div>
                         <span>@item.Address</span>
                         <span>@L.T("Customer: {0}", item.CustomerName)</span>

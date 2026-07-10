@@ -25,7 +25,7 @@
                 <h1>@Model.Name</h1>
                 @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
                 {
-                    <p class="trade">@Model.TradeLabel</p>
+                    <p class="trade">@UiDisplayLocalization.Localize(L, Model.TradeLabel)</p>
                 }
                 <div class="meta">
                     @if (Model.HasReviews)
@@ -40,7 +40,7 @@
                 <div class="meta">
                     @if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
                     {
-                        <span><i class="fas fa-location-dot"></i> @Model.LocationLabel</span>
+                        <span><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.LocationLabel)</span>
                     }
                     @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
                     {
@@ -76,7 +76,7 @@
             <span class="prv-net-row-ic"><i class="fas fa-umbrella"></i></span>
             <div class="prv-net-row-body">
                 <strong>@L["Insurance Status"]</strong>
-                <span>@Model.InsuranceStatusLabel</span>
+                <span>@UiDisplayLocalization.Localize(L, Model.InsuranceStatusLabel)</span>
             </div>
             <span class="prv-net-tag @(Model.InsuranceActive ? null : "prv-net-tag--muted")">@(Model.InsuranceActive ? L["Active"] : L["Not on file"])</span>
         </div>
@@ -99,7 +99,7 @@
                     <div class="prv-net-chips-inline">
                         @foreach (var svc in Model.Services.Take(8))
                         {
-                            <span>@svc</span>
+                            <span>@UiDisplayLocalization.Localize(L, svc)</span>
                         }
                     </div>
                 </div>
@@ -110,9 +110,9 @@
             <span class="prv-net-row-ic"><i class="fas fa-clock"></i></span>
             <div class="prv-net-row-body">
                 <strong>@L["Availability"]</strong>
-                <span>@Model.ResponseTimeLabel</span>
+                <span>@UiDisplayLocalization.Localize(L, Model.ResponseTimeLabel)</span>
             </div>
-            <span class="prv-net-tag @(Model.IsAvailableNow ? null : "prv-net-tag--muted")">@Model.AvailabilityLabel</span>
+            <span class="prv-net-tag @(Model.IsAvailableNow ? null : "prv-net-tag--muted")">@UiDisplayLocalization.Localize(L, Model.AvailabilityLabel)</span>
         </div>
 
         <div class="prv-net-row">
