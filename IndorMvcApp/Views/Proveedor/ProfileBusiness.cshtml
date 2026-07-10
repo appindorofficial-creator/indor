@@ -56,11 +56,11 @@
                         {
                             if (cat.Id == Model.PrimaryCategoryId)
                             {
-                                <option value="@cat.Id" selected="selected">@cat.Label</option>
+                                <option value="@cat.Id" selected="selected">@UiDisplayLocalization.Localize(L, cat.Label)</option>
                             }
                             else
                             {
-                                <option value="@cat.Id">@cat.Label</option>
+                                <option value="@cat.Id">@UiDisplayLocalization.Localize(L, cat.Label)</option>
                             }
                         }
                     </select>

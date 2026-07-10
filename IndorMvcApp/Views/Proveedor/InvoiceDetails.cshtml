@@ -16,9 +16,9 @@
         <a asp-controller="Proveedor" asp-action="Invoices" asp-route-tab="@Model.ReturnTab" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@Model.PageTitle</h1>
-            <small>@Model.InvoiceCode · @Model.ServiceType</small>
+            <small>@Model.InvoiceCode · @UiDisplayLocalization.Localize(L, Model.ServiceType)</small>
         </div>
-        <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@Model.Status</span>
+        <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@UiDisplayLocalization.Localize(L, Model.Status)</span>
     </header>
 
     @if (TempData["InvoiceReminderSent"] as bool? == true)

@@ -1120,5 +1120,18 @@ public static class UiTranslationsFinal
             ["Available this week"] = "Disponible esta semana",
             ["Responds fast"] = "Responde rápido",
             ["Best Match"] = "Mejor coincidencia",
+            // Batch 11 — calendar, estimates, quotes, invoices
+            ["{0} jobs completed"] = "{0} trabajos completados",
+            ["1. Estimate Type"] = "1. Tipo de cotización",
+            ["2. Customer"] = "2. Cliente",
+            ["3. Property Address"] = "3. Dirección de la propiedad",
+            ["4. Service Category"] = "4. Categoría de servicio",
+            ["{0}h {1}m"] = "{0}h {1}m",
+            ["{0}h"] = "{0}h",
+            ["Great Work!"] = "¡Buen trabajo!",
+            ["On Track"] = "En buen camino",
+            ["Getting Started"] = "Comenzando",
+            ["Top 20% of providers"] = "Top 20% de proveedores",
+            ["Complete activation to unlock INDOR leads"] = "Completa la activación para desbloquear clientes potenciales en INDOR",
         };
 }

@@ -37,7 +37,7 @@
         <div class="prv-net-review-body">
             @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
             {
-                <span class="prv-net-review-badge">@Model.TradeLabel</span>
+                <span class="prv-net-review-badge">@UiDisplayLocalization.Localize(L, Model.TradeLabel)</span>
             }
             <strong>@Model.JobTitle</strong>
             @if (!string.IsNullOrWhiteSpace(Model.Description))

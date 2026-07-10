@@ -621,6 +621,18 @@ public static class UiDisplayLocalization
             return localizer.T("Updated in your home profile.");
         }
 
+        var workDurationMatch = Regex.Match(text, @"^(\d+)h (\d+)m$");
+        if (workDurationMatch.Success)
+        {
+            return localizer.T("{0}h {1}m", workDurationMatch.Groups[1].Value, workDurationMatch.Groups[2].Value);
+        }
+
+        var workHoursOnlyMatch = Regex.Match(text, @"^(\d+)h$");
+        if (workHoursOnlyMatch.Success)
+        {
+            return localizer.T("{0}h", workHoursOnlyMatch.Groups[1].Value);
+        }
+
         return localizer[text];
     }
 
