@@ -4,12 +4,12 @@
     <div class="pa-viewing-strip">
         <img src="@(Model.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
         <div class="pa-viewing-strip-main">
-            <strong>Viewing: @Model.PropertyName</strong>
+            <strong>@L.T("Viewing: {0}", Model.PropertyName)</strong>
             @if (!string.IsNullOrWhiteSpace(ViewBag.BadgeLabel as string ?? Model.OccupancyLabel))
             {
-                <span class="pa-occupancy-badge">@(ViewBag.BadgeLabel as string ?? Model.OccupancyLabel)</span>
+                <span class="pa-occupancy-badge">@UiDisplayLocalization.Localize(L, ViewBag.BadgeLabel as string ?? Model.OccupancyLabel)</span>
             }
-            <small>@Model.PropertyTypeLabel • @Model.Location</small>
+            <small>@UiDisplayLocalization.Localize(L, Model.PropertyTypeLabel) • @Model.Location</small>
         </div>
         <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="@L["Switch property"]">
             <i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i>

@@ -13,7 +13,7 @@
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
         <div style="width:48px;height:48px;border-radius:50%;background:rgba(0,102,204,0.1);display:flex;align-items:center;justify-content:center;color:#0066CC;"><i class="fas fa-clipboard-check"></i></div>
         <div style="flex:1;">
-            <div style="font-weight:800;font-size:1.1rem;">@Model.Title</div>
+            <div style="font-weight:800;font-size:1.1rem;">@UiDisplayLocalization.Localize(L, Model.Title)</div>
             <span class="hf-badge">@L[IndorMvcApp.Services.MyHomeDisplayService.MaintenanceStatusLabel(Model.Status)]</span>
         </div>
     </div>

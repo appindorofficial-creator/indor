@@ -7,10 +7,10 @@
             <div class="pa-stat-tile">
                 <span class="pa-stat-tile-icon @stat.ToneClass"><i class="fas @stat.IconClass"></i></span>
                 <strong>@stat.Value</strong>
-                <span class="pa-stat-tile-label">@stat.Label</span>
+                <span class="pa-stat-tile-label">@UiDisplayLocalization.Localize(L, stat.Label)</span>
                 @if (!string.IsNullOrWhiteSpace(stat.LinkLabel))
                 {
-                    <a href="@stat.LinkUrl" class="pa-stat-tile-link">@stat.LinkLabel <i class="fas fa-chevron-right"></i></a>
+                    <a href="@stat.LinkUrl" class="pa-stat-tile-link">@UiDisplayLocalization.Localize(L, stat.LinkLabel) <i class="fas fa-chevron-right"></i></a>
                 }
             </div>
         }

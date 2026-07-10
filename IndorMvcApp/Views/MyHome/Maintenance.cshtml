@@ -31,7 +31,7 @@ else
             <a asp-action="MaintenanceDetail" asp-route-id="@item.Id" asp-route-from="@Model.NavigationFrom" class="hf-card hf-list-item" style="display:flex;margin-bottom:8px;">
                 <i class="fas fa-clipboard-list icon"></i>
                 <div class="meta">
-                    <div class="value">@item.Title</div>
+                    <div class="value">@UiDisplayLocalization.Localize(L, item.Title)</div>
                     <div class="label">@(item.DueDate.HasValue ? L.T("Due on {0}", item.DueDate.Value.ToString("MMM dd, yyyy")) : L["No due date"])</div>
                 </div>
                 <span class="hf-badge" style="font-size:0.72rem;padding:4px 8px;">@L[IndorMvcApp.Services.MyHomeDisplayService.MaintenanceStatusLabel(item.Status)]</span>

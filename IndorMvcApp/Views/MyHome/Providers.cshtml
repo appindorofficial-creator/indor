@@ -24,7 +24,7 @@ else
             <div style="width:44px;height:44px;border-radius:50%;background:#E5E7EB;display:flex;align-items:center;justify-content:center;font-weight:800;color:#0066CC;">@item.Name.Substring(0,1)</div>
             <div class="meta">
                 <div class="value">@item.Name</div>
-                <div class="label">@item.ServiceCategory</div>
+                <div class="label">@UiDisplayLocalization.Localize(L, item.ServiceCategory)</div>
                 @if (!string.IsNullOrWhiteSpace(item.Phone)) { <div class="label">@item.Phone</div> }
             </div>
             <i class="fas fa-chevron-right" style="color:#CBD5E1;"></i>

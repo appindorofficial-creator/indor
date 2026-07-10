@@ -32,7 +32,7 @@ else
                     <div class="hf-timeline-dot"><i class="fas @IndorMvcApp.Services.MyHomeDisplayService.RecordTypeIcon(item.RecordType)"></i></div>
                     <div class="hf-timeline-card">
                         <div class="body">
-                            <div class="title">@item.Title</div>
+                            <div class="title">@UiDisplayLocalization.Localize(L, item.Title)</div>
                             <div class="sub">@(item.ProviderName ?? L["No provider"])</div>
                         </div>
                         <div class="cost">@IndorMvcApp.Services.MyHomeDisplayService.FormatCurrency(item.TotalCost)</div>

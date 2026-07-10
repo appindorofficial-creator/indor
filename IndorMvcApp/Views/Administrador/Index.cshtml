@@ -13,9 +13,9 @@
     <section class="pa-hero-banner">
         <div class="pa-hero-banner-content">
             <a asp-controller="Administrador" asp-action="Properties" class="pa-hero-pill">
-                <i class="fas fa-chart-simple"></i> PORTFOLIO OVERVIEW
+                <i class="fas fa-chart-simple"></i> @L["PORTFOLIO OVERVIEW"]
             </a>
-            <h1>@Model.Greeting</h1>
+            <h1>@UiDisplayLocalization.Localize(L, Model.Greeting)</h1>
             <p>@L["Manage your Airbnb homes, guests, services &amp; local operations across your portfolio."]</p>
         </div>
         <div class="pa-hero-scene" aria-hidden="true">
@@ -64,7 +64,7 @@
                     {
                         <a asp-controller="Administrador" asp-action="Index" asp-route-view="map" asp-route-filter="@chip.Value"
                            class="pa-network-chip @(string.Equals(nm.ActiveFilter, chip.Value, StringComparison.OrdinalIgnoreCase) ? "is-active" : null)">
-                            <i class="fas @chip.Icon"></i> @chip.Label
+                            <i class="fas @chip.Icon"></i> @UiDisplayLocalization.Localize(L, chip.Label)
                         </a>
                     }
                 }
@@ -123,7 +123,7 @@
 
                 <div class="hn-privacy-banner hn-privacy-banner--map">
                     <i class="fas fa-lock"></i>
-                    All communication happens in INDOR. No phone numbers shared.
+                    @L["All communication happens in INDOR. No phone numbers shared."]
                 </div>
             }
             else

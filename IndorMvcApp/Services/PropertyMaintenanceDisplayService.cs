@@ -7,6 +7,7 @@ namespace IndorMvcApp.Services;
 
 public static class PropertyMaintenanceDisplayService
 {
+    private static string Ml(string english) => DisplayLabelsLocalization.L(english);
     private static readonly JsonSerializerOptions JsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
@@ -69,13 +70,13 @@ public static class PropertyMaintenanceDisplayService
             if (string.IsNullOrWhiteSpace(unavailableMessage))
             {
                 unavailableMessage = plan == null
-                    ? "Maintenance recommendations will appear after OpenAI analyzes your property."
-                    : "We couldn't generate AI maintenance suggestions for this address yet.";
+                    ? Ml("Maintenance recommendations will appear after OpenAI analyzes your property.")
+                    : Ml("We couldn't generate AI maintenance suggestions for this address yet.");
             }
 
             return new PropertyMaintenanceSectionViewModel
             {
-                Title = "AI Maintenance Plan",
+                Title = Ml("AI Maintenance Plan"),
                 Subtitle = unavailableMessage,
                 Summary = plan?.Summary,
                 DataSource = plan?.DataSource,
@@ -98,8 +99,8 @@ public static class PropertyMaintenanceDisplayService
 
         return new PropertyMaintenanceSectionViewModel
         {
-            Title = "AI Maintenance Plan",
-            Subtitle = "Personalized upkeep recommendations from OpenAI based on your home profile.",
+            Title = Ml("AI Maintenance Plan"),
+            Subtitle = Ml("Personalized upkeep recommendations from OpenAI based on your home profile."),
             Summary = plan.Summary,
             DataSource = plan.DataSource,
             IsAiGenerated = true,
@@ -147,7 +148,7 @@ public static class PropertyMaintenanceDisplayService
                     Category = i.Category,
                     Title = i.Title,
                     Subtitle = string.IsNullOrWhiteSpace(i.Frequency) ? i.Description : $"{i.Frequency} · {i.Category}",
-                    Badge = i.Priority == "Urgent" ? "AI · Urgent" : "AI · Recommended",
+                    Badge = i.Priority == "Urgent" ? Ml("AI · Urgent") : Ml("AI · Recommended"),
                     Url = taskUrl
                 };
             })

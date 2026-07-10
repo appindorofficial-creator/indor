@@ -538,6 +538,73 @@ public static class UiDisplayLocalization
             return localizer.T("{0} Lead", text[..^" Lead".Length].Trim());
         }
 
+        if (text.StartsWith("Viewing: ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Viewing: {0}", text["Viewing: ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Next: ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Next: {0}", text["Next: ".Length..].Trim());
+        }
+
+        var atPropertyMatch = Regex.Match(text, @"^(.+) at (.+)$");
+        if (atPropertyMatch.Success)
+        {
+            return localizer.T(
+                "{0} at {1}",
+                Localize(localizer, atPropertyMatch.Groups[1].Value.Trim()),
+                atPropertyMatch.Groups[2].Value.Trim());
+        }
+
+        var timestampAtMatch = Regex.Match(text, @"^(.+?) at (\d{1,2}:\d{2} [AP]M)$", RegexOptions.IgnoreCase);
+        if (timestampAtMatch.Success)
+        {
+            return localizer.T("{0} at {1}", timestampAtMatch.Groups[1].Value.Trim(), timestampAtMatch.Groups[2].Value.Trim());
+        }
+
+        var greetingMatch = Regex.Match(text, @"^(Good morning|Good afternoon|Good evening), (.+)$", RegexOptions.IgnoreCase);
+        if (greetingMatch.Success)
+        {
+            return localizer.T(
+                "{0}, {1}",
+                localizer.T(greetingMatch.Groups[1].Value),
+                greetingMatch.Groups[2].Value.Trim());
+        }
+
+        var portfolioNameMatch = Regex.Match(text, @"^(.+) Portfolio$");
+        if (portfolioNameMatch.Success && !text.Contains(" & ", StringComparison.Ordinal))
+        {
+            return localizer.T("{0} Portfolio", portfolioNameMatch.Groups[1].Value.Trim());
+        }
+
+        var activePropertyMatch = Regex.Match(text, @"^(\d+) active (property|properties)$", RegexOptions.IgnoreCase);
+        if (activePropertyMatch.Success && int.TryParse(activePropertyMatch.Groups[1].Value, out var activePropertyCount))
+        {
+            var isSingle = string.Equals(activePropertyMatch.Groups[2].Value, "property", StringComparison.OrdinalIgnoreCase);
+            return localizer.T(isSingle ? "{0} active property" : "{0} active properties", activePropertyCount);
+        }
+
+        if (string.Equals(text, "AI · Urgent", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("AI · Urgent");
+        }
+
+        if (string.Equals(text, "AI · Recommended", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("AI · Recommended");
+        }
+
+        if (string.Equals(text, "Pending schedule", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Pending schedule");
+        }
+
+        if (string.Equals(text, "Updated in your home profile.", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Updated in your home profile.");
+        }
+
         return localizer[text];
     }
 

@@ -366,8 +366,8 @@ public static class HomeDashboardDisplayService
                     : h.Title.Contains("realtor", StringComparison.OrdinalIgnoreCase) ? "fa-circle-check"
                     : "fa-circle-check",
                 Title = h.Title,
-                Timestamp = h.FechaCreacion.ToLocalTime().ToString("MMM d, yyyy 'at' h:mm tt", CultureInfo.GetCultureInfo("en-US")),
-                Description = h.Description ?? h.ProviderName ?? "Updated in your home profile."
+                Timestamp = h.FechaCreacion.ToLocalTime().ToString("MMM d, yyyy 'at' h:mm tt", CultureInfo.CurrentCulture),
+                Description = h.Description ?? h.ProviderName ?? DisplayLabelsLocalization.L("Updated in your home profile.")
             })
             .ToList();
     }
