@@ -12,33 +12,33 @@
     <header class="prv-pro-workflow-head">
         <a asp-controller="Proveedor" asp-action="LeadDetails" asp-route-id="@Model.LeadId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>@Model.PageTitle</h1>
+            <h1>@UiDisplayLocalization.Localize(L, Model.PageTitle)</h1>
             <small>@Model.LeadCode</small>
         </div>
         <button type="button" class="prv-pro-lead-share" aria-label="@L["Share"]"><i class="fas fa-share-nodes"></i></button>
     </header>
 
     <section class="prv-pro-lead-summary">
-        <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Property" class="prv-pro-lead-summary-img" />
+        <img src="@Url.Content($"~{Model.ImageUrl}")" alt="@L["Property"]" class="prv-pro-lead-summary-img" />
         <div class="prv-pro-lead-summary-body">
             <div class="prv-pro-lead-summary-top">
                 <h2>@Model.Address</h2>
                 <button type="button" class="prv-pro-lead-map-btn" aria-label="@L["View on map"]"><i class="fas fa-location-dot"></i></button>
             </div>
             <div class="prv-pro-lead-badges">
-                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @Model.ServiceType</span>
+                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @UiDisplayLocalization.Localize(L, Model.ServiceType)</span>
                 @if (Model.IsHighUrgency)
                 {
-                    <span class="prv-pro-pill prv-pro-pill--urgency"><i class="fas fa-fire"></i> @Model.Urgency</span>
+                    <span class="prv-pro-pill prv-pro-pill--urgency"><i class="fas fa-fire"></i> @UiDisplayLocalization.Localize(L, Model.Urgency)</span>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
                 {
-                    <span class="prv-pro-pill prv-pro-pill--connected"><i class="fas fa-location-crosshairs"></i> @Model.DistanceLabel</span>
+                    <span class="prv-pro-pill prv-pro-pill--connected"><i class="fas fa-location-crosshairs"></i> @UiDisplayLocalization.Localize(L, Model.DistanceLabel)</span>
                 }
             </div>
             @if (!string.IsNullOrWhiteSpace(Model.TimelineNote))
             {
-                <p class="prv-pro-lead-timeline"><i class="fas fa-calendar-day"></i> @Model.TimelineNote</p>
+                <p class="prv-pro-lead-timeline"><i class="fas fa-calendar-day"></i> @UiDisplayLocalization.Localize(L, Model.TimelineNote)</p>
             }
         </div>
     </section>
@@ -51,7 +51,7 @@
                     <strong>@Model.CustomerName</strong>
                     @if (Model.IsHomeownerVerified)
                     {
-                        <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> Verified Homeowner</span>
+                        <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> @L["Verified Homeowner"]</span>
                     }
                     @if (!string.IsNullOrWhiteSpace(Model.CustomerPhone))
                     {
@@ -78,9 +78,9 @@
             <i class="fas fa-clipboard-list"></i>
             <span>@L["Visit Type"]</span>
             <select name="VisitType">
-                <option value="@L["Verification Visit"]" selected="@(Model.VisitType == "Verification Visit")">@L["Verification Visit"]</option>
-                <option value="@L["Estimate Visit"]" selected="@(Model.VisitType == "Estimate Visit")">@L["Estimate Visit"]</option>
-                <option value="@L["Inspection Visit"]" selected="@(Model.VisitType == "Inspection Visit")">@L["Inspection Visit"]</option>
+                <option value="Verification Visit" selected="@(Model.VisitType == "Verification Visit")">@L["Verification Visit"]</option>
+                <option value="Estimate Visit" selected="@(Model.VisitType == "Estimate Visit")">@L["Estimate Visit"]</option>
+                <option value="Inspection Visit" selected="@(Model.VisitType == "Inspection Visit")">@L["Inspection Visit"]</option>
             </select>
             <i class="fas fa-chevron-right"></i>
         </label>
@@ -106,9 +106,9 @@
             <i class="fas fa-flag"></i>
             <span>@L["Priority"]</span>
             <select name="Priority">
-                <option value="@L["Low"]" selected="@(Model.Priority == "Low")">@L["Low"]</option>
-                <option value="@L["Medium"]" selected="@(Model.Priority == "Medium")">@L["Medium"]</option>
-                <option value="@L["High"]" selected="@(Model.Priority == "High")">@L["High"]</option>
+                <option value="Low" selected="@(Model.Priority == "Low")">@L["Low"]</option>
+                <option value="Medium" selected="@(Model.Priority == "Medium")">@L["Medium"]</option>
+                <option value="High" selected="@(Model.Priority == "High")">@L["High"]</option>
             </select>
             <i class="fas fa-chevron-right"></i>
         </label>
@@ -116,9 +116,9 @@
             <i class="fas fa-bell"></i>
             <span>@L["Reminder"]</span>
             <select name="Reminder">
-                <option value="@L["Send 1 hour before"]" selected="@(Model.Reminder == "Send 1 hour before")">@L["Send 1 hour before"]</option>
-                <option value="@L["Send 2 hours before"]" selected="@(Model.Reminder == "Send 2 hours before")">@L["Send 2 hours before"]</option>
-                <option value="@L["Send 1 day before"]" selected="@(Model.Reminder == "Send 1 day before")">@L["Send 1 day before"]</option>
+                <option value="Send 1 hour before" selected="@(Model.Reminder == "Send 1 hour before")">@L["Send 1 hour before"]</option>
+                <option value="Send 2 hours before" selected="@(Model.Reminder == "Send 2 hours before")">@L["Send 2 hours before"]</option>
+                <option value="Send 1 day before" selected="@(Model.Reminder == "Send 1 day before")">@L["Send 1 day before"]</option>
             </select>
             <i class="fas fa-chevron-right"></i>
         </label>
@@ -135,7 +135,7 @@
             </label>
             <div>
                 <strong>@L["Notify homeowner"]</strong>
-                <small>Send visit confirmation to @Model.CustomerName</small>
+                <small>@L.T("Send visit confirmation to {0}", Model.CustomerName)</small>
             </div>
         </div>
         <div class="prv-pro-toggle-row">
@@ -152,16 +152,16 @@
         @if (!string.IsNullOrWhiteSpace(Model.InfoBanner))
         {
             <div class="prv-pro-schedule-info">
-                <i class="fas fa-circle-info"></i> @Model.InfoBanner
+                <i class="fas fa-circle-info"></i> @UiDisplayLocalization.Localize(L, Model.InfoBanner)
             </div>
         }
 
         <footer class="prv-pro-schedule-footer">
             <button type="submit" name="SaveAsDraft" value="true" class="prv-pro-btn prv-pro-btn--ghost">
-                <i class="fas fa-floppy-disk"></i> Save Draft
+                <i class="fas fa-floppy-disk"></i> @L["Save Draft"]
             </button>
             <button type="submit" class="prv-pro-btn prv-pro-btn--teal">
-                <i class="fas fa-calendar-check"></i> Confirm Visit
+                <i class="fas fa-calendar-check"></i> @L["Confirm Visit"]
             </button>
         </footer>
     </form>

@@ -3,7 +3,7 @@
     ViewData["Title"] = L["Jobs Schedule - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "jobs";
-    var views = new[] { ("today", "Today"), ("week", "Week"), ("month", "Month") };
+    var views = new[] { ("today", L["Today"].ToString()), ("week", L["Week"].ToString()), ("month", L["Month"].ToString()) };
 }
 
 <div class="prv-pro-shell prv-pro-shell--workflow">
@@ -17,12 +17,12 @@
             <small>@Model.DateLabel</small>
         </div>
         <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-btn prv-pro-btn--primary prv-pro-workflow-add">
-            <i class="fas fa-plus"></i> Add Job
+            <i class="fas fa-plus"></i> @L["Add Job"]
         </a>
     </header>
 
     <div class="prv-pro-schedule-toolbar">
-        <button type="button" class="prv-pro-filter-btn" title="@L["Filter"]"><i class="fas fa-filter"></i> Filter</button>
+        <button type="button" class="prv-pro-filter-btn" title="@L["Filter"]"><i class="fas fa-filter"></i> @L["Filter"]</button>
         <nav class="prv-pro-schedule-tabs">
             @foreach (var (id, label) in views)
             {
@@ -33,7 +33,7 @@
     </div>
 
     <div class="prv-pro-schedule-summary">
-        <i class="fas fa-calendar-day"></i> @Model.JobsTodayCount Jobs Today
+        <i class="fas fa-calendar-day"></i> @L.T("{0} Jobs Today", Model.JobsTodayCount)
     </div>
 
     <section class="prv-pro-schedule-list">
@@ -59,8 +59,8 @@
     </section>
 
     <footer class="prv-pro-schedule-footer">
-        <a asp-controller="Proveedor" asp-action="JobsSchedule"><i class="fas fa-calendar"></i> See full calendar</a>
-        <a asp-controller="Proveedor" asp-action="CreateJob"><i class="fas fa-plus"></i> Create new job</a>
-        <span><i class="fas fa-file-lines"></i> Job information</span>
+        <a asp-controller="Proveedor" asp-action="JobsSchedule"><i class="fas fa-calendar"></i> @L["See full calendar"]</a>
+        <a asp-controller="Proveedor" asp-action="CreateJob"><i class="fas fa-plus"></i> @L["Create new job"]</a>
+        <span><i class="fas fa-file-lines"></i> @L["Job information"]</span>
     </footer>
 </div>

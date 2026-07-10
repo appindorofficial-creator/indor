@@ -5,7 +5,7 @@
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
-    var channels = new[] { "Email", "SMS", "Both" };
+    var channels = new[] { ("Email", L["Email"].ToString()), ("SMS", L["SMS"].ToString()), ("Both", L["Both"].ToString()) };
 }
 
 <div class="prv-pro-shell prv-pro-shell--send-reminder">
@@ -16,14 +16,14 @@
         <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["Send Reminder"]</h1>
-            <small>Invoice @Model.InvoiceCode</small>
+            <small>@L.T("Invoice {0}", Model.InvoiceCode)</small>
         </div>
     </header>
 
     <section class="prv-pro-invoice-reminder-summary">
         <div>
-            <strong>Invoice @Model.InvoiceCode</strong>
-            <small>@Model.PropertyAddress · @Model.ServiceType</small>
+            <strong>@L.T("Invoice {0}", Model.InvoiceCode)</strong>
+            <small>@Model.PropertyAddress · @UiDisplayLocalization.Localize(L, Model.ServiceType)</small>
             <div class="prv-pro-invoice-reminder-grid">
                 <div>
                     <span>@L["Amount Due"]</span>
@@ -63,11 +63,11 @@
         <section class="prv-pro-lead-section">
             <h3>@L["Send via"]</h3>
             <div class="prv-pro-reminder-channels">
-                @foreach (var channel in channels)
+                @foreach (var (channelKey, channelLabel) in channels)
                 {
-                    <label class="prv-pro-reminder-channel @(Model.SendVia == channel ? "is-active" : "")">
-                        <input type="radio" name="SendVia" value="@channel" @(Model.SendVia == channel ? "checked" : "") />
-                        @channel
+                    <label class="prv-pro-reminder-channel @(Model.SendVia == channelKey ? "is-active" : "")">
+                        <input type="radio" name="SendVia" value="@channelKey" @(Model.SendVia == channelKey ? "checked" : "") />
+                        @channelLabel
                     </label>
                 }
             </div>
@@ -99,8 +99,8 @@
 
         <footer class="prv-pro-reminder-footer">
             <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-btn prv-pro-btn--ghost">@L["Cancel"]</a>
-            <button type="button" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-eye"></i> Preview</button>
-            <button type="submit" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-paper-plane"></i> Send Reminder</button>
+            <button type="button" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-eye"></i> @L["Preview"]</button>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-paper-plane"></i> @L["Send Reminder"]</button>
         </footer>
     </form>
 </div>

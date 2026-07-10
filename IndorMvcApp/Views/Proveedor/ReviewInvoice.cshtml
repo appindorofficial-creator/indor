@@ -37,7 +37,7 @@
         <ul class="prv-pro-invoice-work-list">
             @foreach (var item in Model.LineItems)
             {
-                <li><i class="fas fa-circle-check"></i> @item.Label — @item.Amount.ToString("C2", money)</li>
+                <li><i class="fas fa-circle-check"></i> @UiDisplayLocalization.Localize(L, item.Label) — @item.Amount.ToString("C2", money)</li>
             }
         </ul>
     </section>
@@ -47,7 +47,7 @@
         @foreach (var item in Model.LineItems)
         {
             <div class="prv-pro-ai-estimate-row">
-                <span>@item.Label</span>
+                <span>@UiDisplayLocalization.Localize(L, item.Label)</span>
                 <span>@item.Amount.ToString("C2", money)</span>
             </div>
         }
@@ -55,16 +55,16 @@
             <span>@L["Total due"]</span>
             <strong>@Model.TotalAmount.ToString("C2", money)</strong>
         </div>
-        <p class="prv-pro-lead-hint">Payment terms: @Model.PaymentTerms</p>
+        <p class="prv-pro-lead-hint">@L.T("Payment terms: {0}", UiDisplayLocalization.Localize(L, Model.PaymentTerms))</p>
     </section>
 
     <section class="prv-pro-lead-section">
         <h3>@L["Payment Method"]</h3>
         <div class="prv-pro-payment-methods">
-            <span class="prv-pro-payment-method is-active"><i class="fas fa-credit-card"></i> Card</span>
-            <span class="prv-pro-payment-method"><i class="fas fa-building-columns"></i> ACH</span>
-            <span class="prv-pro-payment-method"><i class="fas fa-mobile-screen"></i> Zelle</span>
-            <span class="prv-pro-payment-method"><i class="fas fa-money-check"></i> Check</span>
+            <span class="prv-pro-payment-method is-active"><i class="fas fa-credit-card"></i> @L["Card"]</span>
+            <span class="prv-pro-payment-method"><i class="fas fa-building-columns"></i> @L["ACH"]</span>
+            <span class="prv-pro-payment-method"><i class="fas fa-mobile-screen"></i> @L["Zelle"]</span>
+            <span class="prv-pro-payment-method"><i class="fas fa-money-check"></i> @L["Check"]</span>
         </div>
     </section>
 
@@ -75,7 +75,7 @@
             @Html.AntiForgeryToken()
             <input type="hidden" name="id" value="@Model.InvoiceId" />
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--full">
-                <i class="fas fa-paper-plane"></i> Send Invoice
+                <i class="fas fa-paper-plane"></i> @L["Send Invoice"]
             </button>
         </form>
     </footer>
