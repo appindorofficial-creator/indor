@@ -35,7 +35,7 @@
         <section class="prv-pro-lead-section">
             <div class="prv-pro-panel-head">
                 <h3>@L["Before &amp; After Photos"]</h3>
-                <span class="prv-pro-count-muted">@Model.Photos.Count total</span>
+                <span class="prv-pro-count-muted">@L.T("{0} total", Model.Photos.Count)</span>
             </div>
             <div class="prv-pro-report-photos">
                 @foreach (var photo in Model.Photos)
@@ -52,7 +52,7 @@
     @if (!string.IsNullOrWhiteSpace(Model.WorkPerformed))
     {
         <section class="prv-pro-lead-section">
-            <h3><i class="fas fa-circle-check"></i> Work Performed</h3>
+            <h3><i class="fas fa-circle-check"></i> @L["Work Performed"]</h3>
             <p class="prv-pro-lead-description">@Model.WorkPerformed</p>
         </section>
     }
@@ -66,7 +66,7 @@
                     <li>@material.Name <span>x@material.Quantity</span></li>
                 }
             </ul>
-            <span class="prv-pro-count-muted">@Model.Materials.Count total</span>
+            <span class="prv-pro-count-muted">@L.T("{0} total", Model.Materials.Count)</span>
         </div>
         @if (!string.IsNullOrWhiteSpace(Model.LaborWarranty))
         {
@@ -81,7 +81,7 @@
     @if (!string.IsNullOrWhiteSpace(Model.FinalNotes))
     {
         <section class="prv-pro-lead-section">
-            <h3><i class="fas fa-file-lines"></i> Final Notes</h3>
+            <h3><i class="fas fa-file-lines"></i> @L["Final Notes"]</h3>
             <p class="prv-pro-lead-description">@Model.FinalNotes</p>
         </section>
     }
@@ -89,7 +89,7 @@
     @if (!string.IsNullOrWhiteSpace(Model.HomeownerSignature))
     {
         <section class="prv-pro-lead-section">
-            <h3><i class="fas fa-pen"></i> Homeowner Signature</h3>
+            <h3><i class="fas fa-pen"></i> @L["Homeowner Signature"]</h3>
             <p class="prv-pro-signature">@Model.HomeownerSignature</p>
             @if (!string.IsNullOrWhiteSpace(Model.SignedLabel))
             {
@@ -99,14 +99,14 @@
     }
 
     <div class="prv-pro-report-banner">
-        <i class="fas fa-circle-check"></i> Record ready for homeowner approval
+        <i class="fas fa-circle-check"></i> @L["Record ready for homeowner approval"]
     </div>
 
     <footer class="prv-pro-report-footer">
-        <button type="button" class="prv-pro-btn prv-pro-btn--success"><i class="fas fa-paper-plane"></i> Send for Approval</button>
-        <button type="button" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-file-invoice-dollar"></i> Create Invoice</button>
-        <button type="button" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-house"></i> Add to House Facts</button>
+        <button type="button" class="prv-pro-btn prv-pro-btn--success"><i class="fas fa-paper-plane"></i> @L["Send for Approval"]</button>
+        <button type="button" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-file-invoice-dollar"></i> @L["Create Invoice"]</button>
+        <button type="button" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-house"></i> @L["Add to House Facts"]</button>
     </footer>
 
-    <p class="prv-pro-report-secure"><i class="fas fa-lock"></i> All report data is securely stored and backed up.</p>
+    <p class="prv-pro-report-secure"><i class="fas fa-lock"></i> @L["All report data is securely stored and backed up."]</p>
 </div>

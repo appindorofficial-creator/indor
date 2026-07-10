@@ -15,7 +15,7 @@
         </div>
         <div class="prv-vf-hero-title">
             <h1>@L["Verification Complete"]</h1>
-            <p>@(Model.IsReady ? "This contractor is ready to be approved." : "Review the remaining items before approving.")</p>
+            <p>@(Model.IsReady ? L["This contractor is ready to be approved."] : L["Review the remaining items before approving."])</p>
         </div>
     </header>
 
@@ -44,15 +44,15 @@
             {
                 <div class="prv-vf-item is-@it.State">
                     <i class="fas @it.IconClass"></i>
-                    <span>@it.Label</span>
-                    <em>@it.StatusLabel</em>
+                    <span>@UiDisplayLocalization.Localize(L, it.Label)</span>
+                    <em>@UiDisplayLocalization.Localize(L, it.StatusLabel)</em>
                 </div>
             }
         </div>
 
         <div class="prv-vf-foot prv-vf-foot--flat">
             <div class="prv-vf-progress">
-                <span>@Model.ItemsComplete / @Model.TotalItems items complete</span>
+                <span>@L.T("{0} of {1} items complete", Model.ItemsComplete, Model.TotalItems)</span>
                 <div class="prv-vf-bar"><i style="width:@((int)Math.Round(100.0 * Model.ItemsComplete / Model.TotalItems))%"></i></div>
             </div>
         </div>
@@ -65,8 +65,8 @@
             {
                 <div class="prv-vf-summary-item is-@it.State">
                     <span class="prv-vf-summary-ic"><i class="fas @it.IconClass"></i></span>
-                    <strong>@it.Label</strong>
-                    <span>@it.StatusLabel</span>
+                    <strong>@UiDisplayLocalization.Localize(L, it.Label)</strong>
+                    <span>@UiDisplayLocalization.Localize(L, it.StatusLabel)</span>
                 </div>
             }
         </div>
@@ -121,7 +121,7 @@
             <div><strong>@L["This contractor is already verified."]</strong></div>
         </div>
         <a asp-controller="Proveedor" asp-action="VerifyContractors" asp-route-tab="approved" class="prv-vf-btn prv-vf-btn--ghost prv-vf-btn--block">
-            <i class="fas fa-arrow-left"></i> Back to Queue
+            <i class="fas fa-arrow-left"></i> @L["Back to Queue"]
         </a>
     }
     else
@@ -130,11 +130,11 @@
             @Html.AntiForgeryToken()
             <input type="hidden" name="id" value="@Model.Id" />
             <button type="submit" class="prv-vf-btn prv-vf-btn--primary prv-vf-btn--block">
-                <i class="fas fa-shield-halved"></i> Approve &amp; Verify
+                <i class="fas fa-shield-halved"></i> @L["Approve & Verify"]
             </button>
         </form>
         <a asp-controller="Proveedor" asp-action="VerifyContractors" class="prv-vf-btn prv-vf-btn--ghost prv-vf-btn--block">
-            <i class="fas fa-arrow-left"></i> Back to Queue
+            <i class="fas fa-arrow-left"></i> @L["Back to Queue"]
         </a>
     }
 </div>

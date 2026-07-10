@@ -16,24 +16,24 @@
 
     <section class="prv-pro-job-success-card">
         <dl class="prv-pro-job-success-list">
-            <div><dt><i class="fas fa-user"></i> Recipient</dt><dd>@Model.CustomerName</dd></div>
-            <div><dt><i class="fas fa-briefcase"></i> Job</dt><dd>@Model.JobTitle</dd></div>
-            <div><dt><i class="fas fa-file-lines"></i> Sent item</dt><dd>@Model.SentItemLabel</dd></div>
+            <div><dt><i class="fas fa-user"></i> @L["Recipient"]</dt><dd>@Model.CustomerName</dd></div>
+            <div><dt><i class="fas fa-briefcase"></i> @L["Job"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.JobTitle)</dd></div>
+            <div><dt><i class="fas fa-file-lines"></i> @L["Sent item"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.SentItemLabel)</dd></div>
         </dl>
     </section>
 
     <div class="prv-pro-customer-success-actions">
         <a asp-controller="Proveedor" asp-action="Conversation" asp-route-id="@Model.ConversationId" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block">
-            <i class="fas fa-message"></i> View conversation
+            <i class="fas fa-message"></i> @L["View conversation"]
         </a>
         @if (Model.JobId.HasValue)
         {
             <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">
-                <i class="fas fa-briefcase"></i> View job
+                <i class="fas fa-briefcase"></i> @L["View job"]
             </a>
         }
         <a asp-controller="Proveedor" asp-action="Messages" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">
-            <i class="fas fa-chevron-left"></i> Back to messages
+            <i class="fas fa-chevron-left"></i> @L["Back to messages"]
         </a>
     </div>
 </div>

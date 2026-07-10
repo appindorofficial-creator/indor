@@ -17,11 +17,11 @@
 
     <section class="prv-pro-job-success-card">
         <dl class="prv-pro-job-success-list">
-            <div><dt><i class="fas fa-house"></i> Property</dt><dd>@Model.Address</dd></div>
-            <div><dt><i class="fas fa-wrench"></i> Service</dt><dd>@Model.ServiceType</dd></div>
-            <div><dt><i class="fas fa-file-lines"></i> Report Type</dt><dd>@Model.ReportType</dd></div>
-            <div><dt><i class="fas fa-paperclip"></i> Attachments</dt><dd>@Model.FilesCount files</dd></div>
-            <div><dt><i class="fas fa-circle-check"></i> Status</dt><dd class="prv-pro-success-status">@Model.StatusLabel</dd></div>
+            <div><dt><i class="fas fa-house"></i> @L["Property"]</dt><dd>@Model.Address</dd></div>
+            <div><dt><i class="fas fa-wrench"></i> @L["Service"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.ServiceType)</dd></div>
+            <div><dt><i class="fas fa-file-lines"></i> @L["Report Type"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.ReportType)</dd></div>
+            <div><dt><i class="fas fa-paperclip"></i> @L["Attachments"]</dt><dd>@L.T("{0} files", Model.FilesCount)</dd></div>
+            <div><dt><i class="fas fa-circle-check"></i> @L["Status"]</dt><dd class="prv-pro-success-status">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</dd></div>
         </dl>
     </section>
 
@@ -29,24 +29,24 @@
         @if (Model.JobId.HasValue)
         {
             <a asp-controller="Proveedor" asp-action="JobReport" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block">
-                <i class="fas fa-eye"></i> View Report
+                <i class="fas fa-eye"></i> @L["View Report"]
             </a>
         }
         else
         {
             <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block">
-                <i class="fas fa-eye"></i> View Report
+                <i class="fas fa-eye"></i> @L["View Report"]
             </a>
         }
         <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="ready" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">
-            <i class="fas fa-paper-plane"></i> Send to Homeowner
+            <i class="fas fa-paper-plane"></i> @L["Send to Homeowner"]
         </a>
         <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="housefacts" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">
-            <i class="fas fa-house"></i> Add to House Facts
+            <i class="fas fa-house"></i> @L["Add to House Facts"]
         </a>
         <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">
-            <i class="fas fa-file-circle-plus"></i> Upload Another Report
+            <i class="fas fa-file-circle-plus"></i> @L["Upload Another Report"]
         </a>
-        <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-customer-add-another">&lt; Back to Reports</a>
+        <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-customer-add-another">&lt; @L["Back to Reports"]</a>
     </div>
 </div>
