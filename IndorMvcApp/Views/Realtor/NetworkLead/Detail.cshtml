@@ -28,21 +28,21 @@
                     <strong class="rl-listing-detail-address">@Model.Title</strong>
                     @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
                     {
-                        <p class="rl-listing-detail-specs">@Model.Subtitle</p>
+                        <p class="rl-listing-detail-specs">@UiDisplayLocalization.Localize(L, Model.Subtitle)</p>
                     }
                     @if (!string.IsNullOrWhiteSpace(Model.SpecsLabel))
                     {
-                        <p class="rl-listing-detail-specs">@Model.SpecsLabel</p>
+                        <p class="rl-listing-detail-specs">@UiDisplayLocalization.Localize(L, Model.SpecsLabel)</p>
                     }
                     @if (!string.IsNullOrWhiteSpace(Model.MetaLabel))
                     {
                         <p class="rl-listing-detail-specs">@Model.MetaLabel</p>
                     }
-                    <span class="rl-listing-detail-distance"><i class="fas fa-location-dot"></i> @Model.DistanceLabel</span>
+                    <span class="rl-listing-detail-distance"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.DistanceLabel)</span>
                 </div>
                 @if (!string.IsNullOrWhiteSpace(Model.StatusBadge))
                 {
-                    <span class="rl-network-status rl-network-status--@Model.StatusCss">@Model.StatusBadge</span>
+                    <span class="rl-network-status rl-network-status--@Model.StatusCss">@UiDisplayLocalization.Localize(L, Model.StatusBadge)</span>
                 }
             </div>
         </div>
@@ -74,13 +74,13 @@
                 @if (Model.RelatedClientId is > 0)
                 {
                     <a asp-action="ClientDetail" asp-route-id="@Model.RelatedClientId" class="rl-btn-primary rl-btn-primary--sm">
-                        <i class="fas fa-comment-dots"></i> Open Client Profile
+                        <i class="fas fa-comment-dots"></i> @L["Open Client Profile"]
                     </a>
                 }
                 else if (Model.InterestRecorded)
                 {
                     <span class="rl-btn-primary rl-btn-primary--sm rl-btn-primary--disabled" aria-disabled="true">
-                        <i class="fas fa-check"></i> Intro requested
+                        <i class="fas fa-check"></i> @L["Intro requested"]
                     </span>
                 }
                 else if (!string.IsNullOrWhiteSpace(Model.ContactUrl))
@@ -88,7 +88,7 @@
                     <form asp-action="RequestNetworkLeadIntro" asp-route-id="@Model.ItemId" method="post" class="rl-inline-form">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="rl-btn-primary rl-btn-primary--sm">
-                            <i class="fas fa-envelope"></i> @Model.ContactActionLabel
+                            <i class="fas fa-envelope"></i> @UiDisplayLocalization.Localize(L, Model.ContactActionLabel)
                         </button>
                     </form>
                 }
@@ -97,7 +97,7 @@
                     <form asp-action="RequestNetworkLeadIntro" asp-route-id="@Model.ItemId" method="post" class="rl-inline-form">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="rl-btn-primary rl-btn-primary--sm">
-                            <i class="fas fa-comment-dots"></i> Request Intro
+                            <i class="fas fa-comment-dots"></i> @L["Request Intro"]
                         </button>
                     </form>
                 }
@@ -109,7 +109,7 @@
         @if (!Model.ShowContactPanel && !Model.InterestRecorded)
         {
             <a asp-action="ViewNetworkLead" asp-route-id="@Model.ItemId" asp-route-contact="true" class="rl-btn-primary rl-btn-primary--sm">
-                <i class="fas fa-comment-dots"></i> Contact Buyer
+                <i class="fas fa-comment-dots"></i> @L["Contact Buyer"]
             </a>
         }
         <a asp-action="Network" asp-route-view="feed" asp-route-filter="Leads" class="rl-btn-outline rl-btn-outline--sm">@L["Back to Leads"]</a>

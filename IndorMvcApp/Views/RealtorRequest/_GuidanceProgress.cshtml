@@ -1,8 +1,9 @@
+@using IndorMvcApp.Localization
 @{
     var step = (int)(ViewBag.GuidanceStep ?? 1);
     var total = 4;
 }
-<p class="rr-step-meta">Step @step of @total</p>
+<p class="rr-step-meta">@L.T("Step {0} of {1}", step, total)</p>
 <div class="rr-progress" aria-hidden="true">
     @for (var i = 1; i <= total; i++)
     {

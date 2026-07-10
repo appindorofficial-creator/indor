@@ -237,6 +237,11 @@ public static class UiDisplayLocalization
             return localizer.T("Requested {0}", text["Requested ".Length..].Trim());
         }
 
+        if (text.StartsWith("Connected ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Connected {0}", text["Connected ".Length..].Trim());
+        }
+
         if (text.StartsWith("Total ", StringComparison.OrdinalIgnoreCase))
         {
             return localizer.T("Total {0}", text["Total ".Length..].Trim());
@@ -298,11 +303,118 @@ public static class UiDisplayLocalization
             return localizer.T(key, selectedCount);
         }
 
+        if (text.StartsWith("Due ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Due {0}", text["Due ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Submitted ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Submitted {0}", text["Submitted ".Length..].Trim());
+        }
+
+        if (string.Equals(text, "Submitted recently", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Submitted recently");
+        }
+
+        if (string.Equals(text, "0 responses so far", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("0 responses so far");
+        }
+
+        var responsesMatch = Regex.Match(text, @"^(\d+) responses? so far$", RegexOptions.IgnoreCase);
+        if (responsesMatch.Success && int.TryParse(responsesMatch.Groups[1].Value, out var responseCount))
+        {
+            var responseKey = responseCount == 1 ? "{0} response so far" : "{0} responses so far";
+            return localizer.T(responseKey, responseCount);
+        }
+
+        if (string.Equals(text, "Quote received", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Quote received");
+        }
+
+        if (string.Equals(text, "Waiting", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Waiting");
+        }
+
+        if (text.StartsWith("Selected: ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Selected: {0}", text["Selected: ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Shared with ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Shared with {0}", text["Shared with ".Length..].Trim());
+        }
+
+        var daysRangeMatch = Regex.Match(text, @"^(\d+)\s*[–-]\s*(\d+)\s+days$", RegexOptions.IgnoreCase);
+        if (daysRangeMatch.Success)
+        {
+            return localizer.T("{0} – {1} days", daysRangeMatch.Groups[1].Value, daysRangeMatch.Groups[2].Value);
+        }
+
+        var licenseMatch = Regex.Match(text, @"^License #(.+)$", RegexOptions.IgnoreCase);
+        if (licenseMatch.Success)
+        {
+            return localizer.T("License #{0}", licenseMatch.Groups[1].Value);
+        }
+
         if (text.StartsWith("Serving ", StringComparison.OrdinalIgnoreCase)
             && text.EndsWith(" and surrounding areas", StringComparison.OrdinalIgnoreCase))
         {
             var cityPart = text["Serving ".Length..^" and surrounding areas".Length].Trim();
             return localizer.T("Serving {0} and surrounding areas", cityPart);
+        }
+
+        var servingMatch = Regex.Match(text, @"^Serving (.+)$", RegexOptions.IgnoreCase);
+        if (servingMatch.Success)
+        {
+            return localizer.T("Serving {0}", servingMatch.Groups[1].Value);
+        }
+
+        if (text.StartsWith("Homeowner viewed the quote ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Homeowner viewed the quote {0}", text["Homeowner viewed the quote ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Quote delivered ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Quote delivered {0}", text["Quote delivered ".Length..].Trim());
+        }
+
+        var quoteSelectedMatch = Regex.Match(text, @"^Quote selected for (.+) — (.+) \((.+)\)$");
+        if (quoteSelectedMatch.Success)
+        {
+            return localizer.T(
+                "Quote selected for {0} — {1} ({2})",
+                quoteSelectedMatch.Groups[1].Value,
+                quoteSelectedMatch.Groups[2].Value,
+                quoteSelectedMatch.Groups[3].Value);
+        }
+
+        var minAgoMatch = Regex.Match(text, @"^(\d+) min ago$", RegexOptions.IgnoreCase);
+        if (minAgoMatch.Success && int.TryParse(minAgoMatch.Groups[1].Value, out var minsAgo))
+        {
+            return localizer.T("{0} min ago", minsAgo);
+        }
+
+        var hrAgoMatch = Regex.Match(text, @"^(\d+) hr ago$", RegexOptions.IgnoreCase);
+        if (hrAgoMatch.Success && int.TryParse(hrAgoMatch.Groups[1].Value, out var hrsAgo))
+        {
+            return localizer.T("{0} hr ago", hrsAgo);
+        }
+
+        if (string.Equals(text, "just now", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("just now");
+        }
+
+        if (text.EndsWith(" Package", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("{0} Package", text[..^" Package".Length].Trim());
         }
 
         return localizer[text];

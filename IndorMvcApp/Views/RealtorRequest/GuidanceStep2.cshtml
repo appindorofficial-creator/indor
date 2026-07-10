@@ -1,12 +1,13 @@
 @model IndorMvcApp.ViewModels.RealtorGuidanceStep2ViewModel
+@using IndorMvcApp.Localization
 @using IndorMvcApp.Services
 @{
-    ViewData["Title"] = "Home Preferences";
+    ViewData["Title"] = L["Home Preferences"];
     Layout = null;
     ViewBag.GuidanceStep = 2;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -21,11 +22,11 @@
 <div class="hvac-page">
     <div class="hvac-top">
         <a asp-action="GuidanceStep1" asp-route-id="@Model.SolicitudId" class="hvac-back"><i class="fas fa-chevron-left"></i></a>
-        <div class="hvac-title">Home Preferences</div>
+        <div class="hvac-title">@L["Home Preferences"]</div>
         <div style="width:40px;"></div>
     </div>
     <div class="hvac-content">
-        <h1 class="rr-page-title">Home Preferences</h1>
+        <h1 class="rr-page-title">@L["Home Preferences"]</h1>
         @await Html.PartialAsync("_GuidanceProgress")
 
         <form asp-action="GuidanceStep2" method="post">
@@ -34,21 +35,21 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
 
             <div class="rr-field">
-                <span class="rr-field-label">What type of place are you open to?</span>
+                <span class="rr-field-label">@L["What type of place are you open to?"]</span>
                 <div class="rr-home-grid">
                     @foreach (var opt in RealtorRequestDisplayService.HomeTypeOptions)
                     {
                         <label class="rr-home-card @(Model.HomeType == opt.Value ? "selected" : "")">
                             <input type="radio" asp-for="HomeType" value="@opt.Value" />
                             <i class="fas @opt.Icon"></i>
-                            <span>@opt.Label</span>
+                            <span>@UiDisplayLocalization.Localize(L, opt.Label)</span>
                         </label>
                     }
                 </div>
             </div>
 
             <div class="rr-field">
-                <span class="rr-field-label">How many bedrooms do you need?</span>
+                <span class="rr-field-label">@L["How many bedrooms do you need?"]</span>
                 <div class="rr-chip-row">
                     @foreach (var n in RealtorRequestDisplayService.CountOptions)
                     {
@@ -60,7 +61,7 @@
             </div>
 
             <div class="rr-field">
-                <span class="rr-field-label">How many bathrooms would you prefer?</span>
+                <span class="rr-field-label">@L["How many bathrooms would you prefer?"]</span>
                 <div class="rr-chip-row">
                     @foreach (var n in RealtorRequestDisplayService.BathroomOptions)
                     {
@@ -72,7 +73,7 @@
             </div>
 
             <div class="rr-field">
-                <span class="rr-field-label">How many people will live in the home?</span>
+                <span class="rr-field-label">@L["How many people will live in the home?"]</span>
                 <div class="rr-chip-row">
                     @foreach (var n in RealtorRequestDisplayService.CountOptions)
                     {

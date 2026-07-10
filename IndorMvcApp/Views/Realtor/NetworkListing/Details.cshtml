@@ -168,11 +168,11 @@
                 <div class="rl-listing-toggle-pair">
                     <label class="rl-listing-toggle-btn @(Model.ListingType == "sale" ? "is-active" : "")">
                         <input type="radio" asp-for="ListingType" value="sale" />
-                        <i class="fas fa-house"></i> For Sale
+                        <i class="fas fa-house"></i> @L["For Sale"]
                     </label>
                     <label class="rl-listing-toggle-btn @(Model.ListingType == "rent" ? "is-active" : "")">
                         <input type="radio" asp-for="ListingType" value="rent" />
-                        <i class="fas fa-key"></i> For Rent
+                        <i class="fas fa-key"></i> @L["For Rent"]
                     </label>
                 </div>
 

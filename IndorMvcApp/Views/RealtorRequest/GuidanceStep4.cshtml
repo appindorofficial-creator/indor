@@ -1,13 +1,14 @@
 @model IndorMvcApp.ViewModels.RealtorGuidanceStep4ViewModel
+@using IndorMvcApp.Localization
 @using IndorMvcApp.Services
 @{
-    ViewData["Title"] = "Contact & Notes";
+    ViewData["Title"] = L["Contact & Notes"];
     Layout = null;
     ViewBag.GuidanceStep = 4;
     var s = Model.Summary;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -22,12 +23,12 @@
 <div class="hvac-page">
     <div class="hvac-top">
         <a asp-action="GuidanceStep3" asp-route-id="@Model.SolicitudId" class="hvac-back"><i class="fas fa-chevron-left"></i></a>
-        <div class="hvac-title">Contact &amp; Notes</div>
+        <div class="hvac-title">@L["Contact & Notes"]</div>
         <div style="width:40px;"></div>
     </div>
     <div class="hvac-content">
-        <h1 class="rr-page-title">Contact &amp; Notes</h1>
-        <p class="rr-lead">We already have your basic contact information, but you can edit it below.</p>
+        <h1 class="rr-page-title">@L["Contact & Notes"]</h1>
+        <p class="rr-lead">@L["We already have your basic contact information, but you can edit it below."]</p>
         @await Html.PartialAsync("_GuidanceProgress")
 
         <form asp-action="GuidanceStep4" method="post">
@@ -36,7 +37,7 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
 
             <div class="rr-field">
-                <label class="rr-field-label" asp-for="ContactPhone">Phone number</label>
+                <label class="rr-field-label" asp-for="ContactPhone">@L["Phone number"]</label>
                 <div class="rr-input-wrap">
                     <i class="fas fa-phone"></i>
                     <input asp-for="ContactPhone" class="hvac-input" type="tel" placeholder="(123) 456-7890" />
@@ -44,7 +45,7 @@
             </div>
 
             <div class="rr-field">
-                <label class="rr-field-label" asp-for="ContactEmail">Email</label>
+                <label class="rr-field-label" asp-for="ContactEmail">@L["Email"]</label>
                 <div class="rr-input-wrap">
                     <i class="fas fa-envelope"></i>
                     <input asp-for="ContactEmail" class="hvac-input" type="email" placeholder="you@example.com" />
@@ -52,46 +53,46 @@
             </div>
 
             <div class="rr-field">
-                <span class="rr-field-label">Preferred contact method</span>
+                <span class="rr-field-label">@L["Preferred contact method"]</span>
                 <div class="rr-contact-row">
                     @foreach (var opt in RealtorRequestDisplayService.ContactMethodOptions)
                     {
                         <label class="rr-contact-btn @(Model.PreferredContactMethod == opt.Value ? "selected" : "")">
                             <input type="radio" asp-for="PreferredContactMethod" value="@opt.Value" />
                             <i class="fas @opt.Icon"></i>
-                            <span>@opt.Label</span>
+                            <span>@UiDisplayLocalization.Localize(L, opt.Label)</span>
                         </label>
                     }
                 </div>
             </div>
 
             <div class="rr-field">
-                <label class="rr-field-label" asp-for="GuidanceNotes">Additional notes <span style="color:#94A3B8;font-weight:500;">(optional)</span></label>
+                <label class="rr-field-label" asp-for="GuidanceNotes">@L["Additional notes"] <span style="color:#94A3B8;font-weight:500;">@L["(optional)"]</span></label>
                 <div class="rr-notes-wrap">
                     <i class="fas fa-pen note-icon"></i>
-                    <textarea asp-for="GuidanceNotes" maxlength="500" placeholder="Tell us anything else that may help the realtor understand what you need." id="guidanceNotesField"></textarea>
+                    <textarea asp-for="GuidanceNotes" maxlength="500" placeholder="@L["Tell us anything else that may help the realtor understand what you need."]" id="guidanceNotesField"></textarea>
                     <span class="rr-char-count"><span id="guidanceNotesCount">@(Model.GuidanceNotes?.Length ?? 0)</span>/500</span>
                 </div>
             </div>
 
             <div class="rr-receive-box">
-                <strong>What your realtor will receive</strong>
+                <strong>@L["What your realtor will receive"]</strong>
                 <div class="rr-receive-cols">
                     <ul>
-                        <li><i class="fas fa-check"></i> Rent payment comfort range</li>
-                        <li><i class="fas fa-check"></i> Move timeline</li>
-                        <li><i class="fas fa-check"></i> Home type</li>
+                        <li><i class="fas fa-check"></i> @L["Rent payment comfort range"]</li>
+                        <li><i class="fas fa-check"></i> @L["Move timeline"]</li>
+                        <li><i class="fas fa-check"></i> @L["Home type"]</li>
                     </ul>
                     <ul>
-                        <li><i class="fas fa-check"></i> Bedrooms / bathrooms</li>
-                        <li><i class="fas fa-check"></i> Pets &amp; lifestyle preferences</li>
-                        <li><i class="fas fa-check"></i> Area preference</li>
+                        <li><i class="fas fa-check"></i> @L["Bedrooms / bathrooms"]</li>
+                        <li><i class="fas fa-check"></i> @L["Pets & lifestyle preferences"]</li>
+                        <li><i class="fas fa-check"></i> @L["Area preference"]</li>
                     </ul>
                 </div>
-                <p class="rr-receive-note"><i class="fas fa-shield-halved"></i> A real estate professional will use this information to guide you toward the best next steps.</p>
+                <p class="rr-receive-note"><i class="fas fa-shield-halved"></i> @L["A real estate professional will use this information to guide you toward the best next steps."]</p>
             </div>
 
-            <button type="submit" class="hvac-save-btn">Submit General Guidance</button>
+            <button type="submit" class="hvac-save-btn">@L["Submit General Guidance"]</button>
         </form>
     </div>
     @await Html.PartialAsync("_AppBottomNav", "home")

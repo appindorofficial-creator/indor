@@ -10,7 +10,7 @@
 
     <div class="rl-page-header rl-page-header--stack">
         <a asp-controller="Realtor" asp-action="EditSharedQuote" asp-route-quoteId="@Model.QuoteId" asp-route-bidId="@Model.BidId" class="rl-back-link">
-            <i class="fas fa-chevron-left"></i> Edit
+            <i class="fas fa-chevron-left"></i> @L["Edit"]
         </a>
         <h1 class="rl-page-title">@L["Preview Shared Quote"]</h1>
     </div>
@@ -47,13 +47,13 @@
                 <div><i class="fas fa-dollar-sign rl-metric-icon rl-metric-icon--blue"></i><span>@L["Total Quote"]</span><strong>@Model.TotalLabel</strong></div>
                 @if (!string.IsNullOrWhiteSpace(Model.TimelineLabel))
                 {
-                    <div><i class="fas fa-calendar-days rl-metric-icon rl-metric-icon--purple"></i><span>@L["Timeline"]</span><strong>@Model.TimelineLabel</strong></div>
+                    <div><i class="fas fa-calendar-days rl-metric-icon rl-metric-icon--purple"></i><span>@L["Timeline"]</span><strong>@UiDisplayLocalization.Localize(L, Model.TimelineLabel)</strong></div>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.WarrantyLabel))
                 {
-                    <div><i class="fas fa-shield-halved rl-metric-icon rl-metric-icon--green"></i><span>@L["Warranty"]</span><strong>@Model.WarrantyLabel</strong></div>
+                    <div><i class="fas fa-shield-halved rl-metric-icon rl-metric-icon--green"></i><span>@L["Warranty"]</span><strong>@UiDisplayLocalization.Localize(L, Model.WarrantyLabel)</strong></div>
                 }
-                <div><i class="fas fa-circle-check rl-metric-icon rl-metric-icon--green"></i><span>@L["Status"]</span><strong>@Model.ReviewStatusLabel</strong></div>
+                <div><i class="fas fa-circle-check rl-metric-icon rl-metric-icon--green"></i><span>@L["Status"]</span><strong>@UiDisplayLocalization.Localize(L, Model.ReviewStatusLabel)</strong></div>
             </div>
 
             @if (Model.IncludedRepairs.Count > 0)

@@ -23,7 +23,7 @@
     <span class="rl-activity-icon"><i class="fas @icon"></i></span>
     <div>
         <p>@Model.Description</p>
-        <span>@Model.OccurredLabel</span>
+        <span>@UiDisplayLocalization.Localize(L, Model.OccurredLabel)</span>
     </div>
     <span class="rl-activity-tag @tagClass">@Model.CategoryTag</span>
 </article>

@@ -10,7 +10,7 @@
 
     <div class="rl-page-header rl-page-header--stack">
         <a asp-controller="Realtor" asp-action="ViewQuote" asp-route-id="@Model.QuoteId" asp-route-bidId="@Model.BidId" class="rl-back-link">
-            <i class="fas fa-chevron-left"></i> Quote Details
+            <i class="fas fa-chevron-left"></i> @L["Quote Details"]
         </a>
         <h1 class="rl-page-title">@L["Edit Shared Quote"]</h1>
     </div>
@@ -19,7 +19,7 @@
         <img src="@Model.PhotoUrl" alt="" />
         <div>
             <strong>@Model.Address</strong>
-            <span class="rl-status-pill rl-status-pill--received">@Model.StatusLabel</span>
+            <span class="rl-status-pill rl-status-pill--received">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
         </div>
     </div>
 
@@ -35,7 +35,7 @@
                 <span class="rl-premium-muted">@L["Send to Homeowner"]</span>
                 <strong>@Model.HomeownerName</strong>
                 <span class="rl-premium-muted">
-                    @(string.IsNullOrWhiteSpace(Model.HomeownerEmail) ? "No email on file" : Model.HomeownerEmail)
+                    @(string.IsNullOrWhiteSpace(Model.HomeownerEmail) ? L["No email on file"] : Model.HomeownerEmail)
                     @if (!string.IsNullOrWhiteSpace(Model.HomeownerPhone)) { <text> · @Model.HomeownerPhone</text> }
                 </span>
             </div>
