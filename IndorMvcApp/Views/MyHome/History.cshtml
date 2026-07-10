@@ -25,7 +25,7 @@ else
     <div class="hf-timeline">
         @foreach (var group in groups)
         {
-            <div class="hf-timeline-month">@group.Key</div>
+            <div class="hf-timeline-month">@UiDisplayLocalization.Localize(L, group.Key)</div>
             @foreach (var item in group)
             {
                 <a asp-action="HistoryDetail" asp-route-id="@item.Id" class="hf-timeline-item">
@@ -33,7 +33,7 @@ else
                     <div class="hf-timeline-card">
                         <div class="body">
                             <div class="title">@UiDisplayLocalization.Localize(L, item.Title)</div>
-                            <div class="sub">@(item.ProviderName ?? L["No provider"])</div>
+                            <div class="sub">@UiDisplayLocalization.Localize(L, item.ProviderName ?? L["No provider"])</div>
                         </div>
                         <div class="cost">@IndorMvcApp.Services.MyHomeDisplayService.FormatCurrency(item.TotalCost)</div>
                         <i class="fas fa-chevron-right" style="color:#CBD5E1;font-size:0.75rem;"></i>

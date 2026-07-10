@@ -207,7 +207,7 @@ public class PropertyAdministratorPortalService(
         return new PropertyAdministratorRecentRequestViewModel
         {
             Id = request.Id,
-            Title = request.Title,
+            Title = PaL(request.Title),
             PropertyName = request.PropertyName,
             StatusLabel = label,
             StatusCss = css,
@@ -225,7 +225,7 @@ public class PropertyAdministratorPortalService(
             var recent = MapRecentRequest(url, request);
             items.Add((request.FechaCreacion, new PropertyAdministratorNotificationItemViewModel
             {
-                Description = PropertyAdministratorDisplayLocalization.EventAtProperty(request.Title, request.PropertyName),
+                Description = PropertyAdministratorDisplayLocalization.EventAtProperty(PaL(request.Title), request.PropertyName),
                 OccurredLabel = FormatRelativeTime(request.FechaCreacion),
                 CategoryTag = recent.StatusLabel,
                 TagCssClass = $"pa-notify-tag--{recent.StatusCss}",
@@ -241,7 +241,7 @@ public class PropertyAdministratorPortalService(
         {
             items.Add((visit.VisitDate.ToUniversalTime(), new PropertyAdministratorNotificationItemViewModel
             {
-                Description = PropertyAdministratorDisplayLocalization.EventAtProperty(visit.Title, visit.PropertyName),
+                Description = PropertyAdministratorDisplayLocalization.EventAtProperty(PaL(visit.Title), visit.PropertyName),
                 OccurredLabel = visit.VisitDate.ToString("MMM d, yyyy", CultureInfo.CurrentCulture),
                 CategoryTag = PaL("Visit"),
                 TagCssClass = "pa-notify-tag--visit",
@@ -962,7 +962,7 @@ public class PropertyAdministratorPortalService(
     private static PropertyAdministratorVisitCardViewModel MapVisit(IndorPropertyAdminScheduledVisit visit) =>
         new()
         {
-            Title = visit.Title,
+            Title = PaL(visit.Title),
             PropertyName = visit.PropertyName,
             DateLabel = PaT("{0} • {1}", visit.VisitDate.ToString("MMM d, yyyy", CultureInfo.CurrentCulture), visit.TimeWindow),
             ImageUrl = visit.ImageUrl
@@ -986,7 +986,7 @@ public class PropertyAdministratorPortalService(
         return new PropertyAdministratorServiceRequestItemViewModel
         {
             Id = request.Id,
-            Title = request.Title,
+            Title = PaL(request.Title),
             PropertyName = request.PropertyName,
             Location = request.Location,
             Status = request.Status,

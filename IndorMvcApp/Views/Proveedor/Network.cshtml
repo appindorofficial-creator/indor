@@ -37,7 +37,7 @@
 
     @if (TempData["NetworkToast"] is string toast && !string.IsNullOrWhiteSpace(toast))
     {
-        <div class="prv-net-toast"><i class="fas fa-circle-check"></i> @toast</div>
+        <div class="prv-net-toast"><i class="fas fa-circle-check"></i> @UiDisplayLocalization.Localize(L, toast)</div>
     }
 
     <div class="prv-net-toggle">
@@ -69,7 +69,7 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </span>
             </div>
-            <img src="~/images/network/find-subcontractors.png" alt="Find subcontractors" class="prv-net-illus-img prv-net-illus-img--workers" asp-append-version="true" />
+            <img src="~/images/network/find-subcontractors.png" alt="@L["Find subcontractors"]" class="prv-net-illus-img prv-net-illus-img--workers" asp-append-version="true" />
         </a>
         <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-trade="all" class="prv-net-illus-card">
             <div class="prv-net-illus-head">
@@ -81,7 +81,7 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </span>
             </div>
-            <img src="~/images/network/service-providers.png" alt="Service providers" class="prv-net-illus-img prv-net-illus-img--services" asp-append-version="true" />
+            <img src="~/images/network/service-providers.png" alt="@L["Service providers"]" class="prv-net-illus-img prv-net-illus-img--services" asp-append-version="true" />
         </a>
     </section>
 

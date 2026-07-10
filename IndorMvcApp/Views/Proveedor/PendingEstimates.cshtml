@@ -6,10 +6,10 @@
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
     var tabs = new[] {
-        ("all", "All"),
-        ("needsreview", "Needs Review"),
-        ("aidraft", "AI Draft"),
-        ("ready", "Ready")
+        ("all", L["All"]),
+        ("needsreview", L["Needs Review"]),
+        ("aidraft", L["AI Draft"]),
+        ("ready", L["Ready"])
     };
 }
 
@@ -19,7 +19,7 @@
     <header class="prv-pro-wizard-head">
         <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Step @Model.StepNumber of @Model.TotalSteps · Pending Estimates</h1>
+            <h1>@L.T("Step {0} of {1} · Pending Estimates", Model.StepNumber, Model.TotalSteps)</h1>
             <p>@L["Here you can see all estimates waiting for action. Tap an estimate to review it."]</p>
         </div>
     </header>
@@ -27,9 +27,9 @@
     @await Html.PartialAsync("_ProviderProEstimateTutorialCard", (
         Model.StepNumber,
         Model.TotalSteps,
-        "Pending Estimates",
-        "Here you can see all estimates waiting for action. Tap an estimate to review it.",
-        "Next: Estimate Review",
+        L["Pending Estimates"],
+        L["Here you can see all estimates waiting for action. Tap an estimate to review it."],
+        L["Next: Estimate Review"],
         Model.Estimates.FirstOrDefault(e => e.CanReview)?.Id is int firstId
             ? Url.Action("ReviewEstimate", "Proveedor", new { id = firstId })!
             : Url.Action("PendingEstimates", "Proveedor")!,
