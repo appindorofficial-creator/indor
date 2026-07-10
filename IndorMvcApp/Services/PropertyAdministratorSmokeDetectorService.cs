@@ -68,7 +68,7 @@ public class PropertyAdministratorSmokeDetectorService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Smoke Detector Check at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Smoke Detector Check", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,
@@ -192,39 +192,39 @@ public class PropertyAdministratorSmokeDetectorService(
 
     private static string LabelServiceType(string value) => value switch
     {
-        "ReplaceBatteries" => "Replace batteries",
-        "ChirpingDetector" => "Chirping detector",
-        "InstallNewDetector" => "Install new detector",
-        _ => "Full detector check"
+        "ReplaceBatteries" => PropertyAdministratorDisplayLocalization.L("Replace batteries"),
+        "ChirpingDetector" => PropertyAdministratorDisplayLocalization.L("Chirping detector"),
+        "InstallNewDetector" => PropertyAdministratorDisplayLocalization.L("Install new detector"),
+        _ => PropertyAdministratorDisplayLocalization.L("Full detector check")
     };
 
     private static string LabelDetectorCount(string value) => value switch
     {
-        "OneToTwo" => "1–2",
-        "SixPlus" => "6+",
-        _ => "3–5"
+        "OneToTwo" => PropertyAdministratorDisplayLocalization.L("1–2"),
+        "SixPlus" => PropertyAdministratorDisplayLocalization.L("6+"),
+        _ => PropertyAdministratorDisplayLocalization.L("3–5")
     };
 
     private static string LabelDetectorType(string value) => value switch
     {
-        "Battery" => "Battery",
-        "NotSure" => "Not sure",
-        _ => "Hardwired"
+        "Battery" => PropertyAdministratorDisplayLocalization.L("Battery"),
+        "NotSure" => PropertyAdministratorDisplayLocalization.L("Not sure"),
+        _ => PropertyAdministratorDisplayLocalization.L("Hardwired")
     };
 
     private static string LabelAccess(string value) => value switch
     {
-        "HostMeet" => "Host will meet",
-        "NeedApproval" => "Need guest approval",
-        _ => "Smart lock code provided"
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "NeedApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
+        _ => PropertyAdministratorDisplayLocalization.L("Smart lock code provided")
     };
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 

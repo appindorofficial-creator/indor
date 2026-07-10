@@ -14,7 +14,7 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>@L["Turnover Cleaning scheduled"] <span class="pa-flow-step-pill pa-flow-step-pill--inline pa-flow-step-pill--purple">Step @Model.FlowStep of @Model.TotalSteps</span></h1>
+        <h1>@L["Turnover Cleaning scheduled"] <span class="pa-flow-step-pill pa-flow-step-pill--inline pa-flow-step-pill--purple">@L.T("Step {0} of {1}", Model.FlowStep, Model.TotalSteps)</span></h1>
         <p>@L["Your turnover service is booked and ready."]</p>
     </section>
 

@@ -72,7 +72,7 @@ public class PropertyAdministratorStandardCleaningService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Standard Cleaning at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Standard Cleaning", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,
@@ -197,25 +197,25 @@ public class PropertyAdministratorStandardCleaningService(
 
     private static string LabelServiceType(string value) => value switch
     {
-        "DeepTouchUp" => "Deep touch-up",
-        "BeforeGuestArrival" => "Before guest arrival",
-        "AfterGuestCheckout" => "After guest checkout",
-        _ => "Routine cleaning"
+        "DeepTouchUp" => PropertyAdministratorDisplayLocalization.L("Deep touch-up"),
+        "BeforeGuestArrival" => PropertyAdministratorDisplayLocalization.L("Before guest arrival"),
+        "AfterGuestCheckout" => PropertyAdministratorDisplayLocalization.L("After guest checkout"),
+        _ => PropertyAdministratorDisplayLocalization.L("Routine cleaning")
     };
 
     private static string LabelScheduleWhen(string value) => value switch
     {
-        "Today" => "Today",
-        "Later" => "Later",
-        _ => "Tomorrow"
+        "Today" => PropertyAdministratorDisplayLocalization.L("Today"),
+        "Later" => PropertyAdministratorDisplayLocalization.L("Later"),
+        _ => PropertyAdministratorDisplayLocalization.L("Tomorrow")
     };
 
     private static string LabelIncludes(IReadOnlyList<string> tasks)
     {
         var labels = tasks.Select(t => t switch
         {
-            "TrashRemoval" => "trash removal",
-            "RestockSupplies" => "restock supplies",
+            "TrashRemoval" => PropertyAdministratorDisplayLocalization.L("trash removal"),
+            "RestockSupplies" => PropertyAdministratorDisplayLocalization.L("restock supplies"),
             _ => t.ToLowerInvariant()
         }).ToList();
 
@@ -224,17 +224,17 @@ public class PropertyAdministratorStandardCleaningService(
 
     private static string LabelAccess(string value) => value switch
     {
-        "HostMeet" => "Host will meet",
-        "NeedApproval" => "Need guest approval",
-        _ => "Smart lock code provided"
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "NeedApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
+        _ => PropertyAdministratorDisplayLocalization.L("Smart lock code provided")
     };
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 

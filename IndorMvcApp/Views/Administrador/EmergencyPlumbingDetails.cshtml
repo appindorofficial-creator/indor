@@ -28,12 +28,12 @@
             <div class="pa-chip-grid">
                 @foreach (var item in new (string Value, string Label, string Icon)[]
                 {
-                    ("ActiveLeak", "Active leak", "fa-droplet"),
-                    ("ClogBackup", "Clog / backup", "fa-toilet"),
-                    ("NoHotWater", "No hot water", "fa-temperature-high"),
-                    ("ToiletIssue", "Toilet issue", "fa-toilet"),
-                    ("BurstPipe", "Burst pipe", "fa-circle-exclamation"),
-                    ("NotDraining", "Water not draining", "fa-water")
+                    ("ActiveLeak", L["Active leak"], "fa-droplet"),
+                    ("ClogBackup", L["Clog / backup"], "fa-toilet"),
+                    ("NoHotWater", L["No hot water"], "fa-temperature-high"),
+                    ("ToiletIssue", L["Toilet issue"], "fa-toilet"),
+                    ("BurstPipe", L["Burst pipe"], "fa-circle-exclamation"),
+                    ("NotDraining", L["Water not draining"], "fa-water")
                 })
                 {
                     <label class="pa-chip @(Model.IssueType == item.Value ? "is-selected" : null)">
@@ -92,12 +92,12 @@
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var loc in new (string Value, string Label, string Icon)[]
                 {
-                    ("Kitchen", "Kitchen", "fa-kitchen-set"),
-                    ("Bathroom", "Bathroom", "fa-sink"),
-                    ("Laundry", "Laundry", "fa-shirt"),
-                    ("WaterHeater", "Water heater", "fa-fire"),
-                    ("MainLine", "Main line", "fa-grip-lines"),
-                    ("Other", "Other", "fa-ellipsis")
+                    ("Kitchen", L["Kitchen"], "fa-kitchen-set"),
+                    ("Bathroom", L["Bathroom"], "fa-sink"),
+                    ("Laundry", L["Laundry"], "fa-shirt"),
+                    ("WaterHeater", L["Water heater"], "fa-fire"),
+                    ("MainLine", L["Main line"], "fa-grip-lines"),
+                    ("Other", L["Other"], "fa-ellipsis")
                 })
                 {
                     <label class="pa-chip @(Model.ProblemLocation == loc.Value ? "is-selected" : null)">

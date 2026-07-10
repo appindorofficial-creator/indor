@@ -207,29 +207,29 @@ public class PropertyAdministratorEmergencyElectricalService(
 
     private static string LabelIssue(string value) => value switch
     {
-        "BreakerTripping" => "Breaker keeps tripping",
-        "BurningSmell" => "Burning smell",
-        "SparksOutlet" => "Sparks / outlet issue",
-        "PartialPower" => "Partial power",
-        "ExposedWire" => "Exposed wire",
-        _ => "Power outage"
+        "BreakerTripping" => PropertyAdministratorDisplayLocalization.L("Breaker keeps tripping"),
+        "BurningSmell" => PropertyAdministratorDisplayLocalization.L("Burning smell"),
+        "SparksOutlet" => PropertyAdministratorDisplayLocalization.L("Sparks / outlet issue"),
+        "PartialPower" => PropertyAdministratorDisplayLocalization.L("Partial power"),
+        "ExposedWire" => PropertyAdministratorDisplayLocalization.L("Exposed wire"),
+        _ => PropertyAdministratorDisplayLocalization.L("Power outage")
     };
 
     private static string LabelLocation(string value) => value switch
     {
-        "Kitchen" => "Kitchen",
-        "Bedroom" => "Bedroom",
-        "Bathroom" => "Bathroom",
-        "PanelBreaker" => "Panel / breaker box",
-        "Other" => "Other",
-        _ => "Living room"
+        "Kitchen" => PropertyAdministratorDisplayLocalization.L("Kitchen"),
+        "Bedroom" => PropertyAdministratorDisplayLocalization.L("Bedroom"),
+        "Bathroom" => PropertyAdministratorDisplayLocalization.L("Bathroom"),
+        "PanelBreaker" => PropertyAdministratorDisplayLocalization.L("Panel / breaker box"),
+        "Other" => PropertyAdministratorDisplayLocalization.L("Other"),
+        _ => PropertyAdministratorDisplayLocalization.L("Living room")
     };
 
     private static string LabelAccess(string value) => value switch
     {
-        "HostMeet" => "Host will meet",
-        "GuestApproval" => "Need guest approval",
-        _ => "Smart lock code provided"
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "GuestApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
+        _ => PropertyAdministratorDisplayLocalization.L("Smart lock code provided")
     };
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(

@@ -3,10 +3,7 @@
 @{
     var s = Model.State;
 }
-<div class="ob-head-block">
-    <h1>@Model.Title</h1>
-    <p>@Model.Subtitle</p>
-</div>
+@await Html.PartialAsync("_PropertyAdminRegHead", Model)
 
 <form asp-action="Portfolio" method="post" id="portfolioForm" class="pa-validate" novalidate>
     @Html.AntiForgeryToken()
@@ -33,7 +30,7 @@
             <option value="">@L["Portfolio type"]</option>
             @foreach (var item in PropertyAdministratorCatalog.PortfolioTypes)
             {
-                <option value="@item.Value" selected="@(s.PortfolioType == item.Value)">@item.Label</option>
+                <option value="@item.Value" selected="@(s.PortfolioType == item.Value)">@PropertyAdministratorDisplayLocalization.LabelPortfolioType(item.Value)</option>
             }
         </select>
     </label>
@@ -44,7 +41,7 @@
             <option value="">@L["Ownership type"]</option>
             @foreach (var item in PropertyAdministratorCatalog.OwnershipTypes)
             {
-                <option value="@item.Value" selected="@(s.OwnershipType == item.Value)">@item.Label</option>
+                <option value="@item.Value" selected="@(s.OwnershipType == item.Value)">@PropertyAdministratorDisplayLocalization.LabelOwnershipType(item.Value)</option>
             }
         </select>
     </label>
@@ -67,7 +64,7 @@
             <label class="pa-choice-card @(s.ManagementStyle == item.Value ? "is-selected" : "")">
                 <input type="radio" name="managementStyle" value="@item.Value" @(s.ManagementStyle == item.Value ? "checked" : null) data-pa-required="true" data-field-label="how you manage your properties" />
                 <i class="fas @(item.Value == "SelfManage" ? "fa-user" : item.Value == "SmallTeam" ? "fa-users" : "fa-briefcase")"></i>
-                <span>@item.Label</span>
+                <span>@PropertyAdministratorDisplayLocalization.LabelManagementStyle(item.Value)</span>
             </label>
         }
     </div>

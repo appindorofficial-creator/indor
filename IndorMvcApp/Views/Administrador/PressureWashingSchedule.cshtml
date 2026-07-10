@@ -37,10 +37,10 @@
             <label><i class="fas fa-calendar-day pa-q-icon pa-q-icon--green"></i> @L["When should service happen?"]</label>
             <div class="pa-pw-timing-row">
                 @foreach (var t in new (string Value, string Label)[] {
-                    ("NextAvailable", "Next available"),
-                    ("BeforeCheckIn", "Before check-in"),
-                    ("AfterCheckOut", "After check-out"),
-                    ("CustomDate", "Custom date") })
+                    ("NextAvailable", L["Next available"]),
+                    ("BeforeCheckIn", L["Before check-in"]),
+                    ("AfterCheckOut", L["After check-out"]),
+                    ("CustomDate", L["Custom date"]) })
                 {
                     <label class="pa-pw-timing-card @(Model.ServiceTiming == t.Value ? "is-selected" : null)">
                         <input type="radio" name="ServiceTiming" value="@t.Value" @(Model.ServiceTiming == t.Value ? "checked" : null) />
@@ -56,9 +56,9 @@
             <label><i class="fas fa-clock pa-q-icon pa-q-icon--green"></i> @L["Preferred arrival window"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var w in new (string Value, string Label)[] {
-                    ("Morning", "Morning (8:00 AM – 12:00 PM)"),
-                    ("Midday", "Midday (11:00 AM – 2:00 PM)"),
-                    ("Afternoon", "Afternoon (2:00 PM – 5:00 PM)") })
+                    ("Morning", L["Morning (8:00 AM – 12:00 PM)"]),
+                    ("Midday", L["Midday (11:00 AM – 2:00 PM)"]),
+                    ("Afternoon", L["Afternoon (2:00 PM – 5:00 PM)"]) })
                 {
                     <label class="pa-chip @(Model.ArrivalWindow == w.Value ? "is-selected" : null)">
                         <input type="radio" name="ArrivalWindow" value="@w.Value" @(Model.ArrivalWindow == w.Value ? "checked" : null) />
@@ -99,9 +99,9 @@
             <label><i class="fas fa-door-open pa-q-icon pa-q-icon--green"></i> @L["How should the crew enter?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var e in new (string Value, string Label)[] {
-                    ("GateCode", "Gate code"),
-                    ("HostOnSite", "Host on-site"),
-                    ("GuestAware", "Guest aware") })
+                    ("GateCode", L["Gate code"]),
+                    ("HostOnSite", L["Host on-site"]),
+                    ("GuestAware", L["Guest aware"]) })
                 {
                     <label class="pa-chip @(Model.EntryMethod == e.Value ? "is-selected" : null)">
                         <input type="radio" name="EntryMethod" value="@e.Value" @(Model.EntryMethod == e.Value ? "checked" : null) />
@@ -122,7 +122,7 @@
             <span class="pa-flow-qnum">7</span>
             <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> @L["Who should get updates?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
                 {
                     <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
                         <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />

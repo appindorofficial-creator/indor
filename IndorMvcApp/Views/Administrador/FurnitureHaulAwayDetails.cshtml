@@ -22,7 +22,7 @@
         <div class="pa-viewing-strip">
             <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
             <div class="pa-viewing-strip-main">
-                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
                 {
                     <span class="pa-checkout-badge"><i class="fas fa-calendar-day"></i> @Model.PropertyStatusLabel</span>
@@ -43,15 +43,15 @@
             <div class="pa-furniture-items-grid">
                 @foreach (var i in new (string Value, string Label, string Icon)[]
                 {
-                    ("Couch", "Couch", "fa-couch"),
-                    ("Mattress", "Mattress", "fa-bed"),
-                    ("BedFrame", "Bed frame", "fa-bed"),
-                    ("Dresser", "Dresser", "fa-archive"),
-                    ("DiningTable", "Dining table", "fa-chair"),
-                    ("Refrigerator", "Refrigerator", "fa-kitchen-set"),
-                    ("WasherDryer", "Washer / Dryer", "fa-shirt"),
-                    ("TvElectronics", "TV / Electronics", "fa-tv"),
-                    ("Other", "Other", "fa-ellipsis")
+                    ("Couch", L["Couch"], "fa-couch"),
+                    ("Mattress", L["Mattress"], "fa-bed"),
+                    ("BedFrame", L["Bed frame"], "fa-bed"),
+                    ("Dresser", L["Dresser"], "fa-archive"),
+                    ("DiningTable", L["Dining table"], "fa-chair"),
+                    ("Refrigerator", L["Refrigerator"], "fa-kitchen-set"),
+                    ("WasherDryer", L["Washer / Dryer"], "fa-shirt"),
+                    ("TvElectronics", L["TV / Electronics"], "fa-tv"),
+                    ("Other", L["Other"], "fa-ellipsis")
                 })
                 {
                     <label class="pa-junk-item-card @(items.Contains(i.Value) ? "is-selected" : null)">
@@ -68,7 +68,7 @@
             <span class="pa-flow-qnum">2</span>
             <label>@L["How many items?"]</label>
             <div class="pa-chip-grid pa-chip-grid--4">
-                @foreach (var c in new (string Value, string Label)[] { ("One", "1 item"), ("TwoThree", "2–3"), ("FourSix", "4–6"), ("SevenPlus", "7+") })
+                @foreach (var c in new (string Value, string Label)[] { ("One", L["1 item"]), ("TwoThree", L["2–3"]), ("FourSix", L["4–6"]), ("SevenPlus", L["7+"]) })
                 {
                     <label class="pa-chip @(Model.ItemCount == c.Value ? "is-selected" : null)">
                         <input type="radio" name="ItemCount" value="@c.Value" @(Model.ItemCount == c.Value ? "checked" : null) />
@@ -82,7 +82,7 @@
             <span class="pa-flow-qnum">3</span>
             <label><i class="fas fa-truck pa-q-icon pa-q-icon--blue"></i> @L["How big is the pickup?"]</label>
             <div class="pa-junk-load-row pa-junk-load-row--3">
-                @foreach (var l in new (string Value, string Label, string Icon)[] { ("SmallPickup", "Small pickup", "fa-truck-pickup"), ("HalfLoad", "Half load", "fa-truck"), ("FullLoad", "Full load", "fa-truck-moving") })
+                @foreach (var l in new (string Value, string Label, string Icon)[] { ("SmallPickup", L["Small pickup"], "fa-truck-pickup"), ("HalfLoad", L["Half load"], "fa-truck"), ("FullLoad", L["Full load"], "fa-truck-moving") })
                 {
                     <label class="pa-junk-load-card @(Model.PickupSize == l.Value ? "is-selected" : null)">
                         <input type="radio" name="PickupSize" value="@l.Value" @(Model.PickupSize == l.Value ? "checked" : null) />

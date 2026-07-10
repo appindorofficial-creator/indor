@@ -2,10 +2,7 @@
 @{
     var s = Model.State;
 }
-<div class="ob-head-block">
-    <h1>@Model.Title</h1>
-    <p>@Model.Subtitle</p>
-</div>
+@await Html.PartialAsync("_PropertyAdminRegHead", Model)
 
 <form asp-action="Tools" method="post" id="toolsForm">
     @Html.AntiForgeryToken()

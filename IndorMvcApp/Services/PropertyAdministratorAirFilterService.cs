@@ -74,7 +74,7 @@ public class PropertyAdministratorAirFilterService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Air Filter Change at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Air Filter Change", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,
@@ -199,40 +199,40 @@ public class PropertyAdministratorAirFilterService(
 
     private static string LabelServiceType(string value) => value switch
     {
-        "BringFilters" => "Bring filters",
-        "CheckSize" => "Check filter size",
-        "FullService" => "Full HVAC filter service",
-        _ => "Replace filter"
+        "BringFilters" => PropertyAdministratorDisplayLocalization.L("Bring filters"),
+        "CheckSize" => PropertyAdministratorDisplayLocalization.L("Check filter size"),
+        "FullService" => PropertyAdministratorDisplayLocalization.L("Full HVAC filter service"),
+        _ => PropertyAdministratorDisplayLocalization.L("Replace filter")
     };
 
     private static string LabelFilterSize(string value) => value switch
     {
-        "16x20x1" => "16x20x1",
-        "20x25x1" => "20x25x1",
-        "NotSure" => "Not sure",
-        _ => "20x20x1"
+        "16x20x1" => PropertyAdministratorDisplayLocalization.L("16x20x1"),
+        "20x25x1" => PropertyAdministratorDisplayLocalization.L("20x25x1"),
+        "NotSure" => PropertyAdministratorDisplayLocalization.L("Not sure"),
+        _ => PropertyAdministratorDisplayLocalization.L("20x20x1")
     };
 
     private static string LabelFrequency(string value) => value switch
     {
-        "OneTime" => "One-time",
-        "Every2Months" => "Every 2 months",
-        _ => "Every 3 months"
+        "OneTime" => PropertyAdministratorDisplayLocalization.L("One-time"),
+        "Every2Months" => PropertyAdministratorDisplayLocalization.L("Every 2 months"),
+        _ => PropertyAdministratorDisplayLocalization.L("Every 3 months")
     };
 
     private static string LabelAccess(string value) => value switch
     {
-        "HostMeet" => "Host will meet",
-        "NeedApproval" => "Need guest approval",
-        _ => "Smart lock code provided"
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "NeedApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
+        _ => PropertyAdministratorDisplayLocalization.L("Smart lock code provided")
     };
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 

@@ -26,7 +26,7 @@
             <span class="pa-flow-qnum">1</span>
             <label><i class="fas fa-bug pa-q-icon pa-q-icon--green"></i> @L["What pest issue do you need help with?"]</label>
             <div class="pa-pc-options-grid">
-                @foreach (var p in new[] { ("Ants", "Ants"), ("Roaches", "Roaches"), ("Rodents", "Rodents"), ("Termites", "Termites"), ("WaspsBees", "Wasps / bees"), ("Spiders", "Spiders"), ("Other", "Other") })
+                @foreach (var p in new[] { ("Ants", L["Ants"]), ("Roaches", L["Roaches"]), ("Rodents", L["Rodents"]), ("Termites", L["Termites"]), ("WaspsBees", L["Wasps / bees"]), ("Spiders", L["Spiders"]), ("Other", L["Other"]) })
                 {
                     <label class="pa-chip @(Model.PestType == p.Item1 ? "is-selected" : null)">
                         <input type="radio" name="PestType" value="@p.Item1" @(Model.PestType == p.Item1 ? "checked" : null) />
@@ -40,7 +40,7 @@
             <span class="pa-flow-qnum">2</span>
             <label>@L["Where are you seeing the issue?"]</label>
             <div class="pa-pc-options-grid">
-                @foreach (var l in new[] { ("Kitchen", "Kitchen"), ("Bathroom", "Bathroom"), ("Bedroom", "Bedroom"), ("PatioExterior", "Patio / exterior"), ("Garage", "Garage"), ("WholeProperty", "Whole property") })
+                @foreach (var l in new[] { ("Kitchen", L["Kitchen"]), ("Bathroom", L["Bathroom"]), ("Bedroom", L["Bedroom"]), ("PatioExterior", L["Patio / exterior"]), ("Garage", L["Garage"]), ("WholeProperty", L["Whole property"]) })
                 {
                     <label class="pa-chip @(Model.IssueLocation == l.Item1 ? "is-selected" : null)">
                         <input type="radio" name="IssueLocation" value="@l.Item1" @(Model.IssueLocation == l.Item1 ? "checked" : null) />

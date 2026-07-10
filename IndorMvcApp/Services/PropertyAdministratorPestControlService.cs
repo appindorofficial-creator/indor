@@ -126,7 +126,7 @@ public class PropertyAdministratorPestControlService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Pest Control at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Pest Control", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = input.Urgency is "Urgent" or "Emergency"
@@ -285,55 +285,55 @@ public class PropertyAdministratorPestControlService(
 
     private static string LabelPestType(string value) => value switch
     {
-        "Ants" => "Ants",
-        "Rodents" => "Rodents",
-        "Termites" => "Termites",
-        "WaspsBees" => "Wasps / bees",
-        "Spiders" => "Spiders",
-        "Other" => "Other",
-        _ => "Roaches"
+        "Ants" => PropertyAdministratorDisplayLocalization.L("Ants"),
+        "Rodents" => PropertyAdministratorDisplayLocalization.L("Rodents"),
+        "Termites" => PropertyAdministratorDisplayLocalization.L("Termites"),
+        "WaspsBees" => PropertyAdministratorDisplayLocalization.L("Wasps / bees"),
+        "Spiders" => PropertyAdministratorDisplayLocalization.L("Spiders"),
+        "Other" => PropertyAdministratorDisplayLocalization.L("Other"),
+        _ => PropertyAdministratorDisplayLocalization.L("Roaches")
     };
 
     private static string LabelLocation(string value) => value switch
     {
-        "Bathroom" => "Bathroom",
-        "Bedroom" => "Bedroom",
-        "PatioExterior" => "Patio / exterior",
-        "Garage" => "Garage",
-        "WholeProperty" => "Whole property",
-        _ => "Kitchen"
+        "Bathroom" => PropertyAdministratorDisplayLocalization.L("Bathroom"),
+        "Bedroom" => PropertyAdministratorDisplayLocalization.L("Bedroom"),
+        "PatioExterior" => PropertyAdministratorDisplayLocalization.L("Patio / exterior"),
+        "Garage" => PropertyAdministratorDisplayLocalization.L("Garage"),
+        "WholeProperty" => PropertyAdministratorDisplayLocalization.L("Whole property"),
+        _ => PropertyAdministratorDisplayLocalization.L("Kitchen")
     };
 
     private static string LabelServiceType(string value) => value switch
     {
-        "RecurringService" => "Recurring service",
-        "InspectionOnly" => "Inspection only",
-        _ => "One-time treatment"
+        "RecurringService" => PropertyAdministratorDisplayLocalization.L("Recurring service"),
+        "InspectionOnly" => PropertyAdministratorDisplayLocalization.L("Inspection only"),
+        _ => PropertyAdministratorDisplayLocalization.L("One-time treatment")
     };
 
     private static string LabelTreatAreas(IReadOnlyList<string> areas) =>
         areas.Count == 0 ? "—" : string.Join(", ", areas.Select(a => a switch
         {
-            "Pantry" => "Pantry",
-            "Bathroom" => "Bathroom",
-            "Bedrooms" => "Bedrooms",
-            "PatioExterior" => "Patio / exterior",
-            _ => "Kitchen"
+            "Pantry" => PropertyAdministratorDisplayLocalization.L("Pantry"),
+            "Bathroom" => PropertyAdministratorDisplayLocalization.L("Bathroom"),
+            "Bedrooms" => PropertyAdministratorDisplayLocalization.L("Bedrooms"),
+            "PatioExterior" => PropertyAdministratorDisplayLocalization.L("Patio / exterior"),
+            _ => PropertyAdministratorDisplayLocalization.L("Kitchen")
         }));
 
     private static string LabelEntryAccess(string value) => value switch
     {
-        "HostOnSite" => "Host will meet",
-        "GuestApproval" => "Need guest approval",
-        _ => "Smart lock access"
+        "HostOnSite" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "GuestApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
+        _ => PropertyAdministratorDisplayLocalization.L("Smart lock access")
     };
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 
@@ -348,9 +348,9 @@ public class PropertyAdministratorPestControlService(
 
     private static string LabelArrivalWindow(string value) => value switch
     {
-        "TodayLater" => "Later today",
-        "Tomorrow" => "Tomorrow",
-        _ => "ASAP"
+        "TodayLater" => PropertyAdministratorDisplayLocalization.L("Later today"),
+        "Tomorrow" => PropertyAdministratorDisplayLocalization.L("Tomorrow"),
+        _ => PropertyAdministratorDisplayLocalization.L("ASAP")
     };
 
     private async Task<ApplicationUser?> GetUserAsync()

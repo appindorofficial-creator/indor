@@ -113,7 +113,7 @@ public class PropertyAdministratorLandscapingService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Landscaping at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Landscaping", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,
@@ -238,10 +238,10 @@ public class PropertyAdministratorLandscapingService(
     {
         var baseLabel = input.ServiceType switch
         {
-            "ReplaceDamagedPlants" => "Plant replacement",
-            "TreeShrubInstall" => "Tree / shrub install",
-            "PatioHardscape" => "Patio / hardscape",
-            _ => "Garden refresh"
+            "ReplaceDamagedPlants" => PropertyAdministratorDisplayLocalization.L("Plant replacement"),
+            "TreeShrubInstall" => PropertyAdministratorDisplayLocalization.L("Tree / shrub install"),
+            "PatioHardscape" => PropertyAdministratorDisplayLocalization.L("Patio / hardscape"),
+            _ => PropertyAdministratorDisplayLocalization.L("Garden refresh")
         };
 
         return input.ServiceType == "GardenRefresh" && input.ServiceReason == "CarDroveOverPlants"
@@ -251,17 +251,17 @@ public class PropertyAdministratorLandscapingService(
 
     private static string LabelArea(string value) => value switch
     {
-        "Backyard" => "Backyard",
-        "Both" => "Front yard + backyard",
-        _ => "Front yard"
+        "Backyard" => PropertyAdministratorDisplayLocalization.L("Backyard"),
+        "Both" => PropertyAdministratorDisplayLocalization.L("Front yard + backyard"),
+        _ => PropertyAdministratorDisplayLocalization.L("Front yard")
     };
 
     private static string LabelReason(string value) => value switch
     {
-        "StormDamage" => "Storm damage",
-        "CarDroveOverPlants" => "Car drove over plants",
-        "PreparingForGuests" => "Preparing for guests",
-        _ => "Routine upgrade"
+        "StormDamage" => PropertyAdministratorDisplayLocalization.L("Storm damage"),
+        "CarDroveOverPlants" => PropertyAdministratorDisplayLocalization.L("Car drove over plants"),
+        "PreparingForGuests" => PropertyAdministratorDisplayLocalization.L("Preparing for guests"),
+        _ => PropertyAdministratorDisplayLocalization.L("Routine upgrade")
     };
 
     private static string LabelTimingRequirement(PropertyAdministratorLandscapingSubmitInput input) =>
@@ -271,32 +271,32 @@ public class PropertyAdministratorLandscapingService(
 
     private static string LabelTimeline(string value) => value switch
     {
-        "Asap" => "As soon as possible",
-        "ScheduleLater" => "Schedule later",
-        _ => "This week"
+        "Asap" => PropertyAdministratorDisplayLocalization.L("As soon as possible"),
+        "ScheduleLater" => PropertyAdministratorDisplayLocalization.L("Schedule later"),
+        _ => PropertyAdministratorDisplayLocalization.L("This week")
     };
 
     private static string LabelHaulAway(string value) => value switch
     {
-        "RemoveTreeDebris" => "Tree debris removed",
-        "RemoveOldMulch" => "Old mulch removed",
-        "NoHaulAway" => "No haul away",
-        _ => "Damaged plants removed"
+        "RemoveTreeDebris" => PropertyAdministratorDisplayLocalization.L("Tree debris removed"),
+        "RemoveOldMulch" => PropertyAdministratorDisplayLocalization.L("Old mulch removed"),
+        "NoHaulAway" => PropertyAdministratorDisplayLocalization.L("No haul away"),
+        _ => PropertyAdministratorDisplayLocalization.L("Damaged plants removed")
     };
 
     private static string LabelTimeWindow(string value) => value switch
     {
-        "Afternoon" => "12 PM – 4 PM",
-        "AnyTime" => "Any time",
-        _ => "8 AM – 12 PM"
+        "Afternoon" => PropertyAdministratorDisplayLocalization.L("12 PM – 4 PM"),
+        "AnyTime" => PropertyAdministratorDisplayLocalization.L("Any time"),
+        _ => PropertyAdministratorDisplayLocalization.L("8 AM – 12 PM")
     };
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 

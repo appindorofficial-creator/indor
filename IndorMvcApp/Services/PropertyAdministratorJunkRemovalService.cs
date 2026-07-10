@@ -114,7 +114,7 @@ public class PropertyAdministratorJunkRemovalService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Junk Removal at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Junk Removal", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.InProgress,
@@ -240,12 +240,12 @@ public class PropertyAdministratorJunkRemovalService(
     {
         var labels = items.Select(i => i switch
         {
-            "Boxes" => "boxes",
-            "BaggedTrash" => "bagged trash",
-            "Appliances" => "appliances",
-            "YardDebris" => "yard debris",
-            "MixedItems" => "mixed items",
-            _ => "furniture"
+            "Boxes" => PropertyAdministratorDisplayLocalization.L("boxes"),
+            "BaggedTrash" => PropertyAdministratorDisplayLocalization.L("bagged trash"),
+            "Appliances" => PropertyAdministratorDisplayLocalization.L("appliances"),
+            "YardDebris" => PropertyAdministratorDisplayLocalization.L("yard debris"),
+            "MixedItems" => PropertyAdministratorDisplayLocalization.L("mixed items"),
+            _ => PropertyAdministratorDisplayLocalization.L("furniture")
         }).Distinct().ToList();
 
         return labels.Count switch
@@ -259,19 +259,19 @@ public class PropertyAdministratorJunkRemovalService(
 
     private static string LabelLoadSize(string value) => value switch
     {
-        "SmallPickup" => "Small pickup",
-        "FullLoad" => "Full load",
-        "MultipleLoads" => "Multiple loads",
-        _ => "Half load"
+        "SmallPickup" => PropertyAdministratorDisplayLocalization.L("Small pickup"),
+        "FullLoad" => PropertyAdministratorDisplayLocalization.L("Full load"),
+        "MultipleLoads" => PropertyAdministratorDisplayLocalization.L("Multiple loads"),
+        _ => PropertyAdministratorDisplayLocalization.L("Half load")
     };
 
     private static string LabelAccess(PropertyAdministratorJunkRemovalSubmitInput input)
     {
         var entry = input.EntryAccess switch
         {
-            "HostMeet" => "Host will meet",
-            "CurbsideOnly" => "Curbside pickup only",
-            _ => "Smart lock"
+            "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+            "CurbsideOnly" => PropertyAdministratorDisplayLocalization.L("Curbside pickup only"),
+            _ => PropertyAdministratorDisplayLocalization.L("Smart lock")
         };
 
         var pickup = input.PickupType switch
@@ -288,8 +288,8 @@ public class PropertyAdministratorJunkRemovalService(
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 
@@ -304,16 +304,16 @@ public class PropertyAdministratorJunkRemovalService(
 
     private static string LabelPickupWhen(string value) => value switch
     {
-        "Asap" => "ASAP",
-        "ScheduledTime" => "Scheduled time",
-        _ => "Today after checkout"
+        "Asap" => PropertyAdministratorDisplayLocalization.L("ASAP"),
+        "ScheduledTime" => PropertyAdministratorDisplayLocalization.L("Scheduled time"),
+        _ => PropertyAdministratorDisplayLocalization.L("Today after checkout")
     };
 
     private static string LabelTimeWindow(string value) => value switch
     {
-        "Morning" => "8 AM – 12 PM",
-        "Evening" => "5 PM – 9 PM",
-        _ => "12 PM – 5 PM"
+        "Morning" => PropertyAdministratorDisplayLocalization.L("8 AM – 12 PM"),
+        "Evening" => PropertyAdministratorDisplayLocalization.L("5 PM – 9 PM"),
+        _ => PropertyAdministratorDisplayLocalization.L("12 PM – 5 PM")
     };
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(

@@ -12,7 +12,7 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>@L["Emergency Flood"] <span class="pa-flow-step-pill pa-flow-step-pill--inline">Step @Model.FlowStep of @Model.TotalSteps</span></h1>
+        <h1>@L["Emergency Flood"] <span class="pa-flow-step-pill pa-flow-step-pill--inline">@L.T("Step {0} of {1}", Model.FlowStep, Model.TotalSteps)</span></h1>
         <p>@L["Tell us what's happening, how bad it is, and whether you have insurance details ready."]</p>
     </section>
 
@@ -28,12 +28,12 @@
             <div class="pa-chip-grid pa-chip-grid--scroll">
                 @foreach (var p in new (string Value, string Label)[]
                 {
-                    ("ActiveFlooding", "Active flooding"),
-                    ("BurstPipe", "Burst pipe"),
-                    ("RoofLeak", "Roof leak"),
-                    ("ApplianceLeak", "Appliance leak"),
-                    ("SewageBackup", "Sewage backup"),
-                    ("Overflow", "Overflow")
+                    ("ActiveFlooding", L["Active flooding"]),
+                    ("BurstPipe", L["Burst pipe"]),
+                    ("RoofLeak", L["Roof leak"]),
+                    ("ApplianceLeak", L["Appliance leak"]),
+                    ("SewageBackup", L["Sewage backup"]),
+                    ("Overflow", L["Overflow"])
                 })
                 {
                     <label class="pa-chip @(Model.ProblemType == p.Value ? "is-selected" : null)">

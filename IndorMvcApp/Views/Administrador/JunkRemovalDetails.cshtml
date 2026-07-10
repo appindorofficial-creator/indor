@@ -29,12 +29,12 @@
             <div class="pa-junk-items-grid">
                 @foreach (var i in new (string Value, string Label, string Icon)[]
                 {
-                    ("Furniture", "Furniture", "fa-couch"),
-                    ("Boxes", "Boxes", "fa-box"),
-                    ("BaggedTrash", "Bagged trash", "fa-trash"),
-                    ("Appliances", "Appliances", "fa-blender"),
-                    ("YardDebris", "Yard debris", "fa-leaf"),
-                    ("MixedItems", "Mixed items", "fa-boxes-stacked")
+                    ("Furniture", L["Furniture"], "fa-couch"),
+                    ("Boxes", L["Boxes"], "fa-box"),
+                    ("BaggedTrash", L["Bagged trash"], "fa-trash"),
+                    ("Appliances", L["Appliances"], "fa-blender"),
+                    ("YardDebris", L["Yard debris"], "fa-leaf"),
+                    ("MixedItems", L["Mixed items"], "fa-boxes-stacked")
                 })
                 {
                     <label class="pa-junk-item-card @(items.Contains(i.Value) ? "is-selected" : null)">
@@ -53,10 +53,10 @@
             <div class="pa-junk-load-row">
                 @foreach (var l in new (string Value, string Label, string Icon)[]
                 {
-                    ("SmallPickup", "Small pickup", "fa-bag-shopping"),
-                    ("HalfLoad", "Half load", "fa-truck-pickup"),
-                    ("FullLoad", "Full load", "fa-truck"),
-                    ("MultipleLoads", "Multiple loads", "fa-truck-moving")
+                    ("SmallPickup", L["Small pickup"], "fa-bag-shopping"),
+                    ("HalfLoad", L["Half load"], "fa-truck-pickup"),
+                    ("FullLoad", L["Full load"], "fa-truck"),
+                    ("MultipleLoads", L["Multiple loads"], "fa-truck-moving")
                 })
                 {
                     <label class="pa-junk-load-card @(Model.LoadSize == l.Value ? "is-selected" : null)">
@@ -103,7 +103,7 @@
             <span class="pa-flow-qnum">5</span>
             <label>@L["Do you need inside pickup or curbside only?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var p in new (string Value, string Label, string Icon)[] { ("InsidePickup", "Inside pickup", "fa-door-open"), ("Curbside", "Curbside", "fa-road"), ("Either", "Either", "fa-arrows-left-right") })
+                @foreach (var p in new (string Value, string Label, string Icon)[] { ("InsidePickup", L["Inside pickup"], "fa-door-open"), ("Curbside", L["Curbside"], "fa-road"), ("Either", L["Either"], "fa-arrows-left-right") })
                 {
                     <label class="pa-toggle-btn pa-toggle-btn--icon @(Model.PickupType == p.Value ? "is-selected" : null)">
                         <input type="radio" name="PickupType" value="@p.Value" @(Model.PickupType == p.Value ? "checked" : null) />

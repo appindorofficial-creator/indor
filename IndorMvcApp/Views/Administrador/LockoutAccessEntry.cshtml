@@ -48,10 +48,10 @@
             <div class="pa-chip-grid pa-chip-grid--2">
                 @foreach (var b in new (string Value, string Label, string Icon)[]
                 {
-                    ("LockboxKey", "Key in lockbox", "fa-lock"),
-                    ("NeighborAccess", "Neighbor access", "fa-house"),
-                    ("CoHostArriving", "Co-host arriving", "fa-users"),
-                    ("NoBackup", "No backup", "fa-ban")
+                    ("LockboxKey", L["Key in lockbox"], "fa-lock"),
+                    ("NeighborAccess", L["Neighbor access"], "fa-house"),
+                    ("CoHostArriving", L["Co-host arriving"], "fa-users"),
+                    ("NoBackup", L["No backup"], "fa-ban")
                 })
                 {
                     <label class="pa-chip pa-chip--wide @(Model.BackupAccess == b.Value ? "is-selected" : null)">
@@ -67,7 +67,7 @@
             <span class="pa-flow-qnum">3</span>
             <label>@L["Who should receive updates?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
                 {
                     <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
                         <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />

@@ -1,9 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorImportPortfolioViewModel
 @using IndorMvcApp.Models
-<div class="ob-head-block">
-    <h1>@Model.Title</h1>
-    <p>@Model.Subtitle</p>
-</div>
+@await Html.PartialAsync("_PropertyAdminRegHead", Model)
 
 @if (!string.IsNullOrWhiteSpace(Model.FormError))
 {
@@ -15,14 +12,14 @@
     <div class="pa-check-item"><i class="fas fa-circle-check"></i> @L["HouseNumber, StreetName, City, State, ZipCode, PropertyType"]</div>
     <div class="pa-check-item"><i class="fas fa-circle-check"></i> @L["Nickname (optional)"]</div>
     <p class="pa-step-hint" style="margin:12px 0 0;">
-        PropertyType values:
+        PropertyType @L["values"]:
         @string.Join(", ", PropertyAdministratorCatalog.PropertyTypes.Select(type => type.Value))
     </p>
 </div>
 
 <p style="margin-bottom:16px;">
     <a asp-action="DownloadPortfolioTemplate" class="pa-reg-action-back" style="display:inline-flex;align-items:center;gap:6px;">
-        <i class="fas fa-download"></i> Download CSV template
+        <i class="fas fa-download"></i> @L["Download CSV template"]
     </a>
 </p>
 

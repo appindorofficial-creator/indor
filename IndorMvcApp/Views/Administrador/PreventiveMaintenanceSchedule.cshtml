@@ -34,7 +34,7 @@
         <div class="pa-flow-question">
             <label>@L["How often?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--4">
-                @foreach (var f in new (string Value, string Label)[] { ("Monthly", "Monthly"), ("Every3Months", "Every 3 months"), ("TwiceAYear", "Twice a year"), ("Yearly", "Yearly") })
+                @foreach (var f in new (string Value, string Label)[] { ("Monthly", L["Monthly"]), ("Every3Months", L["Every 3 months"]), ("TwiceAYear", L["Twice a year"]), ("Yearly", L["Yearly"]) })
                 {
                     <label class="pa-toggle-btn @(Model.Frequency == f.Value ? "is-selected" : null)">
                         <input type="radio" name="Frequency" value="@f.Value" @(Model.Frequency == f.Value ? "checked" : null) />
@@ -61,7 +61,7 @@
         <div class="pa-flow-question">
             <label>@L["Best day"]</label>
             <div class="pa-day-picker">
-                @foreach (var d in new (string Value, string Label)[] { ("Mon", "Mon"), ("Tue", "Tue"), ("Wed", "Wed"), ("Thu", "Thu"), ("Fri", "Fri") })
+                @foreach (var d in new (string Value, string Label)[] { ("Mon", L["Mon"]), ("Tue", L["Tue"]), ("Wed", L["Wed"]), ("Thu", L["Thu"]), ("Fri", L["Fri"]) })
                 {
                     <label class="pa-day-btn @(Model.PreferredDay == d.Value ? "is-selected" : null)">
                         <input type="radio" name="PreferredDay" value="@d.Value" @(Model.PreferredDay == d.Value ? "checked" : null) />
@@ -74,7 +74,7 @@
         <div class="pa-flow-question">
             <label>@L["Access"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var a in new (string Value, string Label)[] { ("SmartLock", "Use smart lock"), ("HostPresent", "Host present"), ("GuestCoordination", "Coordinate with guest") })
+                @foreach (var a in new (string Value, string Label)[] { ("SmartLock", L["Use smart lock"]), ("HostPresent", L["Host present"]), ("GuestCoordination", L["Coordinate with guest"]) })
                 {
                     <label class="pa-toggle-btn @(Model.EntryAccess == a.Value ? "is-selected" : null)">
                         <input type="radio" name="EntryAccess" value="@a.Value" @(Model.EntryAccess == a.Value ? "checked" : null) />
@@ -87,7 +87,7 @@
         <div class="pa-flow-question">
             <label>@L["Who gets updates?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var u in new (string Value, string Label)[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                @foreach (var u in new (string Value, string Label)[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
                 {
                     <label class="pa-toggle-btn @(Model.UpdateRecipients == u.Value ? "is-selected" : null)">
                         <input type="radio" name="UpdateRecipients" value="@u.Value" @(Model.UpdateRecipients == u.Value ? "checked" : null) />

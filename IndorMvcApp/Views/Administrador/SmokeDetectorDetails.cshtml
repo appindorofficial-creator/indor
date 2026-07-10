@@ -13,7 +13,7 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>@L["Smoke Detector Check"] <span class="pa-flow-step-pill pa-flow-step-pill--inline pa-flow-step-pill--green">Step @Model.FlowStep of @Model.TotalSteps</span></h1>
+        <h1>@L["Smoke Detector Check"] <span class="pa-flow-step-pill pa-flow-step-pill--inline pa-flow-step-pill--green">@L.T("Step {0} of {1}", Model.FlowStep, Model.TotalSteps)</span></h1>
         <p>@L["Tell us what needs to be checked so we can schedule the visit."]</p>
     </section>
 
@@ -29,10 +29,10 @@
             <div class="pa-sd-service-grid">
                 @foreach (var s in new (string Value, string Label, string Icon)[]
                 {
-                    ("FullDetectorCheck", "Full detector check", "fa-bell"),
-                    ("ReplaceBatteries", "Replace batteries", "fa-battery-full"),
-                    ("ChirpingDetector", "Chirping detector", "fa-volume-high"),
-                    ("InstallNewDetector", "Install new detector", "fa-plus")
+                    ("FullDetectorCheck", L["Full detector check"], "fa-bell"),
+                    ("ReplaceBatteries", L["Replace batteries"], "fa-battery-full"),
+                    ("ChirpingDetector", L["Chirping detector"], "fa-volume-high"),
+                    ("InstallNewDetector", L["Install new detector"], "fa-plus")
                 })
                 {
                     <label class="pa-sd-service-card @(Model.ServiceType == s.Value ? "is-selected" : null)">
@@ -49,7 +49,7 @@
             <span class="pa-flow-qnum">2</span>
             <label><i class="fas fa-bell pa-q-icon pa-q-icon--green"></i> @L["How many detectors should we check?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var c in new (string Value, string Label)[] { ("OneToTwo", "1–2"), ("ThreeToFive", "3–5"), ("SixPlus", "6+") })
+                @foreach (var c in new (string Value, string Label)[] { ("OneToTwo", L["1–2"]), ("ThreeToFive", L["3–5"]), ("SixPlus", L["6+"]) })
                 {
                     <label class="pa-toggle-btn @(Model.DetectorCount == c.Value ? "is-selected" : null)">
                         <input type="radio" name="DetectorCount" value="@c.Value" @(Model.DetectorCount == c.Value ? "checked" : null) />
@@ -76,7 +76,7 @@
             <span class="pa-flow-qnum">4</span>
             <label><i class="fas fa-plug pa-q-icon pa-q-icon--green"></i> @L["Do you know the detector type?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var t in new (string Value, string Label)[] { ("Battery", "Battery"), ("Hardwired", "Hardwired"), ("NotSure", "Not sure") })
+                @foreach (var t in new (string Value, string Label)[] { ("Battery", L["Battery"]), ("Hardwired", L["Hardwired"]), ("NotSure", L["Not sure"]) })
                 {
                     <label class="pa-toggle-btn @(Model.DetectorType == t.Value ? "is-selected" : null)">
                         <input type="radio" name="DetectorType" value="@t.Value" @(Model.DetectorType == t.Value ? "checked" : null) />
@@ -90,7 +90,7 @@
             <span class="pa-flow-qnum">5</span>
             <label><i class="fas fa-lock pa-q-icon pa-q-icon--green"></i> @L["Can the technician enter now?"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
-                @foreach (var e in new (string Value, string Label)[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet"), ("NeedApproval", "Need guest approval") })
+                @foreach (var e in new (string Value, string Label)[] { ("SmartLock", L["Yes, with smart lock"]), ("HostMeet", L["Host will meet"]), ("NeedApproval", L["Need guest approval"]) })
                 {
                     <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Value ? "is-selected" : null)">
                         <input type="radio" name="EntryAccess" value="@e.Value" @(Model.EntryAccess == e.Value ? "checked" : null) />
@@ -104,7 +104,7 @@
             <span class="pa-flow-qnum">6</span>
             <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> @L["Who should receive updates?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
                 {
                     <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
                         <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />

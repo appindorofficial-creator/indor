@@ -29,12 +29,12 @@
                 @{
                     var issues = new (string Value, string Label, string Icon)[]
                     {
-                        ("PowerOutage", "Power outage", "fa-bolt"),
-                        ("BreakerTripping", "Breaker keeps tripping", "fa-plug-circle-exclamation"),
-                        ("BurningSmell", "Burning smell", "fa-fire"),
-                        ("SparksOutlet", "Sparks / outlet issue", "fa-bolt-lightning"),
-                        ("PartialPower", "Partial power", "fa-circle-half-stroke"),
-                        ("ExposedWire", "Exposed wire", "fa-triangle-exclamation")
+                        ("PowerOutage", L["Power outage"], "fa-bolt"),
+                        ("BreakerTripping", L["Breaker keeps tripping"], "fa-plug-circle-exclamation"),
+                        ("BurningSmell", L["Burning smell"], "fa-fire"),
+                        ("SparksOutlet", L["Sparks / outlet issue"], "fa-bolt-lightning"),
+                        ("PartialPower", L["Partial power"], "fa-circle-half-stroke"),
+                        ("ExposedWire", L["Exposed wire"], "fa-triangle-exclamation")
                     };
                 }
                 @foreach (var item in issues)
@@ -96,11 +96,11 @@
                 @{
                     var locations = new (string Value, string Label, string? Icon)[]
                     {
-                        ("Kitchen", "Kitchen", "fa-kitchen-set"),
-                        ("Bedroom", "Bedroom", "fa-bed"),
-                        ("LivingRoom", "Living room", "fa-couch"),
-                        ("Bathroom", "Bathroom", "fa-sink"),
-                        ("PanelBreaker", "Panel / breaker box", "fa-grip-lines-vertical"),
+                        ("Kitchen", L["Kitchen"], "fa-kitchen-set"),
+                        ("Bedroom", L["Bedroom"], "fa-bed"),
+                        ("LivingRoom", L["Living room"], "fa-couch"),
+                        ("Bathroom", L["Bathroom"], "fa-sink"),
+                        ("PanelBreaker", L["Panel / breaker box"], "fa-grip-lines-vertical"),
                         ("Other", "Other", null)
                     };
                 }

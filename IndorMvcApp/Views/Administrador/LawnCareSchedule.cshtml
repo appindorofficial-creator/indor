@@ -22,7 +22,7 @@
         <div class="pa-viewing-strip">
             <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
             <div class="pa-viewing-strip-main">
-                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
                 {
                     <span class="pa-checkout-badge"><i class="fas fa-calendar-day"></i> @Model.PropertyStatusLabel</span>
@@ -48,7 +48,7 @@
             <span class="pa-flow-qnum">1</span>
             <label><i class="fas fa-bolt pa-q-icon pa-q-icon--green"></i> @L["When do you need service?"]</label>
             <div class="pa-toggle-pair">
-                @foreach (var w in new[] { ("Asap", "As soon as possible"), ("ScheduleLater", "Schedule later") })
+                @foreach (var w in new[] { ("Asap", L["As soon as possible"]), ("ScheduleLater", L["Schedule later"]) })
                 {
                     <label class="pa-toggle-btn @(Model.ScheduleWhen == w.Item1 ? "is-selected" : null)">
                         <input type="radio" name="ScheduleWhen" value="@w.Item1" @(Model.ScheduleWhen == w.Item1 ? "checked" : null) /> @w.Item2
@@ -61,7 +61,7 @@
             <span class="pa-flow-qnum">2</span>
             <label><i class="fas fa-clock pa-q-icon pa-q-icon--green"></i> @L["Best arrival window"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var w in new (string Value, string Label)[] { ("Morning", "8 AM–12 PM"), ("Afternoon", "12 PM–4 PM"), ("Evening", "4 PM–7 PM") })
+                @foreach (var w in new (string Value, string Label)[] { ("Morning", L["8 AM–12 PM"]), ("Afternoon", L["12 PM–4 PM"]), ("Evening", L["4 PM–7 PM"]) })
                 {
                     <label class="pa-chip @(Model.ArrivalWindow == w.Value ? "is-selected" : null)">
                         <input type="radio" name="ArrivalWindow" value="@w.Value" @(Model.ArrivalWindow == w.Value ? "checked" : null) />
@@ -75,7 +75,7 @@
             <span class="pa-flow-qnum">3</span>
             <label><i class="fas fa-plus pa-q-icon pa-q-icon--green"></i> @L["Any add-ons?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-lawn-addons-row">
-                @foreach (var a in new (string Value, string Label, string Icon)[] { ("Edging", "Edging", "fa-border-all"), ("BlowDebris", "Blow debris", "fa-wind"), ("WeedTrim", "Weed trim", "fa-scissors"), ("LeafPickup", "Leaf pickup", "fa-leaf") })
+                @foreach (var a in new (string Value, string Label, string Icon)[] { ("Edging", L["Edging"], "fa-border-all"), ("BlowDebris", L["Blow debris"], "fa-wind"), ("WeedTrim", L["Weed trim"], "fa-scissors"), ("LeafPickup", L["Leaf pickup"], "fa-leaf") })
                 {
                     <label class="pa-lawn-addon-card @(addOns.Contains(a.Value) ? "is-selected" : null)">
                         <input type="checkbox" name="AddOnsList" value="@a.Value" @(addOns.Contains(a.Value) ? "checked" : null) />
@@ -104,7 +104,7 @@
             <span class="pa-flow-qnum">5</span>
             <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> @L["Who should receive updates?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
                 {
                     <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
                         <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />

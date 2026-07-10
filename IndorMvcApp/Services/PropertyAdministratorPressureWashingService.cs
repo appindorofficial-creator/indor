@@ -119,7 +119,7 @@ public class PropertyAdministratorPressureWashingService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Pressure Washing at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Pressure Washing", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,
@@ -254,37 +254,37 @@ public class PropertyAdministratorPressureWashingService(
 
     private static string LabelArea(string value) => value switch
     {
-        "Driveway" => "Driveway",
-        "Walkway" => "Walkway",
-        "Patio" => "Patio",
-        "ExteriorWalls" => "Exterior walls",
-        "Fence" => "Fence",
-        "PoolDeck" => "Pool deck",
-        "TrashArea" => "Trash area",
-        "Other" => "Other",
+        "Driveway" => PropertyAdministratorDisplayLocalization.L("Driveway"),
+        "Walkway" => PropertyAdministratorDisplayLocalization.L("Walkway"),
+        "Patio" => PropertyAdministratorDisplayLocalization.L("Patio"),
+        "ExteriorWalls" => PropertyAdministratorDisplayLocalization.L("Exterior walls"),
+        "Fence" => PropertyAdministratorDisplayLocalization.L("Fence"),
+        "PoolDeck" => PropertyAdministratorDisplayLocalization.L("Pool deck"),
+        "TrashArea" => PropertyAdministratorDisplayLocalization.L("Trash area"),
+        "Other" => PropertyAdministratorDisplayLocalization.L("Other"),
         _ => value
     };
 
     private static string LabelAreaSize(string value) => value switch
     {
-        "Small" => "Small (up to 500 sq ft)",
-        "Large" => "Large (over 2,000 sq ft)",
-        _ => "Medium (500 – 2,000 sq ft)"
+        "Small" => PropertyAdministratorDisplayLocalization.L("Small (up to 500 sq ft)"),
+        "Large" => PropertyAdministratorDisplayLocalization.L("Large (over 2,000 sq ft)"),
+        _ => PropertyAdministratorDisplayLocalization.L("Medium (500 – 2,000 sq ft)")
     };
 
     private static string LabelReason(string value) => value switch
     {
-        "RoutineUpkeep" => "Routine upkeep",
-        "HeavyDirtStains" => "Heavy dirt / stains",
-        "HoaCurbAppeal" => "HOA / curb appeal",
-        _ => "Guest turnover"
+        "RoutineUpkeep" => PropertyAdministratorDisplayLocalization.L("Routine upkeep"),
+        "HeavyDirtStains" => PropertyAdministratorDisplayLocalization.L("Heavy dirt / stains"),
+        "HoaCurbAppeal" => PropertyAdministratorDisplayLocalization.L("HOA / curb appeal"),
+        _ => PropertyAdministratorDisplayLocalization.L("Guest turnover")
     };
 
     private static string LabelAccess(PropertyAdministratorPressureWashingSubmitInput input) =>
         input.EntryMethod switch
         {
-            "HostOnSite" => "Host on-site",
-            "GuestAware" => "Guest aware",
+            "HostOnSite" => PropertyAdministratorDisplayLocalization.L("Host on-site"),
+            "GuestAware" => PropertyAdministratorDisplayLocalization.L("Guest aware"),
             _ => string.IsNullOrWhiteSpace(input.AccessNotes) ? "Gate code provided" : "Gate code provided"
         };
 
@@ -292,8 +292,8 @@ public class PropertyAdministratorPressureWashingService(
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 
@@ -308,16 +308,16 @@ public class PropertyAdministratorPressureWashingService(
 
     private static string LabelEta(string arrivalWindow) => arrivalWindow switch
     {
-        "Morning" => "Tomorrow, 8:00 AM – 12:00 PM",
-        "Afternoon" => "Tomorrow, 2:00 PM – 5:00 PM",
-        _ => "Tomorrow, 11:00 AM – 1:00 PM"
+        "Morning" => PropertyAdministratorDisplayLocalization.L("Tomorrow, 8:00 AM – 12:00 PM"),
+        "Afternoon" => PropertyAdministratorDisplayLocalization.L("Tomorrow, 2:00 PM – 5:00 PM"),
+        _ => PropertyAdministratorDisplayLocalization.L("Tomorrow, 11:00 AM – 1:00 PM")
     };
 
     private static string LabelTimeWindow(string value) => value switch
     {
-        "Morning" => "8 AM – 12 PM",
-        "Afternoon" => "2 PM – 5 PM",
-        _ => "11 AM – 1 PM"
+        "Morning" => PropertyAdministratorDisplayLocalization.L("8 AM – 12 PM"),
+        "Afternoon" => PropertyAdministratorDisplayLocalization.L("2 PM – 5 PM"),
+        _ => PropertyAdministratorDisplayLocalization.L("11 AM – 1 PM")
     };
 
     private static string EstimateTotal(string areaSize) => areaSize switch

@@ -28,12 +28,12 @@
             <div class="pa-chip-grid">
                 @foreach (var item in new (string Value, string Label, string Icon)[]
                 {
-                    ("ActiveLeak", "Active leak", "fa-droplet"),
-                    ("StormDamage", "Storm damage", "fa-cloud-bolt"),
-                    ("MissingShingles", "Missing shingles", "fa-house-chimney"),
-                    ("CeilingStain", "Ceiling stain", "fa-stairs"),
-                    ("SkylightLeak", "Skylight leak", "fa-sun"),
-                    ("TreeImpact", "Tree impact", "fa-tree")
+                    ("ActiveLeak", L["Active leak"], "fa-droplet"),
+                    ("StormDamage", L["Storm damage"], "fa-cloud-bolt"),
+                    ("MissingShingles", L["Missing shingles"], "fa-house-chimney"),
+                    ("CeilingStain", L["Ceiling stain"], "fa-stairs"),
+                    ("SkylightLeak", L["Skylight leak"], "fa-sun"),
+                    ("TreeImpact", L["Tree impact"], "fa-tree")
                 })
                 {
                     <label class="pa-chip @(Model.RoofIssue == item.Value ? "is-selected" : null)">
@@ -96,12 +96,12 @@
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var loc in new (string Value, string Label, string Icon)[]
                 {
-                    ("Bedroom", "Bedroom", "fa-bed"),
-                    ("LivingRoom", "Living room", "fa-couch"),
-                    ("Kitchen", "Kitchen", "fa-kitchen-set"),
-                    ("Attic", "Attic", "fa-stairs"),
-                    ("Hallway", "Hallway", "fa-door-open"),
-                    ("Other", "Other", "fa-ellipsis")
+                    ("Bedroom", L["Bedroom"], "fa-bed"),
+                    ("LivingRoom", L["Living room"], "fa-couch"),
+                    ("Kitchen", L["Kitchen"], "fa-kitchen-set"),
+                    ("Attic", L["Attic"], "fa-stairs"),
+                    ("Hallway", L["Hallway"], "fa-door-open"),
+                    ("Other", L["Other"], "fa-ellipsis")
                 })
                 {
                     <label class="pa-chip @(Model.LeakLocation == loc.Value ? "is-selected" : null)">

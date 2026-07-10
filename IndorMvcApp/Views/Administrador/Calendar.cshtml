@@ -30,9 +30,9 @@
                 <article class="pa-calendar-visit">
                     <img src="@(visit.ImageUrl ?? "/inspeccion2.jpeg")" alt="" />
                     <div>
-                        <strong>@visit.Title</strong>
+                        <strong>@UiDisplayLocalization.Localize(L, visit.Title)</strong>
                         <span>@visit.PropertyName</span>
-                        <small>@visit.DateLabel</small>
+                        <small>@UiDisplayLocalization.Localize(L, visit.DateLabel)</small>
                     </div>
                 </article>
             }
@@ -51,10 +51,10 @@
                 <article class="pa-request-row">
                     <img src="@(request.ImageUrl ?? "/inspeccion2.jpeg")" alt="" />
                     <div class="pa-request-body">
-                        <span class="pa-status-pill pa-status-pill--@request.StatusCss">@request.StatusLabel</span>
-                        <strong>@request.Title</strong>
+                        <span class="pa-status-pill pa-status-pill--@request.StatusCss">@UiDisplayLocalization.Localize(L, request.StatusLabel)</span>
+                        <strong>@UiDisplayLocalization.Localize(L, request.Title)</strong>
                         <small>@request.PropertyName · @request.Location</small>
-                        <span class="pa-request-meta"><i class="fas fa-calendar"></i> @request.DateLabel</span>
+                        <span class="pa-request-meta"><i class="fas fa-calendar"></i> @UiDisplayLocalization.Localize(L, request.DateLabel)</span>
                     </div>
                 </article>
             }

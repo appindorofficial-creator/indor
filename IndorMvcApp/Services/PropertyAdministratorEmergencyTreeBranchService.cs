@@ -219,22 +219,22 @@ public class PropertyAdministratorEmergencyTreeBranchService(
 
     private static string LabelIssue(string value) => value switch
     {
-        "TreeFellOnHouse" => "Tree fell on house",
-        "DrivewayBlocked" => "Driveway blocked",
-        "FenceDamage" => "Fence damage",
-        "RoofImpact" => "Roof impact",
-        "NearPowerLine" => "Near power line",
-        _ => "Large hanging branch"
+        "TreeFellOnHouse" => PropertyAdministratorDisplayLocalization.L("Tree fell on house"),
+        "DrivewayBlocked" => PropertyAdministratorDisplayLocalization.L("Driveway blocked"),
+        "FenceDamage" => PropertyAdministratorDisplayLocalization.L("Fence damage"),
+        "RoofImpact" => PropertyAdministratorDisplayLocalization.L("Roof impact"),
+        "NearPowerLine" => PropertyAdministratorDisplayLocalization.L("Near power line"),
+        _ => PropertyAdministratorDisplayLocalization.L("Large hanging branch")
     };
 
     private static string LabelDamageArea(string value) => value switch
     {
-        "FrontYard" => "Front yard",
-        "Backyard" => "Backyard",
-        "Roof" => "Roof",
-        "Driveway" => "Driveway",
-        "Fence" => "Fence",
-        "Other" => "Other",
+        "FrontYard" => PropertyAdministratorDisplayLocalization.L("Front yard"),
+        "Backyard" => PropertyAdministratorDisplayLocalization.L("Backyard"),
+        "Roof" => PropertyAdministratorDisplayLocalization.L("Roof"),
+        "Driveway" => PropertyAdministratorDisplayLocalization.L("Driveway"),
+        "Fence" => PropertyAdministratorDisplayLocalization.L("Fence"),
+        "Other" => PropertyAdministratorDisplayLocalization.L("Other"),
         _ => value
     };
 
@@ -246,18 +246,18 @@ public class PropertyAdministratorEmergencyTreeBranchService(
 
     private static string LabelEntryAccess(string value) => value switch
     {
-        "SmartLock" => "Smart lock code provided",
-        "HostMeet" => "Host will meet",
-        "GuestApproval" => "Need guest approval",
-        _ => "Exterior only"
+        "SmartLock" => PropertyAdministratorDisplayLocalization.L("Smart lock code provided"),
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "GuestApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
+        _ => PropertyAdministratorDisplayLocalization.L("Exterior only")
     };
 
     private static string LabelInsuranceHelp(string value) => value switch
     {
-        "Yes" => "Yes, help with claim",
+        "Yes" => PropertyAdministratorDisplayLocalization.L("Yes, help with claim"),
         "No" => "No",
-        "UploadLater" => "I'll upload later",
-        _ => "Need documentation for claim"
+        "UploadLater" => PropertyAdministratorDisplayLocalization.L("I'll upload later"),
+        _ => PropertyAdministratorDisplayLocalization.L("Need documentation for claim")
     };
 
     private static string FormatRecipients(IEnumerable<string> recipients)

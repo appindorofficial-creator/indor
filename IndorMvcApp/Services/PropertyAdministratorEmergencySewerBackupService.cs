@@ -222,22 +222,22 @@ public class PropertyAdministratorEmergencySewerBackupService(
 
     private static string LabelIssue(string value) => value switch
     {
-        "ToiletOverflow" => "Toilet overflow",
-        "SewageSmell" => "Sewage smell",
-        "FloorDrainOverflow" => "Floor drain overflow",
-        "MultipleFixtures" => "Multiple fixtures affected",
-        "Other" => "Other",
-        _ => "Drain backing up"
+        "ToiletOverflow" => PropertyAdministratorDisplayLocalization.L("Toilet overflow"),
+        "SewageSmell" => PropertyAdministratorDisplayLocalization.L("Sewage smell"),
+        "FloorDrainOverflow" => PropertyAdministratorDisplayLocalization.L("Floor drain overflow"),
+        "MultipleFixtures" => PropertyAdministratorDisplayLocalization.L("Multiple fixtures affected"),
+        "Other" => PropertyAdministratorDisplayLocalization.L("Other"),
+        _ => PropertyAdministratorDisplayLocalization.L("Drain backing up")
     };
 
     private static string LabelLocation(string value) => value switch
     {
-        "Kitchen" => "Kitchen",
-        "Laundry" => "Laundry",
-        "Basement" => "Basement",
-        "MainLine" => "Main line",
-        "MultipleAreas" => "Multiple areas",
-        _ => "Bathroom"
+        "Kitchen" => PropertyAdministratorDisplayLocalization.L("Kitchen"),
+        "Laundry" => PropertyAdministratorDisplayLocalization.L("Laundry"),
+        "Basement" => PropertyAdministratorDisplayLocalization.L("Basement"),
+        "MainLine" => PropertyAdministratorDisplayLocalization.L("Main line"),
+        "MultipleAreas" => PropertyAdministratorDisplayLocalization.L("Multiple areas"),
+        _ => PropertyAdministratorDisplayLocalization.L("Bathroom")
     };
 
     private static string LabelLocations(IEnumerable<string> locations)
@@ -248,9 +248,9 @@ public class PropertyAdministratorEmergencySewerBackupService(
 
     private static string LabelAccess(string value) => value switch
     {
-        "HostMeet" => "Host will meet",
-        "GuestApproval" => "Need guest approval",
-        _ => "Smart lock code provided"
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "GuestApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
+        _ => PropertyAdministratorDisplayLocalization.L("Smart lock code provided")
     };
 
     private static string FormatRecipients(IEnumerable<string> recipients)

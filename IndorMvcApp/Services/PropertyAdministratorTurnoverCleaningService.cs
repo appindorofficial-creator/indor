@@ -68,7 +68,7 @@ public class PropertyAdministratorTurnoverCleaningService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Turnover Cleaning at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Turnover Cleaning", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,
@@ -193,10 +193,10 @@ public class PropertyAdministratorTurnoverCleaningService(
 
     private static string LabelServiceType(string value) => value switch
     {
-        "LightRefresh" => "Light refresh",
-        "SameDayTurnover" => "Same-day turnover",
-        "CheckoutClean" => "Checkout clean",
-        _ => "Full turnover"
+        "LightRefresh" => PropertyAdministratorDisplayLocalization.L("Light refresh"),
+        "SameDayTurnover" => PropertyAdministratorDisplayLocalization.L("Same-day turnover"),
+        "CheckoutClean" => PropertyAdministratorDisplayLocalization.L("Checkout clean"),
+        _ => PropertyAdministratorDisplayLocalization.L("Full turnover")
     };
 
     private static string LabelGuestArrival(string arrival, string time) => arrival switch
@@ -212,26 +212,26 @@ public class PropertyAdministratorTurnoverCleaningService(
         var hasEssentials = tasks.Contains("KitchenReset") || tasks.Contains("TrashOut");
         return (hasToiletries, hasEssentials) switch
         {
-            (true, true) => "Toiletries + essentials",
-            (true, false) => "Toiletries",
-            (false, true) => "Essentials",
-            _ => "Not included"
+            (true, true) => PropertyAdministratorDisplayLocalization.L("Toiletries + essentials"),
+            (true, false) => PropertyAdministratorDisplayLocalization.L("Toiletries"),
+            (false, true) => PropertyAdministratorDisplayLocalization.L("Essentials"),
+            _ => PropertyAdministratorDisplayLocalization.L("Not included")
         };
     }
 
     private static string LabelAccess(string value) => value switch
     {
-        "HostMeet" => "Host will meet",
-        "NeedApproval" => "Need guest approval",
-        _ => "Smart lock code provided"
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "NeedApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
+        _ => PropertyAdministratorDisplayLocalization.L("Smart lock code provided")
     };
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 

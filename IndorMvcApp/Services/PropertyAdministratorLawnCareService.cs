@@ -110,7 +110,7 @@ public class PropertyAdministratorLawnCareService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Lawn Care at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Lawn Care", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,
@@ -230,10 +230,10 @@ public class PropertyAdministratorLawnCareService(
         {
             input.ServiceType switch
             {
-                "Edging" => "Edging",
-                "WeedTrimming" => "Weed trimming",
-                "FullYardRefresh" => "Full yard refresh",
-                _ => "Grass cutting"
+                "Edging" => PropertyAdministratorDisplayLocalization.L("Edging"),
+                "WeedTrimming" => PropertyAdministratorDisplayLocalization.L("Weed trimming"),
+                "FullYardRefresh" => PropertyAdministratorDisplayLocalization.L("Full yard refresh"),
+                _ => PropertyAdministratorDisplayLocalization.L("Grass cutting")
             }
         };
 
@@ -259,38 +259,38 @@ public class PropertyAdministratorLawnCareService(
 
     private static string LabelArea(string value) => value switch
     {
-        "FrontYard" => "Front yard",
-        "Backyard" => "Backyard",
-        _ => "Front yard + backyard"
+        "FrontYard" => PropertyAdministratorDisplayLocalization.L("Front yard"),
+        "Backyard" => PropertyAdministratorDisplayLocalization.L("Backyard"),
+        _ => PropertyAdministratorDisplayLocalization.L("Front yard + backyard")
     };
 
     private static string LabelYardSize(string value) => value switch
     {
-        "Small" => "Small",
-        "Large" => "Large",
-        _ => "Medium"
+        "Small" => PropertyAdministratorDisplayLocalization.L("Small"),
+        "Large" => PropertyAdministratorDisplayLocalization.L("Large"),
+        _ => PropertyAdministratorDisplayLocalization.L("Medium")
     };
 
     private static string LabelFrequency(string value) => value switch
     {
-        "Weekly" => "Weekly",
-        "BiWeekly" => "Bi-weekly",
-        _ => "One-time"
+        "Weekly" => PropertyAdministratorDisplayLocalization.L("Weekly"),
+        "BiWeekly" => PropertyAdministratorDisplayLocalization.L("Bi-weekly"),
+        _ => PropertyAdministratorDisplayLocalization.L("One-time")
     };
 
     private static string LabelArrivalWindow(string value) => value switch
     {
-        "Afternoon" => "12:00–4:00 PM",
-        "Evening" => "4:00–7:00 PM",
-        _ => "8:00–12:00 PM"
+        "Afternoon" => PropertyAdministratorDisplayLocalization.L("12:00–4:00 PM"),
+        "Evening" => PropertyAdministratorDisplayLocalization.L("4:00–7:00 PM"),
+        _ => PropertyAdministratorDisplayLocalization.L("8:00–12:00 PM")
     };
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 

@@ -21,7 +21,7 @@
         {
             <div class="pa-moving-review-row">
                 <span class="pa-moving-review-label"><i class="fas @row.IconClass"></i> @row.Label</span>
-                <strong class="pa-moving-review-value">@Html.Raw(row.Value.Replace("\n", "<br />"))</strong>
+                <strong class="pa-moving-review-value">@Html.Raw(row.Value.Replace("\n", L["<br />"]))</strong>
             </div>
         }
     </article>

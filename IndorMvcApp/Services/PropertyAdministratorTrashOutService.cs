@@ -118,7 +118,7 @@ public class PropertyAdministratorTrashOutService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Trash Out at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Trash Out", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,
@@ -251,18 +251,18 @@ public class PropertyAdministratorTrashOutService(
 
     private static string LabelServiceNeed(string value) => value switch
     {
-        "TakeBinsOut" => "Take bins out",
-        "BringBinsBackIn" => "Bring bins back in",
-        _ => "Take out + bring back"
+        "TakeBinsOut" => PropertyAdministratorDisplayLocalization.L("Take bins out"),
+        "BringBinsBackIn" => PropertyAdministratorDisplayLocalization.L("Bring bins back in"),
+        _ => PropertyAdministratorDisplayLocalization.L("Take out + bring back")
     };
 
     private static string LabelBins(IReadOnlyList<string> bins)
     {
         var labels = bins.Select(b => b switch
         {
-            "Recycle" => "Recycle",
-            "YardWaste" => "Yard waste",
-            _ => "Trash"
+            "Recycle" => PropertyAdministratorDisplayLocalization.L("Recycle"),
+            "YardWaste" => PropertyAdministratorDisplayLocalization.L("Yard waste"),
+            _ => PropertyAdministratorDisplayLocalization.L("Trash")
         }).Distinct().ToList();
 
         return labels.Count switch
@@ -276,38 +276,38 @@ public class PropertyAdministratorTrashOutService(
 
     private static string LabelBinCount(string value) => value switch
     {
-        "One" => "1 bin",
-        "ThreePlus" => "3+ bins",
-        _ => "2 bins"
+        "One" => PropertyAdministratorDisplayLocalization.L("1 bin"),
+        "ThreePlus" => PropertyAdministratorDisplayLocalization.L("3+ bins"),
+        _ => PropertyAdministratorDisplayLocalization.L("2 bins")
     };
 
     private static string LabelPickupDay(string value) => value switch
     {
-        "Today" => "Today",
-        "Later" => "Later",
-        _ => "Tomorrow"
+        "Today" => PropertyAdministratorDisplayLocalization.L("Today"),
+        "Later" => PropertyAdministratorDisplayLocalization.L("Later"),
+        _ => PropertyAdministratorDisplayLocalization.L("Tomorrow")
     };
 
     private static string LabelTakeOutTiming(string value) => value switch
     {
-        "MorningOfPickup" => "Morning out",
-        "CustomTime" => "Custom time out",
-        _ => "Evening out"
+        "MorningOfPickup" => PropertyAdministratorDisplayLocalization.L("Morning out"),
+        "CustomTime" => PropertyAdministratorDisplayLocalization.L("Custom time out"),
+        _ => PropertyAdministratorDisplayLocalization.L("Evening out")
     };
 
     private static string LabelBringInTiming(string value) => value switch
     {
-        "LateAfternoon" => "Late afternoon back in",
-        "EndOfDay" => "End of day back in",
-        _ => "After collection back in"
+        "LateAfternoon" => PropertyAdministratorDisplayLocalization.L("Late afternoon back in"),
+        "EndOfDay" => PropertyAdministratorDisplayLocalization.L("End of day back in"),
+        _ => PropertyAdministratorDisplayLocalization.L("After collection back in")
     };
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 

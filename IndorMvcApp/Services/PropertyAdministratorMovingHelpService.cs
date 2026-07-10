@@ -95,7 +95,7 @@ public class PropertyAdministratorMovingHelpService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Moving Help at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Moving Help", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,
@@ -236,20 +236,20 @@ public class PropertyAdministratorMovingHelpService(
 
     private static string LabelServiceType(string value) => value switch
     {
-        "FurnitureMoving" => "Furniture moving",
-        "BoxesSupplies" => "Boxes & supplies",
-        "GuestMoveInOut" => "Guest move-in/out",
-        _ => "Turnover setup"
+        "FurnitureMoving" => PropertyAdministratorDisplayLocalization.L("Furniture moving"),
+        "BoxesSupplies" => PropertyAdministratorDisplayLocalization.L("Boxes & supplies"),
+        "GuestMoveInOut" => PropertyAdministratorDisplayLocalization.L("Guest move-in/out"),
+        _ => PropertyAdministratorDisplayLocalization.L("Turnover setup")
     };
 
     private static string LabelItems(IReadOnlyList<string> items)
     {
         var labels = items.Select(i => i switch
         {
-            "Boxes" => "boxes",
-            "BeddingLinens" => "bedding / linens",
-            "DecorSupplies" => "decor / supplies",
-            _ => "small furniture"
+            "Boxes" => PropertyAdministratorDisplayLocalization.L("boxes"),
+            "BeddingLinens" => PropertyAdministratorDisplayLocalization.L("bedding / linens"),
+            "DecorSupplies" => PropertyAdministratorDisplayLocalization.L("decor / supplies"),
+            _ => PropertyAdministratorDisplayLocalization.L("small furniture")
         }).Distinct().ToList();
 
         return labels.Count switch
@@ -263,31 +263,31 @@ public class PropertyAdministratorMovingHelpService(
 
     private static string LabelHelpers(string value) => value switch
     {
-        "One" => "1 helper",
-        "ThreePlus" => "3+ helpers",
-        _ => "2 helpers"
+        "One" => PropertyAdministratorDisplayLocalization.L("1 helper"),
+        "ThreePlus" => PropertyAdministratorDisplayLocalization.L("3+ helpers"),
+        _ => PropertyAdministratorDisplayLocalization.L("2 helpers")
     };
 
     private static string LabelScheduleWhen(string value) => value switch
     {
-        "Today" => "Today",
-        "Later" => "Later",
-        _ => "Tomorrow"
+        "Today" => PropertyAdministratorDisplayLocalization.L("Today"),
+        "Later" => PropertyAdministratorDisplayLocalization.L("Later"),
+        _ => PropertyAdministratorDisplayLocalization.L("Tomorrow")
     };
 
     private static string LabelAccess(string value) => value switch
     {
-        "HostMeet" => "Host will meet",
-        "GuestOnSite" => "Guest on-site",
-        _ => "Smart lock provided"
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "GuestOnSite" => PropertyAdministratorDisplayLocalization.L("Guest on-site"),
+        _ => PropertyAdministratorDisplayLocalization.L("Smart lock provided")
     };
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 

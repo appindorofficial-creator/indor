@@ -29,12 +29,12 @@
             <div class="pa-chip-grid">
                 @foreach (var item in new (string Value, string Label, string Icon)[]
                 {
-                    ("DrainBackingUp", "Drain backing up", "fa-arrow-up-from-ground-water"),
-                    ("ToiletOverflow", "Toilet overflow", "fa-toilet"),
-                    ("SewageSmell", "Sewage smell", "fa-wind"),
-                    ("FloorDrainOverflow", "Floor drain overflow", "fa-grip-lines"),
-                    ("MultipleFixtures", "Multiple fixtures affected", "fa-sink"),
-                    ("Other", "Other", "fa-ellipsis")
+                    ("DrainBackingUp", L["Drain backing up"], "fa-arrow-up-from-ground-water"),
+                    ("ToiletOverflow", L["Toilet overflow"], "fa-toilet"),
+                    ("SewageSmell", L["Sewage smell"], "fa-wind"),
+                    ("FloorDrainOverflow", L["Floor drain overflow"], "fa-grip-lines"),
+                    ("MultipleFixtures", L["Multiple fixtures affected"], "fa-sink"),
+                    ("Other", L["Other"], "fa-ellipsis")
                 })
                 {
                     <label class="pa-chip @(Model.IssueType == item.Value ? "is-selected" : null)">
@@ -95,12 +95,12 @@
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var loc in new (string Value, string Label, string Icon)[]
                 {
-                    ("Bathroom", "Bathroom", "fa-sink"),
-                    ("Kitchen", "Kitchen", "fa-kitchen-set"),
-                    ("Laundry", "Laundry", "fa-shirt"),
-                    ("Basement", "Basement", "fa-stairs"),
-                    ("MainLine", "Main line", "fa-grip-lines"),
-                    ("MultipleAreas", "Multiple areas", "fa-layer-group")
+                    ("Bathroom", L["Bathroom"], "fa-sink"),
+                    ("Kitchen", L["Kitchen"], "fa-kitchen-set"),
+                    ("Laundry", L["Laundry"], "fa-shirt"),
+                    ("Basement", L["Basement"], "fa-stairs"),
+                    ("MainLine", L["Main line"], "fa-grip-lines"),
+                    ("MultipleAreas", L["Multiple areas"], "fa-layer-group")
                 })
                 {
                     <label class="pa-chip @(locations.Contains(loc.Value) ? "is-selected" : null)">

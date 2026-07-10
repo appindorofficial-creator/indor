@@ -22,7 +22,7 @@
         <div class="pa-viewing-strip">
             <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
             <div class="pa-viewing-strip-main">
-                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
                 {
                     <span class="pa-checkout-badge"><i class="fas fa-clock"></i> @Model.PropertyStatusLabel</span>
@@ -43,9 +43,9 @@
             <div class="pa-trash-service-row">
                 @foreach (var s in new (string Value, string Label, string Icon)[]
                 {
-                    ("TakeBinsOut", "Take bins out", "fa-arrow-up"),
-                    ("TakeOutBringBack", "Take out + bring back", "fa-arrows-up-down"),
-                    ("BringBinsBackIn", "Bring bins back in", "fa-arrow-down")
+                    ("TakeBinsOut", L["Take bins out"], "fa-arrow-up"),
+                    ("TakeOutBringBack", L["Take out + bring back"], "fa-arrows-up-down"),
+                    ("BringBinsBackIn", L["Bring bins back in"], "fa-arrow-down")
                 })
                 {
                     <label class="pa-trash-service-card @(Model.ServiceNeed == s.Value ? "is-selected" : null)">
@@ -62,7 +62,7 @@
             <span class="pa-flow-qnum">2</span>
             <label><i class="fas fa-recycle pa-q-icon pa-q-icon--purple"></i> @L["Which bins?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-trash-bins-row">
-                @foreach (var b in new (string Value, string Label, string Icon)[] { ("Trash", "Trash", "fa-trash-can"), ("Recycle", "Recycle", "fa-recycle"), ("YardWaste", "Yard waste", "fa-leaf") })
+                @foreach (var b in new (string Value, string Label, string Icon)[] { ("Trash", L["Trash"], "fa-trash-can"), ("Recycle", L["Recycle"], "fa-recycle"), ("YardWaste", L["Yard waste"], "fa-leaf") })
                 {
                     <label class="pa-trash-bin-card @(bins.Contains(b.Value) ? "is-selected" : null)">
                         <input type="checkbox" name="BinsList" value="@b.Value" @(bins.Contains(b.Value) ? "checked" : null) />
@@ -78,7 +78,7 @@
             <span class="pa-flow-qnum">3</span>
             <label>@L["How many bins?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var c in new (string Value, string Label)[] { ("One", "1"), ("Two", "2"), ("ThreePlus", "3+") })
+                @foreach (var c in new (string Value, string Label)[] { ("One", L["1"]), ("Two", L["2"]), ("ThreePlus", L["3+"]) })
                 {
                     <label class="pa-chip @(Model.BinCount == c.Value ? "is-selected" : null)">
                         <input type="radio" name="BinCount" value="@c.Value" @(Model.BinCount == c.Value ? "checked" : null) />
@@ -92,7 +92,7 @@
             <span class="pa-flow-qnum">4</span>
             <label><i class="fas fa-location-dot pa-q-icon pa-q-icon--purple"></i> @L["Where are the bins now?"]</label>
             <div class="pa-trash-location-grid">
-                @foreach (var l in new (string Value, string Label, string Icon)[] { ("Garage", "Garage", "fa-warehouse"), ("SideYard", "Side yard", "fa-fence"), ("Backyard", "Backyard", "fa-tree"), ("FrontCurb", "Front curb", "fa-road") })
+                @foreach (var l in new (string Value, string Label, string Icon)[] { ("Garage", L["Garage"], "fa-warehouse"), ("SideYard", L["Side yard"], "fa-fence"), ("Backyard", L["Backyard"], "fa-tree"), ("FrontCurb", L["Front curb"], "fa-road") })
                 {
                     <label class="pa-trash-location-card @(Model.BinLocation == l.Value ? "is-selected" : null)">
                         <input type="radio" name="BinLocation" value="@l.Value" @(Model.BinLocation == l.Value ? "checked" : null) />

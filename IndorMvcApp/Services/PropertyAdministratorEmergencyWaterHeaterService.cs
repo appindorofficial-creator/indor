@@ -233,27 +233,27 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
 
     private static string LabelProblem(string value) => value switch
     {
-        "LeakingTank" => "Leaking tank",
-        "PilotLight" => "Pilot light / ignition",
-        "StrangeNoise" => "Strange noise",
-        "LowHotWater" => "Low hot water",
-        "Other" => "Other",
-        _ => "No hot water"
+        "LeakingTank" => PropertyAdministratorDisplayLocalization.L("Leaking tank"),
+        "PilotLight" => PropertyAdministratorDisplayLocalization.L("Pilot light / ignition"),
+        "StrangeNoise" => PropertyAdministratorDisplayLocalization.L("Strange noise"),
+        "LowHotWater" => PropertyAdministratorDisplayLocalization.L("Low hot water"),
+        "Other" => PropertyAdministratorDisplayLocalization.L("Other"),
+        _ => PropertyAdministratorDisplayLocalization.L("No hot water")
     };
 
     private static string LabelHeaterType(string value) => value switch
     {
-        "Electric" => "Electric",
-        "Tankless" => "Tankless",
-        "NotSure" => "Not sure",
-        _ => "Gas"
+        "Electric" => PropertyAdministratorDisplayLocalization.L("Electric"),
+        "Tankless" => PropertyAdministratorDisplayLocalization.L("Tankless"),
+        "NotSure" => PropertyAdministratorDisplayLocalization.L("Not sure"),
+        _ => PropertyAdministratorDisplayLocalization.L("Gas")
     };
 
     private static string LabelAccess(string value, string? notes) => value switch
     {
-        "SmartLock" => "Smart lock code provided",
-        "HostMeet" => "Host will meet",
-        "GuestApproval" => "Need guest approval",
+        "SmartLock" => PropertyAdministratorDisplayLocalization.L("Smart lock code provided"),
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "GuestApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
         _ => string.IsNullOrWhiteSpace(notes) ? "Garage side entry available" : notes
     };
 

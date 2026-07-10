@@ -185,20 +185,20 @@ public class PropertyAdministratorBrokenWindowBoardUpService(
 
     private static string LabelHelpType(string value) => value switch
     {
-        "ShatteredGlass" => "Shattered glass",
-        "DoorGlass" => "Door glass",
-        "BoardUpOnly" => "Board-up only",
-        "ActiveBreakInDamage" => "Active break-in damage",
-        _ => "Broken window"
+        "ShatteredGlass" => PropertyAdministratorDisplayLocalization.L("Shattered glass"),
+        "DoorGlass" => PropertyAdministratorDisplayLocalization.L("Door glass"),
+        "BoardUpOnly" => PropertyAdministratorDisplayLocalization.L("Board-up only"),
+        "ActiveBreakInDamage" => PropertyAdministratorDisplayLocalization.L("Active break-in damage"),
+        _ => PropertyAdministratorDisplayLocalization.L("Broken window")
     };
 
     private static string LabelDamageLocation(string value) => value switch
     {
-        "BackWindow" => "Back window",
-        "SlidingDoor" => "Sliding door",
-        "BedroomWindow" => "Bedroom window",
-        "StorefrontOther" => "Storefront / other",
-        _ => "Front window"
+        "BackWindow" => PropertyAdministratorDisplayLocalization.L("Back window"),
+        "SlidingDoor" => PropertyAdministratorDisplayLocalization.L("Sliding door"),
+        "BedroomWindow" => PropertyAdministratorDisplayLocalization.L("Bedroom window"),
+        "StorefrontOther" => PropertyAdministratorDisplayLocalization.L("Storefront / other"),
+        _ => PropertyAdministratorDisplayLocalization.L("Front window")
     };
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(

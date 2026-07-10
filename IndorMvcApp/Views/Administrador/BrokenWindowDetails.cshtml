@@ -28,11 +28,11 @@
             <div class="pa-chip-grid">
                 @foreach (var item in new (string Value, string Label, string Icon)[]
                 {
-                    ("BrokenWindow", "Broken window", "fa-window-maximize"),
-                    ("ShatteredGlass", "Shattered glass", "fa-glass-water"),
-                    ("DoorGlass", "Door glass", "fa-door-open"),
-                    ("BoardUpOnly", "Board-up only", "fa-hammer"),
-                    ("ActiveBreakInDamage", "Active break-in damage", "fa-house-crack")
+                    ("BrokenWindow", L["Broken window"], "fa-window-maximize"),
+                    ("ShatteredGlass", L["Shattered glass"], "fa-glass-water"),
+                    ("DoorGlass", L["Door glass"], "fa-door-open"),
+                    ("BoardUpOnly", L["Board-up only"], "fa-hammer"),
+                    ("ActiveBreakInDamage", L["Active break-in damage"], "fa-house-crack")
                 })
                 {
                     <label class="pa-chip @(Model.HelpType == item.Value ? "is-selected" : null)">
@@ -65,11 +65,11 @@
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var loc in new (string Value, string Label, string Icon)[]
                 {
-                    ("FrontWindow", "Front window", "fa-window-maximize"),
-                    ("BackWindow", "Back window", "fa-window-restore"),
-                    ("SlidingDoor", "Sliding door", "fa-door-open"),
-                    ("BedroomWindow", "Bedroom window", "fa-bed"),
-                    ("StorefrontOther", "Storefront / other", "fa-store")
+                    ("FrontWindow", L["Front window"], "fa-window-maximize"),
+                    ("BackWindow", L["Back window"], "fa-window-restore"),
+                    ("SlidingDoor", L["Sliding door"], "fa-door-open"),
+                    ("BedroomWindow", L["Bedroom window"], "fa-bed"),
+                    ("StorefrontOther", L["Storefront / other"], "fa-store")
                 })
                 {
                     <label class="pa-chip @(Model.DamageLocation == loc.Value ? "is-selected" : null)">

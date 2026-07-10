@@ -29,11 +29,11 @@
             <div class="pa-chip-grid">
                 @foreach (var item in new (string Value, string Label, string Icon)[]
                 {
-                    ("GuestLockedOut", "Guest locked out", "fa-key"),
-                    ("SmartLockNotWorking", "Smart lock not working", "fa-mobile-screen"),
-                    ("LostKey", "Lost key", "fa-key"),
-                    ("CodeIssue", "Code issue", "fa-hashtag"),
-                    ("DoorWontOpen", "Door won't open", "fa-door-closed")
+                    ("GuestLockedOut", L["Guest locked out"], "fa-key"),
+                    ("SmartLockNotWorking", L["Smart lock not working"], "fa-mobile-screen"),
+                    ("LostKey", L["Lost key"], "fa-key"),
+                    ("CodeIssue", L["Code issue"], "fa-hashtag"),
+                    ("DoorWontOpen", L["Door won't open"], "fa-door-closed")
                 })
                 {
                     <label class="pa-chip @(Model.IssueType == item.Value ? "is-selected" : null)">
@@ -91,10 +91,10 @@
             <div class="pa-chip-grid pa-chip-grid--4">
                 @foreach (var who in new (string Value, string Label, string Icon)[]
                 {
-                    ("Guest", "Guest", "fa-user"),
-                    ("Me", "Me", "fa-house-user"),
-                    ("Cleaner", "Cleaner", "fa-broom"),
-                    ("CoHost", "Co-host", "fa-users")
+                    ("Guest", L["Guest"], "fa-user"),
+                    ("Me", L["Me"], "fa-house-user"),
+                    ("Cleaner", L["Cleaner"], "fa-broom"),
+                    ("CoHost", L["Co-host"], "fa-users")
                 })
                 {
                     <label class="pa-chip @(Model.WhoNeedsAccess == who.Value ? "is-selected" : null)">

@@ -22,7 +22,7 @@
         <div class="pa-viewing-strip">
             <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
             <div class="pa-viewing-strip-main">
-                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
                 {
                     <span class="pa-checkout-badge">@Model.PropertyStatusLabel</span>
@@ -43,9 +43,9 @@
             <div class="pa-chip-grid pa-chip-grid--scroll">
                 @foreach (var s in new (string Value, string Label)[]
                 {
-                    ("AfterPetStayCleanup", "After pet stay cleanup"),
-                    ("RoutinePetRefresh", "Routine pet refresh"),
-                    ("OdorTreatmentAddon", "Odor treatment add-on")
+                    ("AfterPetStayCleanup", L["After pet stay cleanup"]),
+                    ("RoutinePetRefresh", L["Routine pet refresh"]),
+                    ("OdorTreatmentAddon", L["Odor treatment add-on"])
                 })
                 {
                     <label class="pa-chip @(Model.ServiceType == s.Value ? "is-selected" : null)">
@@ -60,7 +60,7 @@
             <span class="pa-flow-qnum">2</span>
             <label><i class="fas fa-paw pa-q-icon pa-q-icon--purple"></i> @L["How many pets were in the home?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--4">
-                @foreach (var c in new (string Value, string Label)[] { ("1", "1"), ("2", "2"), ("3", "3"), ("FourPlus", "4+") })
+                @foreach (var c in new (string Value, string Label)[] { ("1", L["1"]), ("2", L["2"]), ("3", L["3"]), ("FourPlus", L["4+"]) })
                 {
                     <label class="pa-toggle-btn @(Model.PetCount == c.Value ? "is-selected" : null)">
                         <input type="radio" name="PetCount" value="@c.Value" @(Model.PetCount == c.Value ? "checked" : null) />
@@ -74,7 +74,7 @@
             <span class="pa-flow-qnum">3</span>
             <label><i class="fas fa-dog pa-q-icon pa-q-icon--purple"></i> @L["What kind of pets?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var p in new (string Value, string Label, string Icon)[] { ("Dog", "Dog", "fa-dog"), ("Cat", "Cat", "fa-cat"), ("Other", "Other", "fa-paw") })
+                @foreach (var p in new (string Value, string Label, string Icon)[] { ("Dog", L["Dog"], "fa-dog"), ("Cat", L["Cat"], "fa-cat"), ("Other", L["Other"], "fa-paw") })
                 {
                     <label class="pa-toggle-btn @(Model.PetType == p.Value ? "is-selected" : null)">
                         <input type="radio" name="PetType" value="@p.Value" @(Model.PetType == p.Value ? "checked" : null) />
@@ -90,12 +90,12 @@
             <div class="pa-pet-focus-grid">
                 @foreach (var f in new (string Value, string Label, string Icon)[]
                 {
-                    ("PetHair", "Pet hair", "fa-paw"),
-                    ("OdorRemoval", "Odor removal", "fa-wind"),
-                    ("AccidentsStains", "Accidents / stains", "fa-droplet"),
-                    ("BedsUpholstery", "Beds & upholstery", "fa-couch"),
-                    ("Floors", "Floors", "fa-border-all"),
-                    ("CratePetArea", "Crate / pet area", "fa-house-chimney")
+                    ("PetHair", L["Pet hair"], "fa-paw"),
+                    ("OdorRemoval", L["Odor removal"], "fa-wind"),
+                    ("AccidentsStains", L["Accidents / stains"], "fa-droplet"),
+                    ("BedsUpholstery", L["Beds & upholstery"], "fa-couch"),
+                    ("Floors", L["Floors"], "fa-border-all"),
+                    ("CratePetArea", L["Crate / pet area"], "fa-house-chimney")
                 })
                 {
                     <label class="pa-pet-focus-card @(focusAreas.Contains(f.Value) ? "is-selected" : null)">
@@ -129,7 +129,7 @@
             <span class="pa-flow-qnum">6</span>
             <label><i class="fas fa-lock pa-q-icon pa-q-icon--purple"></i> @L["Can the team enter?"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
-                @foreach (var e in new (string Value, string Label)[] { ("SmartLock", "Smart lock"), ("HostMeet", "Host will meet"), ("GuestStillInside", "Guest still inside") })
+                @foreach (var e in new (string Value, string Label)[] { ("SmartLock", L["Smart lock"]), ("HostMeet", L["Host will meet"]), ("GuestStillInside", L["Guest still inside"]) })
                 {
                     <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Value ? "is-selected" : null)">
                         <input type="radio" name="EntryAccess" value="@e.Value" @(Model.EntryAccess == e.Value ? "checked" : null) />

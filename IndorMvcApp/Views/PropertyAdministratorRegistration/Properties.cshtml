@@ -23,8 +23,7 @@
                 <i class="fas fa-arrow-left"></i>
             </a>
             <div class="pa-portfolio-page-header-text">
-                <h1>@Model.Title</h1>
-                <p>@Model.Subtitle</p>
+                @await Html.PartialAsync("_PropertyAdminRegHead", Model)
             </div>
         </header>
         <div class="pa-portfolio-add-content">

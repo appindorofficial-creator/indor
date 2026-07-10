@@ -43,7 +43,7 @@
             <span class="pa-flow-qnum">1</span>
             <label>@L["Where is the equipment?"]</label>
             <div class="pa-chip-grid pa-chip-grid--2">
-                @foreach (var l in new[] { ("PoolPad", "Pool pad"), ("BackyardSpa", "Backyard spa"), ("EquipmentRoom", "Equipment room"), ("Other", "Other") })
+                @foreach (var l in new[] { ("PoolPad", L["Pool pad"]), ("BackyardSpa", L["Backyard spa"]), ("EquipmentRoom", L["Equipment room"]), ("Other", L["Other"]) })
                 {
                     <label class="pa-chip @(Model.EquipmentLocation == l.Item1 ? "is-selected" : null)">
                         <input type="radio" name="EquipmentLocation" value="@l.Item1" @(Model.EquipmentLocation == l.Item1 ? "checked" : null) />
@@ -57,7 +57,7 @@
             <span class="pa-flow-qnum">2</span>
             <label><i class="fas fa-door-open pa-q-icon pa-q-icon--green"></i> @L["Can the pro enter now?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var e in new[] { ("GateCode", "Yes, gate code"), ("HostOnSite", "Host will meet"), ("GuestApproval", "Need guest approval") })
+                @foreach (var e in new[] { ("GateCode", L["Yes, gate code"]), ("HostOnSite", L["Host will meet"]), ("GuestApproval", L["Need guest approval"]) })
                 {
                     <label class="pa-chip @(Model.EntryAccess == e.Item1 ? "is-selected" : null)">
                         <input type="radio" name="EntryAccess" value="@e.Item1" @(Model.EntryAccess == e.Item1 ? "checked" : null) />
@@ -80,7 +80,7 @@
             <span class="pa-flow-qnum">4</span>
             <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> @L["Who should receive updates?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
                 {
                     <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
                         <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />

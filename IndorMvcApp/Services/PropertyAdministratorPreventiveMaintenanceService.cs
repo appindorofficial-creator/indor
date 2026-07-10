@@ -350,23 +350,23 @@ public class PropertyAdministratorPreventiveMaintenanceService(
 
     private static string LabelTiming(string value) => value switch
     {
-        "Morning" => "Weekdays, 9 AM – 12 PM",
-        "Afternoon" => "Weekdays, 12 PM – 5 PM",
-        _ => "Weekdays, 9 AM – 5 PM"
+        "Morning" => PropertyAdministratorDisplayLocalization.L("Weekdays, 9 AM – 12 PM"),
+        "Afternoon" => PropertyAdministratorDisplayLocalization.L("Weekdays, 12 PM – 5 PM"),
+        _ => PropertyAdministratorDisplayLocalization.L("Weekdays, 9 AM – 5 PM")
     };
 
     private static string LabelAccess(string value) => value switch
     {
-        "SmartLock" => "Lockbox",
-        "GuestCoordination" => "Coordinate with guest",
-        _ => "Host present"
+        "SmartLock" => PropertyAdministratorDisplayLocalization.L("Lockbox"),
+        "GuestCoordination" => PropertyAdministratorDisplayLocalization.L("Coordinate with guest"),
+        _ => PropertyAdministratorDisplayLocalization.L("Host present")
     };
 
     private static string LabelUpdates(string value) => value switch
     {
-        "Guest" => "Guest",
-        "CoHost" => "Co-host",
-        "MeGuest" => "Me + Guest",
+        "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+        "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
+        "MeGuest" => PropertyAdministratorDisplayLocalization.L("Me + Guest"),
         _ => "Me"
     };
 

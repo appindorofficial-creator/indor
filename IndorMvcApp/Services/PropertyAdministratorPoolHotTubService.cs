@@ -125,7 +125,7 @@ public class PropertyAdministratorPoolHotTubService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Pool & Hot Tub at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Pool & Hot Tub", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = input.Urgency is "Urgent" or "Emergency"
@@ -264,42 +264,42 @@ public class PropertyAdministratorPoolHotTubService(
 
     private static string LabelServiceHelpType(string value) => value switch
     {
-        "PoolRepair" => "Pool repair",
-        "RoutinePoolService" => "Routine pool service",
-        "SpaHotTubService" => "Spa / hot tub service",
-        _ => "Hot tub repair"
+        "PoolRepair" => PropertyAdministratorDisplayLocalization.L("Pool repair"),
+        "RoutinePoolService" => PropertyAdministratorDisplayLocalization.L("Routine pool service"),
+        "SpaHotTubService" => PropertyAdministratorDisplayLocalization.L("Spa / hot tub service"),
+        _ => PropertyAdministratorDisplayLocalization.L("Hot tub repair")
     };
 
     private static string LabelMainIssue(string value) => value switch
     {
-        "PumpNotWorking" => "Pump not working",
-        "WaterLeak" => "Water leak",
-        "CloudyDirtyWater" => "Cloudy / dirty water",
-        "JetsNotWorking" => "Jets not working",
-        "FilterProblem" => "Filter problem",
-        _ => "Heater issue"
+        "PumpNotWorking" => PropertyAdministratorDisplayLocalization.L("Pump not working"),
+        "WaterLeak" => PropertyAdministratorDisplayLocalization.L("Water leak"),
+        "CloudyDirtyWater" => PropertyAdministratorDisplayLocalization.L("Cloudy / dirty water"),
+        "JetsNotWorking" => PropertyAdministratorDisplayLocalization.L("Jets not working"),
+        "FilterProblem" => PropertyAdministratorDisplayLocalization.L("Filter problem"),
+        _ => PropertyAdministratorDisplayLocalization.L("Heater issue")
     };
 
     private static string LabelUrgency(string value) => value switch
     {
-        "Emergency" => "Emergency",
-        "Routine" => "Routine",
-        _ => "Urgent"
+        "Emergency" => PropertyAdministratorDisplayLocalization.L("Emergency"),
+        "Routine" => PropertyAdministratorDisplayLocalization.L("Routine"),
+        _ => PropertyAdministratorDisplayLocalization.L("Urgent")
     };
 
     private static string LabelEquipmentLocation(string value) => value switch
     {
-        "PoolPad" => "Pool pad",
-        "EquipmentRoom" => "Equipment room",
-        "Other" => "Other",
-        _ => "Backyard spa"
+        "PoolPad" => PropertyAdministratorDisplayLocalization.L("Pool pad"),
+        "EquipmentRoom" => PropertyAdministratorDisplayLocalization.L("Equipment room"),
+        "Other" => PropertyAdministratorDisplayLocalization.L("Other"),
+        _ => PropertyAdministratorDisplayLocalization.L("Backyard spa")
     };
 
     private static string LabelEntryAccess(PropertyAdministratorPoolHotTubSubmitInput input) =>
         input.EntryAccess switch
         {
-            "HostOnSite" => "Host will meet",
-            "GuestApproval" => "Need guest approval",
+            "HostOnSite" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+            "GuestApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
             _ => string.IsNullOrWhiteSpace(input.AccessCode) ? "Gate code provided" : input.AccessCode
         };
 
@@ -307,8 +307,8 @@ public class PropertyAdministratorPoolHotTubService(
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 

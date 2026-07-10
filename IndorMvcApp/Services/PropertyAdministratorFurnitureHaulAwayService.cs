@@ -113,7 +113,7 @@ public class PropertyAdministratorFurnitureHaulAwayService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Furniture Haul Away at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Furniture Haul Away", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.InProgress,
@@ -239,23 +239,23 @@ public class PropertyAdministratorFurnitureHaulAwayService(
     {
         var labels = input.FurnitureItemsList.Select(i => i switch
         {
-            "Mattress" => "mattress",
-            "BedFrame" => "bed frame",
-            "Dresser" => "dresser",
-            "DiningTable" => "dining table",
-            "Refrigerator" => "refrigerator",
-            "WasherDryer" => "washer / dryer",
-            "TvElectronics" => "TV / electronics",
-            "Other" => "other items",
-            _ => "couch"
+            "Mattress" => PropertyAdministratorDisplayLocalization.L("mattress"),
+            "BedFrame" => PropertyAdministratorDisplayLocalization.L("bed frame"),
+            "Dresser" => PropertyAdministratorDisplayLocalization.L("dresser"),
+            "DiningTable" => PropertyAdministratorDisplayLocalization.L("dining table"),
+            "Refrigerator" => PropertyAdministratorDisplayLocalization.L("refrigerator"),
+            "WasherDryer" => PropertyAdministratorDisplayLocalization.L("washer / dryer"),
+            "TvElectronics" => PropertyAdministratorDisplayLocalization.L("TV / electronics"),
+            "Other" => PropertyAdministratorDisplayLocalization.L("other items"),
+            _ => PropertyAdministratorDisplayLocalization.L("couch")
         }).Distinct().ToList();
 
         var countSuffix = input.ItemCount switch
         {
             "One" => "",
-            "FourSix" => " (4–6 items)",
-            "SevenPlus" => " (7+ items)",
-            _ => " + 2 chairs"
+            "FourSix" => PropertyAdministratorDisplayLocalization.L(" (4–6 items)"),
+            "SevenPlus" => PropertyAdministratorDisplayLocalization.L(" (7+ items)"),
+            _ => PropertyAdministratorDisplayLocalization.L(" + 2 chairs")
         };
 
         if (labels.Count == 0)
@@ -275,18 +275,18 @@ public class PropertyAdministratorFurnitureHaulAwayService(
 
     private static string LabelPickupSize(string value) => value switch
     {
-        "SmallPickup" => "Small pickup",
-        "FullLoad" => "Full load",
-        _ => "Half load"
+        "SmallPickup" => PropertyAdministratorDisplayLocalization.L("Small pickup"),
+        "FullLoad" => PropertyAdministratorDisplayLocalization.L("Full load"),
+        _ => PropertyAdministratorDisplayLocalization.L("Half load")
     };
 
     private static string LabelAccess(PropertyAdministratorFurnitureHaulAwaySubmitInput input)
     {
         var entry = input.EntryAccess switch
         {
-            "HostMeet" => "Host will meet",
-            "CurbsideOnly" => "Curbside pickup only",
-            _ => "Smart lock"
+            "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+            "CurbsideOnly" => PropertyAdministratorDisplayLocalization.L("Curbside pickup only"),
+            _ => PropertyAdministratorDisplayLocalization.L("Smart lock")
         };
 
         return $"{entry} / inside pickup";
@@ -296,8 +296,8 @@ public class PropertyAdministratorFurnitureHaulAwayService(
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 
@@ -312,16 +312,16 @@ public class PropertyAdministratorFurnitureHaulAwayService(
 
     private static string LabelPickupWhen(string value) => value switch
     {
-        "Asap" => "ASAP",
-        "ScheduledTime" => "Scheduled time",
-        _ => "Today after checkout"
+        "Asap" => PropertyAdministratorDisplayLocalization.L("ASAP"),
+        "ScheduledTime" => PropertyAdministratorDisplayLocalization.L("Scheduled time"),
+        _ => PropertyAdministratorDisplayLocalization.L("Today after checkout")
     };
 
     private static string LabelTimeWindow(string value) => value switch
     {
-        "Morning" => "8 AM – 12 PM",
-        "Evening" => "5 PM – 9 PM",
-        _ => "12 PM – 5 PM"
+        "Morning" => PropertyAdministratorDisplayLocalization.L("8 AM – 12 PM"),
+        "Evening" => PropertyAdministratorDisplayLocalization.L("5 PM – 9 PM"),
+        _ => PropertyAdministratorDisplayLocalization.L("12 PM – 5 PM")
     };
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(

@@ -14,7 +14,7 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>@L["Standard Cleaning"] <span class="pa-flow-step-pill pa-flow-step-pill--inline pa-flow-step-pill--purple">Step @Model.FlowStep of @Model.TotalSteps</span></h1>
+        <h1>@L["Standard Cleaning"] <span class="pa-flow-step-pill pa-flow-step-pill--inline pa-flow-step-pill--purple">@L.T("Step {0} of {1}", Model.FlowStep, Model.TotalSteps)</span></h1>
         <p>@L["Tell us what needs to be cleaned so we can schedule the visit."]</p>
     </section>
 
@@ -30,10 +30,10 @@
             <div class="pa-chip-grid pa-chip-grid--scroll">
                 @foreach (var s in new (string Value, string Label)[]
                 {
-                    ("RoutineCleaning", "Routine cleaning"),
-                    ("DeepTouchUp", "Deep touch-up"),
-                    ("BeforeGuestArrival", "Before guest arrival"),
-                    ("AfterGuestCheckout", "After guest checkout")
+                    ("RoutineCleaning", L["Routine cleaning"]),
+                    ("DeepTouchUp", L["Deep touch-up"]),
+                    ("BeforeGuestArrival", L["Before guest arrival"]),
+                    ("AfterGuestCheckout", L["After guest checkout"])
                 })
                 {
                     <label class="pa-chip @(Model.ServiceType == s.Value ? "is-selected" : null)">
@@ -67,14 +67,14 @@
             <div class="pa-chip-grid pa-chip-grid--wrap">
                 @foreach (var t in new (string Value, string Label)[]
                 {
-                    ("Bathrooms", "Bathrooms"),
-                    ("Kitchen", "Kitchen"),
-                    ("Bedrooms", "Bedrooms"),
-                    ("Floors", "Floors"),
-                    ("TrashRemoval", "Trash removal"),
-                    ("Dusting", "Dusting"),
-                    ("Laundry", "Laundry"),
-                    ("RestockSupplies", "Restock supplies")
+                    ("Bathrooms", L["Bathrooms"]),
+                    ("Kitchen", L["Kitchen"]),
+                    ("Bedrooms", L["Bedrooms"]),
+                    ("Floors", L["Floors"]),
+                    ("TrashRemoval", L["Trash removal"]),
+                    ("Dusting", L["Dusting"]),
+                    ("Laundry", L["Laundry"]),
+                    ("RestockSupplies", L["Restock supplies"])
                 })
                 {
                     <label class="pa-chip @(tasks.Contains(t.Value) ? "is-selected" : null)">
@@ -102,7 +102,7 @@
             <span class="pa-flow-qnum">5</span>
             <label><i class="fas fa-lock pa-q-icon pa-q-icon--purple"></i> @L["Can the team enter now?"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
-                @foreach (var e in new (string Value, string Label)[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet"), ("NeedApproval", "Need guest approval") })
+                @foreach (var e in new (string Value, string Label)[] { ("SmartLock", L["Yes, with smart lock"]), ("HostMeet", L["Host will meet"]), ("NeedApproval", L["Need guest approval"]) })
                 {
                     <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Value ? "is-selected" : null)">
                         <input type="radio" name="EntryAccess" value="@e.Value" @(Model.EntryAccess == e.Value ? "checked" : null) />
@@ -116,7 +116,7 @@
             <span class="pa-flow-qnum">6</span>
             <label><i class="fas fa-users pa-q-icon pa-q-icon--purple"></i> @L["Who should receive updates?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var r in new[] { ("Me", "Me"), ("CoHost", "Co-host"), ("Guest", "Guest") })
+                @foreach (var r in new[] { ("Me", L["Me"]), ("CoHost", L["Co-host"]), ("Guest", L["Guest"]) })
                 {
                     <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
                         <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />

@@ -2,10 +2,7 @@
 @{
     var s = Model.State;
 }
-<div class="ob-head-block">
-    <h1>@Model.Title</h1>
-    <p>@Model.Subtitle</p>
-</div>
+@await Html.PartialAsync("_PropertyAdminRegHead", Model)
 
 <div class="pa-review-card">
     <div class="pa-review-illus" aria-hidden="true">
@@ -69,10 +66,10 @@
 <a asp-action="InviteTeam" class="pa-action-row pa-action-row--review-invite" aria-label="@L["Invite team members"]">
     <span>
         <i class="fas fa-user-plus"></i>
-        Invite team members
+        @L["Invite team members"]
         @if (Model.PendingTeamInviteCount > 0)
         {
-            <small class="pa-action-row-meta">(@Model.PendingTeamInviteCount added)</small>
+            <small class="pa-action-row-meta">(@L.T("{0} added", Model.PendingTeamInviteCount))</small>
         }
     </span>
     <i class="fas fa-chevron-right" aria-hidden="true"></i>

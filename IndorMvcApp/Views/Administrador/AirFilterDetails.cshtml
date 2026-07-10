@@ -13,7 +13,7 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>@L["Air Filter Change"] <span class="pa-flow-step-pill pa-flow-step-pill--inline">Step @Model.FlowStep of @Model.TotalSteps</span></h1>
+        <h1>@L["Air Filter Change"] <span class="pa-flow-step-pill pa-flow-step-pill--inline">@L.T("Step {0} of {1}", Model.FlowStep, Model.TotalSteps)</span></h1>
         <p>@L["Tell us what you need and how the technician can access the property."]</p>
     </section>
 
@@ -29,10 +29,10 @@
             <div class="pa-chip-grid pa-chip-grid--scroll">
                 @foreach (var s in new (string Value, string Label)[]
                 {
-                    ("ReplaceFilter", "Replace filter"),
-                    ("BringFilters", "Bring filters"),
-                    ("CheckSize", "Check filter size"),
-                    ("FullService", "Full HVAC filter service")
+                    ("ReplaceFilter", L["Replace filter"]),
+                    ("BringFilters", L["Bring filters"]),
+                    ("CheckSize", L["Check filter size"]),
+                    ("FullService", L["Full HVAC filter service"])
                 })
                 {
                     <label class="pa-chip @(Model.ServiceType == s.Value ? "is-selected" : null)">
@@ -73,7 +73,7 @@
             <span class="pa-flow-qnum">4</span>
             <label><i class="fas fa-ruler-combined pa-q-icon"></i> @L["Do you know the filter size?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--4">
-                @foreach (var f in new (string Value, string Label)[] { ("16x20x1", "16x20x1"), ("20x20x1", "20x20x1"), ("20x25x1", "20x25x1"), ("NotSure", "Not sure") })
+                @foreach (var f in new (string Value, string Label)[] { ("16x20x1", L["16x20x1"]), ("20x20x1", L["20x20x1"]), ("20x25x1", L["20x25x1"]), ("NotSure", L["Not sure"]) })
                 {
                     <label class="pa-toggle-btn @(Model.FilterSize == f.Value ? "is-selected" : null)">
                         <input type="radio" name="FilterSize" value="@f.Value" @(Model.FilterSize == f.Value ? "checked" : null) />
@@ -87,7 +87,7 @@
             <span class="pa-flow-qnum">5</span>
             <label><i class="fas fa-calendar pa-q-icon"></i> @L["How often?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var f in new (string Value, string Label)[] { ("OneTime", "One-time"), ("Every2Months", "Every 2 months"), ("Every3Months", "Every 3 months") })
+                @foreach (var f in new (string Value, string Label)[] { ("OneTime", L["One-time"]), ("Every2Months", L["Every 2 months"]), ("Every3Months", L["Every 3 months"]) })
                 {
                     <label class="pa-toggle-btn @(Model.Frequency == f.Value ? "is-selected" : null)">
                         <input type="radio" name="Frequency" value="@f.Value" @(Model.Frequency == f.Value ? "checked" : null) />
@@ -101,7 +101,7 @@
             <span class="pa-flow-qnum">6</span>
             <label><i class="fas fa-lock pa-q-icon"></i> @L["Can the technician enter now?"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
-                @foreach (var e in new (string Value, string Label)[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet"), ("NeedApproval", "Need guest approval") })
+                @foreach (var e in new (string Value, string Label)[] { ("SmartLock", L["Yes, with smart lock"]), ("HostMeet", L["Host will meet"]), ("NeedApproval", L["Need guest approval"]) })
                 {
                     <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Value ? "is-selected" : null)">
                         <input type="radio" name="EntryAccess" value="@e.Value" @(Model.EntryAccess == e.Value ? "checked" : null) />
@@ -115,7 +115,7 @@
             <span class="pa-flow-qnum">7</span>
             <label><i class="fas fa-bell pa-q-icon"></i> @L["Who should receive updates?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
                 {
                     <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
                         <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />

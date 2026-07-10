@@ -184,19 +184,19 @@ public class PropertyAdministratorLockoutAccessService(
 
     private static string LabelIssue(string value) => value switch
     {
-        "SmartLockNotWorking" => "Smart lock not working",
-        "LostKey" => "Lost key",
-        "CodeIssue" => "Code issue",
-        "DoorWontOpen" => "Door won't open",
-        _ => "Guest locked out"
+        "SmartLockNotWorking" => PropertyAdministratorDisplayLocalization.L("Smart lock not working"),
+        "LostKey" => PropertyAdministratorDisplayLocalization.L("Lost key"),
+        "CodeIssue" => PropertyAdministratorDisplayLocalization.L("Code issue"),
+        "DoorWontOpen" => PropertyAdministratorDisplayLocalization.L("Door won't open"),
+        _ => PropertyAdministratorDisplayLocalization.L("Guest locked out")
     };
 
     private static string LabelWhoNeedsAccess(string value) => value switch
     {
-        "Me" => "Host access",
-        "Cleaner" => "Cleaner access",
-        "CoHost" => "Co-host access",
-        _ => "Guest access"
+        "Me" => PropertyAdministratorDisplayLocalization.L("Host access"),
+        "Cleaner" => PropertyAdministratorDisplayLocalization.L("Cleaner access"),
+        "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host access"),
+        _ => PropertyAdministratorDisplayLocalization.L("Guest access")
     };
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(

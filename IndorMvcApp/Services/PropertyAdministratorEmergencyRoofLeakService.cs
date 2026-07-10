@@ -245,29 +245,29 @@ public class PropertyAdministratorEmergencyRoofLeakService(
 
     private static string LabelIssue(string value) => value switch
     {
-        "StormDamage" => "Storm damage",
-        "MissingShingles" => "Missing shingles",
-        "CeilingStain" => "Ceiling stain",
-        "SkylightLeak" => "Skylight leak",
-        "TreeImpact" => "Tree impact",
-        _ => "Active leak"
+        "StormDamage" => PropertyAdministratorDisplayLocalization.L("Storm damage"),
+        "MissingShingles" => PropertyAdministratorDisplayLocalization.L("Missing shingles"),
+        "CeilingStain" => PropertyAdministratorDisplayLocalization.L("Ceiling stain"),
+        "SkylightLeak" => PropertyAdministratorDisplayLocalization.L("Skylight leak"),
+        "TreeImpact" => PropertyAdministratorDisplayLocalization.L("Tree impact"),
+        _ => PropertyAdministratorDisplayLocalization.L("Active leak")
     };
 
     private static string LabelLocation(string value) => value switch
     {
-        "LivingRoom" => "Living room",
-        "Kitchen" => "Kitchen",
-        "Attic" => "Attic",
-        "Hallway" => "Hallway",
-        "Other" => "Other",
-        _ => "Bedroom"
+        "LivingRoom" => PropertyAdministratorDisplayLocalization.L("Living room"),
+        "Kitchen" => PropertyAdministratorDisplayLocalization.L("Kitchen"),
+        "Attic" => PropertyAdministratorDisplayLocalization.L("Attic"),
+        "Hallway" => PropertyAdministratorDisplayLocalization.L("Hallway"),
+        "Other" => PropertyAdministratorDisplayLocalization.L("Other"),
+        _ => PropertyAdministratorDisplayLocalization.L("Bedroom")
     };
 
     private static string LabelAccess(string value) => value switch
     {
-        "HostMeet" => "Host will meet",
-        "GuestApproval" => "Need guest approval",
-        _ => "Smart lock code provided"
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "GuestApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
+        _ => PropertyAdministratorDisplayLocalization.L("Smart lock code provided")
     };
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(

@@ -29,12 +29,12 @@
             <div class="pa-chip-grid">
                 @foreach (var item in new (string Value, string Label, string Icon)[]
                 {
-                    ("TreeFellOnHouse", "Tree fell on house", "fa-house-chimney-crack"),
-                    ("LargeHangingBranch", "Large hanging branch", "fa-code-branch"),
-                    ("DrivewayBlocked", "Driveway blocked", "fa-road"),
-                    ("FenceDamage", "Fence damage", "fa-border-all"),
-                    ("RoofImpact", "Roof impact", "fa-house"),
-                    ("NearPowerLine", "Near power line", "fa-bolt")
+                    ("TreeFellOnHouse", L["Tree fell on house"], "fa-house-chimney-crack"),
+                    ("LargeHangingBranch", L["Large hanging branch"], "fa-code-branch"),
+                    ("DrivewayBlocked", L["Driveway blocked"], "fa-road"),
+                    ("FenceDamage", L["Fence damage"], "fa-border-all"),
+                    ("RoofImpact", L["Roof impact"], "fa-house"),
+                    ("NearPowerLine", L["Near power line"], "fa-bolt")
                 })
                 {
                     <label class="pa-chip @(Model.IssueType == item.Value ? "is-selected" : null)">
@@ -95,12 +95,12 @@
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var loc in new (string Value, string Label, string Icon)[]
                 {
-                    ("FrontYard", "Front yard", "fa-tree"),
-                    ("Backyard", "Backyard", "fa-seedling"),
-                    ("Roof", "Roof", "fa-house-chimney"),
-                    ("Driveway", "Driveway", "fa-road"),
-                    ("Fence", "Fence", "fa-border-all"),
-                    ("Other", "Other", "fa-ellipsis")
+                    ("FrontYard", L["Front yard"], "fa-tree"),
+                    ("Backyard", L["Backyard"], "fa-seedling"),
+                    ("Roof", L["Roof"], "fa-house-chimney"),
+                    ("Driveway", L["Driveway"], "fa-road"),
+                    ("Fence", L["Fence"], "fa-border-all"),
+                    ("Other", L["Other"], "fa-ellipsis")
                 })
                 {
                     <label class="pa-chip @(damageAreas.Contains(loc.Value) ? "is-selected" : null)">

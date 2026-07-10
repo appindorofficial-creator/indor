@@ -71,7 +71,7 @@ public class PropertyAdministratorPetDeepCleanService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Pet Deep Clean at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Pet Deep Clean", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,
@@ -198,10 +198,10 @@ public class PropertyAdministratorPetDeepCleanService(
     {
         var countLabel = count switch
         {
-            "1" => "1",
-            "3" => "3",
-            "FourPlus" => "4+",
-            _ => "2"
+            "1" => PropertyAdministratorDisplayLocalization.L("1"),
+            "3" => PropertyAdministratorDisplayLocalization.L("3"),
+            "FourPlus" => PropertyAdministratorDisplayLocalization.L("4+"),
+            _ => PropertyAdministratorDisplayLocalization.L("2")
         };
         var typeLabel = type switch
         {
@@ -216,12 +216,12 @@ public class PropertyAdministratorPetDeepCleanService(
     {
         var labels = areas.Select(a => a switch
         {
-            "OdorRemoval" => "odors",
-            "AccidentsStains" => "stains",
-            "BedsUpholstery" => "beds & upholstery",
-            "CratePetArea" => "crate / pet area",
-            "Floors" => "floors",
-            _ => "pet hair"
+            "OdorRemoval" => PropertyAdministratorDisplayLocalization.L("odors"),
+            "AccidentsStains" => PropertyAdministratorDisplayLocalization.L("stains"),
+            "BedsUpholstery" => PropertyAdministratorDisplayLocalization.L("beds & upholstery"),
+            "CratePetArea" => PropertyAdministratorDisplayLocalization.L("crate / pet area"),
+            "Floors" => PropertyAdministratorDisplayLocalization.L("floors"),
+            _ => PropertyAdministratorDisplayLocalization.L("pet hair")
         }).Distinct().ToList();
 
         return labels.Count == 0 ? "—" : string.Join(", ", labels);
@@ -229,24 +229,24 @@ public class PropertyAdministratorPetDeepCleanService(
 
     private static string LabelScheduleWhen(string value) => value switch
     {
-        "Today" => "Today",
-        "Later" => "Later",
-        _ => "Tomorrow"
+        "Today" => PropertyAdministratorDisplayLocalization.L("Today"),
+        "Later" => PropertyAdministratorDisplayLocalization.L("Later"),
+        _ => PropertyAdministratorDisplayLocalization.L("Tomorrow")
     };
 
     private static string LabelAccess(string value) => value switch
     {
-        "HostMeet" => "Host will meet",
-        "GuestStillInside" => "Guest still inside",
-        _ => "Smart lock code provided"
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "GuestStillInside" => PropertyAdministratorDisplayLocalization.L("Guest still inside"),
+        _ => PropertyAdministratorDisplayLocalization.L("Smart lock code provided")
     };
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 
