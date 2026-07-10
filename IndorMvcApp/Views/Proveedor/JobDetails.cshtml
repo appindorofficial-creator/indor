@@ -39,10 +39,10 @@
             <small class="prv-pro-job-card-address">@Model.Address</small>
             <div class="prv-pro-lead-badges">
                 <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
-                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @Model.ServiceType</span>
+                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @UiDisplayLocalization.Localize(L, Model.ServiceType)</span>
                 @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
                 {
-                    <span class="prv-pro-pill prv-pro-pill--connected"><i class="fas fa-location-crosshairs"></i> @Model.DistanceLabel</span>
+                    <span class="prv-pro-pill prv-pro-pill--connected"><i class="fas fa-location-crosshairs"></i> @UiDisplayLocalization.Localize(L, Model.DistanceLabel)</span>
                 }
             </div>
         </div>
@@ -55,7 +55,7 @@
         {
             <div><i class="fas fa-file-invoice"></i><strong>@Model.EstimateCode</strong><span>@L["Estimate"]</span></div>
         }
-        <div><i class="fas fa-receipt"></i><strong>@Model.InvoiceStatus</strong><span>@L["Invoice"]</span></div>
+        <div><i class="fas fa-receipt"></i><strong>@UiDisplayLocalization.Localize(L, Model.InvoiceStatus)</strong><span>@L["Invoice"]</span></div>
         @if (!string.IsNullOrWhiteSpace(Model.PaymentLabel))
         {
             <div><i class="fas fa-dollar-sign"></i><strong>@Model.PaymentLabel</strong><span>@L["Payment"]</span></div>
@@ -126,14 +126,14 @@
         <section class="prv-pro-lead-section">
             <div class="prv-pro-checklist-head">
                 <h3>@L["Job Checklist"]</h3>
-                <span>@Model.ChecklistCompleted of @Model.ChecklistTotal</span>
+                <span>@L.T("{0} of {1}", Model.ChecklistCompleted, Model.ChecklistTotal)</span>
             </div>
             <ul class="prv-pro-checklist">
                 @foreach (var item in Model.Checklist)
                 {
                     <li class="@(item.IsCompleted ? "is-done" : item.IsInProgress ? "is-active" : "")">
                         <i class="fas @(item.IsCompleted ? "fa-circle-check" : "fa-circle")"></i>
-                        @item.Label
+                        @UiDisplayLocalization.Localize(L, item.Label)
                         @if (!string.IsNullOrWhiteSpace(item.CompletedLabel))
                         {
                             <small>@item.CompletedLabel</small>
@@ -143,7 +143,7 @@
             </ul>
             @if (Model.ChecklistTotal > Model.Checklist.Count)
             {
-                <small class="prv-pro-checklist-more">+@(Model.ChecklistTotal - Model.Checklist.Count) more</small>
+                <small class="prv-pro-checklist-more">@L.T("+{0} more", Model.ChecklistTotal - Model.Checklist.Count)</small>
             }
         </section>
     }

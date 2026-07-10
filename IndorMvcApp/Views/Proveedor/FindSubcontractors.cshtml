@@ -88,7 +88,7 @@
 
     <div class="prv-net-count">
         <span>@L.T("{0} subcontractor(s) found", Model.ResultCount)@(Model.HasLocation ? $" {L["near you"]}" : "")</span>
-        <span>@L["Sort by:"]<strong>@Model.SortLabel</strong></span>
+        <span>@L["Sort by:"]<strong>@UiDisplayLocalization.Localize(L, Model.SortLabel)</strong></span>
     </div>
 
     @if (Model.ActiveView == "map")

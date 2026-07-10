@@ -1,14 +1,15 @@
 @{
     var cancelAction = (ViewBag.CreateJobCancelAction as string) ?? "Jobs";
-    var cancelLabel = (ViewBag.CreateJobCancelLabel as string)
+    var cancelLabelKey = (ViewBag.CreateJobCancelLabel as string)
         ?? (cancelAction == "Dashboard" ? "Home" : "Jobs hub");
+    var cancelLabel = L[cancelLabelKey];
     var stepLine = ViewBag.WizardStepLine as string;
-    var title = ViewBag.WizardTitle as string ?? "Create Job";
+    var title = ViewBag.WizardTitle as string ?? L["Create Job"].ToString();
     var wizardSteps = ViewBag.WizardSteps as List<IndorMvcApp.ViewModels.ProviderProWizardStepViewModel>;
 }
 
 <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
-    <a asp-controller="Proveedor" asp-action="@cancelAction" class="prv-pro-lead-back" aria-label="@($"Back to {cancelLabel}")">
+    <a asp-controller="Proveedor" asp-action="@cancelAction" class="prv-pro-lead-back" aria-label="@L.T("Back to {0}", cancelLabel)">
         <i class="fas fa-chevron-left"></i>
     </a>
     <div>

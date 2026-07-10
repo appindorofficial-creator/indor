@@ -7,17 +7,17 @@
     var d = Model.Draft;
     string Dash(string? v) => string.IsNullOrWhiteSpace(v) ? "—" : v;
     var dateLabel = DateTime.TryParse(d.ReportDate, out var dt) ? dt.ToString("MMM d, yyyy") : Dash(d.ReportDate);
-    var rows = new (string icon, string label, string value, bool pill)[] {
-        ("fa-file-lines", "Report Type", "Export Report", false),
-        ("fa-calendar", "Report Name", Dash(d.ReportName), false),
-        ("fa-building", "Job", Model.Job.Title, false),
-        ("fa-location-dot", "Property", Model.Job.Address, false),
-        ("fa-user", "Prepared By", Dash(d.PreparedBy), false),
-        ("fa-calendar", "Date", dateLabel, false),
-        ("fa-tag", "Category", Dash(d.Category), false),
-        ("fa-location-dot", "Location", Dash(d.Location), false),
-        ("fa-flag", "Priority", Dash(d.Priority), true),
-        ("fa-image", "Photos Added", d.Photos.Count.ToString(), false)
+    var rows = new (string icon, string label, string value, bool localizeValue, bool pill)[] {
+        ("fa-file-lines", "Report Type", "Export Report", true, false),
+        ("fa-calendar", "Report Name", Dash(d.ReportName), false, false),
+        ("fa-building", "Job", Model.Job.Title, false, false),
+        ("fa-location-dot", "Property", Model.Job.Address, false, false),
+        ("fa-user", "Prepared By", Dash(d.PreparedBy), false, false),
+        ("fa-calendar", "Date", dateLabel, false, false),
+        ("fa-tag", "Category", Dash(d.Category), true, false),
+        ("fa-location-dot", "Location", Dash(d.Location), false, false),
+        ("fa-flag", "Priority", Dash(d.Priority), true, true),
+        ("fa-image", "Photos Added", d.Photos.Count.ToString(), false, false)
     };
 }
 
@@ -36,18 +36,19 @@
 
     <section class="exr-card">
         <div class="exr-review">
-            @foreach (var (icon, label, value, pill) in rows)
+            @foreach (var (icon, label, value, localizeValue, pill) in rows)
             {
+                var displayValue = localizeValue && value != "—" ? UiDisplayLocalization.Localize(L, value) : value;
                 <div class="exr-review-row">
                     <span class="exr-review-ico"><i class="fas @icon"></i></span>
-                    <span class="exr-review-label">@label</span>
-                    @if (pill && value != "—")
+                    <span class="exr-review-label">@L[label]</span>
+                    @if (pill && displayValue != "—")
                     {
-                        <span class="exr-pill exr-pill--medium">@value</span>
+                        <span class="exr-pill exr-pill--medium">@displayValue</span>
                     }
                     else
                     {
-                        <span class="exr-review-value">@value</span>
+                        <span class="exr-review-value">@displayValue</span>
                     }
                 </div>
             }

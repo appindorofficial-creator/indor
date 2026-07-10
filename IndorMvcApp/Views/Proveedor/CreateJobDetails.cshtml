@@ -14,7 +14,8 @@
     }
     @await Html.PartialAsync("_CreateJobWizardHead")
 
-    <form asp-controller="Proveedor" asp-action="CreateJobDetails" method="post" class="prv-pro-wizard-form" id="createJobCustomerForm">
+    <form asp-controller="Proveedor" asp-action="CreateJobDetails" method="post" class="prv-pro-wizard-form" id="createJobCustomerForm"
+          data-select-customer="@L["Select a customer"]">
         @Html.AntiForgeryToken()
         <input type="hidden" name="ServiceCategoryId" value="@Model.ServiceCategoryId" />
         <input type="hidden" name="Title" value="@Model.Title" />
@@ -60,13 +61,13 @@
             else
             {
                 <label class="prv-pro-form-label">
-                    Customer name
+                    @L["Customer name"]
                     <input type="text" name="CustomerName" id="createJobCustomerName" value="@Model.CustomerName" placeholder="@L["Customer name"]" required />
                 </label>
             }
 
             <label class="prv-pro-form-label prv-pro-form-label--spaced">
-                Property address <span class="prv-pro-required">*</span>
+                @L["Property address"] <span class="prv-pro-required">*</span>
                 <div class="prv-pro-form-input-wrap">
                     <i class="fas fa-location-dot"></i>
                     <input type="text" name="Address" id="createJobAddress" value="@(Model.Address ?? selectedCustomer?.Address)" placeholder="@L["123 Maple St, Austin, TX 78704"]" required />
@@ -77,13 +78,13 @@
         <section class="prv-pro-selected-property-card" id="createJobPropertySummary">
             <div class="prv-pro-selected-property-icon"><i class="fas fa-house"></i></div>
             <div class="prv-pro-selected-property-body">
-                <strong id="createJobPropertyAddress">@(Model.Address ?? selectedCustomer?.Address ?? "Select a customer")</strong>
+                <strong id="createJobPropertyAddress">@(Model.Address ?? selectedCustomer?.Address ?? L["Select a customer"])</strong>
                 <div class="prv-pro-selected-property-badges">
                     <span class="prv-pro-badge prv-pro-badge--blue" id="createJobPropertyCount">
-                        @(selectedCustomer?.PropertiesCount ?? 1) active home@(selectedCustomer?.PropertiesCount == 1 ? "" : "s")
+                        @L.T((selectedCustomer?.PropertiesCount ?? 1) == 1 ? "{0} active home" : "{0} active homes", selectedCustomer?.PropertiesCount ?? 1)
                     </span>
                     <span class="prv-pro-badge prv-pro-badge--green @(selectedCustomer?.IsConnected == true ? "" : "is-hidden")" id="createJobConnectedBadge">
-                        Customer connected
+                        @L["Customer connected"]
                     </span>
                 </div>
             </div>
@@ -100,6 +101,8 @@
 @section Scripts {
     <script>
         (function () {
+            var form = document.getElementById('createJobCustomerForm');
+            var selectCustomerLabel = form?.dataset.selectCustomer || '';
             var searchInput = document.getElementById('createJobCustomerSearch');
             var rows = document.querySelectorAll('.prv-pro-customer-pick-row');
             var customerName = document.getElementById('createJobCustomerName');
@@ -113,7 +116,7 @@
                 if (!radio) return;
                 if (customerName) customerName.value = radio.dataset.name || '';
                 if (addressInput && radio.dataset.address) addressInput.value = radio.dataset.address;
-                if (propertyAddress) propertyAddress.textContent = radio.dataset.address || 'Select a customer';
+                if (propertyAddress) propertyAddress.textContent = radio.dataset.address || selectCustomerLabel;
                 rows.forEach(function (r) { r.classList.remove('is-selected'); });
                 row.classList.add('is-selected');
             }
@@ -134,7 +137,7 @@
             });
 
             addressInput?.addEventListener('input', function () {
-                if (propertyAddress) propertyAddress.textContent = addressInput.value || 'Select a customer';
+                if (propertyAddress) propertyAddress.textContent = addressInput.value || selectCustomerLabel;
             });
 
             document.getElementById('createJobCustomerForm')?.addEventListener('submit', function () {

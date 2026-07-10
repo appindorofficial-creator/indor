@@ -75,7 +75,7 @@
                     <option value="">@L["Select a budget range"]</option>
                     @foreach (var b in Model.BudgetOptions)
                     {
-                        <option value="@b" selected="@(Model.BudgetRange == b)">@b</option>
+                        <option value="@b" selected="@(Model.BudgetRange == b)">@UiDisplayLocalization.Localize(L, b)</option>
                     }
                 </select>
             </div>
@@ -122,7 +122,7 @@
 
         <div class="prv-inv-note">
             <i class="fas fa-circle-info"></i>
-            <span>@Model.Sub.Name will receive your request and can respond with availability and quote.</span>
+            <span>@L.T("{0} will receive your request and can respond with availability and quote.", Model.Sub.Name)</span>
         </div>
 
         <div class="prv-inv-actions">

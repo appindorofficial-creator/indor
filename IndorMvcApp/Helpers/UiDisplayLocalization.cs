@@ -22,6 +22,7 @@ public static class UiDisplayLocalization
         (new Regex(@"^(\d+(?:\.\d+)?)\s+baths?$", RegexOptions.IgnoreCase), "{0} baths"),
         (new Regex(@"^(\d{1,3}(?:,\d{3})*)\s+sqft$", RegexOptions.IgnoreCase), "{0} sqft"),
         (new Regex(@"^([\d.]+) mi away$", RegexOptions.IgnoreCase), "{0} mi away"),
+        (new Regex(@"^([\d.]+)\s+miles away$", RegexOptions.IgnoreCase), "{0} miles away"),
         (new Regex(@"^([\d.]+) miles around you$", RegexOptions.IgnoreCase), "{0} miles around you"),
         (new Regex(@"^([\d.]+) miles around (.+)$", RegexOptions.IgnoreCase), "{0} miles around {1}"),
     ];

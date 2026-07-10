@@ -24,12 +24,12 @@
             <small>@Model.Address</small>
             <div class="prv-pro-active-badges">
                 <span class="prv-pro-pill prv-pro-pill--progress">@L["In Progress"]</span>
-                <span class="prv-pro-pill prv-pro-pill--scheduled">@Model.StartedLabel</span>
+                <span class="prv-pro-pill prv-pro-pill--scheduled">@UiDisplayLocalization.Localize(L, Model.StartedLabel)</span>
                 <span class="prv-pro-pill prv-pro-pill--connected"><i class="fas fa-stopwatch"></i> @Model.ElapsedLabel</span>
-                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @Model.ServiceType</span>
+                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @UiDisplayLocalization.Localize(L, Model.ServiceType)</span>
                 @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
                 {
-                    <span class="prv-pro-pill prv-pro-pill--connected">@Model.DistanceLabel</span>
+                    <span class="prv-pro-pill prv-pro-pill--connected">@UiDisplayLocalization.Localize(L, Model.DistanceLabel)</span>
                 }
             </div>
         </div>
@@ -43,7 +43,7 @@
                 <li class="@(item.IsCompleted ? "is-done" : item.IsInProgress ? "is-active" : "")">
                     <i class="fas @(item.IsCompleted ? "fa-circle-check" : item.IsInProgress ? "fa-spinner" : "fa-circle")"></i>
                     <div>
-                        @item.Label
+                        @UiDisplayLocalization.Localize(L, item.Label)
                         @if (item.IsInProgress)
                         {
                             <span class="prv-pro-pill prv-pro-pill--progress">@L["In Progress"]</span>
@@ -66,8 +66,8 @@
                 @foreach (var label in Model.PhotoLabels)
                 {
                     <div class="prv-pro-active-photo">
-                        <img src="@Url.Content($"~{Model.ImageUrl}")" alt="@label" />
-                        <span>@label</span>
+                        <img src="@Url.Content($"~{Model.ImageUrl}")" alt="@UiDisplayLocalization.Localize(L, label)" />
+                        <span>@UiDisplayLocalization.Localize(L, label)</span>
                     </div>
                 }
             </div>
@@ -100,7 +100,7 @@
         @if (Model.HasSignature)
         {
             <p class="prv-pro-signature">@Model.HomeownerSignature</p>
-            <small class="prv-pro-signature-meta"><i class="fas fa-circle-check"></i> @Model.SignatureLabel</small>
+            <small class="prv-pro-signature-meta"><i class="fas fa-circle-check"></i> @UiDisplayLocalization.Localize(L, Model.SignatureLabel)</small>
         }
         else
         {
