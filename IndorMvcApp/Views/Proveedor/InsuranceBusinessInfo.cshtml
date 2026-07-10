@@ -25,7 +25,7 @@
         </div>
         <div class="ins-plancard-price">
             <div><small>@L["Pay today"]</small><strong>$@Model.PayToday.ToString("0")</strong></div>
-            <div><small>@L["Then"]</small><strong>$@Model.Monthly.ToString("0")<span>/month</span></strong></div>
+            <div><small>@L["Then"]</small><strong>$@Model.Monthly.ToString("0")<span>@L["/month"]</span></strong></div>
         </div>
     </div>
 
@@ -120,7 +120,7 @@
 
         <div class="ins-note ins-note--info">
             <i class="fas fa-circle-info"></i>
-            <span><strong>@L["ID may be requested by email."]</strong> Your licensed insurance agent may ask for your SSN, ITIN, EIN, or business registration number after you submit. Please check your email for messages from INDOR.</span>
+            <span><strong>@L["ID may be requested by email."]</strong> @L["Your licensed insurance agent may ask for your SSN, ITIN, EIN, or business registration number after you submit. Please check your email for messages from INDOR."]</span>
         </div>
 
         <div class="ins-footer ins-footer--split">

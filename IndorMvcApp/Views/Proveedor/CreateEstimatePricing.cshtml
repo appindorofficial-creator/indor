@@ -35,7 +35,7 @@
                     <input type="hidden" name="LineTaxable" value="@(line.IsTaxable ? "true" : "false")" />
                     <div class="prv-pro-pricing-line-head">
                         <strong>@line.Label</strong>
-                        <span class="prv-pro-pricing-tax @(line.IsTaxable ? "is-taxable" : "")">@(line.IsTaxable ? "Taxable" : "Non-Taxable")</span>
+                        <span class="prv-pro-pricing-tax @(line.IsTaxable ? "is-taxable" : "")">@(line.IsTaxable ? L["Taxable"] : L["Non-Taxable"])</span>
                     </div>
                     <small>@line.Description</small>
                     <div class="prv-pro-pricing-line-fields">
@@ -50,7 +50,7 @@
 
         <section class="prv-pro-pricing-totals">
             <div><span>@L["Subtotal"]</span><strong>@Model.SubtotalAmount.ToString("C2", money)</strong></div>
-            <div><span>Tax (@((Model.TaxRate * 100).ToString("0.##"))%)</span><strong>@Model.TaxAmount.ToString("C2", money)</strong></div>
+            <div><span>@L.T("Tax ({0}%)", (Model.TaxRate * 100).ToString("0.##"))</span><strong>@Model.TaxAmount.ToString("C2", money)</strong></div>
             <div class="prv-pro-pricing-total"><span>@L["Total Estimate"]</span><strong>@Model.TotalAmount.ToString("C2", money)</strong></div>
         </section>
 
