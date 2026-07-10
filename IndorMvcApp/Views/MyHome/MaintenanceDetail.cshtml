@@ -31,7 +31,7 @@
 {
     <div class="hf-card">
         <div class="hf-label">@L["Notes"]</div>
-        <p style="line-height:1.5;color:#475569;">@Model.Notes</p>
+        <p style="line-height:1.5;color:#475569;">@UiDisplayLocalization.Localize(L, Model.Notes)</p>
     </div>
 }
 <a asp-action="MaintenanceEdit" asp-route-id="@Model.Id" asp-route-from="@Model.NavigationFrom" class="hf-btn hf-btn-primary"><i class="fas fa-pen"></i> @L["Edit task"]</a>

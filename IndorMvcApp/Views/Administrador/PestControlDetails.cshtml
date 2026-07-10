@@ -54,7 +54,7 @@
             <span class="pa-flow-qnum">3</span>
             <label>@L["How urgent is it?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var u in new[] { ("Normal", "Normal"), ("Urgent", "Urgent"), ("Emergency", "Emergency") })
+                @foreach (var u in new[] { ("Normal", L["Normal"]), ("Urgent", L["Urgent"]), ("Emergency", L["Emergency"]) })
                 {
                     <label class="pa-chip @(Model.Urgency == u.Item1 ? "is-selected" : null)">
                         <input type="radio" name="Urgency" value="@u.Item1" @(Model.Urgency == u.Item1 ? "checked" : null) />

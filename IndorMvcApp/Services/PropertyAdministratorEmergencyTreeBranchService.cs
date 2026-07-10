@@ -120,14 +120,14 @@ public class PropertyAdministratorEmergencyTreeBranchService(
             Category = "Emergency",
             ScheduledUtc = now,
             IsEmergency = true,
-            EtaLabel = "28 min",
-            TeamLabel = "Miguel R. • Tree service",
+            EtaLabel = PropertyAdministratorDisplayLocalization.L("28 min"),
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Miguel R. • Tree service"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Miguel R.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Licensed Tree Service Pro",
-            VehicleLabel = "Utility truck",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("Utility truck"),
             TimelineStep = 2
         };
 
@@ -179,24 +179,24 @@ public class PropertyAdministratorEmergencyTreeBranchService(
         PropertyAdministratorEmergencyTreeBranchSubmitInput input,
         PropertyAdministratorFlowPropertyViewModel property) =>
     [
-        new() { Label = "Property", Value = $"Viewing: {property.PropertyName}", IconClass = "fa-house" },
-        new() { Label = "Issue", Value = LabelIssue(input.IssueType), IconClass = "fa-tree" },
-        new() { Label = "Guests inside", Value = input.GuestsInside, IconClass = "fa-users" },
-        new() { Label = "Danger level", Value = input.Urgency, IconClass = "fa-circle-exclamation", IsDangerBadge = input.Urgency == "Emergency" },
-        new() { Label = "Damage area", Value = LabelDamageAreas(input.DamageAreasList), IconClass = "fa-location-dot" },
-        new() { Label = "Tarp needed", Value = input.TarpNeeded, IconClass = "fa-umbrella" },
-        new() { Label = "Power line involvement", Value = input.IssueType == "NearPowerLine" ? "Yes" : "No", IconClass = "fa-bolt" },
-        new() { Label = "Notes", Value = input.QuickDetails ?? "—", IconClass = "fa-note-sticky" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Property"), Value = $"Viewing: {property.PropertyName}", IconClass = "fa-house" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Issue"), Value = LabelIssue(input.IssueType), IconClass = "fa-tree" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Guests inside"), Value = input.GuestsInside, IconClass = "fa-users" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Danger level"), Value = input.Urgency, IconClass = "fa-circle-exclamation", IsDangerBadge = input.Urgency == "Emergency" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Damage area"), Value = LabelDamageAreas(input.DamageAreasList), IconClass = "fa-location-dot" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Tarp needed"), Value = input.TarpNeeded, IconClass = "fa-umbrella" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Power line involvement"), Value = input.IssueType == "NearPowerLine" ? "Yes" : "No", IconClass = "fa-bolt" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Notes"), Value = input.QuickDetails ?? "—", IconClass = "fa-note-sticky" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorEmergencyTreeBranchReviewRowViewModel> BuildAccessContactRows(
         PropertyAdministratorEmergencyTreeBranchSubmitInput input) =>
     [
-        new() { Label = "Entry access", Value = LabelEntryAccess(input.EntryAccess), IconClass = "fa-door-open" },
-        new() { Label = "Gate / parking notes", Value = input.GateParkingNotes, IconClass = "fa-road" },
-        new() { Label = "Who gets updates", Value = FormatRecipients(input.UpdateRecipientsList), IconClass = "fa-bell" },
-        new() { Label = "Best contact", Value = input.ContactPhone, IconClass = "fa-phone" },
-        new() { Label = "Insurance help", Value = LabelInsuranceHelp(input.InsuranceHelp), IconClass = "fa-shield-halved" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Entry access"), Value = LabelEntryAccess(input.EntryAccess), IconClass = "fa-door-open" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Gate / parking notes"), Value = input.GateParkingNotes, IconClass = "fa-road" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Who gets updates"), Value = FormatRecipients(input.UpdateRecipientsList), IconClass = "fa-bell" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Best contact"), Value = input.ContactPhone, IconClass = "fa-phone" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Insurance help"), Value = LabelInsuranceHelp(input.InsuranceHelp), IconClass = "fa-shield-halved" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorEmergencyAcTimelineItemViewModel> BuildTimeline(
@@ -209,11 +209,11 @@ public class PropertyAdministratorEmergencyTreeBranchService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Crew assigned", StatusLabel = assigned, IconClass = "fa-circle-check", State = step >= 1 ? "done" : "pending" },
-            new() { Label = "En route", StatusLabel = enRoute, IconClass = "fa-truck", State = step >= 2 ? "active" : "pending" },
-            new() { Label = "Arrived", StatusLabel = "Pending", IconClass = "fa-location-dot", State = step >= 3 ? "done" : "pending" },
-            new() { Label = "Hazard removed", StatusLabel = "Pending", IconClass = "fa-tree", State = step >= 4 ? "done" : "pending" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Crew assigned"), StatusLabel = assigned, IconClass = "fa-circle-check", State = step >= 1 ? "done" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("En route"), StatusLabel = enRoute, IconClass = "fa-truck", State = step >= 2 ? "active" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Arrived"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-location-dot", State = step >= 3 ? "done" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Hazard removed"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-tree", State = step >= 4 ? "done" : "pending" }
         ];
     }
 
@@ -293,24 +293,7 @@ public class PropertyAdministratorEmergencyTreeBranchService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -347,9 +330,9 @@ public class PropertyAdministratorEmergencyTreeBranchService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

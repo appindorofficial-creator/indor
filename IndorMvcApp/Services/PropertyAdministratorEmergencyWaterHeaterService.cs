@@ -117,14 +117,14 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
             Category = "Emergency",
             ScheduledUtc = now,
             IsEmergency = true,
-            EtaLabel = "24 min",
-            TeamLabel = "Carlos M. • Water heater",
+            EtaLabel = PropertyAdministratorDisplayLocalization.L("24 min"),
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Carlos M. • Water heater"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Carlos M.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Licensed Water Heater Pro",
-            VehicleLabel = "White service van",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("White service van"),
             TimelineStep = 2
         };
 
@@ -176,31 +176,31 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
         PropertyAdministratorEmergencyWaterHeaterSubmitInput input,
         PropertyAdministratorFlowPropertyViewModel property) =>
     [
-        new() { Label = "Property", Value = $"Viewing: {property.PropertyName}", IconClass = "fa-house" },
-        new() { Label = "Issue", Value = FormatIssueSummary(input), IconClass = "fa-fire-flame-simple" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Property"), Value = $"Viewing: {property.PropertyName}", IconClass = "fa-house" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Issue"), Value = FormatIssueSummary(input), IconClass = "fa-fire-flame-simple" },
         new()
         {
-            Label = "Occupied",
+            Label = PropertyAdministratorDisplayLocalization.L("Occupied"),
             Value = input.HomeOccupied,
             IconClass = "fa-user",
             Highlight = input.HomeOccupied == "Yes"
         },
         new()
         {
-            Label = "Guests inside",
+            Label = PropertyAdministratorDisplayLocalization.L("Guests inside"),
             Value = input.GuestsInside,
             IconClass = "fa-users",
             Highlight = input.GuestsInside == "Yes"
         },
-        new() { Label = "Water heater type", Value = LabelHeaterType(input.HeaterType), IconClass = "fa-fire" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Water heater type"), Value = LabelHeaterType(input.HeaterType), IconClass = "fa-fire" },
         new()
         {
-            Label = "Water status",
+            Label = PropertyAdministratorDisplayLocalization.L("Water status"),
             Value = input.ActivelyLeaking == "Yes" ? "Actively leaking" : "Not actively leaking",
             IconClass = "fa-droplet"
         },
-        new() { Label = "Access", Value = LabelAccess(input.EntryAccess, input.AccessNotes), IconClass = "fa-key" },
-        new() { Label = "Updates", Value = FormatRecipients(input.UpdateRecipientsList), IconClass = "fa-bell" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelAccess(input.EntryAccess, input.AccessNotes), IconClass = "fa-key" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = FormatRecipients(input.UpdateRecipientsList), IconClass = "fa-bell" }
     ];
 
     private static string FormatIssueSummary(PropertyAdministratorEmergencyWaterHeaterSubmitInput input)
@@ -223,11 +223,11 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Technician assigned", StatusLabel = assigned, IconClass = "fa-circle-check", State = step >= 1 ? "done" : "pending" },
-            new() { Label = "En route", StatusLabel = enRoute, IconClass = "fa-truck", State = step >= 2 ? "active" : "pending" },
-            new() { Label = "Arrival", StatusLabel = "Pending", IconClass = "fa-location-dot", State = step >= 3 ? "done" : "pending" },
-            new() { Label = "Diagnosis", StatusLabel = "Pending", IconClass = "fa-clipboard-list", State = step >= 4 ? "done" : "pending" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Technician assigned"), StatusLabel = assigned, IconClass = "fa-circle-check", State = step >= 1 ? "done" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("En route"), StatusLabel = enRoute, IconClass = "fa-truck", State = step >= 2 ? "active" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Arrival"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-location-dot", State = step >= 3 ? "done" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Diagnosis"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-clipboard-list", State = step >= 4 ? "done" : "pending" }
         ];
     }
 
@@ -290,24 +290,7 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -344,9 +327,9 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

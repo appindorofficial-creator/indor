@@ -89,7 +89,7 @@ public class PropertyAdministratorPestControlService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             PropertyId = property.Id,
             ViewingProperty = MapProperty(property),
-            PropertyStatusLabel = isRental ? "Occupied now" : null,
+            PropertyStatusLabel = isRental ? PropertyAdministratorDisplayLocalization.L("Occupied now") : null,
             PestType = step1.PestType,
             IssueLocation = step1.IssueLocation,
             Urgency = step1.Urgency,
@@ -136,13 +136,13 @@ public class PropertyAdministratorPestControlService(
             ScheduledUtc = visitDate,
             IsEmergency = input.Urgency == "Emergency",
             EtaLabel = $"{etaMinutes} min",
-            TeamLabel = "Luis R. • Pest Control",
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Luis R. • Pest Control"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Luis R.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Licensed Pest Control Pro",
-            VehicleLabel = "White service van",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("White service van"),
             TimelineStep = 3
         };
 
@@ -257,13 +257,13 @@ public class PropertyAdministratorPestControlService(
         PropertyAdministratorPestControlSubmitInput input,
         IndorPropertyAdminPortfolioProperty? property) =>
     [
-        new() { Label = "Property", Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
-        new() { Label = "Pest issue", Value = LabelPestType(input.PestType), IconClass = "fa-bug" },
-        new() { Label = "Location", Value = LabelLocation(input.IssueLocation), IconClass = "fa-location-dot" },
-        new() { Label = "Service", Value = LabelServiceType(input.ServiceType), IconClass = "fa-spray-can" },
-        new() { Label = "Areas to treat", Value = LabelTreatAreas(input.TreatAreasList), IconClass = "fa-border-all" },
-        new() { Label = "Access", Value = LabelEntryAccess(input.EntryAccess), IconClass = "fa-key" },
-        new() { Label = "Updates", Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Property"), Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Pest issue"), Value = LabelPestType(input.PestType), IconClass = "fa-bug" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Location"), Value = LabelLocation(input.IssueLocation), IconClass = "fa-location-dot" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = LabelServiceType(input.ServiceType), IconClass = "fa-spray-can" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Areas to treat"), Value = LabelTreatAreas(input.TreatAreasList), IconClass = "fa-border-all" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelEntryAccess(input.EntryAccess), IconClass = "fa-key" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorPestControlTimelineItemViewModel> BuildTimeline(
@@ -275,11 +275,11 @@ public class PropertyAdministratorPestControlService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = $"Today, {submitted:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Technician assigned", StatusLabel = $"Today, {assigned:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "En route", StatusLabel = $"Today, {enRoute:h:mm tt}", IconClass = "fa-location-crosshairs", State = "active" },
-            new() { Label = "Arrived", StatusLabel = "Pending", IconClass = "fa-house", State = "pending" },
-            new() { Label = "Treatment started", StatusLabel = "Pending", IconClass = "fa-spray-can", State = "pending" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = $"Today, {submitted:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Technician assigned"), StatusLabel = $"Today, {assigned:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("En route"), StatusLabel = $"Today, {enRoute:h:mm tt}", IconClass = "fa-location-crosshairs", State = "active" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Arrived"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-house", State = "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Treatment started"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-spray-can", State = "pending" }
         ];
     }
 
@@ -381,24 +381,7 @@ public class PropertyAdministratorPestControlService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -429,9 +412,9 @@ public class PropertyAdministratorPestControlService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

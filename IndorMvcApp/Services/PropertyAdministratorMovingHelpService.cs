@@ -103,13 +103,13 @@ public class PropertyAdministratorMovingHelpService(
             ScheduledUtc = visitDate,
             IsEmergency = false,
             EtaLabel = etaLabel,
-            TeamLabel = "Luis R. • Moving",
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Luis R. • Moving"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Luis R.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Verified Homecare Pro",
-            VehicleLabel = "White service van",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("White service van"),
             TimelineStep = 3
         };
 
@@ -195,28 +195,28 @@ public class PropertyAdministratorMovingHelpService(
     [
         new()
         {
-            Label = "Property",
+            Label = PropertyAdministratorDisplayLocalization.L("Property"),
             Value = property != null
-                ? $"Viewing: {property.PropertyName}\n{PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType)} • {property.Location}"
+                ? $"Viewing: {property.PropertyName}\n{PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType)} • {property.Location}"
                 : "—",
             IconClass = "fa-house"
         },
-        new() { Label = "Service", Value = LabelServiceType(input.ServiceType), IconClass = "fa-dolly" },
-        new() { Label = "Items", Value = LabelItems(input.ItemsToMoveList), IconClass = "fa-couch" },
-        new() { Label = "Help needed", Value = LabelHelpers(input.HelperCount), IconClass = "fa-users" },
-        new() { Label = "Date & time", Value = $"{LabelScheduleWhen(input.ScheduleWhen)} • {input.ScheduleTimeWindow}", IconClass = "fa-calendar" },
-        new() { Label = "Access", Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
-        new() { Label = "Updates", Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = LabelServiceType(input.ServiceType), IconClass = "fa-dolly" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Items"), Value = LabelItems(input.ItemsToMoveList), IconClass = "fa-couch" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Help needed"), Value = LabelHelpers(input.HelperCount), IconClass = "fa-users" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Date & time"), Value = $"{LabelScheduleWhen(input.ScheduleWhen)} • {input.ScheduleTimeWindow}", IconClass = "fa-calendar" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorMovingHelpReviewRowViewModel> BuildBookingDetails(
         PropertyAdministratorMovingHelpSubmitInput input) =>
     [
-        new() { Label = "Service", Value = LabelServiceType(input.ServiceType), IconClass = "fa-tag" },
-        new() { Label = "Helpers", Value = LabelHelpers(input.HelperCount), IconClass = "fa-users" },
-        new() { Label = "Items", Value = LabelItems(input.ItemsToMoveList), IconClass = "fa-box" },
-        new() { Label = "Access", Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
-        new() { Label = "Updates", Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = LabelServiceType(input.ServiceType), IconClass = "fa-tag" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Helpers"), Value = LabelHelpers(input.HelperCount), IconClass = "fa-users" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Items"), Value = LabelItems(input.ItemsToMoveList), IconClass = "fa-box" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorMovingHelpTimelineItemViewModel> BuildTimeline(
@@ -228,9 +228,9 @@ public class PropertyAdministratorMovingHelpService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = $"Today, {submitted:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Team assigned", StatusLabel = $"Today, {assigned:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Scheduled visit", StatusLabel = visitLabel, IconClass = "fa-calendar-check", State = "active" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = $"Today, {submitted:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Team assigned"), StatusLabel = $"Today, {assigned:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Scheduled visit"), StatusLabel = visitLabel, IconClass = "fa-calendar-check", State = "active" }
         ];
     }
 
@@ -321,24 +321,7 @@ public class PropertyAdministratorMovingHelpService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -369,9 +352,9 @@ public class PropertyAdministratorMovingHelpService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

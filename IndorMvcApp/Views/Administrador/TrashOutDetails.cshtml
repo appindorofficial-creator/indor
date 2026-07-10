@@ -82,7 +82,7 @@
                 {
                     <label class="pa-chip @(Model.BinCount == c.Value ? "is-selected" : null)">
                         <input type="radio" name="BinCount" value="@c.Value" @(Model.BinCount == c.Value ? "checked" : null) />
-                        <span>@c.Label</span>
+                        <span>@L[c.Label]</span>
                     </label>
                 }
             </div>

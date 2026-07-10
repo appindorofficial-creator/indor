@@ -86,7 +86,7 @@ public class PropertyAdministratorPressureWashingService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             PropertyId = property.Id,
             ViewingProperty = MapProperty(property),
-            PropertyStatusLabel = isRental ? "Occupied now" : null,
+            PropertyStatusLabel = isRental ? PropertyAdministratorDisplayLocalization.L("Occupied now") : null,
             WashAreas = string.Join(",", step1.WashAreasList),
             AreaSize = step1.AreaSize,
             ServiceReason = step1.ServiceReason,
@@ -127,7 +127,7 @@ public class PropertyAdministratorPressureWashingService(
             ScheduledUtc = visitDate,
             IsEmergency = false,
             EtaLabel = LabelEta(input.ArrivalWindow),
-            TeamLabel = "CleanWash Exterior Crew",
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("CleanWash Exterior Crew"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "CleanWash Exterior Crew",
@@ -220,14 +220,14 @@ public class PropertyAdministratorPressureWashingService(
         PropertyAdministratorPressureWashingSubmitInput input,
         IndorPropertyAdminPortfolioProperty? property) =>
     [
-        new() { Label = "Property", Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
-        new() { Label = "Service", Value = "Pressure washing", IconClass = "fa-spray-can" },
-        new() { Label = "Areas", Value = LabelAreas(input.WashAreasList), IconClass = "fa-border-all" },
-        new() { Label = "Size", Value = LabelAreaSize(input.AreaSize), IconClass = "fa-ruler-combined" },
-        new() { Label = "Reason", Value = LabelReason(input.ServiceReason), IconClass = "fa-broom" },
-        new() { Label = "Access", Value = LabelAccess(input), IconClass = "fa-key" },
-        new() { Label = "Updates", Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" },
-        new() { Label = "Estimated total", Value = EstimateTotal(input.AreaSize), IconClass = "fa-dollar-sign" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Property"), Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = "Pressure washing", IconClass = "fa-spray-can" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Areas"), Value = LabelAreas(input.WashAreasList), IconClass = "fa-border-all" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Size"), Value = LabelAreaSize(input.AreaSize), IconClass = "fa-ruler-combined" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Reason"), Value = LabelReason(input.ServiceReason), IconClass = "fa-broom" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelAccess(input), IconClass = "fa-key" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Estimated total"), Value = EstimateTotal(input.AreaSize), IconClass = "fa-dollar-sign" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorPressureWashingTimelineItemViewModel> BuildTimeline(
@@ -239,10 +239,10 @@ public class PropertyAdministratorPressureWashingService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = $"Today, {submitted:h:mm tt}", IconClass = "fa-circle-check", State = "done", StepNumber = 1 },
-            new() { Label = "Crew assigned", StatusLabel = $"Today, {assigned:h:mm tt}", IconClass = "fa-users", State = "done", StepNumber = 2 },
-            new() { Label = "Scheduled", StatusLabel = $"Today, {scheduled:h:mm tt}", IconClass = "fa-calendar-day", State = "done", StepNumber = 3 },
-            new() { Label = "On the way", StatusLabel = "Tomorrow", IconClass = "fa-truck", State = "pending", StepNumber = 4 }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = $"Today, {submitted:h:mm tt}", IconClass = "fa-circle-check", State = "done", StepNumber = 1 },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Crew assigned"), StatusLabel = $"Today, {assigned:h:mm tt}", IconClass = "fa-users", State = "done", StepNumber = 2 },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Scheduled"), StatusLabel = $"Today, {scheduled:h:mm tt}", IconClass = "fa-calendar-day", State = "done", StepNumber = 3 },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("On the way"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Tomorrow"), IconClass = "fa-truck", State = "pending", StepNumber = 4 }
         ];
     }
 
@@ -349,24 +349,7 @@ public class PropertyAdministratorPressureWashingService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -397,9 +380,9 @@ public class PropertyAdministratorPressureWashingService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

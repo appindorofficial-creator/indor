@@ -223,7 +223,7 @@ public class PropertyAdministratorPreventiveMaintenanceService(
             PlanId = plan.Id,
             ViewingProperty = MapProperty(property),
             PlanTierLabel = $"{tierLabel} Plan",
-            NextVisitLabel = "Next visit in 14 days",
+            NextVisitLabel = PropertyAdministratorDisplayLocalization.L("Next visit in 14 days"),
             BundlePriceLabel = $"${plan.BundlePrice:0}",
             SelectedServices = catalog.Where(c => selectedKeys.Contains(c.ServiceKey))
                 .Select(c => new PropertyAdministratorPreventiveServiceItemViewModel
@@ -237,10 +237,10 @@ public class PropertyAdministratorPreventiveMaintenanceService(
                 }).ToList(),
             Preferences =
             [
-                new() { Label = "Preferred timing", Value = LabelTiming(plan.PreferredTiming), IconClass = "fa-calendar" },
-                new() { Label = "Access method", Value = LabelAccess(plan.EntryAccess), IconClass = "fa-key" },
-                new() { Label = "Updates to", Value = LabelUpdates(plan.UpdateRecipients), IconClass = "fa-users" },
-                new() { Label = "Auto-reminders", Value = plan.AutoReminders ? "Enabled" : "Disabled", IconClass = "fa-bell" }
+                new() { Label = PropertyAdministratorDisplayLocalization.L("Preferred timing"), Value = LabelTiming(plan.PreferredTiming), IconClass = "fa-calendar" },
+                new() { Label = PropertyAdministratorDisplayLocalization.L("Access method"), Value = LabelAccess(plan.EntryAccess), IconClass = "fa-key" },
+                new() { Label = PropertyAdministratorDisplayLocalization.L("Updates to"), Value = LabelUpdates(plan.UpdateRecipients), IconClass = "fa-users" },
+                new() { Label = PropertyAdministratorDisplayLocalization.L("Auto-reminders"), Value = plan.AutoReminders ? "Enabled" : "Disabled", IconClass = "fa-bell" }
             ],
             PreventionBenefits =
             [
@@ -391,25 +391,12 @@ public class PropertyAdministratorPreventiveMaintenanceService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = await db.IndorPropertyAdminServiceRequests
-                .CountAsync(r => r.AdministratorId == admin.Id &&
-                    (r.Status == PropertyAdministratorRequestStatuses.Open ||
-                     r.Status == PropertyAdministratorRequestStatuses.Emergency ||
-                     r.Status == PropertyAdministratorRequestStatuses.InProgress), cancellationToken)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
+        shell.NotificationCount = await db.IndorPropertyAdminServiceRequests
+            .CountAsync(r => r.AdministratorId == admin.Id &&
+                (r.Status == PropertyAdministratorRequestStatuses.Open ||
+                 r.Status == PropertyAdministratorRequestStatuses.Emergency ||
+                 r.Status == PropertyAdministratorRequestStatuses.InProgress), cancellationToken);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -440,9 +427,9 @@ public class PropertyAdministratorPreventiveMaintenanceService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

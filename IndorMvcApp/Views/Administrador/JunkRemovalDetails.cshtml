@@ -41,7 +41,7 @@
                         <input type="checkbox" name="RemovalItemsList" value="@i.Value" @(items.Contains(i.Value) ? "checked" : null) />
                         <span class="pa-prev-service-check pa-prev-service-check--blue"><i class="fas fa-check"></i></span>
                         <i class="fas @i.Icon"></i>
-                        <span>@i.Label</span>
+                        <span>@L[i.Label]</span>
                     </label>
                 }
             </div>

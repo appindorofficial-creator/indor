@@ -120,14 +120,14 @@ public class PropertyAdministratorLandscapingService(
             Category = "Landscaping",
             ScheduledUtc = visitDate,
             IsEmergency = false,
-            EtaLabel = "Tomorrow, 10:00 AM",
-            TeamLabel = "Marco R. • Landscaping",
+            EtaLabel = PropertyAdministratorDisplayLocalization.L("Tomorrow, 10:00 AM"),
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Marco R. • Landscaping"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Marco R.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Verified landscaping pro",
-            VehicleLabel = "Green service truck",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("Green service truck"),
             TimelineStep = 2
         };
 
@@ -211,13 +211,13 @@ public class PropertyAdministratorLandscapingService(
     private static IReadOnlyList<PropertyAdministratorLandscapingSummaryItemViewModel> BuildSummary(
         PropertyAdministratorLandscapingSubmitInput input) =>
     [
-        new() { Label = "Service", Value = LabelService(input), IconClass = "fa-leaf" },
-        new() { Label = "Area", Value = LabelArea(input.WorkArea), IconClass = "fa-tree" },
-        new() { Label = "Reason", Value = LabelReason(input.ServiceReason), IconClass = "fa-car" },
-        new() { Label = "Timing", Value = LabelTimingRequirement(input), IconClass = "fa-clock" },
-        new() { Label = "Materials", Value = input.ProvideMaterials == "Yes" ? "Plants/materials provided by pro" : "Owner provides materials", IconClass = "fa-seedling" },
-        new() { Label = "Haul away", Value = LabelHaulAway(input.HaulAwayType), IconClass = "fa-truck" },
-        new() { Label = "Updates", Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = LabelService(input), IconClass = "fa-leaf" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Area"), Value = LabelArea(input.WorkArea), IconClass = "fa-tree" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Reason"), Value = LabelReason(input.ServiceReason), IconClass = "fa-car" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Timing"), Value = LabelTimingRequirement(input), IconClass = "fa-clock" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Materials"), Value = input.ProvideMaterials == "Yes" ? "Plants/materials provided by pro" : "Owner provides materials", IconClass = "fa-seedling" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Haul away"), Value = LabelHaulAway(input.HaulAwayType), IconClass = "fa-truck" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorLandscapingTimelineItemViewModel> BuildTimeline(
@@ -227,10 +227,10 @@ public class PropertyAdministratorLandscapingService(
 
         return
         [
-            new() { Label = "Request received", StatusLabel = $"Today, {submitted:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Consultation scheduled", StatusLabel = "Tomorrow, 10:00 AM", IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Pro on the way", StatusLabel = "Pending", IconClass = "fa-truck", State = "pending" },
-            new() { Label = "Estimate / scope of work", StatusLabel = "Pending", IconClass = "fa-file-lines", State = "pending" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request received"), StatusLabel = $"Today, {submitted:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Consultation scheduled"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Tomorrow, 10:00 AM"), IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Pro on the way"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-truck", State = "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Estimate / scope of work"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-file-lines", State = "pending" }
         ];
     }
 
@@ -331,24 +331,7 @@ public class PropertyAdministratorLandscapingService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -379,9 +362,9 @@ public class PropertyAdministratorLandscapingService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

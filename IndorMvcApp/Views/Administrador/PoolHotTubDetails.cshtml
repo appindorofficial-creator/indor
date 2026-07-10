@@ -58,7 +58,7 @@
                         <input type="radio" name="MainIssue" value="@i.Value" @(Model.MainIssue == i.Value ? "checked" : null) />
                         <span class="pa-prev-service-check pa-prev-service-check--green"><i class="fas fa-check"></i></span>
                         <i class="fas @i.Icon"></i>
-                        <span>@i.Label</span>
+                        <span>@L[i.Label]</span>
                     </label>
                 }
             </div>
@@ -81,7 +81,7 @@
             <span class="pa-flow-qnum">4</span>
             <label>@L["How urgent is it?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var u in new[] { ("Routine", "Routine"), ("Urgent", "Urgent"), ("Emergency", "Emergency") })
+                @foreach (var u in new[] { ("Routine", L["Routine"]), ("Urgent", L["Urgent"]), ("Emergency", L["Emergency"]) })
                 {
                     <label class="pa-chip @(Model.Urgency == u.Item1 ? "is-selected" : null)">
                         <input type="radio" name="Urgency" value="@u.Item1" @(Model.Urgency == u.Item1 ? "checked" : null) />

@@ -40,7 +40,7 @@
                     <label class="pa-chip @(Model.IssueType == item.Value ? "is-selected" : null)">
                         <input type="radio" name="IssueType" value="@item.Value" @(Model.IssueType == item.Value ? "checked" : null) />
                         <i class="fas @item.Icon"></i>
-                        <span>@item.Label</span>
+                        <span>@L[item.Label]</span>
                     </label>
                 }
             </div>
@@ -78,7 +78,7 @@
             <span class="pa-flow-qnum">4</span>
             <label>@L["How urgent is it?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var u in new[] { ("Normal", "Normal"), ("Urgent", "Urgent"), ("Emergency", "Emergency") })
+                @foreach (var u in new[] { ("Normal", L["Normal"]), ("Urgent", L["Urgent"]), ("Emergency", L["Emergency"]) })
                 {
                     <label class="pa-toggle-btn @(Model.Urgency == u.Item1 ? "is-selected" : null) @(u.Item1 == "Emergency" ? "is-urgent" : null)">
                         <input type="radio" name="Urgency" value="@u.Item1" @(Model.Urgency == u.Item1 ? "checked" : null) />
@@ -106,7 +106,7 @@
                     <label class="pa-chip @(locations.Contains(loc.Value) ? "is-selected" : null)">
                         <input type="checkbox" name="LocationsList" value="@loc.Value" @(locations.Contains(loc.Value) ? "checked" : null) />
                         <i class="fas @loc.Icon"></i>
-                        <span>@loc.Label</span>
+                        <span>@L[loc.Label]</span>
                     </label>
                 }
             </div>

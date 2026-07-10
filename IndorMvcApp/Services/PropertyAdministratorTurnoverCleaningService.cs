@@ -75,14 +75,14 @@ public class PropertyAdministratorTurnoverCleaningService(
             Category = "Cleaning",
             ScheduledUtc = todayVisit,
             IsEmergency = false,
-            EtaLabel = "Today • 11:00 AM – 2:00 PM",
-            TeamLabel = "Maria R. • Turnover",
+            EtaLabel = PropertyAdministratorDisplayLocalization.L("Today • 11:00 AM – 2:00 PM"),
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Maria R. • Turnover"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Maria R.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Licensed Homecare Pro",
-            VehicleLabel = "White service van",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("White service van"),
             TimelineStep = 3
         };
 
@@ -165,14 +165,14 @@ public class PropertyAdministratorTurnoverCleaningService(
     private static IReadOnlyList<PropertyAdministratorEmergencyElectricalSummaryItemViewModel> BuildSummary(
         IndorPropertyAdminPortfolioProperty? property, PropertyAdministratorTurnoverCleaningSubmitInput input) =>
     [
-        new() { Label = "Property", Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
-        new() { Label = "Service", Value = "Turnover Cleaning", IconClass = "fa-broom" },
-        new() { Label = "Next guest arrival", Value = LabelGuestArrival(input.GuestArrival, input.GuestArrivalTime), IconClass = "fa-calendar" },
-        new() { Label = "Scope", Value = LabelServiceType(input.ServiceType), IconClass = "fa-clipboard-list" },
-        new() { Label = "Linens", Value = input.IncludedTasksList.Contains("FreshLinens") ? "Included" : "Not included", IconClass = "fa-bed" },
-        new() { Label = "Restock", Value = LabelRestock(input.IncludedTasksList), IconClass = "fa-box" },
-        new() { Label = "Access", Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
-        new() { Label = "Updates", Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-bell" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Property"), Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = "Turnover Cleaning", IconClass = "fa-broom" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Next guest arrival"), Value = LabelGuestArrival(input.GuestArrival, input.GuestArrivalTime), IconClass = "fa-calendar" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Scope"), Value = LabelServiceType(input.ServiceType), IconClass = "fa-clipboard-list" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Linens"), Value = input.IncludedTasksList.Contains("FreshLinens") ? "Included" : "Not included", IconClass = "fa-bed" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Restock"), Value = LabelRestock(input.IncludedTasksList), IconClass = "fa-box" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-bell" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorTurnoverCleaningTimelineItemViewModel> BuildTimeline(
@@ -184,10 +184,10 @@ public class PropertyAdministratorTurnoverCleaningService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Crew assigned", StatusLabel = assigned, IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Scheduled visit", StatusLabel = scheduled, IconClass = "fa-calendar-check", State = "done" },
-            new() { Label = "Final turnover cleaning", StatusLabel = "Today, 11:00 AM – 2:00 PM", IconClass = "fa-broom", State = "active" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Crew assigned"), StatusLabel = assigned, IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Scheduled visit"), StatusLabel = scheduled, IconClass = "fa-calendar-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Final turnover cleaning"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Today, 11:00 AM – 2:00 PM"), IconClass = "fa-broom", State = "active" }
         ];
     }
 
@@ -265,24 +265,7 @@ public class PropertyAdministratorTurnoverCleaningService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -319,9 +302,9 @@ public class PropertyAdministratorTurnoverCleaningService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

@@ -38,7 +38,7 @@
                 {
                     <label class="pa-chip @(Model.ProblemType == p.Value ? "is-selected" : null)">
                         <input type="radio" name="ProblemType" value="@p.Value" @(Model.ProblemType == p.Value ? "checked" : null) />
-                        <span>@p.Label</span>
+                        <span>@L[p.Label]</span>
                     </label>
                 }
             </div>
@@ -48,11 +48,11 @@
             <span class="pa-flow-qnum">2</span>
             <label><i class="fas fa-water pa-q-icon"></i> @L["Is water actively coming in right now?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var v in new[] { "Yes", "No", "NotSure" })
+                @foreach (var v in new[] { ("Yes", L["Yes"]), ("No", L["No"]), ("NotSure", L["Not sure"]) })
                 {
-                    <label class="pa-toggle-btn @(Model.WaterActivelyComingIn == v ? "is-selected" : null)">
-                        <input type="radio" name="WaterActivelyComingIn" value="@v" @(Model.WaterActivelyComingIn == v ? "checked" : null) />
-                        @(v == "NotSure" ? "Not sure" : v)
+                    <label class="pa-toggle-btn @(Model.WaterActivelyComingIn == v.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="WaterActivelyComingIn" value="@v.Item1" @(Model.WaterActivelyComingIn == v.Item1 ? "checked" : null) />
+                        @v.Item2
                     </label>
                 }
             </div>
@@ -62,11 +62,11 @@
             <span class="pa-flow-qnum">3</span>
             <label><i class="fas fa-users pa-q-icon"></i> @L["Are guests currently inside?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var v in new[] { "Yes", "No", "NotSure" })
+                @foreach (var v in new[] { ("Yes", L["Yes"]), ("No", L["No"]), ("NotSure", L["Not sure"]) })
                 {
-                    <label class="pa-toggle-btn @(Model.GuestsInside == v ? "is-selected" : null)">
-                        <input type="radio" name="GuestsInside" value="@v" @(Model.GuestsInside == v ? "checked" : null) />
-                        @(v == "NotSure" ? "Not sure" : v)
+                    <label class="pa-toggle-btn @(Model.GuestsInside == v.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="GuestsInside" value="@v.Item1" @(Model.GuestsInside == v.Item1 ? "checked" : null) />
+                        @v.Item2
                     </label>
                 }
             </div>
@@ -76,7 +76,7 @@
             <span class="pa-flow-qnum">4</span>
             <label><i class="fas fa-triangle-exclamation pa-q-icon"></i> @L["How urgent is it?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--4">
-                @foreach (var u in new[] { ("Emergency", "Emergency"), ("Urgent", "Urgent"), ("Soon", "Soon"), ("NotUrgent", "Not urgent") })
+                @foreach (var u in new[] { ("Emergency", L["Emergency"]), ("Urgent", L["Urgent"]), ("Soon", L["Soon"]), ("NotUrgent", L["Not urgent"]) })
                 {
                     <label class="pa-toggle-btn @(Model.Urgency == u.Item1 ? "is-selected" : null) @(u.Item1 == "Emergency" ? "is-urgent" : null)">
                         <input type="radio" name="Urgency" value="@u.Item1" @(Model.Urgency == u.Item1 ? "checked" : null) />
@@ -90,7 +90,7 @@
             <span class="pa-flow-qnum">5</span>
             <label><i class="fas fa-location-dot pa-q-icon"></i> @L["Where is the water?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var loc in new[] { ("LivingRoom", "Living room"), ("Bathroom", "Bathroom"), ("Kitchen", "Kitchen"), ("Laundry", "Laundry"), ("Ceiling", "Ceiling"), ("Other", "Other") })
+                @foreach (var loc in new[] { ("LivingRoom", L["Living room"]), ("Bathroom", L["Bathroom"]), ("Kitchen", L["Kitchen"]), ("Laundry", L["Laundry"]), ("Ceiling", L["Ceiling"]), ("Other", L["Other"]) })
                 {
                     <label class="pa-chip @(Model.WaterLocation == loc.Item1 ? "is-selected" : null)">
                         <input type="radio" name="WaterLocation" value="@loc.Item1" @(Model.WaterLocation == loc.Item1 ? "checked" : null) />
@@ -104,7 +104,7 @@
             <span class="pa-flow-qnum">6</span>
             <label><i class="fas fa-lock pa-q-icon"></i> @L["Can the crew enter now?"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
-                @foreach (var e in new[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet"), ("GuestApproval", "Need guest approval") })
+                @foreach (var e in new[] { ("SmartLock", L["Yes, with smart lock"]), ("HostMeet", L["Host will meet"]), ("GuestApproval", L["Need guest approval"]) })
                 {
                     <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Item1 ? "is-selected" : null)">
                         <input type="radio" name="EntryAccess" value="@e.Item1" @(Model.EntryAccess == e.Item1 ? "checked" : null) />
@@ -144,11 +144,11 @@
                 <strong>@L["Will this be processed through insurance?"]</strong>
             </div>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var v in new[] { "Yes", "No", "NotSure" })
+                @foreach (var v in new[] { ("Yes", L["Yes"]), ("No", L["No"]), ("NotSure", L["Not sure"]) })
                 {
-                    <label class="pa-toggle-btn @(Model.ProcessThroughInsurance == v ? "is-selected" : null)">
-                        <input type="radio" name="ProcessThroughInsurance" value="@v" @(Model.ProcessThroughInsurance == v ? "checked" : null) />
-                        @(v == "NotSure" ? "Not sure" : v)
+                    <label class="pa-toggle-btn @(Model.ProcessThroughInsurance == v.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="ProcessThroughInsurance" value="@v.Item1" @(Model.ProcessThroughInsurance == v.Item1 ? "checked" : null) />
+                        @v.Item2
                     </label>
                 }
             </div>

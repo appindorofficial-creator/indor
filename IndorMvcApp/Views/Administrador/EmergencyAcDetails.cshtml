@@ -42,7 +42,7 @@
                     <label class="pa-chip @(Model.ProblemType == p.Value ? "is-selected" : null)">
                         <input type="radio" name="ProblemType" value="@p.Value" @(Model.ProblemType == p.Value ? "checked" : null) />
                         <i class="fas @p.Icon"></i>
-                        <span>@p.Label</span>
+                        <span>@L[p.Label]</span>
                     </label>
                 }
             </div>

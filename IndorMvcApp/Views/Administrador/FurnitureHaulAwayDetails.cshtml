@@ -58,7 +58,7 @@
                         <input type="checkbox" name="FurnitureItemsList" value="@i.Value" @(items.Contains(i.Value) ? "checked" : null) />
                         <span class="pa-prev-service-check pa-prev-service-check--blue"><i class="fas fa-check"></i></span>
                         <i class="fas @i.Icon"></i>
-                        <span>@i.Label</span>
+                        <span>@L[i.Label]</span>
                     </label>
                 }
             </div>
@@ -72,7 +72,7 @@
                 {
                     <label class="pa-chip @(Model.ItemCount == c.Value ? "is-selected" : null)">
                         <input type="radio" name="ItemCount" value="@c.Value" @(Model.ItemCount == c.Value ? "checked" : null) />
-                        <span>@c.Label</span>
+                        <span>@L[c.Label]</span>
                     </label>
                 }
             </div>

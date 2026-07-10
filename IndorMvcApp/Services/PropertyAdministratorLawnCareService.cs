@@ -118,13 +118,13 @@ public class PropertyAdministratorLawnCareService(
             ScheduledUtc = visitDate,
             IsEmergency = false,
             EtaLabel = etaLabel,
-            TeamLabel = "Miguel R. • Lawn Care",
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Miguel R. • Lawn Care"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Miguel R.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Verified lawn care pro",
-            VehicleLabel = "Service truck",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("Service truck"),
             TimelineStep = 3
         };
 
@@ -207,21 +207,21 @@ public class PropertyAdministratorLawnCareService(
     private static IReadOnlyList<PropertyAdministratorLawnCareSummaryItemViewModel> BuildSummary(
         PropertyAdministratorLawnCareSubmitInput input) =>
     [
-        new() { Label = "Service", Value = LabelService(input), IconClass = "fa-seedling" },
-        new() { Label = "Area", Value = LabelArea(input.YardArea), IconClass = "fa-tree" },
-        new() { Label = "Yard size", Value = LabelYardSize(input.YardSize), IconClass = "fa-ruler-combined" },
-        new() { Label = "Frequency", Value = LabelFrequency(input.Frequency), IconClass = "fa-calendar" },
-        new() { Label = "Occupied", Value = input.IsOccupied == "Yes" ? "Yes" : "No", IconClass = "fa-house-user" },
-        new() { Label = "Updates", Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = LabelService(input), IconClass = "fa-seedling" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Area"), Value = LabelArea(input.YardArea), IconClass = "fa-tree" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Yard size"), Value = LabelYardSize(input.YardSize), IconClass = "fa-ruler-combined" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Frequency"), Value = LabelFrequency(input.Frequency), IconClass = "fa-calendar" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Occupied"), Value = input.IsOccupied == "Yes" ? "Yes" : "No", IconClass = "fa-house-user" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorLawnCareTimelineItemViewModel> BuildTimeline(
         PropertyAdministratorLawnCareSubmitInput input) =>
     [
-        new() { Label = "Request confirmed", StatusLabel = "Done", IconClass = "fa-circle-check", State = "done", StepNumber = 1 },
-        new() { Label = "Pro assigned", StatusLabel = "Done", IconClass = "fa-circle-check", State = "done", StepNumber = 2 },
-        new() { Label = "Scheduled arrival", StatusLabel = "Tomorrow, 8:00 AM", IconClass = "fa-calendar", State = "active", StepNumber = 3 },
-        new() { Label = "Photos uploaded", StatusLabel = "Pending", IconClass = "fa-camera", State = "pending", StepNumber = 4 }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Request confirmed"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Done"), IconClass = "fa-circle-check", State = "done", StepNumber = 1 },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Pro assigned"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Done"), IconClass = "fa-circle-check", State = "done", StepNumber = 2 },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Scheduled arrival"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Tomorrow, 8:00 AM"), IconClass = "fa-calendar", State = "active", StepNumber = 3 },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Photos uploaded"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-camera", State = "pending", StepNumber = 4 }
     ];
 
     private static string LabelService(PropertyAdministratorLawnCareSubmitInput input)
@@ -325,24 +325,7 @@ public class PropertyAdministratorLawnCareService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -373,9 +356,9 @@ public class PropertyAdministratorLawnCareService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }
