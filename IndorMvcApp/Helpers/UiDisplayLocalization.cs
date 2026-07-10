@@ -417,6 +417,127 @@ public static class UiDisplayLocalization
             return localizer.T("{0} Package", text[..^" Package".Length].Trim());
         }
 
+        if (text.StartsWith("From: ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("From: {0}", text["From: ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Pressed: ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Pressed: {0}", text["Pressed: ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Now: ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Now: {0}", text["Now: ".Length..].Trim());
+        }
+
+        var itemsMatch = Regex.Match(text, @"^(\d+) Items?$", RegexOptions.IgnoreCase);
+        if (itemsMatch.Success && int.TryParse(itemsMatch.Groups[1].Value, out var itemsCount))
+        {
+            return localizer.T(itemsCount == 1 ? "{0} Item" : "{0} Items", itemsCount);
+        }
+
+        var jobsTodayMatch = Regex.Match(text, @"^(\d+) Jobs? Today$", RegexOptions.IgnoreCase);
+        if (jobsTodayMatch.Success && int.TryParse(jobsTodayMatch.Groups[1].Value, out var jobsTodayCount))
+        {
+            return localizer.T(jobsTodayCount == 1 ? "{0} Job Today" : "{0} Jobs Today", jobsTodayCount);
+        }
+
+        var newLeadsMatch = Regex.Match(text, @"^(\d+) New Leads?$", RegexOptions.IgnoreCase);
+        if (newLeadsMatch.Success && int.TryParse(newLeadsMatch.Groups[1].Value, out var newLeadsCount))
+        {
+            return localizer.T(newLeadsCount == 1 ? "{0} New Lead" : "{0} New Leads", newLeadsCount);
+        }
+
+        var estimatesMatch = Regex.Match(text, @"^(\d+) Estimates?$", RegexOptions.IgnoreCase);
+        if (estimatesMatch.Success && int.TryParse(estimatesMatch.Groups[1].Value, out var estimatesCount))
+        {
+            return localizer.T(estimatesCount == 1 ? "{0} Estimate" : "{0} Estimates", estimatesCount);
+        }
+
+        var completedJobsMatch = Regex.Match(text, @"^(\d+) Completed Jobs?$", RegexOptions.IgnoreCase);
+        if (completedJobsMatch.Success && int.TryParse(completedJobsMatch.Groups[1].Value, out var completedJobsCount))
+        {
+            return localizer.T(completedJobsCount == 1 ? "{0} Completed Job" : "{0} Completed Jobs", completedJobsCount);
+        }
+
+        var activeJobsMatch = Regex.Match(text, @"^(\d+) Active Jobs?$", RegexOptions.IgnoreCase);
+        if (activeJobsMatch.Success && int.TryParse(activeJobsMatch.Groups[1].Value, out var activeJobsCount))
+        {
+            return localizer.T(activeJobsCount == 1 ? "{0} Active Job" : "{0} Active Jobs", activeJobsCount);
+        }
+
+        var propertiesMatch = Regex.Match(text, @"^(\d+) propert(?:y|ies)$", RegexOptions.IgnoreCase);
+        if (propertiesMatch.Success && int.TryParse(propertiesMatch.Groups[1].Value, out var propertiesCount))
+        {
+            return localizer.T(propertiesCount == 1 ? "{0} property" : "{0} properties", propertiesCount);
+        }
+
+        var reportsApprovalMatch = Regex.Match(text, @"^(\d+) reports? need homeowner approval$", RegexOptions.IgnoreCase);
+        if (reportsApprovalMatch.Success && int.TryParse(reportsApprovalMatch.Groups[1].Value, out var reportsApprovalCount))
+        {
+            return localizer.T(
+                reportsApprovalCount == 1 ? "{0} report needs homeowner approval" : "{0} reports need homeowner approval",
+                reportsApprovalCount);
+        }
+
+        var reportsUploadMatch = Regex.Match(text, @"^(\d+) reports? ready to upload$", RegexOptions.IgnoreCase);
+        if (reportsUploadMatch.Success && int.TryParse(reportsUploadMatch.Groups[1].Value, out var reportsUploadCount))
+        {
+            return localizer.T(
+                reportsUploadCount == 1 ? "{0} report ready to upload" : "{0} reports ready to upload",
+                reportsUploadCount);
+        }
+
+        var invoicesOverdueMatch = Regex.Match(text, @"^(\d+) invoices? (?:is|are) overdue$", RegexOptions.IgnoreCase);
+        if (invoicesOverdueMatch.Success && int.TryParse(invoicesOverdueMatch.Groups[1].Value, out var invoicesOverdueCount))
+        {
+            return localizer.T(
+                invoicesOverdueCount == 1 ? "{0} invoice is overdue" : "{0} invoices are overdue",
+                invoicesOverdueCount);
+        }
+
+        var leadsAreaMatch = Regex.Match(text, @"^(\d+) leads? match your service area$", RegexOptions.IgnoreCase);
+        if (leadsAreaMatch.Success && int.TryParse(leadsAreaMatch.Groups[1].Value, out var leadsAreaCount))
+        {
+            return localizer.T(
+                leadsAreaCount == 1 ? "{0} lead matches your service area" : "{0} leads match your service area",
+                leadsAreaCount);
+        }
+
+        if (text.StartsWith("Scheduled — ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Scheduled — {0}", text["Scheduled — ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Today • ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Today • {0}", text["Today • ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Tomorrow • ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Tomorrow • {0}", text["Tomorrow • ".Length..].Trim());
+        }
+
+        var timeBulletMatch = Regex.Match(text, @"^([A-Za-z]{3} \d+) • (.+)$");
+        if (timeBulletMatch.Success)
+        {
+            return localizer.T("{0} • {1}", timeBulletMatch.Groups[1].Value, timeBulletMatch.Groups[2].Value);
+        }
+
+        var estimateAmountMatch = Regex.Match(text, @"^Estimate \$(.+)$", RegexOptions.IgnoreCase);
+        if (estimateAmountMatch.Success)
+        {
+            return localizer.T("Estimate ${0}", estimateAmountMatch.Groups[1].Value);
+        }
+
+        if (text.EndsWith(" Lead", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("{0} Lead", text[..^" Lead".Length].Trim());
+        }
+
         return localizer[text];
     }
 

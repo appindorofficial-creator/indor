@@ -33,16 +33,16 @@
             </p>
             @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
             {
-                <p class="prv-net-sub-trade">@Model.TradeLabel</p>
+                <p class="prv-net-sub-trade">@UiDisplayLocalization.Localize(L, Model.TradeLabel)</p>
             }
             @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel) || !string.IsNullOrWhiteSpace(Model.LocationLabel))
             {
                 <p class="prv-net-sub-loc">
                     <i class="fas fa-location-dot"></i>
-                    @(!string.IsNullOrWhiteSpace(Model.LocationLabel) ? Model.LocationLabel : Model.DistanceLabel)
+                    @(!string.IsNullOrWhiteSpace(Model.LocationLabel) ? UiDisplayLocalization.Localize(L, Model.LocationLabel) : UiDisplayLocalization.Localize(L, Model.DistanceLabel))
                     @if (!string.IsNullOrWhiteSpace(Model.LocationLabel) && !string.IsNullOrWhiteSpace(Model.DistanceLabel))
                     {
-                        <span class="prv-net-sub-dist">&middot; @Model.DistanceLabel</span>
+                        <span class="prv-net-sub-dist">&middot; @UiDisplayLocalization.Localize(L, Model.DistanceLabel)</span>
                     }
                 </p>
             }

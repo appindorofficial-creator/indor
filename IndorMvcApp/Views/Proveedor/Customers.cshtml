@@ -121,7 +121,7 @@
                         <div class="prv-pro-customer-card-info">
                             <div class="prv-pro-customer-card-name-row">
                                 <strong>@customer.Name</strong>
-                                <span class="prv-pro-pill prv-pro-pill--@customer.ConnectionClass">@customer.ConnectionLabel</span>
+                                <span class="prv-pro-pill prv-pro-pill--@customer.ConnectionClass">@UiDisplayLocalization.Localize(L, customer.ConnectionLabel)</span>
                             </div>
                             @if (!string.IsNullOrWhiteSpace(customer.Address))
                             {
@@ -136,7 +136,7 @@
                                 {
                                     <span><i class="fas fa-mobile-screen"></i> @L["App connected"]</span>
                                 }
-                                <span><i class="fas fa-house"></i> @customer.PropertiesCount propert@(customer.PropertiesCount == 1 ? "y" : "ies")</span>
+                                <span><i class="fas fa-house"></i> @UiDisplayLocalization.Localize(L, $"{customer.PropertiesCount} propert{(customer.PropertiesCount == 1 ? "y" : "ies")}")</span>
                             </div>
                         </div>
                     </div>
@@ -145,7 +145,7 @@
                     {
                         <div class="prv-pro-customer-job-section">
                             <div class="prv-pro-customer-job-main">
-                                <span class="prv-pro-pill prv-pro-pill--@customer.JobStatusClass">@customer.JobStatusLabel</span>
+                                <span class="prv-pro-pill prv-pro-pill--@customer.JobStatusClass">@UiDisplayLocalization.Localize(L, customer.JobStatusLabel)</span>
                                 <strong>@customer.JobTitle</strong>
                                 @if (customer.JobMetaLines.Count > 0)
                                 {
@@ -153,7 +153,7 @@
                                         @foreach (var meta in customer.JobMetaLines)
                                         {
                                             <span class="prv-pro-meta-line prv-pro-meta-line--@meta.Tone">
-                                                <i class="fas @meta.IconClass"></i> @meta.Text
+                                                <i class="fas @meta.IconClass"></i> @UiDisplayLocalization.Localize(L, meta.Text)
                                             </span>
                                         }
                                     </div>
@@ -179,10 +179,10 @@
                     }
 
                     <div class="prv-pro-customer-card-actions">
-                        <button type="button" class="prv-pro-btn prv-pro-btn--@customer.PrimaryActionClass">@customer.PrimaryAction</button>
+                        <button type="button" class="prv-pro-btn prv-pro-btn--@customer.PrimaryActionClass">@UiDisplayLocalization.Localize(L, customer.PrimaryAction)</button>
                         @if (!string.IsNullOrWhiteSpace(customer.SecondaryAction))
                         {
-                            <button type="button" class="prv-pro-btn prv-pro-btn--ghost">@customer.SecondaryAction</button>
+                            <button type="button" class="prv-pro-btn prv-pro-btn--ghost">@UiDisplayLocalization.Localize(L, customer.SecondaryAction)</button>
                         }
                     </div>
                 </article>
@@ -204,7 +204,7 @@
                 {
                     <article class="prv-pro-smart-card prv-pro-smart-card--@tip.Tone">
                         <i class="fas @tip.IconClass"></i>
-                        <span>@tip.Text</span>
+                        <span>@UiDisplayLocalization.Localize(L, tip.Text)</span>
                     </article>
                 }
             </div>

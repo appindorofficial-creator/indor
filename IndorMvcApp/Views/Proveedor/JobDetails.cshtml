@@ -38,7 +38,7 @@
             </div>
             <small class="prv-pro-job-card-address">@Model.Address</small>
             <div class="prv-pro-lead-badges">
-                <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@Model.StatusLabel</span>
+                <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
                 <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @Model.ServiceType</span>
                 @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
                 {
@@ -50,7 +50,7 @@
 
     <section class="prv-pro-job-meta-row">
         <div><i class="fas fa-clock"></i><strong>@Model.AppointmentLabel</strong><span>@L["Appointment"]</span></div>
-        <div><i class="fas fa-circle-dot"></i><strong>@Model.StatusLabel</strong><span>@L["Status"]</span></div>
+        <div><i class="fas fa-circle-dot"></i><strong>@UiDisplayLocalization.Localize(L, Model.StatusLabel)</strong><span>@L["Status"]</span></div>
         @if (!string.IsNullOrWhiteSpace(Model.EstimateCode))
         {
             <div><i class="fas fa-file-invoice"></i><strong>@Model.EstimateCode</strong><span>@L["Estimate"]</span></div>
@@ -70,7 +70,7 @@
                     <strong>@Model.CustomerName</strong>
                     @if (Model.IsHomeownerVerified)
                     {
-                        <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> Verified Homeowner</span>
+                        <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> @L["Verified Homeowner"]</span>
                     }
                     @if (!string.IsNullOrWhiteSpace(Model.CustomerPhone))
                     {
@@ -95,28 +95,28 @@
     @if (!string.IsNullOrWhiteSpace(Model.ScopeOfWork))
     {
         <section class="prv-pro-lead-section prv-pro-detail-row">
-            <h3><i class="fas fa-clipboard-list"></i> Scope of Work</h3>
+            <h3><i class="fas fa-clipboard-list"></i> @L["Scope of Work"]</h3>
             <p class="prv-pro-lead-description">@Model.ScopeOfWork</p>
         </section>
     }
     @if (!string.IsNullOrWhiteSpace(Model.MaterialsNeeded))
     {
         <section class="prv-pro-lead-section prv-pro-detail-row">
-            <h3><i class="fas fa-toolbox"></i> Materials Needed</h3>
+            <h3><i class="fas fa-toolbox"></i> @L["Materials Needed"]</h3>
             <p class="prv-pro-lead-description">@Model.MaterialsNeeded</p>
         </section>
     }
     @if (!string.IsNullOrWhiteSpace(Model.AccessInstructions))
     {
         <section class="prv-pro-lead-section prv-pro-detail-row">
-            <h3><i class="fas fa-door-open"></i> Access Instructions</h3>
+            <h3><i class="fas fa-door-open"></i> @L["Access Instructions"]</h3>
             <p class="prv-pro-lead-description">@Model.AccessInstructions</p>
         </section>
     }
     @if (!string.IsNullOrWhiteSpace(Model.JobNotes))
     {
         <section class="prv-pro-lead-section prv-pro-detail-row">
-            <h3><i class="fas fa-note-sticky"></i> Notes</h3>
+            <h3><i class="fas fa-note-sticky"></i> @L["Notes"]</h3>
             <p class="prv-pro-lead-description">@Model.JobNotes</p>
         </section>
     }
@@ -155,23 +155,23 @@
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="id" value="@Model.JobId" />
                 <button type="submit" class="prv-pro-btn prv-pro-btn--success prv-pro-job-action-btn">
-                    <i class="fas fa-play"></i> Start Job
+                    <i class="fas fa-play"></i> @L["Start Job"]
                 </button>
             </form>
         }
         else if (Model.StatusClass == "progress")
         {
             <a asp-controller="Proveedor" asp-action="ActiveJob" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--success prv-pro-job-action-btn">
-                <i class="fas fa-play"></i> Continue Job
+                <i class="fas fa-play"></i> @L["Continue Job"]
             </a>
         }
         else if (Model.StatusClass == "completed")
         {
             <a asp-controller="Proveedor" asp-action="JobReport" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--primary prv-pro-job-action-btn">
-                <i class="fas fa-file-lines"></i> View Report
+                <i class="fas fa-file-lines"></i> @L["View Report"]
             </a>
         }
-        <a asp-controller="Proveedor" asp-action="RescheduleJob" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-calendar"></i> Reschedule</a>
-        <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-message"></i> Message Customer</button>
+        <a asp-controller="Proveedor" asp-action="RescheduleJob" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-calendar"></i> @L["Reschedule"]</a>
+        <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-message"></i> @L["Message Customer"]</button>
     </footer>
 </div>

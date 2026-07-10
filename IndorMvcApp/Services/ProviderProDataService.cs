@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
@@ -480,7 +481,7 @@ public partial class ProviderProDataService(
         {
             meta.Add(new ProviderProJobMetaLineViewModel
             {
-                Text = "Viewed by customer",
+                Text = ProviderProDisplayLocalization.L("Viewed by customer"),
                 IconClass = "fa-eye",
                 Tone = "neutral"
             });
@@ -594,9 +595,9 @@ public partial class ProviderProDataService(
             ShowPhotosLink = false,
             ShowChecklistLink = false,
             ShowHouseFactsLink = true,
-            PrimaryAction = "Accept",
+            PrimaryAction = ProviderProDisplayLocalization.L("Accept"),
             PrimaryActionClass = "primary",
-            SecondaryAction = "Send Estimate",
+            SecondaryAction = ProviderProDisplayLocalization.L("Send Estimate"),
             LeadId = lead.Id
         };
     }
@@ -2881,7 +2882,7 @@ public partial class ProviderProDataService(
         {
             meta.Add(new ProviderProJobMetaLineViewModel
             {
-                Text = "Viewed by customer",
+                Text = ProviderProDisplayLocalization.L("Viewed by customer"),
                 IconClass = "fa-eye",
                 Tone = "neutral"
             });
@@ -2896,8 +2897,8 @@ public partial class ProviderProDataService(
             Title = estimate.ServiceType ?? estimate.Title ?? $"Estimate #{estimate.EstimateCode}",
             Address = estimate.Address,
             CustomerName = estimate.CustomerName ?? "",
-            TimeLabel = estimate.SentUtc.HasValue ? FormatTimeLabel(estimate.SentUtc) : "Draft",
-            StatusLabel = "Estimate",
+            TimeLabel = estimate.SentUtc.HasValue ? FormatTimeLabel(estimate.SentUtc) : ProviderProDisplayLocalization.L("Draft"),
+            StatusLabel = ProviderProDisplayLocalization.L("Estimate"),
             StatusClass = "estimate",
             IconClass = MapServiceIcon(estimate.ServiceType ?? estimate.EstimateCode),
             EstimateAmount = estimate.Amount,
@@ -2906,9 +2907,9 @@ public partial class ProviderProDataService(
             ShowPhotosLink = false,
             ShowChecklistLink = false,
             ShowHouseFactsLink = true,
-            PrimaryAction = isDraft ? "Edit Estimate" : "Follow Up",
+            PrimaryAction = isDraft ? ProviderProDisplayLocalization.L("Edit Estimate") : ProviderProDisplayLocalization.L("Follow Up"),
             PrimaryActionClass = "primary",
-            SecondaryAction = canConvert ? "Convert to Job" : "View Estimate",
+            SecondaryAction = canConvert ? ProviderProDisplayLocalization.L("Convert to Job") : ProviderProDisplayLocalization.L("View Estimate"),
             CanConvertToJob = canConvert,
             LeadId = estimate.LeadId
         };
@@ -2924,22 +2925,23 @@ public partial class ProviderProDataService(
     {
         if (!when.HasValue)
         {
-            return "Not scheduled";
+            return ProviderProDisplayLocalization.L("Not scheduled");
         }
 
         var local = when.Value.Kind == DateTimeKind.Utc ? when.Value.ToLocalTime() : when.Value;
-        var day = local.Date == DateTime.Today ? "Today"
-            : local.Date == DateTime.Today.AddDays(1) ? "Tomorrow"
-            : local.ToString("MMM d");
+        var culture = CultureInfo.CurrentCulture;
+        var day = local.Date == DateTime.Today ? ProviderProDisplayLocalization.L("Today")
+            : local.Date == DateTime.Today.AddDays(1) ? ProviderProDisplayLocalization.L("Tomorrow")
+            : local.ToString("MMM d", culture);
 
-        return $"{day} • {local:h:mm tt}";
+        return $"{day} • {local.ToString("h:mm tt", culture)}";
     }
 
     private static string FormatScheduleTimeShort(DateTime? when)
     {
         if (!when.HasValue)
         {
-            return "TBD";
+            return ProviderProDisplayLocalization.L("TBD");
         }
 
         var local = when.Value.Kind == DateTimeKind.Utc ? when.Value.ToLocalTime() : when.Value;
@@ -2965,10 +2967,10 @@ public partial class ProviderProDataService(
 
     private static (string Primary, string PrimaryClass, string? Secondary) MapJobActions(string status) => status switch
     {
-        ProviderJobStatuses.InProgress => ("Continue Job", "success", "Upload Photos"),
-        ProviderJobStatuses.Completed => ("View Record", "ghost", null),
-        ProviderJobStatuses.Scheduled or ProviderJobStatuses.Confirmed => ("Start Job", "primary", "View Details"),
-        _ => ("View Details", "ghost", null)
+        ProviderJobStatuses.InProgress => (ProviderProDisplayLocalization.L("Continue Job"), "success", ProviderProDisplayLocalization.L("Upload Photos")),
+        ProviderJobStatuses.Completed => (ProviderProDisplayLocalization.L("View Record"), "ghost", null),
+        ProviderJobStatuses.Scheduled or ProviderJobStatuses.Confirmed => (ProviderProDisplayLocalization.L("Start Job"), "primary", ProviderProDisplayLocalization.L("View Details")),
+        _ => (ProviderProDisplayLocalization.L("View Details"), "ghost", null)
     };
 
     private static string MapServiceIcon(string value)
@@ -4235,9 +4237,9 @@ public partial class ProviderProDataService(
 
     private static string MapConversationStatusLabel(string status) => status switch
     {
-        ProviderConversationStatuses.Pending => "Pending",
-        ProviderConversationStatuses.InProgress => "In Progress",
-        _ => "New"
+        ProviderConversationStatuses.Pending => ProviderProDisplayLocalization.L("Pending"),
+        ProviderConversationStatuses.InProgress => ProviderProDisplayLocalization.L("In Progress"),
+        _ => ProviderProDisplayLocalization.L("New")
     };
 
     private static string MapConversationStatusClass(string status) => status switch
@@ -4507,7 +4509,7 @@ public partial class ProviderProDataService(
         bool hasPendingApproval)
     {
         var isConnected = customer.ConnectionStatus == ProviderCustomerConnectionStatuses.Connected;
-        var connectionLabel = isConnected ? "Connected" : "Needs Invite";
+        var connectionLabel = isConnected ? ProviderProDisplayLocalization.L("Connected") : ProviderProDisplayLocalization.L("Needs Invite");
         var connectionClass = isConnected ? "connected" : "needsinvite";
 
         var displayAddress = !string.IsNullOrWhiteSpace(customer.Address)
@@ -4539,37 +4541,39 @@ public partial class ProviderProDataService(
             PropertiesCount = Math.Max(1, customer.PropertiesCount),
             ActivityNote = customer.LastActivityNote,
             ShowPhotosLink = isConnected,
-            PrimaryAction = isConnected ? "View Customer" : "Send Invite",
+            PrimaryAction = isConnected ? ProviderProDisplayLocalization.L("View Customer") : ProviderProDisplayLocalization.L("Send Invite"),
             PrimaryActionClass = isConnected ? "primary" : "primary",
-            SecondaryAction = isConnected ? "Open Property" : "View Record"
+            SecondaryAction = isConnected ? ProviderProDisplayLocalization.L("Open Property") : ProviderProDisplayLocalization.L("View Record")
         };
 
         if (activeJob != null)
         {
             card.ShowJobSection = true;
             card.JobTitle = activeJob.Title;
-            card.JobStatusLabel = activeJob.Status == ProviderJobStatuses.InProgress ? "In Progress" : "Active Job";
+            card.JobStatusLabel = activeJob.Status == ProviderJobStatuses.InProgress
+                ? ProviderProDisplayLocalization.L("In Progress")
+                : ProviderProDisplayLocalization.L("Active Job");
             card.JobStatusClass = activeJob.Status == ProviderJobStatuses.InProgress ? "progress" : "scheduled";
             card.JobMetaLines = BuildCustomerJobMeta(activeJob, customer, hasPendingApproval);
 
             if (activeJob.Status == ProviderJobStatuses.InProgress)
             {
-                card.PrimaryAction = "Continue Job";
+                card.PrimaryAction = ProviderProDisplayLocalization.L("Continue Job");
                 card.PrimaryActionClass = "success";
-                card.SecondaryAction = "Message";
+                card.SecondaryAction = ProviderProDisplayLocalization.L("Message");
             }
         }
         else if (recentCompleted != null)
         {
             card.ShowJobSection = true;
             card.JobTitle = recentCompleted.Title;
-            card.JobStatusLabel = "Recent Work";
+            card.JobStatusLabel = ProviderProDisplayLocalization.L("Recent Work");
             card.JobStatusClass = "completed";
             card.JobMetaLines =
             [
                 new ProviderProJobMetaLineViewModel
                 {
-                    Text = "Completed",
+                    Text = ProviderProDisplayLocalization.L("Completed"),
                     IconClass = "fa-circle-check",
                     Tone = "success"
                 }
@@ -4585,9 +4589,9 @@ public partial class ProviderProDataService(
                 });
             }
 
-            card.PrimaryAction = "View Record";
+            card.PrimaryAction = ProviderProDisplayLocalization.L("View Record");
             card.PrimaryActionClass = "ghost";
-            card.SecondaryAction = "Message";
+            card.SecondaryAction = ProviderProDisplayLocalization.L("Message");
         }
         else if (!isConnected)
         {
@@ -4622,7 +4626,7 @@ public partial class ProviderProDataService(
         {
             meta.Add(new ProviderProJobMetaLineViewModel
             {
-                Text = "Pending homeowner approval",
+                Text = ProviderProDisplayLocalization.L("Pending homeowner approval"),
                 IconClass = "fa-clock",
                 Tone = "warning"
             });
@@ -4642,7 +4646,7 @@ public partial class ProviderProDataService(
         {
             meta.Add(new ProviderProJobMetaLineViewModel
             {
-                Text = "Before photos missing",
+                Text = ProviderProDisplayLocalization.L("Before photos missing"),
                 IconClass = "fa-triangle-exclamation",
                 Tone = "danger"
             });

@@ -14,7 +14,7 @@
                 {
                     <i class="fas @step.IconClass"></i>
                 }
-                @step.Label
+                @UiDisplayLocalization.Localize(L, step.Label)
             </a>
         }
         else if (step.IsCurrent)
@@ -24,7 +24,7 @@
                 {
                     <i class="fas @step.IconClass"></i>
                 }
-                @step.Label
+                @UiDisplayLocalization.Localize(L, step.Label)
             </strong>
         }
         else
@@ -34,7 +34,7 @@
                 {
                     <i class="fas @step.IconClass"></i>
                 }
-                @step.Label
+                @UiDisplayLocalization.Localize(L, step.Label)
             </span>
         }
     }
