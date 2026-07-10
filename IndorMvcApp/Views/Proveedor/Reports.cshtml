@@ -36,7 +36,7 @@
         </div>
         <p>@L["Manage completion reports and home records."]</p>
         <a asp-controller="Proveedor" asp-action="ReportTemplates" class="prv-pro-create-btn">
-            <i class="fas fa-plus"></i> Create Report
+            <i class="fas fa-plus"></i> @L["Create Report"]
         </a>
     </section>
 
@@ -47,7 +47,7 @@
             <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search reports, jobs, or properties"]" />
         </div>
         <button type="button" class="prv-pro-filter-btn prv-pro-filter-btn--labeled" title="@L["Filters"]">
-            <i class="fas fa-sliders"></i> Filters
+            <i class="fas fa-sliders"></i> @L["Filters"]
         </button>
     </form>
 
@@ -85,7 +85,7 @@
             <a asp-controller="Proveedor" asp-action="Reports"
                asp-route-tab="@id"
                asp-route-q="@Model.SearchQuery"
-               class="@(Model.ActiveTab == id ? "is-active" : "")">@label</a>
+               class="@(Model.ActiveTab == id ? "is-active" : "")">@UiDisplayLocalization.Localize(L, label)</a>
         }
     </nav>
 
@@ -112,7 +112,7 @@
                         <div class="prv-pro-report-card-body">
                             <div class="prv-pro-report-title-row">
                                 <strong>@report.Title</strong>
-                                <span class="prv-pro-pill prv-pro-pill--@report.StatusClass">@report.StatusLabel</span>
+                                <span class="prv-pro-pill prv-pro-pill--@report.StatusClass">@UiDisplayLocalization.Localize(L, report.StatusLabel)</span>
                             </div>
                             <small class="prv-pro-report-address">@report.Address</small>
                             <small class="prv-pro-report-meta">@report.CustomerJobLabel</small>
@@ -138,7 +138,7 @@
                             </div>
                         </div>
                         <div class="prv-pro-report-action">
-                            <button type="button" class="prv-pro-btn prv-pro-btn--@report.ActionClass">@report.ActionLabel</button>
+                            <button type="button" class="prv-pro-btn prv-pro-btn--@report.ActionClass">@UiDisplayLocalization.Localize(L, report.ActionLabel)</button>
                         </div>
                     </div>
                 </article>
@@ -154,13 +154,13 @@
                 if (!string.IsNullOrEmpty(action))
                 {
                     <a asp-controller="Proveedor" asp-action="@action" class="prv-pro-quick-item prv-pro-quick-item--@color">
-                        <i class="fas @icon"></i><span>@label</span>
+                        <i class="fas @icon"></i><span>@UiDisplayLocalization.Localize(L, label)</span>
                     </a>
                 }
                 else
                 {
                     <button type="button" class="prv-pro-quick-item prv-pro-quick-item--@color">
-                        <i class="fas @icon"></i><span>@label</span>
+                        <i class="fas @icon"></i><span>@UiDisplayLocalization.Localize(L, label)</span>
                     </button>
                 }
             }

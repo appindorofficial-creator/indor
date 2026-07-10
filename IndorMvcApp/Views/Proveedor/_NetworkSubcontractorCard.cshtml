@@ -53,7 +53,7 @@
             {
                 <span class="prv-net-reco-tag">@L["Recommended"]</span>
             }
-            <span class="prv-net-avail @(Model.IsAvailableNow ? null : "prv-net-avail--soft")">@Model.AvailabilityLabel</span>
+            <span class="prv-net-avail @(Model.IsAvailableNow ? null : "prv-net-avail--soft")">@UiDisplayLocalization.Localize(L, Model.AvailabilityLabel)</span>
             <i class="fas fa-chevron-right prv-net-chevron"></i>
         </div>
     </div>
@@ -61,15 +61,15 @@
     <div class="prv-net-badges">
         @if (Model.IsVerified)
         {
-            <span class="prv-net-badge prv-net-badge--verified"><i class="fas fa-circle-check"></i> Verified</span>
+            <span class="prv-net-badge prv-net-badge--verified"><i class="fas fa-circle-check"></i> @L["Verified"]</span>
         }
         @if (Model.IsInsured)
         {
-            <span class="prv-net-badge prv-net-badge--insured"><i class="fas fa-shield-halved"></i> Insurance Active</span>
+            <span class="prv-net-badge prv-net-badge--insured"><i class="fas fa-shield-halved"></i> @L["Insurance Active"]</span>
         }
         @if (Model.IsDocsReady)
         {
-            <span class="prv-net-badge prv-net-badge--docs"><i class="fas fa-file-lines"></i> Docs Ready</span>
+            <span class="prv-net-badge prv-net-badge--docs"><i class="fas fa-file-lines"></i> @L["Docs Ready"]</span>
         }
     </div>
 
@@ -89,13 +89,13 @@
         @if (Model.HasJobsCompleted)
         {
             <span class="prv-net-stat">
-                <i class="fas fa-briefcase"></i> <strong>@Model.JobsCompletedCount</strong> jobs completed
+                <i class="fas fa-briefcase"></i> @L.T("{0} jobs completed", Model.JobsCompletedCount)
             </span>
         }
         @if (!string.IsNullOrWhiteSpace(Model.ResponseLabel))
         {
             <span class="prv-net-stat">
-                <i class="fas fa-clock"></i> @Model.ResponseLabel
+                <i class="fas fa-clock"></i> @UiDisplayLocalization.Localize(L, Model.ResponseLabel)
             </span>
         }
     </div>

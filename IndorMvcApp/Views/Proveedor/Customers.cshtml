@@ -58,7 +58,7 @@
                                asp-route-q="@Model.SearchQuery"
                                class="prv-pro-filter-menu-item @(Model.ActiveTab == id ? "is-active" : null)"
                                role="menuitem">
-                                <span>@label</span>
+                                <span>@UiDisplayLocalization.Localize(L, label)</span>
                                 @if (Model.ActiveTab == id)
                                 {
                                     <i class="fas fa-check"></i>
@@ -74,7 +74,7 @@
                     <a asp-controller="Proveedor" asp-action="Customers"
                        asp-route-tab="@id"
                        asp-route-q="@Model.SearchQuery"
-                       class="prv-pro-jobs-filter-chip @(Model.ActiveTab == id ? "is-active" : null)">@label</a>
+                       class="prv-pro-jobs-filter-chip @(Model.ActiveTab == id ? "is-active" : null)">@UiDisplayLocalization.Localize(L, label)</a>
                 }
             </div>
         </form>
@@ -88,7 +88,7 @@
                 <span class="prv-pro-jobs-stat-icon prv-pro-jobs-stat-icon--@tone"><i class="fas @icon"></i></span>
                 <div class="prv-pro-jobs-stat-copy">
                     <strong>@count</strong>
-                    <span>@label</span>
+                    <span>@UiDisplayLocalization.Localize(L, label)</span>
                 </div>
                 @if (Model.ActiveTab != "all")
                 {

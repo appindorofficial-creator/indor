@@ -55,7 +55,7 @@
             {
                 <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-q="@Model.Query" asp-route-trade="@chip.Id" asp-route-view="@Model.ActiveView"
                    class="prv-net-chip @(Model.ActiveTrade == chip.Id ? "is-active" : null)">
-                    <i class="fas @chip.IconClass"></i> @chip.Label
+                    <i class="fas @chip.IconClass"></i> @UiDisplayLocalization.Localize(L, chip.Label)
                 </a>
             }
         </div>

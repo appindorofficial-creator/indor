@@ -298,6 +298,13 @@ public static class UiDisplayLocalization
             return localizer.T(key, selectedCount);
         }
 
+        if (text.StartsWith("Serving ", StringComparison.OrdinalIgnoreCase)
+            && text.EndsWith(" and surrounding areas", StringComparison.OrdinalIgnoreCase))
+        {
+            var cityPart = text["Serving ".Length..^" and surrounding areas".Length].Trim();
+            return localizer.T("Serving {0} and surrounding areas", cityPart);
+        }
+
         return localizer[text];
     }
 

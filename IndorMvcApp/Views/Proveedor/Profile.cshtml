@@ -18,7 +18,7 @@
         ? Model.PrimaryCity
         : Model.ServiceAreas.FirstOrDefault(a => a.Contains(',')) ?? L["Add your location"];
     var locationLabel = !string.IsNullOrWhiteSpace(Model.ServiceAreaLabel)
-        ? Model.ServiceAreaLabel
+        ? UiDisplayLocalization.Localize(L, Model.ServiceAreaLabel)
         : L.T("Serving {0} and surrounding areas", cityLabel);
     var zipCodes = Model.ServiceAreas
         .Where(a => Regex.IsMatch(a.Trim(), @"^\d{5}$"))
@@ -439,7 +439,7 @@
                 </a>
                 <a asp-controller="Proveedor" asp-action="Subscription" class="prv-pro-profile-link-row prv-pro-profile-link-row--plan">
                     <span><i class="fas fa-crown"></i> @L["Subscription / Plan"]</span>
-                    <strong class="prv-pro-status-plan">@Model.SubscriptionPlan</strong>
+                    <strong class="prv-pro-status-plan">@UiDisplayLocalization.Localize(L, Model.SubscriptionPlan)</strong>
                     <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
                 </a>
                 <a asp-controller="Proveedor" asp-action="Notifications" class="prv-pro-profile-link-row">
