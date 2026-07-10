@@ -7,7 +7,7 @@
     var fromCalendar = !fromHome && !fromJobs;
     ViewBag.NavActive = fromHome ? "home" : "jobs";
     var createJobFrom = fromHome ? "home" : fromJobs ? "jobs" : null;
-    var pageTitle = fromHome ? "Today's Jobs" : fromJobs ? "Today's Schedule" : "Day Schedule";
+    var pageTitle = fromHome ? L["Today's Jobs"].ToString() : fromJobs ? L["Today's Schedule"].ToString() : L["Day Schedule"].ToString();
 }
 
 <div class="prv-pro-shell prv-pro-shell--calendar">
@@ -32,11 +32,11 @@
         }
         <div>
             <h1>@pageTitle</h1>
-            <small>@Model.DateLabel@if (fromJobs) { <text> · Calendar view</text> }</small>
+            <small>@Model.DateLabel@if (fromJobs) { <text> · @L["Calendar view"]</text> }</small>
         </div>
         @if (fromCalendar)
         {
-            <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+            <span class="prv-pro-step-badge">@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</span>
         }
     </header>
 
@@ -51,13 +51,13 @@
             <i class="fas fa-heart-pulse"></i>
             <strong>@Model.InProgressCount</strong>
             <span>@L["In Progress"]</span>
-            <small>@(Model.InProgressCount == 1 ? "1 job active" : $"{Model.InProgressCount} jobs active")</small>
+            <small>@(Model.InProgressCount == 1 ? L["1 job active"].ToString() : L.T("{0} jobs active", Model.InProgressCount))</small>
         </article>
         <article>
             <i class="fas fa-clock"></i>
             <strong>@(Model.NextJobTime ?? "—")</strong>
             <span>@L["Next Job"]</span>
-            <small>@(Model.NextJobTitle ?? "No upcoming jobs")</small>
+            <small>@(Model.NextJobTitle ?? L["No upcoming jobs"].ToString())</small>
         </article>
     </section>
 
@@ -78,7 +78,7 @@
                             <span class="prv-pro-pill prv-pro-pill--@item.StatusClass">@item.StatusLabel</span>
                         </div>
                         <span>@item.Address</span>
-                        <span>Customer: @item.CustomerName</span>
+                        <span>@L.T("Customer: {0}", item.CustomerName)</span>
                         <div class="prv-pro-day-timeline-actions">
                             <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@item.Id" asp-route-fromCalendar="true" asp-route-date="@Model.DateIso" class="prv-pro-btn prv-pro-btn--ghost">@L["View"]</a>
                             @if (item.CanStart)

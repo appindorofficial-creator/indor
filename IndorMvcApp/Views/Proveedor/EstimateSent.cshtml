@@ -15,7 +15,7 @@
     <section class="prv-pro-estimate-sent-hero">
         <div class="prv-pro-estimate-sent-icon"><i class="fas fa-circle-check"></i></div>
         <h1>@L["Estimate Sent!"]</h1>
-        <p>Your estimate has been sent@(Model.IsApproved ? " and approved" : " and is awaiting approval").</p>
+        <p>@(Model.IsApproved ? L["Your estimate has been sent and approved."] : L["Your estimate has been sent and is awaiting approval."])</p>
     </section>
 
     <section class="prv-pro-lead-section prv-pro-status-card">

@@ -85,15 +85,15 @@
         <div class="prv-net-check-item">
             <span class="prv-net-check-ic @(Model.InsuranceVerified ? null : "prv-net-check-ic--pending")"><i class="fas @(Model.InsuranceVerified ? "fa-check" : "fa-clock")"></i></span>
             <div class="prv-net-check-body">
-                <strong>Insurance @(Model.InsuranceVerified ? "verified" : "pending")</strong>
-                <span>@(Model.InsuranceVerified ? "General liability insurance is active" : "Ask the pro to upload proof of insurance")</span>
+                <strong>@(Model.InsuranceVerified ? L["Insurance verified"] : L["Insurance pending"])</strong>
+                <span>@(Model.InsuranceVerified ? L["General liability insurance is active"] : L["Ask the pro to upload proof of insurance"])</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </div>
         <div class="prv-net-check-item">
             <span class="prv-net-check-ic @(Model.DocumentsReady ? null : "prv-net-check-ic--pending")"><i class="fas @(Model.DocumentsReady ? "fa-check" : "fa-clock")"></i></span>
             <div class="prv-net-check-body">
-                <strong>Documents @(Model.DocumentsReady ? "ready" : "pending")</strong>
+                <strong>@(Model.DocumentsReady ? L["Documents ready"] : L["Documents pending"])</strong>
                 <span>@L["W-9, COI, trade license on file"]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
@@ -102,7 +102,7 @@
             <span class="prv-net-check-ic @(Model.AvailabilityConfirmed ? null : "prv-net-check-ic--pending")"><i class="fas fa-check"></i></span>
             <div class="prv-net-check-body">
                 <strong>@L["Availability confirmed"]</strong>
-                <span>Can start on @Model.StartDateLabel</span>
+                <span>@L.T("Can start on {0}", Model.StartDateLabel)</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </div>
@@ -128,7 +128,7 @@
         <i class="fas fa-shield-halved"></i>
         <div>
             <strong>@L["No guessing — every key detail is visible before you hire."]</strong>
-            We help you hire with confidence and stay protected.
+            @L["We help you hire with confidence and stay protected."]
         </div>
     </div>
 </div>

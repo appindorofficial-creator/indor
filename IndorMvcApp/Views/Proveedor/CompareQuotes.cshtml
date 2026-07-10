@@ -36,7 +36,7 @@
             <div class="prv-req-budget">
                 <span>@L["Budget"]</span>
                 <strong>@(Model.BudgetRange ?? "—")</strong>
-                <span class="prv-req-posted-inline">Posted @Model.PostedLabel</span>
+                <span class="prv-req-posted-inline">@L.T("Posted {0}", Model.PostedLabel)</span>
             </div>
         </div>
     </section>

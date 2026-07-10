@@ -10,7 +10,7 @@
     <div class="prv-net-success">
         <span class="prv-net-success-ic"><i class="fas fa-handshake-simple"></i></span>
         <h1>@Model.StatusLabel!</h1>
-        <p>@L["You've brought"]<strong>@Model.SubcontractorName</strong> onto your project. They've been notified.</p>
+        <p>@L.T("You've brought {0} onto your project. They've been notified.", Model.SubcontractorName)</p>
     </div>
 
     <section class="prv-net-hire-card" style="margin-top:22px;">

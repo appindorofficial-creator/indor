@@ -36,15 +36,15 @@
     <div class="prv-req-badges">
         @if (Model.IsVerified)
         {
-            <span class="prv-req-badge prv-req-badge--blue"><i class="fas fa-circle-check"></i> Verified</span>
+            <span class="prv-req-badge prv-req-badge--blue"><i class="fas fa-circle-check"></i> @L["Verified"]</span>
         }
         @if (Model.IsInsured)
         {
-            <span class="prv-req-badge prv-req-badge--green"><i class="fas fa-shield-halved"></i> Insurance Active</span>
+            <span class="prv-req-badge prv-req-badge--green"><i class="fas fa-shield-halved"></i> @L["Insurance Active"]</span>
         }
         @if (Model.IsDocsReady)
         {
-            <span class="prv-req-badge prv-req-badge--purple"><i class="fas fa-file-lines"></i> Docs Ready</span>
+            <span class="prv-req-badge prv-req-badge--purple"><i class="fas fa-file-lines"></i> @L["Docs Ready"]</span>
         }
     </div>
 </section>
