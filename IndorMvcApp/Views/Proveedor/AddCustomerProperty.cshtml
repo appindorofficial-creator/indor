@@ -53,14 +53,14 @@
                     <label class="prv-pro-customer-type-card @(Model.PropertyType == type ? "is-selected" : "")">
                         <input type="radio" name="PropertyType" value="@type" @(Model.PropertyType == type ? "checked" : "") />
                         <i class="fas @icon"></i>
-                        <span>@type</span>
+                        <span>@L[type]</span>
                     </label>
                 }
             </div>
         </section>
 
         <div class="prv-pro-form-row-2">
-            <label class="prv-pro-form-label">Beds (optional)
+            <label class="prv-pro-form-label">@L["Beds (optional)"]
                 <select name="Bedrooms">
                     <option value="">@L["Select beds"]</option>
                     @foreach (var beds in Model.BedroomOptions)
@@ -69,7 +69,7 @@
                     }
                 </select>
             </label>
-            <label class="prv-pro-form-label">Baths (optional)
+            <label class="prv-pro-form-label">@L["Baths (optional)"]
                 <select name="Bathrooms">
                     <option value="">@L["Select baths"]</option>
                     @foreach (var baths in Model.BathroomOptions)

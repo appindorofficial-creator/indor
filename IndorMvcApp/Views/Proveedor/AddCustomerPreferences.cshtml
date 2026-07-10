@@ -3,6 +3,8 @@
     ViewData["Title"] = L["Preferences & Notes - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "customers";
+    var deliveryOpts = new[] { ("Email", L["Email"].ToString()), ("SMS", L["SMS"].ToString()), ("Both", L["Both"].ToString()) };
+    var languageOpts = new[] { ("English", L["English"].ToString()), ("Spanish", L["Spanish"].ToString()) };
     var sources = new[] { ("INDOR Lead", "fa-bullseye"), ("Manual Entry", "fa-pen"), ("Referral", "fa-user-group"), ("Realtor", "fa-building") };
     var tagOptions = new[] { "VIP", "Repeat Customer", "New Customer", "Realtor Client" };
 }
@@ -26,28 +28,28 @@
         <section class="prv-pro-add-customer-section">
             <h3>@L["Communication Preferences"]</h3>
             <label class="prv-pro-form-label">@L["Estimate Delivery"]<div class="prv-pro-segmented">
-                    @foreach (var opt in new[] { "Email", "SMS", "Both" })
+                    @foreach (var (optKey, optLabel) in deliveryOpts)
                     {
-                        <label class="@(Model.EstimateDeliveryPref == opt ? "is-selected" : "")">
-                            <input type="radio" name="EstimateDeliveryPref" value="@opt" @(Model.EstimateDeliveryPref == opt ? "checked" : "") /> @opt
+                        <label class="@(Model.EstimateDeliveryPref == optKey ? "is-selected" : "")">
+                            <input type="radio" name="EstimateDeliveryPref" value="@optKey" @(Model.EstimateDeliveryPref == optKey ? "checked" : "") /> @optLabel
                         </label>
                     }
                 </div>
             </label>
             <label class="prv-pro-form-label">@L["Invoice Delivery"]<div class="prv-pro-segmented">
-                    @foreach (var opt in new[] { "Email", "SMS", "Both" })
+                    @foreach (var (optKey, optLabel) in deliveryOpts)
                     {
-                        <label class="@(Model.InvoiceDeliveryPref == opt ? "is-selected" : "")">
-                            <input type="radio" name="InvoiceDeliveryPref" value="@opt" @(Model.InvoiceDeliveryPref == opt ? "checked" : "") /> @opt
+                        <label class="@(Model.InvoiceDeliveryPref == optKey ? "is-selected" : "")">
+                            <input type="radio" name="InvoiceDeliveryPref" value="@optKey" @(Model.InvoiceDeliveryPref == optKey ? "checked" : "") /> @optLabel
                         </label>
                     }
                 </div>
             </label>
             <label class="prv-pro-form-label">@L["Language"]<div class="prv-pro-segmented">
-                    @foreach (var opt in new[] { "English", "Spanish" })
+                    @foreach (var (optKey, optLabel) in languageOpts)
                     {
-                        <label class="@(Model.PreferredLanguage == opt ? "is-selected" : "")">
-                            <input type="radio" name="PreferredLanguage" value="@opt" @(Model.PreferredLanguage == opt ? "checked" : "") /> @opt
+                        <label class="@(Model.PreferredLanguage == optKey ? "is-selected" : "")">
+                            <input type="radio" name="PreferredLanguage" value="@optKey" @(Model.PreferredLanguage == optKey ? "checked" : "") /> @optLabel
                         </label>
                     }
                 </div>
@@ -62,7 +64,7 @@
                     <label class="prv-pro-customer-type-card @(Model.CustomerSource == source ? "is-selected" : "")">
                         <input type="radio" name="CustomerSource" value="@source" @(Model.CustomerSource == source ? "checked" : "") />
                         <i class="fas @icon"></i>
-                        <span>@source</span>
+                        <span>@L[source]</span>
                     </label>
                 }
             </div>
@@ -75,7 +77,7 @@
                 {
                     var selected = Model.Tags.Contains(tag);
                     <label class="prv-pro-tag-pill @(selected ? "is-selected" : "")">
-                        <input type="checkbox" name="Tags" value="@tag" @(selected ? "checked" : "") /> @tag
+                        <input type="checkbox" name="Tags" value="@tag" @(selected ? "checked" : "") /> @L[tag]
                     </label>
                 }
             </div>

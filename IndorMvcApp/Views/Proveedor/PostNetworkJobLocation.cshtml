@@ -58,7 +58,7 @@
                 {
                     <label class="prv-net-optionchip">
                         <input type="radio" name="PropertyType" value="@id" checked="@(Model.PropertyType == id)" />
-                        <span><i class="fas @icon"></i> @id</span>
+                        <span><i class="fas @icon"></i> @L[id]</span>
                     </label>
                 }
             </div>
@@ -69,7 +69,7 @@
                 {
                     <label class="prv-net-optionchip">
                         <input type="radio" name="WhoMeets" value="@id" checked="@(Model.WhoMeets == id)" />
-                        <span><i class="fas @icon"></i> @(id == "PropertyManager" ? "Property Manager" : id)</span>
+                        <span><i class="fas @icon"></i> @(id == "PropertyManager" ? L["Property Manager"].ToString() : L[id].ToString())</span>
                     </label>
                 }
             </div>
@@ -82,7 +82,7 @@
                 {
                     <label class="prv-net-optionchip">
                         <input type="radio" name="BudgetRange" value="@budget" checked="@(Model.BudgetRange == budget)" />
-                        <span>@budget</span>
+                        <span>@UiDisplayLocalization.Localize(L, budget)</span>
                     </label>
                 }
             </div>

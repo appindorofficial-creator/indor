@@ -24,11 +24,11 @@
             <a asp-controller="Proveedor" asp-action="AddCustomer" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-pen"></i> @L["Edit"]</a>
         </div>
         <dl class="prv-pro-review-list">
-            <div><dt>@L["Customer Type"]</dt><dd>@Model.CustomerType</dd></div>
+            <div><dt>@L["Customer Type"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.CustomerType)</dd></div>
             <div><dt>@L["Name"]</dt><dd>@Model.FullName</dd></div>
             <div><dt>@L["Phone"]</dt><dd>@Model.Phone</dd></div>
             <div><dt>@L["Email"]</dt><dd>@Model.Email</dd></div>
-            <div><dt>@L["Preferred Contact"]</dt><dd>@Model.PreferredContactMethod</dd></div>
+            <div><dt>@L["Preferred Contact"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.PreferredContactMethod)</dd></div>
         </dl>
     </section>
 
@@ -39,7 +39,7 @@
         </div>
         <dl class="prv-pro-review-list">
             <div><dt>@L["Address"]</dt><dd>@Model.FullAddress</dd></div>
-            <div><dt>@L["Property Type"]</dt><dd>@Model.PropertyType</dd></div>
+            <div><dt>@L["Property Type"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.PropertyType)</dd></div>
             <div><dt>@L["Beds / Baths"]</dt><dd>@Model.BedsBathsLabel</dd></div>
             <div><dt>@L["Billing same as property"]</dt><dd>@Model.BillingLabel</dd></div>
         </dl>
@@ -51,13 +51,13 @@
             <a asp-controller="Proveedor" asp-action="AddCustomerPreferences" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-pen"></i> @L["Edit"]</a>
         </div>
         <dl class="prv-pro-review-list">
-            <div><dt>@L["Estimate Delivery"]</dt><dd>@Model.EstimateDeliveryPref</dd></div>
-            <div><dt>@L["Invoice Delivery"]</dt><dd>@Model.InvoiceDeliveryPref</dd></div>
-            <div><dt>@L["Language"]</dt><dd>@Model.PreferredLanguage</dd></div>
-            <div><dt>@L["Source"]</dt><dd>@Model.CustomerSource</dd></div>
+            <div><dt>@L["Estimate Delivery"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.EstimateDeliveryPref)</dd></div>
+            <div><dt>@L["Invoice Delivery"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.InvoiceDeliveryPref)</dd></div>
+            <div><dt>@L["Language"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.PreferredLanguage)</dd></div>
+            <div><dt>@L["Source"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.CustomerSource)</dd></div>
             @if (Model.Tags.Count > 0)
             {
-                <div><dt>@L["Tags"]</dt><dd>@string.Join(", ", Model.Tags)</dd></div>
+                <div><dt>@L["Tags"]</dt><dd>@string.Join(", ", Model.Tags.Select(t => UiDisplayLocalization.Localize(L, t)))</dd></div>
             }
             @if (!string.IsNullOrWhiteSpace(Model.InternalNotes))
             {
