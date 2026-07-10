@@ -1,5 +1,6 @@
 using System.Globalization;
 using IndorMvcApp.Helpers;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 
 namespace IndorMvcApp.Services;
@@ -8,6 +9,15 @@ namespace IndorMvcApp.Services;
 public static class ProviderProDisplayLocalization
 {
     public static string L(string english) => DisplayLabelsLocalization.L(english);
+
+    public static string T(string key, params object[] args)
+    {
+        var template = L(key);
+        return args.Length == 0 ? template : string.Format(CultureInfo.CurrentCulture, template, args);
+    }
+
+    public static string CatalogLabel(string? labelEn, string? labelEs) =>
+        CatalogText.PickWithUiFallback(labelEn, labelEs, DisplayLabelsLocalization.IsSpanishUi);
 
     public static string Localize(IIndorLocalizer localizer, string? text) =>
         UiDisplayLocalization.Localize(localizer, text);

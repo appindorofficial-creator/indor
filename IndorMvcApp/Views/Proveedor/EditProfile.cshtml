@@ -12,21 +12,22 @@
     {
         "business" => L["Business Information"],
         "areas" => L["Service Areas"],
-        _ => "Edit Profile"
+        _ => L["Edit Profile"]
     };
     ViewData["Title"] = $"{pageTitle} - INDOR PRO";
     var pageSubtitle = activeSection switch
     {
-        "business" => "Update your company name, contact details, and hours.",
-        "areas" => "Define where you accept jobs and how far you travel.",
-        _ => "Update your business details and profile photo."
+        "business" => L["Update your company name, contact details, and hours."],
+        "areas" => L["Define where you accept jobs and how far you travel."],
+        _ => L["Update your business details and profile photo."]
     };
     var saveLabel = activeSection switch
     {
         "business" => L["Save business info"],
         "areas" => L["Save service areas"],
-        _ => "Save profile"
+        _ => L["Save profile"]
     };
+    var phoneValidationMessage = L["Enter a valid 10-digit US phone number (e.g. 555 123 4567)."].ToString();
 }
 
 <div class="prv-pro-shell prv-pro-shell--profile prv-pro-shell--edit-profile">
@@ -49,7 +50,7 @@
     @if (TempData["ProfilePhotoError"] is string photoError)
     {
         <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error">
-            <i class="fas fa-circle-exclamation"></i> @photoError
+            <i class="fas fa-circle-exclamation"></i> @UiDisplayLocalization.Localize(L, photoError)
         </div>
     }
 
@@ -67,7 +68,7 @@
     @if (TempData["ProfilePhotoOk"] is string photoOk)
     {
         <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success" role="status">
-            <i class="fas fa-circle-check"></i> @photoOk
+            <i class="fas fa-circle-check"></i> @UiDisplayLocalization.Localize(L, photoOk)
         </div>
     }
     <section class="prv-pro-wizard-card" id="edit-profile-photo">
@@ -80,7 +81,7 @@
                 <div class="prv-pro-edit-profile-photo-preview prv-pro-profile-photo-preview" id="prvEditProfilePhotoPreview">
                     @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
                     {
-                        <img src="@Url.Content($"~{Model.LogoUrl}")" alt="Current profile photo" class="prv-pro-profile-logo prv-pro-profile-logo--img" id="prvEditProfilePhotoImg" />
+                        <img src="@Url.Content($"~{Model.LogoUrl}")" alt="@L["Current profile photo"]" class="prv-pro-profile-logo prv-pro-profile-logo--img" id="prvEditProfilePhotoImg" />
                         <span class="prv-pro-profile-logo" id="prvEditProfilePhotoPlaceholder" hidden>@Model.CompanyInitial</span>
                     }
                     else
@@ -245,7 +246,7 @@
 
         if (!valid) {
             e.preventDefault();
-            phone.setCustomValidity('Enter a valid 10-digit US phone number (e.g. 555 123 4567).');
+            phone.setCustomValidity(@Json.Serialize(phoneValidationMessage));
             phone.reportValidity();
         }
     });

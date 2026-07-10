@@ -20,13 +20,13 @@
     </header>
 
     <section class="prv-pro-subscription-hero">
-        <span class="prv-pro-subscription-badge"><i class="fas fa-crown"></i> Current plan</span>
-        <h2>@Model.SubscriptionPlan</h2>
-        <p>@(Model.IsApproved ? "Your provider profile is active for INDOR opportunities." : "Complete verification to unlock INDOR job leads.")</p>
+        <span class="prv-pro-subscription-badge"><i class="fas fa-crown"></i> @L["Current plan"]</span>
+        <h2>@UiDisplayLocalization.Localize(L, Model.SubscriptionPlan)</h2>
+        <p>@(Model.IsApproved ? L["Your provider profile is active for INDOR opportunities."] : L["Complete verification to unlock INDOR job leads."])</p>
     </section>
 
     <section class="prv-pro-profile-card">
-        <header class="prv-pro-profile-card-head"><h3><i class="fas fa-check-circle"></i> Included with INDOR Pro</h3></header>
+        <header class="prv-pro-profile-card-head"><h3><i class="fas fa-check-circle"></i> @L["Included with INDOR Pro"]</h3></header>
         <div class="prv-pro-profile-kv"><i class="fas fa-users"></i><span>@L["Clients &amp; CRM"]</span></div>
         <div class="prv-pro-profile-kv"><i class="fas fa-briefcase"></i><span>@L["Jobs, photos &amp; scheduling"]</span></div>
         <div class="prv-pro-profile-kv"><i class="fas fa-file-invoice-dollar"></i><span>@L["Estimates &amp; invoices"]</span></div>
@@ -34,10 +34,10 @@
     </section>
 
     <section class="prv-pro-profile-card">
-        <header class="prv-pro-profile-card-head"><h3><i class="fas fa-shield-halved"></i> Activation status</h3></header>
+        <header class="prv-pro-profile-card-head"><h3><i class="fas fa-shield-halved"></i> @L["Activation status"]</h3></header>
         <div class="prv-pro-profile-kv-row">
             <span>@L["Provider verification"]</span>
-            <strong class="@(Model.IsVerified ? "prv-pro-status-ok" : "")">@(Model.IsVerified ? "Verified" : "Pending")</strong>
+            <strong class="@(Model.IsVerified ? "prv-pro-status-ok" : "")">@(Model.IsVerified ? L["Verified"] : L["Pending"])</strong>
         </div>
         <div class="prv-pro-profile-kv-row">
             <span>@L["Documents uploaded"]</span>
@@ -45,14 +45,14 @@
         </div>
         <div class="prv-pro-profile-kv-row">
             <span>@L["Payment processing"]</span>
-            <strong class="@(Model.PaymentProcessingActive ? "prv-pro-status-ok" : "")">@(Model.PaymentProcessingActive ? "Active" : "Inactive")</strong>
+            <strong class="@(Model.PaymentProcessingActive ? "prv-pro-status-ok" : "")">@(Model.PaymentProcessingActive ? L["Active"] : L["Inactive"])</strong>
         </div>
     </section>
 
     @if (!Model.IsApproved)
     {
         <a asp-controller="ProviderRegistration" asp-action="ActivationCall" class="prv-pro-btn prv-pro-btn--primary prv-pro-subscription-cta">
-            Complete activation
+            @L["Complete activation"]
         </a>
     }
 </div>

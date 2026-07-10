@@ -6,9 +6,14 @@
     ViewBag.CompanyInitial = Model.CompanyInitial;
     var allServices = Model.Categories.Concat(Model.Services).Distinct().ToList();
     var publicProfileUrl = Url.Action("PublicProfile", "Proveedor", null, Context.Request.Scheme);
-    var aboutText = !string.IsNullOrWhiteSpace(Model.SpecialtiesSummary) && Model.SpecialtiesSummary != "Services pending"
-        ? $"Professional services including {Model.SpecialtiesSummary.ToLowerInvariant()}."
-        : "Trusted local service provider on INDOR.";
+    var servicesPending = L["Services pending"];
+    var aboutText = !string.IsNullOrWhiteSpace(Model.SpecialtiesSummary) && Model.SpecialtiesSummary != servicesPending
+        ? L.T("Professional services including {0}.", Model.SpecialtiesSummary.ToLowerInvariant())
+        : L["Trusted local service provider on INDOR."];
+    var hoursLabel = string.IsNullOrWhiteSpace(Model.BusinessHours)
+        || string.Equals(Model.BusinessHours, L["Hours not set"], StringComparison.Ordinal)
+        ? "—"
+        : Model.BusinessHours;
 }
 
 <div class="prv-pro-shell prv-pro-shell--profile prv-pro-shell--public-profile">
@@ -39,20 +44,20 @@
                     <h2>@Model.CompanyName</h2>
                     @if (Model.IsVerified)
                     {
-                        <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> Verified Provider</span>
+                        <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> @L["Verified Provider"]</span>
                     }
                     @if (Model.IsTopRated)
                     {
-                        <span class="prv-pro-top-rated"><i class="fas fa-star"></i> Top Rated</span>
+                        <span class="prv-pro-top-rated"><i class="fas fa-star"></i> @L["Top Rated"]</span>
                     }
                 </div>
-                <p class="prv-pro-profile-specialties">@Model.SpecialtiesSummary</p>
-                <p class="prv-pro-profile-area"><i class="fas fa-location-dot"></i> @Model.ServiceAreaLabel</p>
+                <p class="prv-pro-profile-specialties">@UiDisplayLocalization.Localize(L, Model.SpecialtiesSummary)</p>
+                <p class="prv-pro-profile-area"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.ServiceAreaLabel)</p>
             </div>
         </div>
         <div class="prv-pro-public-actions">
             <a asp-controller="Proveedor" asp-action="ProfileCompletion" class="prv-pro-btn prv-pro-btn--primary">
-                <i class="fas fa-pen"></i> Edit Profile
+                <i class="fas fa-pen"></i> @L["Edit Profile"]
             </a>
             <a href="@publicProfileUrl"
                class="prv-pro-btn prv-pro-btn--ghost"
@@ -61,17 +66,19 @@
                data-share-url="@publicProfileUrl"
                data-share-title="@Model.CompanyName - INDOR PRO"
                data-share-text="@L["View my provider profile on INDOR"]"
+               data-share-copied="@L["Profile link copied to clipboard."]"
+               data-share-prompt="@L["Copy profile link:"]"
                role="button">
-                <i class="fas fa-share-nodes"></i> Share
+                <i class="fas fa-share-nodes"></i> @L["Share"]
             </a>
         </div>
     </section>
 
     <div class="prv-pro-profile-grid prv-pro-public-grid">
         <section class="prv-pro-profile-card prv-pro-profile-card--wide">
-            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-circle-info"></i> About</h3></header>
+            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-circle-info"></i> @L["About"]</h3></header>
             <p class="prv-pro-public-about">@aboutText</p>
-            <div class="prv-pro-profile-kv"><i class="fas fa-clock"></i><span>@Model.BusinessHours</span></div>
+            <div class="prv-pro-profile-kv"><i class="fas fa-clock"></i><span>@hoursLabel</span></div>
             @if (Model.EmergencyService)
             {
                 <div class="prv-pro-profile-kv"><i class="fas fa-bolt"></i><span>@L["Emergency service available"]</span></div>
@@ -82,12 +89,12 @@
             }
             @if (Model.TravelRadiusMiles > 0)
             {
-                <div class="prv-pro-profile-kv"><i class="fas fa-route"></i><span>Travel radius: @Model.TravelRadiusMiles miles</span></div>
+                <div class="prv-pro-profile-kv"><i class="fas fa-route"></i><span>@L.T("Travel radius: {0} miles", Model.TravelRadiusMiles)</span></div>
             }
         </section>
 
         <section class="prv-pro-profile-card">
-            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-wrench"></i> Services Offered</h3></header>
+            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-wrench"></i> @L["Services Offered"]</h3></header>
             @if (allServices.Count == 0)
             {
                 <p class="prv-pro-empty">@L["No services selected yet."]</p>
@@ -97,36 +104,36 @@
                 <div class="prv-pro-profile-tags">
                     @foreach (var svc in allServices)
                     {
-                        <span class="prv-pro-pill prv-pro-pill--scheduled">@svc</span>
+                        <span class="prv-pro-pill prv-pro-pill--scheduled">@UiDisplayLocalization.Localize(L, svc)</span>
                     }
                 </div>
             }
         </section>
 
         <section class="prv-pro-profile-card">
-            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-map-location-dot"></i> Service Areas</h3></header>
+            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-map-location-dot"></i> @L["Service Areas"]</h3></header>
             @if (Model.ServiceAreas.Count == 0)
             {
-                <p class="prv-pro-empty">@Model.ServiceAreaLabel</p>
+                <p class="prv-pro-empty">@UiDisplayLocalization.Localize(L, Model.ServiceAreaLabel)</p>
             }
             else
             {
                 @foreach (var area in Model.ServiceAreas)
                 {
-                    <div class="prv-pro-profile-kv"><i class="fas fa-location-dot"></i><span>@area</span></div>
+                    <div class="prv-pro-profile-kv"><i class="fas fa-location-dot"></i><span>@UiDisplayLocalization.Localize(L, area)</span></div>
                 }
             }
         </section>
 
         <section class="prv-pro-profile-card">
-            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-star"></i> Reputation</h3></header>
+            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-star"></i> @L["Reputation"]</h3></header>
             <div class="prv-pro-profile-kv-row">
                 <span>@L["Provider Score"]</span>
                 <strong>@(Model.ProviderScore > 0 ? Model.ProviderScore.ToString() : "—")</strong>
             </div>
             <div class="prv-pro-profile-kv-row">
                 <span>@L["Rating"]</span>
-                <strong>@(Model.ReviewCount > 0 ? $"{Model.Rating:0.0} ★ ({Model.ReviewCount} reviews)" : "No reviews yet")</strong>
+                <strong>@(Model.ReviewCount > 0 ? L.T("{0} ★ ({1} reviews)", Model.Rating.ToString("0.0"), Model.ReviewCount) : L["No reviews yet"])</strong>
             </div>
             <div class="prv-pro-profile-kv-row">
                 <span>@L["Jobs completed this year"]</span>

@@ -30,7 +30,7 @@
     @if (TempData["ProfileSectionError"] is string sectionError)
     {
         <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error">
-            <i class="fas fa-circle-exclamation"></i> @sectionError
+            <i class="fas fa-circle-exclamation"></i> @UiDisplayLocalization.Localize(L, sectionError)
         </div>
     }
 
@@ -49,12 +49,12 @@
                     <span class="prv-flow-setup-row-icon @(item.IsComplete ? "is-done" : "")"><i class="fas @item.IconClass"></i></span>
                     <div class="prv-flow-setup-row-copy">
                         <div class="prv-flow-setup-row-top">
-                            <strong>@item.Title</strong>
-                            <span class="prv-flow-status prv-flow-status--@item.StatusKind">@item.StatusLabel</span>
+                            <strong>@UiDisplayLocalization.Localize(L, item.Title)</strong>
+                            <span class="prv-flow-status prv-flow-status--@item.StatusKind">@UiDisplayLocalization.Localize(L, item.StatusLabel)</span>
                         </div>
-                        <p>@item.Description</p>
+                        <p>@UiDisplayLocalization.Localize(L, item.Description)</p>
                     </div>
-                    <a asp-controller="Proveedor" asp-action="ProfileDocuments" asp-route-section="@item.Id" class="prv-flow-setup-row-btn">@item.ActionLabel</a>
+                    <a asp-controller="Proveedor" asp-action="ProfileDocuments" asp-route-section="@item.Id" class="prv-flow-setup-row-btn">@UiDisplayLocalization.Localize(L, item.ActionLabel)</a>
                 </article>
             }
         </div>
@@ -69,7 +69,7 @@
 
             <section class="prv-flow-detail-card">
                 <header class="prv-flow-detail-head">
-                    <h3>@activeSection.Title</h3>
+                    <h3>@UiDisplayLocalization.Localize(L, activeSection.Title)</h3>
                     <a asp-controller="Proveedor" asp-action="ProfileDocuments" class="prv-flow-detail-close" aria-label="@L["Close section"]"><i class="fas fa-xmark"></i></a>
                 </header>
                 @await Html.PartialAsync("_ProfileDocumentSectionForm", activeSection)
