@@ -27,10 +27,10 @@
             <label><i class="fas fa-water-ladder pa-q-icon pa-q-icon--green"></i> @L["What do you need help with?"]</label>
             <div class="pa-pool-service-row">
                 @foreach (var s in new (string Value, string Label, string Icon)[] {
-                    ("PoolRepair", "Pool repair", "fa-screwdriver-wrench"),
-                    ("HotTubRepair", "Hot tub repair", "fa-hot-tub-person"),
-                    ("RoutinePoolService", "Routine pool service", "fa-water-ladder"),
-                    ("SpaHotTubService", "Spa / hot tub service", "fa-spa") })
+                    ("PoolRepair", L["Pool repair"], "fa-screwdriver-wrench"),
+                    ("HotTubRepair", L["Hot tub repair"], "fa-hot-tub-person"),
+                    ("RoutinePoolService", L["Routine pool service"], "fa-water-ladder"),
+                    ("SpaHotTubService", L["Spa / hot tub service"], "fa-spa") })
                 {
                     <label class="pa-pool-option-card @(Model.ServiceHelpType == s.Value ? "is-selected" : null)">
                         <input type="radio" name="ServiceHelpType" value="@s.Value" @(Model.ServiceHelpType == s.Value ? "checked" : null) />
@@ -47,18 +47,18 @@
             <label>@L["What's the main issue?"]</label>
             <div class="pa-pool-issue-grid">
                 @foreach (var i in new (string Value, string Label, string Icon)[] {
-                    ("PumpNotWorking", "Pump not working", "fa-gears"),
-                    ("HeaterIssue", "Heater issue", "fa-temperature-high"),
-                    ("WaterLeak", "Water leak", "fa-droplet"),
-                    ("CloudyDirtyWater", "Cloudy / dirty water", "fa-circle"),
-                    ("JetsNotWorking", "Jets not working", "fa-wind"),
-                    ("FilterProblem", "Filter problem", "fa-filter") })
+                    ("PumpNotWorking", L["Pump not working"], "fa-gears"),
+                    ("HeaterIssue", L["Heater issue"], "fa-temperature-high"),
+                    ("WaterLeak", L["Water leak"], "fa-droplet"),
+                    ("CloudyDirtyWater", L["Cloudy / dirty water"], "fa-circle"),
+                    ("JetsNotWorking", L["Jets not working"], "fa-wind"),
+                    ("FilterProblem", L["Filter problem"], "fa-filter") })
                 {
                     <label class="pa-pool-option-card @(Model.MainIssue == i.Value ? "is-selected" : null)">
                         <input type="radio" name="MainIssue" value="@i.Value" @(Model.MainIssue == i.Value ? "checked" : null) />
                         <span class="pa-prev-service-check pa-prev-service-check--green"><i class="fas fa-check"></i></span>
                         <i class="fas @i.Icon"></i>
-                        <span>@i.Label</span>
+                        <span>@L[i.Label]</span>
                     </label>
                 }
             </div>
@@ -81,7 +81,7 @@
             <span class="pa-flow-qnum">4</span>
             <label>@L["How urgent is it?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var u in new[] { ("Routine", "Routine"), ("Urgent", "Urgent"), ("Emergency", "Emergency") })
+                @foreach (var u in new[] { ("Routine", L["Routine"]), ("Urgent", L["Urgent"]), ("Emergency", L["Emergency"]) })
                 {
                     <label class="pa-chip @(Model.Urgency == u.Item1 ? "is-selected" : null)">
                         <input type="radio" name="Urgency" value="@u.Item1" @(Model.Urgency == u.Item1 ? "checked" : null) />

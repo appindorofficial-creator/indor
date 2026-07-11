@@ -11,25 +11,25 @@
             @if (Model.Id == "license")
             {
                 <label class="prv-pro-btn prv-pro-btn--ghost prv-flow-upload-btn">
-                    <i class="fas fa-upload"></i> Upload file
+                    <i class="fas fa-upload"></i> @L["Upload file"]
                     <input type="file" class="prv-flow-doc-input" data-doc-type="@Model.DocumentType" data-section="@Model.Id" accept="image/jpeg,image/png,image/webp,application/pdf" />
                 </label>
                 <label class="prv-pro-btn prv-pro-btn--ghost prv-flow-upload-btn">
-                    <i class="fas fa-camera"></i> Take photo
+                    <i class="fas fa-camera"></i> @L["Take photo"]
                     <input type="file" class="prv-flow-doc-input" data-doc-type="@Model.DocumentType" data-section="@Model.Id" accept="image/*" capture="environment" />
                 </label>
             }
             else
             {
                 <label class="prv-pro-btn prv-pro-btn--ghost prv-flow-upload-btn">
-                    <i class="fas fa-upload"></i> Upload @(Model.Id == "w9" ? "W-9" : "COI")
+                    <i class="fas fa-upload"></i> @(Model.Id == "w9" ? L["Upload W-9"] : L["Upload COI"])
                     <input type="file" class="prv-flow-doc-input" data-doc-type="@Model.DocumentType" data-section="@Model.Id" accept="image/jpeg,image/png,image/webp,application/pdf" />
                 </label>
             }
             @if (!string.IsNullOrWhiteSpace(Model.FileUrl))
             {
                 <a href="@Url.Content($"~{Model.FileUrl}")" target="_blank" rel="noopener" class="prv-flow-doc-link">
-                    <i class="fas fa-file-lines"></i> View uploaded file
+                    <i class="fas fa-file-lines"></i> @L["View uploaded file"]
                 </a>
             }
         </div>
@@ -44,8 +44,8 @@
                     <option value="">@L["Select type"]</option>
                     @foreach (var t in new[] { "General Contractor", "HVAC", "Plumbing", "Electrical", "Roofing", "Other" })
                     {
-                        if (F("LicenseType") == t) { <option value="@t" selected="selected">@t</option> }
-                        else { <option value="@t">@t</option> }
+                        if (F("LicenseType") == t) { <option value="@t" selected="selected">@L[t]</option> }
+                        else { <option value="@t">@L[t]</option> }
                     }
                 </select>
             </label>
@@ -62,8 +62,8 @@
             <label><span>@L["Expiration date"]</span><input type="date" name="LicenseExpiry" value="@F("LicenseExpiry")" /></label>
         </div>
         <div class="prv-flow-flags">
-            <label><input type="checkbox" name="LicenseNotApplicable" value="true" @(Model.NotApplicable ? "checked" : "") /> Not applicable</label>
-            <label><input type="checkbox" name="LicenseUnknown" value="true" @(Model.Unknown ? "checked" : "") /> I don't know</label>
+            <label><input type="checkbox" name="LicenseNotApplicable" value="true" @(Model.NotApplicable ? "checked" : "") /> @L["Not applicable"]</label>
+            <label><input type="checkbox" name="LicenseUnknown" value="true" @(Model.Unknown ? "checked" : "") /> @L["I don't know"]</label>
         </div>
     }
     else if (Model.Id == "insurance")
@@ -75,8 +75,8 @@
             <label><span>@L["Expiration date"]</span><input type="date" name="InsuranceExpiry" value="@F("InsuranceExpiry")" /></label>
         </div>
         <div class="prv-flow-flags">
-            <label><input type="checkbox" name="InsuranceNotApplicable" value="true" @(Model.NotApplicable ? "checked" : "") /> Not applicable</label>
-            <label><input type="checkbox" name="InsuranceUnknown" value="true" @(Model.Unknown ? "checked" : "") /> I don't know</label>
+            <label><input type="checkbox" name="InsuranceNotApplicable" value="true" @(Model.NotApplicable ? "checked" : "") /> @L["Not applicable"]</label>
+            <label><input type="checkbox" name="InsuranceUnknown" value="true" @(Model.Unknown ? "checked" : "") /> @L["I don't know"]</label>
         </div>
     }
     else if (Model.Id == "w9")
@@ -89,16 +89,16 @@
                     <option value="">@L["Select classification"]</option>
                     @foreach (var c in new[] { "Individual", "C Corporation", "S Corporation", "Partnership", "LLC", "Other" })
                     {
-                        if (F("W9TaxClassification") == c) { <option value="@c" selected="selected">@c</option> }
-                        else { <option value="@c">@c</option> }
+                        if (F("W9TaxClassification") == c) { <option value="@c" selected="selected">@L[c]</option> }
+                        else { <option value="@c">@L[c]</option> }
                     }
                 </select>
             </label>
             <label><span>@L["EIN / Tax ID"]</span><input type="text" name="W9Ein" value="@F("W9Ein")" placeholder="@L["12-3456789"]" /></label>
         </div>
         <div class="prv-flow-flags">
-            <label><input type="checkbox" name="W9NotApplicable" value="true" @(Model.NotApplicable ? "checked" : "") /> Not applicable</label>
-            <label><input type="checkbox" name="W9Unknown" value="true" @(Model.Unknown ? "checked" : "") /> I don't know</label>
+            <label><input type="checkbox" name="W9NotApplicable" value="true" @(Model.NotApplicable ? "checked" : "") /> @L["Not applicable"]</label>
+            <label><input type="checkbox" name="W9Unknown" value="true" @(Model.Unknown ? "checked" : "") /> @L["I don't know"]</label>
         </div>
     }
     else if (Model.Id == "background")
@@ -120,7 +120,7 @@
         </div>
         <label class="prv-flow-consent">
             <input type="checkbox" name="BackgroundConsent" value="true" @(Model.IsUploaded ? "checked" : "") />
-            I authorize INDOR to perform a background check
+            @L["I authorize INDOR to perform a background check"]
         </label>
     }
 </div>

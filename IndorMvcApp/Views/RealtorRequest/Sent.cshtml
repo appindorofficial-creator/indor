@@ -1,10 +1,11 @@
 @model IndorMvcApp.ViewModels.RealtorRequestSentViewModel
+@using IndorMvcApp.Localization
 @{
-    ViewData["Title"] = Model.IsGeneralGuidance ? "Request Submitted" : "Request Sent";
+    ViewData["Title"] = Model.IsGeneralGuidance ? L["Request Submitted"] : L["Request Sent"];
     Layout = null;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -18,7 +19,7 @@
 <body>
 <div class="hvac-page">
     <div class="hvac-top">
-        <a asp-controller="Home" asp-action="Index" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+        <a asp-controller="Home" asp-action="Index" class="hvac-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
         <div class="hvac-title">@ViewData["Title"]</div>
         <div style="width:40px;"></div>
     </div>
@@ -30,15 +31,15 @@
             @if (Model.IsGeneralGuidance)
             {
                 <p>
-                    <strong>Your General Guidance request has been sent.</strong>
-                    A real estate professional will review your answers and contact you soon to help guide your next step.
+                    <strong>@L["Your General Guidance request has been sent."]</strong>
+                    @L["A real estate professional will review your answers and contact you soon to help guide your next step."]
                 </p>
             }
             else
             {
                 <p>
-                    <strong>We received your realtor request.</strong>
-                    Our team will review your information and help connect you with a trusted real estate professional.
+                    <strong>@L["We received your realtor request."]</strong>
+                    @L["Our team will review your information and help connect you with a trusted real estate professional."]
                 </p>
             }
         </div>
@@ -48,37 +49,37 @@
             {
                 <div class="rr-summary-row">
                     <i class="fas fa-dollar-sign"></i>
-                    <span class="k">Monthly rent comfort</span>
-                    <span class="v">@Model.RentComfortLabel</span>
+                    <span class="k">@L["Monthly rent comfort"]</span>
+                    <span class="v">@UiDisplayLocalization.Localize(L, Model.RentComfortLabel)</span>
                 </div>
                 <div class="rr-summary-row">
                     <i class="far fa-calendar"></i>
-                    <span class="k">Move timeline</span>
-                    <span class="v">@Model.TimeframeLabel</span>
+                    <span class="k">@L["Move timeline"]</span>
+                    <span class="v">@UiDisplayLocalization.Localize(L, Model.TimeframeLabel)</span>
                 </div>
                 <div class="rr-summary-row">
                     <i class="fas fa-building"></i>
-                    <span class="k">Property type</span>
-                    <span class="v">@Model.HomeTypeLabel</span>
+                    <span class="k">@L["Property type"]</span>
+                    <span class="v">@UiDisplayLocalization.Localize(L, Model.HomeTypeLabel)</span>
                 </div>
                 <div class="rr-summary-row">
                     <i class="fas fa-bed"></i>
-                    <span class="k">Bedrooms</span>
+                    <span class="k">@L["Bedrooms"]</span>
                     <span class="v">@Model.BedroomsLabel</span>
                 </div>
                 <div class="rr-summary-row">
                     <i class="fas fa-bath"></i>
-                    <span class="k">Bathrooms</span>
+                    <span class="k">@L["Bathrooms"]</span>
                     <span class="v">@Model.BathroomsLabel</span>
                 </div>
                 <div class="rr-summary-row">
                     <i class="fas fa-paw"></i>
-                    <span class="k">Pets</span>
-                    <span class="v">@Model.PetsLabel</span>
+                    <span class="k">@L["Pets"]</span>
+                    <span class="v">@UiDisplayLocalization.Localize(L, Model.PetsLabel)</span>
                 </div>
                 <div class="rr-summary-row">
                     <i class="fas fa-location-dot"></i>
-                    <span class="k">Preferred area</span>
+                    <span class="k">@L["Preferred area"]</span>
                     <span class="v">@Model.AreaLabel</span>
                 </div>
             }
@@ -86,23 +87,23 @@
             {
                 <div class="rr-summary-row">
                     <i class="fas fa-house"></i>
-                    <span class="k">Need</span>
-                    <span class="v">@Model.NeedLabel</span>
+                    <span class="k">@L["Need"]</span>
+                    <span class="v">@UiDisplayLocalization.Localize(L, Model.NeedLabel)</span>
                 </div>
                 <div class="rr-summary-row">
                     <i class="fas fa-location-dot"></i>
-                    <span class="k">Area</span>
+                    <span class="k">@L["Area"]</span>
                     <span class="v">@Model.AreaLabel</span>
                 </div>
                 <div class="rr-summary-row">
                     <i class="far fa-calendar"></i>
-                    <span class="k">Timeframe</span>
-                    <span class="v">@Model.TimeframeLabel</span>
+                    <span class="k">@L["Timeframe"]</span>
+                    <span class="v">@UiDisplayLocalization.Localize(L, Model.TimeframeLabel)</span>
                 </div>
                 <div class="rr-summary-row">
                     <i class="fas fa-rotate"></i>
-                    <span class="k">Status</span>
-                    <span class="v status">@Model.StatusLabel</span>
+                    <span class="k">@L["Status"]</span>
+                    <span class="v status">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
                 </div>
             }
         </div>
@@ -111,34 +112,34 @@
         {
             <div class="rr-info-banner">
                 <i class="fas fa-circle-info"></i>
-                <span>You can edit this information later if needed.</span>
+                <span>@L["You can edit this information later if needed."]</span>
             </div>
             <a asp-controller="Home" asp-action="Index" class="hvac-save-btn" style="text-decoration:none;text-align:center;display:block;">@L["Done"]</a>
-            <a asp-action="Request" class="rr-secondary-btn">Request another consultation</a>
+            <a asp-action="Request" class="rr-secondary-btn">@L["Request another consultation"]</a>
         }
         else
         {
-            <h2 class="rr-next-title">What happens next</h2>
+            <h2 class="rr-next-title">@L["What happens next"]</h2>
             <div class="rr-steps">
                 <div class="rr-step">
                     <span class="rr-step-num"><i class="fas fa-file-lines"></i></span>
                     <div class="rr-step-copy">
-                        <strong>We review your request</strong>
-                        <span>Our team will review your information.</span>
+                        <strong>@L["We review your request"]</strong>
+                        <span>@L["Our team will review your information."]</span>
                     </div>
                 </div>
                 <div class="rr-step">
                     <span class="rr-step-num"><i class="fas fa-users"></i></span>
                     <div class="rr-step-copy">
-                        <strong>We identify a trusted match</strong>
-                        <span>We'll find a real estate professional that fits your needs.</span>
+                        <strong>@L["We identify a trusted match"]</strong>
+                        <span>@L["We'll find a real estate professional that fits your needs."]</span>
                     </div>
                 </div>
                 <div class="rr-step">
                     <span class="rr-step-num"><i class="fas fa-comment-dots"></i></span>
                     <div class="rr-step-copy">
-                        <strong>We contact you with next steps</strong>
-                        <span>We'll reach out with your match and next steps.</span>
+                        <strong>@L["We contact you with next steps"]</strong>
+                        <span>@L["We'll reach out with your match and next steps."]</span>
                     </div>
                 </div>
             </div>

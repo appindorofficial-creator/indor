@@ -76,7 +76,7 @@ public class PropertyAdministratorEmergencyPlumbingService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             PropertyId = property.Id,
             ViewingProperty = mapped,
-            GuestsOnSiteLabel = step1.GuestsInside == "Yes" ? "Guests on-site" : null,
+            GuestsOnSiteLabel = step1.GuestsInside == "Yes" ? PropertyAdministratorDisplayLocalization.L("Guests on-site") : null,
             IssueType = step1.IssueType,
             ActivelyLeaking = step1.ActivelyLeaking,
             GuestsInside = step1.GuestsInside,
@@ -112,14 +112,14 @@ public class PropertyAdministratorEmergencyPlumbingService(
             Category = "Emergency",
             ScheduledUtc = now,
             IsEmergency = true,
-            EtaLabel = "22 min",
-            TeamLabel = "Carlos M. • Plumbing",
+            EtaLabel = PropertyAdministratorDisplayLocalization.L("22 min"),
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Carlos M. • Plumbing"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Carlos M.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Licensed Plumbing Pro",
-            VehicleLabel = "White service van",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("White service van"),
             TimelineStep = 2
         };
 
@@ -193,33 +193,33 @@ public class PropertyAdministratorEmergencyPlumbingService(
     [
         new()
         {
-            Label = "Issue",
+            Label = PropertyAdministratorDisplayLocalization.L("Issue"),
             Value = $"{LabelIssue(input.IssueType)} / {LabelLocation(input.ProblemLocation).ToLowerInvariant()}",
             IconClass = "fa-droplet"
         },
         new()
         {
-            Label = "Occupied",
+            Label = PropertyAdministratorDisplayLocalization.L("Occupied"),
             Value = input.ActivelyLeaking == "Yes" ? "Yes" : "No",
             IconClass = "fa-user",
             Highlight = input.GuestsInside == "Yes"
         },
         new()
         {
-            Label = "Guests inside",
+            Label = PropertyAdministratorDisplayLocalization.L("Guests inside"),
             Value = input.GuestsInside,
             IconClass = "fa-users",
             Highlight = input.GuestsInside == "Yes"
         },
         new()
         {
-            Label = "Access",
+            Label = PropertyAdministratorDisplayLocalization.L("Access"),
             Value = LabelAccess(input.EntryAccess),
             IconClass = "fa-key"
         },
         new()
         {
-            Label = "Updates",
+            Label = PropertyAdministratorDisplayLocalization.L("Updates"),
             Value = string.Join(" + ", input.UpdateRecipientsList),
             IconClass = "fa-bell"
         }
@@ -235,39 +235,39 @@ public class PropertyAdministratorEmergencyPlumbingService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Technician assigned", StatusLabel = assigned, IconClass = "fa-circle-check", State = step >= 1 ? "done" : "pending" },
-            new() { Label = "En route", StatusLabel = enRoute, IconClass = "fa-truck", State = step >= 2 ? "active" : "pending" },
-            new() { Label = "Arrived", StatusLabel = "Pending", IconClass = "fa-location-dot", State = step >= 3 ? "done" : "pending" },
-            new() { Label = "Diagnosis", StatusLabel = "Pending", IconClass = "fa-clipboard-list", State = step >= 4 ? "done" : "pending" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Technician assigned"), StatusLabel = assigned, IconClass = "fa-circle-check", State = step >= 1 ? "done" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("En route"), StatusLabel = enRoute, IconClass = "fa-truck", State = step >= 2 ? "active" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Arrived"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-location-dot", State = step >= 3 ? "done" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Diagnosis"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-clipboard-list", State = step >= 4 ? "done" : "pending" }
         ];
     }
 
     private static string LabelIssue(string value) => value switch
     {
-        "ClogBackup" => "Clog / backup",
-        "NoHotWater" => "No hot water",
-        "ToiletIssue" => "Toilet issue",
-        "BurstPipe" => "Burst pipe",
-        "NotDraining" => "Water not draining",
-        _ => "Active leak"
+        "ClogBackup" => PropertyAdministratorDisplayLocalization.L("Clog / backup"),
+        "NoHotWater" => PropertyAdministratorDisplayLocalization.L("No hot water"),
+        "ToiletIssue" => PropertyAdministratorDisplayLocalization.L("Toilet issue"),
+        "BurstPipe" => PropertyAdministratorDisplayLocalization.L("Burst pipe"),
+        "NotDraining" => PropertyAdministratorDisplayLocalization.L("Water not draining"),
+        _ => PropertyAdministratorDisplayLocalization.L("Active leak")
     };
 
     private static string LabelLocation(string value) => value switch
     {
-        "Kitchen" => "Kitchen",
-        "Laundry" => "Laundry",
-        "WaterHeater" => "Water heater",
-        "MainLine" => "Main line",
-        "Other" => "Other",
-        _ => "Bathroom"
+        "Kitchen" => PropertyAdministratorDisplayLocalization.L("Kitchen"),
+        "Laundry" => PropertyAdministratorDisplayLocalization.L("Laundry"),
+        "WaterHeater" => PropertyAdministratorDisplayLocalization.L("Water heater"),
+        "MainLine" => PropertyAdministratorDisplayLocalization.L("Main line"),
+        "Other" => PropertyAdministratorDisplayLocalization.L("Other"),
+        _ => PropertyAdministratorDisplayLocalization.L("Bathroom")
     };
 
     private static string LabelAccess(string value) => value switch
     {
-        "HostMeet" => "Host will meet",
-        "GuestApproval" => "Need guest approval",
-        _ => "Smart lock code provided"
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "GuestApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
+        _ => PropertyAdministratorDisplayLocalization.L("Smart lock code provided")
     };
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(
@@ -292,24 +292,7 @@ public class PropertyAdministratorEmergencyPlumbingService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -346,9 +329,9 @@ public class PropertyAdministratorEmergencyPlumbingService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

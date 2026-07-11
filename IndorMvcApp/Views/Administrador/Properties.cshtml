@@ -59,10 +59,10 @@
 
     <div class="pa-portfolio-cta-row">
         <a href="@Model.AddPropertyUrl" class="pa-btn-primary pa-portfolio-cta-primary">
-            <i class="fas fa-plus"></i> @(hasProperties ? "Add property" : "Add your first property")
+            <i class="fas fa-plus"></i> @(hasProperties ? L["Add property"] : L["Add your first property"])
         </a>
         <a href="@Model.AddPropertyUrl" class="pa-btn-outline pa-portfolio-cta-import">
-            <i class="fas fa-cloud-arrow-up"></i> Import portfolio
+            <i class="fas fa-cloud-arrow-up"></i> @L["Import portfolio"]
         </a>
     </div>
 
@@ -76,7 +76,7 @@
                     <strong>@L["No properties added yet"]</strong>
                     <p>@L["Start by adding your first home to track services, maintenance, guests, and operations."]</p>
                     <a href="@Model.AddPropertyUrl" class="pa-btn-outline pa-btn-outline--sm">
-                        <i class="fas fa-plus"></i> Add property
+                        <i class="fas fa-plus"></i> @L["Add property"]
                     </a>
                 </div>
             </div>
@@ -90,9 +90,9 @@
                     <div class="pa-portfolio-property-body">
                         <strong>@property.PropertyName</strong>
                         <small>@property.Location</small>
-                        <span class="pa-portfolio-status @(property.StatusLabel == "Active" ? "is-active" : null)">
+                        <span class="pa-portfolio-status @(property.StatusLabel == L["Active"] || property.StatusLabel == "Active" ? "is-active" : null)">
                             <span class="pa-portfolio-status-dot" aria-hidden="true"></span>
-                            @property.StatusLabel
+                            @UiDisplayLocalization.Localize(L, property.StatusLabel)
                         </span>
                     </div>
                     <i class="fas fa-chevron-right pa-portfolio-property-chevron"></i>

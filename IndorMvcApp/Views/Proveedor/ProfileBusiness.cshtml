@@ -28,13 +28,13 @@
     @if (TempData["ProfileSaved"] is true)
     {
         <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success">
-            <i class="fas fa-circle-check"></i> Business profile saved.
+            <i class="fas fa-circle-check"></i> @L["Business profile saved."]
         </div>
     }
     @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
     {
         <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error">
-            <i class="fas fa-circle-exclamation"></i> @Model.ErrorMessage
+            <i class="fas fa-circle-exclamation"></i> @UiDisplayLocalization.Localize(L, Model.ErrorMessage)
         </div>
     }
 
@@ -56,11 +56,11 @@
                         {
                             if (cat.Id == Model.PrimaryCategoryId)
                             {
-                                <option value="@cat.Id" selected="selected">@cat.Label</option>
+                                <option value="@cat.Id" selected="selected">@UiDisplayLocalization.Localize(L, cat.Label)</option>
                             }
                             else
                             {
-                                <option value="@cat.Id">@cat.Label</option>
+                                <option value="@cat.Id">@UiDisplayLocalization.Localize(L, cat.Label)</option>
                             }
                         }
                     </select>
@@ -78,7 +78,7 @@
                     <input type="url" name="Website" value="@Model.Website" placeholder="@L["https://"]" @(Model.WebsiteNotApplicable ? "disabled" : "") id="prvFlowWebsite" />
                     <label class="prv-flow-inline-check">
                         <input type="checkbox" name="WebsiteNotApplicable" value="true" @(Model.WebsiteNotApplicable ? "checked" : "") id="prvFlowWebsiteNa" />
-                        Not applicable
+                        @L["Not applicable"]
                     </label>
                 </label>
                 <label>
@@ -98,17 +98,17 @@
                 <div class="prv-flow-tri">
                     <span>@L["Emergency service"]</span>
                     <div class="prv-flow-tri-btns">
-                        <label><input type="radio" name="EmergencyPreference" value="yes" @TriChecked(Model.EmergencyPreference, Model.EmergencyService) /> Yes</label>
-                        <label><input type="radio" name="EmergencyPreference" value="no" @TriNo(Model.EmergencyPreference, Model.EmergencyService) /> No</label>
-                        <label><input type="radio" name="EmergencyPreference" value="na" @TriNa(Model.EmergencyPreference) /> N/A</label>
+                        <label><input type="radio" name="EmergencyPreference" value="yes" @TriChecked(Model.EmergencyPreference, Model.EmergencyService) /> @L["Yes"]</label>
+                        <label><input type="radio" name="EmergencyPreference" value="no" @TriNo(Model.EmergencyPreference, Model.EmergencyService) /> @L["No"]</label>
+                        <label><input type="radio" name="EmergencyPreference" value="na" @TriNa(Model.EmergencyPreference) /> @L["N/A"]</label>
                     </div>
                 </div>
                 <div class="prv-flow-tri">
                     <span>@L["Same-day jobs"]</span>
                     <div class="prv-flow-tri-btns">
-                        <label><input type="radio" name="SameDayPreference" value="yes" @TriChecked(Model.SameDayPreference, Model.SameDayJobs) /> Yes</label>
-                        <label><input type="radio" name="SameDayPreference" value="no" @TriNo(Model.SameDayPreference, Model.SameDayJobs) /> No</label>
-                        <label><input type="radio" name="SameDayPreference" value="na" @TriNa(Model.SameDayPreference) /> N/A</label>
+                        <label><input type="radio" name="SameDayPreference" value="yes" @TriChecked(Model.SameDayPreference, Model.SameDayJobs) /> @L["Yes"]</label>
+                        <label><input type="radio" name="SameDayPreference" value="no" @TriNo(Model.SameDayPreference, Model.SameDayJobs) /> @L["No"]</label>
+                        <label><input type="radio" name="SameDayPreference" value="na" @TriNa(Model.SameDayPreference) /> @L["N/A"]</label>
                     </div>
                 </div>
             </div>
@@ -123,7 +123,7 @@
                     <label class="prv-pro-edit-profile-service-chip @(option.IsSelected ? "is-selected" : "")">
                         <input type="checkbox" name="ServiceIds" value="@option.Id" @(option.IsSelected ? "checked" : "") />
                         <i class="fas @option.IconClass"></i>
-                        <span>@option.Label</span>
+                        <span>@UiDisplayLocalization.Localize(L, option.Label)</span>
                     </label>
                 }
             </div>
@@ -145,12 +145,12 @@
 
         <p class="prv-flow-tip prv-flow-tip--inline">
             <i class="fas fa-circle-info"></i>
-            Missing something? Mark Not applicable or save and finish later.
+            @L["Missing something? Mark Not applicable or save and finish later."]
         </p>
 
         <footer class="prv-flow-footer prv-flow-footer--form">
             <button type="submit" name="SaveMode" value="save" class="prv-pro-btn prv-pro-btn--primary prv-flow-cta">
-                <i class="fas fa-floppy-disk"></i> Save changes
+                <i class="fas fa-floppy-disk"></i> @L["Save changes"]
             </button>
             <button type="submit" name="SaveMode" value="continue" class="prv-pro-btn prv-pro-btn--ghost">@L["Save &amp; continue"]</button>
             <button type="submit" name="SaveMode" value="exit" class="prv-flow-exit">@L["Save &amp; exit"]</button>

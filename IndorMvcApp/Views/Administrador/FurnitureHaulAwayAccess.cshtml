@@ -21,7 +21,7 @@
         <div class="pa-viewing-strip">
             <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
             <div class="pa-viewing-strip-main">
-                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
                 {
                     <span class="pa-checkout-badge pa-checkout-badge--guest"><i class="fas fa-user"></i> @Model.PropertyStatusLabel</span>
@@ -49,7 +49,7 @@
             <span class="pa-flow-qnum">1</span>
             <label><i class="fas fa-bolt pa-q-icon pa-q-icon--blue"></i> @L["When should pickup happen?"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
-                @foreach (var w in new (string Value, string Label, string Icon)[] { ("Asap", "ASAP", "fa-bolt"), ("TodayAfterCheckout", "Today after checkout", "fa-calendar-day"), ("ScheduledTime", "Scheduled time", "fa-calendar") })
+                @foreach (var w in new (string Value, string Label, string Icon)[] { ("Asap", L["ASAP"], "fa-bolt"), ("TodayAfterCheckout", L["Today after checkout"], "fa-calendar-day"), ("ScheduledTime", L["Scheduled time"], "fa-calendar") })
                 {
                     <label class="pa-chip pa-chip--wide @(Model.PickupWhen == w.Value ? "is-selected" : null)">
                         <input type="radio" name="PickupWhen" value="@w.Value" @(Model.PickupWhen == w.Value ? "checked" : null) />
@@ -64,7 +64,7 @@
             <span class="pa-flow-qnum">2</span>
             <label><i class="fas fa-clock pa-q-icon pa-q-icon--blue"></i> @L["What time window works best?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var tw in new (string Value, string Label)[] { ("Morning", "Morning"), ("Afternoon", "Afternoon"), ("Evening", "Evening") })
+                @foreach (var tw in new (string Value, string Label)[] { ("Morning", L["Morning"]), ("Afternoon", L["Afternoon"]), ("Evening", L["Evening"]) })
                 {
                     <label class="pa-toggle-btn @(Model.TimeWindow == tw.Value ? "is-selected" : null)">
                         <input type="radio" name="TimeWindow" value="@tw.Value" @(Model.TimeWindow == tw.Value ? "checked" : null) />
@@ -78,7 +78,7 @@
             <span class="pa-flow-qnum">3</span>
             <label><i class="fas fa-key pa-q-icon pa-q-icon--blue"></i> @L["Can the crew enter the property?"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
-                @foreach (var e in new (string Value, string Label)[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet crew"), ("CurbsideOnly", "Curbside pickup only") })
+                @foreach (var e in new (string Value, string Label)[] { ("SmartLock", L["Yes, with smart lock"]), ("HostMeet", L["Host will meet crew"]), ("CurbsideOnly", L["Curbside pickup only"]) })
                 {
                     <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Value ? "is-selected" : null)">
                         <input type="radio" name="EntryAccess" value="@e.Value" @(Model.EntryAccess == e.Value ? "checked" : null) />
@@ -103,12 +103,12 @@
             <div class="pa-furniture-items-grid pa-furniture-items-grid--6">
                 @foreach (var loc in new (string Value, string Label, string Icon)[]
                 {
-                    ("LivingRoom", "Living room", "fa-couch"),
-                    ("Bedroom", "Bedroom", "fa-bed"),
-                    ("Garage", "Garage", "fa-warehouse"),
-                    ("FrontCurb", "Front curb", "fa-road"),
-                    ("StorageRoom", "Storage room", "fa-box"),
-                    ("MultipleAreas", "Multiple areas", "fa-border-all")
+                    ("LivingRoom", L["Living room"], "fa-couch"),
+                    ("Bedroom", L["Bedroom"], "fa-bed"),
+                    ("Garage", L["Garage"], "fa-warehouse"),
+                    ("FrontCurb", L["Front curb"], "fa-road"),
+                    ("StorageRoom", L["Storage room"], "fa-box"),
+                    ("MultipleAreas", L["Multiple areas"], "fa-border-all")
                 })
                 {
                     <label class="pa-junk-item-card @(locations.Contains(loc.Value) ? "is-selected" : null)">
@@ -125,7 +125,7 @@
             <span class="pa-flow-qnum">6</span>
             <label><i class="fas fa-stairs pa-q-icon pa-q-icon--blue"></i> @L["Are there stairs or elevator access?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var a in new (string Value, string Label, string Icon)[] { ("GroundFloor", "Ground floor", "fa-building"), ("Stairs", "Stairs", "fa-stairs"), ("Elevator", "Elevator", "fa-elevator") })
+                @foreach (var a in new (string Value, string Label, string Icon)[] { ("GroundFloor", L["Ground floor"], "fa-building"), ("Stairs", L["Stairs"], "fa-stairs"), ("Elevator", L["Elevator"], "fa-elevator") })
                 {
                     <label class="pa-toggle-btn pa-toggle-btn--icon @(Model.AccessLevel == a.Value ? "is-selected" : null)">
                         <input type="radio" name="AccessLevel" value="@a.Value" @(Model.AccessLevel == a.Value ? "checked" : null) />
@@ -139,7 +139,7 @@
             <span class="pa-flow-qnum">7</span>
             <label><i class="fas fa-users pa-q-icon pa-q-icon--blue"></i> @L["Who should receive updates?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
                 {
                     <label class="pa-toggle-btn @(Model.UpdateRecipient == r.Item1 ? "is-selected" : null)">
                         <input type="radio" name="UpdateRecipientsList" value="@r.Item1" @(Model.UpdateRecipient == r.Item1 ? "checked" : null) /> @r.Item2

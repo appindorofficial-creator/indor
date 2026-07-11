@@ -34,7 +34,7 @@
             <span class="pa-flow-qnum">1</span>
             <label>@L["Technician inspection"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
-                @foreach (var e in new[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet"), ("GuestApproval", "Need guest approval") })
+                @foreach (var e in new[] { ("SmartLock", L["Yes, with smart lock"]), ("HostMeet", L["Host will meet"]), ("GuestApproval", L["Need guest approval"]) })
                 {
                     <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Item1 ? "is-selected" : null)">
                         <input type="radio" name="EntryAccess" value="@e.Item1" @(Model.EntryAccess == e.Item1 ? "checked" : null) />
@@ -57,7 +57,7 @@
             <span class="pa-flow-qnum">3</span>
             <label>@L["Area protection"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var p in new[] { ("BucketPlaced", "Bucket placed"), ("TarpNeeded", "Tarp needed"), ("NotSure", "Not sure") })
+                @foreach (var p in new[] { ("BucketPlaced", L["Bucket placed"]), ("TarpNeeded", L["Tarp needed"]), ("NotSure", L["Not sure"]) })
                 {
                     <label class="pa-chip @(Model.AreaProtection == p.Item1 ? "is-selected" : null)">
                         <input type="radio" name="AreaProtection" value="@p.Item1" @(Model.AreaProtection == p.Item1 ? "checked" : null) />
@@ -71,7 +71,7 @@
             <span class="pa-flow-qnum">4</span>
             <label>@L["Interior damage"]</label>
             <div class="pa-chip-grid pa-chip-grid--4">
-                @foreach (var d in new[] { ("Ceiling", "Ceiling"), ("Wall", "Wall"), ("Floor", "Floor"), ("NotSure", "Not sure") })
+                @foreach (var d in new[] { ("Ceiling", L["Ceiling"]), ("Wall", L["Wall"]), ("Floor", L["Floor"]), ("NotSure", L["Not sure"]) })
                 {
                     <label class="pa-chip @(damageItems.Contains(d.Item1) ? "is-selected" : null)">
                         <input type="checkbox" name="InteriorDamageList" value="@d.Item1" @(damageItems.Contains(d.Item1) ? "checked" : null) />
@@ -85,7 +85,7 @@
             <span class="pa-flow-qnum">5</span>
             <label>@L["Insurance info"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var i in new[] { ("Yes", "Yes"), ("No", "No"), ("UploadLater", "I'll upload later") })
+                @foreach (var i in new[] { ("Yes", L["Yes"]), ("No", L["No"]), ("UploadLater", L["I'll upload later"]) })
                 {
                     <label class="pa-chip @(Model.InsuranceInfo == i.Item1 ? "is-selected" : null)">
                         <input type="radio" name="InsuranceInfo" value="@i.Item1" @(Model.InsuranceInfo == i.Item1 ? "checked" : null) />
@@ -114,7 +114,7 @@
             <span class="pa-flow-qnum">8</span>
             <label>@L["Who should receive updates?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
                 {
                     <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
                         <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />

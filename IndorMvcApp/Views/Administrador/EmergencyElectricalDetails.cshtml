@@ -29,12 +29,12 @@
                 @{
                     var issues = new (string Value, string Label, string Icon)[]
                     {
-                        ("PowerOutage", "Power outage", "fa-bolt"),
-                        ("BreakerTripping", "Breaker keeps tripping", "fa-plug-circle-exclamation"),
-                        ("BurningSmell", "Burning smell", "fa-fire"),
-                        ("SparksOutlet", "Sparks / outlet issue", "fa-bolt-lightning"),
-                        ("PartialPower", "Partial power", "fa-circle-half-stroke"),
-                        ("ExposedWire", "Exposed wire", "fa-triangle-exclamation")
+                        ("PowerOutage", L["Power outage"], "fa-bolt"),
+                        ("BreakerTripping", L["Breaker keeps tripping"], "fa-plug-circle-exclamation"),
+                        ("BurningSmell", L["Burning smell"], "fa-fire"),
+                        ("SparksOutlet", L["Sparks / outlet issue"], "fa-bolt-lightning"),
+                        ("PartialPower", L["Partial power"], "fa-circle-half-stroke"),
+                        ("ExposedWire", L["Exposed wire"], "fa-triangle-exclamation")
                     };
                 }
                 @foreach (var item in issues)
@@ -42,7 +42,7 @@
                     <label class="pa-chip @(Model.IssueType == item.Value ? "is-selected" : null)">
                         <input type="radio" name="IssueType" value="@item.Value" @(Model.IssueType == item.Value ? "checked" : null) />
                         <i class="fas @item.Icon"></i>
-                        <span>@item.Label</span>
+                        <span>@L[item.Label]</span>
                     </label>
                 }
             </div>
@@ -78,7 +78,7 @@
             <span class="pa-flow-qnum">4</span>
             <label>@L["How urgent is it?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var u in new[] { ("Normal", "Normal"), ("Urgent", "Urgent"), ("Emergency", "Emergency") })
+                @foreach (var u in new[] { ("Normal", L["Normal"]), ("Urgent", L["Urgent"]), ("Emergency", L["Emergency"]) })
                 {
                     <label class="pa-toggle-btn @(Model.Urgency == u.Item1 ? "is-selected" : null)">
                         <input type="radio" name="Urgency" value="@u.Item1" @(Model.Urgency == u.Item1 ? "checked" : null) />
@@ -96,11 +96,11 @@
                 @{
                     var locations = new (string Value, string Label, string? Icon)[]
                     {
-                        ("Kitchen", "Kitchen", "fa-kitchen-set"),
-                        ("Bedroom", "Bedroom", "fa-bed"),
-                        ("LivingRoom", "Living room", "fa-couch"),
-                        ("Bathroom", "Bathroom", "fa-sink"),
-                        ("PanelBreaker", "Panel / breaker box", "fa-grip-lines-vertical"),
+                        ("Kitchen", L["Kitchen"], "fa-kitchen-set"),
+                        ("Bedroom", L["Bedroom"], "fa-bed"),
+                        ("LivingRoom", L["Living room"], "fa-couch"),
+                        ("Bathroom", L["Bathroom"], "fa-sink"),
+                        ("PanelBreaker", L["Panel / breaker box"], "fa-grip-lines-vertical"),
                         ("Other", "Other", null)
                     };
                 }
@@ -109,7 +109,7 @@
                     <label class="pa-chip @(Model.ProblemLocation == loc.Value ? "is-selected" : null)">
                         <input type="radio" name="ProblemLocation" value="@loc.Value" @(Model.ProblemLocation == loc.Value ? "checked" : null) />
                         @if (loc.Icon != null) { <i class="fas @loc.Icon"></i> }
-                        <span>@loc.Label</span>
+                        <span>@L[loc.Label]</span>
                     </label>
                 }
             </div>
@@ -119,7 +119,7 @@
             <span class="pa-flow-qnum">6</span>
             <label>@L["Can the technician enter now?"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
-                @foreach (var e in new[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet"), ("GuestApproval", "Need guest approval") })
+                @foreach (var e in new[] { ("SmartLock", L["Yes, with smart lock"]), ("HostMeet", L["Host will meet"]), ("GuestApproval", L["Need guest approval"]) })
                 {
                     <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Item1 ? "is-selected" : null)">
                         <input type="radio" name="EntryAccess" value="@e.Item1" @(Model.EntryAccess == e.Item1 ? "checked" : null) />

@@ -13,9 +13,9 @@
         <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@Model.JobId" asp-route-fromCalendar="true" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["Reschedule Job"]</h1>
-            <small>Step @Model.StepNumber of @Model.TotalSteps</small>
+            <small>@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</small>
         </div>
-        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+        <span class="prv-pro-step-badge">@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</span>
     </header>
 
     <section class="prv-pro-upload-report-job-summary">
@@ -73,7 +73,7 @@
             <article class="prv-pro-reschedule-panel">
                 <h3>@L["Availability Preview"]</h3>
                 <p>@L["Open time slot selected:"]<strong>@Model.StartTimeLabel – @Model.EndTimeLabel</strong></p>
-                <small>Based on @Model.AssignedTechnician availability</small>
+                <small>@L.T("Based on {0} availability", Model.AssignedTechnician)</small>
             </article>
             <label class="prv-pro-create-toggle">
                 <div><i class="fas fa-comment-sms"></i><div><strong>@L["Send SMS Notification"]</strong></div></div>

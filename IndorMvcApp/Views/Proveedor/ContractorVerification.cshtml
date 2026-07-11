@@ -14,7 +14,7 @@
             </a>
             <span class="prv-vf-brand-word">@L["INDOR"]</span>
             <span class="prv-vf-brand-pro">@L["PRO"]</span>
-            <span class="prv-vf-hero-status">@Model.StatusLabel</span>
+            <span class="prv-vf-hero-status">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
         </div>
         <div class="prv-vf-hero-title">
             <h1>@L["Contractor Verification"]</h1>
@@ -38,11 +38,11 @@
                 <div class="prv-vf-name prv-vf-name--lg">@Model.Name</div>
                 @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
                 {
-                    <div class="prv-vf-trade"><i class="fas fa-screwdriver-wrench"></i> @Model.TradeLabel</div>
+                    <div class="prv-vf-trade"><i class="fas fa-screwdriver-wrench"></i> @UiDisplayLocalization.Localize(L, Model.TradeLabel)</div>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
                 {
-                    <div class="prv-vf-loc"><i class="fas fa-location-dot"></i> @Model.LocationLabel</div>
+                    <div class="prv-vf-loc"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.LocationLabel)</div>
                 }
             </div>
         </div>
@@ -61,7 +61,7 @@
             </div>
             <div class="prv-vf-contact-item">
                 <i class="fas fa-calendar"></i>
-                <div><span>@L["Submitted"]</span><strong>@Model.SubmittedLabel</strong></div>
+                <div><span>@L["Submitted"]</span><strong>@UiDisplayLocalization.Localize(L, Model.SubmittedLabel)</strong></div>
             </div>
         </div>
     </section>
@@ -74,16 +74,16 @@
                 <div class="prv-vf-row">
                     <span class="prv-vf-row-ic is-@it.State"><i class="fas @it.IconClass"></i></span>
                     <div class="prv-vf-row-body">
-                        <strong>@it.Label</strong>
+                        <strong>@UiDisplayLocalization.Localize(L, it.Label)</strong>
                         @if (!string.IsNullOrWhiteSpace(it.Detail))
                         {
-                            <span>@it.Detail</span>
+                            <span>@UiDisplayLocalization.Localize(L, it.Detail)</span>
                         }
                     </div>
                     <div class="prv-vf-row-status is-@it.State">
                         <span class="prv-vf-row-badge">
                             <i class="fas @(it.State == "ok" ? "fa-circle-check" : it.State == "warn" ? "fa-circle-exclamation" : "fa-circle-notch")"></i>
-                            @it.StatusLabel
+                            @UiDisplayLocalization.Localize(L, it.StatusLabel)
                         </span>
                         @if (!string.IsNullOrWhiteSpace(it.Meta))
                         {

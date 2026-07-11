@@ -2,15 +2,15 @@
 @if (!string.IsNullOrEmpty(Model.Url))
 {
     <a href="@Model.Url" class="rl-profile-row">
-        <span>@Model.Label</span>
+        <span>@UiDisplayLocalization.Localize(L, Model.Label)</span>
         <i class="fas fa-chevron-right"></i>
     </a>
 }
 else
 {
     <div class="rl-profile-row">
-        <span>@Model.Label</span>
-        <span class="@Model.StatusClass">@Model.Value</span>
+        <span>@UiDisplayLocalization.Localize(L, Model.Label)</span>
+        <span class="@Model.StatusClass">@UiDisplayLocalization.Localize(L, Model.Value)</span>
         <i class="fas fa-chevron-right"></i>
     </div>
 }

@@ -12,9 +12,9 @@
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
         <a asp-controller="Proveedor" asp-action="Conversation" asp-route-id="@Model.ConversationId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1><i class="fas fa-bolt"></i> Quick Actions</h1>
+            <h1><i class="fas fa-bolt"></i> @L["Quick Actions"]</h1>
         </div>
-        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+        <span class="prv-pro-step-badge">@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</span>
     </header>
 
     <section class="prv-pro-message-action-customer">

@@ -17,8 +17,8 @@
         <img src="@Model.PhotoUrl" alt="" />
         <div>
             <strong>@Model.Address</strong>
-            <span class="rl-premium-muted">@Model.RequestedLabel</span>
-            <span class="rl-status-pill rl-status-pill--received">@Model.StatusLabel</span>
+            <span class="rl-premium-muted">@UiDisplayLocalization.Localize(L, Model.RequestedLabel)</span>
+            <span class="rl-status-pill rl-status-pill--received">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
         </div>
     </div>
     <p class="rl-section-caption rl-qcmp-caption">@L["Review and compare quotes from trusted providers."]</p>
@@ -50,13 +50,13 @@
                 <div>
                     <i class="fas fa-clock"></i>
                     <span>@L["Timeline"]</span>
-                    <strong>@quote.TimelineLabel</strong>
+                    <strong>@UiDisplayLocalization.Localize(L, quote.TimelineLabel)</strong>
                     <em>@L["Estimated"]</em>
                 </div>
                 <div>
                     <i class="fas fa-shield-halved"></i>
                     <span>@L["Warranty"]</span>
-                    <strong>@quote.WarrantyLabel</strong>
+                    <strong>@UiDisplayLocalization.Localize(L, quote.WarrantyLabel)</strong>
                     <em>@L["Included"]</em>
                 </div>
                 <div>
@@ -84,16 +84,16 @@
         <div>
             <i class="fas fa-chart-column"></i>
             <span>@L["Price Range"]</span>
-            <strong>@Model.PriceRangeLabel</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.PriceRangeLabel)</strong>
         </div>
         <div>
             <i class="fas fa-clock"></i>
             <span>@L["Timeline Range"]</span>
-            <strong>@Model.TimelineRangeLabel</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.TimelineRangeLabel)</strong>
         </div>
     </div>
 
     <a href="@Model.InviteProvidersUrl" class="rl-qcmp-invite">
-        <i class="fas fa-user-plus"></i> Need another option? Invite more providers
+        <i class="fas fa-user-plus"></i> @L["Need another option? Invite more providers"]
     </a>
 </div>

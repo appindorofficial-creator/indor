@@ -118,15 +118,15 @@ public class PropertyAdministratorTrashOutService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Trash Out at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Trash Out", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,
             Category = "Trash",
             ScheduledUtc = visitDate,
             IsEmergency = false,
-            EtaLabel = "7:00–9:00 PM",
-            TeamLabel = "Homecare runner • Trash Out",
+            EtaLabel = PropertyAdministratorDisplayLocalization.L("7:00–9:00 PM"),
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Homecare runner • Trash Out"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Homecare runner",
@@ -213,17 +213,17 @@ public class PropertyAdministratorTrashOutService(
     [
         new()
         {
-            Label = "Property",
+            Label = PropertyAdministratorDisplayLocalization.L("Property"),
             Value = property != null ? $"Viewing: {property.PropertyName}" : "—",
             IconClass = "fa-house"
         },
-        new() { Label = "Service", Value = LabelServiceNeed(input.ServiceNeed), IconClass = "fa-trash-arrow-up" },
-        new() { Label = "Bins", Value = LabelBins(input.BinsList), IconClass = "fa-trash-can" },
-        new() { Label = "Quantity", Value = LabelBinCount(input.BinCount), IconClass = "fa-hashtag" },
-        new() { Label = "Pickup day", Value = LabelPickupDay(input.PickupDay), IconClass = "fa-calendar" },
-        new() { Label = "Timing", Value = $"{LabelTakeOutTiming(input.TakeOutTiming)} / {LabelBringInTiming(input.BringInTiming)}", IconClass = "fa-clock" },
-        new() { Label = "Updates", Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" },
-        new() { Label = "Price", Value = $"{ResolveFlatRate(input.ServiceNeed)} flat rate", IconClass = "fa-tag" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = LabelServiceNeed(input.ServiceNeed), IconClass = "fa-trash-arrow-up" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Bins"), Value = LabelBins(input.BinsList), IconClass = "fa-trash-can" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Quantity"), Value = LabelBinCount(input.BinCount), IconClass = "fa-hashtag" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Pickup day"), Value = LabelPickupDay(input.PickupDay), IconClass = "fa-calendar" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Timing"), Value = $"{LabelTakeOutTiming(input.TakeOutTiming)} / {LabelBringInTiming(input.BringInTiming)}", IconClass = "fa-clock" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Price"), Value = $"{ResolveFlatRate(input.ServiceNeed)} flat rate", IconClass = "fa-tag" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorTrashOutTimelineItemViewModel> BuildTimeline(
@@ -234,11 +234,11 @@ public class PropertyAdministratorTrashOutService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = $"Today, {now:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Scheduled", StatusLabel = $"Today, {now:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Bins out for pickup", StatusLabel = pickupLabel, IconClass = "fa-trash-arrow-up", State = "pending" },
-            new() { Label = "Collection in progress", StatusLabel = "Pending", IconClass = "fa-truck", State = "pending" },
-            new() { Label = "Bins returned", StatusLabel = "Pending", IconClass = "fa-trash-arrow-down", State = "pending" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = $"Today, {now:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Scheduled"), StatusLabel = $"Today, {now:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Bins out for pickup"), StatusLabel = pickupLabel, IconClass = "fa-trash-arrow-up", State = "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Collection in progress"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-truck", State = "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Bins returned"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-trash-arrow-down", State = "pending" }
         ];
     }
 
@@ -251,18 +251,18 @@ public class PropertyAdministratorTrashOutService(
 
     private static string LabelServiceNeed(string value) => value switch
     {
-        "TakeBinsOut" => "Take bins out",
-        "BringBinsBackIn" => "Bring bins back in",
-        _ => "Take out + bring back"
+        "TakeBinsOut" => PropertyAdministratorDisplayLocalization.L("Take bins out"),
+        "BringBinsBackIn" => PropertyAdministratorDisplayLocalization.L("Bring bins back in"),
+        _ => PropertyAdministratorDisplayLocalization.L("Take out + bring back")
     };
 
     private static string LabelBins(IReadOnlyList<string> bins)
     {
         var labels = bins.Select(b => b switch
         {
-            "Recycle" => "Recycle",
-            "YardWaste" => "Yard waste",
-            _ => "Trash"
+            "Recycle" => PropertyAdministratorDisplayLocalization.L("Recycle"),
+            "YardWaste" => PropertyAdministratorDisplayLocalization.L("Yard waste"),
+            _ => PropertyAdministratorDisplayLocalization.L("Trash")
         }).Distinct().ToList();
 
         return labels.Count switch
@@ -276,38 +276,38 @@ public class PropertyAdministratorTrashOutService(
 
     private static string LabelBinCount(string value) => value switch
     {
-        "One" => "1 bin",
-        "ThreePlus" => "3+ bins",
-        _ => "2 bins"
+        "One" => PropertyAdministratorDisplayLocalization.L("1 bin"),
+        "ThreePlus" => PropertyAdministratorDisplayLocalization.L("3+ bins"),
+        _ => PropertyAdministratorDisplayLocalization.L("2 bins")
     };
 
     private static string LabelPickupDay(string value) => value switch
     {
-        "Today" => "Today",
-        "Later" => "Later",
-        _ => "Tomorrow"
+        "Today" => PropertyAdministratorDisplayLocalization.L("Today"),
+        "Later" => PropertyAdministratorDisplayLocalization.L("Later"),
+        _ => PropertyAdministratorDisplayLocalization.L("Tomorrow")
     };
 
     private static string LabelTakeOutTiming(string value) => value switch
     {
-        "MorningOfPickup" => "Morning out",
-        "CustomTime" => "Custom time out",
-        _ => "Evening out"
+        "MorningOfPickup" => PropertyAdministratorDisplayLocalization.L("Morning out"),
+        "CustomTime" => PropertyAdministratorDisplayLocalization.L("Custom time out"),
+        _ => PropertyAdministratorDisplayLocalization.L("Evening out")
     };
 
     private static string LabelBringInTiming(string value) => value switch
     {
-        "LateAfternoon" => "Late afternoon back in",
-        "EndOfDay" => "End of day back in",
-        _ => "After collection back in"
+        "LateAfternoon" => PropertyAdministratorDisplayLocalization.L("Late afternoon back in"),
+        "EndOfDay" => PropertyAdministratorDisplayLocalization.L("End of day back in"),
+        _ => PropertyAdministratorDisplayLocalization.L("After collection back in")
     };
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 
@@ -342,24 +342,7 @@ public class PropertyAdministratorTrashOutService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -396,9 +379,9 @@ public class PropertyAdministratorTrashOutService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

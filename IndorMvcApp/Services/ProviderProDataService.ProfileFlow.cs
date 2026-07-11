@@ -50,17 +50,29 @@ public partial class ProviderProDataService
 
         var meta = ReadOnboardingMeta(loaded.OnboardingMetaJson);
         var servicesVm = await GetEditProfileServicesAsync(loaded, cancellationToken);
-        var categories = await db.IndorProveedorCategoriasCatalogo
+        var categoryRows = await db.IndorProveedorCategoriasCatalogo
             .AsNoTracking()
             .Where(c => c.Activo)
             .OrderBy(c => c.SortOrder)
-            .Select(c => new ProviderProfileCategoryOptionViewModel { Id = c.Id, Label = c.LabelEn })
+            .Select(c => new { c.Id, c.LabelEn, c.LabelEs })
             .ToListAsync(cancellationToken);
+
+        var categories = categoryRows
+            .Select(c => new ProviderProfileCategoryOptionViewModel
+            {
+                Id = c.Id,
+                Label = ProviderProDisplayLocalization.CatalogLabel(c.LabelEn, c.LabelEs)
+            })
+            .ToList();
 
         if (categories.Count == 0)
         {
             categories = OnboardingCatalog.ProviderCategories
-                .Select(c => new ProviderProfileCategoryOptionViewModel { Id = c.Id, Label = c.Label })
+                .Select(c => new ProviderProfileCategoryOptionViewModel
+                {
+                    Id = c.Id,
+                    Label = ProviderProDisplayLocalization.L(c.Label)
+                })
                 .ToList();
         }
 
@@ -176,7 +188,7 @@ public partial class ProviderProDataService
         var sections = new List<ProviderProfileDocumentSectionViewModel>
         {
             BuildDocumentSection(
-                "license", "License", "Upload or verify your business license", "fa-id-card",
+                "license", ProviderProDisplayLocalization.L("License"), ProviderProDisplayLocalization.L("Upload or verify your business license"), "fa-id-card",
                 ProviderDocumentTypes.License,
                 IsLicenseComplete(loaded, docMeta, HasDoc(ProviderDocumentTypes.License)),
                 IsLicensePending(loaded, docMeta, HasDoc(ProviderDocumentTypes.License)),
@@ -190,7 +202,7 @@ public partial class ProviderProDataService
                     ["LicenseExpiry"] = docMeta.LicenseExpiry
                 }),
             BuildDocumentSection(
-                "insurance", "Insurance & COI", "Add proof of insurance and COI", "fa-shield-halved",
+                "insurance", ProviderProDisplayLocalization.L("Insurance & COI"), ProviderProDisplayLocalization.L("Add proof of insurance and COI"), "fa-shield-halved",
                 ProviderDocumentTypes.Insurance,
                 IsInsuranceComplete(loaded, docMeta, HasDoc(ProviderDocumentTypes.Insurance)),
                 IsInsurancePending(loaded, docMeta, HasDoc(ProviderDocumentTypes.Insurance)),
@@ -204,7 +216,7 @@ public partial class ProviderProDataService
                     ["InsuranceExpiry"] = docMeta.InsuranceExpiry
                 }),
             BuildDocumentSection(
-                "w9", "W-9", "Upload your tax form", "fa-file-invoice",
+                "w9", ProviderProDisplayLocalization.L("W-9"), ProviderProDisplayLocalization.L("Upload your tax form"), "fa-file-invoice",
                 ProviderDocumentTypes.W9,
                 IsW9Complete(docMeta, HasDoc(ProviderDocumentTypes.W9)),
                 IsW9Pending(docMeta, HasDoc(ProviderDocumentTypes.W9)),
@@ -218,7 +230,7 @@ public partial class ProviderProDataService
                     ["W9Ein"] = docMeta.W9Ein ?? meta.EinNumber
                 }),
             BuildDocumentSection(
-                "background", "Background Check", "Complete trust and safety review", "fa-user-shield",
+                "background", ProviderProDisplayLocalization.L("Background Check"), ProviderProDisplayLocalization.L("Complete trust and safety review"), "fa-user-shield",
                 ProviderDocumentTypes.GovernmentId,
                 IsBackgroundComplete(loaded, docMeta),
                 IsBackgroundPending(loaded, docMeta),
@@ -439,7 +451,11 @@ public partial class ProviderProDataService
         Dictionary<string, string?> fields)
     {
         var (statusKind, statusLabel) = ResolveSectionStatus(id, complete, pendingReview);
-        var actionLabel = complete ? "Edit" : id is "insurance" or "w9" ? "Upload" : "Complete";
+        var actionLabel = complete
+            ? ProviderProDisplayLocalization.L("Edit")
+            : id is "insurance" or "w9"
+                ? ProviderProDisplayLocalization.L("Upload")
+                : ProviderProDisplayLocalization.L("Complete");
 
         return new ProviderProfileDocumentSectionViewModel
         {
@@ -465,7 +481,7 @@ public partial class ProviderProDataService
     {
         if (string.IsNullOrWhiteSpace(city))
         {
-            return "Add your location";
+            return ProviderProDisplayLocalization.L("Add your location");
         }
 
         return city.Contains(',') ? city.Trim() : city.Trim();
@@ -488,17 +504,17 @@ public partial class ProviderProDataService
             return proveedor.PrimaryContact.Trim();
         }
 
-        return "Your business name";
+        return ProviderProDisplayLocalization.L("Your business name");
     }
 
     private static string BuildServiceAreaSummary(IndorProveedor proveedor)
     {
         if (!string.IsNullOrWhiteSpace(proveedor.PrimaryCity))
         {
-            return $"Serving {proveedor.PrimaryCity.Trim()} and surrounding areas";
+            return ProviderProDisplayLocalization.T("Serving {0} and surrounding areas", proveedor.PrimaryCity.Trim());
         }
 
-        return "Add your service areas so homeowners can find you.";
+        return ProviderProDisplayLocalization.L("Add your service areas so homeowners can find you.");
     }
 
     private static string TriStatePreference(bool value) => value ? "yes" : "no";

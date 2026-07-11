@@ -13,7 +13,7 @@
         <p>
             @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
             {
-                <text>Your @Model.TradeLabel job is now shared with verified subcontractors.</text>
+                <text>@L.T("Your {0} job is now shared with verified subcontractors.", UiDisplayLocalization.Localize(L, Model.TradeLabel))</text>
             }
             else
             {
@@ -23,7 +23,7 @@
     </div>
 
     <div class="prv-net-sec-head">
-        <h2>@Model.MatchedCount qualified match@(Model.MatchedCount == 1 ? "" : "es")</h2>
+        <h2>@L.T("{0} qualified match(es)", Model.MatchedCount)</h2>
         <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-trade="@(Model.TradeLabel == null ? "all" : "all")" class="prv-net-sort">@L["See all"]<i class="fas fa-chevron-right"></i></a>
     </div>
 
@@ -46,6 +46,6 @@
     }
 
     <div class="prv-net-actionbar" style="position:static;">
-        <a asp-controller="Proveedor" asp-action="Network" class="prv-net-btn prv-net-btn--primary"><i class="fas fa-house"></i> Back to Network</a>
+        <a asp-controller="Proveedor" asp-action="Network" class="prv-net-btn prv-net-btn--primary"><i class="fas fa-house"></i> @L["Back to Network"]</a>
     </div>
 </div>

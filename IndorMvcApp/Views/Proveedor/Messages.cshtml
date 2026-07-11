@@ -18,9 +18,9 @@
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
         <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1><i class="fas fa-message"></i> Messages</h1>
+            <h1><i class="fas fa-message"></i> @L["Messages"]</h1>
         </div>
-        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+        <span class="prv-pro-step-badge">@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</span>
     </header>
 
     <form method="get" asp-controller="Proveedor" asp-action="Messages" class="prv-pro-messages-search">
@@ -35,7 +35,7 @@
         @foreach (var (key, label) in tabs)
         {
             <a asp-controller="Proveedor" asp-action="Messages" asp-route-tab="@key" asp-route-q="@Model.SearchQuery"
-               class="prv-pro-upload-report-filter @(Model.ActiveTab == key ? "is-active" : "")">@label</a>
+               class="prv-pro-upload-report-filter @(Model.ActiveTab == key ? "is-active" : "")">@UiDisplayLocalization.Localize(L, label)</a>
         }
     </div>
 
@@ -66,13 +66,13 @@
                     <div class="prv-pro-message-thread-body">
                         <div class="prv-pro-message-thread-head">
                             <strong>@thread.CustomerName</strong>
-                            <span>@thread.TimeLabel</span>
+                            <span>@UiDisplayLocalization.Localize(L, thread.TimeLabel)</span>
                         </div>
                         <small>@thread.Address</small>
                         <p>@thread.Preview</p>
                     </div>
                     <div class="prv-pro-message-thread-meta">
-                        <span class="prv-pro-pill prv-pro-pill--@thread.StatusClass">@thread.StatusLabel</span>
+                        <span class="prv-pro-pill prv-pro-pill--@thread.StatusClass">@UiDisplayLocalization.Localize(L, thread.StatusLabel)</span>
                         <i class="fas fa-chevron-right"></i>
                     </div>
                 </a>
@@ -82,10 +82,10 @@
 
     <div class="prv-pro-messages-footer">
         <a asp-controller="Proveedor" asp-action="Customers" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block">
-            <i class="fas fa-message"></i> New message
+            <i class="fas fa-message"></i> @L["New message"]
         </a>
         <a asp-controller="Proveedor" asp-action="Messages" asp-route-tab="unread" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">
-            <i class="fas fa-envelope"></i> View unread
+            <i class="fas fa-envelope"></i> @L["View unread"]
         </a>
     </div>
 </div>

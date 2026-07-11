@@ -27,7 +27,8 @@
     var ratingLabel = Model.ReviewCount > 0 ? Model.Rating.ToString("0.0") : null;
     var phoneLabel = string.IsNullOrWhiteSpace(Model.Phone) ? "—" : Model.Phone;
     var emailLabel = string.IsNullOrWhiteSpace(Model.Email) ? "—" : Model.Email;
-    var hoursLabel = string.IsNullOrWhiteSpace(Model.BusinessHours) || Model.BusinessHours == "Hours not set"
+    var hoursLabel = string.IsNullOrWhiteSpace(Model.BusinessHours)
+        || string.Equals(Model.BusinessHours, L["Hours not set"], StringComparison.Ordinal)
         ? "—"
         : Model.BusinessHours;
     string ScoreLabel(int score) => score switch
@@ -66,7 +67,7 @@
         @if (TempData["ProfileSectionError"] is string sectionError)
         {
             <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error">
-                <i class="fas fa-circle-exclamation"></i> @sectionError
+                <i class="fas fa-circle-exclamation"></i> @UiDisplayLocalization.Localize(L, sectionError)
             </div>
         }
 
@@ -151,6 +152,8 @@
                data-share-url="@publicProfileUrl"
                data-share-title="@displayName - INDOR PRO"
                data-share-text="@L["View my provider profile on INDOR"]"
+               data-share-copied="@L["Profile link copied to clipboard."]"
+               data-share-prompt="@L["Copy profile link:"]"
                role="button">
                 <span class="prv-pro-profile-v2-action-icon prv-pro-profile-v2-action-icon--share"><i class="fas fa-share-nodes"></i></span>
                 <span class="prv-pro-profile-v2-action-copy">
@@ -252,7 +255,7 @@
                         <img src="~/images/profile-services-empty.png" alt="" aria-hidden="true" />
                         <h4>@L["No services selected yet"]</h4>
                         <p>@L["Add services to show customers what you offer."]</p>
-                        <span class="prv-pro-profile-v2-add-btn"><i class="fas fa-plus"></i> Add Services</span>
+                        <span class="prv-pro-profile-v2-add-btn"><i class="fas fa-plus"></i> @L["Add Services"]</span>
                     </div>
                 }
                 else
@@ -260,7 +263,7 @@
                     <div class="prv-pro-profile-v2-tags">
                         @foreach (var svc in allServices)
                         {
-                            <span class="prv-pro-profile-v2-tag">@svc</span>
+                            <span class="prv-pro-profile-v2-tag">@UiDisplayLocalization.Localize(L, svc)</span>
                         }
                     </div>
                 }
@@ -281,7 +284,7 @@
                 {
                     <div class="prv-pro-profile-v2-verify-row">
                         <span class="prv-pro-profile-v2-verify-icon"><i class="fas @VerifyIcon(item.Label)"></i></span>
-                        <span>@item.Label</span>
+                        <span>@UiDisplayLocalization.Localize(L, item.Label)</span>
                         <span class="prv-pro-profile-v2-pending @(item.IsComplete ? "is-done" : "")">@(item.IsComplete ? L["Complete"] : L["Pending"])</span>
                         <i class="fas fa-chevron-right prv-pro-profile-v2-verify-chevron"></i>
                     </div>
@@ -330,7 +333,7 @@
                     {
                         <div class="prv-pro-profile-v2-kv">
                             <span>@member.Name</span>
-                            <strong>@member.Role</strong>
+                            <strong>@UiDisplayLocalization.Localize(L, member.Role)</strong>
                         </div>
                     }
                 }
@@ -346,7 +349,7 @@
                 <div class="prv-pro-profile-v2-auto-row">
                     <i class="fas fa-bell"></i>
                     <span>@L["Auto reminders"]</span>
-                    <strong class="@(Model.AutoRemindersOn ? "is-ok" : "")">@(Model.AutoRemindersOn ? "ON" : "OFF")</strong>
+                    <strong class="@(Model.AutoRemindersOn ? "is-ok" : "")">@(Model.AutoRemindersOn ? L["ON"] : L["OFF"])</strong>
                 </div>
                 <div class="prv-pro-profile-v2-auto-row">
                     <i class="fas fa-file-lines"></i>
@@ -375,17 +378,17 @@
                 <div class="prv-pro-profile-v2-perf">
                     <div class="prv-pro-profile-v2-perf-item">
                         <span class="prv-pro-profile-v2-perf-icon prv-pro-profile-v2-perf-icon--time"><i class="fas fa-clock"></i></span>
-                        <strong>@Model.Performance.AvgResponseTime</strong>
+                        <strong>@UiDisplayLocalization.Localize(L, Model.Performance.AvgResponseTime)</strong>
                         <span class="prv-pro-profile-v2-perf-label">@L["Avg. Response Time"]</span>
                     </div>
                     <div class="prv-pro-profile-v2-perf-item">
                         <span class="prv-pro-profile-v2-perf-icon prv-pro-profile-v2-perf-icon--check"><i class="fas fa-circle-check"></i></span>
-                        <strong>@Model.Performance.CompletionRate</strong>
+                        <strong>@UiDisplayLocalization.Localize(L, Model.Performance.CompletionRate)</strong>
                         <span class="prv-pro-profile-v2-perf-label">@L["Completion Rate"]</span>
                     </div>
                     <div class="prv-pro-profile-v2-perf-item">
                         <span class="prv-pro-profile-v2-perf-icon prv-pro-profile-v2-perf-icon--thumb"><i class="fas fa-thumbs-up"></i></span>
-                        <strong>@Model.Performance.HomeownerApproval</strong>
+                        <strong>@UiDisplayLocalization.Localize(L, Model.Performance.HomeownerApproval)</strong>
                         <span class="prv-pro-profile-v2-perf-label">@L["Homeowner Approval"]</span>
                     </div>
                     <div class="prv-pro-profile-v2-perf-item">

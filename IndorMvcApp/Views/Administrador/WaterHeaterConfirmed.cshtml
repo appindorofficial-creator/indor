@@ -15,7 +15,7 @@
 
     <section class="pa-flow-intro">
         <h1>@L["Water Heater Emergency request sent"]</h1>
-        <p>A technician is on the way to @(Model.ViewingProperty?.PropertyName ?? "your property").</p>
+        <p>@L.T("A technician is on the way to {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"])</p>
     </section>
 
     <div class="pa-success-banner">
@@ -32,7 +32,7 @@
             <div class="pa-tech-meta">
                 <strong>@Model.TechnicianName</strong>
                 <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0")</span>
-                <small>@Model.TechnicianTitle</small>
+                <small>@UiDisplayLocalization.Localize(L, Model.TechnicianTitle)</small>
             </div>
             <span class="pa-verified-badge"><i class="fas fa-check"></i> @L["Verified"]</span>
             <a href="tel:" class="pa-tech-call" aria-label="@L["Call technician"]"><i class="fas fa-phone"></i></a>
@@ -40,17 +40,17 @@
         <div class="pa-tech-stats">
             <div>
                 <i class="fas fa-clock"></i>
-                <strong>@Model.EtaLabel</strong>
+                <strong>@UiDisplayLocalization.Localize(L, Model.EtaLabel)</strong>
                 <small>@L["ETA"]</small>
             </div>
             <div>
                 <i class="fas fa-car"></i>
-                <strong>@Model.VehicleLabel</strong>
+                <strong>@UiDisplayLocalization.Localize(L, Model.VehicleLabel)</strong>
                 <small>@L["Vehicle"]</small>
             </div>
             <div>
                 <i class="fas fa-house"></i>
-                <strong>Viewing: @(Model.ViewingProperty?.PropertyName)</strong>
+                <strong>@L.T("Viewing: {0}", Model.ViewingProperty?.PropertyName)</strong>
                 <small>@propertyLabel</small>
             </div>
         </div>
@@ -64,8 +64,8 @@
                 <li class="pa-timeline-item pa-timeline-item--@step.State">
                     <span class="pa-timeline-dot"><i class="fas @step.IconClass"></i></span>
                     <div class="pa-timeline-body">
-                        <strong>@step.Label</strong>
-                        <span>@step.StatusLabel</span>
+                        <strong>@UiDisplayLocalization.Localize(L, step.Label)</strong>
+                        <span>@UiDisplayLocalization.Localize(L, step.StatusLabel)</span>
                     </div>
                 </li>
             }
@@ -83,13 +83,9 @@
 
     <div class="pa-tip-banner pa-tip-banner--info">
         <span class="pa-tip-icon"><i class="fas fa-circle-info"></i></span>
-        <p><strong>@L["Tip:"]</strong> @Model.Tip</p>
+        <p><strong>@L["Tip:"]</strong> @UiDisplayLocalization.Localize(L, Model.Tip)</p>
     </div>
+    @{ ViewBag.ConfirmedPropertyId = Model.ViewingProperty?.Id; }
+    @await Html.PartialAsync("_PropertyAdminConfirmedFooter")
 
-    <a asp-controller="Administrador" asp-action="Tasks" asp-route-filter="inprogress" class="ob-btn ob-btn-primary pa-flow-submit">
-        Track request <i class="fas fa-chevron-right"></i>
-    </a>
-    <a asp-controller="Administrador" asp-action="Index" asp-route-propertyId="@Model.ViewingProperty?.Id" class="ob-btn ob-btn-outline pa-flow-edit">
-        Back to dashboard
-    </a>
 </div>

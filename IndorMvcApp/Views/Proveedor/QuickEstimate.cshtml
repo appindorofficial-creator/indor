@@ -5,7 +5,7 @@
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
-    var steps = new[] { ("service", "Service"), ("scope", "Scope"), ("price", "Price"), ("review", "Review") };
+    var steps = new[] { ("service", L["Service"].ToString()), ("scope", L["Scope"].ToString()), ("price", L["Price"].ToString()), ("review", L["Review"].ToString()) };
 }
 
 <div class="prv-pro-shell prv-pro-shell--estimate">
@@ -27,7 +27,7 @@
         <div>
             <strong>@Model.Address</strong>
             <div class="prv-pro-lead-badges">
-                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @Model.ServiceType</span>
+                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @UiDisplayLocalization.Localize(L, Model.ServiceType)</span>
                 @if (Model.IsHighUrgency)
                 {
                     <span class="prv-pro-pill prv-pro-pill--urgency"><i class="fas fa-fire"></i> @Model.Urgency</span>
@@ -47,7 +47,7 @@
                 <strong>@Model.CustomerName</strong>
                 @if (Model.IsHomeownerVerified)
                 {
-                    <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> Verified Homeowner</span>
+                    <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> @L["Verified Homeowner"]</span>
                 }
             </div>
         </div>
@@ -111,7 +111,7 @@
                     </li>
                 }
             </ol>
-            <button type="button" class="prv-pro-link-more" id="addScopeItem">+ Add Item</button>
+            <button type="button" class="prv-pro-link-more" id="addScopeItem">@L["+ Add Item"]</button>
         </section>
 
         <section class="prv-pro-estimate-pricing prv-pro-estimate-pricing--cards">
@@ -132,12 +132,12 @@
 
         <div class="prv-pro-estimate-meta-grid">
             <div class="prv-pro-lead-section">
-                <h3><i class="fas fa-calendar"></i> Timeline</h3>
+                <h3><i class="fas fa-calendar"></i> @L["Timeline"]</h3>
                 <input type="text" name="Timeline" value="@Model.Timeline" class="prv-pro-estimate-inline-input" />
                 <small>@L["Estimated completion"]</small>
             </div>
             <div class="prv-pro-lead-section">
-                <h3><i class="fas fa-shield"></i> Warranty</h3>
+                <h3><i class="fas fa-shield"></i> @L["Warranty"]</h3>
                 <input type="text" name="Warranty" value="@Model.Warranty" class="prv-pro-estimate-inline-input" />
             </div>
         </div>
@@ -159,10 +159,10 @@
 
         <footer class="prv-pro-estimate-footer">
             <button type="submit" name="SaveAsDraft" value="true" class="prv-pro-btn prv-pro-btn--ghost">
-                <i class="fas fa-floppy-disk"></i> Save Draft
+                <i class="fas fa-floppy-disk"></i> @L["Save Draft"]
             </button>
             <button type="submit" name="GoToReview" value="true" class="prv-pro-btn prv-pro-btn--primary">
-                <i class="fas fa-paper-plane"></i> Review &amp; Send
+                <i class="fas fa-paper-plane"></i> @L["Review & Send"]
             </button>
         </footer>
     </form>

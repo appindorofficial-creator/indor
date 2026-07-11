@@ -27,9 +27,9 @@ public class PropertyAdministratorAirFilterService(
             StartUrl = url.Action("AirFilterDetails", "Administrador", new { propertyId }) ?? "#",
             Benefits =
             [
-                new() { Label = "Quick & reliable — On-time service", IconClass = "fa-clock" },
-                new() { Label = "Healthier air — Cleaner, safer spaces", IconClass = "fa-shield-halved" },
-                new() { Label = "Stay ready — Ideal for turnovers", IconClass = "fa-calendar-check" }
+                new() { Label = PropertyAdministratorDisplayLocalization.L("Quick & reliable — On-time service"), IconClass = "fa-clock" },
+                new() { Label = PropertyAdministratorDisplayLocalization.L("Healthier air — Cleaner, safer spaces"), IconClass = "fa-shield-halved" },
+                new() { Label = PropertyAdministratorDisplayLocalization.L("Stay ready — Ideal for turnovers"), IconClass = "fa-calendar-check" }
             ]
         };
 
@@ -74,21 +74,21 @@ public class PropertyAdministratorAirFilterService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Air Filter Change at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Air Filter Change", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,
             Category = "Homecare",
             ScheduledUtc = tomorrow,
             IsEmergency = false,
-            EtaLabel = "Tomorrow • 10:00 AM – 12:00 PM",
-            TeamLabel = "Daniel M. • Homecare",
+            EtaLabel = PropertyAdministratorDisplayLocalization.L("Tomorrow • 10:00 AM – 12:00 PM"),
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Daniel M. • Homecare"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Daniel M.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Licensed Homecare Pro",
-            VehicleLabel = "White service van",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("White service van"),
             TimelineStep = 3
         };
 
@@ -171,14 +171,14 @@ public class PropertyAdministratorAirFilterService(
     private static IReadOnlyList<PropertyAdministratorEmergencyElectricalSummaryItemViewModel> BuildSummary(
         IndorPropertyAdminPortfolioProperty? property, PropertyAdministratorAirFilterSubmitInput input) =>
     [
-        new() { Label = "Property", Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
-        new() { Label = "Service", Value = LabelServiceType(input.ServiceType), IconClass = "fa-fan" },
-        new() { Label = "Occupied", Value = input.IsOccupied, IconClass = "fa-door-open" },
-        new() { Label = "Guests inside", Value = input.GuestsInside, IconClass = "fa-users" },
-        new() { Label = "Filter size", Value = LabelFilterSize(input.FilterSize), IconClass = "fa-ruler-combined" },
-        new() { Label = "Frequency", Value = LabelFrequency(input.Frequency), IconClass = "fa-calendar" },
-        new() { Label = "Access", Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
-        new() { Label = "Updates", Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-bell" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Property"), Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = LabelServiceType(input.ServiceType), IconClass = "fa-fan" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Occupied"), Value = input.IsOccupied, IconClass = "fa-door-open" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Guests inside"), Value = input.GuestsInside, IconClass = "fa-users" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Filter size"), Value = LabelFilterSize(input.FilterSize), IconClass = "fa-ruler-combined" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Frequency"), Value = LabelFrequency(input.Frequency), IconClass = "fa-calendar" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-bell" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorAirFilterTimelineItemViewModel> BuildTimeline(
@@ -190,49 +190,49 @@ public class PropertyAdministratorAirFilterService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Technician assigned", StatusLabel = assigned, IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Scheduled visit", StatusLabel = scheduled, IconClass = "fa-calendar-check", State = "done" },
-            new() { Label = "Filter replacement", StatusLabel = "Upcoming", IconClass = "fa-fan", State = "pending" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Technician assigned"), StatusLabel = assigned, IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Scheduled visit"), StatusLabel = scheduled, IconClass = "fa-calendar-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Filter replacement"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Upcoming"), IconClass = "fa-fan", State = "pending" }
         ];
     }
 
     private static string LabelServiceType(string value) => value switch
     {
-        "BringFilters" => "Bring filters",
-        "CheckSize" => "Check filter size",
-        "FullService" => "Full HVAC filter service",
-        _ => "Replace filter"
+        "BringFilters" => PropertyAdministratorDisplayLocalization.L("Bring filters"),
+        "CheckSize" => PropertyAdministratorDisplayLocalization.L("Check filter size"),
+        "FullService" => PropertyAdministratorDisplayLocalization.L("Full HVAC filter service"),
+        _ => PropertyAdministratorDisplayLocalization.L("Replace filter")
     };
 
     private static string LabelFilterSize(string value) => value switch
     {
-        "16x20x1" => "16x20x1",
-        "20x25x1" => "20x25x1",
-        "NotSure" => "Not sure",
-        _ => "20x20x1"
+        "16x20x1" => PropertyAdministratorDisplayLocalization.L("16x20x1"),
+        "20x25x1" => PropertyAdministratorDisplayLocalization.L("20x25x1"),
+        "NotSure" => PropertyAdministratorDisplayLocalization.L("Not sure"),
+        _ => PropertyAdministratorDisplayLocalization.L("20x20x1")
     };
 
     private static string LabelFrequency(string value) => value switch
     {
-        "OneTime" => "One-time",
-        "Every2Months" => "Every 2 months",
-        _ => "Every 3 months"
+        "OneTime" => PropertyAdministratorDisplayLocalization.L("One-time"),
+        "Every2Months" => PropertyAdministratorDisplayLocalization.L("Every 2 months"),
+        _ => PropertyAdministratorDisplayLocalization.L("Every 3 months")
     };
 
     private static string LabelAccess(string value) => value switch
     {
-        "HostMeet" => "Host will meet",
-        "NeedApproval" => "Need guest approval",
-        _ => "Smart lock code provided"
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "NeedApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
+        _ => PropertyAdministratorDisplayLocalization.L("Smart lock code provided")
     };
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 
@@ -266,24 +266,7 @@ public class PropertyAdministratorAirFilterService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -320,9 +303,9 @@ public class PropertyAdministratorAirFilterService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

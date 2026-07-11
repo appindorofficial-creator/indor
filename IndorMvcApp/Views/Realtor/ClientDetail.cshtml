@@ -53,8 +53,8 @@
                     <strong>@Model.PropertyAddress</strong>
                 </div>
             }
-            <div><span>@L["Connected"]</span><strong>@Model.ConnectedLabel.Replace("Connected ", "")</strong></div>
-            <div><span>@L["Last active"]</span><strong>@Model.LastActiveLabel</strong></div>
+            <div><span>@L["Connected"]</span><strong>@UiDisplayLocalization.Localize(L, Model.ConnectedLabel)</strong></div>
+            <div><span>@L["Last active"]</span><strong>@UiDisplayLocalization.Localize(L, Model.LastActiveLabel)</strong></div>
             <div><span>@L["Files"]</span><strong>@Model.FilesCount</strong></div>
             <div><span>@L["Quotes"]</span><strong>@Model.QuotesCount</strong></div>
         </div>
@@ -62,12 +62,12 @@
 
     <div class="rl-client-detail-actions">
         <a href="@Model.CreateFileUrl" class="ob-btn ob-btn-primary">
-            <i class="fas fa-folder-plus"></i> Create File
+            <i class="fas fa-folder-plus"></i> @L["Create File"]
         </a>
         @if (Model.FilesCount > 0)
         {
             <a href="@Model.ViewFilesUrl" class="rl-btn-outline">
-                <i class="fas fa-folder-open"></i> View All Files
+                <i class="fas fa-folder-open"></i> @L["View All Files"]
             </a>
         }
     </div>
@@ -95,12 +95,12 @@
                                     <span class="rl-premium-muted">@file.CityRegion</span>
                                 }
                             </div>
-                            <span class="rl-status-pill rl-status-pill--@file.StatusCss">@file.StatusBadge</span>
+                            <span class="rl-status-pill rl-status-pill--@file.StatusCss">@UiDisplayLocalization.Localize(L, file.StatusBadge)</span>
                         </div>
                         <span class="rl-file-code">@file.FileCode</span>
-                        <span class="rl-file-updated">@file.UpdatedLabel</span>
+                        <span class="rl-file-updated">@UiDisplayLocalization.Localize(L, file.UpdatedLabel)</span>
                     </div>
-                    <a href="@file.ActionUrl" class="rl-btn-outline rl-btn-outline--sm">@file.ActionLabel</a>
+                    <a href="@file.ActionUrl" class="rl-btn-outline rl-btn-outline--sm">@UiDisplayLocalization.Localize(L, file.ActionLabel)</a>
                 </article>
             }
         }
@@ -119,7 +119,7 @@
                         <strong>@quote.Address</strong>
                         <span class="rl-premium-muted">@quote.ServiceType · @quote.QuoteCode</span>
                     </div>
-                    <span class="rl-status-pill rl-status-pill--@quote.StatusCss">@quote.StatusLabel</span>
+                    <span class="rl-status-pill rl-status-pill--@quote.StatusCss">@UiDisplayLocalization.Localize(L, quote.StatusLabel)</span>
                     <a href="@quote.ActionUrl" class="rl-btn-outline rl-btn-outline--sm">@L["View"]</a>
                 </article>
             }

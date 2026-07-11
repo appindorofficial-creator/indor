@@ -162,7 +162,7 @@ else
                         <span class="hd-activity-dot"><i class="fas @act.Icon"></i></span>
                         <div class="hd-activity-body">
                             <div class="hd-activity-title">@UiDisplayLocalization.Localize(L, act.Title)</div>
-                            <div class="hd-activity-time">@act.Timestamp</div>
+                            <div class="hd-activity-time">@UiDisplayLocalization.Localize(L, act.Timestamp)</div>
                             @if (!string.IsNullOrWhiteSpace(act.Description))
                             {
                                 <div class="hd-activity-desc">@UiDisplayLocalization.Localize(L, act.Description)</div>

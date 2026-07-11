@@ -23,11 +23,11 @@
         <h2>@L["Account status"]</h2>
         <div class="prv-pro-profile-kv-row">
             <span>@L["Payout account"]</span>
-            <strong class="@(Model.PayoutConnected ? "prv-pro-status-ok" : "")">@(Model.PayoutConnected ? "Connected" : "Not connected")</strong>
+            <strong class="@(Model.PayoutConnected ? "prv-pro-status-ok" : "")">@(Model.PayoutConnected ? L["Connected"] : L["Not connected"])</strong>
         </div>
         <div class="prv-pro-profile-kv-row">
             <span>@L["Payment processing"]</span>
-            <strong class="@(Model.PaymentProcessingActive ? "prv-pro-status-ok" : "")">@(Model.PaymentProcessingActive ? "Active" : "Inactive")</strong>
+            <strong class="@(Model.PaymentProcessingActive ? "prv-pro-status-ok" : "")">@(Model.PaymentProcessingActive ? L["Active"] : L["Inactive"])</strong>
         </div>
         <div class="prv-pro-profile-kv-row">
             <span>@L["Next payout"]</span>

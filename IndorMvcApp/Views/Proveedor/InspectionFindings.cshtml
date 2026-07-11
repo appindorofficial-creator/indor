@@ -13,7 +13,7 @@
         <a asp-controller="Proveedor" asp-action="LeadDetails" asp-route-id="@Model.LeadId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["Inspection Findings"]</h1>
-            <small>@Model.Address · @Model.ServiceType</small>
+            <small>@Model.Address · @UiDisplayLocalization.Localize(L, Model.ServiceType)</small>
         </div>
     </header>
 
@@ -54,7 +54,7 @@
                             {
                                 <span class="prv-pro-inspection-priority">@item.Priority</span>
                             }
-                            <strong>@item.Title</strong>
+                            <strong>@UiDisplayLocalization.Localize(L, item.Title)</strong>
                         </div>
                         @if (!string.IsNullOrWhiteSpace(item.ReportReference))
                         {
@@ -82,12 +82,13 @@
         </section>
 
         <footer class="prv-pro-workflow-footer">
-            <p class="prv-pro-workflow-footer-count">
-                <span id="selectedCount">@Model.SelectedCount</span> item@(Model.SelectedCount == 1 ? "" : "s") selected
+            <p class="prv-pro-workflow-footer-count" id="selectedCountLabel"
+               data-fmt-one="@L["{0} item selected"]" data-fmt-many="@L["{0} items selected"]">
+                @L.T(Model.SelectedCount == 1 ? "{0} item selected" : "{0} items selected", Model.SelectedCount)
             </p>
             <button type="submit" name="action" value="estimate" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--full"
                     @(Model.Findings.Count == 0 ? "disabled" : "")>
-                Continue to Estimate
+                @L["Continue to Estimate"]
             </button>
         </footer>
     </form>
@@ -97,10 +98,14 @@
 <script>
 (function () {
     const form = document.querySelector('.prv-pro-findings-form');
-    const countEl = document.getElementById('selectedCount');
+    const labelEl = document.getElementById('selectedCountLabel');
+    function updateCount(n) {
+        if (!labelEl) return;
+        const tpl = n === 1 ? labelEl.dataset.fmtOne : labelEl.dataset.fmtMany;
+        labelEl.textContent = tpl.replace('{0}', String(n));
+    }
     form?.addEventListener('change', () => {
-        const n = form.querySelectorAll('input[name="selectedFindingIndices"]:checked').length;
-        if (countEl) countEl.textContent = String(n);
+        updateCount(form.querySelectorAll('input[name="selectedFindingIndices"]:checked').length);
     });
 })();
 </script>

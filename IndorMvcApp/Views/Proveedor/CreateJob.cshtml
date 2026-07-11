@@ -30,12 +30,12 @@
                 @foreach (var cat in Model.Categories)
                 {
                     var isSelected = cat.Id == selectedId;
-                    <label class="prv-pro-type-tile @(isSelected ? "is-selected" : "")" data-suggested="@cat.SuggestedJobName">
+                    <label class="prv-pro-type-tile @(isSelected ? "is-selected" : "")" data-suggested="@UiDisplayLocalization.Localize(L, cat.SuggestedJobName)">
                         <input type="radio" name="ServiceCategoryId" value="@cat.Id" @(isSelected ? "checked" : "") required />
                         <span class="prv-pro-wizard-type-icon prv-pro-wizard-type-icon--@cat.ToneClass">
                             <i class="fas @cat.IconClass"></i>
                         </span>
-                        <span class="prv-pro-type-tile-label">@cat.Label</span>
+                        <span class="prv-pro-type-tile-label">@UiDisplayLocalization.Localize(L, cat.Label)</span>
                         @if (isSelected)
                         {
                             <span class="prv-pro-type-tile-check"><i class="fas fa-check"></i></span>
@@ -48,7 +48,7 @@
         <section class="prv-pro-wizard-card">
             <h2>@L["Job naming"]</h2>
             <label class="prv-pro-form-label">
-                Job name
+                @L["Job name"]
                 <input type="text" name="Title" id="createJobTitle" value="@jobTitle" placeholder="@L["Water Damage Inspection"]" required />
             </label>
             <small class="prv-pro-wizard-hint">@L["This will help classify the job in your list."]</small>

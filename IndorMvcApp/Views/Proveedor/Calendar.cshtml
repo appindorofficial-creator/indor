@@ -15,7 +15,7 @@
         <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1><i class="fas fa-calendar-week"></i> @L["Calendar Overview"]</h1>
-            <small>@Model.WeekRangeLabel</small>
+            <small>@UiDisplayLocalization.Localize(L, Model.WeekRangeLabel)</small>
         </div>
         <span class="prv-pro-step-badge">@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</span>
     </header>
@@ -78,14 +78,14 @@
             <i class="fas fa-calendar-check"></i>
             <div>
                 <strong>@L["This Week Summary"]</strong>
-                <span>@Model.WeekEventCount @L["Events Scheduled"] • @Model.EstimatedWorkLabel @L["Estimated Work Time"]</span>
+                <span>@Model.WeekEventCount @L["Events Scheduled"] • @UiDisplayLocalization.Localize(L, Model.EstimatedWorkLabel) @L["Estimated Work Time"]</span>
             </div>
         </article>
         <article>
             <i class="fas fa-clock"></i>
             <div>
                 <strong>@L["Available Time This Week"]</strong>
-                <span>@Model.AvailableTimeLabel</span>
+                <span>@UiDisplayLocalization.Localize(L, Model.AvailableTimeLabel)</span>
             </div>
         </article>
         <article>

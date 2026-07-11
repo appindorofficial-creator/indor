@@ -29,17 +29,17 @@
             <div class="pa-chip-grid">
                 @foreach (var item in new (string Value, string Label, string Icon)[]
                 {
-                    ("GuestLockedOut", "Guest locked out", "fa-key"),
-                    ("SmartLockNotWorking", "Smart lock not working", "fa-mobile-screen"),
-                    ("LostKey", "Lost key", "fa-key"),
-                    ("CodeIssue", "Code issue", "fa-hashtag"),
-                    ("DoorWontOpen", "Door won't open", "fa-door-closed")
+                    ("GuestLockedOut", L["Guest locked out"], "fa-key"),
+                    ("SmartLockNotWorking", L["Smart lock not working"], "fa-mobile-screen"),
+                    ("LostKey", L["Lost key"], "fa-key"),
+                    ("CodeIssue", L["Code issue"], "fa-hashtag"),
+                    ("DoorWontOpen", L["Door won't open"], "fa-door-closed")
                 })
                 {
                     <label class="pa-chip @(Model.IssueType == item.Value ? "is-selected" : null)">
                         <input type="radio" name="IssueType" value="@item.Value" @(Model.IssueType == item.Value ? "checked" : null) />
                         <i class="fas @item.Icon"></i>
-                        <span>@item.Label</span>
+                        <span>@L[item.Label]</span>
                     </label>
                 }
             </div>
@@ -75,7 +75,7 @@
             <span class="pa-flow-qnum">4</span>
             <label>@L["How urgent is it?"]</label>
             <div class="pa-toggle-pair">
-                @foreach (var u in new[] { ("Urgent", "Urgent"), ("Emergency", "Emergency") })
+                @foreach (var u in new[] { ("Urgent", L["Urgent"]), ("Emergency", L["Emergency"]) })
                 {
                     <label class="pa-toggle-btn @(Model.Urgency == u.Item1 ? "is-selected" : null) @(u.Item1 == "Emergency" ? "is-urgent" : null)">
                         <input type="radio" name="Urgency" value="@u.Item1" @(Model.Urgency == u.Item1 ? "checked" : null) />
@@ -91,10 +91,10 @@
             <div class="pa-chip-grid pa-chip-grid--4">
                 @foreach (var who in new (string Value, string Label, string Icon)[]
                 {
-                    ("Guest", "Guest", "fa-user"),
-                    ("Me", "Me", "fa-house-user"),
-                    ("Cleaner", "Cleaner", "fa-broom"),
-                    ("CoHost", "Co-host", "fa-users")
+                    ("Guest", L["Guest"], "fa-user"),
+                    ("Me", L["Me"], "fa-house-user"),
+                    ("Cleaner", L["Cleaner"], "fa-broom"),
+                    ("CoHost", L["Co-host"], "fa-users")
                 })
                 {
                     <label class="pa-chip @(Model.WhoNeedsAccess == who.Value ? "is-selected" : null)">

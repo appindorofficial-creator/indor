@@ -29,12 +29,12 @@
                 @{
                     var problems = new (string Value, string Label, string Icon)[]
                     {
-                        ("NoCooling", "No cooling", "fa-snowflake"),
-                        ("WarmAir", "Warm air", "fa-temperature-high"),
-                        ("NoAirflow", "No airflow", "fa-wind"),
-                        ("WaterLeak", "Water leak", "fa-droplet"),
-                        ("StrangeNoise", "Strange noise", "fa-volume-high"),
-                        ("BurningSmell", "Burning smell", "fa-fire")
+                        ("NoCooling", L["No cooling"], "fa-snowflake"),
+                        ("WarmAir", L["Warm air"], "fa-temperature-high"),
+                        ("NoAirflow", L["No airflow"], "fa-wind"),
+                        ("WaterLeak", L["Water leak"], "fa-droplet"),
+                        ("StrangeNoise", L["Strange noise"], "fa-volume-high"),
+                        ("BurningSmell", L["Burning smell"], "fa-fire")
                     };
                 }
                 @foreach (var p in problems)
@@ -42,7 +42,7 @@
                     <label class="pa-chip @(Model.ProblemType == p.Value ? "is-selected" : null)">
                         <input type="radio" name="ProblemType" value="@p.Value" @(Model.ProblemType == p.Value ? "checked" : null) />
                         <i class="fas @p.Icon"></i>
-                        <span>@p.Label</span>
+                        <span>@L[p.Label]</span>
                     </label>
                 }
             </div>
@@ -96,9 +96,9 @@
                 @{
                     var entry = new (string Value, string Label)[]
                     {
-                        ("SmartLock", "Yes, with smart lock"),
-                        ("HostMeet", "Host will meet"),
-                        ("NeedApproval", "Need approval")
+                        ("SmartLock", L["Yes, with smart lock"]),
+                        ("HostMeet", L["Host will meet"]),
+                        ("NeedApproval", L["Need approval"])
                     };
                 }
                 @foreach (var e in entry)
@@ -127,7 +127,7 @@
                 @{
                     var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
                 }
-                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
                 {
                     <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
                         <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />

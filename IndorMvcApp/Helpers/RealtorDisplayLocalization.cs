@@ -13,7 +13,7 @@ public static class RealtorDisplayLocalization
             return text ?? string.Empty;
         }
 
-        return localizer[text];
+        return UiDisplayLocalization.Localize(localizer, text);
     }
 
     public static string FilePhaseLabel(IIndorLocalizer localizer, string? phase)

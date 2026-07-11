@@ -36,10 +36,10 @@
             <div class="rl-public-hero-info">
                 <h1 class="rl-public-hero-name">@Model.FullName</h1>
                 <div class="rl-public-hero-title-row">
-                    <span class="rl-public-hero-title">@Model.TitleLabel</span>
+                    <span class="rl-public-hero-title">@UiDisplayLocalization.Localize(L, Model.TitleLabel)</span>
                     @if (!string.IsNullOrWhiteSpace(Model.AccountStatusLabel))
                     {
-                        <span class="rl-public-status-pill @Model.AccountStatusCss">@Model.AccountStatusLabel</span>
+                        <span class="rl-public-status-pill @Model.AccountStatusCss">@UiDisplayLocalization.Localize(L, Model.AccountStatusLabel)</span>
                     }
                 </div>
                 @if (!string.IsNullOrWhiteSpace(Model.HeroLocationLabel))
@@ -59,7 +59,7 @@
                 {
                     <span class="rl-public-hero-badge-pill is-complete">
                         <i class="fas fa-circle-check" aria-hidden="true"></i>
-                        @badge.Label
+                        @UiDisplayLocalization.Localize(L, badge.Label)
                     </span>
                 }
             </div>
@@ -94,7 +94,7 @@
                 <div class="rl-public-stat">
                     <span class="rl-stat-icon rl-stat-icon--@stat.ColorClass"><i class="fas @stat.Icon"></i></span>
                     <strong>@stat.Count</strong>
-                    <span>@stat.Label</span>
+                    <span>@UiDisplayLocalization.Localize(L, stat.Label)</span>
                 </div>
             }
         </section>
@@ -105,7 +105,7 @@
         <p>@aboutText</p>
         @if (!string.IsNullOrWhiteSpace(Model.LicenseLabel))
         {
-            <p class="rl-public-license"><i class="fas fa-id-card"></i> @Model.LicenseLabel</p>
+            <p class="rl-public-license"><i class="fas fa-id-card"></i> @UiDisplayLocalization.Localize(L, Model.LicenseLabel)</p>
         }
         @if (!string.IsNullOrWhiteSpace(Model.HeroLocationLabel))
         {
@@ -143,14 +143,14 @@
                         <li class="@(step.IsComplete ? "is-complete" : "")">
                             <span class="rl-public-verify-step-label">
                                 <i class="fas @(step.IsComplete ? "fa-circle-check" : "fa-circle")"></i>
-                                @step.Label
+                                @UiDisplayLocalization.Localize(L, step.Label)
                             </span>
-                            <span class="rl-public-verify-step-status">@step.StatusLabel</span>
+                            <span class="rl-public-verify-step-status">@UiDisplayLocalization.Localize(L, step.StatusLabel)</span>
                         </li>
                     }
                 </ul>
                 <a asp-controller="Realtor" asp-action="EditProfileLicense" class="rl-public-verify-cta">
-                    Start Verification <i class="fas fa-arrow-right"></i>
+                    @L["Start Verification"] <i class="fas fa-arrow-right"></i>
                 </a>
             </div>
         </section>
@@ -178,7 +178,7 @@
                             }
                             @if (!string.IsNullOrWhiteSpace(listing.StatusBadge))
                             {
-                                <span class="rl-network-card-badge rl-network-card-badge--listing">@listing.StatusBadge</span>
+                                <span class="rl-network-card-badge rl-network-card-badge--listing">@UiDisplayLocalization.Localize(L, listing.StatusBadge)</span>
                             }
                         </div>
                         <div class="rl-network-card-body">
@@ -189,7 +189,7 @@
                             }
                             @if (!string.IsNullOrWhiteSpace(listing.SpecsLabel))
                             {
-                                <span class="rl-network-card-specs">@listing.SpecsLabel</span>
+                                <span class="rl-network-card-specs">@UiDisplayLocalization.Localize(L, listing.SpecsLabel)</span>
                             }
                             <a href="@listing.ViewUrl" class="rl-btn-outline rl-btn-outline--sm rl-public-listing-btn">@L["View Listing"]</a>
                         </div>
@@ -250,7 +250,7 @@
                         <span class="rl-public-package-icon"><i class="fas fa-box-archive"></i></span>
                         <strong>@package.Title</strong>
                         <span>@package.Subtitle</span>
-                        <small>@package.SharedLabel · @package.StatusLabel</small>
+                        <small>@UiDisplayLocalization.Localize(L, package.SharedLabel) · @UiDisplayLocalization.Localize(L, package.StatusLabel)</small>
                     </article>
                 }
             </div>

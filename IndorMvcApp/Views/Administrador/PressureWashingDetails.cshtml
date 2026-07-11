@@ -29,14 +29,14 @@
             <div class="pa-pw-areas-grid">
                 @foreach (var a in new (string Value, string Label, string Icon)[]
                 {
-                    ("Driveway", "Driveway", "fa-road"),
-                    ("Walkway", "Walkway", "fa-shoe-prints"),
-                    ("Patio", "Patio", "fa-umbrella-beach"),
-                    ("ExteriorWalls", "Exterior walls", "fa-house"),
-                    ("Fence", "Fence", "fa-grip-lines-vertical"),
-                    ("PoolDeck", "Pool deck", "fa-water-ladder"),
-                    ("TrashArea", "Trash area", "fa-trash"),
-                    ("Other", "Other", "fa-ellipsis")
+                    ("Driveway", L["Driveway"], "fa-road"),
+                    ("Walkway", L["Walkway"], "fa-shoe-prints"),
+                    ("Patio", L["Patio"], "fa-umbrella-beach"),
+                    ("ExteriorWalls", L["Exterior walls"], "fa-house"),
+                    ("Fence", L["Fence"], "fa-grip-lines-vertical"),
+                    ("PoolDeck", L["Pool deck"], "fa-water-ladder"),
+                    ("TrashArea", L["Trash area"], "fa-trash"),
+                    ("Other", L["Other"], "fa-ellipsis")
                 })
                 {
                     <label class="pa-pw-area-card @(areas.Contains(a.Value) ? "is-selected" : null)">
@@ -73,10 +73,10 @@
             <label>@L["What is the main reason for service?"]</label>
             <div class="pa-pw-reason-row">
                 @foreach (var r in new (string Value, string Label, string Icon)[] {
-                    ("GuestTurnover", "Guest turnover", "fa-calendar-check"),
-                    ("RoutineUpkeep", "Routine upkeep", "fa-broom"),
-                    ("HeavyDirtStains", "Heavy dirt / stains", "fa-droplet"),
-                    ("HoaCurbAppeal", "HOA / curb appeal", "fa-house-chimney") })
+                    ("GuestTurnover", L["Guest turnover"], "fa-calendar-check"),
+                    ("RoutineUpkeep", L["Routine upkeep"], "fa-broom"),
+                    ("HeavyDirtStains", L["Heavy dirt / stains"], "fa-droplet"),
+                    ("HoaCurbAppeal", L["HOA / curb appeal"], "fa-house-chimney") })
                 {
                     <label class="pa-pw-reason-card @(Model.ServiceReason == r.Value ? "is-selected" : null)">
                         <input type="radio" name="ServiceReason" value="@r.Value" @(Model.ServiceReason == r.Value ? "checked" : null) />
@@ -107,7 +107,7 @@
             <span class="pa-flow-qnum">5</span>
             <label>@L["Do guests need to be notified?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var n in new[] { ("Me", "Me"), ("Guest", "Guest"), ("Both", "Both") })
+                @foreach (var n in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("Both", L["Both"]) })
                 {
                     <label class="pa-chip @(Model.GuestNotification == n.Item1 ? "is-selected" : null)">
                         <input type="radio" name="GuestNotification" value="@n.Item1" @(Model.GuestNotification == n.Item1 ? "checked" : null) />

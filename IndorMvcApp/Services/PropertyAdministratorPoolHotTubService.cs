@@ -88,7 +88,7 @@ public class PropertyAdministratorPoolHotTubService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             PropertyId = property.Id,
             ViewingProperty = MapProperty(property),
-            PropertyStatusLabel = isRental ? "Occupied now" : null,
+            PropertyStatusLabel = isRental ? PropertyAdministratorDisplayLocalization.L("Occupied now") : null,
             ServiceHelpType = step1.ServiceHelpType,
             MainIssue = step1.MainIssue,
             GuestStayAffected = step1.GuestStayAffected,
@@ -125,7 +125,7 @@ public class PropertyAdministratorPoolHotTubService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Pool & Hot Tub at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Pool & Hot Tub", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = input.Urgency is "Urgent" or "Emergency"
@@ -135,13 +135,13 @@ public class PropertyAdministratorPoolHotTubService(
             ScheduledUtc = visitDate,
             IsEmergency = input.Urgency == "Emergency",
             EtaLabel = $"{etaMinutes} min",
-            TeamLabel = "Marco R. • Pool & Spa",
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Marco R. • Pool & Spa"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Marco R.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Licensed Pool & Spa Pro",
-            VehicleLabel = "White service van",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("White service van"),
             TimelineStep = 3
         };
 
@@ -194,7 +194,7 @@ public class PropertyAdministratorPoolHotTubService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             RequestId = request.Id,
             ViewingProperty = property == null ? null : MapProperty(property),
-            PropertyStatusLabel = isRental ? "Occupied now" : null,
+            PropertyStatusLabel = isRental ? PropertyAdministratorDisplayLocalization.L("Occupied now") : null,
             TechnicianName = request.TechnicianName ?? "Marco R.",
             TechnicianRating = request.TechnicianRating ?? 4.9m,
             TechnicianTitle = request.TechnicianTitle ?? "Licensed Pool & Spa Pro",
@@ -226,23 +226,23 @@ public class PropertyAdministratorPoolHotTubService(
     private static IReadOnlyList<PropertyAdministratorPoolHotTubSummaryChipViewModel> BuildStep1SummaryChips(
         PropertyAdministratorPoolHotTubStep1Input input) =>
     [
-        new() { Label = "Service type", Value = LabelServiceHelpType(input.ServiceHelpType), IconClass = "fa-hot-tub-person" },
-        new() { Label = "Main issue", Value = LabelMainIssue(input.MainIssue), IconClass = "fa-temperature-high" },
-        new() { Label = "Urgency", Value = LabelUrgency(input.Urgency), IconClass = "fa-clock" },
-        new() { Label = "Guest stay affected", Value = input.GuestStayAffected == "Yes" ? "Yes" : "No", IconClass = "fa-users" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service type"), Value = LabelServiceHelpType(input.ServiceHelpType), IconClass = "fa-hot-tub-person" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Main issue"), Value = LabelMainIssue(input.MainIssue), IconClass = "fa-temperature-high" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Urgency"), Value = LabelUrgency(input.Urgency), IconClass = "fa-clock" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Guest stay affected"), Value = input.GuestStayAffected == "Yes" ? "Yes" : "No", IconClass = "fa-users" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorPoolHotTubSummaryItemViewModel> BuildSummary(
         PropertyAdministratorPoolHotTubSubmitInput input,
         IndorPropertyAdminPortfolioProperty? property) =>
     [
-        new() { Label = "Property", Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
-        new() { Label = "Service", Value = LabelServiceHelpType(input.ServiceHelpType), IconClass = "fa-water-ladder" },
-        new() { Label = "Issue", Value = LabelMainIssue(input.MainIssue), IconClass = "fa-wrench" },
-        new() { Label = "Equipment", Value = LabelEquipmentLocation(input.EquipmentLocation), IconClass = "fa-location-dot" },
-        new() { Label = "Access", Value = LabelEntryAccess(input), IconClass = "fa-key" },
-        new() { Label = "Updates", Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" },
-        new() { Label = "Diagnostic estimate", Value = "$129 – $169", IconClass = "fa-dollar-sign" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Property"), Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = LabelServiceHelpType(input.ServiceHelpType), IconClass = "fa-water-ladder" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Issue"), Value = LabelMainIssue(input.MainIssue), IconClass = "fa-wrench" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Equipment"), Value = LabelEquipmentLocation(input.EquipmentLocation), IconClass = "fa-location-dot" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelEntryAccess(input), IconClass = "fa-key" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Diagnostic estimate"), Value = "$129 – $169", IconClass = "fa-dollar-sign" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorPoolHotTubTimelineItemViewModel> BuildTimeline(
@@ -254,52 +254,52 @@ public class PropertyAdministratorPoolHotTubService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = $"Today, {submitted:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Technician assigned", StatusLabel = $"Today, {assigned:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "En route", StatusLabel = $"Today, {enRoute:h:mm tt}", IconClass = "fa-truck", State = "active" },
-            new() { Label = "Arrived", StatusLabel = "Upcoming", IconClass = "fa-house", State = "pending" },
-            new() { Label = "Diagnosis", StatusLabel = "Upcoming", IconClass = "fa-clipboard-list", State = "pending" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = $"Today, {submitted:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Technician assigned"), StatusLabel = $"Today, {assigned:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("En route"), StatusLabel = $"Today, {enRoute:h:mm tt}", IconClass = "fa-truck", State = "active" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Arrived"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Upcoming"), IconClass = "fa-house", State = "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Diagnosis"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Upcoming"), IconClass = "fa-clipboard-list", State = "pending" }
         ];
     }
 
     private static string LabelServiceHelpType(string value) => value switch
     {
-        "PoolRepair" => "Pool repair",
-        "RoutinePoolService" => "Routine pool service",
-        "SpaHotTubService" => "Spa / hot tub service",
-        _ => "Hot tub repair"
+        "PoolRepair" => PropertyAdministratorDisplayLocalization.L("Pool repair"),
+        "RoutinePoolService" => PropertyAdministratorDisplayLocalization.L("Routine pool service"),
+        "SpaHotTubService" => PropertyAdministratorDisplayLocalization.L("Spa / hot tub service"),
+        _ => PropertyAdministratorDisplayLocalization.L("Hot tub repair")
     };
 
     private static string LabelMainIssue(string value) => value switch
     {
-        "PumpNotWorking" => "Pump not working",
-        "WaterLeak" => "Water leak",
-        "CloudyDirtyWater" => "Cloudy / dirty water",
-        "JetsNotWorking" => "Jets not working",
-        "FilterProblem" => "Filter problem",
-        _ => "Heater issue"
+        "PumpNotWorking" => PropertyAdministratorDisplayLocalization.L("Pump not working"),
+        "WaterLeak" => PropertyAdministratorDisplayLocalization.L("Water leak"),
+        "CloudyDirtyWater" => PropertyAdministratorDisplayLocalization.L("Cloudy / dirty water"),
+        "JetsNotWorking" => PropertyAdministratorDisplayLocalization.L("Jets not working"),
+        "FilterProblem" => PropertyAdministratorDisplayLocalization.L("Filter problem"),
+        _ => PropertyAdministratorDisplayLocalization.L("Heater issue")
     };
 
     private static string LabelUrgency(string value) => value switch
     {
-        "Emergency" => "Emergency",
-        "Routine" => "Routine",
-        _ => "Urgent"
+        "Emergency" => PropertyAdministratorDisplayLocalization.L("Emergency"),
+        "Routine" => PropertyAdministratorDisplayLocalization.L("Routine"),
+        _ => PropertyAdministratorDisplayLocalization.L("Urgent")
     };
 
     private static string LabelEquipmentLocation(string value) => value switch
     {
-        "PoolPad" => "Pool pad",
-        "EquipmentRoom" => "Equipment room",
-        "Other" => "Other",
-        _ => "Backyard spa"
+        "PoolPad" => PropertyAdministratorDisplayLocalization.L("Pool pad"),
+        "EquipmentRoom" => PropertyAdministratorDisplayLocalization.L("Equipment room"),
+        "Other" => PropertyAdministratorDisplayLocalization.L("Other"),
+        _ => PropertyAdministratorDisplayLocalization.L("Backyard spa")
     };
 
     private static string LabelEntryAccess(PropertyAdministratorPoolHotTubSubmitInput input) =>
         input.EntryAccess switch
         {
-            "HostOnSite" => "Host will meet",
-            "GuestApproval" => "Need guest approval",
+            "HostOnSite" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+            "GuestApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
             _ => string.IsNullOrWhiteSpace(input.AccessCode) ? "Gate code provided" : input.AccessCode
         };
 
@@ -307,8 +307,8 @@ public class PropertyAdministratorPoolHotTubService(
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 
@@ -349,24 +349,7 @@ public class PropertyAdministratorPoolHotTubService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -397,9 +380,9 @@ public class PropertyAdministratorPoolHotTubService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

@@ -18,13 +18,13 @@
         <div>
             <div class="rl-qreq-hero-top">
                 <strong>@Model.Address</strong>
-                <span class="rl-status-pill rl-status-pill--@Model.StatusCss">@Model.StatusLabel</span>
+                <span class="rl-status-pill rl-status-pill--@Model.StatusCss">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
             </div>
             <div class="rl-qreq-meta-grid">
-                <div><span>@L["Requested"]</span><strong>@Model.RequestedLabel.Replace("Requested ", "")</strong></div>
-                <div><span>@L["Category"]</span><strong>@Model.ServiceType</strong></div>
-                <div><span>@L["Requested by"]</span><strong>@Model.RequestedByLabel</strong></div>
-                <div><span>@L["Requested providers"]</span><strong>@Model.ProvidersResponseLabel</strong></div>
+                <div><span>@L["Requested"]</span><strong>@UiDisplayLocalization.Localize(L, Model.RequestedLabel)</strong></div>
+                <div><span>@L["Category"]</span><strong>@UiDisplayLocalization.Localize(L, Model.ServiceType)</strong></div>
+                <div><span>@L["Requested by"]</span><strong>@UiDisplayLocalization.Localize(L, Model.RequestedByLabel)</strong></div>
+                <div><span>@L["Requested providers"]</span><strong>@UiDisplayLocalization.Localize(L, Model.ProvidersResponseLabel)</strong></div>
             </div>
         </div>
     </div>
@@ -63,10 +63,10 @@
 
     <div class="rl-qreq-actions">
         <a href="@Model.InviteProvidersUrl" class="ob-btn ob-btn-primary rl-qreq-btn">
-            <i class="fas fa-user-plus"></i> Invite Providers
+            <i class="fas fa-user-plus"></i> @L["Invite Providers"]
         </a>
         <a href="@Model.InviteProvidersUrl" class="rl-btn-outline rl-qreq-btn">
-            <i class="fas fa-pen"></i> Edit Request
+            <i class="fas fa-pen"></i> @L["Edit Request"]
         </a>
         <a asp-controller="Realtor" asp-action="Quotes" class="rl-qreq-cancel">@L["Cancel Request"]</a>
     </div>

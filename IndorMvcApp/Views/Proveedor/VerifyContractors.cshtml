@@ -27,7 +27,7 @@
                 <i class="fas fa-magnifying-glass"></i>
                 <input type="search" name="q" value="@Model.Query" placeholder="@L["Search contractors or companies"]" />
             </div>
-            <button type="submit" class="prv-vf-filter"><i class="fas fa-sliders"></i> Filter</button>
+            <button type="submit" class="prv-vf-filter"><i class="fas fa-sliders"></i> @L["Filter"]</button>
         </form>
     </header>
 
@@ -41,7 +41,7 @@
         {
             <a asp-controller="Proveedor" asp-action="VerifyContractors" asp-route-tab="@t.Id" asp-route-q="@Model.Query"
                class="prv-vf-tab @(Model.ActiveTab == t.Id ? "is-active" : "")">
-                @t.Label <span class="prv-vf-tab-count">@t.Count</span>
+                @UiDisplayLocalization.Localize(L, t.Label) <span class="prv-vf-tab-count">@t.Count</span>
             </a>
         }
     </div>
@@ -75,16 +75,16 @@
                             <div class="prv-vf-name">@c.Name</div>
                             @if (!string.IsNullOrWhiteSpace(c.TradeLabel))
                             {
-                                <div class="prv-vf-trade"><i class="fas fa-screwdriver-wrench"></i> @c.TradeLabel</div>
+                                <div class="prv-vf-trade"><i class="fas fa-screwdriver-wrench"></i> @UiDisplayLocalization.Localize(L, c.TradeLabel)</div>
                             }
                             @if (!string.IsNullOrWhiteSpace(c.LocationLabel))
                             {
-                                <div class="prv-vf-loc"><i class="fas fa-location-dot"></i> @c.LocationLabel</div>
+                                <div class="prv-vf-loc"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, c.LocationLabel)</div>
                             }
                         </div>
                         <span class="prv-vf-pill prv-vf-pill--@c.PillKind">
                             <i class="fas @(c.PillKind == "ready" ? "fa-circle-check" : c.PillKind == "warn" ? "fa-triangle-exclamation" : "fa-clock")"></i>
-                            @c.PillLabel
+                            @UiDisplayLocalization.Localize(L, c.PillLabel)
                         </span>
                     </div>
 
@@ -97,8 +97,8 @@
                             {
                                 <div class="prv-vf-item is-@it.State">
                                     <i class="fas @it.IconClass"></i>
-                                    <span>@it.Label</span>
-                                    <em>@it.StatusLabel</em>
+                                    <span>@UiDisplayLocalization.Localize(L, it.Label)</span>
+                                    <em>@UiDisplayLocalization.Localize(L, it.StatusLabel)</em>
                                 </div>
                             }
                         </div>
@@ -106,7 +106,7 @@
 
                     <div class="prv-vf-foot">
                         <div class="prv-vf-progress">
-                            <span>@c.ItemsComplete / @c.TotalItems items complete</span>
+                            <span>@L.T("{0} of {1} items complete", c.ItemsComplete, c.TotalItems)</span>
                             <div class="prv-vf-bar"><i style="width:@(c.ProgressPercent)%"></i></div>
                         </div>
                         <span class="prv-vf-review">@L["Review"]<i class="fas fa-arrow-right"></i></span>

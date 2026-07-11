@@ -56,7 +56,7 @@
             <span class="prv-pro-settings-icon"><i class="fas fa-crown"></i></span>
             <div>
                 <strong>@L["Subscription / Plan"]</strong>
-                <span>@Model.SubscriptionPlan — view plan details and activation status.</span>
+                <span>@L.T("{0} — view plan details and activation status.", UiDisplayLocalization.Localize(L, Model.SubscriptionPlan))</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
@@ -79,16 +79,16 @@
     </nav>
 
     <section class="prv-pro-profile-card prv-pro-settings-account">
-        <header class="prv-pro-profile-card-head"><h3><i class="fas fa-life-ring"></i> Account</h3></header>
+        <header class="prv-pro-profile-card-head"><h3><i class="fas fa-life-ring"></i> @L["Account"]</h3></header>
         <form asp-controller="Account" asp-action="Logout" method="post" class="prv-pro-logout-form">
             @Html.AntiForgeryToken()
             <button type="submit" class="prv-pro-profile-center-action">
-                <span><i class="fas fa-right-from-bracket"></i> Sign Out</span>
+                <span><i class="fas fa-right-from-bracket"></i> @L["Sign Out"]</span>
                 <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
             </button>
         </form>
         <a asp-controller="Account" asp-action="DeleteAccount" class="prv-pro-profile-center-action">
-            <span><i class="fas fa-user-xmark"></i> Delete account</span>
+            <span><i class="fas fa-user-xmark"></i> @L["Delete account"]</span>
             <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
         </a>
     </section>

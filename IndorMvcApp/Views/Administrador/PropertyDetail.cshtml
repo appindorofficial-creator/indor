@@ -3,7 +3,13 @@
     ViewData["Title"] = Model.PropertyName;
     Layout = "_PropertyAdminLayout";
     ViewBag.NavActive = "properties";
-    var tabs = new[] { "overview", "details", "documents", "activity" };
+    var tabs = new (string Key, string Label)[]
+    {
+        ("overview", L["Overview"]),
+        ("details", L["Details"]),
+        ("documents", L["Documents"]),
+        ("activity", L["Activity"])
+    };
 }
 
 <div class="pa-portal-shell pa-portal-shell--property-detail">
@@ -22,15 +28,14 @@
         <img src="@(Model.ImageUrl ?? "/inspeccion2.jpeg")" alt="" />
         <span class="pa-property-detail-status">
             <span class="pa-portfolio-status-dot" aria-hidden="true"></span>
-            @Model.StatusLabel
+            @UiDisplayLocalization.Localize(L, Model.StatusLabel)
         </span>
     </section>
 
     <nav class="pa-property-detail-tabs" aria-label="@L["Property sections"]">
-        @foreach (var tab in tabs)
+        @foreach (var (tab, label) in tabs)
         {
-            var label = char.ToUpper(tab[0]) + tab[1..];
-            <a href="@Url.Action("PropertyDetail", "Administrador", new { id = Model.PropertyId, tab })"
+            <a href="@Url.Action("PropertyDetail", "Administrador", new { id = Model.PropertyId, tab = tab })"
                class="pa-property-detail-tab @(Model.ActiveTab == tab ? "is-active" : null)">
                 @label
             </a>
@@ -45,7 +50,7 @@
                 <div class="pa-property-overview-row">
                     <span class="pa-property-overview-icon"><i class="fas fa-house"></i></span>
                     <span class="pa-property-overview-label">@L["Property type"]</span>
-                    <span class="pa-property-overview-value">@Model.PropertyTypeLabel</span>
+                    <span class="pa-property-overview-value">@UiDisplayLocalization.Localize(L, Model.PropertyTypeLabel)</span>
                 </div>
                 <div class="pa-property-overview-row">
                     <span class="pa-property-overview-icon"><i class="fas fa-calendar"></i></span>
@@ -55,7 +60,7 @@
                 <div class="pa-property-overview-row">
                     <span class="pa-property-overview-icon"><i class="fas fa-ruler-combined"></i></span>
                     <span class="pa-property-overview-label">@L["Square footage"]</span>
-                    <span class="pa-property-overview-value">@Model.SquareFootageLabel</span>
+                    <span class="pa-property-overview-value">@UiDisplayLocalization.Localize(L, Model.SquareFootageLabel)</span>
                 </div>
                 <div class="pa-property-overview-row">
                     <span class="pa-property-overview-icon"><i class="fas fa-bed"></i></span>
@@ -67,7 +72,7 @@
                     <span class="pa-property-overview-label">@L["Status"]</span>
                     <span class="pa-portfolio-status is-active">
                         <span class="pa-portfolio-status-dot" aria-hidden="true"></span>
-                        @Model.StatusLabel
+                        @UiDisplayLocalization.Localize(L, Model.StatusLabel)
                     </span>
                 </div>
             </div>
@@ -81,8 +86,8 @@
                     <a href="@action.Url" class="pa-property-quick-action">
                         <span class="pa-property-quick-action-icon"><i class="fas @action.IconClass"></i></span>
                         <div>
-                            <strong>@action.Title</strong>
-                            <small>@action.Subtitle</small>
+                            <strong>@UiDisplayLocalization.Localize(L, action.Title)</strong>
+                            <small>@UiDisplayLocalization.Localize(L, action.Subtitle)</small>
                         </div>
                         <i class="fas fa-chevron-right"></i>
                     </a>
@@ -99,8 +104,8 @@
                 {
                     <div class="pa-property-overview-row">
                         <span class="pa-property-overview-icon"><i class="fas @row.IconClass"></i></span>
-                        <span class="pa-property-overview-label">@row.Label</span>
-                        <span class="pa-property-overview-value">@row.Value</span>
+                        <span class="pa-property-overview-label">@UiDisplayLocalization.Localize(L, row.Label)</span>
+                        <span class="pa-property-overview-value">@UiDisplayLocalization.Localize(L, row.Value)</span>
                     </div>
                 }
             </div>
@@ -128,10 +133,10 @@
                     {
                         <div class="pa-property-activity-item">
                             <div>
-                                <strong>@item.Title</strong>
-                                <small>@item.DateLabel</small>
+                                <strong>@UiDisplayLocalization.Localize(L, item.Title)</strong>
+                                <small>@UiDisplayLocalization.Localize(L, item.DateLabel)</small>
                             </div>
-                            <span class="pa-badge pa-badge-added">@item.StatusLabel</span>
+                            <span class="pa-badge pa-badge-added">@UiDisplayLocalization.Localize(L, item.StatusLabel)</span>
                         </div>
                     }
                 </div>

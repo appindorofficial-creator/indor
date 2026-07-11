@@ -40,7 +40,7 @@
             <p>@L["Choose the type of report you want to create."]</p>
         </div>
         <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-fresh="true" class="prv-pro-rt-add">
-            <i class="fas fa-plus"></i> Add Custom
+            <i class="fas fa-plus"></i> @L["Add Custom"]
         </a>
     </section>
 
@@ -50,8 +50,8 @@
         {
             <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-fresh="true" asp-route-template="@t.template" class="prv-pro-rt-card">
                 <span class="prv-pro-rt-icon prv-pro-rt-icon--@t.color"><i class="fas @t.icon"></i></span>
-                <strong>@t.title</strong>
-                <small>@t.desc</small>
+                <strong>@L[t.title]</strong>
+                <small>@L[t.desc]</small>
             </a>
         }
     </div>
@@ -63,8 +63,8 @@
             <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-fresh="true" asp-route-template="@t.template" class="prv-pro-rt-row">
                 <span class="prv-pro-rt-icon prv-pro-rt-icon--@t.color"><i class="fas @t.icon"></i></span>
                 <div class="prv-pro-rt-row-text">
-                    <strong>@t.title</strong>
-                    <small>@t.desc</small>
+                    <strong>@L[t.title]</strong>
+                    <small>@L[t.desc]</small>
                 </div>
                 <i class="fas fa-chevron-right prv-pro-rt-chevron"></i>
             </a>

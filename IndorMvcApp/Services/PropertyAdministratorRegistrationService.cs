@@ -116,7 +116,7 @@ public class PropertyAdministratorRegistrationService(
                 PropertyName = p.PropertyName,
                 Location = p.Location,
                 PropertyType = p.PropertyType,
-                PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(p.PropertyType),
+                PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(p.PropertyType),
                 ImageUrl = p.ImageUrl,
                 Status = p.Status
             })
@@ -354,8 +354,8 @@ public class PropertyAdministratorRegistrationService(
             BackUrl = "",
             State = state,
             PropertyCount = properties.Count,
-            PortfolioTypeLabel = PropertyAdministratorCatalog.LabelPortfolioType(entity.PortfolioType),
-            ManagementStyleLabel = PropertyAdministratorCatalog.LabelManagementStyle(entity.ManagementStyle),
+            PortfolioTypeLabel = PropertyAdministratorDisplayLocalization.LabelPortfolioType(entity.PortfolioType),
+            ManagementStyleLabel = PropertyAdministratorDisplayLocalization.LabelManagementStyle(entity.ManagementStyle),
             AccountCreated = entity.TermsAccepted,
             PortfolioDetailsAdded = !string.IsNullOrWhiteSpace(entity.PortfolioType),
             PropertiesAdded = properties.Count > 0,

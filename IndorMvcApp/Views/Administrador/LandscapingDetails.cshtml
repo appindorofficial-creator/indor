@@ -21,7 +21,7 @@
         <div class="pa-viewing-strip">
             <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
             <div class="pa-viewing-strip-main">
-                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
                 {
                     <span class="pa-checkout-badge"><i class="fas fa-calendar-day"></i> @Model.PropertyStatusLabel</span>
@@ -41,10 +41,10 @@
             <label><i class="fas fa-leaf pa-q-icon pa-q-icon--green"></i> @L["What kind of landscaping help do you need?"]</label>
             <div class="pa-lawn-service-row">
                 @foreach (var s in new (string Value, string Label, string Icon)[] {
-                    ("GardenRefresh", "Garden refresh", "fa-seedling"),
-                    ("ReplaceDamagedPlants", "Replace damaged plants", "fa-spa"),
-                    ("TreeShrubInstall", "Tree / shrub install", "fa-tree"),
-                    ("PatioHardscape", "Patio / hardscape", "fa-border-all") })
+                    ("GardenRefresh", L["Garden refresh"], "fa-seedling"),
+                    ("ReplaceDamagedPlants", L["Replace damaged plants"], "fa-spa"),
+                    ("TreeShrubInstall", L["Tree / shrub install"], "fa-tree"),
+                    ("PatioHardscape", L["Patio / hardscape"], "fa-border-all") })
                 {
                     <label class="pa-lawn-option-card @(Model.ServiceType == s.Value ? "is-selected" : null)">
                         <input type="radio" name="ServiceType" value="@s.Value" @(Model.ServiceType == s.Value ? "checked" : null) />
@@ -60,7 +60,7 @@
             <span class="pa-flow-qnum">2</span>
             <label>@L["Which area needs work?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var a in new[] { ("FrontYard", "Front yard"), ("Backyard", "Backyard"), ("Both", "Both") })
+                @foreach (var a in new[] { ("FrontYard", L["Front yard"]), ("Backyard", L["Backyard"]), ("Both", L["Both"]) })
                 {
                     <label class="pa-chip @(Model.WorkArea == a.Item1 ? "is-selected" : null)">
                         <input type="radio" name="WorkArea" value="@a.Item1" @(Model.WorkArea == a.Item1 ? "checked" : null) />
@@ -75,10 +75,10 @@
             <label>@L["What happened?"]</label>
             <div class="pa-lawn-service-row">
                 @foreach (var r in new (string Value, string Label)[] {
-                    ("RoutineUpgrade", "Routine upgrade"),
-                    ("StormDamage", "Storm damage"),
-                    ("CarDroveOverPlants", "Car drove over plants"),
-                    ("PreparingForGuests", "Preparing for guests") })
+                    ("RoutineUpgrade", L["Routine upgrade"]),
+                    ("StormDamage", L["Storm damage"]),
+                    ("CarDroveOverPlants", L["Car drove over plants"]),
+                    ("PreparingForGuests", L["Preparing for guests"]) })
                 {
                     <label class="pa-lawn-option-card @(Model.ServiceReason == r.Value ? "is-selected" : null)">
                         <input type="radio" name="ServiceReason" value="@r.Value" @(Model.ServiceReason == r.Value ? "checked" : null) />
@@ -93,7 +93,7 @@
             <span class="pa-flow-qnum">4</span>
             <label><i class="fas fa-clock pa-q-icon pa-q-icon--green"></i> @L["When do you need this done?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var t in new[] { ("Asap", "As soon as possible"), ("ThisWeek", "This week"), ("ScheduleLater", "Schedule later") })
+                @foreach (var t in new[] { ("Asap", L["As soon as possible"]), ("ThisWeek", L["This week"]), ("ScheduleLater", L["Schedule later"]) })
                 {
                     <label class="pa-chip @(Model.Timeline == t.Item1 ? "is-selected" : null)">
                         <input type="radio" name="Timeline" value="@t.Item1" @(Model.Timeline == t.Item1 ? "checked" : null) />

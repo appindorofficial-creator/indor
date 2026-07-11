@@ -110,14 +110,14 @@ public class PropertyAdministratorLockoutAccessService(
             Category = "Emergency",
             ScheduledUtc = now,
             IsEmergency = true,
-            EtaLabel = "18 min",
-            TeamLabel = "Alex R. • Access",
+            EtaLabel = PropertyAdministratorDisplayLocalization.L("18 min"),
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Alex R. • Access"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Alex R.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Verified access pro",
-            VehicleLabel = "White service van",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("White service van"),
             TimelineStep = 2
         };
 
@@ -175,28 +175,28 @@ public class PropertyAdministratorLockoutAccessService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Technician assigned", StatusLabel = assigned, IconClass = "fa-circle-check", State = step >= 1 ? "done" : "pending" },
-            new() { Label = "En route", StatusLabel = enRoute, IconClass = "fa-truck", State = step >= 2 ? "active" : "pending" },
-            new() { Label = "Arrival", StatusLabel = "Pending", IconClass = "fa-location-dot", State = step >= 3 ? "done" : "pending" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Technician assigned"), StatusLabel = assigned, IconClass = "fa-circle-check", State = step >= 1 ? "done" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("En route"), StatusLabel = enRoute, IconClass = "fa-truck", State = step >= 2 ? "active" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Arrival"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-location-dot", State = step >= 3 ? "done" : "pending" }
         ];
     }
 
     private static string LabelIssue(string value) => value switch
     {
-        "SmartLockNotWorking" => "Smart lock not working",
-        "LostKey" => "Lost key",
-        "CodeIssue" => "Code issue",
-        "DoorWontOpen" => "Door won't open",
-        _ => "Guest locked out"
+        "SmartLockNotWorking" => PropertyAdministratorDisplayLocalization.L("Smart lock not working"),
+        "LostKey" => PropertyAdministratorDisplayLocalization.L("Lost key"),
+        "CodeIssue" => PropertyAdministratorDisplayLocalization.L("Code issue"),
+        "DoorWontOpen" => PropertyAdministratorDisplayLocalization.L("Door won't open"),
+        _ => PropertyAdministratorDisplayLocalization.L("Guest locked out")
     };
 
     private static string LabelWhoNeedsAccess(string value) => value switch
     {
-        "Me" => "Host access",
-        "Cleaner" => "Cleaner access",
-        "CoHost" => "Co-host access",
-        _ => "Guest access"
+        "Me" => PropertyAdministratorDisplayLocalization.L("Host access"),
+        "Cleaner" => PropertyAdministratorDisplayLocalization.L("Cleaner access"),
+        "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host access"),
+        _ => PropertyAdministratorDisplayLocalization.L("Guest access")
     };
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(
@@ -221,24 +221,7 @@ public class PropertyAdministratorLockoutAccessService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -275,9 +258,9 @@ public class PropertyAdministratorLockoutAccessService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

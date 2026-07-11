@@ -8,7 +8,7 @@
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
     @{
-        ViewBag.WizardTitle = "AI Quote Draft";
+        ViewBag.WizardTitle = L["AI Quote Draft"].ToString();
         ViewBag.WizardStepLine = Model.StepSubtitle;
         ViewBag.WizardSteps = Model.WizardSteps;
     }
@@ -28,7 +28,7 @@
             <span class="prv-pro-wizard-type-icon prv-pro-wizard-type-icon--@Model.ServiceCategoryTone">
                 <i class="fas @Model.ServiceCategoryIcon"></i>
             </span>
-            <strong>@Model.ServiceCategoryLabel</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.ServiceCategoryLabel)</strong>
         </div>
         <div>
             <small>@L["Customer"]</small>
@@ -59,7 +59,7 @@
             @foreach (var line in Model.EstimateLines)
             {
                 <div class="prv-pro-ai-estimate-row">
-                    <span>@line.Label</span>
+                    <span>@UiDisplayLocalization.Localize(L, line.Label)</span>
                     <span>@line.AmountLabel</span>
                 </div>
             }

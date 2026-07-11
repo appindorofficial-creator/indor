@@ -20,7 +20,7 @@
                 <p>@L["See status, timeline, and activity."]</p>
             </div>
             <span class="prv-req-hero-status prv-req-hero-status--@Model.StatusKind">
-                <i class="fas fa-quote-right"></i> @Model.StatusLabel
+                <i class="fas fa-quote-right"></i> @UiDisplayLocalization.Localize(L, Model.StatusLabel)
             </span>
         </div>
     </header>
@@ -32,17 +32,17 @@
                 <div class="prv-req-title prv-req-title--lg">@Model.Title</div>
                 @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
                 {
-                    <div class="prv-req-meta"><i class="fas fa-screwdriver-wrench"></i> @Model.TradeLabel</div>
+                    <div class="prv-req-meta"><i class="fas fa-screwdriver-wrench"></i> @UiDisplayLocalization.Localize(L, Model.TradeLabel)</div>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
                 {
-                    <div class="prv-req-meta"><i class="fas fa-location-dot"></i> @Model.LocationLabel</div>
+                    <div class="prv-req-meta"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.LocationLabel)</div>
                 }
             </div>
             <div class="prv-req-budget">
                 <span>@L["Budget"]</span>
                 <strong>@(Model.BudgetRange ?? "—")</strong>
-                <span class="prv-req-posted-inline">Posted @Model.PostedLabel</span>
+                <span class="prv-req-posted-inline">@L["Posted"] @UiDisplayLocalization.Localize(L, Model.PostedLabel)</span>
             </div>
         </div>
 
@@ -69,13 +69,13 @@
                 <div class="prv-req-act">
                     <span class="prv-req-act-ic prv-req-act-ic--@a.Tone"><i class="fas @a.IconClass"></i></span>
                     <div class="prv-req-act-body">
-                        <strong>@a.Title</strong>
+                        <strong>@UiDisplayLocalization.Localize(L, a.Title)</strong>
                         @if (!string.IsNullOrWhiteSpace(a.Detail))
                         {
-                            <span>@a.Detail</span>
+                            <span>@UiDisplayLocalization.Localize(L, a.Detail)</span>
                         }
                     </div>
-                    <span class="prv-req-act-time">@a.TimeLabel</span>
+                    <span class="prv-req-act-time">@UiDisplayLocalization.Localize(L, a.TimeLabel)</span>
                 </div>
             }
         </div>
@@ -114,33 +114,33 @@
                             </div>
                             @if (!string.IsNullOrWhiteSpace(qt.LocationLabel))
                             {
-                                <div class="prv-req-meta">@qt.LocationLabel</div>
+                                <div class="prv-req-meta">@UiDisplayLocalization.Localize(L, qt.LocationLabel)</div>
                             }
                             <div class="prv-req-badges">
                                 @if (qt.IsVerified)
                                 {
-                                    <span class="prv-req-badge prv-req-badge--blue"><i class="fas fa-circle-check"></i> Verified</span>
+                                    <span class="prv-req-badge prv-req-badge--blue"><i class="fas fa-circle-check"></i> @L["Verified"]</span>
                                 }
                                 @if (qt.IsInsured)
                                 {
-                                    <span class="prv-req-badge prv-req-badge--green"><i class="fas fa-shield-halved"></i> Insurance Active</span>
+                                    <span class="prv-req-badge prv-req-badge--green"><i class="fas fa-shield-halved"></i> @L["Insurance Active"]</span>
                                 }
                                 @if (qt.IsDocsReady)
                                 {
-                                    <span class="prv-req-badge prv-req-badge--purple"><i class="fas fa-file-lines"></i> Docs Ready</span>
+                                    <span class="prv-req-badge prv-req-badge--purple"><i class="fas fa-file-lines"></i> @L["Docs Ready"]</span>
                                 }
                             </div>
                         </div>
                         <div class="prv-req-quote-price">
                             <strong>@qt.RangeLabel</strong>
-                            <span>@qt.ResponseLabel</span>
+                            <span>@UiDisplayLocalization.Localize(L, qt.ResponseLabel)</span>
                         </div>
                     </a>
                 }
             </div>
 
             <a asp-controller="Proveedor" asp-action="CompareQuotes" asp-route-id="@Model.Id" class="prv-req-btn prv-req-btn--primary prv-req-btn--block">
-                Compare Quotes
+                @L["Compare Quotes"]
             </a>
         }
     </section>

@@ -2,10 +2,7 @@
 @{
     var s = Model.State;
 }
-<div class="ob-head-block">
-    <h1>@Model.Title</h1>
-    <p>@Model.Subtitle</p>
-</div>
+@await Html.PartialAsync("_PropertyAdminRegHead", Model)
 
 @if (!string.IsNullOrWhiteSpace(Model.FormError))
 {
@@ -59,12 +56,12 @@
         }
         else
         {
-            <text>Use a complete email address (e.g. name@email.com).</text>
+            <text>@L["Use a complete email address (e.g. name@email.com)."]</text>
         }
     </p>
 
     <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">
-        @(Model.PendingInvites.Count > 0 ? "Add another invite" : "Send invite")
+        @(Model.PendingInvites.Count > 0 ? L["Add another invite"] : L["Send invite"])
     </button>
 </form>
 

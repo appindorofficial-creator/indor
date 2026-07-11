@@ -18,7 +18,7 @@
             <span class="prv-req-confirm-check"><i class="fas fa-check"></i></span>
             <div>
                 <h1>@L["Invitation Sent"]</h1>
-                <p>Your invitation was sent to @Model.Sub.Name.</p>
+                <p>@L.T("Your invitation was sent to {0}.", Model.Sub.Name)</p>
             </div>
         </div>
     </header>
@@ -69,12 +69,12 @@
 
     <div class="prv-inv-info">
         <i class="fas fa-circle-info"></i>
-        <span>You can continue browsing other subcontractors while you wait. We'll notify you when @Model.Sub.Name responds.</span>
+        <span>@L.T("You can continue browsing other subcontractors while you wait. We'll notify you when {0} responds.", Model.Sub.Name)</span>
     </div>
 
     <a asp-controller="Proveedor" asp-action="InvitationSent" asp-route-id="@Model.Id" class="prv-req-btn prv-req-btn--primary prv-req-btn--block">
         <i class="fas fa-paper-plane"></i> @L["Track Request"]</a>
     <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-req-btn prv-req-btn--ghost prv-req-btn--block">
-        Back to Search
+        @L["Back to Search"]
     </a>
 </div>

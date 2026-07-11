@@ -1,12 +1,13 @@
 @model IndorMvcApp.ViewModels.RealtorGuidanceStep1ViewModel
+@using IndorMvcApp.Localization
 @using IndorMvcApp.Services
 @{
-    ViewData["Title"] = "General Guidance";
+    ViewData["Title"] = L["General Guidance"];
     Layout = null;
     ViewBag.GuidanceStep = 1;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -21,12 +22,12 @@
 <div class="hvac-page">
     <div class="hvac-top">
         <a asp-controller="Home" asp-action="Index" class="hvac-back"><i class="fas fa-chevron-left"></i></a>
-        <div class="hvac-title">General Guidance</div>
+        <div class="hvac-title">@L["General Guidance"]</div>
         <div style="width:40px;"></div>
     </div>
     <div class="hvac-content">
-        <h1 class="rr-page-title">General Guidance</h1>
-        <p class="rr-lead">Answer a few quick questions so a real estate professional can better guide you.</p>
+        <h1 class="rr-page-title">@L["General Guidance"]</h1>
+        <p class="rr-lead">@L["Answer a few quick questions so a real estate professional can better guide you."]</p>
         @await Html.PartialAsync("_GuidanceProgress")
 
         <form asp-action="GuidanceStep1" method="post">
@@ -36,20 +37,20 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
 
             <div class="rr-field">
-                <span class="rr-field-label">What monthly rent payment would you feel comfortable with?</span>
+                <span class="rr-field-label">@L["What monthly rent payment would you feel comfortable with?"]</span>
                 <div class="rr-rent-grid">
                     @foreach (var opt in RealtorRequestDisplayService.RentComfortOptions)
                     {
                         <label class="rr-chip-btn @(Model.RentComfortRange == opt.Value ? "selected" : "")">
                             <input type="radio" asp-for="RentComfortRange" value="@opt.Value" />
-                            <span>@opt.Label</span>
+                            <span>@UiDisplayLocalization.Localize(L, opt.Label)</span>
                         </label>
                     }
                 </div>
             </div>
 
             <div class="rr-field">
-                <span class="rr-field-label">When are you hoping to move?</span>
+                <span class="rr-field-label">@L["When are you hoping to move?"]</span>
                 <div class="rr-time-row">
                     <label class="rr-time-btn @(Model.Timeframe == "ASAP" ? "selected" : "")">
                         <input type="radio" asp-for="Timeframe" value="ASAP" />
@@ -57,11 +58,11 @@
                     </label>
                     <label class="rr-time-btn @(Model.Timeframe == "Days30" ? "selected" : "")">
                         <input type="radio" asp-for="Timeframe" value="Days30" />
-                        <i class="far fa-calendar"></i><span>30 days</span>
+                        <i class="far fa-calendar"></i><span>@L["30 days"]</span>
                     </label>
                     <label class="rr-time-btn @(Model.Timeframe == "Days60Plus" ? "selected" : "")">
                         <input type="radio" asp-for="Timeframe" value="Days60Plus" />
-                        <i class="far fa-calendar-check"></i><span>60+ days</span>
+                        <i class="far fa-calendar-check"></i><span>@L["60+ days"]</span>
                     </label>
                 </div>
             </div>

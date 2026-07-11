@@ -59,7 +59,7 @@
             <div class="prv-pro-jobs-hero-title-row">
                 <h1>@L["Jobs"]</h1>
                 <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="jobs" class="prv-pro-jobs-create-btn" aria-label="@L["Create job"]">
-                    <i class="fas fa-plus" aria-hidden="true"></i> Create Job
+                    <i class="fas fa-plus" aria-hidden="true"></i> @L["Create Job"]
                 </a>
             </div>
             <p>@L["Your operational hub for leads, jobs, estimates, reports, and payments."]</p>
@@ -73,7 +73,7 @@
                 </div>
                 <div class="prv-pro-filter-wrap">
                     <button type="button" class="prv-pro-filter-btn prv-pro-filter-btn--labeled" id="prvJobsFilterBtn" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-sliders"></i> Filter
+                        <i class="fas fa-sliders"></i> @L["Filter"]
                     </button>
                     <div class="prv-pro-filter-menu" id="prvJobsFilterMenu" role="menu" hidden>
                         @foreach (var (id, label) in tabs)
@@ -83,7 +83,7 @@
                                asp-route-q="@Model.SearchQuery"
                                class="prv-pro-filter-menu-item @(Model.ActiveTab == id ? "is-active" : null)"
                                role="menuitem">
-                                <span>@label</span>
+                                <span>@UiDisplayLocalization.Localize(L, label)</span>
                                 @if (Model.ActiveTab == id)
                                 {
                                     <i class="fas fa-check"></i>
@@ -99,7 +99,7 @@
                     <a asp-controller="Proveedor" asp-action="Jobs"
                        asp-route-tab="@id"
                        asp-route-q="@Model.SearchQuery"
-                       class="prv-pro-jobs-filter-chip @(Model.ActiveTab == id ? "is-active" : null)">@label</a>
+                       class="prv-pro-jobs-filter-chip @(Model.ActiveTab == id ? "is-active" : null)">@UiDisplayLocalization.Localize(L, label)</a>
                 }
                 <a asp-controller="Proveedor" asp-action="Network" class="prv-pro-jobs-filter-chip">@L["Network"]</a>
                 <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-pro-jobs-filter-chip prv-pro-jobs-filter-chip--outline">@L["Subcontractors"]</a>
@@ -114,13 +114,13 @@
                class="prv-pro-jobs-stat">
                 <span class="prv-pro-jobs-stat-icon prv-pro-jobs-stat-icon--@tone"><i class="fas @icon"></i></span>
                 <strong>@count</strong>
-                <span>@label</span>
+                <span>@UiDisplayLocalization.Localize(L, label)</span>
             </a>
         }
     </section>
 
     <div class="prv-pro-jobs-list-head">
-        <h2>@listTitle</h2>
+        <h2>@UiDisplayLocalization.Localize(L, listTitle)</h2>
         @if (Model.ActiveTab == "today")
         {
             <a asp-controller="Proveedor" asp-action="DaySchedule"
@@ -131,7 +131,7 @@
     </div>
     <div class="prv-pro-jobs-info">
         <i class="fas fa-circle-info"></i>
-        <p>@infoText</p>
+        <p>@UiDisplayLocalization.Localize(L, infoText)</p>
     </div>
 
     <section class="prv-pro-jobs-list">
@@ -155,10 +155,10 @@
                         <div class="prv-pro-job-card-body">
                             <div class="prv-pro-job-card-title-row">
                                 <strong>@item.Title</strong>
-                                <span class="prv-pro-pill prv-pro-pill--@item.StatusClass">@item.StatusLabel</span>
+                                <span class="prv-pro-pill prv-pro-pill--@item.StatusClass">@UiDisplayLocalization.Localize(L, item.StatusLabel)</span>
                                 @if (!string.IsNullOrWhiteSpace(item.SecondaryBadge))
                                 {
-                                    <span class="prv-pro-pill prv-pro-pill--@item.SecondaryBadgeClass">@item.SecondaryBadge</span>
+                                    <span class="prv-pro-pill prv-pro-pill--@item.SecondaryBadgeClass">@UiDisplayLocalization.Localize(L, item.SecondaryBadge)</span>
                                 }
                             </div>
                             <small class="prv-pro-job-card-address">@item.Address</small>
@@ -168,7 +168,7 @@
                             }
                             @if (!string.IsNullOrWhiteSpace(item.TimeLabel))
                             {
-                                <small class="prv-pro-job-card-time">@item.TimeLabel</small>
+                                <small class="prv-pro-job-card-time">@UiDisplayLocalization.Localize(L, item.TimeLabel)</small>
                             }
                         </div>
                     </div>
@@ -221,49 +221,49 @@
                             <form asp-controller="Proveedor" asp-action="AcceptLead" method="post" class="prv-pro-job-action-form">
                                 @Html.AntiForgeryToken()
                                 <input type="hidden" name="id" value="@item.ItemId" />
-                                <button type="submit" class="prv-pro-btn prv-pro-btn--@item.PrimaryActionClass">@item.PrimaryAction</button>
-                            </form>
-                            <a asp-controller="Proveedor" asp-action="QuickEstimate" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--ghost">@item.SecondaryAction</a>
+                                    <button type="submit" class="prv-pro-btn prv-pro-btn--@item.PrimaryActionClass">@UiDisplayLocalization.Localize(L, item.PrimaryAction)</button>
+                                </form>
+                                <a asp-controller="Proveedor" asp-action="QuickEstimate" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--ghost">@UiDisplayLocalization.Localize(L, item.SecondaryAction)</a>
                         }
                         else if (item.ItemKind == "Estimate" && item.ItemId.HasValue)
                         {
-                            <a asp-controller="Proveedor" asp-action="EditEstimate" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--@item.PrimaryActionClass">@item.PrimaryAction</a>
+                            <a asp-controller="Proveedor" asp-action="EditEstimate" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--@item.PrimaryActionClass">@UiDisplayLocalization.Localize(L, item.PrimaryAction)</a>
                             @if (item.CanConvertToJob)
                             {
                                 <form asp-controller="Proveedor" asp-action="ConvertEstimateToJob" method="post" class="prv-pro-job-action-form">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@item.ItemId" />
-                                    <button type="submit" class="prv-pro-btn prv-pro-btn--ghost">@item.SecondaryAction</button>
+                                    <button type="submit" class="prv-pro-btn prv-pro-btn--ghost">@UiDisplayLocalization.Localize(L, item.SecondaryAction)</button>
                                 </form>
                             }
                             else
                             {
-                                <a asp-controller="Proveedor" asp-action="EstimateSent" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--ghost">@item.SecondaryAction</a>
+                                <a asp-controller="Proveedor" asp-action="EstimateSent" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--ghost">@UiDisplayLocalization.Localize(L, item.SecondaryAction)</a>
                             }
                         }
                         else if (item.ItemKind == "Job" && item.ItemId.HasValue)
                         {
                             @if (item.StatusClass == "progress")
                             {
-                                <a asp-controller="Proveedor" asp-action="ActiveJob" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--@item.PrimaryActionClass">@item.PrimaryAction</a>
+                                <a asp-controller="Proveedor" asp-action="ActiveJob" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--@item.PrimaryActionClass">@UiDisplayLocalization.Localize(L, item.PrimaryAction)</a>
                             }
                             else if (item.StatusClass == "completed")
                             {
-                                <a asp-controller="Proveedor" asp-action="JobReport" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--@item.PrimaryActionClass">@item.PrimaryAction</a>
+                                <a asp-controller="Proveedor" asp-action="JobReport" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--@item.PrimaryActionClass">@UiDisplayLocalization.Localize(L, item.PrimaryAction)</a>
                             }
                             else
                             {
-                                <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--@item.PrimaryActionClass">@item.PrimaryAction</a>
+                                <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--@item.PrimaryActionClass">@UiDisplayLocalization.Localize(L, item.PrimaryAction)</a>
                             }
                             @if (!string.IsNullOrWhiteSpace(item.SecondaryAction))
                             {
-                                @if (item.SecondaryAction == "Upload Photos")
+                                @if (item.SecondaryAction == ProviderProDisplayLocalization.L("Upload Photos"))
                                 {
-                                    <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-btn prv-pro-btn--ghost">@item.SecondaryAction</a>
+                                    <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-btn prv-pro-btn--ghost">@UiDisplayLocalization.Localize(L, item.SecondaryAction)</a>
                                 }
                                 else
                                 {
-                                    <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--ghost">@item.SecondaryAction</a>
+                                    <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--ghost">@UiDisplayLocalization.Localize(L, item.SecondaryAction)</a>
                                 }
                             }
                         }
@@ -277,7 +277,7 @@
     {
         <section class="prv-pro-smart-suggestions">
             <div class="prv-pro-panel-head">
-                <h2><i class="fas fa-wand-magic-sparkles"></i> Smart Suggestions</h2>
+                <h2><i class="fas fa-wand-magic-sparkles"></i> @L["Smart Suggestions"]</h2>
             </div>
             <div class="prv-pro-smart-scroll">
                 @foreach (var tip in Model.SmartSuggestions)
@@ -286,14 +286,14 @@
                     {
                         <a href="@tip.Url" class="prv-pro-smart-card prv-pro-smart-card--@tip.Tone prv-pro-smart-card--link">
                             <i class="fas @tip.IconClass"></i>
-                            <span>@tip.Text</span>
+                            <span>@UiDisplayLocalization.Localize(L, tip.Text)</span>
                         </a>
                     }
                     else
                     {
                         <article class="prv-pro-smart-card prv-pro-smart-card--@tip.Tone">
                             <i class="fas @tip.IconClass"></i>
-                            <span>@tip.Text</span>
+                            <span>@UiDisplayLocalization.Localize(L, tip.Text)</span>
                         </article>
                     }
                 }

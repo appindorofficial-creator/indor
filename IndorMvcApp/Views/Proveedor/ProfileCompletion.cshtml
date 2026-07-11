@@ -25,7 +25,7 @@
         @if (TempData["ProfileSaved"] is true)
         {
             <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success">
-                <i class="fas fa-circle-check"></i> Progress saved successfully.
+                <i class="fas fa-circle-check"></i> @L["Progress saved successfully."]
             </div>
         }
 
@@ -45,25 +45,25 @@
                     </div>
                     <div class="prv-flow-hero-copy">
                         <h2>@Model.DisplayBusinessName</h2>
-                        <p class="prv-flow-hero-location"><i class="fas fa-location-dot"></i> @Model.LocationLabel</p>
-                        <p class="prv-flow-hero-area">@Model.ServiceAreaSummary</p>
+                        <p class="prv-flow-hero-location"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.LocationLabel)</p>
+                        <p class="prv-flow-hero-area">@UiDisplayLocalization.Localize(L, Model.ServiceAreaSummary)</p>
                     </div>
                 </div>
                 <img src="~/images/profile-house-illustration.png" alt="" class="prv-flow-hero-illus" aria-hidden="true" />
             </div>
             <div class="prv-flow-hero-actions">
                 <a asp-controller="Proveedor" asp-action="EditProfile" class="prv-flow-hero-btn">
-                    <i class="fas fa-pen"></i> Edit Profile
+                    <i class="fas fa-pen"></i> @L["Edit Profile"]
                 </a>
                 <a asp-controller="Proveedor" asp-action="PublicProfile" class="prv-flow-hero-btn">
-                    <i class="fas fa-eye"></i> Preview Profile
+                    <i class="fas fa-eye"></i> @L["Preview Profile"]
                 </a>
             </div>
         </section>
 
         <section class="prv-flow-ready-card">
             <div class="prv-flow-ready-ring" aria-hidden="true">
-                <svg viewBox="0 0 36 36" role="img" aria-label="@pct percent complete">
+                <svg viewBox="0 0 36 36" role="img" aria-label="@L.T("{0} percent complete", pct)">
                     <path class="prv-flow-ring-track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                     <path class="prv-flow-ring-fill" stroke-dasharray="@pct, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
                     <text x="18" y="20.5" class="prv-flow-ring-text">@pct%</text>
@@ -76,10 +76,10 @@
                     <span style="width:@pct%"></span>
                 </div>
                 <div class="prv-flow-ready-foot">
-                    <span>@Model.CompletedSections of @Model.TotalSections sections complete</span>
+                    <span>@L.T("{0} of {1} sections complete", Model.CompletedSections, Model.TotalSections)</span>
                     @if (!string.IsNullOrWhiteSpace(Model.NextStepTitle) && !string.IsNullOrWhiteSpace(Model.NextStepAction))
                     {
-                        <a href="@Model.NextStepAction" class="prv-flow-next-step">@L["Next step:"]<strong>@Model.NextStepTitle</strong> <i class="fas fa-chevron-right"></i></a>
+                        <a href="@Model.NextStepAction" class="prv-flow-next-step">@L["Next step:"]<strong>@UiDisplayLocalization.Localize(L, Model.NextStepTitle)</strong> <i class="fas fa-chevron-right"></i></a>
                     }
                 </div>
             </div>
@@ -88,7 +88,7 @@
         @if (!string.IsNullOrWhiteSpace(Model.ContinueAction))
         {
             <a href="@Model.ContinueAction" class="prv-pro-btn prv-pro-btn--primary prv-flow-continue">
-                <i class="fas fa-wand-magic-sparkles"></i> Continue Setup
+                <i class="fas fa-wand-magic-sparkles"></i> @L["Continue Setup"]
             </a>
         }
 
@@ -107,12 +107,12 @@
                         <span class="prv-flow-setup-row-icon @(item.IsComplete ? "is-done" : "")"><i class="fas @item.IconClass"></i></span>
                         <div class="prv-flow-setup-row-copy">
                             <div class="prv-flow-setup-row-top">
-                                <strong>@item.Title</strong>
-                                <span class="prv-flow-status prv-flow-status--@item.StatusKind">@item.StatusLabel</span>
+                                <strong>@UiDisplayLocalization.Localize(L, item.Title)</strong>
+                                <span class="prv-flow-status prv-flow-status--@item.StatusKind">@UiDisplayLocalization.Localize(L, item.StatusLabel)</span>
                             </div>
-                            <p>@item.Description</p>
+                            <p>@UiDisplayLocalization.Localize(L, item.Description)</p>
                         </div>
-                        <a href="@item.Action" class="prv-flow-setup-row-btn">@item.ActionLabel</a>
+                        <a href="@item.Action" class="prv-flow-setup-row-btn">@UiDisplayLocalization.Localize(L, item.ActionLabel)</a>
                     </article>
                 }
             </div>

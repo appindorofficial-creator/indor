@@ -36,7 +36,7 @@
                         <span class="rl-pkg-folder rl-pkg-folder--@pkg.IconColor"><i class="fas fa-folder"></i></span>
                         <div class="rl-premium-card-body">
                             <strong>@pkg.PackageTitle</strong>
-                            <span class="rl-premium-muted">Shared with @pkg.ClientName</span>
+                            <span class="rl-premium-muted">@UiDisplayLocalization.Localize(L, $"Shared with {pkg.ClientName}")</span>
                             <span class="rl-status-pill rl-status-pill--@pkg.StatusCss">
                                 @if (pkg.StatusCss == "viewed")
                                 {
@@ -46,9 +46,9 @@
                                 {
                                     <i class="fas fa-clock"></i>
                                 }
-                                @pkg.StatusLabel
+                                @UiDisplayLocalization.Localize(L, pkg.StatusLabel)
                             </span>
-                            <span class="rl-premium-muted rl-premium-date">@pkg.SharedLabel</span>
+                            <span class="rl-premium-muted rl-premium-date">@UiDisplayLocalization.Localize(L, pkg.SharedLabel)</span>
                         </div>
                     </article>
                 }

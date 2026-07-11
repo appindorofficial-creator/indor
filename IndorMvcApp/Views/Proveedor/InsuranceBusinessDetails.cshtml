@@ -34,7 +34,7 @@
         </div>
         <div class="ins-plancard-price">
             <div><small>@L["Pay today"]</small><strong>$@Model.PayToday.ToString("0")</strong></div>
-            <div><small>@L["Then"]</small><strong>$@Model.Monthly.ToString("0")<span>/mo</span></strong></div>
+            <div><small>@L["Then"]</small><strong>$@Model.Monthly.ToString("0")<span>@L["/mo"]</span></strong></div>
         </div>
     </div>
 
@@ -48,7 +48,7 @@
                             <option value="">@L["Select number"]</option>
                             @foreach (var e in IndorMvcApp.ViewModels.InsuranceCatalog.EmployeeOptions)
                             {
-                                <option value="@e" selected="@(Model.NumberOfEmployees == e)">@e</option>
+                                <option value="@e" selected="@(Model.NumberOfEmployees == e)">@UiDisplayLocalization.Localize(L, e)</option>
                             }
                         </select>
                         <i class="fas fa-chevron-down ins-bx-caret"></i>
@@ -76,7 +76,7 @@
                         <option value="">@L["Select years"]</option>
                         @foreach (var y in IndorMvcApp.ViewModels.InsuranceCatalog.YearsOptions)
                         {
-                            <option value="@y" selected="@(Model.YearsInBusiness == y)">@y</option>
+                            <option value="@y" selected="@(Model.YearsInBusiness == y)">@UiDisplayLocalization.Localize(L, y)</option>
                         }
                     </select>
                     <i class="fas fa-chevron-down ins-bx-caret"></i>
@@ -87,10 +87,10 @@
                 <label class="ins-drow-lbl">@L["Do you work at customer homes?"]</label>
                 <div class="ins-seg">
                     <label class="ins-seg-opt @(homesYes ? "is-on" : "")">
-                        <input type="radio" name="WorksAtCustomerHomes" value="true" @(homesYes ? "checked" : null) /> Yes
+                        <input type="radio" name="WorksAtCustomerHomes" value="true" @(homesYes ? "checked" : null) /> @L["Yes"]
                     </label>
                     <label class="ins-seg-opt @(!homesYes ? "is-on" : "")">
-                        <input type="radio" name="WorksAtCustomerHomes" value="false" @(!homesYes ? "checked" : null) /> No
+                        <input type="radio" name="WorksAtCustomerHomes" value="false" @(!homesYes ? "checked" : null) /> @L["No"]
                     </label>
                 </div>
             </div>
@@ -99,10 +99,10 @@
                 <label class="ins-drow-lbl">@L["Do you use subcontractors?"]</label>
                 <div class="ins-seg">
                     <label class="ins-seg-opt @(subYes ? "is-on" : "")">
-                        <input type="radio" name="UsesSubcontractors" value="true" @(subYes ? "checked" : null) /> Yes
+                        <input type="radio" name="UsesSubcontractors" value="true" @(subYes ? "checked" : null) /> @L["Yes"]
                     </label>
                     <label class="ins-seg-opt @(!subYes ? "is-on" : "")">
-                        <input type="radio" name="UsesSubcontractors" value="false" @(!subYes ? "checked" : null) /> No
+                        <input type="radio" name="UsesSubcontractors" value="false" @(!subYes ? "checked" : null) /> @L["No"]
                     </label>
                 </div>
             </div>
@@ -111,10 +111,10 @@
                 <label class="ins-drow-lbl">@L["Need a Certificate of Insurance (COI)?"]</label>
                 <div class="ins-seg">
                     <label class="ins-seg-opt @(coiYes ? "is-on" : "")">
-                        <input type="radio" name="NeedsCOI" value="true" @(coiYes ? "checked" : null) /> Yes
+                        <input type="radio" name="NeedsCOI" value="true" @(coiYes ? "checked" : null) /> @L["Yes"]
                     </label>
                     <label class="ins-seg-opt @(!coiYes ? "is-on" : "")">
-                        <input type="radio" name="NeedsCOI" value="false" @(!coiYes ? "checked" : null) /> No
+                        <input type="radio" name="NeedsCOI" value="false" @(!coiYes ? "checked" : null) /> @L["No"]
                     </label>
                 </div>
             </div>
@@ -126,13 +126,13 @@
                 <span class="ins-pay-ic ins-pay-ic--box"><i class="fas fa-credit-card"></i></span>
                 <span class="ins-pay-body">
                     <strong>@L["Card on File"]</strong>
-                    <small>Visa ending in @Model.CardLast4</small>
+                    <small>@L.T("Visa ending in {0}", Model.CardLast4)</small>
                 </span>
             </div>
             <div class="ins-pay-row">
                 <span class="ins-pay-ic ins-pay-ic--box"><i class="fas fa-arrows-rotate"></i></span>
                 <span class="ins-pay-body">
-                    <strong>@L["AutoPay"]<span class="ins-pay-muted">(charged monthly)</span></strong>
+                    <strong>@L["AutoPay"]<span class="ins-pay-muted">@L["(charged monthly)"]</span></strong>
                     <small>@L["Automatically charge my card each month"]</small>
                 </span>
                 <label class="ins-switch">

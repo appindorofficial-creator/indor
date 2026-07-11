@@ -71,7 +71,7 @@ public class PropertyAdministratorPetDeepCleanService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Pet Deep Clean at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Pet Deep Clean", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,
@@ -79,13 +79,13 @@ public class PropertyAdministratorPetDeepCleanService(
             ScheduledUtc = visitDate,
             IsEmergency = false,
             EtaLabel = etaLabel,
-            TeamLabel = "Maria Gutierrez • Pet cleaning",
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Maria Gutierrez • Pet cleaning"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Maria Gutierrez",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Licensed Homecare Pro",
-            VehicleLabel = "White service van",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("White service van"),
             TimelineStep = 3
         };
 
@@ -171,12 +171,12 @@ public class PropertyAdministratorPetDeepCleanService(
         PropertyAdministratorPetDeepCleanSubmitInput input,
         DateTime visitDate) =>
     [
-        new() { Label = "Service", Value = "Pet Deep Cleaning", IconClass = "fa-paw" },
-        new() { Label = "Date & time", Value = $"{visitDate:MMM d, yyyy} • {input.ScheduleTimeWindow}", IconClass = "fa-calendar" },
-        new() { Label = "Pets", Value = LabelPets(input.PetCount, input.PetType), IconClass = "fa-dog" },
-        new() { Label = "Focus areas", Value = LabelFocusAreas(input.FocusAreasList), IconClass = "fa-wand-magic-sparkles" },
-        new() { Label = "Access method", Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
-        new() { Label = "Updates", Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = "Pet Deep Cleaning", IconClass = "fa-paw" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Date & time"), Value = $"{visitDate:MMM d, yyyy} • {input.ScheduleTimeWindow}", IconClass = "fa-calendar" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Pets"), Value = LabelPets(input.PetCount, input.PetType), IconClass = "fa-dog" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Focus areas"), Value = LabelFocusAreas(input.FocusAreasList), IconClass = "fa-wand-magic-sparkles" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Access method"), Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorPetDeepCleanTimelineItemViewModel> BuildTimeline(
@@ -188,9 +188,9 @@ public class PropertyAdministratorPetDeepCleanService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = $"{submitted:MMM d, yyyy} • {submitted:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Crew assigned", StatusLabel = $"{assigned:MMM d, yyyy} • {assigned:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Scheduled visit", StatusLabel = visitLabel, IconClass = "fa-calendar-check", State = "active" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = $"{submitted:MMM d, yyyy} • {submitted:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Crew assigned"), StatusLabel = $"{assigned:MMM d, yyyy} • {assigned:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Scheduled visit"), StatusLabel = visitLabel, IconClass = "fa-calendar-check", State = "active" }
         ];
     }
 
@@ -198,10 +198,10 @@ public class PropertyAdministratorPetDeepCleanService(
     {
         var countLabel = count switch
         {
-            "1" => "1",
-            "3" => "3",
-            "FourPlus" => "4+",
-            _ => "2"
+            "1" => PropertyAdministratorDisplayLocalization.L("1"),
+            "3" => PropertyAdministratorDisplayLocalization.L("3"),
+            "FourPlus" => PropertyAdministratorDisplayLocalization.L("4+"),
+            _ => PropertyAdministratorDisplayLocalization.L("2")
         };
         var typeLabel = type switch
         {
@@ -216,12 +216,12 @@ public class PropertyAdministratorPetDeepCleanService(
     {
         var labels = areas.Select(a => a switch
         {
-            "OdorRemoval" => "odors",
-            "AccidentsStains" => "stains",
-            "BedsUpholstery" => "beds & upholstery",
-            "CratePetArea" => "crate / pet area",
-            "Floors" => "floors",
-            _ => "pet hair"
+            "OdorRemoval" => PropertyAdministratorDisplayLocalization.L("odors"),
+            "AccidentsStains" => PropertyAdministratorDisplayLocalization.L("stains"),
+            "BedsUpholstery" => PropertyAdministratorDisplayLocalization.L("beds & upholstery"),
+            "CratePetArea" => PropertyAdministratorDisplayLocalization.L("crate / pet area"),
+            "Floors" => PropertyAdministratorDisplayLocalization.L("floors"),
+            _ => PropertyAdministratorDisplayLocalization.L("pet hair")
         }).Distinct().ToList();
 
         return labels.Count == 0 ? "—" : string.Join(", ", labels);
@@ -229,24 +229,24 @@ public class PropertyAdministratorPetDeepCleanService(
 
     private static string LabelScheduleWhen(string value) => value switch
     {
-        "Today" => "Today",
-        "Later" => "Later",
-        _ => "Tomorrow"
+        "Today" => PropertyAdministratorDisplayLocalization.L("Today"),
+        "Later" => PropertyAdministratorDisplayLocalization.L("Later"),
+        _ => PropertyAdministratorDisplayLocalization.L("Tomorrow")
     };
 
     private static string LabelAccess(string value) => value switch
     {
-        "HostMeet" => "Host will meet",
-        "GuestStillInside" => "Guest still inside",
-        _ => "Smart lock code provided"
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "GuestStillInside" => PropertyAdministratorDisplayLocalization.L("Guest still inside"),
+        _ => PropertyAdministratorDisplayLocalization.L("Smart lock code provided")
     };
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 
@@ -280,24 +280,7 @@ public class PropertyAdministratorPetDeepCleanService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -328,9 +311,9 @@ public class PropertyAdministratorPetDeepCleanService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

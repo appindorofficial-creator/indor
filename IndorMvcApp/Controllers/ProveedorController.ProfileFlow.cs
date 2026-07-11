@@ -54,7 +54,7 @@ public partial class ProveedorController
         if (!saved)
         {
             var failed = await proData.GetProfileBusinessAsync(proveedor.Entity!, input, cancellationToken);
-            failed.ErrorMessage = "We couldn't save your business profile. Please try again.";
+            failed.ErrorMessage = localizer["We couldn't save your business profile. Please try again."];
             ViewBag.CompanyInitial = failed.CompanyInitial;
             ViewBag.ProfileFlowStep = 2;
             ViewData["ProviderProExtraCss"] = "provider-profile-flow.css";

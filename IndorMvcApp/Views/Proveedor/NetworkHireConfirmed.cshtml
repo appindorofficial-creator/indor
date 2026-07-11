@@ -9,8 +9,8 @@
 <div class="prv-net-shell">
     <div class="prv-net-success">
         <span class="prv-net-success-ic"><i class="fas fa-handshake-simple"></i></span>
-        <h1>@Model.StatusLabel!</h1>
-        <p>@L["You've brought"]<strong>@Model.SubcontractorName</strong> onto your project. They've been notified.</p>
+        <h1>@UiDisplayLocalization.Localize(L, Model.StatusLabel)!</h1>
+        <p>@L.T("You've brought {0} onto your project. They've been notified.", Model.SubcontractorName)</p>
     </div>
 
     <section class="prv-net-hire-card" style="margin-top:22px;">
@@ -21,14 +21,14 @@
                 <p class="prv-net-sub-name">@Model.SubcontractorName @if (Model.IsVerified) { <i class="fas fa-circle-check"></i> }</p>
                 @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
                 {
-                    <p class="prv-net-sub-trade">@Model.TradeLabel</p>
+                    <p class="prv-net-sub-trade">@UiDisplayLocalization.Localize(L, Model.TradeLabel)</p>
                 }
             </div>
         </div>
         <div class="prv-net-badges">
-            @if (Model.IsVerified) { <span class="prv-net-badge prv-net-badge--verified"><i class="fas fa-circle-check"></i> Verified</span> }
-            @if (Model.IsInsured) { <span class="prv-net-badge prv-net-badge--insured"><i class="fas fa-shield-halved"></i> Insured</span> }
-            @if (Model.IsDocsReady) { <span class="prv-net-badge prv-net-badge--docs"><i class="fas fa-file-lines"></i> Docs Ready</span> }
+            @if (Model.IsVerified) { <span class="prv-net-badge prv-net-badge--verified"><i class="fas fa-circle-check"></i> @L["Verified"]</span> }
+            @if (Model.IsInsured) { <span class="prv-net-badge prv-net-badge--insured"><i class="fas fa-shield-halved"></i> @L["Insured"]</span> }
+            @if (Model.IsDocsReady) { <span class="prv-net-badge prv-net-badge--docs"><i class="fas fa-file-lines"></i> @L["Docs Ready"]</span> }
         </div>
     </section>
 
@@ -53,7 +53,7 @@
     </section>
 
     <div class="prv-net-actionbar" style="position:static;">
-        <a asp-controller="Proveedor" asp-action="Network" class="prv-net-btn prv-net-btn--primary"><i class="fas fa-house"></i> Back to Network</a>
-        <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-net-btn prv-net-btn--ghost"><i class="fas fa-magnifying-glass"></i> Find more pros</a>
+        <a asp-controller="Proveedor" asp-action="Network" class="prv-net-btn prv-net-btn--primary"><i class="fas fa-house"></i> @L["Back to Network"]</a>
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-net-btn prv-net-btn--ghost"><i class="fas fa-magnifying-glass"></i> @L["Find more pros"]</a>
     </div>
 </div>

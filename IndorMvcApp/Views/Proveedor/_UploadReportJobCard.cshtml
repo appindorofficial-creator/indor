@@ -14,8 +14,8 @@
         <span>@Model.Address</span>
         @if (!string.IsNullOrWhiteSpace(Model.JobCode))
         {
-            <span>Job #@Model.JobCode.Replace("JOB-", "") @if (!string.IsNullOrWhiteSpace(Model.ScheduledLabel)) { <text>• @Model.ScheduledLabel</text> }</span>
+            <span>@L.T("Job #{0}", Model.JobCode.Replace("JOB-", "")) @if (!string.IsNullOrWhiteSpace(Model.ScheduledLabel)) { <text>• @UiDisplayLocalization.Localize(L, Model.ScheduledLabel)</text> }</span>
         }
-        <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@Model.StatusLabel</span>
+        <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
     </div>
 </section>

@@ -1,3 +1,6 @@
+using System.Globalization;
+using IndorMvcApp.Helpers;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 
 namespace IndorMvcApp.Services;
@@ -6,6 +9,18 @@ namespace IndorMvcApp.Services;
 public static class ProviderProDisplayLocalization
 {
     public static string L(string english) => DisplayLabelsLocalization.L(english);
+
+    public static string T(string key, params object[] args)
+    {
+        var template = L(key);
+        return args.Length == 0 ? template : string.Format(CultureInfo.CurrentCulture, template, args);
+    }
+
+    public static string CatalogLabel(string? labelEn, string? labelEs) =>
+        CatalogText.PickWithUiFallback(labelEn, labelEs, DisplayLabelsLocalization.IsSpanishUi);
+
+    public static string Localize(IIndorLocalizer localizer, string? text) =>
+        UiDisplayLocalization.Localize(localizer, text);
 
     public static string MapJobStatus(string status) => status switch
     {
@@ -16,12 +31,16 @@ public static class ProviderProDisplayLocalization
         _ => L("Scheduled")
     };
 
-    public static string DayLabel(int offset, DateTime day) => offset switch
+    public static string DayLabel(int offset, DateTime day)
     {
-        0 => L("Today"),
-        1 => $"{L("Tomorrow")}, {day.ToString("MMM d")}",
-        _ => day.ToString("dddd, MMM d")
-    };
+        var culture = CultureInfo.CurrentCulture;
+        return offset switch
+        {
+            0 => L("Today"),
+            1 => $"{L("Tomorrow")}, {day.ToString("MMM d", culture)}",
+            _ => day.ToString("dddd, MMM d", culture)
+        };
+    }
 
     public static (string Kind, string Label) SectionStatus(string id, bool complete, bool pendingReview)
     {

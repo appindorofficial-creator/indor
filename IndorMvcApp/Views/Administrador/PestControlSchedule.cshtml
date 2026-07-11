@@ -34,7 +34,7 @@
             <span class="pa-flow-qnum">1</span>
             <label>@L["What type of service do you need?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var s in new[] { ("OneTimeTreatment", "One-time treatment"), ("RecurringService", "Recurring service"), ("InspectionOnly", "Inspection only") })
+                @foreach (var s in new[] { ("OneTimeTreatment", L["One-time treatment"]), ("RecurringService", L["Recurring service"]), ("InspectionOnly", L["Inspection only"]) })
                 {
                     <label class="pa-chip @(Model.ServiceType == s.Item1 ? "is-selected" : null)">
                         <input type="radio" name="ServiceType" value="@s.Item1" @(Model.ServiceType == s.Item1 ? "checked" : null) />
@@ -48,7 +48,7 @@
             <span class="pa-flow-qnum">2</span>
             <label><i class="fas fa-clock pa-q-icon pa-q-icon--green"></i> @L["Preferred arrival"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var a in new[] { ("Asap", "ASAP"), ("TodayLater", "Today later"), ("Tomorrow", "Tomorrow") })
+                @foreach (var a in new[] { ("Asap", L["ASAP"]), ("TodayLater", L["Today later"]), ("Tomorrow", L["Tomorrow"]) })
                 {
                     <label class="pa-chip @(Model.PreferredArrival == a.Item1 ? "is-selected" : null)">
                         <input type="radio" name="PreferredArrival" value="@a.Item1" @(Model.PreferredArrival == a.Item1 ? "checked" : null) />
@@ -62,7 +62,7 @@
             <span class="pa-flow-qnum">3</span>
             <label><i class="fas fa-door-open pa-q-icon pa-q-icon--green"></i> @L["Can the technician enter now?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var e in new[] { ("SmartLock", "Yes, with smart lock"), ("HostOnSite", "Host will meet"), ("GuestApproval", "Need guest approval") })
+                @foreach (var e in new[] { ("SmartLock", L["Yes, with smart lock"]), ("HostOnSite", L["Host will meet"]), ("GuestApproval", L["Need guest approval"]) })
                 {
                     <label class="pa-chip @(Model.EntryAccess == e.Item1 ? "is-selected" : null)">
                         <input type="radio" name="EntryAccess" value="@e.Item1" @(Model.EntryAccess == e.Item1 ? "checked" : null) />
@@ -89,7 +89,7 @@
             <span class="pa-flow-qnum">5</span>
             <label>@L["Areas to treat"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-pw-areas-grid">
-                @foreach (var a in new[] { ("Kitchen", "Kitchen"), ("Pantry", "Pantry"), ("Bathroom", "Bathroom"), ("Bedrooms", "Bedrooms"), ("PatioExterior", "Patio / exterior") })
+                @foreach (var a in new[] { ("Kitchen", L["Kitchen"]), ("Pantry", L["Pantry"]), ("Bathroom", L["Bathroom"]), ("Bedrooms", L["Bedrooms"]), ("PatioExterior", L["Patio / exterior"]) })
                 {
                     <label class="pa-pw-area-card @(treatAreas.Contains(a.Item1) ? "is-selected" : null)">
                         <input type="checkbox" name="TreatAreasList" value="@a.Item1" @(treatAreas.Contains(a.Item1) ? "checked" : null) />
@@ -104,7 +104,7 @@
             <span class="pa-flow-qnum">6</span>
             <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> @L["Best contact for updates"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
                 {
                     <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
                         <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />

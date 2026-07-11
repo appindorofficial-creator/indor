@@ -16,7 +16,7 @@
             <h1>@L["Select Job or Property"]</h1>
             <small>@L["Choose the completed or active job this report belongs to."]</small>
         </div>
-        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+        <span class="prv-pro-step-badge">@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</span>
     </header>
 
     <p class="prv-pro-upload-report-hint">@L["Search for a job, then tap"]<strong>@L["Select"]</strong> on the matching card to continue.</p>
@@ -84,9 +84,9 @@
                     }
                     <div class="prv-pro-upload-report-job-body">
                         <strong>@job.Address</strong>
-                        <span><i class="fas @job.IconClass"></i> @job.ServiceType</span>
+                        <span><i class="fas @job.IconClass"></i> @UiDisplayLocalization.Localize(L, job.ServiceType)</span>
                         <span>@job.DateLabel · @job.JobCode</span>
-                        <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@job.StatusLabel</span>
+                        <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@UiDisplayLocalization.Localize(L, job.StatusLabel)</span>
                     </div>
                     <button type="submit" class="prv-pro-btn prv-pro-btn--outline">@L["Select"]</button>
                 </form>

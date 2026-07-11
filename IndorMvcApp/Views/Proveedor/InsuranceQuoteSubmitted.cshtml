@@ -8,10 +8,10 @@
     var benefits = IndorMvcApp.ViewModels.InsuranceCatalog.BenefitsFor(Model.Plan);
     var nextSteps = new (string Icon, string Text)[]
     {
-        ("fa-credit-card", "Payment received"),
-        ("fa-user-shield", "Insurance partner reviews your request"),
-        ("fa-shield-halved", "Carrier confirms approval"),
-        ("fa-file-lines", "Policy and COI become available in INDOR")
+        ("fa-credit-card", L["Payment received"].ToString()),
+        ("fa-user-shield", L["Insurance partner reviews your request"].ToString()),
+        ("fa-shield-halved", L["Carrier confirms approval"].ToString()),
+        ("fa-file-lines", L["Policy and COI become available in INDOR"].ToString())
     };
 }
 
@@ -28,14 +28,14 @@
     @await Html.PartialAsync("_InsuranceStepper", 6)
 
     <div class="ins-fc ins-success">
-        <span class="ins-status-badge ins-status-badge--corner">@Model.Status</span>
+        <span class="ins-status-badge ins-status-badge--corner">@UiDisplayLocalization.Localize(L, Model.Status)</span>
         <img src="~/images/insurance/ins-success-cert.png" alt="" class="ins-success-img" asp-append-version="true" />
         <div class="ins-success-body">
             <h2>@Model.PlanDisplayName</h2>
             <span class="ins-success-cov"><i class="fas fa-shield-halved"></i> @Model.Coverage</span>
             <div class="ins-success-price">
                 <div><small>@L["Paid today"]</small><strong>$@Model.PaidToday.ToString("0")</strong></div>
-                <div><small>@L["Monthly plan"]</small><strong>$@Model.MonthlyPlan.ToString("0")<span>/month</span></strong></div>
+                <div><small>@L["Monthly plan"]</small><strong>$@Model.MonthlyPlan.ToString("0")<span>@L["/month"]</span></strong></div>
             </div>
         </div>
     </div>
@@ -55,13 +55,13 @@
     </div>
 
     <div class="ins-fc">
-        <h3 class="ins-rv-title">With INDOR @Model.Plan, you get</h3>
+        <h3 class="ins-rv-title">@L.T("With INDOR {0}, you get", Model.Plan)</h3>
         <div class="ins-benefits">
             @foreach (var b in benefits)
             {
                 <div class="ins-benefit">
                     <span class="ins-benefit-ic"><i class="fas @b.Icon"></i></span>
-                    <span class="ins-benefit-tx">@b.Title</span>
+                    <span class="ins-benefit-tx">@UiDisplayLocalization.Localize(L, b.Title)</span>
                 </div>
             }
         </div>

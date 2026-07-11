@@ -69,7 +69,7 @@
         </div>
 
         <div class="prv-net-card">
-            <h3 class="prv-net-card-title">@L["Add photos"]<span class="prv-net-optional">(optional)</span></h3>
+            <h3 class="prv-net-card-title">@L["Add photos"]<span class="prv-net-optional">(@L["optional"])</span></h3>
             <p class="prv-net-card-sub">@L["Photos help pros understand the job"]</p>
             <div class="prv-net-photos" id="photoGrid">
                 @foreach (var photo in Model.Photos)
@@ -93,15 +93,15 @@
             <div class="prv-net-optionchips prv-net-optionchips--3">
                 <label class="prv-net-optionchip">
                     <input type="radio" name="Urgency" value="ASAP" checked="@(Model.Urgency == "ASAP")" />
-                    <span><i class="fas fa-clock"></i> ASAP</span>
+                    <span><i class="fas fa-clock"></i> @L["ASAP"]</span>
                 </label>
                 <label class="prv-net-optionchip">
                     <input type="radio" name="Urgency" value="ThisWeek" checked="@(Model.Urgency == "ThisWeek")" />
-                    <span><i class="fas fa-calendar-day"></i> This Week</span>
+                    <span><i class="fas fa-calendar-day"></i> @L["This Week"]</span>
                 </label>
                 <label class="prv-net-optionchip">
                     <input type="radio" name="Urgency" value="Flexible" checked="@(Model.Urgency == "Flexible")" />
-                    <span><i class="fas fa-clock-rotate-left"></i> Flexible</span>
+                    <span><i class="fas fa-clock-rotate-left"></i> @L["Flexible"]</span>
                 </label>
             </div>
         </div>

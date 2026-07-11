@@ -15,9 +15,9 @@
         <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["Customer Information"]</h1>
-            <small>Step @Model.StepNumber of @Model.TotalSteps</small>
+            <small>@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</small>
         </div>
-        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+        <span class="prv-pro-step-badge">@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</span>
     </header>
 
     @if (TempData["AddCustomerError"] is string addCustomerError)
@@ -36,7 +36,7 @@
                     <label class="prv-pro-customer-type-card @(Model.CustomerType == type ? "is-selected" : "")">
                         <input type="radio" name="CustomerType" value="@type" @(Model.CustomerType == type ? "checked" : "") />
                         <i class="fas @icon"></i>
-                        <span>@type</span>
+                        <span>@L[type]</span>
                     </label>
                 }
             </div>
@@ -65,7 +65,7 @@
                 {
                     <label class="prv-pro-contact-method @(Model.PreferredContactMethod == method ? "is-selected" : "")">
                         <input type="radio" name="PreferredContactMethod" value="@method" @(Model.PreferredContactMethod == method ? "checked" : "") />
-                        <i class="fas @icon"></i> @method
+                        <i class="fas @icon"></i> @L[method]
                     </label>
                 }
             </div>

@@ -21,7 +21,7 @@
         <div class="pa-viewing-strip">
             <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
             <div class="pa-viewing-strip-main">
-                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
                 {
                     <span class="pa-checkout-badge"><i class="fas fa-calendar-day"></i> @Model.PropertyStatusLabel</span>
@@ -47,9 +47,9 @@
             <label><i class="fas fa-clipboard-list pa-q-icon pa-q-icon--green"></i> @L["What kind of visit do you need?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var v in new (string Value, string Label)[] {
-                    ("QuoteWalkthrough", "Quote / walkthrough"),
-                    ("OneTimeService", "One-time service"),
-                    ("OngoingLandscaping", "Ongoing landscaping") })
+                    ("QuoteWalkthrough", L["Quote / walkthrough"]),
+                    ("OneTimeService", L["One-time service"]),
+                    ("OngoingLandscaping", L["Ongoing landscaping"]) })
                 {
                     <label class="pa-chip @(Model.VisitType == v.Value ? "is-selected" : null)">
                         <input type="radio" name="VisitType" value="@v.Value" @(Model.VisitType == v.Value ? "checked" : null) />
@@ -77,10 +77,10 @@
             <label><i class="fas fa-truck pa-q-icon pa-q-icon--green"></i> @L["Do you need haul away?"]</label>
             <div class="pa-lawn-service-row">
                 @foreach (var h in new (string Value, string Label)[] {
-                    ("RemoveDamagedPlants", "Remove damaged plants"),
-                    ("RemoveTreeDebris", "Remove tree debris"),
-                    ("RemoveOldMulch", "Remove old mulch"),
-                    ("NoHaulAway", "No haul away") })
+                    ("RemoveDamagedPlants", L["Remove damaged plants"]),
+                    ("RemoveTreeDebris", L["Remove tree debris"]),
+                    ("RemoveOldMulch", L["Remove old mulch"]),
+                    ("NoHaulAway", L["No haul away"]) })
                 {
                     <label class="pa-lawn-option-card @(Model.HaulAwayType == h.Value ? "is-selected" : null)">
                         <input type="radio" name="HaulAwayType" value="@h.Value" @(Model.HaulAwayType == h.Value ? "checked" : null) />
@@ -95,7 +95,7 @@
             <span class="pa-flow-qnum">4</span>
             <label>@L["Any irrigation or sprinkler lines in the area?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var i in new[] { ("Yes", "Yes"), ("No", "No"), ("NotSure", "Not sure") })
+                @foreach (var i in new[] { ("Yes", L["Yes"]), ("No", L["No"]), ("NotSure", L["Not sure"]) })
                 {
                     <label class="pa-chip @(Model.HasIrrigation == i.Item1 ? "is-selected" : null)">
                         <input type="radio" name="HasIrrigation" value="@i.Item1" @(Model.HasIrrigation == i.Item1 ? "checked" : null) />
@@ -110,9 +110,9 @@
             <label><i class="fas fa-door-open pa-q-icon pa-q-icon--green"></i> @L["Can the crew access the yard?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var a in new (string Value, string Label)[] {
-                    ("UnlockedAccess", "Unlocked access"),
-                    ("GateCode", "Gate code"),
-                    ("MeetOnSite", "Meet on-site") })
+                    ("UnlockedAccess", L["Unlocked access"]),
+                    ("GateCode", L["Gate code"]),
+                    ("MeetOnSite", L["Meet on-site"]) })
                 {
                     <label class="pa-chip @(Model.YardAccess == a.Value ? "is-selected" : null)">
                         <input type="radio" name="YardAccess" value="@a.Value" @(Model.YardAccess == a.Value ? "checked" : null) />
@@ -126,7 +126,7 @@
             <span class="pa-flow-qnum">6</span>
             <label><i class="fas fa-calendar-day pa-q-icon pa-q-icon--green"></i> @L["Preferred date"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var d in new[] { ("Tomorrow", "Tomorrow"), ("ThisWeek", "This week"), ("Flexible", "Flexible") })
+                @foreach (var d in new[] { ("Tomorrow", L["Tomorrow"]), ("ThisWeek", L["This week"]), ("Flexible", L["Flexible"]) })
                 {
                     <label class="pa-chip @(Model.PreferredDate == d.Item1 ? "is-selected" : null)">
                         <input type="radio" name="PreferredDate" value="@d.Item1" @(Model.PreferredDate == d.Item1 ? "checked" : null) />
@@ -140,7 +140,7 @@
             <span class="pa-flow-qnum">7</span>
             <label><i class="fas fa-clock pa-q-icon pa-q-icon--green"></i> @L["Best time window"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var w in new[] { ("Morning", "Morning"), ("Afternoon", "Afternoon"), ("AnyTime", "Any time") })
+                @foreach (var w in new[] { ("Morning", L["Morning"]), ("Afternoon", L["Afternoon"]), ("AnyTime", L["Any time"]) })
                 {
                     <label class="pa-chip @(Model.TimeWindow == w.Item1 ? "is-selected" : null)">
                         <input type="radio" name="TimeWindow" value="@w.Item1" @(Model.TimeWindow == w.Item1 ? "checked" : null) />
@@ -166,7 +166,7 @@
             <span class="pa-flow-qnum">9</span>
             <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> @L["Who should receive updates?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
                 {
                     <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
                         <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />

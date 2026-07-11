@@ -43,8 +43,8 @@
             <img src="/inspeccion2.jpeg" alt="" class="pa-tech-avatar" />
             <div class="pa-tech-meta">
                 <strong>@Model.TechnicianName</strong>
-                <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0") (@Model.TechnicianReviewCount reviews)</span>
-                <small>@Model.TechnicianTitle</small>
+                <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0") (@L.T("{0} reviews", Model.TechnicianReviewCount))</span>
+                <small>@UiDisplayLocalization.Localize(L, Model.TechnicianTitle)</small>
             </div>
             <span class="pa-verified-badge"><i class="fas fa-check"></i> @L["Verified"]</span>
         </div>
@@ -56,7 +56,7 @@
             </div>
             <div>
                 <i class="fas fa-truck"></i>
-                <strong>@Model.VehicleLabel</strong>
+                <strong>@UiDisplayLocalization.Localize(L, Model.VehicleLabel)</strong>
                 <small>@L["Vehicle"]</small>
             </div>
             <div>
@@ -75,7 +75,7 @@
                 {
                     <li>
                         <i class="fas @item.IconClass"></i>
-                        <span>@item.Label</span>
+                        <span>@UiDisplayLocalization.Localize(L, item.Label)</span>
                         <strong>@item.Value</strong>
                     </li>
                 }
@@ -90,8 +90,8 @@
                     <li class="pa-timeline-item pa-timeline-item--@step.State">
                         <span class="pa-timeline-dot"><i class="fas @step.IconClass"></i></span>
                         <div class="pa-timeline-body">
-                            <strong>@step.Label</strong>
-                            <span>@step.StatusLabel</span>
+                            <strong>@UiDisplayLocalization.Localize(L, step.Label)</strong>
+                            <span>@UiDisplayLocalization.Localize(L, step.StatusLabel)</span>
                         </div>
                     </li>
                 }
@@ -110,13 +110,13 @@
 
     <div class="pa-lawn-tip-banner">
         <i class="fas fa-lightbulb"></i>
-        <p><strong>@L["Tip:"]</strong> @Model.Tip</p>
+        <p><strong>@L["Tip:"]</strong> @UiDisplayLocalization.Localize(L, Model.Tip)</p>
     </div>
 
     <a asp-controller="Administrador" asp-action="Tasks" class="ob-btn ob-btn-primary pa-flow-submit">
-        Track request <i class="fas fa-chevron-right"></i>
+        @L["Track request"] <i class="fas fa-chevron-right"></i>
     </a>
     <a asp-controller="Administrador" asp-action="Services" class="ob-btn ob-btn-outline pa-flow-edit">
-        Back to services
+        @L["Back to services"]
     </a>
 </div>

@@ -5,7 +5,7 @@
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
-    var methods = new[] { "Cash", "Check", "Card", "Bank Transfer" };
+    var methods = new[] { L["Cash"].ToString(), L["Check"].ToString(), L["Card"].ToString(), L["Bank Transfer"].ToString() };
 }
 
 <div class="prv-pro-shell prv-pro-shell--record-payment">
@@ -16,13 +16,13 @@
         <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["Record Payment"]</h1>
-            <small>Invoice @Model.InvoiceCode</small>
+            <small>@L.T("Invoice {0}", Model.InvoiceCode)</small>
         </div>
     </header>
 
     <section class="prv-pro-record-payment-summary">
-        <strong>Invoice @Model.InvoiceCode</strong>
-        <small>@Model.Address · @Model.ServiceType</small>
+        <strong>@L.T("Invoice {0}", Model.InvoiceCode)</strong>
+        <small>@Model.Address · @UiDisplayLocalization.Localize(L, Model.ServiceType)</small>
         <div class="prv-pro-record-payment-total">
             <span>@L["Total Amount Due"]</span>
             <strong>@Model.AmountDue.ToString("C2", money)</strong>
@@ -49,8 +49,15 @@
             <div class="prv-pro-payment-methods">
                 @foreach (var method in methods)
                 {
-                    <label class="prv-pro-payment-method @(Model.PaymentMethod == method ? "is-active" : "")">
-                        <input type="radio" name="PaymentMethod" value="@method" @(Model.PaymentMethod == method ? "checked" : "") />
+                    var methodKey = method switch
+                    {
+                        var m when m == L["Cash"].ToString() => "Cash",
+                        var m when m == L["Check"].ToString() => "Check",
+                        var m when m == L["Card"].ToString() => "Card",
+                        _ => "Bank Transfer"
+                    };
+                    <label class="prv-pro-payment-method @(Model.PaymentMethod == methodKey ? "is-active" : "")">
+                        <input type="radio" name="PaymentMethod" value="@methodKey" @(Model.PaymentMethod == methodKey ? "checked" : "") />
                         @method
                     </label>
                 }
@@ -82,7 +89,7 @@
         <footer class="prv-pro-record-payment-footer">
             <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-btn prv-pro-btn--ghost">@L["Cancel"]</a>
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--success-solid">
-                <i class="fas fa-circle-check"></i> Confirm Payment
+                <i class="fas fa-circle-check"></i> @L["Confirm Payment"]
             </button>
         </footer>
     </form>

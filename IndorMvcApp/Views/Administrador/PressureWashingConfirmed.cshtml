@@ -31,7 +31,7 @@
             <img src="/inspeccion2.jpeg" alt="" class="pa-tech-avatar" />
             <div class="pa-tech-meta">
                 <strong>@Model.TechnicianName</strong>
-                <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0") (@Model.TechnicianReviewCount jobs)</span>
+                <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0") (@L.T("{0} jobs", Model.TechnicianReviewCount))</span>
                 <small>@Model.TechnicianSubtitle</small>
             </div>
             <span class="pa-verified-badge"><i class="fas fa-check"></i> @L["Verified"]</span>
@@ -39,7 +39,7 @@
         <div class="pa-tech-stats">
             <div>
                 <i class="fas fa-clock"></i>
-                <strong>@Model.EtaLabel</strong>
+                <strong>@UiDisplayLocalization.Localize(L, Model.EtaLabel)</strong>
                 <small>@L["Arrival window"]</small>
             </div>
             <div>
@@ -71,7 +71,7 @@
                             <i class="fas @step.IconClass"></i>
                         }
                     </span>
-                    <strong>@step.Label</strong>
+                    <strong>@UiDisplayLocalization.Localize(L, step.Label)</strong>
                     <small>@step.StatusLabel</small>
                 </div>
             }
@@ -85,7 +85,7 @@
             {
                 <li>
                     <i class="fas @item.IconClass"></i>
-                    <span>@item.Label</span>
+                    <span>@UiDisplayLocalization.Localize(L, item.Label)</span>
                     <strong>@item.Value</strong>
                 </li>
             }
@@ -104,13 +104,13 @@
 
     <div class="pa-lawn-tip-banner">
         <i class="fas fa-lightbulb"></i>
-        <p><strong>@L["Tip:"]</strong> @Model.Tip</p>
+        <p><strong>@L["Tip:"]</strong> @UiDisplayLocalization.Localize(L, Model.Tip)</p>
     </div>
 
     <a asp-controller="Administrador" asp-action="Tasks" class="ob-btn ob-btn-primary pa-flow-submit">
-        Track request <i class="fas fa-location-dot"></i>
+        @L["Track request"] <i class="fas fa-location-dot"></i>
     </a>
     <a asp-controller="Administrador" asp-action="Services" class="ob-btn ob-btn-outline pa-flow-edit">
-        Back to services
+        @L["Back to services"]
     </a>
 </div>

@@ -20,7 +20,7 @@
     @if (TempData["ProfileSectionError"] is string sectionError)
     {
         <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error">
-            <i class="fas fa-circle-exclamation"></i> @sectionError
+            <i class="fas fa-circle-exclamation"></i> @UiDisplayLocalization.Localize(L, sectionError)
         </div>
     }
 
@@ -36,7 +36,7 @@
                     <label class="prv-pro-edit-profile-service-chip @(option.IsSelected ? "is-selected" : "")" aria-pressed="@(option.IsSelected ? "true" : "false")">
                         <input type="checkbox" name="serviceIds" value="@option.Id" @(option.IsSelected ? "checked" : "") />
                         <i class="fas @option.IconClass"></i>
-                        <span>@option.Label</span>
+                        <span>@UiDisplayLocalization.Localize(L, option.Label)</span>
                         @if (option.IsCategory)
                         {
                             <small>@L["Category"]</small>

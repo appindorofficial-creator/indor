@@ -40,6 +40,9 @@ public class PropertyAdministratorPortalService(
     UserManager<ApplicationUser> userManager,
     IHttpContextAccessor httpContextAccessor) : IPropertyAdministratorPortalService
 {
+    private static string PaL(string english) => PropertyAdministratorDisplayLocalization.L(english);
+    private static string PaT(string key, params object[] args) => PropertyAdministratorDisplayLocalization.T(key, args);
+
     /// <summary>
     /// Previously auto-seeded demo homecare plans, visits and service requests
     /// (with placeholder technicians such as "Marcus R.", "HVAC Team", "Cleaning
@@ -67,10 +70,10 @@ public class PropertyAdministratorPortalService(
                 PropertyName = p.PropertyName,
                 Location = p.Location,
                 PropertyType = p.PropertyType,
-                PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(p.PropertyType),
+                PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(p.PropertyType),
                 ImageUrl = p.ImageUrl,
                 Status = p.Status,
-                OccupancyLabel = p.PropertyType == "ShortTermRental" ? "Occupied now" : null
+                OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(p.PropertyType)
             })
             .ToList();
 
@@ -107,38 +110,38 @@ public class PropertyAdministratorPortalService(
             [
                 new PropertyAdministratorStatCardViewModel
                 {
-                    Label = "Open service requests",
+                    Label = PaL("Open service requests"),
                     Value = openRequests.ToString(),
                     IconClass = "fa-clipboard-list",
                     ToneClass = "tone-blue",
-                    LinkLabel = "View requests",
+                    LinkLabel = PaL("View requests"),
                     LinkUrl = url.Action("Tasks", "Administrador") ?? "#"
                 },
                 new PropertyAdministratorStatCardViewModel
                 {
-                    Label = "Emergency help",
+                    Label = PaL("Emergency help"),
                     Value = "24/7",
                     IconClass = "fa-truck-medical",
                     ToneClass = "tone-red",
-                    LinkLabel = "Call now",
+                    LinkLabel = PaL("Call now"),
                     LinkUrl = url.Action("Services", "Administrador", new { filter = "emergency" }) ?? "#"
                 },
                 new PropertyAdministratorStatCardViewModel
                 {
-                    Label = "Active homecare plans",
+                    Label = PaL("Active homecare plans"),
                     Value = activePlans.ToString(),
                     IconClass = "fa-house-chimney",
                     ToneClass = "tone-green",
-                    LinkLabel = "View plans",
+                    LinkLabel = PaL("View plans"),
                     LinkUrl = url.Action("Services", "Administrador", new { filter = "homecare" }) ?? "#"
                 },
                 new PropertyAdministratorStatCardViewModel
                 {
-                    Label = "Upcoming visits",
+                    Label = PaL("Upcoming visits"),
                     Value = upcomingVisits.ToString(),
                     IconClass = "fa-calendar-days",
                     ToneClass = "tone-purple",
-                    LinkLabel = "View calendar",
+                    LinkLabel = PaL("View calendar"),
                     LinkUrl = url.Action("Calendar", "Administrador") ?? "#"
                 }
             ],
@@ -151,10 +154,10 @@ public class PropertyAdministratorPortalService(
             }).ToList(),
             TodayActivity =
             [
-                new() { Label = "Check-ins", Value = Math.Max(1, admin.PortfolioProperties.Count / 2).ToString(), IconClass = "fa-key" },
-                new() { Label = "Cleanings", Value = admin.HomecarePlans.Count(p => p.PlanName.Contains("Clean", StringComparison.OrdinalIgnoreCase)).ToString(), IconClass = "fa-broom" },
-                new() { Label = "Guest messages", Value = admin.ToolGuestMessaging ? "12" : "0", IconClass = "fa-comment" },
-                new() { Label = "Service requests", Value = openRequests.ToString(), IconClass = "fa-wrench" }
+                new() { Label = PaL("Check-ins"), Value = Math.Max(1, admin.PortfolioProperties.Count / 2).ToString(), IconClass = "fa-key" },
+                new() { Label = PaL("Cleanings"), Value = admin.HomecarePlans.Count(p => p.PlanName.Contains("Clean", StringComparison.OrdinalIgnoreCase)).ToString(), IconClass = "fa-broom" },
+                new() { Label = PaL("Guest messages"), Value = admin.ToolGuestMessaging ? "12" : "0", IconClass = "fa-comment" },
+                new() { Label = PaL("Service requests"), Value = openRequests.ToString(), IconClass = "fa-wrench" }
             ],
             UpcomingVisits = admin.ScheduledVisits
                 .Where(v => v.VisitDate >= DateTime.Today)
@@ -178,12 +181,7 @@ public class PropertyAdministratorPortalService(
     private static PropertyAdministratorRecentRequestViewModel MapRecentRequest(
         IUrlHelper url, IndorPropertyAdminServiceRequest request)
     {
-        var (label, css) = request.Status switch
-        {
-            PropertyAdministratorRequestStatuses.InProgress => ("En route", "inprogress"),
-            PropertyAdministratorRequestStatuses.Emergency => ("Emergency", "emergency"),
-            _ => ("Open", "open")
-        };
+        var (label, css) = PropertyAdministratorDisplayLocalization.MapRecentRequestStatus(request.Status);
 
         var trackUrl = request.Title.Contains("AC", StringComparison.OrdinalIgnoreCase)
             ? url.Action("EmergencyAcConfirmed", "Administrador", new { id = request.Id }) ?? "#"
@@ -209,7 +207,7 @@ public class PropertyAdministratorPortalService(
         return new PropertyAdministratorRecentRequestViewModel
         {
             Id = request.Id,
-            Title = request.Title,
+            Title = PaL(request.Title),
             PropertyName = request.PropertyName,
             StatusLabel = label,
             StatusCss = css,
@@ -227,7 +225,7 @@ public class PropertyAdministratorPortalService(
             var recent = MapRecentRequest(url, request);
             items.Add((request.FechaCreacion, new PropertyAdministratorNotificationItemViewModel
             {
-                Description = $"{request.Title} at {request.PropertyName}",
+                Description = PropertyAdministratorDisplayLocalization.EventAtProperty(PaL(request.Title), request.PropertyName),
                 OccurredLabel = FormatRelativeTime(request.FechaCreacion),
                 CategoryTag = recent.StatusLabel,
                 TagCssClass = $"pa-notify-tag--{recent.StatusCss}",
@@ -243,9 +241,9 @@ public class PropertyAdministratorPortalService(
         {
             items.Add((visit.VisitDate.ToUniversalTime(), new PropertyAdministratorNotificationItemViewModel
             {
-                Description = $"{visit.Title} at {visit.PropertyName}",
-                OccurredLabel = visit.VisitDate.ToString("MMM d, yyyy"),
-                CategoryTag = "Visit",
+                Description = PropertyAdministratorDisplayLocalization.EventAtProperty(PaL(visit.Title), visit.PropertyName),
+                OccurredLabel = visit.VisitDate.ToString("MMM d, yyyy", CultureInfo.CurrentCulture),
+                CategoryTag = PaL("Visit"),
                 TagCssClass = "pa-notify-tag--visit",
                 IconClass = "fa-calendar-days",
                 TargetUrl = url.Action("Calendar", "Administrador")
@@ -265,15 +263,15 @@ public class PropertyAdministratorPortalService(
         var today = DateTime.Today;
         if (local.Date == today)
         {
-            return $"Today, {local:h:mm tt}";
+            return PaT("Today, {0}", local.ToString("h:mm tt", CultureInfo.CurrentCulture));
         }
 
         if (local.Date == today.AddDays(-1))
         {
-            return $"Yesterday, {local:h:mm tt}";
+            return PaT("Yesterday, {0}", local.ToString("h:mm tt", CultureInfo.CurrentCulture));
         }
 
-        return local.ToString("MMM d, yyyy");
+        return local.ToString("MMM d, yyyy", CultureInfo.CurrentCulture);
     }
 
     public async Task<PropertyAdministratorCalendarViewModel> GetCalendarAsync(IUrlHelper url, CancellationToken cancellationToken = default)
@@ -322,8 +320,8 @@ public class PropertyAdministratorPortalService(
             HasNotifications = shell.HasNotifications,
             RecentNotifications = shell.RecentNotifications,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            PortfolioTypeLabel = PropertyAdministratorCatalog.LabelPortfolioType(admin.PortfolioType),
-            ManagementStyleLabel = PropertyAdministratorCatalog.LabelManagementStyle(admin.ManagementStyle),
+            PortfolioTypeLabel = PropertyAdministratorDisplayLocalization.LabelPortfolioType(admin.PortfolioType),
+            ManagementStyleLabel = PropertyAdministratorDisplayLocalization.LabelManagementStyle(admin.ManagementStyle),
             TotalPropertyCount = properties.Count,
             ActivePropertiesCount = properties.Count(p => IsActivePropertyStatus(p.Status)),
             ServiceTasksPendingCount = admin.ServiceRequests.Count(r =>
@@ -374,7 +372,7 @@ public class PropertyAdministratorPortalService(
         var bathrooms = summary?.Bathrooms ?? details?.Bathrooms;
         var propertyTypeLabel = !string.IsNullOrWhiteSpace(details?.PropertyType)
             ? details.PropertyType!
-            : PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType);
+            : PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType);
 
         var activityItems = admin.ServiceRequests
             .Where(r => r.PortfolioPropertyId == property.Id)
@@ -394,14 +392,14 @@ public class PropertyAdministratorPortalService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             ImageUrl = property.ImageUrl ?? "/inspeccion2.jpeg",
-            StatusLabel = MapPropertyStatusLabel(property.Status),
+            StatusLabel = PropertyAdministratorDisplayLocalization.MapPropertyStatusLabel(property.Status),
             ActiveTab = activeTab,
             BackUrl = url.Action("Properties", "Administrador") ?? "#",
             EditUrl = url.Action("Properties", "PropertyAdministratorRegistration") ?? "#",
             PropertyTypeLabel = propertyTypeLabel,
             YearBuiltLabel = yearBuilt ?? "—",
             SquareFootageLabel = livingArea.HasValue
-                ? $"{livingArea.Value:N0} sq ft"
+                ? PropertyAdministratorDisplayLocalization.FormatSquareFootage(livingArea.Value)
                 : "—",
             BedsBathsLabel = bedrooms.HasValue || bathrooms.HasValue
                 ? $"{bedrooms ?? 0} / {bathrooms ?? 0}"
@@ -410,22 +408,22 @@ public class PropertyAdministratorPortalService(
             [
                 new()
                 {
-                    Title = "View documents",
-                    Subtitle = "Deeds, insurance, and more",
+                    Title = PaL("View documents"),
+                    Subtitle = PaL("Deeds, insurance, and more"),
                     IconClass = "fa-file-lines",
                     Url = url.Action("PropertyDetail", "Administrador", new { id = property.Id, tab = "documents" }) ?? "#"
                 },
                 new()
                 {
-                    Title = "Request a service",
-                    Subtitle = "Schedule maintenance or repairs",
+                    Title = PaL("Request a service"),
+                    Subtitle = PaL("Schedule maintenance or repairs"),
                     IconClass = "fa-wrench",
                     Url = url.Action("Services", "Administrador") ?? "#"
                 },
                 new()
                 {
-                    Title = "View property tasks",
-                    Subtitle = "See tasks and upcoming items",
+                    Title = PaL("View property tasks"),
+                    Subtitle = PaL("See tasks and upcoming items"),
                     IconClass = "fa-list-check",
                     Url = url.Action("Tasks", "Administrador") ?? "#"
                 }
@@ -524,10 +522,10 @@ public class PropertyAdministratorPortalService(
             ActiveFilter = activeFilter,
             SummaryStats =
             [
-                new() { Label = "Open requests", Value = admin.ServiceRequests.Count(r => r.Status == PropertyAdministratorRequestStatuses.Open).ToString(), IconClass = "fa-clipboard-list", ToneClass = "tone-blue", LinkLabel = "View all", LinkUrl = url.Action("Tasks", "Administrador") ?? "#" },
-                new() { Label = "Providers en route", Value = admin.ServiceRequests.Count(r => r.Status == PropertyAdministratorRequestStatuses.InProgress).ToString(), IconClass = "fa-truck", ToneClass = "tone-green", LinkLabel = "Track", LinkUrl = url.Action("Tasks", "Administrador", new { filter = "inprogress" }) ?? "#" },
-                new() { Label = "Scheduled today", Value = admin.ServiceRequests.Count(r => r.Status == PropertyAdministratorRequestStatuses.Scheduled && r.ScheduledUtc?.Date == DateTime.UtcNow.Date).ToString(), IconClass = "fa-calendar", ToneClass = "tone-purple", LinkLabel = "Today", LinkUrl = url.Action("Calendar", "Administrador") ?? "#" },
-                new() { Label = "Completed this month", Value = admin.ServiceRequests.Count(r => r.Status == PropertyAdministratorRequestStatuses.Completed).ToString(), IconClass = "fa-circle-check", ToneClass = "tone-green", LinkLabel = "Report", LinkUrl = url.Action("Tasks", "Administrador", new { filter = "completed" }) ?? "#" }
+                new() { Label = PaL("Open requests"), Value = admin.ServiceRequests.Count(r => r.Status == PropertyAdministratorRequestStatuses.Open).ToString(), IconClass = "fa-clipboard-list", ToneClass = "tone-blue", LinkLabel = PaL("View all"), LinkUrl = url.Action("Tasks", "Administrador") ?? "#" },
+                new() { Label = PaL("Providers en route"), Value = admin.ServiceRequests.Count(r => r.Status == PropertyAdministratorRequestStatuses.InProgress).ToString(), IconClass = "fa-truck", ToneClass = "tone-green", LinkLabel = PaL("Track"), LinkUrl = url.Action("Tasks", "Administrador", new { filter = "inprogress" }) ?? "#" },
+                new() { Label = PaL("Scheduled today"), Value = admin.ServiceRequests.Count(r => r.Status == PropertyAdministratorRequestStatuses.Scheduled && r.ScheduledUtc?.Date == DateTime.UtcNow.Date).ToString(), IconClass = "fa-calendar", ToneClass = "tone-purple", LinkLabel = PaL("Today"), LinkUrl = url.Action("Calendar", "Administrador") ?? "#" },
+                new() { Label = PaL("Completed this month"), Value = admin.ServiceRequests.Count(r => r.Status == PropertyAdministratorRequestStatuses.Completed).ToString(), IconClass = "fa-circle-check", ToneClass = "tone-green", LinkLabel = PaL("Report"), LinkUrl = url.Action("Tasks", "Administrador", new { filter = "completed" }) ?? "#" }
             ],
             Requests = list
         };
@@ -551,7 +549,7 @@ public class PropertyAdministratorPortalService(
             : user?.PhoneNumber ?? user?.Telefono ?? "";
         var location = !string.IsNullOrWhiteSpace(admin.PrimaryMarket)
             ? admin.PrimaryMarket!
-            : "United States";
+            : PaL("United States");
 
         return new PropertyAdministratorProfileViewModel
         {
@@ -568,56 +566,56 @@ public class PropertyAdministratorPortalService(
             [
                 new()
                 {
-                    Label = "Personal information",
+                    Label = PaL("Personal information"),
                     IconClass = "fa-user",
                     Url = url.Action("PersonalInformation", "Administrador") ?? "#"
                 },
                 new()
                 {
-                    Label = "Portfolio & properties",
+                    Label = PaL("Portfolio & properties"),
                     IconClass = "fa-building",
                     Url = url.Action("Properties", "Administrador", new { from = "profile" }) ?? "#"
                 },
                 new()
                 {
-                    Label = "Notifications",
+                    Label = PaL("Notifications"),
                     IconClass = "fa-bell",
                     Url = url.Action("NotificationPreferences", "Administrador") ?? "#",
                     BadgeCount = shell.NotificationCount > 0 ? shell.NotificationCount : null
                 },
                 new()
                 {
-                    Label = "Payments & billing",
+                    Label = PaL("Payments & billing"),
                     IconClass = "fa-credit-card",
                     Url = url.Action("PaymentsBilling", "Administrador") ?? "#"
                 },
                 new()
                 {
-                    Label = "Saved providers",
+                    Label = PaL("Saved providers"),
                     IconClass = "fa-user-plus",
                     Url = url.Action("SavedProviders", "Administrador") ?? "#"
                 },
                 new()
                 {
-                    Label = "Homecare plans",
+                    Label = PaL("Homecare plans"),
                     IconClass = "fa-shield-halved",
                     Url = url.Action("Services", "Administrador", new { filter = "homecare" }) ?? "#"
                 },
                 new()
                 {
-                    Label = "Security",
+                    Label = PaL("Security"),
                     IconClass = "fa-lock",
                     Url = url.Action("Security", "Administrador") ?? "#"
                 },
                 new()
                 {
-                    Label = "Help & support",
+                    Label = PaL("Help & support"),
                     IconClass = "fa-circle-question",
                     Url = url.Action("HelpSupport", "Administrador") ?? "#"
                 },
                 new()
                 {
-                    Label = "Sign out",
+                    Label = PaL("Sign out"),
                     IconClass = "fa-right-from-bracket",
                     Url = url.Action("Logout", "Account") ?? "#",
                     IsDanger = true
@@ -644,7 +642,7 @@ public class PropertyAdministratorPortalService(
             : user?.PhoneNumber ?? user?.Telefono ?? "";
         var location = !string.IsNullOrWhiteSpace(admin.PrimaryMarket)
             ? $"{admin.PrimaryMarket} United States"
-            : "United States";
+            : PaL("United States");
 
         return new PropertyAdministratorPersonalInformationViewModel
         {
@@ -783,26 +781,26 @@ public class PropertyAdministratorPortalService(
             [
                 new()
                 {
-                    Title = "Manage properties",
-                    Description = "Add homes, update details, and organize your portfolio.",
+                    Title = PaL("Manage properties"),
+                    Description = PaL("Add homes, update details, and organize your portfolio."),
                     IconClass = "fa-building"
                 },
                 new()
                 {
-                    Title = "Request services",
-                    Description = "Book emergency help, cleaning, maintenance, and more.",
+                    Title = PaL("Request services"),
+                    Description = PaL("Book emergency help, cleaning, maintenance, and more."),
                     IconClass = "fa-wrench"
                 },
                 new()
                 {
-                    Title = "Billing & receipts",
-                    Description = "Review invoices, payment methods, and billing alerts.",
+                    Title = PaL("Billing & receipts"),
+                    Description = PaL("Review invoices, payment methods, and billing alerts."),
                     IconClass = "fa-credit-card"
                 },
                 new()
                 {
-                    Title = "Account & security",
-                    Description = "Update your profile, password, and notification settings.",
+                    Title = PaL("Account & security"),
+                    Description = PaL("Update your profile, password, and notification settings."),
                     IconClass = "fa-lock"
                 }
             ]
@@ -941,19 +939,19 @@ public class PropertyAdministratorPortalService(
 
     private static PropertyAdministratorPortalShellViewModel BuildShell(IndorPropertyAdministrator admin)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
+        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? PaL("there");
         var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
+        var greeting = PropertyAdministratorDisplayLocalization.BuildGreeting(hour, firstName);
+        var portfolioName = PropertyAdministratorDisplayLocalization.BuildPortfolioName(
+            firstName,
+            admin.PortfolioBusinessName);
 
         return new PropertyAdministratorPortalShellViewModel
         {
-            DisplayName = admin.DisplayName ?? "Property Owner",
+            DisplayName = admin.DisplayName ?? PaL("Property Owner"),
             PortfolioName = portfolioName,
             ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
+            Greeting = greeting,
             NotificationCount = admin.ServiceRequests.Count(r =>
                 r.Status is PropertyAdministratorRequestStatuses.Open
                     or PropertyAdministratorRequestStatuses.Emergency
@@ -964,9 +962,9 @@ public class PropertyAdministratorPortalService(
     private static PropertyAdministratorVisitCardViewModel MapVisit(IndorPropertyAdminScheduledVisit visit) =>
         new()
         {
-            Title = visit.Title,
+            Title = PaL(visit.Title),
             PropertyName = visit.PropertyName,
-            DateLabel = $"{visit.VisitDate:MMM d, yyyy} • {visit.TimeWindow}",
+            DateLabel = PaT("{0} • {1}", visit.VisitDate.ToString("MMM d, yyyy", CultureInfo.CurrentCulture), visit.TimeWindow),
             ImageUrl = visit.ImageUrl
         };
 
@@ -976,32 +974,25 @@ public class PropertyAdministratorPortalService(
             PlanName = plan.PlanName,
             Frequency = plan.Frequency,
             HomesCovered = plan.HomesCovered,
-            NextDueLabel = plan.NextDueDate?.ToString("MMM d, yyyy") ?? "—",
+            NextDueLabel = plan.NextDueDate?.ToString("MMM d, yyyy", CultureInfo.CurrentCulture) ?? "—",
             IconClass = plan.IconClass,
             ToneClass = plan.ToneClass
         };
 
     private static PropertyAdministratorServiceRequestItemViewModel MapRequest(IndorPropertyAdminServiceRequest request)
     {
-        var (label, css) = request.Status switch
-        {
-            PropertyAdministratorRequestStatuses.Emergency => ("EMERGENCY", "emergency"),
-            PropertyAdministratorRequestStatuses.Scheduled => ("SCHEDULED", "scheduled"),
-            PropertyAdministratorRequestStatuses.InProgress => ("IN PROGRESS", "inprogress"),
-            PropertyAdministratorRequestStatuses.Completed => ("COMPLETED", "completed"),
-            _ => ("OPEN", "open")
-        };
+        var (label, css) = PropertyAdministratorDisplayLocalization.MapRequestStatus(request.Status);
 
         return new PropertyAdministratorServiceRequestItemViewModel
         {
             Id = request.Id,
-            Title = request.Title,
+            Title = PaL(request.Title),
             PropertyName = request.PropertyName,
             Location = request.Location,
             Status = request.Status,
             StatusLabel = label,
             StatusCss = css,
-            DateLabel = request.ScheduledUtc?.ToLocalTime().ToString("MMM d, yyyy • h:mm tt") ?? "Pending schedule",
+            DateLabel = request.ScheduledUtc?.ToLocalTime().ToString("MMM d, yyyy • h:mm tt", CultureInfo.CurrentCulture) ?? PaL("Pending schedule"),
             TeamLabel = request.TeamLabel,
             EtaLabel = request.EtaLabel,
             ImageUrl = request.ImageUrl,
@@ -1030,18 +1021,16 @@ public class PropertyAdministratorPortalService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyType = property.PropertyType,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
             Status = property.Status,
-            StatusLabel = MapPropertyStatusLabel(property.Status),
+            StatusLabel = PropertyAdministratorDisplayLocalization.MapPropertyStatusLabel(property.Status),
             DetailUrl = url.Action("PropertyDetail", "Administrador", new { id = property.Id }) ?? "#",
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
 
     private static string MapPropertyStatusLabel(string? status) =>
-        string.IsNullOrWhiteSpace(status) || status is "Added" or "Active"
-            ? "Active"
-            : status;
+        PropertyAdministratorDisplayLocalization.MapPropertyStatusLabel(status);
 
     private static bool IsActivePropertyStatus(string? status) =>
         string.IsNullOrWhiteSpace(status) || status is "Added" or "Active";
@@ -1064,13 +1053,13 @@ public class PropertyAdministratorPortalService(
             [
                 new()
                 {
-                    Label = "Property type",
-                    Value = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+                    Label = PaL("Property type"),
+                    Value = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
                     IconClass = "fa-house"
                 },
                 new()
                 {
-                    Label = "Address",
+                    Label = PaL("Address"),
                     Value = property.Location,
                     IconClass = "fa-location-dot"
                 }
@@ -1081,37 +1070,37 @@ public class PropertyAdministratorPortalService(
         {
             new()
             {
-                Label = "Parcel ID",
+                Label = PaL("Parcel ID"),
                 Value = details.ParcelId ?? "—",
                 IconClass = "fa-hashtag"
             },
             new()
             {
-                Label = "County",
+                Label = PaL("County"),
                 Value = details.County ?? "—",
                 IconClass = "fa-map"
             },
             new()
             {
-                Label = "Lot size",
+                Label = PaL("Lot size"),
                 Value = details.LotSizeSqFt.HasValue
-                    ? $"{details.LotSizeSqFt.Value:N0} sq ft"
+                    ? PropertyAdministratorDisplayLocalization.FormatLotSizeSqFt(details.LotSizeSqFt.Value)
                     : details.LotSizeAcres.HasValue
-                        ? $"{details.LotSizeAcres.Value:N2} acres"
+                        ? PropertyAdministratorDisplayLocalization.FormatLotSizeAcres(details.LotSizeAcres.Value)
                         : "—",
                 IconClass = "fa-ruler-combined"
             },
             new()
             {
-                Label = "Last sale",
+                Label = PaL("Last sale"),
                 Value = details.LastSalePrice.HasValue || details.LastSaleDate.HasValue
-                    ? $"{MyHomeDisplayService.FormatCurrency(details.LastSalePrice)} • {(details.LastSaleDate.HasValue ? details.LastSaleDate.Value.ToString("MMM d, yyyy") : "—")}"
+                    ? PaT("{0} • {1}", MyHomeDisplayService.FormatCurrency(details.LastSalePrice), details.LastSaleDate.HasValue ? details.LastSaleDate.Value.ToString("MMM d, yyyy", CultureInfo.CurrentCulture) : "—")
                     : "—",
                 IconClass = "fa-hand-holding-dollar"
             },
             new()
             {
-                Label = "Estimated value",
+                Label = PaL("Estimated value"),
                 Value = MyHomeDisplayService.FormatCurrency(details.EstimatedValue),
                 IconClass = "fa-chart-line"
             }
@@ -1145,19 +1134,13 @@ public class PropertyAdministratorPortalService(
     private static PropertyAdministratorBillingInvoiceViewModel MapBillingInvoice(IndorPropertyAdminServiceRequest request)
     {
         var amount = 89m + request.Id % 5 * 35m;
-        var (statusLabel, statusCss) = request.Status switch
-        {
-            PropertyAdministratorRequestStatuses.Completed => ("Paid", "paid"),
-            PropertyAdministratorRequestStatuses.Scheduled => ("Upcoming", "scheduled"),
-            PropertyAdministratorRequestStatuses.InProgress => ("Pending", "pending"),
-            _ => ("Open", "open")
-        };
+        var (statusLabel, statusCss) = PropertyAdministratorDisplayLocalization.MapBillingStatus(request.Status);
 
         return new PropertyAdministratorBillingInvoiceViewModel
         {
             Title = request.Title,
             PropertyName = request.PropertyName,
-            DateLabel = request.ScheduledUtc?.ToLocalTime().ToString("MMM d, yyyy") ?? request.FechaCreacion.ToLocalTime().ToString("MMM d, yyyy"),
+            DateLabel = request.ScheduledUtc?.ToLocalTime().ToString("MMM d, yyyy", CultureInfo.CurrentCulture) ?? request.FechaCreacion.ToLocalTime().ToString("MMM d, yyyy", CultureInfo.CurrentCulture),
             AmountLabel = FormatCurrency(amount),
             StatusLabel = statusLabel,
             StatusCss = statusCss
@@ -1168,20 +1151,20 @@ public class PropertyAdministratorPortalService(
     [
         new()
         {
-            Title = "Turnover cleaning",
-            PropertyName = "Portfolio property",
-            DateLabel = DateTime.Today.AddDays(-3).ToString("MMM d, yyyy"),
+            Title = PaL("Turnover cleaning"),
+            PropertyName = PaL("Portfolio property"),
+            DateLabel = DateTime.Today.AddDays(-3).ToString("MMM d, yyyy", CultureInfo.CurrentCulture),
             AmountLabel = FormatCurrency(149m),
-            StatusLabel = "Paid",
+            StatusLabel = PaL("Paid"),
             StatusCss = "paid"
         },
         new()
         {
-            Title = "HVAC filter change",
-            PropertyName = "Portfolio property",
-            DateLabel = DateTime.Today.AddDays(5).ToString("MMM d, yyyy"),
+            Title = PaL("HVAC filter change"),
+            PropertyName = PaL("Portfolio property"),
+            DateLabel = DateTime.Today.AddDays(5).ToString("MMM d, yyyy", CultureInfo.CurrentCulture),
             AmountLabel = FormatCurrency(89m),
-            StatusLabel = "Upcoming",
+            StatusLabel = PaL("Upcoming"),
             StatusCss = "scheduled"
         }
     ];

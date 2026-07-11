@@ -17,5 +17,5 @@
     <a asp-controller="Administrador" asp-action="Index" class="pa-portal-logo pa-portal-logo--center" aria-label="@L["INDOR home"]">
         <span class="pa-portal-logo-text">@L["ÎNDÔR"]</span>
     </a>
-    <span class="pa-flow-step-pill pa-flow-step-pill--sm">Step @flowStep of @totalSteps</span>
+    <span class="pa-flow-step-pill pa-flow-step-pill--sm">@L.T("Step {0} of {1}", flowStep, totalSteps)</span>
 </header>

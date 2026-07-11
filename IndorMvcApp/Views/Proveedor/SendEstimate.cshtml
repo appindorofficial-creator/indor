@@ -5,15 +5,15 @@
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
-    var deliveryOptions = new[] {
-        ("indor", "Send in INDOR", "Send securely inside the INDOR app."),
-        ("sms", "Text message", "Send a link via SMS to the customer."),
-        ("email", "Email", "Send the estimate via email.")
+    var deliveryOptions = new (string Id, string Label, string Hint)[] {
+        ("indor", L["Send in INDOR"].ToString(), L["Send securely inside the INDOR app."].ToString()),
+        ("sms", L["Text message"].ToString(), L["Send a link via SMS to the customer."].ToString()),
+        ("email", L["Email"].ToString(), L["Send the estimate via email."].ToString())
     };
     var postSendOptions = new (string Id, string Label, string Hint, bool IsDefault)[] {
-        ("job_only", "Create job only", "Create the job without sending for approval.", false),
-        ("wait_approval", "Send estimate and wait for approval", "Customer reviews and approves before the job is created.", true),
-        ("request_deposit", "Request deposit", "Request a deposit before starting the job.", false)
+        ("job_only", L["Create job only"].ToString(), L["Create the job without sending for approval."].ToString(), false),
+        ("wait_approval", L["Send estimate and wait for approval"].ToString(), L["Customer reviews and approves before the job is created."].ToString(), true),
+        ("request_deposit", L["Request deposit"].ToString(), L["Request a deposit before starting the job."].ToString(), false)
     };
 }
 
@@ -23,7 +23,7 @@
     <header class="prv-pro-wizard-head">
         <a asp-controller="Proveedor" asp-action="ReviewEstimate" asp-route-id="@Model.EstimateId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Step @Model.StepNumber of @Model.TotalSteps · Send Estimate</h1>
+            <h1>@L.T("Step {0} of {1} · Send Estimate", Model.StepNumber, Model.TotalSteps)</h1>
             <p>@L["Choose how to deliver the estimate and what happens after you send."]</p>
         </div>
     </header>
@@ -35,10 +35,10 @@
             <i class="fas @Model.ServiceIcon"></i>
         </span>
         <div>
-            <strong>@Model.Title</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.Title)</strong>
             <small>@Model.CustomerName</small>
             <small>@Model.Address</small>
-            <small>@Model.DateLabel</small>
+            <small>@UiDisplayLocalization.Localize(L, Model.DateLabel)</small>
             <div class="prv-pro-est-send-total">
                 <span>@L["Total estimate"]</span>
                 <strong>@Model.TotalAmount.ToString("C2", money)</strong>
@@ -75,15 +75,15 @@
             <ul class="prv-pro-est-send-attachments">
                 @if (Model.HasEstimatePdf)
                 {
-                    <li><i class="fas fa-circle-check"></i> Estimate PDF</li>
+                    <li><i class="fas fa-circle-check"></i> @L["Estimate PDF"]</li>
                 }
                 @if (Model.HasAiSummary)
                 {
-                    <li><i class="fas fa-circle-check"></i> AI summary</li>
+                    <li><i class="fas fa-circle-check"></i> @L["AI summary"]</li>
                 }
                 @if (Model.HasVoiceTranscript)
                 {
-                    <li><i class="fas fa-circle-check"></i> Voice transcript</li>
+                    <li><i class="fas fa-circle-check"></i> @L["Voice transcript"]</li>
                 }
             </ul>
         </section>
@@ -95,7 +95,7 @@
                 <label class="prv-pro-est-radio">
                     <input type="radio" name="PostSendAction" value="@option.Id" checked="@(Model.PostSendAction == option.Id || (option.IsDefault && Model.PostSendAction == "wait_approval"))" />
                     <span>
-                        <strong>@option.Label @(option.IsDefault ? "(Recommended)" : "")</strong>
+                        <strong>@option.Label @(option.IsDefault ? L["(Recommended)"] : "")</strong>
                         <small>@option.Hint</small>
                     </span>
                 </label>
@@ -104,10 +104,10 @@
 
         <footer class="prv-pro-est-review-actions">
             <button type="submit" name="SaveAsDraft" value="true" class="prv-pro-btn prv-pro-btn--ghost">
-                <i class="fas fa-floppy-disk"></i> Save draft
+                <i class="fas fa-floppy-disk"></i> @L["Save draft"]
             </button>
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary">
-                <i class="fas fa-paper-plane"></i> Send estimate
+                <i class="fas fa-paper-plane"></i> @L["Send estimate"]
             </button>
         </footer>
     </form>

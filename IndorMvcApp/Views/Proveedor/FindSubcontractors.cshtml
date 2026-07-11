@@ -87,8 +87,8 @@
     </div>
 
     <div class="prv-net-count">
-        <span>@Model.ResultCount subcontractor@(Model.ResultCount == 1 ? "" : "s") found@(Model.HasLocation ? " near you" : "")</span>
-        <span>@L["Sort by:"]<strong>@Model.SortLabel</strong></span>
+        <span>@L.T("{0} subcontractor(s) found", Model.ResultCount)@(Model.HasLocation ? $" {L["near you"]}" : "")</span>
+        <span>@L["Sort by:"]<strong>@UiDisplayLocalization.Localize(L, Model.SortLabel)</strong></span>
     </div>
 
     @if (Model.ActiveView == "map")
@@ -117,17 +117,17 @@
 
                 function showCurrentLocation() {
                     if (!navigator.geolocation) {
-                        note.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Location not available on this device.';
+                        note.innerHTML = '<i class="fas fa-triangle-exclamation"></i> @L["Location not available on this device."]';
                         return;
                     }
                     navigator.geolocation.getCurrentPosition(function (pos) {
                         var lat = pos.coords.latitude, lng = pos.coords.longitude;
                         map.setView([lat, lng], 13);
                         L.circle([lat, lng], { radius: 400, color: '#2E8BFF', fillColor: '#2E8BFF', fillOpacity: .15, weight: 1 }).addTo(map);
-                        L.marker([lat, lng]).addTo(map).bindPopup('You are here').openPopup();
-                        note.innerHTML = '<i class="fas fa-location-dot"></i> Showing your current location.';
+                        L.marker([lat, lng]).addTo(map).bindPopup('@L["You are here"]').openPopup();
+                        note.innerHTML = '<i class="fas fa-location-dot"></i> @L["Showing your current location."]';
                     }, function () {
-                        note.innerHTML = '<i class="fas fa-triangle-exclamation"></i> Enable location access to see your position on the map.';
+                        note.innerHTML = '<i class="fas fa-triangle-exclamation"></i> @L["Enable location access to see your position on the map."]';
                     }, { enableHighAccuracy: true, timeout: 8000, maximumAge: 60000 });
                 }
 

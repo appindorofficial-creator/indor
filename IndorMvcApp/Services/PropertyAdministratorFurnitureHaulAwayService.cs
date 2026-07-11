@@ -82,7 +82,7 @@ public class PropertyAdministratorFurnitureHaulAwayService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             PropertyId = property.Id,
             ViewingProperty = MapProperty(property),
-            PropertyStatusLabel = step1.GuestsInside == "Yes" ? "Guests on-site" : null,
+            PropertyStatusLabel = step1.GuestsInside == "Yes" ? PropertyAdministratorDisplayLocalization.L("Guests on-site") : null,
             FurnitureItems = string.Join(",", step1.FurnitureItemsList),
             ItemCount = step1.ItemCount,
             PickupSize = step1.PickupSize,
@@ -113,21 +113,21 @@ public class PropertyAdministratorFurnitureHaulAwayService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Furniture Haul Away at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Furniture Haul Away", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.InProgress,
             Category = "Furniture",
             ScheduledUtc = visitDate,
             IsEmergency = input.PickupWhen == "Asap",
-            EtaLabel = "38 min",
-            TeamLabel = "Luis R. • Furniture Haul Away",
+            EtaLabel = PropertyAdministratorDisplayLocalization.L("38 min"),
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Luis R. • Furniture Haul Away"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Luis R.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Verified",
-            VehicleLabel = "Box truck",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("Box truck"),
             TimelineStep = 3
         };
 
@@ -211,11 +211,11 @@ public class PropertyAdministratorFurnitureHaulAwayService(
     private static IReadOnlyList<PropertyAdministratorFurnitureHaulAwaySummaryItemViewModel> BuildSummary(
         PropertyAdministratorFurnitureHaulAwaySubmitInput input) =>
     [
-        new() { Label = "Items", Value = LabelItems(input), IconClass = "fa-couch" },
-        new() { Label = "Load size", Value = LabelPickupSize(input.PickupSize), IconClass = "fa-box" },
-        new() { Label = "Access", Value = LabelAccess(input), IconClass = "fa-key" },
-        new() { Label = "Updates", Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" },
-        new() { Label = "Pickup time", Value = LabelPickupWhen(input.PickupWhen), IconClass = "fa-clock" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Items"), Value = LabelItems(input), IconClass = "fa-couch" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Load size"), Value = LabelPickupSize(input.PickupSize), IconClass = "fa-box" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelAccess(input), IconClass = "fa-key" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Pickup time"), Value = LabelPickupWhen(input.PickupWhen), IconClass = "fa-clock" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorFurnitureHaulAwayTimelineItemViewModel> BuildTimeline(
@@ -227,11 +227,11 @@ public class PropertyAdministratorFurnitureHaulAwayService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = submitted.ToString("h:mm tt"), IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Crew assigned", StatusLabel = assigned.ToString("h:mm tt"), IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "En route", StatusLabel = enRoute.ToString("h:mm tt"), IconClass = "fa-truck", State = "active" },
-            new() { Label = "Arrived", StatusLabel = "—", IconClass = "fa-location-dot", State = "pending" },
-            new() { Label = "Pickup in progress", StatusLabel = "—", IconClass = "fa-dolly", State = "pending" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = submitted.ToString("h:mm tt"), IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Crew assigned"), StatusLabel = assigned.ToString("h:mm tt"), IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("En route"), StatusLabel = enRoute.ToString("h:mm tt"), IconClass = "fa-truck", State = "active" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Arrived"), StatusLabel = PropertyAdministratorDisplayLocalization.L("—"), IconClass = "fa-location-dot", State = "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Pickup in progress"), StatusLabel = PropertyAdministratorDisplayLocalization.L("—"), IconClass = "fa-dolly", State = "pending" }
         ];
     }
 
@@ -239,23 +239,23 @@ public class PropertyAdministratorFurnitureHaulAwayService(
     {
         var labels = input.FurnitureItemsList.Select(i => i switch
         {
-            "Mattress" => "mattress",
-            "BedFrame" => "bed frame",
-            "Dresser" => "dresser",
-            "DiningTable" => "dining table",
-            "Refrigerator" => "refrigerator",
-            "WasherDryer" => "washer / dryer",
-            "TvElectronics" => "TV / electronics",
-            "Other" => "other items",
-            _ => "couch"
+            "Mattress" => PropertyAdministratorDisplayLocalization.L("mattress"),
+            "BedFrame" => PropertyAdministratorDisplayLocalization.L("bed frame"),
+            "Dresser" => PropertyAdministratorDisplayLocalization.L("dresser"),
+            "DiningTable" => PropertyAdministratorDisplayLocalization.L("dining table"),
+            "Refrigerator" => PropertyAdministratorDisplayLocalization.L("refrigerator"),
+            "WasherDryer" => PropertyAdministratorDisplayLocalization.L("washer / dryer"),
+            "TvElectronics" => PropertyAdministratorDisplayLocalization.L("TV / electronics"),
+            "Other" => PropertyAdministratorDisplayLocalization.L("other items"),
+            _ => PropertyAdministratorDisplayLocalization.L("couch")
         }).Distinct().ToList();
 
         var countSuffix = input.ItemCount switch
         {
             "One" => "",
-            "FourSix" => " (4–6 items)",
-            "SevenPlus" => " (7+ items)",
-            _ => " + 2 chairs"
+            "FourSix" => PropertyAdministratorDisplayLocalization.L(" (4–6 items)"),
+            "SevenPlus" => PropertyAdministratorDisplayLocalization.L(" (7+ items)"),
+            _ => PropertyAdministratorDisplayLocalization.L(" + 2 chairs")
         };
 
         if (labels.Count == 0)
@@ -275,18 +275,18 @@ public class PropertyAdministratorFurnitureHaulAwayService(
 
     private static string LabelPickupSize(string value) => value switch
     {
-        "SmallPickup" => "Small pickup",
-        "FullLoad" => "Full load",
-        _ => "Half load"
+        "SmallPickup" => PropertyAdministratorDisplayLocalization.L("Small pickup"),
+        "FullLoad" => PropertyAdministratorDisplayLocalization.L("Full load"),
+        _ => PropertyAdministratorDisplayLocalization.L("Half load")
     };
 
     private static string LabelAccess(PropertyAdministratorFurnitureHaulAwaySubmitInput input)
     {
         var entry = input.EntryAccess switch
         {
-            "HostMeet" => "Host will meet",
-            "CurbsideOnly" => "Curbside pickup only",
-            _ => "Smart lock"
+            "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+            "CurbsideOnly" => PropertyAdministratorDisplayLocalization.L("Curbside pickup only"),
+            _ => PropertyAdministratorDisplayLocalization.L("Smart lock")
         };
 
         return $"{entry} / inside pickup";
@@ -296,8 +296,8 @@ public class PropertyAdministratorFurnitureHaulAwayService(
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 
@@ -312,16 +312,16 @@ public class PropertyAdministratorFurnitureHaulAwayService(
 
     private static string LabelPickupWhen(string value) => value switch
     {
-        "Asap" => "ASAP",
-        "ScheduledTime" => "Scheduled time",
-        _ => "Today after checkout"
+        "Asap" => PropertyAdministratorDisplayLocalization.L("ASAP"),
+        "ScheduledTime" => PropertyAdministratorDisplayLocalization.L("Scheduled time"),
+        _ => PropertyAdministratorDisplayLocalization.L("Today after checkout")
     };
 
     private static string LabelTimeWindow(string value) => value switch
     {
-        "Morning" => "8 AM – 12 PM",
-        "Evening" => "5 PM – 9 PM",
-        _ => "12 PM – 5 PM"
+        "Morning" => PropertyAdministratorDisplayLocalization.L("8 AM – 12 PM"),
+        "Evening" => PropertyAdministratorDisplayLocalization.L("5 PM – 9 PM"),
+        _ => PropertyAdministratorDisplayLocalization.L("12 PM – 5 PM")
     };
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(
@@ -346,24 +346,7 @@ public class PropertyAdministratorFurnitureHaulAwayService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -400,9 +383,9 @@ public class PropertyAdministratorFurnitureHaulAwayService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

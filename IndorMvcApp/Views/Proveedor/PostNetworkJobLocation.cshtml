@@ -14,7 +14,7 @@
     <header class="prv-net-hero prv-net-hero--wizard">
         <div class="prv-net-hero-top">
             <a asp-controller="Proveedor" asp-action="PostNetworkJob" asp-route-id="@Model.DraftId" class="prv-net-back"><i class="fas fa-chevron-left"></i></a>
-            <button type="submit" name="Mode" value="draft" form="locForm" class="prv-net-draft-btn"><i class="fas fa-file-lines"></i> Save Draft</button>
+            <button type="submit" name="Mode" value="draft" form="locForm" class="prv-net-draft-btn"><i class="fas fa-file-lines"></i> @L["Save Draft"]</button>
         </div>
         <div class="prv-net-hero-title">
             <div>
@@ -58,7 +58,7 @@
                 {
                     <label class="prv-net-optionchip">
                         <input type="radio" name="PropertyType" value="@id" checked="@(Model.PropertyType == id)" />
-                        <span><i class="fas @icon"></i> @id</span>
+                        <span><i class="fas @icon"></i> @L[id]</span>
                     </label>
                 }
             </div>
@@ -69,7 +69,7 @@
                 {
                     <label class="prv-net-optionchip">
                         <input type="radio" name="WhoMeets" value="@id" checked="@(Model.WhoMeets == id)" />
-                        <span><i class="fas @icon"></i> @(id == "PropertyManager" ? "Property Manager" : id)</span>
+                        <span><i class="fas @icon"></i> @(id == "PropertyManager" ? L["Property Manager"].ToString() : L[id].ToString())</span>
                     </label>
                 }
             </div>
@@ -82,7 +82,7 @@
                 {
                     <label class="prv-net-optionchip">
                         <input type="radio" name="BudgetRange" value="@budget" checked="@(Model.BudgetRange == budget)" />
-                        <span>@budget</span>
+                        <span>@UiDisplayLocalization.Localize(L, budget)</span>
                     </label>
                 }
             </div>
@@ -111,7 +111,7 @@
         </div>
 
         <div class="prv-net-card">
-            <h3 class="prv-net-card-title">@L["Access Notes"]<span class="prv-net-optional">(Optional)</span></h3>
+            <h3 class="prv-net-card-title">@L["Access Notes"]<span class="prv-net-optional">@L["(Optional)"]</span></h3>
             <textarea id="AccessNotes" name="AccessNotes" maxlength="200" class="prv-net-textarea"
                       placeholder="@L["Add any details about access, gate codes, parking, etc."]">@Model.AccessNotes</textarea>
             <div class="prv-net-field-hint"><span id="notesCount">0</span>/200</div>

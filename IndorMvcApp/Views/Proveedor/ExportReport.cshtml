@@ -52,7 +52,7 @@
                             <span class="exr-job-body">
                                 <strong>@job.Title</strong>
                                 <small>@job.Address</small>
-                                <span class="exr-pill exr-pill--@job.StatusClass">@job.StatusLabel</span>
+                                <span class="exr-pill exr-pill--@job.StatusClass">@UiDisplayLocalization.Localize(L, job.StatusLabel)</span>
                             </span>
                         </label>
                     }

@@ -14,9 +14,9 @@
         <a asp-controller="Proveedor" asp-action="AddCustomer" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["Property Info"]</h1>
-            <small>Step @Model.StepNumber of @Model.TotalSteps</small>
+            <small>@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</small>
         </div>
-        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+        <span class="prv-pro-step-badge">@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</span>
     </header>
 
     <form asp-controller="Proveedor" asp-action="AddCustomerProperty" method="post" class="prv-pro-add-customer-form">
@@ -53,14 +53,14 @@
                     <label class="prv-pro-customer-type-card @(Model.PropertyType == type ? "is-selected" : "")">
                         <input type="radio" name="PropertyType" value="@type" @(Model.PropertyType == type ? "checked" : "") />
                         <i class="fas @icon"></i>
-                        <span>@type</span>
+                        <span>@L[type]</span>
                     </label>
                 }
             </div>
         </section>
 
         <div class="prv-pro-form-row-2">
-            <label class="prv-pro-form-label">Beds (optional)
+            <label class="prv-pro-form-label">@L["Beds (optional)"]
                 <select name="Bedrooms">
                     <option value="">@L["Select beds"]</option>
                     @foreach (var beds in Model.BedroomOptions)
@@ -69,7 +69,7 @@
                     }
                 </select>
             </label>
-            <label class="prv-pro-form-label">Baths (optional)
+            <label class="prv-pro-form-label">@L["Baths (optional)"]
                 <select name="Bathrooms">
                     <option value="">@L["Select baths"]</option>
                     @foreach (var baths in Model.BathroomOptions)

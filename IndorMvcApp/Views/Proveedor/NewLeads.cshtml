@@ -19,7 +19,7 @@
         <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["New Leads"]</h1>
-            <small>@Model.NewCount new · @Model.HighUrgencyCount high urgency</small>
+            <small>@L.T("{0} new · {1} high urgency", Model.NewCount, Model.HighUrgencyCount)</small>
         </div>
         <button type="button" class="prv-pro-lead-share" aria-label="@L["Notifications"]"><i class="fas fa-bell"></i></button>
     </header>
@@ -44,7 +44,7 @@
                asp-route-filter="@id"
                asp-route-q="@Model.SearchQuery"
                class="@(Model.ActiveFilter == id ? "is-active" : "")">
-                @label (@count)
+                @UiDisplayLocalization.Localize(L, label) (@count)
             </a>
         }
     </nav>
@@ -65,19 +65,19 @@
                     <div class="prv-pro-new-lead-body">
                         <div class="prv-pro-new-lead-top">
                             <span class="prv-pro-pill prv-pro-pill--urgency-@lead.UrgencyClass">
-                                <i class="fas @lead.UrgencyIcon"></i> @lead.Urgency
+                                <i class="fas @lead.UrgencyIcon"></i> @UiDisplayLocalization.Localize(L, lead.Urgency)
                             </span>
                             @if (!string.IsNullOrWhiteSpace(lead.ReceivedLabel))
                             {
-                                <small class="prv-pro-new-lead-time">@lead.ReceivedLabel</small>
+                                <small class="prv-pro-new-lead-time">@UiDisplayLocalization.Localize(L, lead.ReceivedLabel)</small>
                             }
                         </div>
                         <strong>@lead.Address</strong>
                         <div class="prv-pro-new-lead-tags">
-                            <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @lead.ServiceType</span>
+                            <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @UiDisplayLocalization.Localize(L, lead.ServiceType)</span>
                             @if (!string.IsNullOrWhiteSpace(lead.FindingSummary))
                             {
-                                <span class="prv-pro-pill prv-pro-pill--realtor"><i class="fas fa-list-check"></i> @lead.FindingSummary</span>
+                                <span class="prv-pro-pill prv-pro-pill--realtor"><i class="fas fa-list-check"></i> @UiDisplayLocalization.Localize(L, lead.FindingSummary)</span>
                             }
                         </div>
                         <div class="prv-pro-new-lead-actions">

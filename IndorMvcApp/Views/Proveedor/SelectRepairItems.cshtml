@@ -13,7 +13,7 @@
         <a asp-controller="Proveedor" asp-action="InspectionFindings" asp-route-id="@Model.LeadId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["Select Repair Items"]</h1>
-            <small>@Model.Address · @Model.ServiceType</small>
+            <small>@Model.Address · @UiDisplayLocalization.Localize(L, Model.ServiceType)</small>
         </div>
     </header>
 
@@ -28,7 +28,7 @@
                     <input type="checkbox" checked disabled />
                     <span class="prv-pro-repair-check-ui"></span>
                     <div>
-                        <strong>@item.Title</strong>
+                        <strong>@UiDisplayLocalization.Localize(L, item.Title)</strong>
                         @if (!string.IsNullOrWhiteSpace(item.Description))
                         {
                             <small>@item.Description</small>
@@ -39,12 +39,14 @@
         </section>
 
         <p class="prv-pro-lead-hint">
-            <a asp-controller="Proveedor" asp-action="InspectionFindings" asp-route-id="@Model.LeadId">+ Add another repair item</a>
+            <a asp-controller="Proveedor" asp-action="InspectionFindings" asp-route-id="@Model.LeadId">@L["+ Add another repair item"]</a>
         </p>
 
         <footer class="prv-pro-workflow-footer">
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--full">
-                Create Quick Estimate (@Model.SelectedItems.Count item@(Model.SelectedItems.Count == 1 ? "" : "s"))
+                @(Model.SelectedItems.Count == 1
+                    ? L.T("Create Quick Estimate ({0} item)", Model.SelectedItems.Count)
+                    : L.T("Create Quick Estimate ({0} items)", Model.SelectedItems.Count))
             </button>
         </footer>
     </form>

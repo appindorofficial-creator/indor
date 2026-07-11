@@ -4,12 +4,12 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.NavActive = "services";
     var filters = new[] {
-        ("all", "All services", "fa-grid-2"),
-        ("emergency", "Emergency", "fa-truck-medical"),
-        ("homecare", "Homecare", "fa-house-chimney"),
-        ("cleaning", "Cleaning", "fa-broom"),
-        ("outdoor", "Outdoor", "fa-seedling"),
-        ("moving", "Moving", "fa-truck")
+        ("all", L["All services"], "fa-grid-2"),
+        ("emergency", L["Emergency"], "fa-truck-medical"),
+        ("homecare", L["Homecare"], "fa-house-chimney"),
+        ("cleaning", L["Cleaning"], "fa-broom"),
+        ("outdoor", L["Outdoor"], "fa-seedling"),
+        ("moving", L["Moving"], "fa-truck")
     };
 }
 
@@ -46,7 +46,7 @@
     {
         <section class="pa-section">
             <div class="pa-section-head">
-                <h2>@category.CategoryTitle</h2>
+                <h2>@UiDisplayLocalization.Localize(L, category.CategoryTitle)</h2>
                 <a asp-controller="Administrador" asp-action="Services" asp-route-filter="@category.CategoryKey">@L["View all"] <i class="fas fa-chevron-right"></i></a>
             </div>
             <div class="pa-service-grid">
@@ -54,7 +54,7 @@
                 {
                     <a href="@item.Url" class="pa-service-grid-item">
                         <span class="pa-service-hub-icon @item.ToneClass"><i class="fas @item.IconClass"></i></span>
-                        <span>@item.ServiceName</span>
+                        <span>@UiDisplayLocalization.Localize(L, item.ServiceName)</span>
                     </a>
                 }
             </div>
@@ -73,10 +73,10 @@
                 {
                     <article class="pa-plan-card">
                         <span class="pa-plan-icon @plan.ToneClass"><i class="fas @plan.IconClass"></i></span>
-                        <strong>@plan.PlanName</strong>
-                        <small>@plan.Frequency</small>
-                        <span class="pa-plan-next">Next: @plan.NextDueLabel</span>
-                        <span class="pa-plan-status">@plan.StatusLabel</span>
+                        <strong>@UiDisplayLocalization.Localize(L, plan.PlanName)</strong>
+                        <small>@UiDisplayLocalization.Localize(L, plan.Frequency)</small>
+                        <span class="pa-plan-next">@L.T("Next: {0}", plan.NextDueLabel)</span>
+                        <span class="pa-plan-status">@UiDisplayLocalization.Localize(L, plan.StatusLabel)</span>
                     </article>
                 }
             </div>

@@ -26,17 +26,17 @@
                 <div class="prv-req-title prv-req-title--lg">@Model.Title</div>
                 @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
                 {
-                    <div class="prv-req-meta"><i class="fas fa-screwdriver-wrench"></i> @Model.TradeLabel</div>
+                    <div class="prv-req-meta"><i class="fas fa-screwdriver-wrench"></i> @UiDisplayLocalization.Localize(L, Model.TradeLabel)</div>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
                 {
-                    <div class="prv-req-meta"><i class="fas fa-location-dot"></i> @Model.LocationLabel</div>
+                    <div class="prv-req-meta"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.LocationLabel)</div>
                 }
             </div>
             <div class="prv-req-budget">
                 <span>@L["Budget"]</span>
-                <strong>@(Model.BudgetRange ?? "—")</strong>
-                <span class="prv-req-posted-inline">Posted @Model.PostedLabel</span>
+                <strong>@(string.IsNullOrWhiteSpace(Model.BudgetRange) ? "—" : UiDisplayLocalization.Localize(L, Model.BudgetRange))</strong>
+                <span class="prv-req-posted-inline">@L.T("Posted {0}", Model.PostedLabel)</span>
             </div>
         </div>
     </section>
@@ -82,10 +82,10 @@
                                 {
                                     <span><i class="fas fa-star prv-req-star"></i> @qt.Rating.Value.ToString("0.0") (@qt.ReviewCount)</span>
                                 }
-                                <span><i class="fas fa-briefcase"></i> @qt.JobsCompleted jobs completed</span>
+                                <span><i class="fas fa-briefcase"></i> @L.T("{0} jobs completed", qt.JobsCompleted)</span>
                             </div>
                             <div class="prv-req-cmp-stats">
-                                <span><i class="fas fa-clock"></i> @qt.ResponseLabel</span>
+                                <span><i class="fas fa-clock"></i> @UiDisplayLocalization.Localize(L, qt.ResponseLabel)</span>
                             </div>
                         </div>
                         <div class="prv-req-cmp-price">

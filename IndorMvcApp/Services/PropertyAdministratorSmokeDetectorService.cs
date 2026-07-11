@@ -68,21 +68,21 @@ public class PropertyAdministratorSmokeDetectorService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Smoke Detector Check at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Smoke Detector Check", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,
             Category = "Homecare",
             ScheduledUtc = tomorrow,
             IsEmergency = false,
-            EtaLabel = "Tomorrow • 1:00 PM – 3:00 PM",
-            TeamLabel = "Daniel M. • Homecare",
+            EtaLabel = PropertyAdministratorDisplayLocalization.L("Tomorrow • 1:00 PM – 3:00 PM"),
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Daniel M. • Homecare"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Daniel M.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Licensed Homecare Pro",
-            VehicleLabel = "White service van",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("White service van"),
             TimelineStep = 3
         };
 
@@ -165,13 +165,13 @@ public class PropertyAdministratorSmokeDetectorService(
     private static IReadOnlyList<PropertyAdministratorEmergencyElectricalSummaryItemViewModel> BuildSummary(
         IndorPropertyAdminPortfolioProperty? property, PropertyAdministratorSmokeDetectorSubmitInput input) =>
     [
-        new() { Label = "Property", Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
-        new() { Label = "Service", Value = LabelServiceType(input.ServiceType), IconClass = "fa-bell" },
-        new() { Label = "Occupied", Value = property?.PropertyType == "ShortTermRental" ? "Yes" : "No", IconClass = "fa-door-open" },
-        new() { Label = "Detectors", Value = LabelDetectorCount(input.DetectorCount), IconClass = "fa-bell" },
-        new() { Label = "Type", Value = LabelDetectorType(input.DetectorType), IconClass = "fa-plug" },
-        new() { Label = "Access", Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
-        new() { Label = "Updates", Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-bell" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Property"), Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = LabelServiceType(input.ServiceType), IconClass = "fa-bell" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Occupied"), Value = property?.PropertyType == "ShortTermRental" ? "Yes" : "No", IconClass = "fa-door-open" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Detectors"), Value = LabelDetectorCount(input.DetectorCount), IconClass = "fa-bell" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Type"), Value = LabelDetectorType(input.DetectorType), IconClass = "fa-plug" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-bell" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorSmokeDetectorTimelineItemViewModel> BuildTimeline(
@@ -183,48 +183,48 @@ public class PropertyAdministratorSmokeDetectorService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Technician assigned", StatusLabel = assigned, IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Scheduled visit", StatusLabel = scheduled, IconClass = "fa-calendar-check", State = "done" },
-            new() { Label = "Final safety check", StatusLabel = "Upcoming", IconClass = "fa-shield-halved", State = "pending" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Technician assigned"), StatusLabel = assigned, IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Scheduled visit"), StatusLabel = scheduled, IconClass = "fa-calendar-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Final safety check"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Upcoming"), IconClass = "fa-shield-halved", State = "pending" }
         ];
     }
 
     private static string LabelServiceType(string value) => value switch
     {
-        "ReplaceBatteries" => "Replace batteries",
-        "ChirpingDetector" => "Chirping detector",
-        "InstallNewDetector" => "Install new detector",
-        _ => "Full detector check"
+        "ReplaceBatteries" => PropertyAdministratorDisplayLocalization.L("Replace batteries"),
+        "ChirpingDetector" => PropertyAdministratorDisplayLocalization.L("Chirping detector"),
+        "InstallNewDetector" => PropertyAdministratorDisplayLocalization.L("Install new detector"),
+        _ => PropertyAdministratorDisplayLocalization.L("Full detector check")
     };
 
     private static string LabelDetectorCount(string value) => value switch
     {
-        "OneToTwo" => "1–2",
-        "SixPlus" => "6+",
-        _ => "3–5"
+        "OneToTwo" => PropertyAdministratorDisplayLocalization.L("1–2"),
+        "SixPlus" => PropertyAdministratorDisplayLocalization.L("6+"),
+        _ => PropertyAdministratorDisplayLocalization.L("3–5")
     };
 
     private static string LabelDetectorType(string value) => value switch
     {
-        "Battery" => "Battery",
-        "NotSure" => "Not sure",
-        _ => "Hardwired"
+        "Battery" => PropertyAdministratorDisplayLocalization.L("Battery"),
+        "NotSure" => PropertyAdministratorDisplayLocalization.L("Not sure"),
+        _ => PropertyAdministratorDisplayLocalization.L("Hardwired")
     };
 
     private static string LabelAccess(string value) => value switch
     {
-        "HostMeet" => "Host will meet",
-        "NeedApproval" => "Need guest approval",
-        _ => "Smart lock code provided"
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "NeedApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
+        _ => PropertyAdministratorDisplayLocalization.L("Smart lock code provided")
     };
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 
@@ -258,24 +258,7 @@ public class PropertyAdministratorSmokeDetectorService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -312,9 +295,9 @@ public class PropertyAdministratorSmokeDetectorService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

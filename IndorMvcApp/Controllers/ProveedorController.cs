@@ -1558,7 +1558,7 @@ public partial class ProveedorController(
 
         if (photo == null || photo.Length == 0)
         {
-            return PhotoUploadResult("Please choose a photo to upload.");
+            return PhotoUploadResult(localizer["Please choose a photo to upload."].ToString());
         }
 
         var (photoError, photoUrl) = await SaveProfilePhotoAsync(proveedor.Entity!.Id, photo);
@@ -3532,12 +3532,12 @@ public partial class ProveedorController(
 
         if (!ProfilePhotoExtensions.Contains(ext))
         {
-            return ("Photo must be JPG, PNG, or WEBP.", null);
+            return (ProviderProDisplayLocalization.L("Photo must be JPG, PNG, or WEBP."), null);
         }
 
         if (file.Length > MaxProfilePhotoBytes)
         {
-            return ("Photo must be 10 MB or less.", null);
+            return (ProviderProDisplayLocalization.L("Photo must be 10 MB or less."), null);
         }
 
         var uploadDir = Path.Combine(env.WebRootPath, "uploads", "provider", proveedorId.ToString());
@@ -3563,7 +3563,7 @@ public partial class ProveedorController(
                 return BadRequest(new { ok = false, message = error });
             }
 
-            return Json(new { ok = true, message = "Profile photo updated.", photoUrl });
+            return Json(new { ok = true, message = localizer["Profile photo updated."].ToString(), photoUrl });
         }
 
         if (!string.IsNullOrWhiteSpace(error))
@@ -3587,7 +3587,7 @@ public partial class ProveedorController(
     {
         if (!AllowedProfileDocumentTypes.Contains(documentType))
         {
-            return "That document type is not supported.";
+            return ProviderProDisplayLocalization.L("That document type is not supported.");
         }
 
         var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
@@ -3602,12 +3602,12 @@ public partial class ProveedorController(
 
         if (!ProfileDocumentExtensions.Contains(ext))
         {
-            return "Document must be JPG, PNG, WEBP, or PDF.";
+            return ProviderProDisplayLocalization.L("Document must be JPG, PNG, WEBP, or PDF.");
         }
 
         if (file.Length > MaxProfileDocumentBytes)
         {
-            return "Document must be 10 MB or less.";
+            return ProviderProDisplayLocalization.L("Document must be 10 MB or less.");
         }
 
         var uploadDir = Path.Combine(env.WebRootPath, "uploads", "provider", proveedorId.ToString());

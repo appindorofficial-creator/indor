@@ -21,9 +21,9 @@
         <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["Choose Report Type"]</h1>
-            <small>Step @Model.StepNumber of @Model.TotalSteps</small>
+            <small>@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</small>
         </div>
-        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+        <span class="prv-pro-step-badge">@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</span>
     </header>
 
     @await Html.PartialAsync("_UploadReportJobCard", Model.Job)
@@ -37,15 +37,15 @@
                     <input type="radio" name="ReportType" value="@type" @(Model.ReportType == type ? "checked" : "") />
                     <i class="fas @icon"></i>
                     <div>
-                        <strong>@type</strong>
-                        <small>@desc</small>
+                        <strong>@L[type]</strong>
+                        <small>@L[desc]</small>
                     </div>
                 </label>
             }
         </div>
         <div class="prv-pro-upload-report-info">
             <i class="fas fa-circle-info"></i>
-            Reports can be shared with the homeowner and saved to House Facts.
+            @L["Reports can be shared with the homeowner and saved to House Facts."]
         </div>
         <div class="prv-pro-upload-report-actions">
             <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>

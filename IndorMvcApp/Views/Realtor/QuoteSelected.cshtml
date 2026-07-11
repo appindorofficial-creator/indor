@@ -22,7 +22,7 @@
         <img src="@Model.PhotoUrl" alt="" />
         <div>
             <strong>@Model.Address</strong>
-            <span class="rl-status-pill rl-status-pill--selected">Selected: @Model.ProviderName</span>
+            <span class="rl-status-pill rl-status-pill--selected">@UiDisplayLocalization.Localize(L, $"Selected: {Model.ProviderName}")</span>
             <span class="rl-premium-muted">@L["Total Approved Amount"]</span>
             <strong class="rl-qsel-amount">@Model.TotalAmountLabel</strong>
         </div>
@@ -37,12 +37,12 @@
         <div>
             <i class="fas fa-clock rl-metric-icon rl-metric-icon--purple"></i>
             <span>@L["Estimated Timeline"]</span>
-            <strong>@Model.TimelineLabel</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.TimelineLabel)</strong>
         </div>
         <div>
             <i class="fas fa-shield-halved rl-metric-icon rl-metric-icon--green"></i>
             <span>@L["Warranty"]</span>
-            <strong>@Model.WarrantyLabel</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.WarrantyLabel)</strong>
         </div>
     </div>
 
@@ -53,7 +53,7 @@
             {
                 <li>
                     <span class="rl-qsel-step-icon"><i class="fas @step.Icon"></i></span>
-                    <span>@step.Label</span>
+                    <span>@UiDisplayLocalization.Localize(L, step.Label)</span>
                     <span class="rl-qsel-step-check"></span>
                 </li>
             }

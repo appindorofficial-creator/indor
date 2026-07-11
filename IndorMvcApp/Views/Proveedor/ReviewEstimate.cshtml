@@ -16,7 +16,7 @@
     <header class="prv-pro-wizard-head">
         <a asp-controller="Proveedor" asp-action="@(Model.LeadId > 0 ? "LeadDetails" : "PendingEstimates")" asp-route-id="@(Model.LeadId > 0 ? Model.LeadId : null)" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Step @Model.StepNumber of @Model.TotalSteps · Estimate Review</h1>
+            <h1>@L.T("Step {0} of {1} · Estimate Review", Model.StepNumber, Model.TotalSteps)</h1>
             <p>@L["Review the draft, total estimate, scope summary, and AI recommendations before sending."]</p>
         </div>
     </header>
@@ -24,9 +24,9 @@
     @await Html.PartialAsync("_ProviderProEstimateTutorialCard", (
         Model.StepNumber,
         Model.TotalSteps,
-        "Estimate Review",
-        "Review the draft, total estimate, scope summary, and AI recommendations before sending.",
-        "Next: Edit Estimate",
+        L["Estimate Review"].ToString(),
+        L["Review the draft, total estimate, scope summary, and AI recommendations before sending."].ToString(),
+        L["Next: Edit Estimate"].ToString(),
         Url.Action("EditEstimate", "Proveedor", new { id = Model.EstimateId })!,
         Model.WizardSteps))
 
@@ -40,20 +40,20 @@
             <i class="fas @Model.ServiceIcon"></i>
         </span>
         <div>
-            <strong>@Model.Title</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.Title)</strong>
             <small>@Model.CustomerName</small>
             <small>@Model.Address</small>
-            <small>@Model.DateLabel</small>
-            <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@Model.StatusLabel</span>
+            <small>@UiDisplayLocalization.Localize(L, Model.DateLabel)</small>
+            <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
         </div>
     </section>
 
     <section class="prv-pro-wizard-card prv-pro-est-breakdown">
-        <h2><i class="fas fa-file-lines"></i> Estimate breakdown</h2>
+        <h2><i class="fas fa-file-lines"></i> @L["Estimate breakdown"]</h2>
         @foreach (var item in Model.ScopeItems)
         {
             <div class="prv-pro-ai-estimate-row">
-                <span>@item.Label</span>
+                <span>@UiDisplayLocalization.Localize(L, item.Label)</span>
                 <span>@item.Amount.ToString("C2", money)</span>
             </div>
         }
@@ -78,11 +78,11 @@
     {
         <a asp-controller="Proveedor" asp-action="EditEstimate" asp-route-id="@Model.EstimateId" class="prv-pro-est-review-panel">
             <div>
-                <h3><i class="fas fa-clipboard-list"></i> Scope summary</h3>
+                <h3><i class="fas fa-clipboard-list"></i> @L["Scope summary"]</h3>
                 <ul>
                     @foreach (var line in scopeLines)
                     {
-                        <li>@line</li>
+                        <li>@UiDisplayLocalization.Localize(L, line)</li>
                     }
                 </ul>
             </div>
@@ -94,11 +94,11 @@
     {
         <a asp-controller="Proveedor" asp-action="EditEstimate" asp-route-id="@Model.EstimateId" class="prv-pro-est-review-panel prv-pro-est-review-panel--ai">
             <div>
-                <h3><i class="fas fa-wand-magic-sparkles"></i> AI recommendations</h3>
+                <h3><i class="fas fa-wand-magic-sparkles"></i> @L["AI recommendations"]</h3>
                 <ul>
                     @foreach (var tip in Model.AiRecommendations)
                     {
-                        <li>@tip</li>
+                        <li>@UiDisplayLocalization.Localize(L, tip)</li>
                     }
                 </ul>
             </div>
@@ -108,18 +108,18 @@
 
     <footer class="prv-pro-est-review-actions">
         <a asp-controller="Proveedor" asp-action="EditEstimate" asp-route-id="@Model.EstimateId" class="prv-pro-btn prv-pro-btn--ghost">
-            <i class="fas fa-pen-to-square"></i> Edit estimate
+            <i class="fas fa-pen-to-square"></i> @L["Edit estimate"]
         </a>
         @if (Model.CanSend)
         {
             <a asp-controller="Proveedor" asp-action="SendEstimate" asp-route-id="@Model.EstimateId" class="prv-pro-btn prv-pro-btn--primary">
-                <i class="fas fa-paper-plane"></i> Continue to send
+                <i class="fas fa-paper-plane"></i> @L["Continue to send"]
             </a>
         }
         else
         {
             <a asp-controller="Proveedor" asp-action="EstimateSent" asp-route-id="@Model.EstimateId" class="prv-pro-btn prv-pro-btn--primary">
-                <i class="fas fa-eye"></i> View sent estimate
+                <i class="fas fa-eye"></i> @L["View sent estimate"]
             </a>
         }
     </footer>

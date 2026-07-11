@@ -22,7 +22,7 @@
 
         <a asp-controller="Realtor" asp-action="Quotes" class="rl-back-link">
 
-            <i class="fas fa-chevron-left"></i> Quotes
+            <i class="fas fa-chevron-left"></i> @L["Quotes"]
 
         </a>
 
@@ -40,7 +40,7 @@
 
             <strong>@Model.Address</strong>
 
-            <span class="rl-status-pill rl-status-pill--received">@Model.StatusLabel</span>
+            <span class="rl-status-pill rl-status-pill--received">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
 
         </div>
 
@@ -84,7 +84,7 @@
 
             <span>@L["Timeline"]</span>
 
-            <strong>@Model.TimelineLabel</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.TimelineLabel)</strong>
 
         </div>
 
@@ -94,7 +94,7 @@
 
             <span>@L["Warranty"]</span>
 
-            <strong>@Model.WarrantyLabel</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.WarrantyLabel)</strong>
 
         </div>
 
@@ -104,7 +104,7 @@
 
             <span>@L["Status"]</span>
 
-            <strong>@Model.ReviewStatusLabel</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.ReviewStatusLabel)</strong>
 
         </div>
 
@@ -160,7 +160,7 @@
 
                 <div class="rl-qview-price-row">
 
-                    <span>@line.Label</span>
+                    <span>@UiDisplayLocalization.Localize(L, line.Label)</span>
 
                     <span>@line.AmountLabel</span>
 
@@ -202,13 +202,13 @@
 
             <a href="@Model.EditSharedQuoteUrl" class="ob-btn ob-btn-primary rl-qview-btn">
 
-                <i class="fas fa-paper-plane"></i> Share with Homeowner
+                <i class="fas fa-paper-plane"></i> @L["Share with Homeowner"]
 
             </a>
 
             <a href="@Model.EditSharedQuoteUrl" class="rl-btn-outline rl-qview-btn">
 
-                <i class="fas fa-pen"></i> Edit Before Sharing
+                <i class="fas fa-pen"></i> @L["Edit Before Sharing"]
 
             </a>
 
@@ -224,7 +224,7 @@
 
                 <button type="submit" class="rl-btn-outline rl-qview-btn">
 
-                    <i class="fas fa-circle-check"></i> Accept Quote
+                    <i class="fas fa-circle-check"></i> @L["Accept Quote"]
 
                 </button>
 

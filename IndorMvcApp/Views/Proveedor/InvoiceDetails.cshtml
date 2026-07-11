@@ -16,9 +16,9 @@
         <a asp-controller="Proveedor" asp-action="Invoices" asp-route-tab="@Model.ReturnTab" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@Model.PageTitle</h1>
-            <small>@Model.InvoiceCode · @Model.ServiceType</small>
+            <small>@Model.InvoiceCode · @UiDisplayLocalization.Localize(L, Model.ServiceType)</small>
         </div>
-        <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@Model.Status</span>
+        <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@UiDisplayLocalization.Localize(L, Model.Status)</span>
     </header>
 
     @if (TempData["InvoiceReminderSent"] as bool? == true)
@@ -37,9 +37,9 @@
             <i class="fas @(Model.IsPaid ? "fa-circle-check" : "fa-file-invoice-dollar")"></i>
         </div>
         <div>
-            <strong>Invoice @Model.InvoiceCode</strong>
+            <strong>@L.T("Invoice {0}", Model.InvoiceCode)</strong>
             <small>@Model.Address</small>
-            <small>@Model.ServiceType</small>
+            <small>@UiDisplayLocalization.Localize(L, Model.ServiceType)</small>
             <div class="prv-pro-invoice-hero-amount">@displayAmount.ToString("C2", money)</div>
             <span class="prv-pro-invoice-hero-label">@Model.AmountLabel</span>
         </div>
@@ -66,7 +66,7 @@
             </div>
             <div class="prv-pro-invoice-meta-item prv-pro-invoice-meta-item--receipt">
                 <span>@L["Receipt"]</span>
-                <strong>@(Model.ReceiptAvailable ? "Receipt Available" : "—")</strong>
+                <strong>@(Model.ReceiptAvailable ? L["Receipt Available"].ToString() : "—")</strong>
             </div>
         </section>
 
@@ -103,7 +103,7 @@
                 <summary><span><i class="fas fa-briefcase"></i> @L["Job Information"]</span></summary>
                 @if (!string.IsNullOrWhiteSpace(Model.JobCode))
                 {
-                    <p><strong>Job #@Model.JobCode</strong>@(string.IsNullOrWhiteSpace(Model.JobStatus) ? "" : $" — {Model.JobStatus}")</p>
+                    <p><strong>@L.T("Job #{0}", Model.JobCode)</strong>@(string.IsNullOrWhiteSpace(Model.JobStatus) ? "" : $" — {UiDisplayLocalization.Localize(L, Model.JobStatus)}")</p>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.JobTitle))
                 {

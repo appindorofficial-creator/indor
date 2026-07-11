@@ -79,7 +79,7 @@ public class PropertyAdministratorEmergencyElectricalService(
             ScheduledUtc = now,
             IsEmergency = true,
             EtaLabel = null,
-            TeamLabel = "Matching a verified electrician",
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Matching a verified electrician"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TimelineStep = 1
@@ -155,33 +155,33 @@ public class PropertyAdministratorEmergencyElectricalService(
     [
         new()
         {
-            Label = "Issue",
+            Label = PropertyAdministratorDisplayLocalization.L("Issue"),
             Value = $"{LabelIssue(input.IssueType)} / {LabelLocation(input.ProblemLocation).ToLowerInvariant()}",
             IconClass = "fa-triangle-exclamation"
         },
         new()
         {
-            Label = "Occupied",
+            Label = PropertyAdministratorDisplayLocalization.L("Occupied"),
             Value = input.PowerFullyOut == "Yes" ? "Yes" : "No",
             IconClass = "fa-user",
             Highlight = input.PowerFullyOut == "Yes"
         },
         new()
         {
-            Label = "Guests inside",
+            Label = PropertyAdministratorDisplayLocalization.L("Guests inside"),
             Value = input.GuestsInside,
             IconClass = "fa-users",
             Highlight = input.GuestsInside == "Yes"
         },
         new()
         {
-            Label = "Access",
+            Label = PropertyAdministratorDisplayLocalization.L("Access"),
             Value = LabelAccess(input.EntryAccess),
             IconClass = "fa-key"
         },
         new()
         {
-            Label = "Updates",
+            Label = PropertyAdministratorDisplayLocalization.L("Updates"),
             Value = "Me + Guest",
             IconClass = "fa-bell"
         }
@@ -197,39 +197,39 @@ public class PropertyAdministratorEmergencyElectricalService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Technician assigned", StatusLabel = assigned, IconClass = "fa-circle-check", State = step >= 1 ? "done" : "pending" },
-            new() { Label = "En route", StatusLabel = enRoute, IconClass = "fa-truck", State = step >= 2 ? "active" : "pending" },
-            new() { Label = "Arrived", StatusLabel = "—", IconClass = "fa-location-dot", State = step >= 3 ? "done" : "pending" },
-            new() { Label = "Diagnosis", StatusLabel = "—", IconClass = "fa-clipboard-list", State = step >= 4 ? "done" : "pending" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Technician assigned"), StatusLabel = assigned, IconClass = "fa-circle-check", State = step >= 1 ? "done" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("En route"), StatusLabel = enRoute, IconClass = "fa-truck", State = step >= 2 ? "active" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Arrived"), StatusLabel = PropertyAdministratorDisplayLocalization.L("—"), IconClass = "fa-location-dot", State = step >= 3 ? "done" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Diagnosis"), StatusLabel = PropertyAdministratorDisplayLocalization.L("—"), IconClass = "fa-clipboard-list", State = step >= 4 ? "done" : "pending" }
         ];
     }
 
     private static string LabelIssue(string value) => value switch
     {
-        "BreakerTripping" => "Breaker keeps tripping",
-        "BurningSmell" => "Burning smell",
-        "SparksOutlet" => "Sparks / outlet issue",
-        "PartialPower" => "Partial power",
-        "ExposedWire" => "Exposed wire",
-        _ => "Power outage"
+        "BreakerTripping" => PropertyAdministratorDisplayLocalization.L("Breaker keeps tripping"),
+        "BurningSmell" => PropertyAdministratorDisplayLocalization.L("Burning smell"),
+        "SparksOutlet" => PropertyAdministratorDisplayLocalization.L("Sparks / outlet issue"),
+        "PartialPower" => PropertyAdministratorDisplayLocalization.L("Partial power"),
+        "ExposedWire" => PropertyAdministratorDisplayLocalization.L("Exposed wire"),
+        _ => PropertyAdministratorDisplayLocalization.L("Power outage")
     };
 
     private static string LabelLocation(string value) => value switch
     {
-        "Kitchen" => "Kitchen",
-        "Bedroom" => "Bedroom",
-        "Bathroom" => "Bathroom",
-        "PanelBreaker" => "Panel / breaker box",
-        "Other" => "Other",
-        _ => "Living room"
+        "Kitchen" => PropertyAdministratorDisplayLocalization.L("Kitchen"),
+        "Bedroom" => PropertyAdministratorDisplayLocalization.L("Bedroom"),
+        "Bathroom" => PropertyAdministratorDisplayLocalization.L("Bathroom"),
+        "PanelBreaker" => PropertyAdministratorDisplayLocalization.L("Panel / breaker box"),
+        "Other" => PropertyAdministratorDisplayLocalization.L("Other"),
+        _ => PropertyAdministratorDisplayLocalization.L("Living room")
     };
 
     private static string LabelAccess(string value) => value switch
     {
-        "HostMeet" => "Host will meet",
-        "GuestApproval" => "Need guest approval",
-        _ => "Smart lock code provided"
+        "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+        "GuestApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
+        _ => PropertyAdministratorDisplayLocalization.L("Smart lock code provided")
     };
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(
@@ -254,24 +254,7 @@ public class PropertyAdministratorEmergencyElectricalService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -308,9 +291,9 @@ public class PropertyAdministratorEmergencyElectricalService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

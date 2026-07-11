@@ -30,14 +30,14 @@
                 <div class="prv-req-title prv-req-title--lg">@Model.Title</div>
                 @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
                 {
-                    <div class="prv-req-meta"><i class="fas fa-screwdriver-wrench"></i> @Model.TradeLabel</div>
+                    <div class="prv-req-meta"><i class="fas fa-screwdriver-wrench"></i> @UiDisplayLocalization.Localize(L, Model.TradeLabel)</div>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
                 {
-                    <div class="prv-req-meta"><i class="fas fa-location-dot"></i> @Model.LocationLabel</div>
+                    <div class="prv-req-meta"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.LocationLabel)</div>
                 }
             </div>
-            <span class="prv-req-pill prv-req-pill--hired"><i class="fas fa-circle-check"></i> Hired</span>
+            <span class="prv-req-pill prv-req-pill--hired"><i class="fas fa-circle-check"></i> @L["Hired"]</span>
         </div>
 
         <div class="prv-req-selected">
@@ -58,15 +58,15 @@
         <div class="prv-req-badges prv-req-badges--center">
             @if (Model.IsVerified)
             {
-                <span class="prv-req-badge prv-req-badge--blue"><i class="fas fa-circle-check"></i> Verified</span>
+                <span class="prv-req-badge prv-req-badge--blue"><i class="fas fa-circle-check"></i> @L["Verified"]</span>
             }
             @if (Model.IsInsured)
             {
-                <span class="prv-req-badge prv-req-badge--green"><i class="fas fa-shield-halved"></i> Insurance Active</span>
+                <span class="prv-req-badge prv-req-badge--green"><i class="fas fa-shield-halved"></i> @L["Insurance Active"]</span>
             }
             @if (Model.IsDocsReady)
             {
-                <span class="prv-req-badge prv-req-badge--purple"><i class="fas fa-file-lines"></i> Docs Ready</span>
+                <span class="prv-req-badge prv-req-badge--purple"><i class="fas fa-file-lines"></i> @L["Docs Ready"]</span>
             }
         </div>
 
@@ -84,9 +84,9 @@
                 {
                     <div class="prv-req-sched-line"><i class="fas fa-location-dot"></i> @Model.AddressLine</div>
                 }
-                <div class="prv-req-sched-line"><i class="fas fa-calendar"></i> Estimated duration: @Model.DurationLabel</div>
+                <div class="prv-req-sched-line"><i class="fas fa-calendar"></i> @L.T("Estimated duration: {0}", UiDisplayLocalization.Localize(L, Model.DurationLabel))</div>
                 <div class="prv-req-sched-note">
-                    <i class="fas fa-circle-check"></i> We've shared the details with @Model.ContractorName. They'll see you soon!
+                    <i class="fas fa-circle-check"></i> @L.T("We've shared the details with {0}. They'll see you soon!", Model.ContractorName)
                 </div>
             </div>
         </div>
@@ -114,10 +114,10 @@
     </section>
 
     <a asp-controller="Proveedor" asp-action="SubcontractorProfile" asp-route-id="@Model.SubcontractorId" class="prv-req-btn prv-req-btn--primary prv-req-btn--block">
-        <i class="fas fa-comment-dots"></i> Message Contractor
+        <i class="fas fa-comment-dots"></i> @L["Message Contractor"]
     </a>
     <a asp-controller="Proveedor" asp-action="RequestDetails" asp-route-id="@Model.JobId" class="prv-req-btn prv-req-btn--ghost prv-req-btn--block">
-        <i class="fas fa-file-lines"></i> View Request
+        <i class="fas fa-file-lines"></i> @L["View Request"]
     </a>
 </div>
 

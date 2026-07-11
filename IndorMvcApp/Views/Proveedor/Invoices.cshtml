@@ -5,7 +5,7 @@
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
-    var tabs = new[] { ("all", "All"), ("paid", "Paid"), ("pending", "Pending"), ("overdue", "Overdue") };
+    var tabs = new[] { ("all", L["All"]), ("paid", L["Paid"]), ("pending", L["Pending"]), ("overdue", L["Overdue"]) };
 }
 
 <div class="prv-pro-shell prv-pro-shell--invoices">
@@ -18,11 +18,11 @@
             <h1>@Model.PageTitle</h1>
             @if (Model.ShowOverdueSummary)
             {
-                <small>@Model.OverdueCount invoice@(Model.OverdueCount == 1 ? "" : "s") past due</small>
+                <small>@L.T("{0} invoice(s) past due", Model.OverdueCount)</small>
             }
             else if (Model.ShowPendingSummary)
             {
-                <small>@Model.PendingCount invoice@(Model.PendingCount == 1 ? "" : "s") awaiting payment</small>
+                <small>@L.T("{0} invoice(s) awaiting payment", Model.PendingCount)</small>
             }
             else
             {
@@ -34,7 +34,7 @@
     @if (TempData["InvoicePaymentRecorded"] as bool? == true)
     {
         <div class="prv-pro-alert prv-pro-alert--success">
-            <i class="fas fa-circle-check"></i> Payment recorded successfully. The invoice has moved to the Paid tab.
+            <i class="fas fa-circle-check"></i> @L["Payment recorded successfully. The invoice has moved to the Paid tab."]
         </div>
     }
 
@@ -70,7 +70,7 @@
             <div class="prv-pro-invoice-stat prv-pro-invoice-stat--late">
                 <i class="fas fa-calendar-xmark"></i>
                 <div>
-                    <strong>@Model.OverdueCount Invoice@(Model.OverdueCount == 1 ? "" : "s") Late</strong>
+                    <strong>@L.T("{0} invoice(s) late", Model.OverdueCount)</strong>
                     <span>@L["Past due"]</span>
                 </div>
             </div>
@@ -89,7 +89,7 @@
             <div class="prv-pro-invoice-stat prv-pro-invoice-stat--late">
                 <i class="fas fa-file-invoice"></i>
                 <div>
-                    <strong>@Model.PendingCount Invoice@(Model.PendingCount == 1 ? "" : "s")</strong>
+                    <strong>@L.T("{0} invoice(s)", Model.PendingCount)</strong>
                     <span>@L["Awaiting Payment"]</span>
                 </div>
             </div>
@@ -141,11 +141,11 @@
                     <div class="prv-pro-invoice-card-body">
                         <div class="prv-pro-invoice-card-top">
                             <div>
-                                <strong>Invoice @inv.InvoiceCode</strong>
+                                <strong>@L["Invoice"] @inv.InvoiceCode</strong>
                                 <small>@inv.Address</small>
                                 @if (!string.IsNullOrWhiteSpace(inv.ServiceType))
                                 {
-                                    <small class="prv-pro-invoice-service">@inv.ServiceType</small>
+                                    <small class="prv-pro-invoice-service">@UiDisplayLocalization.Localize(L, inv.ServiceType)</small>
                                 }
                                 @if (!string.IsNullOrWhiteSpace(inv.DueDateLabel))
                                 {
@@ -166,13 +166,13 @@
                             @if (inv.ShowReminderAction)
                             {
                                 <a asp-controller="Proveedor" asp-action="SendInvoiceReminder" asp-route-id="@inv.Id" asp-route-from="@fromTab" class="prv-pro-btn prv-pro-btn--ghost">
-                                    <i class="fas fa-bell"></i> Reminder
+                                    <i class="fas fa-bell"></i> @L["Reminder"]
                                 </a>
                             }
                             @if (inv.ShowMarkPaidAction)
                             {
                                 <a asp-controller="Proveedor" asp-action="RecordPayment" asp-route-id="@inv.Id" asp-route-from="@fromTab" class="prv-pro-btn prv-pro-btn--ghost prv-pro-btn--success">
-                                    <i class="fas fa-circle-check"></i> Mark Paid
+                                    <i class="fas fa-circle-check"></i> @L["Mark Paid"]
                                 </a>
                             }
                         </div>
@@ -183,8 +183,8 @@
     </section>
 
     <footer class="prv-pro-invoices-footer">
-        <button type="button" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-plus"></i> Create Invoice</button>
-        <button type="button" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-filter"></i> Filter</button>
-        <button type="button" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-download"></i> Export</button>
+        <button type="button" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-plus"></i> @L["Create Invoice"]</button>
+        <button type="button" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-filter"></i> @L["Filter"]</button>
+        <button type="button" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-download"></i> @L["Export"]</button>
     </footer>
 </div>

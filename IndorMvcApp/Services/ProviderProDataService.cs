@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
@@ -480,7 +481,7 @@ public partial class ProviderProDataService(
         {
             meta.Add(new ProviderProJobMetaLineViewModel
             {
-                Text = "Viewed by customer",
+                Text = ProviderProDisplayLocalization.L("Viewed by customer"),
                 IconClass = "fa-eye",
                 Tone = "neutral"
             });
@@ -594,9 +595,9 @@ public partial class ProviderProDataService(
             ShowPhotosLink = false,
             ShowChecklistLink = false,
             ShowHouseFactsLink = true,
-            PrimaryAction = "Accept",
+            PrimaryAction = ProviderProDisplayLocalization.L("Accept"),
             PrimaryActionClass = "primary",
-            SecondaryAction = "Send Estimate",
+            SecondaryAction = ProviderProDisplayLocalization.L("Send Estimate"),
             LeadId = lead.Id
         };
     }
@@ -2881,7 +2882,7 @@ public partial class ProviderProDataService(
         {
             meta.Add(new ProviderProJobMetaLineViewModel
             {
-                Text = "Viewed by customer",
+                Text = ProviderProDisplayLocalization.L("Viewed by customer"),
                 IconClass = "fa-eye",
                 Tone = "neutral"
             });
@@ -2896,8 +2897,8 @@ public partial class ProviderProDataService(
             Title = estimate.ServiceType ?? estimate.Title ?? $"Estimate #{estimate.EstimateCode}",
             Address = estimate.Address,
             CustomerName = estimate.CustomerName ?? "",
-            TimeLabel = estimate.SentUtc.HasValue ? FormatTimeLabel(estimate.SentUtc) : "Draft",
-            StatusLabel = "Estimate",
+            TimeLabel = estimate.SentUtc.HasValue ? FormatTimeLabel(estimate.SentUtc) : ProviderProDisplayLocalization.L("Draft"),
+            StatusLabel = ProviderProDisplayLocalization.L("Estimate"),
             StatusClass = "estimate",
             IconClass = MapServiceIcon(estimate.ServiceType ?? estimate.EstimateCode),
             EstimateAmount = estimate.Amount,
@@ -2906,9 +2907,9 @@ public partial class ProviderProDataService(
             ShowPhotosLink = false,
             ShowChecklistLink = false,
             ShowHouseFactsLink = true,
-            PrimaryAction = isDraft ? "Edit Estimate" : "Follow Up",
+            PrimaryAction = isDraft ? ProviderProDisplayLocalization.L("Edit Estimate") : ProviderProDisplayLocalization.L("Follow Up"),
             PrimaryActionClass = "primary",
-            SecondaryAction = canConvert ? "Convert to Job" : "View Estimate",
+            SecondaryAction = canConvert ? ProviderProDisplayLocalization.L("Convert to Job") : ProviderProDisplayLocalization.L("View Estimate"),
             CanConvertToJob = canConvert,
             LeadId = estimate.LeadId
         };
@@ -2924,22 +2925,23 @@ public partial class ProviderProDataService(
     {
         if (!when.HasValue)
         {
-            return "Not scheduled";
+            return ProviderProDisplayLocalization.L("Not scheduled");
         }
 
         var local = when.Value.Kind == DateTimeKind.Utc ? when.Value.ToLocalTime() : when.Value;
-        var day = local.Date == DateTime.Today ? "Today"
-            : local.Date == DateTime.Today.AddDays(1) ? "Tomorrow"
-            : local.ToString("MMM d");
+        var culture = CultureInfo.CurrentCulture;
+        var day = local.Date == DateTime.Today ? ProviderProDisplayLocalization.L("Today")
+            : local.Date == DateTime.Today.AddDays(1) ? ProviderProDisplayLocalization.L("Tomorrow")
+            : local.ToString("MMM d", culture);
 
-        return $"{day} • {local:h:mm tt}";
+        return $"{day} • {local.ToString("h:mm tt", culture)}";
     }
 
     private static string FormatScheduleTimeShort(DateTime? when)
     {
         if (!when.HasValue)
         {
-            return "TBD";
+            return ProviderProDisplayLocalization.L("TBD");
         }
 
         var local = when.Value.Kind == DateTimeKind.Utc ? when.Value.ToLocalTime() : when.Value;
@@ -2965,10 +2967,10 @@ public partial class ProviderProDataService(
 
     private static (string Primary, string PrimaryClass, string? Secondary) MapJobActions(string status) => status switch
     {
-        ProviderJobStatuses.InProgress => ("Continue Job", "success", "Upload Photos"),
-        ProviderJobStatuses.Completed => ("View Record", "ghost", null),
-        ProviderJobStatuses.Scheduled or ProviderJobStatuses.Confirmed => ("Start Job", "primary", "View Details"),
-        _ => ("View Details", "ghost", null)
+        ProviderJobStatuses.InProgress => (ProviderProDisplayLocalization.L("Continue Job"), "success", ProviderProDisplayLocalization.L("Upload Photos")),
+        ProviderJobStatuses.Completed => (ProviderProDisplayLocalization.L("View Record"), "ghost", null),
+        ProviderJobStatuses.Scheduled or ProviderJobStatuses.Confirmed => (ProviderProDisplayLocalization.L("Start Job"), "primary", ProviderProDisplayLocalization.L("View Details")),
+        _ => (ProviderProDisplayLocalization.L("View Details"), "ghost", null)
     };
 
     private static string MapServiceIcon(string value)
@@ -4235,9 +4237,9 @@ public partial class ProviderProDataService(
 
     private static string MapConversationStatusLabel(string status) => status switch
     {
-        ProviderConversationStatuses.Pending => "Pending",
-        ProviderConversationStatuses.InProgress => "In Progress",
-        _ => "New"
+        ProviderConversationStatuses.Pending => ProviderProDisplayLocalization.L("Pending"),
+        ProviderConversationStatuses.InProgress => ProviderProDisplayLocalization.L("In Progress"),
+        _ => ProviderProDisplayLocalization.L("New")
     };
 
     private static string MapConversationStatusClass(string status) => status switch
@@ -4507,7 +4509,7 @@ public partial class ProviderProDataService(
         bool hasPendingApproval)
     {
         var isConnected = customer.ConnectionStatus == ProviderCustomerConnectionStatuses.Connected;
-        var connectionLabel = isConnected ? "Connected" : "Needs Invite";
+        var connectionLabel = isConnected ? ProviderProDisplayLocalization.L("Connected") : ProviderProDisplayLocalization.L("Needs Invite");
         var connectionClass = isConnected ? "connected" : "needsinvite";
 
         var displayAddress = !string.IsNullOrWhiteSpace(customer.Address)
@@ -4539,37 +4541,39 @@ public partial class ProviderProDataService(
             PropertiesCount = Math.Max(1, customer.PropertiesCount),
             ActivityNote = customer.LastActivityNote,
             ShowPhotosLink = isConnected,
-            PrimaryAction = isConnected ? "View Customer" : "Send Invite",
+            PrimaryAction = isConnected ? ProviderProDisplayLocalization.L("View Customer") : ProviderProDisplayLocalization.L("Send Invite"),
             PrimaryActionClass = isConnected ? "primary" : "primary",
-            SecondaryAction = isConnected ? "Open Property" : "View Record"
+            SecondaryAction = isConnected ? ProviderProDisplayLocalization.L("Open Property") : ProviderProDisplayLocalization.L("View Record")
         };
 
         if (activeJob != null)
         {
             card.ShowJobSection = true;
             card.JobTitle = activeJob.Title;
-            card.JobStatusLabel = activeJob.Status == ProviderJobStatuses.InProgress ? "In Progress" : "Active Job";
+            card.JobStatusLabel = activeJob.Status == ProviderJobStatuses.InProgress
+                ? ProviderProDisplayLocalization.L("In Progress")
+                : ProviderProDisplayLocalization.L("Active Job");
             card.JobStatusClass = activeJob.Status == ProviderJobStatuses.InProgress ? "progress" : "scheduled";
             card.JobMetaLines = BuildCustomerJobMeta(activeJob, customer, hasPendingApproval);
 
             if (activeJob.Status == ProviderJobStatuses.InProgress)
             {
-                card.PrimaryAction = "Continue Job";
+                card.PrimaryAction = ProviderProDisplayLocalization.L("Continue Job");
                 card.PrimaryActionClass = "success";
-                card.SecondaryAction = "Message";
+                card.SecondaryAction = ProviderProDisplayLocalization.L("Message");
             }
         }
         else if (recentCompleted != null)
         {
             card.ShowJobSection = true;
             card.JobTitle = recentCompleted.Title;
-            card.JobStatusLabel = "Recent Work";
+            card.JobStatusLabel = ProviderProDisplayLocalization.L("Recent Work");
             card.JobStatusClass = "completed";
             card.JobMetaLines =
             [
                 new ProviderProJobMetaLineViewModel
                 {
-                    Text = "Completed",
+                    Text = ProviderProDisplayLocalization.L("Completed"),
                     IconClass = "fa-circle-check",
                     Tone = "success"
                 }
@@ -4585,9 +4589,9 @@ public partial class ProviderProDataService(
                 });
             }
 
-            card.PrimaryAction = "View Record";
+            card.PrimaryAction = ProviderProDisplayLocalization.L("View Record");
             card.PrimaryActionClass = "ghost";
-            card.SecondaryAction = "Message";
+            card.SecondaryAction = ProviderProDisplayLocalization.L("Message");
         }
         else if (!isConnected)
         {
@@ -4622,7 +4626,7 @@ public partial class ProviderProDataService(
         {
             meta.Add(new ProviderProJobMetaLineViewModel
             {
-                Text = "Pending homeowner approval",
+                Text = ProviderProDisplayLocalization.L("Pending homeowner approval"),
                 IconClass = "fa-clock",
                 Tone = "warning"
             });
@@ -4642,7 +4646,7 @@ public partial class ProviderProDataService(
         {
             meta.Add(new ProviderProJobMetaLineViewModel
             {
-                Text = "Before photos missing",
+                Text = ProviderProDisplayLocalization.L("Before photos missing"),
                 IconClass = "fa-triangle-exclamation",
                 Tone = "danger"
             });
@@ -4878,13 +4882,13 @@ public partial class ProviderProDataService(
 
         var categories = proveedor.Categorias
             .Where(c => c.Categoria != null)
-            .Select(c => c.Categoria!.LabelEn)
+            .Select(c => ProviderProDisplayLocalization.CatalogLabel(c.Categoria!.LabelEn, c.Categoria!.LabelEs))
             .OrderBy(l => l)
             .ToList();
 
         var services = proveedor.Ofertas
             .Where(o => o.Oferta != null)
-            .Select(o => o.Oferta!.LabelEn)
+            .Select(o => ProviderProDisplayLocalization.CatalogLabel(o.Oferta!.LabelEn, o.Oferta!.LabelEs))
             .OrderBy(l => l)
             .ToList();
 
@@ -4936,7 +4940,7 @@ public partial class ProviderProDataService(
         var serviceAreas = BuildServiceAreas(proveedor);
         var specialties = categories.Count > 0
             ? string.Join(" • ", categories.Take(4))
-            : services.Count > 0 ? string.Join(" • ", services.Take(4)) : "Services pending";
+            : services.Count > 0 ? string.Join(" • ", services.Take(4)) : ProviderProDisplayLocalization.L("Services pending");
 
         var teamMembers = BuildTeamMembers(proveedor);
 
@@ -4969,7 +4973,7 @@ public partial class ProviderProDataService(
             HomeRecordsCreated = homeRecordsCreated,
             YearsActiveLabel = BuildYearsActiveLabel(proveedor.FechaCreacion),
             BusinessHours = string.IsNullOrWhiteSpace(proveedor.PreferredHours)
-                ? "Hours not set"
+                ? ProviderProDisplayLocalization.L("Hours not set")
                 : proveedor.PreferredHours!,
             Website = "",
             TravelRadiusMiles = proveedor.TravelRadiusMiles,
@@ -4982,7 +4986,7 @@ public partial class ProviderProDataService(
             PayoutConnected = invoices.Any(i => i.Status == ProviderInvoiceStatuses.Paid),
             PaymentProcessingActive = isProActive,
             NextPayoutAmount = nextPayout?.Amount ?? invoices.Where(i => i.Status == ProviderInvoiceStatuses.Pending).Sum(i => i.Amount),
-            NextPayoutDateLabel = nextPayout?.DueDate?.ToLocalTime().ToString("MMM d, yyyy"),
+            NextPayoutDateLabel = nextPayout?.DueDate?.ToLocalTime().ToString("MMM d, yyyy", CultureInfo.CurrentCulture),
             TeamMembers = teamMembers,
             AutoRemindersOn = proveedor.EmergencyService || proveedor.SameDayJobs,
             ReportTemplatesCount = reports.Count(r => r.Status != ProviderReportStatuses.Draft),
@@ -4993,12 +4997,12 @@ public partial class ProviderProDataService(
                 AvgResponseTime = "—",
                 CompletionRate = completionRate,
                 HomeownerApproval = reports.Count(r => r.Status == ProviderReportStatuses.Approved) > 0
-                    ? $"{reports.Count(r => r.Status == ProviderReportStatuses.Approved)} approved"
+                    ? ProviderProDisplayLocalization.T("{0} approved", reports.Count(r => r.Status == ProviderReportStatuses.Approved))
                     : "—",
                 HouseFactsAdded = houseFactsAdded
             },
             Reviews = [],
-            SubscriptionPlan = isProActive ? "Pro Plan" : "Activation Pending",
+            SubscriptionPlan = isProActive ? ProviderProDisplayLocalization.L("Pro Plan") : ProviderProDisplayLocalization.L("Activation Pending"),
             DocumentsUploaded = proveedor.Documentos.Count(d => !string.IsNullOrWhiteSpace(d.FileUrl)),
             DocumentsRequired = proveedor.Documentos.Count
         };
@@ -5107,37 +5111,45 @@ public partial class ProviderProDataService(
             .AsNoTracking()
             .Where(c => c.Activo)
             .OrderBy(c => c.SortOrder)
-            .Select(c => new ProviderProEditProfileServiceOptionViewModel
-            {
-                Id = c.Id,
-                Label = c.LabelEn,
-                IconClass = c.IconClass.StartsWith("fa-") ? c.IconClass : $"fa-{c.IconClass}",
-                IsCategory = true,
-                IsSelected = selectedCategories.Contains(c.Id)
-            })
+            .Select(c => new { c.Id, c.LabelEn, c.LabelEs, c.IconClass })
             .ToListAsync(cancellationToken);
 
         var services = await db.IndorProveedorOfertasCatalogo
             .AsNoTracking()
             .Where(o => o.Activo)
             .OrderBy(o => o.SortOrder)
+            .Select(o => new { o.Id, o.LabelEn, o.LabelEs, o.IconClass })
+            .ToListAsync(cancellationToken);
+
+        var categoryOptions = categories
+            .Select(c => new ProviderProEditProfileServiceOptionViewModel
+            {
+                Id = c.Id,
+                Label = ProviderProDisplayLocalization.CatalogLabel(c.LabelEn, c.LabelEs),
+                IconClass = c.IconClass.StartsWith("fa-") ? c.IconClass : $"fa-{c.IconClass}",
+                IsCategory = true,
+                IsSelected = selectedCategories.Contains(c.Id)
+            })
+            .ToList();
+
+        var serviceOptions = services
             .Select(o => new ProviderProEditProfileServiceOptionViewModel
             {
                 Id = o.Id,
-                Label = o.LabelEn,
+                Label = ProviderProDisplayLocalization.CatalogLabel(o.LabelEn, o.LabelEs),
                 IconClass = o.IconClass.StartsWith("fa-") ? o.IconClass : $"fa-{o.IconClass}",
                 IsCategory = false,
                 IsSelected = selectedServices.Contains(o.Id)
             })
-            .ToListAsync(cancellationToken);
+            .ToList();
 
-        if (categories.Count == 0)
+        if (categoryOptions.Count == 0)
         {
-            categories = OnboardingCatalog.ProviderCategories
+            categoryOptions = OnboardingCatalog.ProviderCategories
                 .Select(c => new ProviderProEditProfileServiceOptionViewModel
                 {
                     Id = c.Id,
-                    Label = c.Label,
+                    Label = ProviderProDisplayLocalization.L(c.Label),
                     IconClass = c.IconClass,
                     IsCategory = true,
                     IsSelected = selectedCategories.Contains(c.Id)
@@ -5149,7 +5161,7 @@ public partial class ProviderProDataService(
         {
             CompanyName = companyName,
             CompanyInitial = BuildCompanyInitial(companyName),
-            Options = categories.Concat(services).ToList()
+            Options = categoryOptions.Concat(serviceOptions).ToList()
         };
     }
 
@@ -5223,10 +5235,10 @@ public partial class ProviderProDataService(
 
         var slots = new[]
         {
-            (ProviderDocumentTypes.License, "Trade / business license"),
-            (ProviderDocumentTypes.Insurance, "Insurance certificate"),
-            (ProviderDocumentTypes.GovernmentId, "Government-issued ID"),
-            (ProviderDocumentTypes.W9, "W-9 tax form")
+            (ProviderDocumentTypes.License, ProviderProDisplayLocalization.L("Trade / business license")),
+            (ProviderDocumentTypes.Insurance, ProviderProDisplayLocalization.L("Insurance certificate")),
+            (ProviderDocumentTypes.GovernmentId, ProviderProDisplayLocalization.L("Government-issued ID")),
+            (ProviderDocumentTypes.W9, ProviderProDisplayLocalization.L("W-9 tax form"))
         }.Select(slot => new ProviderProEditProfileDocumentSlotViewModel
         {
             DocumentType = slot.Item1,
@@ -5709,7 +5721,7 @@ public partial class ProviderProDataService(
 
         if (areas.Count == 0 && proveedor.TravelRadiusMiles > 0)
         {
-            areas.Add($"{proveedor.TravelRadiusMiles} mile service radius");
+            areas.Add(ProviderProDisplayLocalization.T("{0} mile service radius", proveedor.TravelRadiusMiles));
         }
 
         return areas.Distinct().ToList();
@@ -5720,14 +5732,14 @@ public partial class ProviderProDataService(
         var years = Math.Max(0, DateTime.UtcNow.Year - createdUtc.Year);
         if (years >= 3)
         {
-            return "3+ Years";
+            return ProviderProDisplayLocalization.L("3+ Years");
         }
 
         return years switch
         {
-            0 => "< 1 Year",
-            1 => "1 Year",
-            _ => $"{years} Years"
+            0 => ProviderProDisplayLocalization.L("< 1 Year"),
+            1 => ProviderProDisplayLocalization.L("1 Year"),
+            _ => ProviderProDisplayLocalization.T("{0} Years", years)
         };
     }
 
@@ -5735,12 +5747,12 @@ public partial class ProviderProDataService(
     {
         if (!string.IsNullOrWhiteSpace(proveedor.PrimaryCity))
         {
-            return $"Serving {proveedor.PrimaryCity} and surrounding areas";
+            return ProviderProDisplayLocalization.T("Serving {0} and surrounding areas", proveedor.PrimaryCity.Trim());
         }
 
         return proveedor.TravelRadiusMiles > 0
-            ? $"Serving within {proveedor.TravelRadiusMiles} miles"
-            : "Service area not set";
+            ? ProviderProDisplayLocalization.T("Serving within {0} miles", proveedor.TravelRadiusMiles)
+            : ProviderProDisplayLocalization.L("Service area not set");
     }
 
     private static List<ProviderProProfileVerificationItemViewModel> BuildVerificationItems(IndorProveedor proveedor)
@@ -5752,10 +5764,10 @@ public partial class ProviderProDataService(
 
         return
         [
-            new() { Label = "License Verified", IsComplete = proveedor.IsLicensed && HasDoc(ProviderDocumentTypes.License, ProviderDocumentTypes.HvacLicense, ProviderDocumentTypes.PlumbingLicense, ProviderDocumentTypes.ContractorLicense) },
-            new() { Label = "Insurance Active", IsComplete = proveedor.IsInsured && HasDoc(ProviderDocumentTypes.Insurance, ProviderDocumentTypes.LiabilityInsurance) },
-            new() { Label = "Background Check Complete", IsComplete = proveedor.BackgroundCheckConsent },
-            new() { Label = "W-9 on File", IsComplete = HasDoc(ProviderDocumentTypes.W9) }
+            new() { Label = ProviderProDisplayLocalization.L("License Verified"), IsComplete = proveedor.IsLicensed && HasDoc(ProviderDocumentTypes.License, ProviderDocumentTypes.HvacLicense, ProviderDocumentTypes.PlumbingLicense, ProviderDocumentTypes.ContractorLicense) },
+            new() { Label = ProviderProDisplayLocalization.L("Insurance Active"), IsComplete = proveedor.IsInsured && HasDoc(ProviderDocumentTypes.Insurance, ProviderDocumentTypes.LiabilityInsurance) },
+            new() { Label = ProviderProDisplayLocalization.L("Background Check Complete"), IsComplete = proveedor.BackgroundCheckConsent },
+            new() { Label = ProviderProDisplayLocalization.L("W-9 on File"), IsComplete = HasDoc(ProviderDocumentTypes.W9) }
         ];
     }
 
@@ -5768,7 +5780,7 @@ public partial class ProviderProDataService(
             members.Add(new ProviderProProfileTeamMemberViewModel
             {
                 Name = proveedor.PrimaryContact,
-                Role = "Owner",
+                Role = ProviderProDisplayLocalization.L("Owner"),
                 RoleClass = "owner"
             });
         }
@@ -5777,8 +5789,8 @@ public partial class ProviderProDataService(
         {
             members.Add(new ProviderProProfileTeamMemberViewModel
             {
-                Name = "Team member",
-                Role = "Technician",
+                Name = ProviderProDisplayLocalization.L("Team member"),
+                Role = ProviderProDisplayLocalization.L("Technician"),
                 RoleClass = "technician"
             });
         }

@@ -13,7 +13,7 @@
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
     @{
-        ViewBag.WizardTitle = "Review & Send";
+        ViewBag.WizardTitle = L["Review & Send"].ToString();
         ViewBag.WizardStepLine = Model.StepSubtitle;
         ViewBag.WizardSteps = Model.WizardSteps;
     }
@@ -77,7 +77,7 @@
                         <label class="prv-pro-delivery-option @(selected ? "is-selected" : "")">
                             <input type="radio" name="DeliveryMethod" value="@id" @(selected ? "checked" : "") />
                             <i class="fas @icon"></i>
-                            <span>@label</span>
+                            <span>@L[label]</span>
                             @if (selected) { <i class="fas fa-check prv-pro-delivery-check"></i> }
                         </label>
                     }

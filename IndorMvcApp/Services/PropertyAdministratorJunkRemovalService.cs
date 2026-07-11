@@ -107,14 +107,14 @@ public class PropertyAdministratorJunkRemovalService(
         var visitDate = input.PickupWhen == "ScheduledTime"
             ? DateTime.Today.AddDays(1).AddHours(14)
             : DateTime.Today.AddHours(14.5);
-        var etaLabel = "35 min";
+        var etaLabel = PropertyAdministratorDisplayLocalization.L("35 min");
         var pickupLabel = LabelPickupWhen(input.PickupWhen);
 
         var request = new IndorPropertyAdminServiceRequest
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = $"Junk Removal at {property.PropertyName}",
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Junk Removal", property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.InProgress,
@@ -122,13 +122,13 @@ public class PropertyAdministratorJunkRemovalService(
             ScheduledUtc = visitDate,
             IsEmergency = input.PickupWhen == "Asap",
             EtaLabel = etaLabel,
-            TeamLabel = "Marcus T. • Junk Removal",
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Marcus T. • Junk Removal"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Marcus T.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Verified",
-            VehicleLabel = "Box truck",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("Box truck"),
             TimelineStep = 3
         };
 
@@ -212,11 +212,11 @@ public class PropertyAdministratorJunkRemovalService(
     private static IReadOnlyList<PropertyAdministratorJunkRemovalSummaryItemViewModel> BuildSummary(
         PropertyAdministratorJunkRemovalSubmitInput input) =>
     [
-        new() { Label = "Items", Value = LabelItems(input.RemovalItemsList), IconClass = "fa-couch" },
-        new() { Label = "Load size", Value = LabelLoadSize(input.LoadSize), IconClass = "fa-trash" },
-        new() { Label = "Access", Value = LabelAccess(input), IconClass = "fa-key" },
-        new() { Label = "Updates", Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" },
-        new() { Label = "Pickup time", Value = LabelPickupWhen(input.PickupWhen), IconClass = "fa-clock" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Items"), Value = LabelItems(input.RemovalItemsList), IconClass = "fa-couch" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Load size"), Value = LabelLoadSize(input.LoadSize), IconClass = "fa-trash" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelAccess(input), IconClass = "fa-key" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Pickup time"), Value = LabelPickupWhen(input.PickupWhen), IconClass = "fa-clock" }
     ];
 
     private static IReadOnlyList<PropertyAdministratorJunkRemovalTimelineItemViewModel> BuildTimeline(
@@ -228,11 +228,11 @@ public class PropertyAdministratorJunkRemovalService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = submitted.ToString("h:mm tt"), IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Crew assigned", StatusLabel = assigned.ToString("h:mm tt"), IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "En route", StatusLabel = enRoute.ToString("h:mm tt"), IconClass = "fa-truck", State = "active" },
-            new() { Label = "Arrived", StatusLabel = "Pending", IconClass = "fa-location-dot", State = "pending" },
-            new() { Label = "Pickup in progress", StatusLabel = "Pending", IconClass = "fa-dolly", State = "pending" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = submitted.ToString("h:mm tt"), IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Crew assigned"), StatusLabel = assigned.ToString("h:mm tt"), IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("En route"), StatusLabel = enRoute.ToString("h:mm tt"), IconClass = "fa-truck", State = "active" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Arrived"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-location-dot", State = "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Pickup in progress"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-dolly", State = "pending" }
         ];
     }
 
@@ -240,12 +240,12 @@ public class PropertyAdministratorJunkRemovalService(
     {
         var labels = items.Select(i => i switch
         {
-            "Boxes" => "boxes",
-            "BaggedTrash" => "bagged trash",
-            "Appliances" => "appliances",
-            "YardDebris" => "yard debris",
-            "MixedItems" => "mixed items",
-            _ => "furniture"
+            "Boxes" => PropertyAdministratorDisplayLocalization.L("boxes"),
+            "BaggedTrash" => PropertyAdministratorDisplayLocalization.L("bagged trash"),
+            "Appliances" => PropertyAdministratorDisplayLocalization.L("appliances"),
+            "YardDebris" => PropertyAdministratorDisplayLocalization.L("yard debris"),
+            "MixedItems" => PropertyAdministratorDisplayLocalization.L("mixed items"),
+            _ => PropertyAdministratorDisplayLocalization.L("furniture")
         }).Distinct().ToList();
 
         return labels.Count switch
@@ -259,19 +259,19 @@ public class PropertyAdministratorJunkRemovalService(
 
     private static string LabelLoadSize(string value) => value switch
     {
-        "SmallPickup" => "Small pickup",
-        "FullLoad" => "Full load",
-        "MultipleLoads" => "Multiple loads",
-        _ => "Half load"
+        "SmallPickup" => PropertyAdministratorDisplayLocalization.L("Small pickup"),
+        "FullLoad" => PropertyAdministratorDisplayLocalization.L("Full load"),
+        "MultipleLoads" => PropertyAdministratorDisplayLocalization.L("Multiple loads"),
+        _ => PropertyAdministratorDisplayLocalization.L("Half load")
     };
 
     private static string LabelAccess(PropertyAdministratorJunkRemovalSubmitInput input)
     {
         var entry = input.EntryAccess switch
         {
-            "HostMeet" => "Host will meet",
-            "CurbsideOnly" => "Curbside pickup only",
-            _ => "Smart lock"
+            "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+            "CurbsideOnly" => PropertyAdministratorDisplayLocalization.L("Curbside pickup only"),
+            _ => PropertyAdministratorDisplayLocalization.L("Smart lock")
         };
 
         var pickup = input.PickupType switch
@@ -288,8 +288,8 @@ public class PropertyAdministratorJunkRemovalService(
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
             _ => "Me"
         }).Distinct().ToList();
 
@@ -304,16 +304,16 @@ public class PropertyAdministratorJunkRemovalService(
 
     private static string LabelPickupWhen(string value) => value switch
     {
-        "Asap" => "ASAP",
-        "ScheduledTime" => "Scheduled time",
-        _ => "Today after checkout"
+        "Asap" => PropertyAdministratorDisplayLocalization.L("ASAP"),
+        "ScheduledTime" => PropertyAdministratorDisplayLocalization.L("Scheduled time"),
+        _ => PropertyAdministratorDisplayLocalization.L("Today after checkout")
     };
 
     private static string LabelTimeWindow(string value) => value switch
     {
-        "Morning" => "8 AM – 12 PM",
-        "Evening" => "5 PM – 9 PM",
-        _ => "12 PM – 5 PM"
+        "Morning" => PropertyAdministratorDisplayLocalization.L("8 AM – 12 PM"),
+        "Evening" => PropertyAdministratorDisplayLocalization.L("5 PM – 9 PM"),
+        _ => PropertyAdministratorDisplayLocalization.L("12 PM – 5 PM")
     };
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(
@@ -338,24 +338,7 @@ public class PropertyAdministratorJunkRemovalService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -392,9 +375,9 @@ public class PropertyAdministratorJunkRemovalService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

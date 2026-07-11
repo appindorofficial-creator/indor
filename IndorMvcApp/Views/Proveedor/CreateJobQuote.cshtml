@@ -98,7 +98,8 @@
 
         <div class="prv-pro-wizard-actions">
             <a asp-controller="Proveedor" asp-action="CreateJobDetails" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
-            <button type="submit" class="prv-pro-btn prv-pro-btn--primary" id="createJobQuoteSubmit">@L["Send to AI"]</button>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary" id="createJobQuoteSubmit"
+                    data-label-send="@L["Send to AI"]" data-label-continue="@L["Continue"]">@L["Send to AI"]</button>
         </div>
     </form>
 </div>
@@ -117,7 +118,7 @@
             function setSendQuote(enabled) {
                 sendInput.value = enabled ? 'true' : 'false';
                 actionInput.value = enabled ? 'ai' : 'skip';
-                submitBtn.textContent = enabled ? 'Send to AI' : 'Continue';
+                submitBtn.textContent = enabled ? submitBtn.dataset.labelSend : submitBtn.dataset.labelContinue;
                 inputs?.classList.toggle('is-hidden', !enabled);
                 toggles.forEach(function (btn) {
                     btn.classList.toggle('is-active', btn.dataset.send === (enabled ? 'true' : 'false'));

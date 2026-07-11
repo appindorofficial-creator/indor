@@ -1,8 +1,5 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorUploadDocumentsViewModel
-<div class="ob-head-block">
-    <h1>@Model.Title</h1>
-    <p>@Model.Subtitle</p>
-</div>
+@await Html.PartialAsync("_PropertyAdminRegHead", Model)
 
 @if (!string.IsNullOrWhiteSpace(Model.FormError))
 {

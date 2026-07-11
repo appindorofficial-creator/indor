@@ -76,7 +76,7 @@ public class PropertyAdministratorBrokenWindowBoardUpService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             PropertyId = property.Id,
             ViewingProperty = mapped,
-            GuestsOnSiteLabel = step1.GuestsInside == "Yes" ? "Guests on-site" : null,
+            GuestsOnSiteLabel = step1.GuestsInside == "Yes" ? PropertyAdministratorDisplayLocalization.L("Guests on-site") : null,
             HelpType = step1.HelpType,
             Urgency = step1.Urgency,
             DamageLocation = step1.DamageLocation,
@@ -110,14 +110,14 @@ public class PropertyAdministratorBrokenWindowBoardUpService(
             Category = "Emergency",
             ScheduledUtc = now,
             IsEmergency = true,
-            EtaLabel = "24 min",
-            TeamLabel = "Carlos M. • Board-up",
+            EtaLabel = PropertyAdministratorDisplayLocalization.L("24 min"),
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Carlos M. • Board-up"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
             TechnicianName = "Carlos M.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Emergency board-up pro",
-            VehicleLabel = "White service van",
+            VehicleLabel = PropertyAdministratorDisplayLocalization.L("White service van"),
             TimelineStep = 2
         };
 
@@ -175,30 +175,30 @@ public class PropertyAdministratorBrokenWindowBoardUpService(
 
         return
         [
-            new() { Label = "Request submitted", StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
-            new() { Label = "Technician assigned", StatusLabel = assigned, IconClass = "fa-circle-check", State = step >= 1 ? "done" : "pending" },
-            new() { Label = "En route", StatusLabel = enRoute, IconClass = "fa-truck", State = step >= 2 ? "active" : "pending" },
-            new() { Label = "Arrived", StatusLabel = "Pending", IconClass = "fa-location-dot", State = step >= 3 ? "done" : "pending" },
-            new() { Label = "Temporary board-up complete", StatusLabel = "Pending", IconClass = "fa-window-maximize", State = step >= 4 ? "done" : "pending" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Technician assigned"), StatusLabel = assigned, IconClass = "fa-circle-check", State = step >= 1 ? "done" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("En route"), StatusLabel = enRoute, IconClass = "fa-truck", State = step >= 2 ? "active" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Arrived"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-location-dot", State = step >= 3 ? "done" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Temporary board-up complete"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-window-maximize", State = step >= 4 ? "done" : "pending" }
         ];
     }
 
     private static string LabelHelpType(string value) => value switch
     {
-        "ShatteredGlass" => "Shattered glass",
-        "DoorGlass" => "Door glass",
-        "BoardUpOnly" => "Board-up only",
-        "ActiveBreakInDamage" => "Active break-in damage",
-        _ => "Broken window"
+        "ShatteredGlass" => PropertyAdministratorDisplayLocalization.L("Shattered glass"),
+        "DoorGlass" => PropertyAdministratorDisplayLocalization.L("Door glass"),
+        "BoardUpOnly" => PropertyAdministratorDisplayLocalization.L("Board-up only"),
+        "ActiveBreakInDamage" => PropertyAdministratorDisplayLocalization.L("Active break-in damage"),
+        _ => PropertyAdministratorDisplayLocalization.L("Broken window")
     };
 
     private static string LabelDamageLocation(string value) => value switch
     {
-        "BackWindow" => "Back window",
-        "SlidingDoor" => "Sliding door",
-        "BedroomWindow" => "Bedroom window",
-        "StorefrontOther" => "Storefront / other",
-        _ => "Front window"
+        "BackWindow" => PropertyAdministratorDisplayLocalization.L("Back window"),
+        "SlidingDoor" => PropertyAdministratorDisplayLocalization.L("Sliding door"),
+        "BedroomWindow" => PropertyAdministratorDisplayLocalization.L("Bedroom window"),
+        "StorefrontOther" => PropertyAdministratorDisplayLocalization.L("Storefront / other"),
+        _ => PropertyAdministratorDisplayLocalization.L("Front window")
     };
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(
@@ -223,24 +223,7 @@ public class PropertyAdministratorBrokenWindowBoardUpService(
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
         IndorPropertyAdministrator admin, CancellationToken cancellationToken)
     {
-        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
-        var hour = DateTime.Now.Hour;
-        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
-        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
-            ? admin.PortfolioBusinessName
-            : $"{firstName} Portfolio";
-
-        var shell = new PropertyAdministratorPortalShellViewModel
-        {
-            DisplayName = admin.DisplayName ?? "Property Owner",
-            PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
-            Greeting = $"{greeting}, {firstName}",
-            NotificationCount = admin.ServiceRequests.Count(r =>
-                r.Status is PropertyAdministratorRequestStatuses.Open
-                    or PropertyAdministratorRequestStatuses.Emergency
-                    or PropertyAdministratorRequestStatuses.InProgress)
-        };
+        var shell = PropertyAdministratorFlowServiceSupport.BuildShell(admin);
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (!string.IsNullOrEmpty(userId))
@@ -277,9 +260,9 @@ public class PropertyAdministratorBrokenWindowBoardUpService(
             Id = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
             ImageUrl = property.ImageUrl,
-            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+            OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
 }

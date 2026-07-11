@@ -46,10 +46,10 @@
                                     <a href="@item.TargetUrl" class="pa-notify-item">
                                         <span class="pa-notify-item-icon"><i class="fas @item.IconClass"></i></span>
                                         <span class="pa-notify-item-body">
-                                            <span class="pa-notify-item-text">@item.Description</span>
-                                            <span class="pa-notify-item-time">@item.OccurredLabel</span>
+                                            <span class="pa-notify-item-text">@UiDisplayLocalization.Localize(L, item.Description)</span>
+                                            <span class="pa-notify-item-time">@UiDisplayLocalization.Localize(L, item.OccurredLabel)</span>
                                         </span>
-                                        <span class="pa-notify-tag @item.TagCssClass">@item.CategoryTag</span>
+                                        <span class="pa-notify-tag @item.TagCssClass">@UiDisplayLocalization.Localize(L, item.CategoryTag)</span>
                                     </a>
                                 }
                                 else
@@ -57,10 +57,10 @@
                                     <div class="pa-notify-item">
                                         <span class="pa-notify-item-icon"><i class="fas @item.IconClass"></i></span>
                                         <span class="pa-notify-item-body">
-                                            <span class="pa-notify-item-text">@item.Description</span>
-                                            <span class="pa-notify-item-time">@item.OccurredLabel</span>
+                                            <span class="pa-notify-item-text">@UiDisplayLocalization.Localize(L, item.Description)</span>
+                                            <span class="pa-notify-item-time">@UiDisplayLocalization.Localize(L, item.OccurredLabel)</span>
                                         </span>
-                                        <span class="pa-notify-tag @item.TagCssClass">@item.CategoryTag</span>
+                                        <span class="pa-notify-tag @item.TagCssClass">@UiDisplayLocalization.Localize(L, item.CategoryTag)</span>
                                     </div>
                                 }
                             </li>
@@ -69,13 +69,13 @@
                 }
                 <div class="pa-notify-panel-foot">
                     <a asp-controller="Administrador" asp-action="NotificationPreferences" class="pa-notify-settings-link">
-                        <i class="fas fa-gear"></i> Notification settings
+                        <i class="fas fa-gear"></i> @L["Notification settings"]
                     </a>
                 </div>
             </div>
         </div>
     </div>
     <a asp-controller="Administrador" asp-action="Profile" class="pa-portal-my-account">
-        My account <i class="fas fa-chevron-right"></i>
+        @L["My account"] <i class="fas fa-chevron-right"></i>
     </a>
 </header>

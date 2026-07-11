@@ -63,6 +63,8 @@
         var shareUrl = button.getAttribute('data-share-url') || button.href || window.location.href;
         var shareTitle = button.getAttribute('data-share-title') || document.title;
         var shareText = button.getAttribute('data-share-text') || 'View my provider profile on INDOR';
+        var copiedMessage = button.getAttribute('data-share-copied') || 'Profile link copied to clipboard.';
+        var promptLabel = button.getAttribute('data-share-prompt') || 'Copy profile link:';
 
         button.addEventListener('click', function (event) {
             event.preventDefault();
@@ -79,15 +81,15 @@
                         return;
                     }
                     copyText(shareUrl)
-                        .then(function () { showToast('Profile link copied to clipboard.'); })
-                        .catch(function () { window.prompt('Copy profile link:', shareUrl); });
+                        .then(function () { showToast(copiedMessage); })
+                        .catch(function () { window.prompt(promptLabel, shareUrl); });
                 });
                 return;
             }
 
             copyText(shareUrl)
-                .then(function () { showToast('Profile link copied to clipboard.'); })
-                .catch(function () { window.prompt('Copy profile link:', shareUrl); });
+                .then(function () { showToast(copiedMessage); })
+                .catch(function () { window.prompt(promptLabel, shareUrl); });
         });
     }
 

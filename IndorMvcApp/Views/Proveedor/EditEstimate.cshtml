@@ -13,7 +13,7 @@
     <header class="prv-pro-wizard-head">
         <a asp-controller="Proveedor" asp-action="ReviewEstimate" asp-route-id="@Model.EstimateId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Step @Model.StepNumber of @Model.TotalSteps · Edit Estimate</h1>
+            <h1>@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps) · @L["Edit Estimate"]</h1>
             <p>@L["Adjust line items, prices, quantities, materials, and notes before sending."]</p>
         </div>
     </header>
@@ -26,7 +26,7 @@
         </span>
         <div>
             <strong>@Model.Title</strong>
-            <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@Model.StatusLabel</span>
+            <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
             <small>@Model.CustomerName · @Model.Address</small>
         </div>
     </section>

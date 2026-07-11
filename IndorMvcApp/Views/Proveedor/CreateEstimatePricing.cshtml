@@ -15,9 +15,9 @@
         <a asp-controller="Proveedor" asp-action="CreateEstimateDetails" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["Pricing &amp; Line Items"]</h1>
-            <small>Step @Model.StepNumber of @Model.TotalSteps</small>
+            <small>@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</small>
         </div>
-        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+        <span class="prv-pro-step-badge">@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</span>
     </header>
 
     <form asp-controller="Proveedor" asp-action="CreateEstimatePricing" method="post" class="prv-pro-create-estimate-form">
@@ -35,7 +35,7 @@
                     <input type="hidden" name="LineTaxable" value="@(line.IsTaxable ? "true" : "false")" />
                     <div class="prv-pro-pricing-line-head">
                         <strong>@line.Label</strong>
-                        <span class="prv-pro-pricing-tax @(line.IsTaxable ? "is-taxable" : "")">@(line.IsTaxable ? "Taxable" : "Non-Taxable")</span>
+                        <span class="prv-pro-pricing-tax @(line.IsTaxable ? "is-taxable" : "")">@(line.IsTaxable ? L["Taxable"] : L["Non-Taxable"])</span>
                     </div>
                     <small>@line.Description</small>
                     <div class="prv-pro-pricing-line-fields">
@@ -50,7 +50,7 @@
 
         <section class="prv-pro-pricing-totals">
             <div><span>@L["Subtotal"]</span><strong>@Model.SubtotalAmount.ToString("C2", money)</strong></div>
-            <div><span>Tax (@((Model.TaxRate * 100).ToString("0.##"))%)</span><strong>@Model.TaxAmount.ToString("C2", money)</strong></div>
+            <div><span>@L.T("Tax ({0}%)", (Model.TaxRate * 100).ToString("0.##"))</span><strong>@Model.TaxAmount.ToString("C2", money)</strong></div>
             <div class="prv-pro-pricing-total"><span>@L["Total Estimate"]</span><strong>@Model.TotalAmount.ToString("C2", money)</strong></div>
         </section>
 

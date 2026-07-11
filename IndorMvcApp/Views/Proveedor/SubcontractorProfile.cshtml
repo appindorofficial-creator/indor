@@ -8,7 +8,7 @@
 
 <div class="prv-net-shell">
     <header class="prv-net-pro-hero">
-        <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-net-back"><i class="fas fa-chevron-left"></i> Back</a>
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-net-back"><i class="fas fa-chevron-left"></i> @L["Back"]</a>
     </header>
 
     <section class="prv-net-profile-card">
@@ -25,12 +25,12 @@
                 <h1>@Model.Name</h1>
                 @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
                 {
-                    <p class="trade">@Model.TradeLabel</p>
+                    <p class="trade">@UiDisplayLocalization.Localize(L, Model.TradeLabel)</p>
                 }
                 <div class="meta">
                     @if (Model.HasReviews)
                     {
-                        <span class="prv-net-stars"><i class="fas fa-star"></i> @Model.Rating!.Value.ToString("0.0") (@Model.ReviewCount reviews)</span>
+                        <span class="prv-net-stars"><i class="fas fa-star"></i> @Model.Rating!.Value.ToString("0.0") (@L.T("{0} reviews", Model.ReviewCount))</span>
                     }
                     else
                     {
@@ -40,11 +40,11 @@
                 <div class="meta">
                     @if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
                     {
-                        <span><i class="fas fa-location-dot"></i> @Model.LocationLabel</span>
+                        <span><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.LocationLabel)</span>
                     }
                     @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
                     {
-                        <span>@Model.DistanceLabel away</span>
+                        <span>@UiDisplayLocalization.Localize(L, Model.DistanceLabel) @L["away"]</span>
                     }
                 </div>
             </div>
@@ -52,7 +52,7 @@
             {
                 <span class="prv-net-verified-seal">
                     <i class="fas fa-shield-halved"></i>
-                    Verified Pro
+                    @L["Verified Pro"]
                 </span>
             }
         </div>
@@ -60,13 +60,13 @@
         <div class="prv-net-ready">
             <span class="prv-net-ready-ic"><i class="fas fa-shield-halved"></i></span>
             <div class="prv-net-ready-copy">
-                <strong>@(Model.IsVerified && Model.IsInsured ? "Ready to hire" : "Profile available")</strong>
+                <strong>@(Model.IsVerified && Model.IsInsured ? L["Ready to hire"] : L["Profile available"])</strong>
                 <small>@L["Verified, insured, and qualified"]</small>
             </div>
             <div class="prv-net-ready-badges">
-                <span class="@(Model.IsVerified ? "is-on" : null)"><i class="fas fa-circle-check"></i> Verified</span>
-                <span class="@(Model.IsInsured ? "is-on" : null)"><i class="fas fa-shield-halved"></i> Insured</span>
-                <span class="@(Model.IsDocsReady ? "is-on" : null)"><i class="fas fa-file-lines"></i> Docs</span>
+                <span class="@(Model.IsVerified ? "is-on" : null)"><i class="fas fa-circle-check"></i> @L["Verified"]</span>
+                <span class="@(Model.IsInsured ? "is-on" : null)"><i class="fas fa-shield-halved"></i> @L["Insured"]</span>
+                <span class="@(Model.IsDocsReady ? "is-on" : null)"><i class="fas fa-file-lines"></i> @L["Docs"]</span>
             </div>
         </div>
     </section>
@@ -76,18 +76,18 @@
             <span class="prv-net-row-ic"><i class="fas fa-umbrella"></i></span>
             <div class="prv-net-row-body">
                 <strong>@L["Insurance Status"]</strong>
-                <span>@Model.InsuranceStatusLabel</span>
+                <span>@UiDisplayLocalization.Localize(L, Model.InsuranceStatusLabel)</span>
             </div>
-            <span class="prv-net-tag @(Model.InsuranceActive ? null : "prv-net-tag--muted")">@(Model.InsuranceActive ? "Active" : "Not on file")</span>
+            <span class="prv-net-tag @(Model.InsuranceActive ? null : "prv-net-tag--muted")">@(Model.InsuranceActive ? L["Active"] : L["Not on file"])</span>
         </div>
 
         <div class="prv-net-row">
             <span class="prv-net-row-ic"><i class="fas fa-file-contract"></i></span>
             <div class="prv-net-row-body">
                 <strong>@L["License / Documents"]</strong>
-                <span>@(string.IsNullOrWhiteSpace(Model.LicenseNumber) ? "Documents on file" : $"License {Model.LicenseNumber}")</span>
+                <span>@(string.IsNullOrWhiteSpace(Model.LicenseNumber) ? L["Documents on file"] : $"{L["License"]} {Model.LicenseNumber}")</span>
             </div>
-            <span class="prv-net-tag @(Model.LicenseVerified || Model.IsDocsReady ? null : "prv-net-tag--muted")">@(Model.LicenseVerified || Model.IsDocsReady ? "Verified" : "Pending")</span>
+            <span class="prv-net-tag @(Model.LicenseVerified || Model.IsDocsReady ? null : "prv-net-tag--muted")">@(Model.LicenseVerified || Model.IsDocsReady ? L["Verified"] : L["Pending"])</span>
         </div>
 
         @if (Model.Services.Count > 0)
@@ -99,7 +99,7 @@
                     <div class="prv-net-chips-inline">
                         @foreach (var svc in Model.Services.Take(8))
                         {
-                            <span>@svc</span>
+                            <span>@UiDisplayLocalization.Localize(L, svc)</span>
                         }
                     </div>
                 </div>
@@ -110,16 +110,16 @@
             <span class="prv-net-row-ic"><i class="fas fa-clock"></i></span>
             <div class="prv-net-row-body">
                 <strong>@L["Availability"]</strong>
-                <span>@Model.ResponseTimeLabel</span>
+                <span>@UiDisplayLocalization.Localize(L, Model.ResponseTimeLabel)</span>
             </div>
-            <span class="prv-net-tag @(Model.IsAvailableNow ? null : "prv-net-tag--muted")">@Model.AvailabilityLabel</span>
+            <span class="prv-net-tag @(Model.IsAvailableNow ? null : "prv-net-tag--muted")">@UiDisplayLocalization.Localize(L, Model.AvailabilityLabel)</span>
         </div>
 
         <div class="prv-net-row">
             <span class="prv-net-row-ic"><i class="fas fa-briefcase"></i></span>
             <div class="prv-net-row-body">
                 <strong>@L["Experience"]</strong>
-                <span>@(Model.RecentJobsCount > 0 ? $"{Model.RecentJobsCount} hire(s) through INDOR" : "New to the INDOR network")</span>
+                <span>@(Model.RecentJobsCount > 0 ? L.T("{0} hire(s) through INDOR", Model.RecentJobsCount) : L["New to the INDOR network"])</span>
             </div>
         </div>
     </div>
@@ -131,7 +131,7 @@
                 <div class="prv-net-reviews-score">
                     <strong>@Model.Rating!.Value.ToString("0.0")</strong>
                     <div>@for (var i = 0; i < 5; i++) { <i class="fas fa-star"></i> }</div>
-                    <small>@Model.ReviewCount reviews</small>
+                    <small>@L.T("{0} reviews", Model.ReviewCount)</small>
                 </div>
                 <div class="prv-net-bars">
                     @foreach (var bar in Model.RatingBreakdown)
@@ -163,15 +163,15 @@
 
     <div class="prv-net-actionbar">
         <a asp-controller="Proveedor" asp-action="InviteToJob" asp-route-id="@Model.Id" class="prv-net-btn prv-net-btn--primary">
-            <i class="fas fa-paper-plane"></i> Invite to Job
+            <i class="fas fa-paper-plane"></i> @L["Invite to Job"]
         </a>
         <div class="prv-net-btn-row">
-            <a asp-controller="Proveedor" asp-action="Network" class="prv-net-btn prv-net-btn--ghost"><i class="fas fa-comment"></i> Message</a>
+            <a asp-controller="Proveedor" asp-action="Network" class="prv-net-btn prv-net-btn--ghost"><i class="fas fa-comment"></i> @L["Message"]</a>
             <form asp-controller="Proveedor" asp-action="ToggleSaveSubcontractor" method="post" style="flex:1;">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="id" value="@Model.Id" />
                 <button type="submit" class="prv-net-btn prv-net-btn--ghost">
-                    <i class="@(Model.IsSaved ? "fas" : "far") fa-bookmark"></i> @(Model.IsSaved ? "Saved" : "Save")
+                    <i class="@(Model.IsSaved ? "fas" : "far") fa-bookmark"></i> @(Model.IsSaved ? L["Saved"] : L["Save"])
                 </button>
             </form>
         </div>

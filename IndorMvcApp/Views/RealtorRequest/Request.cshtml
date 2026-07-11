@@ -1,11 +1,12 @@
 @model IndorMvcApp.ViewModels.RealtorRequestFormViewModel
+@using IndorMvcApp.Localization
 @using IndorMvcApp.Services
 @{
-    ViewData["Title"] = "Request a Realtor";
+    ViewData["Title"] = L["Request a Realtor"];
     Layout = null;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -19,13 +20,13 @@
 <body>
 <div class="hvac-page">
     <div class="hvac-top">
-        <a asp-controller="Home" asp-action="Index" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
-        <div class="hvac-title">Request a Realtor</div>
+        <a asp-controller="Home" asp-action="Index" class="hvac-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
+        <div class="hvac-title">@L["Request a Realtor"]</div>
         <div style="width:40px;"></div>
     </div>
 
     <div class="hvac-content">
-        <p class="rr-lead">Tell us what you need and we'll help connect you with a trusted real estate professional.</p>
+        <p class="rr-lead">@L["Tell us what you need and we'll help connect you with a trusted real estate professional."]</p>
 
         <form asp-action="Request" method="post">
             @Html.AntiForgeryToken()
@@ -33,22 +34,22 @@
             <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
 
             <div class="rr-field">
-                <span class="rr-field-label">What do you need?</span>
+                <span class="rr-field-label">@L["What do you need?"]</span>
                 <div class="rr-need-grid rr-need-grid--3">
                     <label class="rr-need-card @(Model.NeedType == "Buy" ? "selected" : "")">
                         <input type="radio" asp-for="NeedType" value="Buy" />
                         <i class="fas fa-house"></i>
-                        <span>Buy</span>
+                        <span>@L["Buy"]</span>
                     </label>
                     <label class="rr-need-card @(Model.NeedType == "Sell" ? "selected" : "")">
                         <input type="radio" asp-for="NeedType" value="Sell" />
                         <i class="fas fa-tag"></i>
-                        <span>Sell</span>
+                        <span>@L["Sell"]</span>
                     </label>
                     <label class="rr-need-card @(Model.NeedType == "Rent" ? "selected" : "")">
                         <input type="radio" asp-for="NeedType" value="Rent" />
                         <i class="fas fa-building"></i>
-                        <span>Rent</span>
+                        <span>@L["Rent"]</span>
                     </label>
                 </div>
             </div>
@@ -56,22 +57,22 @@
             <a asp-action="StartGuidance" asp-route-propiedadId="@Model.PropiedadId" class="rr-guidance-banner">
                 <span class="rr-guidance-icon"><i class="fas fa-compass"></i></span>
                 <span class="rr-guidance-copy">
-                    <strong>General Guidance</strong>
-                    <span>Not sure if you should buy, sell, or rent? Connect with a real estate professional to explore your options and see what you may qualify for.</span>
+                    <strong>@L["General Guidance"]</strong>
+                    <span>@L["Not sure if you should buy, sell, or rent? Connect with a real estate professional to explore your options and see what you may qualify for."]</span>
                 </span>
                 <i class="fas fa-chevron-right rr-guidance-chevron"></i>
             </a>
 
             <div class="rr-field">
-                <label class="rr-field-label" asp-for="PreferredArea">Preferred area</label>
+                <label class="rr-field-label" asp-for="PreferredArea">@L["Preferred area"]</label>
                 <div class="rr-input-wrap">
                     <i class="fas fa-location-dot"></i>
-                    <input asp-for="PreferredArea" class="hvac-input" placeholder="City or ZIP code" />
+                    <input asp-for="PreferredArea" class="hvac-input" placeholder="@L["City or ZIP code"]" />
                 </div>
             </div>
 
             <div class="rr-field">
-                <span class="rr-field-label">Timeframe</span>
+                <span class="rr-field-label">@L["Timeframe"]</span>
                 <div class="rr-time-row">
                     <label class="rr-time-btn @(Model.Timeframe == "ASAP" ? "selected" : "")">
                         <input type="radio" asp-for="Timeframe" value="ASAP" />
@@ -81,40 +82,40 @@
                     <label class="rr-time-btn @(Model.Timeframe == "Days30" ? "selected" : "")">
                         <input type="radio" asp-for="Timeframe" value="Days30" />
                         <i class="far fa-calendar"></i>
-                        <span>30 days</span>
+                        <span>@L["30 days"]</span>
                     </label>
                     <label class="rr-time-btn @(Model.Timeframe == "Days60Plus" ? "selected" : "")">
                         <input type="radio" asp-for="Timeframe" value="Days60Plus" />
                         <i class="far fa-calendar-check"></i>
-                        <span>60+ days</span>
+                        <span>@L["60+ days"]</span>
                     </label>
                 </div>
             </div>
 
             <div class="rr-field">
-                <label class="rr-field-label" asp-for="PriceRange">Price range <span style="color:#94A3B8;font-weight:500;">Optional</span></label>
+                <label class="rr-field-label" asp-for="PriceRange">@L["Price range"] <span style="color:#94A3B8;font-weight:500;">@L["Optional"]</span></label>
                 <div class="rr-input-wrap">
                     <i class="fas fa-dollar-sign"></i>
                     <select asp-for="PriceRange" class="hvac-select">
-                        <option value="">Select range</option>
+                        <option value="">@L["Select range"]</option>
                         @foreach (var opt in RealtorRequestDisplayService.PriceRangeOptions)
                         {
-                            <option value="@opt.Value">@opt.Label</option>
+                            <option value="@opt.Value">@UiDisplayLocalization.Localize(L, opt.Label)</option>
                         }
                     </select>
                 </div>
             </div>
 
             <div class="rr-field">
-                <label class="rr-field-label" asp-for="Notes">Notes</label>
+                <label class="rr-field-label" asp-for="Notes">@L["Notes"]</label>
                 <div class="rr-notes-wrap">
                     <i class="fas fa-pen note-icon"></i>
-                    <textarea asp-for="Notes" maxlength="500" placeholder="Tell us anything that may help us match you" id="notesField"></textarea>
+                    <textarea asp-for="Notes" maxlength="500" placeholder="@L["Tell us anything that may help us match you"]" id="notesField"></textarea>
                     <span class="rr-char-count"><span id="notesCount">0</span>/500</span>
                 </div>
             </div>
 
-            <button type="submit" class="hvac-save-btn">Submit request</button>
+            <button type="submit" class="hvac-save-btn">@L["Submit request"]</button>
         </form>
     </div>
 

@@ -32,7 +32,7 @@
         </div>
         <div class="prv-pro-status-card-row">
             <span>@L["Status"]</span>
-            <span class="prv-pro-pill prv-pro-pill--paid">@Model.StatusLabel</span>
+            <span class="prv-pro-pill prv-pro-pill--paid">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
         </div>
     </section>
 
@@ -42,7 +42,7 @@
         <a asp-controller="Proveedor" asp-action="RecordPayment" asp-route-id="@Model.InvoiceId" asp-route-from="all"
            class="prv-pro-btn prv-pro-btn--teal prv-pro-btn--full">@L["Mark as Paid"]</a>
         <a asp-controller="Proveedor" asp-action="Jobs" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--full">
-            Back to Jobs
+            @L["Back to Jobs"]
         </a>
     </footer>
 </div>
