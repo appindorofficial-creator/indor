@@ -1,10 +1,45 @@
 @model IndorMvcApp.ViewModels.HomeownerNearbyNetworkViewModel
 @using System.Text.Json
+@using IndorMvcApp.Models
+@using IndorMvcApp.ViewModels
 @{
     var isMapView = Model.ActiveView == "map";
     string BuildFilterUrl(string filter) =>
         (Url.Action("Index", "Home", new { filter, view = Model.ActiveView, q = Model.SearchQuery }) ?? "/") + "#section-home";
-    var showQuickHelpHero = Model.ActiveFilter is "All" or "NeighborRequests";
+    var showQuickHelpHero = Model.ActiveFilter is NearbyNetworkHomeownerFilters.NeighborRequests;
+    var showMgmtCards = Model.ActiveFilter is NearbyNetworkHomeownerFilters.NeighborRequests;
+    var isLandingFeed = Model.ActiveFilter == NearbyNetworkHomeownerFilters.All && string.IsNullOrWhiteSpace(Model.SearchQuery);
+    string QuickActionSlug(string label) => label switch
+    {
+        "Certified Providers" => "certified-providers",
+        "House Facts" => "house-facts",
+        "Post a Request" => "post-request",
+        "My Requests" => "my-requests",
+        _ => "default"
+    };
+    string QuickActionBadge(string slug) => slug switch
+    {
+        "certified-providers" => L["Trusted"],
+        "house-facts" => L["Home Info"],
+        "post-request" => L["Get Help"],
+        "my-requests" => L["Track"],
+        _ => ""
+    };
+    string QuickActionArt(string slug) => slug switch
+    {
+        "certified-providers" => "~/images/hn-v4-tile-providers.png",
+        "house-facts" => "~/images/hn-v4-tile-housefacts.png",
+        "post-request" => "~/images/hn-v4-tile-post.png",
+        "my-requests" => "~/images/hn-v4-tile-requests.png",
+        _ => ""
+    };
+    var landingQuickActions = isLandingFeed ? new List<RealtorQuickActionViewModel>
+    {
+        new() { Label = "Certified Providers", Subtitle = "Find verified professionals in your area.", Icon = "fa-shield-halved", Url = BuildFilterUrl(NearbyNetworkHomeownerFilters.Providers) },
+        new() { Label = "House Facts", Subtitle = "See your property details, history, and records.", Icon = "fa-house-circle-check", Url = (Url.Action("Index", "Home") ?? "/") + "#section-myhome" },
+        new() { Label = "Post a Request", Subtitle = "Ask neighbors for help.", Icon = "fa-plus", Url = Model.QuickActions.FirstOrDefault(a => a.Label == "Post a Request")?.Url ?? Model.PostQuickJobUrl },
+        new() { Label = "My Requests", Subtitle = "Track your requests and responses in one place.", Icon = "fa-comment-dots", Url = Model.MyRequestsUrl }
+    } : Model.QuickActions;
     var emptyFilterMessage = Model.ActiveFilter switch
     {
         "Homes" => L["No nearby home listings yet. Check back soon or browse all categories."],
@@ -47,7 +82,7 @@
         : null;
 }
 
-<div class="hn-network @(isMapView ? "hn-network--map" : "")">
+<div class="hn-network @(isMapView ? "hn-network--map" : "") @(isLandingFeed ? "hn-network--landing" : "")">
     @if (!Model.HasProperty)
     {
         <div class="hn-network-empty">
@@ -113,18 +148,21 @@
     }
     else
     {
-        <form asp-controller="Home" asp-action="Index" method="get" class="hn-search-form" asp-fragment="section-home">
+        <form asp-controller="Home" asp-action="Index" method="get" class="hn-search-form hn-v4-search-form" asp-fragment="section-home">
             <div class="hn-search-row">
-                <div class="hn-search-bar">
+                <div class="hn-search-bar hn-v4-search-bar">
                     <i class="fas fa-magnifying-glass"></i>
-                    <input type="text" name="q" value="@Model.SearchQuery" placeholder="@L["Search in my neighborhood..."]" inputmode="search" enterkeyhint="search" autocomplete="off" aria-label="@L["Search in my neighborhood"]" />
+                    <input type="text" name="q" value="@Model.SearchQuery" placeholder="@L["Search neighbors, services, or local help..."]" inputmode="search" enterkeyhint="search" autocomplete="off" aria-label="@L["Search neighbors, services, or local help"]" />
+                    <button type="button" class="hn-v4-search-filter" aria-label="@L["Filter"]" onclick="document.getElementById('hnFilterChips')?.scrollIntoView({behavior:'smooth',block:'nearest'})">
+                        <i class="fas fa-sliders"></i>
+                    </button>
                 </div>
                 <input type="hidden" name="view" value="@Model.ActiveView" />
                 <input type="hidden" name="filter" value="@Model.ActiveFilter" />
             </div>
         </form>
 
-        <div class="hn-filter-chips hn-filter-chips--scroll">
+        <div class="hn-filter-chips hn-filter-chips--scroll" id="hnFilterChips">
             @foreach (var chip in Model.Filters)
             {
                 <a href="@BuildFilterUrl(chip.Value)"
@@ -135,17 +173,33 @@
             }
         </div>
 
-        @if (Model.QuickActions.Count > 0)
+        @if (landingQuickActions.Count > 0)
         {
-            <section class="hn-quick-actions" aria-label="@L["Nearby network shortcuts"]">
-                @foreach (var action in Model.QuickActions)
+            <section class="hn-quick-actions hn-v4-tiles" aria-label="@L["Nearby network shortcuts"]">
+                @foreach (var action in landingQuickActions)
                 {
-                    <a href="@action.Url" class="hn-quick-action">
+                    var slug = QuickActionSlug(action.Label);
+                    var badge = QuickActionBadge(slug);
+                    var art = QuickActionArt(slug);
+                    <a href="@action.Url" class="hn-quick-action hn-quick-action--@slug hn-v4-tile">
+                        @if (!string.IsNullOrWhiteSpace(badge))
+                        {
+                            <span class="hn-v4-tile-badge">@badge</span>
+                        }
                         <span class="hn-quick-action-icon"><i class="fas @action.Icon"></i></span>
                         <span class="hn-quick-action-label">@L[action.Label]</span>
                         @if (!string.IsNullOrWhiteSpace(action.Subtitle))
                         {
                             <span class="hn-quick-action-sub">@UiDisplayLocalization.Localize(L, action.Subtitle)</span>
+                        }
+                        <span class="hn-v4-tile-go hn-v4-tile-go--@slug" aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M5 12h12M13 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </span>
+                        @if (!string.IsNullOrWhiteSpace(art))
+                        {
+                            <span class="hn-v4-tile-art-wrap hn-v4-tile-art-wrap--@slug" aria-hidden="true">
+                                <img src="@Url.Content(art)" alt="" class="hn-v4-tile-art" loading="lazy" asp-append-version="true" />
+                            </span>
                         }
                     </a>
                 }
@@ -174,7 +228,7 @@
         </section>
         }
 
-        @if (Model.ActiveFilter is "All" or "NeighborRequests")
+        @if (showMgmtCards)
         {
         <section class="hn-mgmt-cards" aria-label="@L["Manage quick help"]">
             <a href="@Model.MyQuickJobsUrl" class="hn-mgmt-card hn-mgmt-card--jobs">

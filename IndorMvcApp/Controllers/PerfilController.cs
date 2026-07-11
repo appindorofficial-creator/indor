@@ -359,9 +359,7 @@ public class PerfilController : Controller
         TempData["PerfilOk"] = savedHome
             ? _localizer.T("Profile and home address saved successfully.")
             : _localizer.T("Profile updated successfully.");
-        return Redirect(savedHome
-            ? Url.Action(nameof(EditarPerfil)) + "#home"
-            : Url.Action(nameof(Opciones))!);
+        return RedirectToAction("Index", "Home");
     }
 
     [HttpGet]

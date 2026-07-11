@@ -1,0 +1,68 @@
+@model IndorMvcApp.ViewModels.MyHomeMaintenanceRequestViewModel
+@{
+    ViewData["Title"] = L["Request Indor specialist"];
+    Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
+    ViewBag.PropiedadId = Model.PropiedadId;
+    ViewBag.MyHomeNav = "maintenance";
+    ViewBag.MyHomeBackUrl = Url.Action("Maintenance", "MyHome", new { id = Model.PropiedadId, from = Model.NavigationFrom });
+}
+<div class="hf-title-row">
+    <h1 class="hf-title">@L["Request Indor specialist"]</h1>
+</div>
+
+<div class="hf-card">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <span style="width:48px;height:48px;border-radius:50%;background:rgba(16,185,129,0.12);color:#059669;display:flex;align-items:center;justify-content:center;font-size:1.2rem;">
+            <i class="fas fa-user-shield"></i>
+        </span>
+        <div>
+            <strong style="font-size:1.05rem;">@Model.Title</strong>
+            <div style="font-size:0.82rem;color:#64748B;margin-top:4px;">@L["Requested"]</div>
+        </div>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Model.Notes))
+    {
+        <p style="line-height:1.5;color:#475569;font-size:0.9rem;">@Model.Notes</p>
+    }
+</div>
+
+<p class="hf-maint-request-copy">
+    @if (Model.HasMappedService)
+    {
+        @L["INDOR will help you complete the service request so we can find a verified contractor for this task."]
+    }
+    else
+    {
+        @L["INDOR received your request. Choose a service below so we can find the right contractor for you."]
+    }
+</p>
+
+<a href="@Model.ServiceUrl" class="hf-btn hf-btn-primary hf-maint-request-go" id="maintRequestGo">
+    <i class="fas fa-arrow-right"></i> @L["Continue to service request"]
+</a>
+<a asp-action="Maintenance" asp-route-id="@Model.PropiedadId" asp-route-from="@Model.NavigationFrom" class="hf-btn hf-btn-outline" style="margin-top:10px;width:100%;justify-content:center;">
+    @L["Back to maintenance list"]
+</a>
+
+<style>
+    .hf-maint-request-copy { color: #475569; line-height: 1.5; margin-bottom: 16px; font-size: 0.92rem; }
+    .hf-btn-outline { background: #FFF; border: 1.5px solid #E5E7EB; color: #64748B; }
+</style>
+
+@section Scripts {
+<script>
+    (function () {
+        var btn = document.getElementById('maintRequestGo');
+        if (!btn) { return; }
+        btn.addEventListener('click', function (e) {
+            if (btn.classList.contains('is-busy')) {
+                e.preventDefault();
+                return;
+            }
+            btn.classList.add('is-busy');
+            btn.style.opacity = '0.7';
+            btn.style.pointerEvents = 'none';
+        }, { once: false });
+    })();
+</script>
+}

@@ -1,0 +1,52 @@
+@model IndorMvcApp.ViewModels.HomeownerNearbyNetworkViewModel?
+@{
+    var radius = Model?.RadiusMiles.ToString("0.#") ?? "3";
+    var notifyCount = ViewData["HomeNotificationCount"] as int? ?? 0;
+}
+
+<header class="hn-v4-header">
+    <div class="hn-v4-header-bar">
+        <a asp-controller="Home" asp-action="Index" class="hn-v4-logo-word" aria-label="@L["INDOR home"]">
+            <span class="hn-v4-logo-ch">I</span>
+            <span class="hn-v4-logo-ch">N</span>
+            <span class="hn-v4-logo-ch">D</span>
+            <span class="hn-v4-logo-o" aria-hidden="true">
+                <svg viewBox="0 0 24 24" focusable="false">
+                    <circle cx="12" cy="12" r="11" fill="currentColor" />
+                    <path d="M12 6.5 L17.5 11.5 V17 H6.5 V11.5 Z" fill="#FFFFFF" />
+                    <rect x="10.2" y="12.5" width="3.6" height="4.5" rx="0.6" fill="currentColor" />
+                </svg>
+            </span>
+            <span class="hn-v4-logo-ch">R</span>
+        </a>
+        <button type="button"
+                class="hn-v4-icon-btn js-home-bell @(notifyCount > 0 ? "has-dot" : "")"
+                aria-label="@L["Notifications"]"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-controls="notifPanel">
+            <svg class="hn-v4-icon-svg" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M12 3a5 5 0 0 1 5 5v2.2c0 .8.3 1.6.8 2.2l.7.8c.5.6.8 1.3.8 2v.5H4.7v-.5c0-.7.3-1.4.8-2l.7-.8c.5-.6.8-1.4.8-2.2V8a5 5 0 0 1 5-5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M10 18.5a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="hn-v4-header-main">
+        <div class="hn-v4-header-copy">
+            <h1 class="hn-v4-title">@L["Nearby Network"]</h1>
+            <p class="hn-v4-subtitle">
+                @L["Explore help, updates, and services within"]
+                <strong>@L.T("{0} miles", radius)</strong>
+                @L["of your home."]
+            </p>
+        </div>
+        <button type="button" class="hn-v4-profile-btn nav-jump" data-target="section-more">
+            <svg class="hn-v4-icon-svg hn-v4-icon-svg--sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M6 19c0-3.3 2.7-6 6-6s6 2.7 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+            <span>@L["My Profile"]</span>
+        </button>
+    </div>
+</header>

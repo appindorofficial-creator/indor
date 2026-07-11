@@ -182,6 +182,19 @@ public class MyHomeMaintenanceDetailViewModel
     public string Status { get; set; } = "Upcoming";
     public string? Notes { get; set; }
     public string? ProviderName { get; set; }
+    public bool CanRequestIndor { get; set; }
+    public string? RequestServiceUrl { get; set; }
+}
+
+public class MyHomeMaintenanceRequestViewModel
+{
+    public int Id { get; set; }
+    public int PropiedadId { get; set; }
+    public string? NavigationFrom { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string? Notes { get; set; }
+    public string ServiceUrl { get; set; } = "/";
+    public bool HasMappedService { get; set; }
 }
 
 public class MyHomeProvidersViewModel
@@ -258,6 +271,9 @@ public class MyHomeMaintenanceFormViewModel
     public string? Notes { get; set; }
 
     public int? PropiedadProveedorId { get; set; }
+
+    /// <summary>Agenda = reminder only; IndorSpecialist = INDOR finds a contractor.</summary>
+    public string SaveMode { get; set; } = "Agenda";
 }
 
 public class MyHomeDocumentsViewModel

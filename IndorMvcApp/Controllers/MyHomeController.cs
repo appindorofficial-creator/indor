@@ -493,17 +493,58 @@ public class MyHomeController : Controller
         if (!await UserOwnsPropertyAsync(model.PropiedadId)) return NotFound();
         if (!ModelState.IsValid) return View(model);
 
-        _db.PropiedadMantenimiento.Add(new PropiedadMantenimiento
+        var requestIndor = string.Equals(model.SaveMode, "IndorSpecialist", StringComparison.OrdinalIgnoreCase);
+        var item = new PropiedadMantenimiento
         {
             PropiedadId = model.PropiedadId,
             Title = model.Title.Trim(),
             DueDate = model.DueDate,
-            Status = model.Status,
+            Status = requestIndor ? "Requested" : model.Status,
             Notes = model.Notes?.Trim(),
             PropiedadProveedorId = model.PropiedadProveedorId
-        });
+        };
+        _db.PropiedadMantenimiento.Add(item);
         await _db.SaveChangesAsync();
+
+        if (requestIndor)
+        {
+            TempData["MaintenanceRequestOk"] = _localizer.T(
+                "Your request was saved. Complete the service details so INDOR can find a contractor for you.");
+            return RedirectToAction(nameof(MaintenanceRequestService), new { id = item.Id, from = model.NavigationFrom });
+        }
+
+        TempData["MaintenanceSaved"] = _localizer.T("Maintenance task saved to your agenda.");
         return RedirectToAction(nameof(Maintenance), new { id = model.PropiedadId, from = model.NavigationFrom });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> MaintenanceRequestService(int id, string? from)
+    {
+        var item = await LoadMaintenanceAsync(id);
+        if (item == null) return NotFound();
+
+        if (!string.Equals(item.Status, "Requested", StringComparison.OrdinalIgnoreCase))
+        {
+            item.Status = "Requested";
+            item.FechaActualizacion = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
+        }
+
+        var serviceUrl = await ResolveMaintenanceServiceUrlAsync(item);
+        var fallbackUrl = $"{Url.Action("Index", "Home")}#home-care-priorities";
+        var hasMappedService = !string.Equals(serviceUrl, fallbackUrl, StringComparison.OrdinalIgnoreCase)
+            && !serviceUrl.Contains("#home-care-priorities", StringComparison.OrdinalIgnoreCase);
+
+        return View(new MyHomeMaintenanceRequestViewModel
+        {
+            Id = item.Id,
+            PropiedadId = item.PropiedadId,
+            NavigationFrom = HomeNavigationUrls.NormalizeMyHomeNavigationFrom(from),
+            Title = item.Title,
+            Notes = item.Notes,
+            ServiceUrl = serviceUrl,
+            HasMappedService = hasMappedService
+        });
     }
 
     [HttpGet]
@@ -562,7 +603,10 @@ public class MyHomeController : Controller
             CompletedDate = item.CompletedDate,
             Status = item.Status,
             Notes = item.Notes,
-            ProviderName = item.Proveedor?.Name
+            ProviderName = item.Proveedor?.Name,
+            CanRequestIndor = !string.Equals(item.Status, "Completed", StringComparison.OrdinalIgnoreCase)
+                && !string.Equals(item.Status, "Requested", StringComparison.OrdinalIgnoreCase),
+            RequestServiceUrl = Url.Action(nameof(MaintenanceRequestService), new { id = item.Id, from })
         });
     }
 
@@ -810,6 +854,26 @@ public class MyHomeController : Controller
 
     private string ResolveMaintenanceBackUrl(int propiedadId, string? from) =>
         HomeNavigationUrls.ResolveMyHomeBackUrl(Url, from, propiedadId);
+
+    private async Task<string> ResolveMaintenanceServiceUrlAsync(PropiedadMantenimiento item)
+    {
+        var priorities = await _db.HomeCarePriorities
+            .AsNoTracking()
+            .Where(p => p.Activo)
+            .OrderBy(p => p.Orden)
+            .ToListAsync();
+
+        var (serviceUrl, _) = PropertyMaintenanceBookingLinkResolver.Resolve(
+            item.Title,
+            "General",
+            priorities,
+            Url,
+            item.PropiedadId);
+
+        return !string.IsNullOrWhiteSpace(serviceUrl)
+            ? serviceUrl
+            : $"{Url.Action("Index", "Home")}#home-care-priorities";
+    }
 
     private static string SerializePropertyInfo(PropertyInfoViewModel info)
     {

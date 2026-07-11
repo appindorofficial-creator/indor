@@ -3,116 +3,138 @@
     ViewData["Title"] = L["Create your profile - INDOR"];
     Layout = "_LayoutAuth";
     ViewData["LanguageSelectorVariant"] = "compact";
+    ViewData["AuthExtraCss"] = "selectrole-v3.css";
 }
 
-<div class="login-container login-container--select-role">
-    <nav class="auth-stepper" aria-label="@L["Onboarding progress"]">
-            <div class="auth-stepper-seg is-done"></div>
-            <div class="auth-stepper-seg is-active"></div>
-            <div class="auth-stepper-seg"></div>
-            <div class="auth-stepper-seg"></div>
-            <div class="auth-stepper-seg"></div>
-        </nav>
-        <div class="top-bar top-bar--with-lang">
-            <a asp-controller="Account" asp-action="Welcome" class="back-btn" aria-label="@L["Back"]">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            @await Html.PartialAsync("_LanguageSelector")
-        </div>
-
-        <div class="logo-container">
-            <img src="~/logoindor.png" alt="@L["Indor - The Home Operating System"]" class="smart-home-logo" />
-        </div>
-
-        <div class="brand-section">
-            <h1 class="brand-title">@L["Create your profile"]</h1>
-            <p class="brand-tagline">
-                @L["Start with your personal profile. You can add or edit your home, address, or role later inside INDOR."]
-            </p>
-        </div>
-
-        <div class="form-card">
-            <form asp-controller="Account" asp-action="SelectRole" method="post" id="roleForm">
-                @Html.AntiForgeryToken()
-                <input type="hidden" asp-for="UserId" />
-                <input type="hidden" asp-for="SelectedRole" id="selectedRoleInput" value="Propietario" />
-
-                <div asp-validation-summary="ModelOnly" class="validation-error"></div>
-
-                <div class="role-card-primary selected" data-role="Propietario" onclick="selectRole(this)" role="button" tabindex="0">
-                    <div class="role-icon"><i class="fas fa-user"></i></div>
-                    <div class="role-primary-body">
-                        <div class="role-primary-header">
-                            <div class="role-primary-title">@L["Personal Profile"]</div>
-                            <span class="role-recommended"><i class="fas fa-star"></i> @L["Recommended"]</span>
-                        </div>
-                        <div class="role-primary-subtitle">@L["Neighbor / Personal Profile"]</div>
-                        <p class="role-primary-desc">
-                            @L["For anyone joining INDOR—whether you own a home, rent, or are just getting started."]
-                            <strong>@L["Add your address or home later."]</strong>
-                        </p>
-                    </div>
-                    <span class="role-check" aria-hidden="true"><i class="fas fa-check"></i></span>
-                </div>
-
-                <div class="roles-divider">
-                    <i class="fas fa-shield-halved"></i>
-                    <span>@L["You can change or expand your role later."]</span>
-                </div>
-
-                <div class="roles-secondary">
-                    <div class="role-card-secondary" data-role="Realtor" onclick="selectRole(this)" role="button" tabindex="0">
-                        <div class="role-icon"><i class="fas fa-user-tie"></i></div>
-                        <div class="role-name">@L["Realtor"]</div>
-                        <div class="role-desc">@L["Manage client properties and transactions."]</div>
-                    </div>
-
-                    <div class="role-card-secondary" data-role="AdministradorPropiedades" onclick="selectRole(this)" role="button" tabindex="0">
-                        <div class="role-icon"><i class="fas fa-building"></i></div>
-                        <div class="role-name">@L["Multi-Property Owner"]</div>
-                        <div class="role-desc">@L["Manage Airbnbs, rentals & multiple homes."]</div>
-                    </div>
-
-                    <div class="role-card-secondary" data-role="ProveedorServicios" onclick="selectRole(this)" role="button" tabindex="0">
-                        <div class="role-icon"><i class="fas fa-tools"></i></div>
-                        <div class="role-name">@L["Service Provider"]</div>
-                        <div class="role-desc">@L["Manage services and maintenance work."]</div>
-                    </div>
-                </div>
-
-                <div class="role-form-actions">
-                <button type="submit" class="btn btn-primary" id="continueBtn">
-                    <i class="fas fa-circle-check btn-icon btn-icon-left"></i>
-                    <span class="btn-label">@L["Continue"]</span>
-                    <i class="fas fa-chevron-right btn-icon btn-icon-right"></i>
-                </button>
-
-                <div class="skip-link">
-                    <button type="submit" name="skipLater" value="true">@L["I'll choose later"]</button>
-                </div>
-                </div>
-            </form>
-        </div>
+<div class="login-container login-container--select-role sr-screen">
+    <div class="sr-scene" aria-hidden="true">
+        <img src="~/images/selectrole-bg-house.png" alt="" class="sr-scene-house" asp-append-version="true" />
+        <span class="sr-scene-icon sr-scene-icon--people"><i class="fas fa-users"></i></span>
+        <span class="sr-scene-icon sr-scene-icon--key"><i class="fas fa-key"></i></span>
+        <span class="sr-scene-icon sr-scene-icon--shield"><i class="fas fa-shield-halved"></i></span>
     </div>
 
-    <script>
-        function selectRole(card) {
-            document.querySelectorAll('.role-card-primary, .role-card-secondary').forEach(c => c.classList.remove('selected'));
-            card.classList.add('selected');
-            document.getElementById('selectedRoleInput').value = card.getAttribute('data-role');
+    <nav class="auth-stepper" aria-label="@L["Onboarding progress"]">
+        <div class="auth-stepper-seg is-done"></div>
+        <div class="auth-stepper-seg is-active"></div>
+        <div class="auth-stepper-seg"></div>
+        <div class="auth-stepper-seg"></div>
+        <div class="auth-stepper-seg"></div>
+    </nav>
+
+    <div class="top-bar top-bar--with-lang">
+        <a asp-controller="Account" asp-action="Welcome" class="back-btn" aria-label="@L["Back"]">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        @await Html.PartialAsync("_LanguageSelector")
+    </div>
+
+    <div class="logo-container sr-logo-wrap">
+        <img src="~/images/indor-logo-transparent.png" alt="@L["Indor - The Home Operating System"]" class="smart-home-logo sr-logo" asp-append-version="true" />
+        <p class="sr-logo-tagline">@L["The Home Operating System, helping navigate owning a house."]</p>
+    </div>
+
+    <div class="brand-section sr-brand">
+        <h1 class="brand-title sr-brand-title">@L["Create your profile"]</h1>
+        <p class="brand-tagline sr-brand-tagline">
+            @L["Start with your personal profile. You can add or edit your home, address, or role later inside INDOR."]
+        </p>
+    </div>
+
+    <form asp-controller="Account" asp-action="SelectRole" method="post" id="roleForm" class="sr-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="UserId" />
+        <input type="hidden" asp-for="SelectedRole" id="selectedRoleInput" value="Propietario" />
+
+        <div asp-validation-summary="ModelOnly" class="validation-error sr-validation"></div>
+
+        <div class="sr-role-primary selected" data-role="Propietario" onclick="selectRole(this)" role="button" tabindex="0" onkeydown="roleKeySelect(event, this)">
+            <span class="sr-spark sr-spark--gold" aria-hidden="true">✦</span>
+            <span class="sr-spark sr-spark--blue" aria-hidden="true">✦</span>
+            <span class="sr-badge-rec"><i class="fas fa-star"></i> @L["Recommended"]</span>
+            <div class="sr-role-primary-inner">
+                <div class="sr-avatar-wrap">
+                    <img src="~/images/selectrole-personal-avatar.png" alt="" class="sr-avatar" asp-append-version="true" width="72" height="72" />
+                    <span class="sr-avatar-house" aria-hidden="true"><i class="fas fa-house"></i></span>
+                </div>
+                <div class="sr-role-primary-copy">
+                    <div class="sr-role-primary-title">@L["Personal Profile"]</div>
+                    <div class="sr-role-primary-sub">@L["Neighbor / Personal Profile"]</div>
+                    <p class="sr-role-primary-desc">
+                        @L["For anyone joining INDOR—whether you own a home, rent, or are just getting started."]
+                        <strong>@L["Add your address or home later."]</strong>
+                    </p>
+                </div>
+            </div>
+            <span class="sr-role-check" aria-hidden="true"><i class="fas fa-check"></i></span>
+        </div>
+
+        <div class="sr-role-grid">
+            <div class="sr-role-tile sr-role-tile--realtor" data-role="Realtor" onclick="selectRole(this)" role="button" tabindex="0" onkeydown="roleKeySelect(event, this)">
+                <div class="sr-tile-icon"><i class="fas fa-user-tie"></i></div>
+                <div class="sr-tile-name">@L["Realtor"]</div>
+                <div class="sr-tile-desc">@L["Manage client properties and transactions."]</div>
+                <span class="sr-tile-arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+            </div>
+
+            <div class="sr-role-tile sr-role-tile--owner" data-role="AdministradorPropiedades" onclick="selectRole(this)" role="button" tabindex="0" onkeydown="roleKeySelect(event, this)">
+                <div class="sr-tile-icon"><i class="fas fa-building"></i></div>
+                <div class="sr-tile-name">@L["Multi-Property Owner"]</div>
+                <div class="sr-tile-desc">@L["Manage Airbnbs, rentals & multiple homes."]</div>
+                <span class="sr-tile-arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+            </div>
+
+            <div class="sr-role-tile sr-role-tile--provider" data-role="ProveedorServicios" onclick="selectRole(this)" role="button" tabindex="0" onkeydown="roleKeySelect(event, this)">
+                <div class="sr-tile-icon"><i class="fas fa-screwdriver-wrench"></i></div>
+                <div class="sr-tile-name">@L["Service Provider"]</div>
+                <div class="sr-tile-desc">@L["Manage services and maintenance work."]</div>
+                <span class="sr-tile-arrow" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+            </div>
+        </div>
+
+        <div class="roles-divider sr-divider">
+            <i class="fas fa-shield-halved"></i>
+            <span>@L["You can change or expand your role later."]</span>
+        </div>
+
+        <div class="role-form-actions sr-actions">
+            <button type="submit" class="sr-continue-btn" id="continueBtn">
+                <span class="sr-continue-icon" aria-hidden="true"><i class="fas fa-arrow-right"></i></span>
+                <span class="sr-continue-label">@L["Continue"]</span>
+            </button>
+
+            <div class="skip-link sr-skip">
+                <button type="submit" name="skipLater" value="true">@L["I'll choose later"]</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+    function selectRole(card) {
+        document.querySelectorAll('.sr-role-primary, .sr-role-tile').forEach(function (c) { c.classList.remove('selected'); });
+        card.classList.add('selected');
+        document.getElementById('selectedRoleInput').value = card.getAttribute('data-role');
+    }
+
+    function roleKeySelect(e, card) {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            selectRole(card);
+        }
+    }
+
+    document.getElementById('roleForm').addEventListener('submit', function (e) {
+        var skipBtn = e.submitter && e.submitter.name === 'skipLater';
+        if (skipBtn) {
+            document.getElementById('selectedRoleInput').value = 'Propietario';
+            return;
         }
 
-        document.getElementById('roleForm').addEventListener('submit', function (e) {
-            var skipBtn = e.submitter && e.submitter.name === 'skipLater';
-            if (skipBtn) {
-                document.getElementById('selectedRoleInput').value = 'Propietario';
-                return;
-            }
-
-            var selectedRole = document.getElementById('selectedRoleInput').value;
-            if (!selectedRole) {
-                e.preventDefault();
-                alert('@Html.Raw(L["Please select a profile before continuing."].Replace("'", "\\'"))');
-            }
-        });
-    </script>
+        var selectedRole = document.getElementById('selectedRoleInput').value;
+        if (!selectedRole) {
+            e.preventDefault();
+            alert('@Html.Raw(L["Please select a profile before continuing."].Replace("'", "\\'"))');
+        }
+    });
+</script>

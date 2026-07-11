@@ -333,6 +333,7 @@ public static class MyHomeDisplayService
     {
         "Upcoming" => "Upcoming",
         "Completed" => "Completed",
+        "Requested" => "Requested",
         _ => status ?? "Upcoming"
     };
 

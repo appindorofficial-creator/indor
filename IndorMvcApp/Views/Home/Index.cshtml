@@ -540,6 +540,12 @@
         ?? new IndorMvcApp.ViewModels.MoreProfileViewModel();
     ViewData["HomeNotificationCount"] = homeNotificationItems.Count;
     ViewData["HomeNotificationItems"] = homeNotificationItems;
+
+    var homeNearbyNetworkModel = ViewBag.HomeNearbyNetwork as IndorMvcApp.ViewModels.HomeownerNearbyNetworkViewModel;
+    var isHomeMapView = homeNearbyNetworkModel?.ActiveView == "map";
+    var isHomeLanding = homeNearbyNetworkModel?.ActiveFilter == IndorMvcApp.Models.NearbyNetworkHomeownerFilters.All
+        && string.IsNullOrWhiteSpace(homeNearbyNetworkModel?.SearchQuery)
+        && !isHomeMapView;
 }
 
 @functions {
@@ -576,7 +582,7 @@
 <html lang="@(L.IsSpanish ? "es" : "en")">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>@ViewData["Title"]</title>
     @await Html.PartialAsync("_IndorDesignHead")
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -589,9 +595,10 @@
     <link rel="stylesheet" href="~/css/realtor-portal.css" asp-append-version="true" />
     @await Html.PartialAsync("_AppVersionHead")
     <link rel="stylesheet" href="~/css/home-index.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/home-nearby-network-v4.css" asp-append-version="true" />
     @await Html.PartialAsync("_TabletResponsiveHead")
 </head>
-<body class="rl-dash-page">
+<body class="rl-dash-page @(isHomeLanding ? "hn-landing-active" : "")">
     <div class="home-search-overlay" id="homeSearchOverlay" role="dialog" aria-label="@L["Search"]" aria-hidden="true">
         <div class="home-search-panel">
             <div class="home-search-head">
@@ -630,38 +637,25 @@
     </div>
 
     <!-- ====== HOME (Nearby Network) ====== -->
-    @{
-        var homeNearbyNetworkModel = ViewBag.HomeNearbyNetwork as IndorMvcApp.ViewModels.HomeownerNearbyNetworkViewModel;
-        var isHomeMapView = homeNearbyNetworkModel?.ActiveView == "map";
-    }
-    <section class="section ho-portal-section active @(isHomeMapView ? "hn-map-active" : "")" id="section-home">
+    <section class="section ho-portal-section active hn-v4 @(isHomeMapView ? "hn-map-active" : "") @(isHomeLanding ? "hn-v4-landing" : "")" id="section-home">
         @{
             var homeNearbyNetwork = homeNearbyNetworkModel;
         }
         <div class="rl-dash-shell rl-network-page @(isHomeMapView ? "rl-network-page--map" : "")">
-            <div class="rl-portal-page-hero @(isHomeMapView ? "rl-portal-page-hero--network-map" : "")">
-                @await Html.PartialAsync("_HomeownerTopbar")
-                @if (homeNearbyNetwork != null)
-                {
-                    <div class="rl-page-header rl-page-header--hero rl-network-head">
-                        <div class="rl-page-header-copy">
-                            <h1 class="rl-page-title">@L["Nearby Network"]</h1>
-                            <p class="rl-page-subtitle">@L.T("{0} miles around your home", homeNearbyNetwork.RadiusMiles.ToString("0.#"))</p>
-                        </div>
-                        @if (!isHomeMapView)
-                        {
-                            <button type="button" class="rl-btn-outline rl-btn-outline--sm rl-network-profile-btn nav-jump" data-target="section-more">
-                                <i class="fas fa-user"></i> @L["My Profile"]
-                            </button>
-                        }
-                    </div>
-                    @await Html.PartialAsync("_HomeNearbyNetworkHero", homeNearbyNetwork)
-                }
-            </div>
+            @await Html.PartialAsync("_HomeNetworkHeader", homeNearbyNetwork)
 
             @if (TempData["NeighborRequestSaved"] is string neighborMsg)
             {
-                <div class="alert-schedule-ok" style="margin:0 0 12px;"><i class="fas fa-check-circle"></i> @neighborMsg</div>
+                <div class="alert-schedule-ok hn-v4-alert"><i class="fas fa-check-circle"></i> @neighborMsg</div>
+            }
+            @if (TempData["PerfilOk"] != null)
+            {
+                <div class="alert-schedule-ok hn-v4-alert"><i class="fas fa-check-circle"></i> @TempData["PerfilOk"]</div>
+            }
+
+            @if (homeNearbyNetwork != null)
+            {
+                @await Html.PartialAsync("_HomeNearbyNetworkHero", homeNearbyNetwork)
             }
 
             <div class="ho-view-switcher-wrap">
@@ -679,7 +673,7 @@
     </section>
 
     <!-- ====== MY HOME (property dashboard) ====== -->
-    <section class="section" id="section-mydashboard">
+    <section class="section hn-v4-myhome" id="section-mydashboard">
         @{
             var homeDashboard = ViewBag.HomeDashboard as IndorMvcApp.ViewModels.HomeDashboardViewModel;
         }
@@ -1056,6 +1050,15 @@
             pastWork: @Html.Raw(JsonSerializer.Serialize(L["Past work on your home"]))
         };
 
+        function syncBottomNavOffset() {
+            const nav = document.querySelector('.bottom-nav');
+            if (!nav) return;
+            const navH = Math.ceil(nav.getBoundingClientRect().height);
+            if (navH > 0) {
+                document.documentElement.style.setProperty('--homeowner-bottom-nav-h', `${navH}px`);
+            }
+        }
+
         function activateSection(sectionId, scrollTargetId) {
             if (!sectionId) return;
             const section = document.getElementById(sectionId);
@@ -1065,6 +1068,12 @@
             });
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             section.classList.add('active');
+            const isLandingHome = sectionId === 'section-home' && section.classList.contains('hn-v4-landing');
+            document.body.classList.toggle('hn-landing-active', isLandingHome);
+            document.body.style.overflow = isLandingHome ? 'hidden' : '';
+            if (isLandingHome) {
+                syncBottomNavOffset();
+            }
 
             const scrollTarget = scrollTargetId
                 ? document.getElementById(scrollTargetId)
@@ -1080,21 +1089,24 @@
         }
 
         function buildSectionHash(target) {
-            const params = new URLSearchParams(window.location.search);
             const base = window.location.pathname;
-            const qs = params.toString();
-            if (target === 'section-home' && qs) {
-                return base + '?' + qs + '#' + target;
+            if (target === 'section-home') {
+                return base + '#section-home';
             }
-            return '#' + target;
+            return base + '#' + target;
         }
 
         // === Bottom nav ===
         document.querySelectorAll('.bottom-nav .nav-item[data-target]').forEach(btn => {
             btn.addEventListener('click', () => {
-                activateSection(btn.dataset.target);
-                if (btn.dataset.target?.startsWith('section-')) {
-                    history.replaceState(null, '', buildSectionHash(btn.dataset.target));
+                const target = btn.dataset.target;
+                if (target === 'section-home' && window.location.search) {
+                    window.location.href = window.location.pathname + '#section-home';
+                    return;
+                }
+                activateSection(target);
+                if (target?.startsWith('section-')) {
+                    history.replaceState(null, '', buildSectionHash(target));
                 }
             });
         });
@@ -1128,6 +1140,11 @@
         }
 
         applyRouteFromHash();
+        syncBottomNavOffset();
+        window.addEventListener('resize', syncBottomNavOffset);
+        window.addEventListener('orientationchange', () => window.setTimeout(syncBottomNavOffset, 120));
+        window.visualViewport?.addEventListener('resize', syncBottomNavOffset);
+        window.visualViewport?.addEventListener('scroll', syncBottomNavOffset);
         window.addEventListener('hashchange', applyRouteFromHash);
 
         // === Slider por propiedad ===
@@ -1259,7 +1276,7 @@
             el.addEventListener('click', () => {
                 const target = el.dataset.target;
                 activateSection(target, el.dataset.scrollTarget || null);
-                if (target === 'section-mydashboard' || target === 'section-home') {
+                if (target?.startsWith('section-')) {
                     history.replaceState(null, '', buildSectionHash(target));
                 }
             });

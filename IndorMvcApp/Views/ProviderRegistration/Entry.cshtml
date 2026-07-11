@@ -1,13 +1,19 @@
 @model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
 @{
     Layout = "_LayoutStep";
+    ViewData["PrvWizardSkin"] = "prv-page--entry";
     var s = Model.State;
     var selectedPath = string.Equals(s.OnboardingPath, "Apply", StringComparison.OrdinalIgnoreCase) ? "apply" : "pro";
 }
-<div class="prv-wiz-step-label">@L.T("Step {0} of {1}", Model.Step, Model.TotalSteps)</div>
-<div class="ob-head-block">
-    <h1>@Model.Title</h1>
-    <p>@Model.Subtitle</p>
+
+@section Head {
+    <link rel="stylesheet" href="~/css/provider-entry-v1.css" asp-append-version="true" />
+}
+
+<div class="prv-entry-hero">
+    <span class="prv-entry-step-pill">@L.T("Step {0} of {1}", Model.Step, Model.TotalSteps)</span>
+    <h1>@L[Model.Title]</h1>
+    <p>@L[Model.Subtitle]</p>
 </div>
 
 <form asp-action="Entry" method="post" id="prvEntryForm" class="prv-wiz-stack pa-validate" novalidate>
@@ -16,41 +22,82 @@
 
     <input type="hidden" name="path" id="prvEntryPath" value="@selectedPath" />
 
-    <div class="prv-entry-options" role="radiogroup" aria-label="@L["Choose how you want to get started with INDOR"]">
+    <div class="prv-entry-options" role="radiogroup" aria-label="@L[Model.Subtitle]">
         <button type="button"
-                class="prv-wiz-card prv-wiz-card--selectable @(selectedPath == "pro" ? "is-selected" : "")"
+                class="prv-entry-card prv-entry-card--pro @(selectedPath == "pro" ? "is-selected" : "")"
                 data-path="pro"
                 role="radio"
                 aria-checked="@(selectedPath == "pro" ? "true" : "false")">
-            <span class="prv-wiz-card-icon prv-wiz-icon-blue"><i class="fas fa-chart-line"></i></span>
-            <span class="prv-wiz-card-body">
-                <strong>@L["Use INDOR Pro"]</strong>
-                <small>Run your business with INDOR Pro. Manage clients, jobs, photos, estimates, invoices, reports, and property history in one place.</small>
-                <span class="prv-wiz-badge prv-wiz-badge--green"><i class="fas fa-check"></i> Available now</span>
+            <span class="prv-entry-card-select" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L19 7"/></svg>
             </span>
+            <img src="~/images/prv-entry-pro-art.png" alt="" class="prv-entry-card-art" loading="lazy" asp-append-version="true" />
+            <div class="prv-entry-card-main">
+                <strong>@L["Use INDOR Pro"]</strong>
+                <p>@L["Start using INDOR Pro tools right away. Manage clients, jobs, photos, estimates, invoices, reports, and property history in one place."]</p>
+                <span class="prv-entry-badge prv-entry-badge--green">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 12l5 5L19 7"/></svg>
+                    @L["Available now"]
+                </span>
+                <p class="prv-entry-card-note prv-entry-card-note--pro">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.2 6.8H21l-5.5 4 2.1 6.7L12 17.8 6.4 19.5l2.1-6.7L3 8.8h6.8z"/></svg>
+                    <span>@L["No provider activation required to start using these tools."]</span>
+                </p>
+            </div>
         </button>
 
         <button type="button"
-                class="prv-wiz-card prv-wiz-card--selectable @(selectedPath == "apply" ? "is-selected" : "")"
+                class="prv-entry-card prv-entry-card--apply @(selectedPath == "apply" ? "is-selected" : "")"
                 data-path="apply"
                 role="radio"
                 aria-checked="@(selectedPath == "apply" ? "true" : "false")">
-            <span class="prv-wiz-card-icon prv-wiz-icon-orange"><i class="fas fa-clipboard-check"></i></span>
-            <span class="prv-wiz-card-body">
+            <img src="~/images/prv-entry-apply-art.png" alt="" class="prv-entry-card-art" loading="lazy" asp-append-version="true" />
+            <div class="prv-entry-card-main">
                 <strong>@L["Apply to Become an INDOR Provider"]</strong>
-                <small>@L["Apply to receive INDOR leads and job opportunities, appear in the provider network, and activate your provider profile."]</small>
-                <span class="prv-wiz-badge prv-wiz-badge--orange"><i class="fas fa-shield-halved"></i> Requires verification</span>
-            </span>
+                <p>@L["Apply to receive INDOR leads and job opportunities, appear in the provider network, and activate your provider profile."]</p>
+                <span class="prv-entry-badge prv-entry-badge--orange">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l7 4v5c0 4.2-2.8 7.9-7 9-4.2-1.1-7-4.8-7-9V7l7-4z"/></svg>
+                    @L["Verification required"]
+                </span>
+                <p class="prv-entry-card-note prv-entry-card-note--apply">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 11c1.7 0 3-1.3 3-3s-1.3-3-3-3-3 1.3-3 3 1.3 3 3 3zm-8 0c1.7 0 3-1.3 3-3S9.7 5 8 5 5 6.3 5 8s1.3 3 3 3zm0 2c-2.3 0-7 1.2-7 3.5V19h14v-2.5C15 14.2 10.3 13 8 13zm8 0c-.3 0-.6 0-1 .1 1.2.8 2 1.9 2 3.4V19h6v-2.5c0-2.3-4.7-3.5-7-3.5z"/></svg>
+                    <span>@L["Required if you want to appear in the network and receive local jobs."]</span>
+                </p>
+            </div>
         </button>
     </div>
 
     <p class="prv-entry-hint">@L["Tap an option to select it. Both paths are available."]</p>
 
-    <div class="prv-wiz-info">
-        <i class="fas fa-circle-info"></i>
+    <section class="prv-entry-diff" aria-label="@L["What's the difference?"]">
+        <div>
+            <h2>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/></svg>
+                @L["What's the difference?"]
+            </h2>
+            <ul class="prv-entry-diff-list">
+                <li>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 12l5 5L19 7"/></svg>
+                    <span>@L["INDOR Pro = tools to run your business"]</span>
+                </li>
+                <li>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 12l5 5L19 7"/></svg>
+                    <span>@L["INDOR Provider = visibility, leads, and verified profile"]</span>
+                </li>
+                <li>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 12l5 5L19 7"/></svg>
+                    <span>@L["You can start with INDOR Pro first, then apply as a provider later"]</span>
+                </li>
+            </ul>
+        </div>
+        <img src="~/images/prv-entry-lightbulb.png" alt="" class="prv-entry-diff-art" loading="lazy" asp-append-version="true" />
+    </section>
+
+    <div class="prv-entry-important">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 3l7 4v5c0 4.2-2.8 7.9-7 9-4.2-1.1-7-4.8-7-9V7l7-4z"/></svg>
         <div>
             <strong>@L["Important"]</strong>
-            <p>You can start using INDOR Pro without completing provider activation. To receive INDOR jobs, you will need to submit your business information, verification documents, complete a short category assessment, and schedule an activation call with INDOR.</p>
+            <p>@L["To receive INDOR jobs, you'll need to submit your business information, verification documents, complete a short category assessment, and schedule an activation call with INDOR."]</p>
         </div>
     </div>
 
@@ -63,7 +110,7 @@
                @(s.TermsAccepted ? "checked" : null)
                data-pa-required="true"
                data-field-label="@L["Please agree to INDOR's Terms &amp; Conditions."]" />
-        <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms" asp-route-from="provider-entry">@L["Terms & Conditions"]</a></span>
+        <span>@L["I agree to INDOR's"] <a asp-controller="Account" asp-action="Terms" asp-route-from="provider-entry">@L["Terms & Conditions"]</a></span>
     </label>
 </form>
 

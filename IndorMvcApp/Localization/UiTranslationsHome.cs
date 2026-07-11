@@ -289,6 +289,36 @@ public static class UiTranslationsHome
 
             ["Save task"] = "Guardar tarea",
 
+            ["How would you like to handle this?"] = "¿Cómo quieres manejar esto?",
+            ["Save to my agenda"] = "Guardar en mi agenda",
+            ["Add a reminder with your message. INDOR will not search for a contractor."] =
+                "Agrega un recordatorio con tu mensaje. INDOR no buscará un contratista.",
+            ["Request Indor specialist"] = "Solicitar especialista Indor",
+            ["INDOR will receive your request and find a verified contractor for you."] =
+                "INDOR recibirá tu solicitud y encontrará un contratista verificado por ti.",
+            ["Leave a message"] = "Deja un mensaje",
+            ["Optional notes about this task..."] = "Notas opcionales sobre esta tarea...",
+            ["Save to agenda"] = "Guardar en agenda",
+            ["Double-tap a task in your list anytime to request an Indor specialist."] =
+                "Toca dos veces una tarea de tu lista para solicitar un especialista Indor.",
+            ["Tap the shield icon on any task to request an Indor specialist."] =
+                "Toca el ícono de escudo en cualquier tarea para solicitar un especialista Indor.",
+            ["Continue to service request"] = "Continuar al requerimiento de servicio",
+            ["Continue service request"] = "Continuar requerimiento",
+            ["INDOR will help you complete the service request so we can find a verified contractor for this task."] =
+                "INDOR te ayudará a completar el requerimiento de servicio para encontrar un contratista verificado para esta tarea.",
+            ["INDOR received your request. Choose a service below so we can find the right contractor for you."] =
+                "INDOR recibió tu solicitud. Elige un servicio abajo para que encontremos el contratista adecuado.",
+            ["Back to maintenance list"] = "Volver a la lista de mantenimiento",
+            ["Requested"] = "Solicitado",
+            ["Maintenance task saved to your agenda."] = "Tarea de mantenimiento guardada en tu agenda.",
+            ["Your request was saved. Complete the service details so INDOR can find a contractor for you."] =
+                "Tu solicitud fue guardada. Completa los detalles del servicio para que INDOR encuentre un contratista.",
+            ["Your request was saved. Browse services to tell INDOR what you need."] =
+                "Tu solicitud fue guardada. Explora servicios para indicarle a INDOR lo que necesitas.",
+            ["Complete the service details so INDOR can find a contractor for you."] =
+                "Completa los detalles del servicio para que INDOR encuentre un contratista por ti.",
+
             ["Maintenance Details"] = "Detalles de mantenimiento",
 
             ["Maintenance details"] = "Detalles de mantenimiento",
@@ -1106,6 +1136,23 @@ public static class UiTranslationsHome
             ["Feed"] = "Actividad",
             ["Home view"] = "Vista del hogar",
             ["Feed, neighbors, local help"] = "Actividad, vecinos, ayuda local",
+            ["Explore help, updates, and services within"] = "Explora ayuda, actualizaciones y servicios en un radio de",
+            ["of your home."] = "de tu hogar.",
+            ["{0} miles"] = "{0} millas",
+            ["See nearby places"] = "Ver lugares cercanos",
+            ["See local updates"] = "Ver actualizaciones locales",
+            ["Local feed, neighbors, and help around you."] = "Feed local, vecinos y ayuda a tu alrededor.",
+            ["Your home dashboard, records, and details."] = "Panel de tu hogar, registros y detalles.",
+            ["Search neighbors, services, or local help..."] = "Buscar vecinos, servicios o ayuda local...",
+            ["Search neighbors, services, or local help"] = "Buscar vecinos, servicios o ayuda local",
+            ["Trusted"] = "Confiable",
+            ["Home Info"] = "Info. del hogar",
+            ["Get Help"] = "Obtener ayuda",
+            ["Track"] = "Seguimiento",
+            ["Find verified professionals in your area."] = "Encuentra profesionales verificados en tu área.",
+            ["See your property details, history, and records."] = "Mira los detalles, historial y registros de tu propiedad.",
+            ["Ask neighbors or providers for help."] = "Pide ayuda a vecinos o proveedores.",
+            ["Track your requests and responses in one place."] = "Sigue tus solicitudes y respuestas en un solo lugar.",
             ["Certified Providers"] = "Proveedores certificados",
             ["Home Care Essentials"] = "Esenciales del cuidado del hogar",
             ["Homes for sale"] = "Hogares en venta",

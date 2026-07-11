@@ -1,29 +1,95 @@
 @model IndorMvcApp.ViewModels.MyHomeMaintenanceFormViewModel
 @{
-    var isEdit = Model.Id.HasValue;
-    ViewData["Title"] = isEdit ? L["Edit Maintenance"] : L["Add Maintenance"];
+    ViewData["Title"] = L["Add Maintenance"];
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "maintenance";
     ViewBag.MyHomeBackUrl = Url.Action("Maintenance", "MyHome", new { id = Model.PropiedadId, from = Model.NavigationFrom });
 }
 <div class="hf-title-row">
-    <h1 class="hf-title">@(isEdit ? L["Edit maintenance"] : L["Add maintenance"])</h1>
+    <h1 class="hf-title">@L["Add maintenance"]</h1>
 </div>
-<form asp-action="@(isEdit ? "MaintenanceEdit" : "MaintenanceCreate")" method="post">
-    @if (isEdit) { <input type="hidden" asp-for="Id" /> }
+<form asp-action="MaintenanceCreate" method="post" class="hf-maint-form">
     <input type="hidden" asp-for="PropiedadId" />
     <input type="hidden" asp-for="NavigationFrom" />
+    <input type="hidden" asp-for="Status" value="Upcoming" />
+
     <label asp-for="Title" class="hf-label">@L["Task title"]</label>
     <input asp-for="Title" class="hf-input" placeholder="@L["Check AC system"]" />
+
     <label asp-for="DueDate" class="hf-label">@L["Due date"]</label>
     <input asp-for="DueDate" class="hf-input" type="date" />
-    <label asp-for="Status" class="hf-label">@L["Status"]</label>
-    <select asp-for="Status" class="hf-select">
-        <option value="Upcoming">@L["Upcoming"]</option>
-        <option value="Completed">@L["Completed"]</option>
-    </select>
-    <label asp-for="Notes" class="hf-label">@L["Notes"]</label>
-    <textarea asp-for="Notes" class="hf-textarea" rows="3"></textarea>
-    <button type="submit" class="hf-btn hf-btn-primary">@L["Save task"]</button>
+
+    <p class="hf-label" style="margin-top:16px;">@L["How would you like to handle this?"]</p>
+    <div class="hf-help-mode">
+        <label class="hf-help-mode-card">
+            <input type="radio" name="SaveMode" value="Agenda" checked />
+            <span class="hf-help-mode-icon"><i class="fas fa-calendar-check"></i></span>
+            <strong>@L["Save to my agenda"]</strong>
+            <small>@L["Add a reminder with your message. INDOR will not search for a contractor."]</small>
+        </label>
+        <label class="hf-help-mode-card">
+            <input type="radio" name="SaveMode" value="IndorSpecialist" />
+            <span class="hf-help-mode-icon hf-help-mode-icon--indor"><i class="fas fa-user-shield"></i></span>
+            <strong>@L["Request Indor specialist"]</strong>
+            <small>@L["INDOR will receive your request and find a verified contractor for you."]</small>
+        </label>
+    </div>
+
+    <label asp-for="Notes" class="hf-label">@L["Leave a message"]</label>
+    <textarea asp-for="Notes" class="hf-textarea" rows="3" placeholder="@L["Optional notes about this task..."]"></textarea>
+
+    <div class="hf-maint-actions">
+        <button type="submit" name="SaveMode" value="Agenda" class="hf-btn hf-btn-outline">
+            <i class="fas fa-calendar-plus"></i> @L["Save to agenda"]
+        </button>
+        <button type="submit" name="SaveMode" value="IndorSpecialist" class="hf-btn hf-btn-primary">
+            <i class="fas fa-user-shield"></i> @L["Request Indor specialist"]
+        </button>
+    </div>
+    <p class="hf-maint-hint"><i class="fas fa-circle-info"></i> @L["Tap the shield icon on any task to request an Indor specialist."]</p>
 </form>
+
+<style>
+    .hf-help-mode { display: grid; gap: 10px; margin-bottom: 16px; }
+    .hf-help-mode-card {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        grid-template-rows: auto auto;
+        gap: 2px 12px;
+        padding: 14px;
+        border: 2px solid #E2E8F0;
+        border-radius: 14px;
+        cursor: pointer;
+        background: #fff;
+    }
+    .hf-help-mode-card:has(input:checked) { border-color: #0066CC; background: rgba(0,102,204,0.04); }
+    .hf-help-mode-card input { grid-row: 1 / span 2; align-self: center; accent-color: #0066CC; }
+    .hf-help-mode-icon {
+        grid-column: 2;
+        width: 36px; height: 36px; border-radius: 10px;
+        background: rgba(0,102,204,0.1); color: #0066CC;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .hf-help-mode-icon--indor { background: rgba(16,185,129,0.12); color: #059669; }
+    .hf-help-mode-card strong { grid-column: 2; font-size: 0.95rem; }
+    .hf-help-mode-card small { grid-column: 2; color: #64748B; line-height: 1.4; }
+    .hf-maint-actions { display: grid; gap: 10px; margin-top: 8px; }
+    .hf-maint-hint { font-size: 0.82rem; color: #64748B; margin-top: 12px; line-height: 1.4; }
+    .hf-maint-hint i { color: #0066CC; margin-right: 4px; }
+</style>
+
+@section Scripts {
+<script>
+    (function () {
+        var form = document.querySelector('.hf-maint-form');
+        if (!form) { return; }
+        form.addEventListener('submit', function () {
+            form.querySelectorAll('button[type="submit"]').forEach(function (btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+            });
+        });
+    })();
+</script>
+}

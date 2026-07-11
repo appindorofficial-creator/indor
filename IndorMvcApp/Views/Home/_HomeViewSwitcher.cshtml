@@ -4,27 +4,37 @@
     var isMyHome = activeView == "myhome";
 }
 
-<div class="hv-view-switcher" role="tablist" aria-label="@L["Home view"]">
+<div class="hv-view-switcher hn-v4-feature-cards" role="tablist" aria-label="@L["Home view"]">
     <button type="button"
-            class="hv-view-card @(isNetwork ? "is-active" : null) nav-jump"
+            class="hv-view-card hn-v4-feature-card hn-v4-feature-card--network @(isNetwork ? "is-active" : null) nav-jump"
             data-target="section-home"
             role="tab"
             aria-selected="@(isNetwork ? "true" : "false")">
-        <i class="fas fa-users hv-view-icon" aria-hidden="true"></i>
-        <span class="hv-view-copy">
+        <span class="hn-v4-feature-card-copy">
             <strong>@L["Nearby Network"]</strong>
-            <small>@L["Feed, neighbors, local help"]</small>
+            <small>@L["Local feed, neighbors, and help around you."]</small>
+        </span>
+        <span class="hn-v4-feature-card-art-wrap" aria-hidden="true">
+            <img src="~/images/hn-v4-card-network.png" alt="" class="hn-v4-feature-card-art" loading="lazy" asp-append-version="true" />
+        </span>
+        <span class="hn-v4-feature-card-go" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M5 12h12M13 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </span>
     </button>
     <button type="button"
-            class="hv-view-card @(isMyHome ? "is-active" : null) nav-jump"
+            class="hv-view-card hn-v4-feature-card hn-v4-feature-card--myhome @(isMyHome ? "is-active" : null) nav-jump"
             data-target="section-mydashboard"
             role="tab"
             aria-selected="@(isMyHome ? "true" : "false")">
-        <i class="fas fa-house hv-view-icon" aria-hidden="true"></i>
-        <span class="hv-view-copy">
+        <span class="hn-v4-feature-card-copy">
             <strong>@L["My Home"]</strong>
-            <small>@L["Your home dashboard"]</small>
+            <small>@L["Your home dashboard, records, and details."]</small>
+        </span>
+        <span class="hn-v4-feature-card-art-wrap" aria-hidden="true">
+            <img src="~/images/hn-v4-card-myhome.png" alt="" class="hn-v4-feature-card-art" loading="lazy" asp-append-version="true" />
+        </span>
+        <span class="hn-v4-feature-card-go hn-v4-feature-card-go--green" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M5 12h12M13 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </span>
     </button>
 </div>

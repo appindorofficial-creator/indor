@@ -1,42 +1,194 @@
 @model IndorMvcApp.ViewModels.MyHomeMaintenanceViewModel
+
 @{
+
     ViewData["Title"] = L["Maintenance"];
+
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
+
     ViewBag.PropiedadId = Model.PropiedadId;
+
     ViewBag.MyHomeNav = "maintenance";
+
     ViewBag.MyHomeBackUrl = Model.BackUrl;
+
     var groups = Model.Items.GroupBy(i => i.MonthLabel).ToList();
+
 }
+
 <div class="hf-title-row">
+
     <h1 class="hf-title">@L["Maintenance"]</h1>
+
     <a asp-action="MaintenanceCreate" asp-route-id="@Model.PropiedadId" asp-route-from="@Model.NavigationFrom" class="hf-btn">@L["+ Add"]</a>
+
 </div>
+
+@if (TempData["MaintenanceSaved"] is string savedMsg)
+
+{
+
+    <div class="hf-card" style="background:#ECFDF5;border-color:#A7F3D0;color:#065F46;margin-bottom:12px;">
+
+        <i class="fas fa-check-circle"></i> @savedMsg
+
+    </div>
+
+}
+
+@if (TempData["MaintenanceRequestOk"] is string requestMsg)
+
+{
+
+    <div class="hf-card" style="background:#EFF6FF;border-color:#BFDBFE;color:#1E40AF;margin-bottom:12px;">
+
+        <i class="fas fa-user-shield"></i> @requestMsg
+
+    </div>
+
+}
+
 <div class="hf-chip-row">
+
     @foreach (var f in new[] { "Upcoming", "Completed", "All" })
+
     {
+
         <a asp-action="Maintenance" asp-route-id="@Model.PropiedadId" asp-route-filter="@f" asp-route-from="@Model.NavigationFrom" class="hf-chip @(string.Equals(Model.Filter, f, StringComparison.OrdinalIgnoreCase) ? "active" : "")">@L[f]</a>
+
     }
+
 </div>
+
 @if (groups.Count == 0)
+
 {
+
     <div class="hf-card" style="text-align:center;color:#64748B;">@L["No maintenance tasks yet."]</div>
+
 }
+
 else
+
 {
+
     @foreach (var group in groups)
+
     {
+
         <div style="font-weight:800;margin:12px 0 8px;">@group.Key</div>
+
         @foreach (var item in group)
+
         {
-            <a asp-action="MaintenanceDetail" asp-route-id="@item.Id" asp-route-from="@Model.NavigationFrom" class="hf-card hf-list-item" style="display:flex;margin-bottom:8px;">
-                <i class="fas fa-clipboard-list icon"></i>
-                <div class="meta">
-                    <div class="value">@item.Title</div>
-                    <div class="label">@(item.DueDate.HasValue ? L.T("Due on {0}", item.DueDate.Value.ToString("MMM dd, yyyy")) : L["No due date"])</div>
-                </div>
-                <span class="hf-badge" style="font-size:0.72rem;padding:4px 8px;">@L[IndorMvcApp.Services.MyHomeDisplayService.MaintenanceStatusLabel(item.Status)]</span>
-                <i class="fas fa-chevron-right" style="color:#CBD5E1;margin-left:8px;"></i>
-            </a>
+
+            var canRequest = !string.Equals(item.Status, "Completed", StringComparison.OrdinalIgnoreCase)
+
+                && !string.Equals(item.Status, "Requested", StringComparison.OrdinalIgnoreCase);
+
+            var isRequested = string.Equals(item.Status, "Requested", StringComparison.OrdinalIgnoreCase);
+
+            <div class="hf-card hf-maint-row" style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:12px 14px;">
+
+                <a asp-action="MaintenanceDetail" asp-route-id="@item.Id" asp-route-from="@Model.NavigationFrom"
+
+                   class="hf-maint-main" style="flex:1;display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;min-width:0;">
+
+                    <i class="fas fa-clipboard-list icon" style="color:#0066CC;width:20px;text-align:center;flex-shrink:0;"></i>
+
+                    <div class="meta" style="flex:1;min-width:0;">
+
+                        <div class="value" style="font-weight:700;font-size:0.92rem;">@item.Title</div>
+
+                        <div class="label" style="font-size:0.78rem;color:#94A3B8;">@(item.DueDate.HasValue ? L.T("Due on {0}", item.DueDate.Value.ToString("MMM dd, yyyy")) : L["No due date"])</div>
+
+                    </div>
+
+                    <span class="hf-badge" style="font-size:0.72rem;padding:4px 8px;flex-shrink:0;">@L[IndorMvcApp.Services.MyHomeDisplayService.MaintenanceStatusLabel(item.Status)]</span>
+
+                    <i class="fas fa-chevron-right" style="color:#CBD5E1;flex-shrink:0;"></i>
+
+                </a>
+
+                @if (canRequest)
+
+                {
+
+                    <a asp-action="MaintenanceRequestService" asp-route-id="@item.Id" asp-route-from="@Model.NavigationFrom"
+
+                       class="hf-maint-indor-btn"
+
+                       aria-label="@L["Request Indor specialist"]"
+
+                       title="@L["Request Indor specialist"]">
+
+                        <i class="fas fa-user-shield"></i>
+
+                    </a>
+
+                }
+
+                else if (isRequested)
+
+                {
+
+                    <a asp-action="MaintenanceRequestService" asp-route-id="@item.Id" asp-route-from="@Model.NavigationFrom"
+
+                       class="hf-maint-indor-btn hf-maint-indor-btn--continue"
+
+                       aria-label="@L["Continue service request"]"
+
+                       title="@L["Continue service request"]">
+
+                        <i class="fas fa-arrow-right"></i>
+
+                    </a>
+
+                }
+
+            </div>
+
         }
+
     }
+
 }
+
+
+
+<style>
+
+    .hf-maint-indor-btn {
+
+        flex-shrink: 0;
+
+        width: 42px;
+
+        height: 42px;
+
+        border-radius: 12px;
+
+        background: rgba(16,185,129,0.12);
+
+        color: #059669;
+
+        display: flex;
+
+        align-items: center;
+
+        justify-content: center;
+
+        text-decoration: none;
+
+        font-size: 1rem;
+
+        border: 1.5px solid rgba(16,185,129,0.25);
+
+    }
+
+    .hf-maint-indor-btn--continue { background: rgba(0,102,204,0.1); color: #0066CC; border-color: rgba(0,102,204,0.2); }
+
+    .hf-maint-indor-btn:active { transform: scale(0.96); }
+
+</style>
+

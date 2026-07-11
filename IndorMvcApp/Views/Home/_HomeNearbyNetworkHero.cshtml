@@ -5,13 +5,25 @@
         (Url.Action("Index", "Home", new { filter = Model.ActiveFilter, view, q = Model.SearchQuery }) ?? "/") + "#section-home";
 }
 
-<div class="rl-network-view-toggle @(isMapView ? "rl-network-view-toggle--map" : "")" role="tablist" aria-label="@L["Network view"]">
+<div class="hn-v4-view-tabs @(isMapView ? "hn-v4-view-tabs--map" : "hn-v4-view-tabs--feed")" role="tablist" aria-label="@L["Network view"]">
     <a href="@BuildViewUrl("map")"
-       class="rl-network-view-btn @(Model.ActiveView == "map" ? "is-active" : null)">
-        <i class="fas fa-map"></i> @L["Map"]
+       class="hn-v4-view-tab @(Model.ActiveView == "map" ? "is-active" : null)"
+       role="tab"
+       aria-selected="@(Model.ActiveView == "map" ? "true" : "false")">
+        <span class="hn-v4-view-tab-icon"><i class="fas fa-map"></i></span>
+        <span class="hn-v4-view-tab-copy">
+            <strong>@L["Map"]</strong>
+            <small>@L["See nearby places"]</small>
+        </span>
     </a>
     <a href="@BuildViewUrl("feed")"
-       class="rl-network-view-btn @(Model.ActiveView == "feed" ? "is-active" : null)">
-        <i class="fas fa-list"></i> @L["Feed"]
+       class="hn-v4-view-tab @(Model.ActiveView == "feed" ? "is-active" : null)"
+       role="tab"
+       aria-selected="@(Model.ActiveView == "feed" ? "true" : "false")">
+        <span class="hn-v4-view-tab-icon"><i class="fas fa-list"></i></span>
+        <span class="hn-v4-view-tab-copy">
+            <strong>@L["Feed"]</strong>
+            <small>@L["See local updates"]</small>
+        </span>
     </a>
 </div>

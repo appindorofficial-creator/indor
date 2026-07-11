@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 132 32" fill="none" role="img" aria-label="INDOR">
+  <text x="0" y="24" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" fill="#0F172A" letter-spacing="-1">IND</text>
+  <g transform="translate(52 4)">
+    <circle cx="12" cy="12" r="12" fill="#2563EB"/>
+    <path d="M12 6 L18 12 V18 H6 V12 Z" fill="#FFFFFF"/>
+    <rect x="10" y="13" width="4" height="5" rx="0.5" fill="#2563EB"/>
+  </g>
+  <text x="78" y="24" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="800" fill="#0F172A" letter-spacing="-1">R</text>
+</svg>

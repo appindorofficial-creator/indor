@@ -1,9 +1,32 @@
 @model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
 @{
     var backUrl = Model.BackUrl ?? Url.Action("Dashboard", "Proveedor");
+    var isEntrySkin = string.Equals(ViewData["PrvWizardSkin"] as string, "prv-page--entry", StringComparison.Ordinal);
 }
 <nav class="ob-nav prv-wiz-nav">
     <a href="@backUrl" class="ob-nav-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
-    <img src="~/logoindor.png" alt="INDOR" class="prv-wiz-logo" />
+    @if (isEntrySkin)
+    {
+        <div class="prv-entry-brand" aria-label="INDOR home index">
+            <div class="prv-entry-logo-main">
+                <span class="prv-entry-logo-ind">IND</span>
+                <svg class="prv-entry-logo-house" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                    <path d="M16 4 L28 15 V28 H4 V15 Z" fill="currentColor" stroke="none" />
+                    <rect x="11" y="16" width="4" height="4" rx="0.5" fill="#FFFFFF" />
+                    <rect x="17" y="16" width="4" height="4" rx="0.5" fill="#FFFFFF" />
+                    <rect x="11" y="22" width="4" height="4" rx="0.5" fill="#FFFFFF" />
+                    <rect x="17" y="22" width="4" height="4" rx="0.5" fill="#FFFFFF" />
+                </svg>
+                <span class="prv-entry-logo-ind">R</span>
+            </div>
+            <p class="prv-entry-logo-sub">
+                <span class="prv-entry-logo-sub-home">home </span><span class="prv-entry-logo-sub-index">index</span>
+            </p>
+        </div>
+    }
+    else
+    {
+        <img src="~/logoindor.png" alt="INDOR" class="prv-wiz-logo" />
+    }
     <span class="ob-nav-spacer"></span>
 </nav>

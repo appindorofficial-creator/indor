@@ -34,4 +34,10 @@
         <p style="line-height:1.5;color:#475569;">@Model.Notes</p>
     </div>
 }
-<a asp-action="MaintenanceEdit" asp-route-id="@Model.Id" asp-route-from="@Model.NavigationFrom" class="hf-btn hf-btn-primary"><i class="fas fa-pen"></i> @L["Edit task"]</a>
+@if (Model.CanRequestIndor && !string.IsNullOrWhiteSpace(Model.RequestServiceUrl))
+{
+    <a href="@Model.RequestServiceUrl" class="hf-btn hf-btn-primary">
+        <i class="fas fa-user-shield"></i> @L["Request Indor specialist"]
+    </a>
+}
+<a asp-action="MaintenanceEdit" asp-route-id="@Model.Id" asp-route-from="@Model.NavigationFrom" class="hf-btn hf-btn-outline"><i class="fas fa-pen"></i> @L["Edit task"]</a>

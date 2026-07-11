@@ -13,6 +13,7 @@ public static class UiTranslationsShared
             ["Select the language for the entire app"] = "Selecciona el idioma para toda la aplicación",
             ["Welcome - INDOR"] = "Bienvenido - INDOR",
             ["The Home Operating System"] = "El sistema operativo del hogar",
+            ["The Home Operating System, helping navigate owning a house."] = "El sistema operativo del hogar, que te ayuda a navegar la propiedad de una casa.",
             ["Everything you need to manage your home with clarity and confidence."] = "Todo lo que necesitas para administrar tu hogar con claridad y confianza.",
             ["ALL IN ONE PLACE"] = "TODO EN UN SOLO LUGAR",
             ["Home Records"] = "Registros del hogar",

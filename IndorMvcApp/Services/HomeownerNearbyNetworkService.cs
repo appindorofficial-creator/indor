@@ -23,7 +23,7 @@ public class HomeownerNearbyNetworkService(
         new() { Label = "All", Value = NearbyNetworkHomeownerFilters.All, Icon = "fa-border-all" },
         new() { Label = "Homes", Value = NearbyNetworkHomeownerFilters.Homes, Icon = "fa-house" },
         new() { Label = "Services", Value = NearbyNetworkHomeownerFilters.Providers, Icon = "fa-screwdriver-wrench" },
-        new() { Label = "Quick Help", Value = NearbyNetworkHomeownerFilters.NeighborRequests, Icon = "fa-people-carry-box" },
+        new() { Label = "Quick Help", Value = NearbyNetworkHomeownerFilters.NeighborRequests, Icon = "fa-users" },
         new() { Label = "Promotions", Value = NearbyNetworkHomeownerFilters.Promotions, Icon = "fa-tags" }
     ];
 
@@ -1230,28 +1230,28 @@ public class HomeownerNearbyNetworkService(
                 new()
                 {
                     Label = "Certified Providers",
-                    Subtitle = "Verified professionals in your area",
+                    Subtitle = "Find verified professionals in your area.",
                     Icon = "fa-shield-halved",
                     Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.Providers, searchQuery)
                 },
                 new()
                 {
                     Label = "House Facts",
-                    Subtitle = "Property overview and details",
+                    Subtitle = "See your property details, history, and records.",
                     Icon = "fa-house-circle-check",
                     Url = houseFactsUrl
                 },
                 new()
                 {
                     Label = "Post a Request",
-                    Subtitle = "Ask neighbors for help",
+                    Subtitle = "Ask neighbors or providers for help.",
                     Icon = "fa-plus",
                     Url = postUrl
                 },
                 new()
                 {
                     Label = "My Requests",
-                    Subtitle = "Track & manage your requests",
+                    Subtitle = "Track your requests and responses in one place.",
                     Icon = "fa-comment-dots",
                     Url = mineUrl
                 }

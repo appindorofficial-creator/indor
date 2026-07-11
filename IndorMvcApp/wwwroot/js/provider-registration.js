@@ -20,7 +20,7 @@ document.querySelectorAll('.prv-wiz-card--selectable').forEach(card => {
     if (!form) return;
 
     const pathInput = document.getElementById('prvEntryPath');
-    const cards = form.querySelectorAll('.prv-wiz-card--selectable[data-path]');
+    const cards = form.querySelectorAll('.prv-entry-card[data-path], .prv-wiz-card--selectable[data-path]');
 
     function selectPath(path, activeCard) {
         if (pathInput) {

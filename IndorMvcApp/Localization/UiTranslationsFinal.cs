@@ -398,5 +398,23 @@ public static class UiTranslationsFinal
             ["Approvals"] = "Aprobaciones",
             ["Templates"] = "Plantillas",
             ["Complete activation"] = "Completar activación",
+
+            // Provider registration — Step 1 entry
+            ["Use INDOR Pro"] = "Usar INDOR Pro",
+            ["Start using INDOR Pro tools right away. Manage clients, jobs, photos, estimates, invoices, reports, and property history in one place."] =
+                "Empieza a usar las herramientas de INDOR Pro de inmediato. Administra clientes, trabajos, fotos, cotizaciones, facturas, informes e historial de la propiedad en un solo lugar.",
+            ["Verification required"] = "Verificación requerida",
+            ["Required if you want to appear in the network and receive local jobs."] =
+                "Requerido si quieres aparecer en la red y recibir trabajos locales.",
+            ["Tap an option to select it. Both paths are available."] =
+                "Toca una opción para seleccionarla. Ambas rutas están disponibles.",
+            ["What's the difference?"] = "¿Cuál es la diferencia?",
+            ["You can start with INDOR Pro first, then apply as a provider later"] =
+                "Puedes empezar con INDOR Pro primero y solicitar ser proveedor después",
+            ["To receive INDOR jobs, you'll need to submit your business information, verification documents, complete a short category assessment, and schedule an activation call with INDOR."] =
+                "Para recibir trabajos de INDOR, deberás enviar la información de tu negocio, documentos de verificación, completar una breve evaluación de categoría y programar una llamada de activación con INDOR.",
+            ["Choose how you want to get started with INDOR"] = "Elige cómo quieres comenzar con INDOR",
+            ["I agree to INDOR's"] = "Acepto los",
+            ["Please agree to INDOR's Terms & Conditions."] = "Acepta los Términos y condiciones de INDOR.",
         };
 }
