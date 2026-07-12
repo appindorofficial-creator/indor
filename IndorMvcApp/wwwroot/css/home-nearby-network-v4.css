@@ -671,8 +671,8 @@ body.rl-dash-page:has(#section-home.hn-v4-landing.active) {
 }
 
 #section-home.hn-v4.hn-v4-landing .hn-v4-feature-card {
-    min-height: 100px;
-    height: 100px;
+    min-height: 108px;
+    height: 108px;
     min-width: 0;
     background: #FFFFFF !important;
     backdrop-filter: none;
@@ -765,8 +765,8 @@ body.rl-dash-page:has(#section-home.hn-v4-landing.active) {
 }
 
 #section-home.hn-v4.hn-v4-landing .hn-v4-tile {
-    height: 122px !important;
-    min-height: 122px !important;
+    height: 128px !important;
+    min-height: 128px !important;
     padding: 9px 9px 32px !important;
     padding-right: calc(var(--hn-v4-tile-art-w) + 6px) !important;
 }
