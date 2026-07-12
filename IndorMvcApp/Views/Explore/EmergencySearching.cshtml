@@ -1,0 +1,35 @@
+@model IndorMvcApp.ViewModels.GuestEmergencySearchingViewModel
+@{
+    Layout = "_LayoutGuestExplore";
+    ViewData["Title"] = L["Searching providers - INDOR"];
+    ViewBag.GuestNavActive = "home";
+    ViewBag.HideGuestBottomNav = true;
+}
+
+<div class="xp-guest-shell xp-guest-search">
+    <div class="xp-guest-radar" aria-hidden="true">
+        <span class="xp-guest-radar-ring"></span>
+        <span class="xp-guest-radar-ring"></span>
+        <span class="xp-guest-radar-ring"></span>
+        <span class="xp-guest-radar-pin"><i class="fas fa-location-dot"></i></span>
+    </div>
+
+    <h1>@L["Searching for providers"]</h1>
+    <p class="xp-guest-wiz-lead">@L.T("Looking for verified pros for {0} within {1} miles.", Model.ServiceTitle, Model.RadiusMiles)</p>
+
+    <form asp-action="EmergencySearchingComplete" method="post" id="guestEmergencySearchForm">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="xp-guest-btn" id="guestEmergencySearchBtn" hidden>
+            @L["Continue"]
+        </button>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+    setTimeout(function () {
+        const form = document.getElementById('guestEmergencySearchForm');
+        form?.requestSubmit();
+    }, 2800);
+</script>
+}

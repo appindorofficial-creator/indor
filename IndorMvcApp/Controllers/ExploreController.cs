@@ -17,7 +17,7 @@ namespace IndorMvcApp.Controllers;
 /// guideline 5.1.1(v).
 /// </summary>
 [AllowAnonymous]
-public class ExploreController : Controller
+public partial class ExploreController : Controller
 {
     private readonly AppDbContext _db;
     private readonly HomeCatalogCache _catalogCache;
@@ -44,10 +44,16 @@ public class ExploreController : Controller
         var catalog = await _catalogCache.GetAsync(_db, cancellationToken);
         var providers = await LoadPublicProvidersAsync(cancellationToken);
 
+        var emergencySection = EmergencyServicesDisplayService.BuildSection(
+            catalog.ServiciosEmergencia, Url, _localizer.IsSpanish);
+        var quickEmergencyCategories = BuildQuickEmergencyCategories(catalog.ServiciosEmergencia);
+
         return View(new ExploreViewModel
         {
             Catalog = catalog,
-            Providers = providers
+            Providers = providers,
+            EmergencySection = emergencySection,
+            QuickEmergencyCategories = quickEmergencyCategories
         });
     }
 

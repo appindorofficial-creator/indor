@@ -4,7 +4,8 @@
 @using IndorMvcApp.ViewModels
 @{
     ViewData["Title"] = L["Explore Services - INDOR"];
-    Layout = null;
+    Layout = "_LayoutGuestExplore";
+    ViewBag.GuestNavActive = "home";
     var es = L.IsSpanish;
 
     bool IsPrePurchaseInspection(string? name) => string.Equals(name?.Trim(), "Pre-Purchase Home Inspection", StringComparison.OrdinalIgnoreCase);
@@ -171,155 +172,118 @@
     var microservicios = catalog.Microservicios;
     var servicios = catalog.Servicios;
     var inspecciones = catalog.Inspecciones;
-    var serviciosEmergencia = catalog.ServiciosEmergencia;
     var homeCarePriorityIds = (IReadOnlyDictionary<string, int>)catalog.HomeCarePriorityIds;
-    var totalOfferings = microservicios.Count + servicios.Count + inspecciones.Count + serviciosEmergencia.Count;
-    var emergencySection = EmergencyServicesDisplayService.BuildSection(serviciosEmergencia, Url, es);
+    var totalOfferings = microservicios.Count + servicios.Count + inspecciones.Count + catalog.ServiciosEmergencia.Count;
 }
-<!DOCTYPE html>
-<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    @await Html.PartialAsync("_IndorDesignHead")
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    @await Html.PartialAsync("_AppVersionHead")
+
+@section Head {
     <link rel="stylesheet" href="~/css/home-index.css" asp-append-version="true" />
     @await Html.PartialAsync("_TabletResponsiveHead")
-    <style>
-        .xp-topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; }
-        .xp-topbar .hd-brand { font-weight:800; font-size:20px; color:#0f172a; display:inline-flex; align-items:center; gap:2px; text-decoration:none; }
-        .xp-topbar .hd-brand-house { width:22px; height:22px; }
-        .xp-auth { display:flex; gap:8px; }
-        .xp-auth a { font-size:13px; font-weight:600; padding:8px 14px; border-radius:999px; text-decoration:none; white-space:nowrap; }
-        .xp-auth .xp-login { color:#1867F2; border:1px solid #1867F2; background:#fff; }
-        .xp-auth .xp-register { color:#fff; background:#1867F2; border:1px solid #1867F2; }
-        .xp-guest-note { margin:4px 16px 12px; padding:12px 14px; border-radius:14px; background:#EEF4FF; color:#1e3a8a; font-size:13px; display:flex; align-items:flex-start; gap:10px; }
-        .xp-guest-note i { margin-top:2px; }
-        .xp-cta { margin:24px 16px 40px; text-align:center; }
-        .xp-cta a { display:inline-flex; align-items:center; gap:8px; background:#1867F2; color:#fff; font-weight:700; padding:14px 24px; border-radius:999px; text-decoration:none; }
-        .xp-providers { margin:8px 16px 0; }
-        .xp-providers-list { display:flex; flex-direction:column; gap:10px; }
-        .xp-provider { display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid #E5E9F0; border-radius:14px; background:#fff; }
-        .xp-provider-icon { width:42px; height:42px; flex:0 0 42px; border-radius:12px; background:#EEF4FF; color:#1867F2; display:flex; align-items:center; justify-content:center; font-size:16px; }
-        .xp-provider-body { flex:1 1 auto; min-width:0; }
-        .xp-provider-body strong { display:block; font-size:15px; color:#0f172a; }
-        .xp-provider-body small { color:#64748b; font-size:12.5px; }
-        .xp-provider-verified { flex:0 0 auto; font-size:11px; font-weight:700; color:#0f9d58; display:inline-flex; align-items:center; gap:4px; }
-        .xp-provider-empty { padding:16px; border:1px dashed #CBD5E1; border-radius:14px; color:#64748b; font-size:13.5px; text-align:center; }
-    </style>
-</head>
-<body>
-    <header class="top-bar xp-topbar">
-        <span class="hd-brand" aria-label="INDOR">
-            IND
-            <svg class="hd-brand-house" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
-                <path d="M14 3 L26 14 V26 H2 V14 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
-            </svg>
-            R
-        </span>
-        <div class="xp-auth">
-            <a class="xp-login" asp-controller="Account" asp-action="LoginForm">@L["Log In"]</a>
-            <a class="xp-register" asp-controller="Account" asp-action="Register">@L["Sign Up"]</a>
-        </div>
-    </header>
+}
 
-    <div class="xp-guest-note">
-        <i class="fas fa-circle-info"></i>
-        <span>@L["You're browsing as a guest. Explore all services, inspections and providers freely. Create a free account only when you're ready to book or request a quote."]</span>
+<header class="top-bar xp-topbar">
+    <a href="@Url.Action("Index")" class="hd-brand" aria-label="INDOR">
+        IND
+        <svg class="hd-brand-house" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+            <path d="M14 3 L26 14 V26 H2 V14 Z" fill="currentColor" stroke="none" />
+        </svg>
+        R
+    </a>
+    <div class="xp-auth">
+        <a class="xp-login" asp-controller="Account" asp-action="LoginForm">@L["Log In"]</a>
+        <a class="xp-register" asp-controller="Account" asp-action="Register">@L["Sign Up"]</a>
+    </div>
+</header>
+
+<div class="xp-guest-note">
+    <i class="fas fa-circle-info"></i>
+    <span>@L["You're browsing as a guest. Explore all services, inspections and providers freely. Create a free account only when you're ready to book or request a quote."]</span>
+</div>
+
+@await Html.PartialAsync("_GuestEmergencyHero", Model)
+
+<section class="section active xp-services" id="xp-services">
+    <div class="section-title">
+        @L["Available services"]
+        <span class="services-count">@totalOfferings</span>
     </div>
 
-    <section class="section active" id="section-services">
-        <div class="section-title">
-            @L["Available services"]
-            <span class="services-count">@totalOfferings</span>
+    @if (totalOfferings == 0)
+    {
+        <div class="empty-state">
+            <i class="fas fa-tools"></i>
+            <p>@L["No services available right now."]</p>
         </div>
-
-        @if (totalOfferings == 0)
-        {
-            <div class="empty-state">
-                <i class="fas fa-tools"></i>
-                <p>@L["No services available right now."]</p>
-            </div>
-        }
-        else
-        {
-            <div class="services-catalog">
-                <div class="services-hero">
-                    <div class="services-hero-text">
-                        <strong>@L["Take care of your home effortlessly"]</strong>
-                        <small>@L["Verified professionals with transparent pricing."]</small>
-                    </div>
-                    <div class="services-hero-icon"><i class="fas fa-house-chimney-medical"></i></div>
+    }
+    else
+    {
+        <div class="services-catalog">
+            <div class="services-hero">
+                <div class="services-hero-text">
+                    <strong>@L["Take care of your home effortlessly"]</strong>
+                    <small>@L["Verified professionals with transparent pricing."]</small>
                 </div>
-
-                @if (microservicios.Any())
-                {
-                    @await Html.PartialAsync("~/Views/Home/_OfferingCarousel.cshtml", BuildMicroCarousel(microservicios, L.T("{0} services available for your home", microservicios.Count)))
-                }
-
-                @if (servicios.Any())
-                {
-                    @await Html.PartialAsync("~/Views/Home/_OfferingCarousel.cshtml", BuildServicioCarousel(servicios, L.T("{0} remodeling and installation projects", servicios.Count), homeCarePriorityIds))
-                }
-
-                @if (inspecciones.Any())
-                {
-                    @await Html.PartialAsync("~/Views/Home/_OfferingCarousel.cshtml", BuildInspeccionCarousel(inspecciones, L.T("{0} professional inspections for your home", inspecciones.Count)))
-                }
-
-                @if (emergencySection != null)
-                {
-                    @await Html.PartialAsync("~/Views/Home/_EmergencyServicesSection.cshtml", emergencySection)
-                }
+                <div class="services-hero-icon"><i class="fas fa-house-chimney-medical"></i></div>
             </div>
-        }
 
-    </section>
-
-    <section class="section active xp-providers">
-        <div class="section-title">
-            @L["Service providers"]
-            @if (Model.Providers.Count > 0)
+            @if (microservicios.Any())
             {
-                <span class="services-count">@Model.Providers.Count</span>
+                @await Html.PartialAsync("~/Views/Home/_OfferingCarousel.cshtml", BuildMicroCarousel(microservicios, L.T("{0} services available for your home", microservicios.Count)))
+            }
+
+            @if (servicios.Any())
+            {
+                @await Html.PartialAsync("~/Views/Home/_OfferingCarousel.cshtml", BuildServicioCarousel(servicios, L.T("{0} remodeling and installation projects", servicios.Count), homeCarePriorityIds))
+            }
+
+            @if (inspecciones.Any())
+            {
+                @await Html.PartialAsync("~/Views/Home/_OfferingCarousel.cshtml", BuildInspeccionCarousel(inspecciones, L.T("{0} professional inspections for your home", inspecciones.Count)))
             }
         </div>
+    }
+</section>
 
-        @if (Model.Providers.Count == 0)
+<section class="section active xp-providers">
+    <div class="section-title">
+        @L["Service providers"]
+        @if (Model.Providers.Count > 0)
         {
-            <div class="xp-provider-empty">
-                @L["No providers are listed in your area yet. New verified providers join INDOR regularly — create a free account to be notified and to request quotes."]
-            </div>
+            <span class="services-count">@Model.Providers.Count</span>
         }
-        else
-        {
-            <div class="xp-providers-list">
-                @foreach (var provider in Model.Providers)
-                {
-                    <div class="xp-provider">
-                        <span class="xp-provider-icon"><i class="fas @provider.IconClass"></i></span>
-                        <div class="xp-provider-body">
-                            <strong>@provider.Name</strong>
-                            <small>
-                                @provider.CategoryLabel@(string.IsNullOrWhiteSpace(provider.Location) ? "" : (string.IsNullOrWhiteSpace(provider.CategoryLabel) ? "" : " · ") + provider.Location)
-                            </small>
-                        </div>
-                        @if (provider.IsVerified)
-                        {
-                            <span class="xp-provider-verified"><i class="fas fa-circle-check"></i> @L["Verified"]</span>
-                        }
-                    </div>
-                }
-            </div>
-        }
+    </div>
 
-        <div class="xp-cta">
-            <a asp-controller="Account" asp-action="Register">
-                <i class="fas fa-user-plus"></i> @L["Create a free account to book"]
-            </a>
+    @if (Model.Providers.Count == 0)
+    {
+        <div class="xp-provider-empty">
+            @L["No providers are listed in your area yet. New verified providers join INDOR regularly — create a free account to be notified and to request quotes."]
         </div>
-    </section>
-</body>
-</html>
+    }
+    else
+    {
+        <div class="xp-providers-list">
+            @foreach (var provider in Model.Providers)
+            {
+                <div class="xp-provider">
+                    <span class="xp-provider-icon"><i class="fas @provider.IconClass"></i></span>
+                    <div class="xp-provider-body">
+                        <strong>@provider.Name</strong>
+                        <small>
+                            @provider.CategoryLabel@(string.IsNullOrWhiteSpace(provider.Location) ? "" : (string.IsNullOrWhiteSpace(provider.CategoryLabel) ? "" : " · ") + provider.Location)
+                        </small>
+                    </div>
+                    @if (provider.IsVerified)
+                    {
+                        <span class="xp-provider-verified"><i class="fas fa-circle-check"></i> @L["Verified"]</span>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+    <div class="xp-cta">
+        <a asp-controller="Account" asp-action="Register">
+            <i class="fas fa-user-plus"></i> @L["Create a free account to book"]
+        </a>
+    </div>
+</section>

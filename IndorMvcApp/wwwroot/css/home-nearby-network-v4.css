@@ -5,8 +5,9 @@ html {
 }
 
 body.rl-dash-page.hn-landing-active {
-    padding-bottom: 0 !important;
-    overflow: hidden;
+    padding-bottom: calc(var(--homeowner-bottom-nav-h, 80px) + env(safe-area-inset-bottom, 0px)) !important;
+    overflow-x: hidden;
+    overflow-y: auto;
     background: #FFFFFF !important;
     background-image: linear-gradient(180deg, #E8F4FF 0%, #EFF7FF 16%, #F9FBFD 34%, #FFFFFF 48%, #FFFFFF 100%) !important;
     background-attachment: fixed;
@@ -574,7 +575,7 @@ body.rl-dash-page.hn-landing-active {
     box-shadow: 0 4px 12px rgba(15, 23, 42, 0.14);
 }
 
-/* Landing: natural stack — mesh background fills viewport */
+/* Landing: tight natural stack — no flex stretch / no middle gap */
 #section-home.section.ho-portal-section.hn-v4.hn-v4-landing.active {
     position: relative !important;
     display: block !important;
@@ -582,58 +583,62 @@ body.rl-dash-page.hn-landing-active {
     max-width: none !important;
     margin: 0 !important;
     height: auto !important;
-    min-height: calc(100svh - var(--homeowner-bottom-nav-h, 80px));
-    min-height: calc(100dvh - var(--homeowner-bottom-nav-h, 80px));
+    min-height: 0 !important;
     max-height: none !important;
     padding: 0 !important;
-    overflow: hidden;
+    overflow: visible;
     box-sizing: border-box;
 }
 
-body.rl-dash-page.hn-landing-active {
-    padding-bottom: 0 !important;
-    overflow: hidden;
-}
-
 body.rl-dash-page:has(#section-home.hn-v4-landing.active) {
-    padding-bottom: 0 !important;
-    overflow: hidden;
+    padding-bottom: calc(var(--homeowner-bottom-nav-h, 80px) + env(safe-area-inset-bottom, 0px)) !important;
+    overflow-x: hidden;
+    overflow-y: auto;
     background: #FFFFFF !important;
     background-image: linear-gradient(180deg, #E8F4FF 0%, #EFF7FF 16%, #F9FBFD 34%, #FFFFFF 48%, #FFFFFF 100%) !important;
     background-attachment: fixed;
 }
 
 #section-home.hn-v4.hn-v4-landing.active .rl-dash-shell.rl-network-page {
-    display: flex !important;
-    flex-direction: column;
-    min-height: calc(100svh - var(--homeowner-bottom-nav-h, 80px));
-    min-height: calc(100dvh - var(--homeowner-bottom-nav-h, 80px));
-    padding: max(4px, env(safe-area-inset-top, 0px)) 16px 8px !important;
-    overflow: hidden;
-}
-
-#section-home.hn-v4.hn-v4-landing .hn-v4-header,
-#section-home.hn-v4.hn-v4-landing .hn-v4-view-tabs,
-#section-home.hn-v4.hn-v4-landing .ho-view-switcher-wrap {
-    flex-shrink: 0;
+    display: block !important;
+    min-height: 0 !important;
+    height: auto !important;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: max(4px, env(safe-area-inset-top, 0px)) 16px 12px !important;
+    padding-bottom: calc(12px + var(--homeowner-bottom-nav-h, 80px) + env(safe-area-inset-bottom, 0px)) !important;
+    overflow: visible;
+    background: transparent;
 }
 
 #section-home.hn-v4.hn-v4-landing .hn-network.hn-network--landing {
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
+    display: block !important;
+    flex: none !important;
+    min-height: 0 !important;
+    height: auto !important;
     overflow: visible;
+    margin: 0;
+    padding: 0;
 }
 
 #section-home.hn-v4.hn-v4-landing .hn-search-form,
 #section-home.hn-v4.hn-v4-landing .hn-filter-chips {
-    flex-shrink: 0;
+    margin-bottom: 8px;
 }
 
 #section-home.hn-v4.hn-v4-landing .hn-quick-actions {
-    margin-top: auto;
-    padding-bottom: 0;
+    margin-top: 8px !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+/* Landing is tile-only — hide feed / banners that create extra whitespace */
+#section-home.hn-v4.hn-v4-landing .hn-network-feed,
+#section-home.hn-v4.hn-v4-landing .hn-emergency-banner,
+#section-home.hn-v4.hn-v4-landing .hn-privacy-banner,
+#section-home.hn-v4.hn-v4-landing .hn-quick-help-hero,
+#section-home.hn-v4.hn-v4-landing .hn-mgmt-cards {
+    display: none !important;
 }
 
 /* Critical: hide inactive sections even when landing overrides display */
@@ -653,10 +658,6 @@ body.rl-dash-page:has(#section-home.hn-v4-landing.active) {
 /* Landing: sky-blue header fading to solid white (mockup) */
 #section-home.hn-v4.hn-v4-landing.active {
     background: linear-gradient(180deg, #E8F4FF 0%, #EFF7FF 16%, #F9FBFD 34%, #FFFFFF 48%, #FFFFFF 100%);
-}
-
-#section-home.hn-v4.hn-v4-landing.active .rl-dash-shell.rl-network-page {
-    background: transparent;
 }
 
 #section-home.hn-v4.hn-v4-landing .hn-v4-view-tab {
@@ -716,11 +717,17 @@ body.rl-dash-page:has(#section-home.hn-v4-landing.active) {
 }
 
 #section-home.hn-v4.hn-v4-landing .hn-v4-view-tabs {
-    margin-bottom: 6px;
+    margin-bottom: 8px;
+    gap: 8px;
+}
+
+#section-home.hn-v4.hn-v4-landing .hn-v4-view-tab.is-active {
+    background: #DBEAFE !important;
+    border-color: #93C5FD !important;
 }
 
 #section-home.hn-v4.hn-v4-landing .ho-view-switcher-wrap {
-    margin: 0 0 6px !important;
+    margin: 0 0 8px !important;
     position: static !important;
 }
 
@@ -732,8 +739,19 @@ body.rl-dash-page:has(#section-home.hn-v4-landing.active) {
     overflow: hidden;
 }
 
+#section-home.hn-v4.hn-v4-landing .hn-search-form {
+    margin-bottom: 8px !important;
+}
+
 #section-home.hn-v4.hn-v4-landing .hn-filter-chips {
-    padding-bottom: 4px !important;
+    margin-bottom: 8px !important;
+    padding-bottom: 0 !important;
+}
+
+#section-home.hn-v4.hn-v4-landing .hn-quick-actions.hn-v4-tiles {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    gap: 8px !important;
 }
 
 #section-home.hn-v4.hn-v4-landing .hn-v4-tile {

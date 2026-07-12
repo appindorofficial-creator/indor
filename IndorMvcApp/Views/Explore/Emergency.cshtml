@@ -1,0 +1,73 @@
+@model IndorMvcApp.ViewModels.GuestEmergencyChooseViewModel
+@{
+    Layout = "_LayoutGuestExplore";
+    ViewData["Title"] = L["Choose problem - INDOR"];
+    ViewBag.GuestNavActive = "home";
+    ViewBag.HideGuestBottomNav = true;
+    var selectedId = Model.SelectedId ?? Model.Options.FirstOrDefault()?.Id;
+}
+
+<div class="xp-guest-shell xp-guest-wiz">
+    <div class="xp-guest-wiz-nav">
+        <a href="@Url.Action("Index")" class="xp-guest-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
+        <span class="xp-guest-step">@L.T("Step {0} of {1}", 1, 3)</span>
+    </div>
+
+    <h1>@L["Choose problem"]</h1>
+    <p class="xp-guest-wiz-lead">@L["Select the urgent issue so we can find the right pro near you."]</p>
+
+    <form asp-action="Emergency" method="post" id="guestEmergencyChooseForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="serviceId" id="guestEmergencyServiceId" value="@selectedId" />
+
+        <div class="xp-guest-options" role="radiogroup" aria-label="@L["Choose problem"]">
+            @foreach (var option in Model.Options)
+            {
+                var isSelected = option.Id == selectedId;
+                <button type="button"
+                        class="xp-guest-option @(isSelected ? "is-selected" : "")"
+                        data-service-id="@option.Id"
+                        role="radio"
+                        aria-checked="@(isSelected ? "true" : "false")">
+                    <span class="xp-guest-option-radio" aria-hidden="true"></span>
+                    <span class="xp-guest-option-icon"><i class="fas @option.IconClass"></i></span>
+                    <span class="xp-guest-option-copy">
+                        <strong>@option.Title</strong>
+                        <small>@option.Subtitle</small>
+                    </span>
+                </button>
+            }
+        </div>
+
+        <button type="submit" class="xp-guest-btn" id="guestEmergencyContinueBtn" @(selectedId == null ? "disabled" : null)>
+            @L["Continue"] <i class="fas fa-arrow-right"></i>
+        </button>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+    (function () {
+        const form = document.getElementById('guestEmergencyChooseForm');
+        const input = document.getElementById('guestEmergencyServiceId');
+        const continueBtn = document.getElementById('guestEmergencyContinueBtn');
+        const options = form?.querySelectorAll('.xp-guest-option[data-service-id]') ?? [];
+
+        function selectOption(button) {
+            const id = button.dataset.serviceId;
+            if (!id || !input || !continueBtn) return;
+            input.value = id;
+            continueBtn.disabled = false;
+            options.forEach(opt => {
+                const selected = opt === button;
+                opt.classList.toggle('is-selected', selected);
+                opt.setAttribute('aria-checked', selected ? 'true' : 'false');
+            });
+        }
+
+        options.forEach(button => {
+            button.addEventListener('click', () => selectOption(button));
+        });
+    })();
+</script>
+}

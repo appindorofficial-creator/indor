@@ -1,0 +1,42 @@
+@model IndorMvcApp.ViewModels.ExploreViewModel
+@{
+    var quickCategories = Model.QuickEmergencyCategories;
+    var emergencyHelpUrl = Url.Action("Emergency", "Explore");
+    var emergencyGuideUrl = Url.Action("Emergency", "Explore");
+}
+
+<section class="xp-emergency-hero" aria-label="@L["Emergency Services"]">
+    <div class="xp-emergency-hero-head">
+        <div>
+            <div class="xp-emergency-hero-title">
+                <h2>@L["Emergency Services"]</h2>
+                <span class="xp-emergency-badge-247">24/7</span>
+            </div>
+            <p class="xp-emergency-hero-sub">@L["Fast help for urgent home problems."]</p>
+        </div>
+    </div>
+
+    <a href="@emergencyHelpUrl" class="xp-emergency-cta">
+        <i class="fas fa-bolt" aria-hidden="true"></i>
+        <span>@L["I NEED HELP NOW"]</span>
+        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+    </a>
+
+    @if (quickCategories.Count > 0)
+    {
+        <div class="xp-emergency-quick" role="list" aria-label="@L["Quick emergency categories"]">
+            @foreach (var item in quickCategories)
+            {
+                <a href="@item.Url" role="listitem">
+                    <span class="xp-emergency-quick-icon"><i class="fas @item.IconClass" aria-hidden="true"></i></span>
+                    <strong>@item.Label</strong>
+                    <small>@item.Subtitle</small>
+                </a>
+            }
+        </div>
+    }
+
+    <a href="@emergencyGuideUrl" class="xp-emergency-view-all">
+        @L["View all emergency services"] <i class="fas fa-chevron-right" aria-hidden="true"></i>
+    </a>
+</section>

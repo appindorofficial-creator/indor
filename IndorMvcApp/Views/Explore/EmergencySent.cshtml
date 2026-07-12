@@ -1,0 +1,22 @@
+@model IndorMvcApp.ViewModels.GuestEmergencySentViewModel
+@{
+    Layout = "_LayoutGuestExplore";
+    ViewData["Title"] = L["Request sent - INDOR"];
+    ViewBag.GuestNavActive = "home";
+    ViewBag.HideGuestBottomNav = true;
+    var loginUrl = Url.Action("LoginForm", "Account", new { returnUrl = Url.Action("EmergencyResume") });
+    var registerUrl = Url.Action("Register", "Account", new { returnUrl = Url.Action("EmergencyResume") });
+}
+
+<div class="xp-guest-shell xp-guest-sent">
+    <div class="xp-guest-sent-icon" aria-hidden="true"><i class="fas fa-circle-check"></i></div>
+    <h1>@L["Request sent!"]</h1>
+    <p class="xp-guest-wiz-lead">@L.T("Your {0} request is ready. Create a free account to track status and connect with a verified pro.", Model.ServiceTitle)</p>
+    <span class="xp-guest-request-id">@L.T("Request ID: {0}", Model.RequestId)</span>
+
+    <div class="xp-guest-actions-stack">
+        <a href="@loginUrl" class="xp-guest-btn">@L["View Request Status"]</a>
+        <a href="@Url.Action("Index")" class="xp-guest-btn xp-guest-btn--outline">@L["Back to Home"]</a>
+        <a href="@registerUrl" class="xp-guest-btn xp-guest-btn--outline">@L["Create a free account"]</a>
+    </div>
+</div>

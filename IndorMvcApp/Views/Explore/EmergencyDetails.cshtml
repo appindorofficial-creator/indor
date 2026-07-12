@@ -1,0 +1,52 @@
+@model IndorMvcApp.ViewModels.GuestEmergencyDetailsViewModel
+@{
+    Layout = "_LayoutGuestExplore";
+    ViewData["Title"] = L["Quick details - INDOR"];
+    ViewBag.GuestNavActive = "home";
+    ViewBag.HideGuestBottomNav = true;
+    var whenNeeded = string.Equals(Model.WhenNeeded, "Today", StringComparison.OrdinalIgnoreCase) ? "Today" : "ASAP";
+}
+
+<div class="xp-guest-shell xp-guest-wiz">
+    <div class="xp-guest-wiz-nav">
+        <a href="@Url.Action("Emergency")" class="xp-guest-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
+        <span class="xp-guest-step">@L.T("Step {0} of {1}", 2, 3)</span>
+    </div>
+
+    <h1>@L["Quick details"]</h1>
+    <p class="xp-guest-wiz-lead">@L.T("Tell us about your {0} emergency.", Model.ServiceTitle)</p>
+
+    <form asp-action="EmergencyDetails" method="post">
+        @Html.AntiForgeryToken()
+
+        <div class="xp-guest-field">
+            <label for="guestEmergencyDescription">@L["Describe the problem"]</label>
+            <textarea id="guestEmergencyDescription"
+                      name="description"
+                      placeholder="@L["Example: No AC in the living room and it's getting hot fast."]">@Model.Description</textarea>
+        </div>
+
+        <div class="xp-guest-field">
+            <label>@L["When do you need help?"]</label>
+            <div class="xp-guest-when">
+                <label>
+                    <input type="radio" name="whenNeeded" value="ASAP" @(whenNeeded == "ASAP" ? "checked" : null) />
+                    @L["ASAP (Now)"]
+                </label>
+                <label>
+                    <input type="radio" name="whenNeeded" value="Today" @(whenNeeded == "Today" ? "checked" : null) />
+                    @L["Today"]
+                </label>
+            </div>
+        </div>
+
+        <div class="xp-guest-photo-hint">
+            <i class="fas fa-camera"></i>
+            <span>@L["Add photos (optional) after you create a free account."]</span>
+        </div>
+
+        <button type="submit" class="xp-guest-btn">
+            @L["Find Help Now"] <i class="fas fa-location-crosshairs"></i>
+        </button>
+    </form>
+</div>

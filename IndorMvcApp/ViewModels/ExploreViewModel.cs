@@ -12,6 +12,8 @@ public sealed class ExploreViewModel
 {
     public required HomeCatalogSnapshot Catalog { get; init; }
     public List<ExploreProviderCardViewModel> Providers { get; init; } = [];
+    public EmergencyServicesSectionViewModel? EmergencySection { get; init; }
+    public IReadOnlyList<GuestEmergencyQuickCategoryViewModel> QuickEmergencyCategories { get; init; } = [];
 }
 
 public sealed class ExploreProviderCardViewModel

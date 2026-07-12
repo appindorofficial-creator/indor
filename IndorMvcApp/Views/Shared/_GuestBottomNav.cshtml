@@ -1,0 +1,24 @@
+@{
+    var active = (ViewBag.GuestNavActive as string ?? "home").ToLowerInvariant();
+    var homeUrl = Url.Action("Index", "Explore");
+    var servicesUrl = $"{homeUrl}#xp-services";
+    var loginUrl = Url.Action("LoginForm", "Account", new { returnUrl = homeUrl });
+    var registerUrl = Url.Action("Register", "Account");
+
+    string IsActive(string key) => active == key ? "active" : "";
+}
+
+<nav class="bottom-nav" aria-label="@L["Guest navigation"]">
+    <a href="@homeUrl" class="nav-item @IsActive("home")">
+        <i class="fas fa-house"></i><span>@L["Home"]</span>
+    </a>
+    <a href="@servicesUrl" class="nav-item @IsActive("services")">
+        <i class="fas fa-screwdriver-wrench"></i><span>@L["Services"]</span>
+    </a>
+    <a href="@registerUrl" class="nav-item nav-item--locked @IsActive("myhome")" title="@L["Create a free account to unlock My Home"]">
+        <i class="fas fa-house-circle-check"></i><span>@L["My Home"]</span>
+    </a>
+    <a href="@loginUrl" class="nav-item nav-item--locked @IsActive("profile")" title="@L["Log in to view your profile"]">
+        <i class="fas fa-user"></i><span>@L["Profile"]</span>
+    </a>
+</nav>
