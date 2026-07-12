@@ -5,9 +5,8 @@
 }
 
 <div class="hv-view-switcher hn-v4-feature-cards" role="tablist" aria-label="@L["Home view"]">
-    <button type="button"
-            class="hv-view-card hn-v4-feature-card hn-v4-feature-card--network @(isNetwork ? "is-active" : null) nav-jump"
-            data-target="section-home"
+    <a href="@Url.Action("Index", "Neighborhood")"
+            class="hv-view-card hn-v4-feature-card hn-v4-feature-card--network @(isNetwork ? "is-active" : null)"
             role="tab"
             aria-selected="@(isNetwork ? "true" : "false")">
         <span class="hn-v4-feature-card-copy">
@@ -20,7 +19,7 @@
         <span class="hn-v4-feature-card-go" aria-hidden="true">
             <svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M5 12h12M13 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </span>
-    </button>
+    </a>
     <button type="button"
             class="hv-view-card hn-v4-feature-card hn-v4-feature-card--myhome @(isMyHome ? "is-active" : null) nav-jump"
             data-target="section-mydashboard"

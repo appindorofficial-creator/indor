@@ -1,0 +1,117 @@
+@model IndorMvcApp.ViewModels.NeighborhoodCreatePostViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = L["Create post"];
+}
+<!DOCTYPE html>
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    @await Html.PartialAsync("_AppVersionHead")
+    @await Html.PartialAsync("_IndorDesignHead")
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/neighborhood-feed.css" asp-append-version="true" />
+</head>
+<body class="nb-body nb-body--create">
+    <form method="post" action="@(Url.Action("Create", "Neighborhood"))" enctype="multipart/form-data" class="nb-form" id="nbCreateForm">
+        @Html.AntiForgeryToken()
+
+        <header class="nb-header nb-header--create">
+            <a href="@Model.BackUrl" class="nb-create-cancel">@L["Cancel"]</a>
+            <div class="nb-brand nb-brand--detail">@L["Create post"]</div>
+            <button type="submit" class="nb-create-publish">@L["Publish"]</button>
+        </header>
+
+        <main class="nb-main nb-main--create">
+            <div class="nb-create-author">
+                <div class="nb-avatar nb-avatar--sm"><i class="fas fa-user"></i></div>
+                <div class="nb-create-author-meta">
+                    <div class="nb-audience" data-nb-audience>
+                        <button type="button" class="nb-audience-btn" data-nb-audience-toggle>
+                            <i class="fas fa-globe" id="nbAudienceIcon"></i>
+                            <span id="nbAudienceLabel">@(Model.Audiences.FirstOrDefault(a => a.Code == Model.Audience)?.Label ?? L["Public"])</span>
+                            <i class="fas fa-chevron-down nb-caret"></i>
+                        </button>
+                        <div class="nb-audience-pop" hidden>
+                            @foreach (var a in Model.Audiences)
+                            {
+                                <button type="button" class="nb-audience-item" data-code="@a.Code" data-icon="@a.Icon" data-label="@a.Label">
+                                    <i class="fas @a.Icon"></i> @a.Label
+                                </button>
+                            }
+                        </div>
+                        <input type="hidden" name="Audience" id="nbAudienceInput" value="@Model.Audience" />
+                    </div>
+                    <span class="nb-create-loc"><i class="fas fa-location-dot"></i> ZIP @Model.ZipCode</span>
+                </div>
+            </div>
+
+            <div class="nb-create-textwrap">
+                <textarea id="nbBody" name="Body" class="nb-create-textarea" rows="4" maxlength="500" required
+                          placeholder="@L["What's happening in your neighborhood?"]">@Model.Body</textarea>
+                <span class="nb-char-counter"><span id="nbCharCount">0</span>/500</span>
+            </div>
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <span class="nb-field-error">@L["Please write something to share."]</span>
+            }
+
+            <label class="nb-field-label">@L["Add photos or videos"]</label>
+            <label class="nb-media-drop">
+                <input type="file" name="media" accept="image/*,video/*" multiple hidden id="nbMedia" />
+                <i class="fas fa-plus"></i>
+                <span id="nbMediaLabel">@L["Add files"]</span>
+            </label>
+            <div id="nbMediaPreview" class="nb-media-preview"></div>
+
+            <label class="nb-field-label">@L["What type of post is it?"]</label>
+            <div class="nb-type-grid">
+                @foreach (var t in Model.Types)
+                {
+                    <label class="nb-type-pill nb-type-pill--@t.Css">
+                        <input type="radio" name="PostType" value="@t.Code" @(t.Code == Model.PostType ? "checked" : null) />
+                        <i class="fas @t.Icon"></i>
+                        <span>@t.Label</span>
+                    </label>
+                }
+            </div>
+
+            <label class="nb-field-label">@L["Category"]</label>
+            <div class="nb-cat-grid">
+                @foreach (var cat in Model.Categories)
+                {
+                    <label class="nb-cat-pill nb-tag--@cat.Css">
+                        <input type="radio" name="CategoryCode" value="@cat.Code" @(cat.Code == Model.CategoryCode ? "checked" : null) />
+                        <span>@cat.Label</span>
+                    </label>
+                }
+            </div>
+
+            <label class="nb-field-label">@L["Location (automatic)"]</label>
+            <div class="nb-create-locbox">
+                <i class="fas fa-location-dot"></i>
+                <span>ZIP @Model.ZipCode</span>
+                <input type="hidden" name="LocationLabel" value="@Model.LocationLabel" />
+            </div>
+
+            <section class="nb-rules">
+                <h3 class="nb-rules-title"><i class="fas fa-shield-heart"></i> @L["Community rules"]</h3>
+                <ul class="nb-rules-list">
+                    <li><i class="fas fa-check"></i> @L["Be respectful, kind, and contribute to your community."]</li>
+                    <li><i class="fas fa-check"></i> @L["No spam, advertising, or promotions."]</li>
+                    <li><i class="fas fa-check"></i> @L["Do not share sensitive personal information."]</li>
+                    <li><i class="fas fa-check"></i> @L["Report inappropriate content."]</li>
+                </ul>
+            </section>
+
+            <button type="submit" class="nb-btn nb-btn-primary nb-btn-block">
+                <i class="fas fa-paper-plane"></i> @L["Publish to neighborhood"]
+            </button>
+        </main>
+    </form>
+
+    <script src="~/js/neighborhood-feed.js" asp-append-version="true"></script>
+</body>
+</html>

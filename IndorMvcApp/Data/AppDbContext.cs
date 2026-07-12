@@ -202,6 +202,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<IndorNeighborRequestCategory> IndorNeighborRequestCategories { get; set; }
     public DbSet<IndorNeighborRequestPhoto> IndorNeighborRequestPhotos { get; set; }
     public DbSet<IndorNeighborRequestOffer> IndorNeighborRequestOffers { get; set; }
+    public DbSet<IndorNeighborhoodPost> IndorNeighborhoodPosts { get; set; }
+    public DbSet<IndorNeighborhoodComment> IndorNeighborhoodComments { get; set; }
+    public DbSet<IndorNeighborhoodPostLike> IndorNeighborhoodPostLikes { get; set; }
+    public DbSet<IndorNeighborhoodPostSave> IndorNeighborhoodPostSaves { get; set; }
+    public DbSet<IndorNeighborhoodPostMedia> IndorNeighborhoodPostMedia { get; set; }
+    public DbSet<IndorNeighborhoodCommentSave> IndorNeighborhoodCommentSaves { get; set; }
 
     // Agrega más DbSets según necesites:
     // public DbSet<Usuario> Usuarios { get; set; }
@@ -1203,6 +1209,61 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(e => e.Request)
                   .WithMany(r => r.Offers)
                   .HasForeignKey(e => e.RequestId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<IndorNeighborhoodPost>(entity =>
+        {
+            entity.HasIndex(e => new { e.ZipCode, e.IsActive, e.CreatedUtc });
+            entity.HasOne(e => e.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(e => e.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<IndorNeighborhoodComment>(entity =>
+        {
+            entity.HasIndex(e => new { e.PostId, e.CreatedUtc });
+            entity.HasIndex(e => e.ParentCommentId);
+            entity.HasOne(e => e.Post)
+                  .WithMany(p => p.Comments)
+                  .HasForeignKey(e => e.PostId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<IndorNeighborhoodPostLike>(entity =>
+        {
+            entity.HasIndex(e => new { e.PostId, e.UserId }).IsUnique();
+            entity.HasOne(e => e.Post)
+                  .WithMany()
+                  .HasForeignKey(e => e.PostId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<IndorNeighborhoodPostSave>(entity =>
+        {
+            entity.HasIndex(e => new { e.PostId, e.UserId }).IsUnique();
+            entity.HasOne(e => e.Post)
+                  .WithMany()
+                  .HasForeignKey(e => e.PostId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<IndorNeighborhoodPostMedia>(entity =>
+        {
+            entity.HasIndex(e => new { e.PostId, e.SortOrder });
+            entity.HasOne(e => e.Post)
+                  .WithMany(p => p.Media)
+                  .HasForeignKey(e => e.PostId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<IndorNeighborhoodCommentSave>(entity =>
+        {
+            entity.HasIndex(e => new { e.CommentId, e.UserId }).IsUnique();
+            entity.HasOne(e => e.Comment)
+                  .WithMany()
+                  .HasForeignKey(e => e.CommentId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
     }

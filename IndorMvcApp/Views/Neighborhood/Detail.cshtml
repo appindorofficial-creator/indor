@@ -1,0 +1,100 @@
+@model IndorMvcApp.ViewModels.NeighborhoodPostDetailViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = string.IsNullOrWhiteSpace(Model.Post.Title) ? L["Post"] : Model.Post.Title;
+    var homeUrl = Url.Action("Index", "Home") + "#section-home";
+}
+<!DOCTYPE html>
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    @await Html.PartialAsync("_AppVersionHead")
+    @await Html.PartialAsync("_IndorDesignHead")
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/homeowner-bottom-nav.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/neighborhood-feed.css" asp-append-version="true" />
+</head>
+<body class="nb-body nb-body--detail">
+    <header class="nb-header nb-header--detail">
+        <a href="@Model.BackUrl" class="nb-header-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
+        <nav class="nb-breadcrumb">
+            <a href="@homeUrl">@L["Home"]</a>
+            <i class="fas fa-chevron-right"></i>
+            <a href="@Model.BackUrl">Neighborhood</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>@L["Post"]</span>
+        </nav>
+        <a href="@homeUrl" class="nb-header-bell" aria-label="@L["Home"]"><i class="fas fa-house"></i></a>
+    </header>
+
+    <main class="nb-main nb-main--detail">
+        @await Html.PartialAsync("_NeighborhoodPostCard", Model.Post)
+
+        <section class="nb-comments" id="nbComments">
+            <h2 class="nb-comments-head">@L["Comments"] (@Model.TotalCommentCount)</h2>
+            @if (Model.Comments.Count == 0)
+            {
+                <p class="nb-comments-empty">@L["No comments yet. Start the conversation."]</p>
+            }
+            else
+            {
+                @foreach (var comment in Model.Comments)
+                {
+                    @await Html.PartialAsync("_NeighborhoodComment", comment, new ViewDataDictionary(ViewData)
+                    {
+                        ["PostId"] = Model.Post.Id,
+                        ["CanComment"] = Model.CanComment,
+                        ["IsReply"] = false
+                    })
+                }
+            }
+        </section>
+    </main>
+
+    @if (Model.CanComment)
+    {
+        <form method="post" action="@(Url.Action("Comment", "Neighborhood"))" class="nb-comment-bar" id="nbMainCommentForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Post.Id" />
+            <input type="hidden" name="parentId" value="" id="nbReplyParent" />
+            <div class="nb-reply-hint" id="nbReplyHint" hidden>
+                <span id="nbReplyHintText"></span>
+                <button type="button" id="nbReplyCancel" aria-label="@L["Cancel"]"><i class="fas fa-xmark"></i></button>
+            </div>
+            <div class="nb-comment-bar-row">
+                <input type="text" name="body" class="nb-comment-input" id="nbCommentInput" placeholder="@L["Write a comment..."]" required maxlength="1000" autocomplete="off" />
+                <button type="submit" class="nb-comment-send" aria-label="@L["Send"]"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </form>
+    }
+
+    <button type="button" class="nb-scroll-top" id="nbScrollTop" aria-label="@L["Back to top"]" hidden>
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <form id="nbSaveForm" method="post" action="@(Url.Action("Save", "Neighborhood"))" hidden>
+        @Html.AntiForgeryToken()
+    </form>
+    <form id="nbSaveCommentForm" method="post" action="@(Url.Action("SaveComment", "Neighborhood"))" hidden>
+        @Html.AntiForgeryToken()
+    </form>
+    <form id="nbDeleteForm" method="post" action="@(Url.Action("Delete", "Neighborhood"))" hidden>
+        @Html.AntiForgeryToken()
+    </form>
+    <form id="nbReportForm" method="post" action="@(Url.Action("Report", "Neighborhood"))" hidden>
+        @Html.AntiForgeryToken()
+    </form>
+
+    <script>
+        window.nbFeed = {
+            deleteConfirm: '@L["Delete this post?"]',
+            reportDone: '@L["Thanks, we received your report."]',
+            copied: '@L["Link copied"]',
+            replyingTo: '@L["Replying to"]'
+        };
+    </script>
+    <script src="~/js/neighborhood-feed.js" asp-append-version="true"></script>
+</body>
+</html>

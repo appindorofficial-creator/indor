@@ -52,6 +52,56 @@
             }
         });
 
+        // Blank-screen self-heal: some mobile WebViews discard the render surface
+        // when the app is backgrounded. On return the page can come back blank and
+        // otherwise requires the user to force-close and reopen the app. We detect
+        // that collapsed/blank state after the app becomes visible again and reload
+        // once (guarded against loops) so it recovers on its own.
+        var RESUME_RELOAD_KEY = '__indorResumeReloads';
+        function resumeReloadCount() {
+            try { return parseInt(window.sessionStorage.getItem(RESUME_RELOAD_KEY) || '0', 10) || 0; }
+            catch (e) { return 0; }
+        }
+        function markHealthy() {
+            try { window.sessionStorage.removeItem(RESUME_RELOAD_KEY); } catch (e) { }
+        }
+        function looksBlank() {
+            var b = document.body;
+            if (!b) return true;
+            var rectH = b.getBoundingClientRect ? b.getBoundingClientRect().height : 0;
+            var h = Math.max(b.scrollHeight || 0, b.offsetHeight || 0, rectH || 0);
+            // A real INDOR screen fills the viewport; a lost surface collapses to ~0.
+            return h < 10 && window.innerHeight > 0;
+        }
+        function checkBlankAndRecover() {
+            if (document.visibilityState !== 'visible') return;
+            if (!looksBlank()) { markHealthy(); return; }
+            if (resumeReloadCount() >= 2) return; // stop retrying to avoid loops
+            try { window.sessionStorage.setItem(RESUME_RELOAD_KEY, String(resumeReloadCount() + 1)); } catch (e) { }
+            window.location.reload();
+        }
+        function scheduleBlankCheck() {
+            // Wait a beat so the WebView has a chance to repaint before we judge it.
+            window.setTimeout(checkBlankAndRecover, 450);
+        }
+        window.addEventListener('pageshow', scheduleBlankCheck);
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible') {
+                scheduleBlankCheck();
+            }
+        });
+        // Once a page has painted normally, clear any stale reload counter — but
+        // only if it is genuinely not blank, otherwise we would reset the loop guard
+        // on a blank reload and recurse forever.
+        function resetCounterIfHealthy() {
+            window.setTimeout(function () { if (!looksBlank()) markHealthy(); }, 500);
+        }
+        if (document.readyState === 'complete') {
+            resetCounterIfHealthy();
+        } else {
+            window.addEventListener('load', resetCounterIfHealthy);
+        }
+
         document.addEventListener('click', function (e) {
             if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
             if (!e.target || !e.target.closest) return;

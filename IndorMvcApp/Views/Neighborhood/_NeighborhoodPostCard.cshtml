@@ -1,0 +1,96 @@
+@model IndorMvcApp.ViewModels.NeighborhoodPostCardViewModel
+<article class="nb-card" data-post-id="@Model.Id">
+    <div class="nb-card-top">
+        <div class="nb-avatar">
+            @if (!string.IsNullOrWhiteSpace(Model.AuthorPhotoUrl))
+            {
+                <img src="@Model.AuthorPhotoUrl" alt="@Model.AuthorName" />
+            }
+            else
+            {
+                <span>@Model.AuthorInitials</span>
+            }
+        </div>
+        <div class="nb-card-ident">
+            <strong class="nb-card-author">@Model.AuthorName</strong>
+            <span class="nb-card-meta">ZIP @Model.ZipCode · @Model.TimeAgo</span>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.TypeLabel))
+        {
+            <span class="nb-type nb-type--@Model.TypeCss">@Model.TypeLabel</span>
+        }
+        <div class="nb-menu" data-nb-menu>
+            <button type="button" class="nb-menu-btn" aria-label="@L["More options"]" data-nb-menu-toggle>
+                <i class="fas fa-ellipsis-vertical"></i>
+            </button>
+            <div class="nb-menu-pop" hidden>
+                <a href="@Model.ShareUrl" class="nb-menu-item nb-share" data-share-url="@Model.ShareUrl">
+                    <i class="fas fa-share-nodes"></i>@L["Share"]
+                </a>
+                <button type="button" class="nb-menu-item nb-report" data-post-id="@Model.Id">
+                    <i class="far fa-flag"></i>@L["Report post"]
+                </button>
+                @if (Model.IsMine)
+                {
+                    <button type="button" class="nb-menu-item nb-delete" data-post-id="@Model.Id">
+                        <i class="far fa-trash-can"></i>@L["Delete"]
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+
+    <a href="@Model.DetailUrl" class="nb-card-bodylink">
+        @if (!string.IsNullOrWhiteSpace(Model.Title))
+        {
+            <h3 class="nb-card-title">@Model.Title</h3>
+        }
+        <p class="nb-card-text">@Model.Body</p>
+    </a>
+
+    @if (Model.Media.Count > 0)
+    {
+        <a href="@Model.DetailUrl" class="nb-media nb-media--count@(Model.Media.Count > 1 ? "2" : "1")">
+            @foreach (var m in Model.Media.Take(2))
+            {
+                if (m.IsVideo)
+                {
+                    <video class="nb-media-item" muted playsinline preload="metadata">
+                        <source src="@m.Path" />
+                    </video>
+                }
+                else
+                {
+                    <img src="@m.Path" alt="" class="nb-media-item" loading="lazy" />
+                }
+            }
+            @if (Model.Media.Count > 1)
+            {
+                <span class="nb-media-count">1/@Model.Media.Count</span>
+            }
+        </a>
+    }
+
+    <div class="nb-card-tags">
+        @if (!string.IsNullOrWhiteSpace(Model.CategoryLabel))
+        {
+            <span class="nb-tag nb-tag--@Model.CategoryCss">@Model.CategoryLabel</span>
+        }
+        <span class="nb-tag-zip">ZIP @Model.ZipCode</span>
+    </div>
+
+    <div class="nb-card-actions">
+        <a href="@Model.DetailUrl" class="nb-act nb-comment">
+            <i class="far fa-comment"></i>
+            <span>@Model.CommentCount @L["comments"]</span>
+        </a>
+        <button type="button" class="nb-act nb-save @(Model.SavedByMe ? "is-on" : null)" data-post-id="@Model.Id" aria-pressed="@(Model.SavedByMe ? "true" : "false")">
+            <i class="@(Model.SavedByMe ? "fas" : "far") fa-bookmark"></i>
+            <span class="nb-save-label" data-save="@L["Save"]" data-saved="@L["Saved"]">@(Model.SavedByMe ? L["Saved"] : L["Save"])</span>
+        </button>
+        <button type="button" class="nb-act nb-share" data-share-url="@Model.ShareUrl">
+            <i class="fas fa-share-nodes"></i>
+            <span>@L["Share"]</span>
+        </button>
+    </div>
+</article>

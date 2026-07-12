@@ -177,6 +177,7 @@ builder.Services.AddScoped<RealtorPortalService>();
 builder.Services.AddScoped<RealtorPropertyFileInspectionBackfillService>();
 builder.Services.AddScoped<RealtorNearbyNetworkService>();
 builder.Services.AddScoped<HomeownerNearbyNetworkService>();
+builder.Services.AddScoped<NeighborhoodFeedService>();
 builder.Services.AddScoped<LawnCatalogService>();
 builder.Services.AddScoped<NeighborRequestWizardService>();
 builder.Services.AddScoped<RealtorSharedQuoteService>();

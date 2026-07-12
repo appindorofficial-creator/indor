@@ -1,0 +1,47 @@
+@model IndorMvcApp.ViewModels.NeighborhoodCommentViewModel
+@{
+    var canComment = ViewData["CanComment"] as bool? ?? false;
+    var isReply = ViewData["IsReply"] as bool? ?? false;
+    var postId = ViewData["PostId"];
+}
+<div class="nb-comment @(isReply ? "nb-comment--reply" : null)">
+    <div class="nb-avatar nb-avatar--sm">
+        @if (!string.IsNullOrWhiteSpace(Model.AuthorPhotoUrl))
+        {
+            <img src="@Model.AuthorPhotoUrl" alt="@Model.AuthorName" />
+        }
+        else
+        {
+            <span>@Model.AuthorInitials</span>
+        }
+    </div>
+    <div class="nb-comment-body">
+        <div class="nb-comment-top">
+            <strong>@Model.AuthorName</strong>
+            <button type="button" class="nb-comment-save @(Model.SavedByMe ? "is-on" : null)" data-comment-id="@Model.Id" aria-pressed="@(Model.SavedByMe ? "true" : "false")" aria-label="@L["Save tip"]">
+                <i class="@(Model.SavedByMe ? "fas" : "far") fa-bookmark"></i>
+            </button>
+        </div>
+        <span class="nb-comment-meta">@(string.IsNullOrWhiteSpace(Model.ZipCode) ? "" : "ZIP " + Model.ZipCode + " · ")@Model.TimeAgo</span>
+        <p>@Model.Body</p>
+        @if (canComment && !isReply)
+        {
+            <button type="button" class="nb-reply-btn" data-parent-id="@Model.Id" data-author="@Model.AuthorName">@L["Reply"]</button>
+        }
+
+        @if (Model.Replies.Count > 0)
+        {
+            <div class="nb-replies">
+                @foreach (var reply in Model.Replies)
+                {
+                    @await Html.PartialAsync("_NeighborhoodComment", reply, new ViewDataDictionary(ViewData)
+                    {
+                        ["PostId"] = postId,
+                        ["CanComment"] = canComment,
+                        ["IsReply"] = true
+                    })
+                }
+            </div>
+        }
+    </div>
+</div>

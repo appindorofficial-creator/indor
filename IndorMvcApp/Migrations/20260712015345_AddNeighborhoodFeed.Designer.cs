@@ -4,6 +4,7 @@ using IndorMvcApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace IndorMvcApp.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260712015345_AddNeighborhoodFeed")]
+    partial class AddNeighborhoodFeed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2694,9 +2697,6 @@ namespace IndorMvcApp.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("ParentCommentId")
-                        .HasColumnType("int");
-
                     b.Property<int>("PostId")
                         .HasColumnType("int");
 
@@ -2705,44 +2705,11 @@ namespace IndorMvcApp.Migrations
                         .HasMaxLength(450)
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ZipCode")
-                        .HasMaxLength(12)
-                        .HasColumnType("nvarchar(12)");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("ParentCommentId");
 
                     b.HasIndex("PostId", "CreatedUtc");
 
                     b.ToTable("IndorNeighborhoodComments");
-                });
-
-            modelBuilder.Entity("IndorMvcApp.Models.IndorNeighborhoodCommentSave", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CommentId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasMaxLength(450)
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommentId", "UserId")
-                        .IsUnique();
-
-                    b.ToTable("IndorNeighborhoodCommentSaves");
                 });
 
             modelBuilder.Entity("IndorMvcApp.Models.IndorNeighborhoodPost", b =>
@@ -2752,11 +2719,6 @@ namespace IndorMvcApp.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Audience")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("AuthorName")
                         .IsRequired()
@@ -2795,10 +2757,6 @@ namespace IndorMvcApp.Migrations
                     b.Property<string>("LocationLabel")
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
-
-                    b.Property<string>("PostType")
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
 
                     b.Property<int?>("PropiedadId")
                         .HasColumnType("int");
@@ -2857,40 +2815,6 @@ namespace IndorMvcApp.Migrations
                         .IsUnique();
 
                     b.ToTable("IndorNeighborhoodPostLikes");
-                });
-
-            modelBuilder.Entity("IndorMvcApp.Models.IndorNeighborhoodPostMedia", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedUtc")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasMaxLength(500)
-                        .HasColumnType("nvarchar(500)");
-
-                    b.Property<string>("MediaType")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)");
-
-                    b.Property<int>("PostId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SortOrder")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PostId", "SortOrder");
-
-                    b.ToTable("IndorNeighborhoodPostMedia");
                 });
 
             modelBuilder.Entity("IndorMvcApp.Models.IndorNeighborhoodPostSave", b =>
@@ -14028,17 +13952,6 @@ namespace IndorMvcApp.Migrations
                     b.Navigation("Post");
                 });
 
-            modelBuilder.Entity("IndorMvcApp.Models.IndorNeighborhoodCommentSave", b =>
-                {
-                    b.HasOne("IndorMvcApp.Models.IndorNeighborhoodComment", "Comment")
-                        .WithMany()
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Comment");
-                });
-
             modelBuilder.Entity("IndorMvcApp.Models.IndorNeighborhoodPost", b =>
                 {
                     b.HasOne("IndorMvcApp.Models.Propiedad", "Propiedad")
@@ -14053,17 +13966,6 @@ namespace IndorMvcApp.Migrations
                 {
                     b.HasOne("IndorMvcApp.Models.IndorNeighborhoodPost", "Post")
                         .WithMany()
-                        .HasForeignKey("PostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Post");
-                });
-
-            modelBuilder.Entity("IndorMvcApp.Models.IndorNeighborhoodPostMedia", b =>
-                {
-                    b.HasOne("IndorMvcApp.Models.IndorNeighborhoodPost", "Post")
-                        .WithMany("Media")
                         .HasForeignKey("PostId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -16153,8 +16055,6 @@ namespace IndorMvcApp.Migrations
             modelBuilder.Entity("IndorMvcApp.Models.IndorNeighborhoodPost", b =>
                 {
                     b.Navigation("Comments");
-
-                    b.Navigation("Media");
                 });
 
             modelBuilder.Entity("IndorMvcApp.Models.IndorPropertyAdministrator", b =>

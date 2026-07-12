@@ -1,0 +1,147 @@
+@model IndorMvcApp.ViewModels.NeighborhoodSavedViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = L["Saved"];
+    var isPosts = Model.ActiveTab == "posts";
+    var homeUrl = Url.Action("Index", "Home") + "#section-home";
+}
+<!DOCTYPE html>
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    @await Html.PartialAsync("_AppVersionHead")
+    @await Html.PartialAsync("_IndorDesignHead")
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/homeowner-bottom-nav.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/neighborhood-feed.css" asp-append-version="true" />
+</head>
+<body class="nb-body">
+    <header class="nb-header nb-header--detail">
+        <a href="@Model.BackUrl" class="nb-header-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
+        <div class="nb-brand nb-brand--detail">@L["Saved"]</div>
+        <a href="@homeUrl" class="nb-header-bell" aria-label="@L["Home"]"><i class="fas fa-house"></i></a>
+    </header>
+
+    <main class="nb-main">
+        <div class="nb-saved-switch">
+            <a href="@Model.PostsTabUrl" class="nb-tab @(isPosts ? "is-active" : null)">@L["Posts"]</a>
+            <a href="@Model.CommentsTabUrl" class="nb-tab @(!isPosts ? "is-active" : null)">@L["Comments"]</a>
+        </div>
+
+        @if (isPosts)
+        {
+            <div class="nb-tabs" role="tablist">
+                @foreach (var chip in Model.CategoryFilters)
+                {
+                    <a href="@chip.Url" class="nb-tab @(chip.IsActive ? "is-active" : null)">@chip.Label</a>
+                }
+            </div>
+
+            <section class="nb-saved-list">
+                @if (Model.Posts.Count == 0)
+                {
+                    <div class="nb-empty">
+                        <i class="far fa-bookmark"></i>
+                        <p>@L["You haven't saved any posts yet."]</p>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var post in Model.Posts)
+                    {
+                        var thumb = post.Media.FirstOrDefault();
+                        <div class="nb-saved-row" data-post-id="@post.Id">
+                            <a href="@post.DetailUrl" class="nb-saved-thumb">
+                                @if (thumb is { IsVideo: false })
+                                {
+                                    <img src="@thumb.Path" alt="" loading="lazy" />
+                                }
+                                else if (thumb is { IsVideo: true })
+                                {
+                                    <span class="nb-saved-thumb-icon"><i class="fas fa-play"></i></span>
+                                }
+                                else
+                                {
+                                    <span class="nb-saved-thumb-icon"><i class="fas fa-image"></i></span>
+                                }
+                            </a>
+                            <a href="@post.DetailUrl" class="nb-saved-info">
+                                <strong>@(string.IsNullOrWhiteSpace(post.Title) ? post.Body : post.Title)</strong>
+                                <span class="nb-saved-meta">@post.AuthorName · @post.TimeAgo</span>
+                                @if (!string.IsNullOrWhiteSpace(post.CategoryLabel))
+                                {
+                                    <span class="nb-tag nb-tag--@post.CategoryCss">@post.CategoryLabel</span>
+                                }
+                            </a>
+                            <button type="button" class="nb-saved-bookmark is-on nb-save" data-post-id="@post.Id" aria-pressed="true" aria-label="@L["Saved"]">
+                                <i class="fas fa-bookmark"></i>
+                            </button>
+                        </div>
+                    }
+                }
+            </section>
+
+            <div class="nb-sent-tip nb-saved-tip">
+                <i class="fas fa-lightbulb"></i>
+                <span>@L["Tip: Organize your saved posts by category and revisit them anytime."]</span>
+            </div>
+        }
+        else
+        {
+            <section class="nb-saved-comments">
+                @if (Model.Comments.Count == 0)
+                {
+                    <div class="nb-empty">
+                        <i class="far fa-bookmark"></i>
+                        <p>@L["You haven't saved any comments yet."]</p>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var comment in Model.Comments)
+                    {
+                        <a href="@comment.PostDetailUrl" class="nb-saved-comment">
+                            @if (!string.IsNullOrWhiteSpace(comment.PostTitleContext))
+                            {
+                                <span class="nb-saved-comment-context"><i class="fas fa-reply"></i> @comment.PostTitleContext</span>
+                            }
+                            <div class="nb-saved-comment-row">
+                                <div class="nb-avatar nb-avatar--sm">
+                                    @if (!string.IsNullOrWhiteSpace(comment.AuthorPhotoUrl))
+                                    {
+                                        <img src="@comment.AuthorPhotoUrl" alt="@comment.AuthorName" />
+                                    }
+                                    else
+                                    {
+                                        <span>@comment.AuthorInitials</span>
+                                    }
+                                </div>
+                                <div class="nb-comment-body">
+                                    <div class="nb-comment-top">
+                                        <strong>@comment.AuthorName</strong>
+                                        <span class="nb-comment-time">@comment.TimeAgo</span>
+                                    </div>
+                                    <p>@comment.Body</p>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                }
+            </section>
+        }
+    </main>
+
+    @await Html.PartialAsync("_NeighborhoodBottomNav")
+
+    <form id="nbSaveForm" method="post" action="@(Url.Action("Save", "Neighborhood"))" hidden>
+        @Html.AntiForgeryToken()
+    </form>
+    <form id="nbSaveCommentForm" method="post" action="@(Url.Action("SaveComment", "Neighborhood"))" hidden>
+        @Html.AntiForgeryToken()
+    </form>
+
+    <script src="~/js/neighborhood-feed.js" asp-append-version="true"></script>
+</body>
+</html>

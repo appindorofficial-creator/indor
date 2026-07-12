@@ -1,0 +1,14 @@
+@{
+    var homeUrl = Url.Action("Index", "Home") + "#section-home";
+    var servicesUrl = Url.Action("Index", "Home") + "#section-services";
+    var houseFactsUrl = Url.Action("Index", "Home") + "#section-myhome";
+    var moreUrl = Url.Action("Index", "Home") + "#section-more";
+    var neighborhoodUrl = Url.Action("Index", "Neighborhood");
+}
+<nav class="bottom-nav" aria-label="@L["Home navigation"]">
+    <a href="@homeUrl" class="nav-item"><i class="fas fa-house"></i><span>@L["Home"]</span></a>
+    <a href="@neighborhoodUrl" class="nav-item active"><i class="fas fa-people-group"></i><span>Neighborhood</span></a>
+    <a href="@servicesUrl" class="nav-item"><i class="fas fa-screwdriver-wrench"></i><span>@L["Services"]</span></a>
+    <a href="@houseFactsUrl" class="nav-item"><i class="fas fa-house-circle-check"></i><span>@L["House Facts"]</span></a>
+    <a href="@moreUrl" class="nav-item"><i class="fas fa-ellipsis"></i><span>@L["More"]</span></a>
+</nav>

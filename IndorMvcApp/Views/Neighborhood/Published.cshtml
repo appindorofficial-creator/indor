@@ -1,0 +1,61 @@
+@model IndorMvcApp.ViewModels.NeighborhoodPublishedViewModel
+@{
+    Layout = null;
+    ViewData["Title"] = L["Post published"];
+}
+<!DOCTYPE html>
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    @await Html.PartialAsync("_AppVersionHead")
+    @await Html.PartialAsync("_IndorDesignHead")
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/neighborhood-feed.css" asp-append-version="true" />
+</head>
+<body class="nb-body nb-body--sent">
+    <main class="nb-sent">
+        <div class="nb-sent-confetti" aria-hidden="true">
+            @for (var i = 0; i < 14; i++)
+            {
+                <span class="nb-confetti nb-confetti--@(i % 7)"></span>
+            }
+        </div>
+
+        <div class="nb-sent-check"><i class="fas fa-check"></i></div>
+        <h1 class="nb-sent-title">@L["Your post was published!"]</h1>
+        <p class="nb-sent-sub">@L["Thanks for contributing to your neighborhood."]</p>
+
+        <h2 class="nb-sent-question">@L["What would you like to do now?"]</h2>
+        <div class="nb-sent-actions">
+            <a href="@Model.ViewPostUrl" class="nb-sent-action">
+                <span class="nb-sent-action-ico nb-sent-action-ico--view"><i class="fas fa-eye"></i></span>
+                <span class="nb-sent-action-body">
+                    <strong>@L["View my post"]</strong>
+                    <small>@L["See your newly published post."]</small>
+                </span>
+            </a>
+            <a href="@Model.FeedUrl" class="nb-sent-action">
+                <span class="nb-sent-action-ico nb-sent-action-ico--feed"><i class="fas fa-house"></i></span>
+                <span class="nb-sent-action-body">
+                    <strong>@L["Go to feed"]</strong>
+                    <small>@L["Back to the main feed."]</small>
+                </span>
+            </a>
+            <a href="@Model.CreateAnotherUrl" class="nb-sent-action">
+                <span class="nb-sent-action-ico nb-sent-action-ico--new"><i class="fas fa-plus"></i></span>
+                <span class="nb-sent-action-body">
+                    <strong>@L["Create another post"]</strong>
+                    <small>@L["Share something else with your neighbors."]</small>
+                </span>
+            </a>
+        </div>
+
+        <div class="nb-sent-tip">
+            <i class="fas fa-lightbulb"></i>
+            <span>@L["Tip: Posts with photos get more comments and help."]</span>
+        </div>
+    </main>
+</body>
+</html>
