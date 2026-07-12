@@ -37,6 +37,7 @@ body.rl-dash-page.hn-landing-active {
 #section-home.hn-v4.hn-v4-landing.active .rl-dash-shell.rl-network-page {
     max-width: 480px;
     margin: 0 auto;
+    padding-bottom: 8px !important;
 }
 
 #section-home.hn-v4 .rl-portal-page-hero {
@@ -48,18 +49,18 @@ body.rl-dash-page.hn-landing-active {
     position: relative;
     padding: calc(4px + env(safe-area-inset-top, 0px)) 0 8px;
     z-index: 2;
-    overflow: visible;
+    overflow: hidden;
 }
 
 .hn-v4-header::before {
     content: "";
     position: absolute;
     top: calc(-2px + env(safe-area-inset-top, 0px));
-    right: -14px;
-    width: min(255px, 68vw);
-    height: 142px;
+    right: -8px;
+    width: min(220px, 58vw);
+    height: 118px;
     background: url('../images/hn-v4-header-sky.png') right top / contain no-repeat;
-    opacity: 0.95;
+    opacity: 0.9;
     pointer-events: none;
     z-index: 0;
     -webkit-mask-image: linear-gradient(90deg, transparent 0%, rgba(0, 0, 0, 0.35) 28%, #000 52%, #000 100%);
@@ -216,6 +217,8 @@ body.rl-dash-page.hn-landing-active {
 
 /* Map / Feed tabs */
 .hn-v4-view-tabs {
+    position: relative;
+    z-index: 3;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
@@ -605,8 +608,7 @@ body.rl-dash-page:has(#section-home.hn-v4-landing.active) {
     height: auto !important;
     max-width: 480px;
     margin: 0 auto;
-    padding: max(4px, env(safe-area-inset-top, 0px)) 16px 12px !important;
-    padding-bottom: calc(12px + var(--homeowner-bottom-nav-h, 80px) + env(safe-area-inset-bottom, 0px)) !important;
+    padding: max(4px, env(safe-area-inset-top, 0px)) 16px 8px !important;
     overflow: visible;
     background: transparent;
 }
@@ -717,8 +719,15 @@ body.rl-dash-page:has(#section-home.hn-v4-landing.active) {
 }
 
 #section-home.hn-v4.hn-v4-landing .hn-v4-view-tabs {
+    position: relative;
+    z-index: 5;
     margin-bottom: 8px;
     gap: 8px;
+    background: transparent;
+}
+
+#section-home.hn-v4.hn-v4-landing .hn-v4-view-tab {
+    background: #FFFFFF !important;
 }
 
 #section-home.hn-v4.hn-v4-landing .hn-v4-view-tab.is-active {
@@ -728,7 +737,8 @@ body.rl-dash-page:has(#section-home.hn-v4-landing.active) {
 
 #section-home.hn-v4.hn-v4-landing .ho-view-switcher-wrap {
     margin: 0 0 8px !important;
-    position: static !important;
+    position: relative !important;
+    z-index: 4;
 }
 
 #section-home.hn-v4.hn-v4-landing .hn-v4-feature-cards {

@@ -1070,7 +1070,7 @@
             section.classList.add('active');
             const isLandingHome = sectionId === 'section-home' && section.classList.contains('hn-v4-landing');
             document.body.classList.toggle('hn-landing-active', isLandingHome);
-            document.body.style.overflow = isLandingHome ? 'hidden' : '';
+            document.body.style.overflow = '';
             if (isLandingHome) {
                 syncBottomNavOffset();
             }
@@ -1119,9 +1119,12 @@
                 if (window.location.hash !== '#section-home') {
                     history.replaceState(null, '', base + '#section-home');
                 }
+                const isLanding = document.getElementById('section-home')?.classList.contains('hn-v4-landing');
                 const feed = document.getElementById('hn-network-feed');
-                if (feed) {
+                if (feed && !isLanding && getComputedStyle(feed).display !== 'none') {
                     window.setTimeout(() => feed.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'auto' });
                 }
                 return;
             }
