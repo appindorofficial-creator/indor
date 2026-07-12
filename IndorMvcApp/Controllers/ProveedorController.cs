@@ -14,6 +14,7 @@ using IndorMvcApp.Validation;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Options;
 
 
 
@@ -44,6 +45,10 @@ public partial class ProveedorController(
     INetworkRequestsService requests,
 
     IWebHostEnvironment env,
+
+    IInsuranceCarrierEmailSender insuranceCarrierEmail,
+
+    IOptions<InsuranceSettings> insuranceOptions,
 
     IIndorLocalizer localizer) : Controller
 
@@ -624,7 +629,7 @@ public partial class ProveedorController(
 
         if (!authorize)
         {
-            TempData["InsuranceConfirmError"] = localizer["Please authorize the payment to continue."];
+            TempData["InsuranceConfirmError"] = localizer["Please confirm and authorize to continue."];
             return RedirectToAction(nameof(InsuranceReview));
         }
 
@@ -632,15 +637,49 @@ public partial class ProveedorController(
         SaveInsuranceDraft(draft);
 
         var quoteId = await proData.SaveInsuranceQuoteAsync(proveedor.Entity!.Id, draft, cancellationToken);
+        var receiptNumber = $"IND-GL-{DateTime.UtcNow:yyyy}-{quoteId:00000}";
+
+        // Persist the manual issuance request and email the partner carrier the completed
+        // "Business Quote Sheet" so a policy can be issued manually (pre-API integration).
+        var carrierEmail = insuranceOptions.Value.CarrierEmail;
+        var issuanceId = await proData.SaveInsuranceIssuanceRequestAsync(
+            proveedor.Entity!.Id, draft, receiptNumber, carrierEmail, cancellationToken);
+
+        var ci = System.Globalization.CultureInfo.InvariantCulture;
+        var emailModel = new InsuranceIssuanceEmailModel(
+            RequestCode: receiptNumber,
+            Plan: draft.Plan,
+            BusinessName: draft.BusinessName,
+            BusinessAddress: draft.FullAddress,
+            WorkersComp: draft.Coverages.Any(c => c.Contains("Workers", StringComparison.OrdinalIgnoreCase)),
+            GeneralLiability: draft.Coverages.Any(c => c.Contains("General Liability", StringComparison.OrdinalIgnoreCase)),
+            OwnerName: draft.OwnerName,
+            OwnerDateOfBirth: draft.OwnerDateOfBirth,
+            OwnerPhone: draft.OwnerPhone,
+            OwnerEmail: draft.OwnerEmail,
+            TypeOfBusiness: draft.Trade,
+            NumberOfEmployees: draft.NumberOfEmployees,
+            EmployeePayroll: draft.EmployeePayroll?.ToString("0.##", ci),
+            CompanyGross: draft.CompanyGrossRevenue?.ToString("0.##", ci),
+            Notes: null,
+            ProviderContactEmail: draft.OwnerEmail);
+
+        var emailResult = await insuranceCarrierEmail.SendIssuanceRequestAsync(emailModel, cancellationToken);
+        await proData.MarkInsuranceIssuanceEmailAsync(
+            issuanceId,
+            emailResult.ToString(),
+            emailResult == InsuranceEmailResult.Sent ? DateTime.UtcNow : null,
+            cancellationToken);
 
         var (payToday, monthly) = InsuranceCatalog.Pricing(draft.Plan);
         ClearInsuranceDraft();
         await HttpContext.Session.CommitAsync(cancellationToken);
 
         TempData["InsuranceQuotePlan"] = draft.Plan;
-        TempData["InsurancePaidToday"] = payToday.ToString(System.Globalization.CultureInfo.InvariantCulture);
-        TempData["InsuranceMonthly"] = monthly.ToString(System.Globalization.CultureInfo.InvariantCulture);
-        TempData["InsuranceReceipt"] = $"IND-GL-{DateTime.UtcNow:yyyy}-{quoteId:00000}";
+        TempData["InsurancePaidToday"] = payToday.ToString(ci);
+        TempData["InsuranceMonthly"] = monthly.ToString(ci);
+        TempData["InsuranceReceipt"] = receiptNumber;
+        TempData["InsuranceCarrierEmailStatus"] = emailResult.ToString();
         return RedirectToAction(nameof(InsuranceQuoteSubmitted));
     }
 

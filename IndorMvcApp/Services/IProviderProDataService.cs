@@ -95,6 +95,24 @@ public interface IProviderProDataService
     Task<ProviderProTopbarViewModel> GetTopbarAsync(IndorProveedor proveedor, CancellationToken cancellationToken = default);
     void MarkNotificationsViewed(int proveedorId);
     Task<int> SaveInsuranceQuoteAsync(int proveedorId, ProviderProInsuranceQuoteDraft draft, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Persists a manual insurance issuance request (the carrier "Business Quote Sheet")
+    /// so INDOR can email the partner carrier to issue a policy manually.
+    /// </summary>
+    Task<int> SaveInsuranceIssuanceRequestAsync(
+        int proveedorId,
+        ProviderProInsuranceQuoteDraft draft,
+        string requestCode,
+        string? carrierEmail,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>Records the outcome of the carrier notification email for an issuance request.</summary>
+    Task MarkInsuranceIssuanceEmailAsync(
+        int requestId,
+        string carrierEmailStatus,
+        DateTime? sentUtc,
+        CancellationToken cancellationToken = default);
 }
 
 public class ProviderProWorkspaceData

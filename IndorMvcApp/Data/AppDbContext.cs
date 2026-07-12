@@ -147,6 +147,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<IndorProveedorApproval> IndorProveedorApprovals { get; set; }
     public DbSet<IndorPasswordResetCode> IndorPasswordResetCodes { get; set; }
     public DbSet<IndorProviderInsuranceQuote> IndorProviderInsuranceQuotes { get; set; }
+    public DbSet<IndorInsuranceIssuanceRequest> IndorInsuranceIssuanceRequests { get; set; }
     public DbSet<IndorProveedorReport> IndorProveedorReports { get; set; }
     public DbSet<IndorProveedorReportPhoto> IndorProveedorReportPhotos { get; set; }
     public DbSet<IndorProveedorReportTemplate> IndorProveedorReportTemplates { get; set; }
@@ -1228,6 +1229,16 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(e => e.Post)
                   .WithMany(p => p.Comments)
                   .HasForeignKey(e => e.PostId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<IndorInsuranceIssuanceRequest>(entity =>
+        {
+            entity.HasIndex(e => e.RequestCode).IsUnique();
+            entity.HasIndex(e => new { e.ProveedorId, e.CreatedUtc });
+            entity.HasOne(e => e.Proveedor)
+                  .WithMany()
+                  .HasForeignKey(e => e.ProveedorId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
 

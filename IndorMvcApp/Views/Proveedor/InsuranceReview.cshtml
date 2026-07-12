@@ -102,15 +102,15 @@
 
             <label class="ins-authorize">
                 <input type="checkbox" name="authorize" value="true" />
-                <span>@L.T("I authorize INDOR and its insurance partners to charge {0} today and {1} monthly until I cancel. I understand I can cancel at any time.", "$" + Model.PayToday.ToString("0"), "$" + Model.Monthly.ToString("0"))</span>
+                <span>@L["I confirm the information above is correct and authorize INDOR to send it to the insurance carrier to issue my policy manually."]</span>
             </label>
 
-            <button type="submit" class="ins-cta ins-cta--block"><i class="fas fa-lock"></i> @L.T("Pay {0} Today", "$" + Model.PayToday.ToString("0"))</button>
+            <button type="submit" class="ins-cta ins-cta--block"><i class="fas fa-shield-halved"></i> @L["Issue insurance"]</button>
         </div>
 
         <div class="ins-note ins-note--info">
             <i class="fas fa-circle-info"></i>
-            <span>@L["Your policy is subject to final carrier approval. Rates may vary based on underwriting review. You'll receive confirmation once your policy is active."]</span>
+            <span>@L["We'll email your details to the insurance carrier so they can issue your policy manually."] @L["Your policy is subject to final carrier approval. Rates may vary based on underwriting review. You'll receive confirmation once your policy is active."]</span>
         </div>
     </form>
 </div>

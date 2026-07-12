@@ -3867,6 +3867,66 @@ public partial class ProviderProDataService(
         return quote.Id;
     }
 
+    public async Task<int> SaveInsuranceIssuanceRequestAsync(
+        int proveedorId,
+        ProviderProInsuranceQuoteDraft draft,
+        string requestCode,
+        string? carrierEmail,
+        CancellationToken cancellationToken = default)
+    {
+        DateTime? dob = null;
+        if (DateTime.TryParse(draft.OwnerDateOfBirth, out var parsedDob))
+        {
+            dob = parsedDob.Date;
+        }
+
+        var now = DateTime.UtcNow;
+        var request = new IndorInsuranceIssuanceRequest
+        {
+            ProveedorId = proveedorId,
+            RequestCode = requestCode,
+            Plan = NullIfEmpty(draft.Plan),
+            BusinessName = NullIfEmpty(draft.BusinessName) ?? "—",
+            BusinessAddress = NullIfEmpty(draft.FullAddress) ?? "—",
+            WorkersComp = draft.Coverages.Any(c => c.Contains("Workers", StringComparison.OrdinalIgnoreCase)),
+            GeneralLiability = draft.Coverages.Any(c => c.Contains("General Liability", StringComparison.OrdinalIgnoreCase)),
+            OwnerName = NullIfEmpty(draft.OwnerName) ?? "—",
+            OwnerDateOfBirth = dob,
+            OwnerPhone = NullIfEmpty(draft.OwnerPhone),
+            OwnerEmail = NullIfEmpty(draft.OwnerEmail),
+            TypeOfBusiness = NullIfEmpty(draft.Trade),
+            NumberOfEmployees = NullIfEmpty(draft.NumberOfEmployees),
+            EmployeePayroll = draft.EmployeePayroll,
+            CompanyGross = draft.CompanyGrossRevenue,
+            Status = "Submitted",
+            CarrierEmail = NullIfEmpty(carrierEmail),
+            SubmittedUtc = now,
+            CreatedUtc = now
+        };
+
+        db.IndorInsuranceIssuanceRequests.Add(request);
+        await db.SaveChangesAsync(cancellationToken);
+        return request.Id;
+    }
+
+    public async Task MarkInsuranceIssuanceEmailAsync(
+        int requestId,
+        string carrierEmailStatus,
+        DateTime? sentUtc,
+        CancellationToken cancellationToken = default)
+    {
+        var request = await db.IndorInsuranceIssuanceRequests
+            .FirstOrDefaultAsync(r => r.Id == requestId, cancellationToken);
+        if (request == null)
+        {
+            return;
+        }
+
+        request.CarrierEmailStatus = carrierEmailStatus;
+        request.CarrierEmailSentUtc = sentUtc;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task<ProviderProMessagesInboxViewModel> GetMessagesInboxAsync(
         IndorProveedor proveedor,
         string? tab = "all",
