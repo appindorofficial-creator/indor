@@ -673,7 +673,7 @@ public static class UiTranslationsFinal
             ["Import portfolio"] = "Importar portafolio",
             ["Upload a CSV file to add multiple properties at once."] = "Sube un archivo CSV para agregar varias propiedades a la vez.",
             ["Scan or upload documents"] = "Escanear o subir documentos",
-            ["Add leases, deeds, or spreadsheets to help INDOR understand your portfolio."] = "Agrega contratos, escrituras o hojas de cálculo para ayudar a INDOR a entender tu portafolio.",
+            ["Add leases, deeds, or spreadsheets to help INDOR understand your portfolio."] = "Agrega contratos, escrituras u hojas de cálculo para ayudar a INDOR a entender tu portafolio.",
             ["Invite team members"] = "Invitar miembros del equipo",
             ["Add colleagues who will help manage your portfolio."] = "Agrega colegas que te ayudarán a administrar tu portafolio.",
             ["Add your properties"] = "Agrega tus propiedades",

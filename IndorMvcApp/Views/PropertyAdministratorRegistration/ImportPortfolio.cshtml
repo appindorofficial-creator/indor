@@ -12,7 +12,7 @@
     <div class="pa-check-item"><i class="fas fa-circle-check"></i> @L["HouseNumber, StreetName, City, State, ZipCode, PropertyType"]</div>
     <div class="pa-check-item"><i class="fas fa-circle-check"></i> @L["Nickname (optional)"]</div>
     <p class="pa-step-hint" style="margin:12px 0 0;">
-        PropertyType @L["values"]:
+        @L["PropertyType values:"]
         @string.Join(", ", PropertyAdministratorCatalog.PropertyTypes.Select(type => type.Value))
     </p>
 </div>
@@ -35,7 +35,7 @@
                accept=".csv,text/csv,.txt"
                required />
         <label for="csvFile" class="pa-file-picker-btn">@L["Choose CSV file"]</label>
-        <span class="pa-file-picker-name" id="csvFileName" data-empty-label="No file selected">@L["No file selected"]</span>
+        <span class="pa-file-picker-name" id="csvFileName" data-empty-label="@L["No file selected"]">@L["No file selected"]</span>
     </div>
 
     <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">@L["Import properties"]</button>

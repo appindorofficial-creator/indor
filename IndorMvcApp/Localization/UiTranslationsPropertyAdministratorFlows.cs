@@ -342,5 +342,19 @@ public static class UiTranslationsPropertyAdministratorFlows
             ["water mitigation"] = "mitigación de agua",
             ["yard debris"] = "escombros del jardín",
             ["—"] = "—",
+            // PA registration — upload / import property documents (override broken Realtor Spanglish)
+            ["Accepted formats: PDF, JPG, PNG, WEBP, HEIC. Max 10 MB per file."] = "Formatos aceptados: PDF, JPG, PNG, WEBP, HEIC. Máx. 10 MB por archivo.",
+            ["Choose files"] = "Elegir archivos",
+            ["No files selected"] = "No hay archivos seleccionados",
+            ["{0} files selected"] = "{0} archivos seleccionados",
+            ["Back to properties"] = "Volver a propiedades",
+            ["Back to review"] = "Volver a la revisión",
+            ["Choose CSV file"] = "Elegir archivo CSV",
+            ["No file selected"] = "No hay archivo seleccionado",
+            ["Import properties"] = "Importar propiedades",
+            ["Nickname (optional)"] = "Apodo (opcional)",
+            ["Use a CSV file with one property per row. Required columns:"] = "Usa un archivo CSV con una propiedad por fila. Columnas requeridas:",
+            ["PropertyType values:"] = "Valores de PropertyType:",
+            ["Upload documents"] = "Subir documentos",
         };
 }

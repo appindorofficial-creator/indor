@@ -36,7 +36,7 @@
                accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,image/*,application/pdf"
                multiple />
         <label for="documentFiles" class="pa-file-picker-btn">@L["Choose files"]</label>
-        <span class="pa-file-picker-name" id="documentFilesName" data-empty-label="No files selected">@L["No files selected"]</span>
+        <span class="pa-file-picker-name" id="documentFilesName" data-empty-label="@L["No files selected"]" data-many-label="@L["{0} files selected"]">@L["No files selected"]</span>
     </div>
 
     <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">@L["Upload documents"]</button>
@@ -55,6 +55,7 @@
         if (!input || !nameEl || !picker) return;
 
         const emptyLabel = nameEl.dataset.emptyLabel || 'No files selected';
+        const manyLabel = nameEl.dataset.manyLabel || '{0} files selected';
 
         function syncFileLabel() {
             const files = input.files ? Array.from(input.files) : [];
@@ -68,7 +69,7 @@
             if (files.length === 1) {
                 nameEl.textContent = files[0].name;
             } else {
-                nameEl.textContent = files.length + ' files selected';
+                nameEl.textContent = manyLabel.replace('{0}', String(files.length));
             }
             nameEl.classList.add('is-selected');
             picker.classList.add('has-file');
