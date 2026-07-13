@@ -20,7 +20,7 @@
             <span class="prv-pro-wizard-type-icon prv-pro-wizard-type-icon--@Model.ServiceCategoryTone">
                 <i class="fas @Model.ServiceCategoryIcon"></i>
             </span>
-            <strong>@Model.ServiceCategoryLabel</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.ServiceCategoryLabel)</strong>
         </div>
         <div>
             <small>@L["Customer"]</small>
@@ -42,14 +42,14 @@
                 <button type="button" class="prv-pro-quote-toggle-btn @(Model.SendQuote ? "is-active" : "")" data-send="true">
                     <i class="fas fa-paper-plane"></i> @L["Yes, send quote"]</button>
                 <button type="button" class="prv-pro-quote-toggle-btn @(!Model.SendQuote ? "is-active" : "")" data-send="false">
-                    Skip for now
+                    @L["Skip for now"]
                 </button>
             </div>
         </section>
 
         <section class="prv-pro-wizard-card prv-pro-quote-inputs @(Model.SendQuote ? "" : "is-hidden")" id="createJobQuoteInputs">
             <label class="prv-pro-form-label">
-                Describe what needs to be done
+                @L["Describe what needs to be done"]
                 <textarea name="QuoteRequestNotes" id="createJobQuoteNotes" rows="5" maxlength="@Model.MaxCharacters" placeholder="@L["Describe the work, damage, and what the customer needs..."]">@Model.QuoteRequestNotes</textarea>
             </label>
             <div class="prv-pro-quote-charcount"><span id="createJobQuoteCount">@charCount</span> / @Model.MaxCharacters</div>

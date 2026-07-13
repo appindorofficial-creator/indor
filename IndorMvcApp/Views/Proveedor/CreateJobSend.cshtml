@@ -25,7 +25,7 @@
         </span>
         <div>
             <strong>@Model.JobTitle</strong>
-            <span class="prv-pro-customer-pill">@Model.ServiceCategoryLabel</span>
+            <span class="prv-pro-customer-pill">@UiDisplayLocalization.Localize(L, Model.ServiceCategoryLabel)</span>
             <div class="prv-pro-send-meta">
                 <span><i class="fas fa-user"></i> @Model.CustomerName</span>
                 <span><i class="fas fa-location-dot"></i> @Model.Address</span>

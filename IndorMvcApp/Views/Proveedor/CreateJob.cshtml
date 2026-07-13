@@ -8,6 +8,7 @@
     var jobTitle = !string.IsNullOrWhiteSpace(Model.JobTitle)
         ? Model.JobTitle
         : selectedCategory?.SuggestedJobName ?? "";
+    jobTitle = UiDisplayLocalization.Localize(L, jobTitle);
 }
 
 <div class="prv-pro-shell prv-pro-shell--create-job prv-pro-shell--wizard">

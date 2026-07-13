@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderProInvoiceDetailsViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = $"{Model.PageTitle} - INDOR PRO";
+    ViewData["Title"] = $"{UiDisplayLocalization.Localize(L, Model.PageTitle)} - INDOR PRO";
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
@@ -15,7 +15,7 @@
     <header class="prv-pro-workflow-head">
         <a asp-controller="Proveedor" asp-action="Invoices" asp-route-tab="@Model.ReturnTab" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>@Model.PageTitle</h1>
+            <h1>@UiDisplayLocalization.Localize(L, Model.PageTitle)</h1>
             <small>@Model.InvoiceCode · @UiDisplayLocalization.Localize(L, Model.ServiceType)</small>
         </div>
         <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@UiDisplayLocalization.Localize(L, Model.Status)</span>
