@@ -356,5 +356,15 @@ public static class UiTranslationsPropertyAdministratorFlows
             ["Use a CSV file with one property per row. Required columns:"] = "Usa un archivo CSV con una propiedad por fila. Columnas requeridas:",
             ["PropertyType values:"] = "Valores de PropertyType:",
             ["Upload documents"] = "Subir documentos",
+            ["HouseNumber, StreetName, City, State, ZipCode, PropertyType"] = "HouseNumber, StreetName, City, State, ZipCode, PropertyType (número, calle, ciudad, estado, ZIP, tipo)",
+            ["PropertyType values:"] = "Valores de tipo de propiedad (PropertyType):",
+            ["Duplex"] = "Dúplex",
+            ["Short-term rental"] = "Alquiler a corto plazo",
+            ["Single-family home"] = "Casa unifamiliar",
+            ["Multi-family"] = "Multifamiliar",
+            ["Townhouse"] = "Casa adosada",
+            ["SingleFamily"] = "Unifamiliar",
+            ["MultiFamily"] = "Multifamiliar",
+            ["ShortTermRental"] = "Alquiler a corto plazo",
         };
 }

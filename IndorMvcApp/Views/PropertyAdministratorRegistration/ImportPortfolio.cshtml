@@ -13,7 +13,8 @@
     <div class="pa-check-item"><i class="fas fa-circle-check"></i> @L["Nickname (optional)"]</div>
     <p class="pa-step-hint" style="margin:12px 0 0;">
         @L["PropertyType values:"]
-        @string.Join(", ", PropertyAdministratorCatalog.PropertyTypes.Select(type => type.Value))
+        @string.Join(", ", PropertyAdministratorCatalog.PropertyTypes.Select(type =>
+            $"{UiDisplayLocalization.Localize(L, type.Label)} ({type.Value})"))
     </p>
 </div>
 

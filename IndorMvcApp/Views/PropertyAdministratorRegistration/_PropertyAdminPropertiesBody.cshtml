@@ -192,11 +192,11 @@ else if (TempData["PropertyAdminError"] is string err)
                 {
                     if (formPropertyType == item.Value)
                     {
-                        <option value="@item.Value" selected="selected">@item.Label</option>
+                        <option value="@item.Value" selected="selected">@UiDisplayLocalization.Localize(L, item.Label)</option>
                     }
                     else
                     {
-                        <option value="@item.Value">@item.Label</option>
+                        <option value="@item.Value">@UiDisplayLocalization.Localize(L, item.Label)</option>
                     }
                 }
             </select>
