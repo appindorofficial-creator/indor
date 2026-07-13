@@ -376,5 +376,10 @@ public static class UiTranslationsPropertyAdministratorFlows
             ["Property nickname (optional)"] = "Apodo de la propiedad (opcional)",
             ["Some rows were skipped:"] = "Algunas filas se omitieron:",
             ["Add property quickly"] = "Agregar propiedad rápidamente",
+            // PA calendar
+            ["Upcoming visits and scheduled service across your portfolio."] = "Visitas próximas y servicios programados en tu portafolio.",
+            ["Scheduled visits"] = "Visitas programadas",
+            ["No visits on the calendar yet."] = "Aún no hay visitas en el calendario.",
+            ["Scheduled requests"] = "Solicitudes programadas",
         };
 }
