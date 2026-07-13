@@ -282,6 +282,8 @@ public static class UiTranslationsFinal
                 "Administra y conéctate con inspectores y proveedores de confianza.",
             ["Get help, manage your subscription and account."] =
                 "Obtén ayuda, administra tu suscripción y cuenta.",
+            ["Support & Account"] = "Soporte y cuenta",
+            ["Verify now"] = "Verificar ahora",
             ["Become a Verified Realtor"] = "Conviértete en agente verificado",
             ["Upload your license and ID to unlock the Verified Realtor badge."] =
                 "Sube tu licencia e identificación para obtener la insignia de agente verificado.",
@@ -1253,5 +1255,97 @@ public static class UiTranslationsFinal
             ["Create Job for Customer"] = "Crear trabajo para el cliente",
             ["Name"] = "Nombre",
             ["ZIP Code"] = "Código ZIP",
+
+            // Realtor — Profile subtree, edit wizard, activity feed
+            ["Quote Requests"] = "Solicitudes de cotización",
+            ["Profile {0}% complete"] = "Perfil {0}% completo",
+            ["Account settings"] = "Configuración de la cuenta",
+            ["Manage alerts for clients, files, and quote updates."] =
+                "Administra alertas de clientes, expedientes y cotizaciones.",
+            ["Need help?"] = "¿Necesitas ayuda?",
+            ["Help, account preferences, and INDOR resources for realtors."] =
+                "Ayuda, preferencias de cuenta y recursos de INDOR para agentes inmobiliarios.",
+            ["Contact INDOR support at"] = "Contacta al soporte de INDOR en",
+            ["Review INDOR platform terms for real estate professionals."] =
+                "Revisa los términos de la plataforma INDOR para profesionales inmobiliarios.",
+            ["How INDOR handles your account and client data."] =
+                "Cómo INDOR maneja tu cuenta y los datos de tus clientes.",
+            ["Public profile header"] = "Encabezado del perfil público",
+            ["Edit photo"] = "Editar foto",
+            ["Share Profile"] = "Compartir perfil",
+            ["Share your profile link"] = "Comparte el enlace de tu perfil",
+            ["Edit profile progress"] = "Progreso de edición del perfil",
+            ["Set up your business details and professional identity."] =
+                "Configura los detalles de tu negocio e identidad profesional.",
+            ["Complete your business information to build trust and grow your visibility."] =
+                "Completa la información de tu negocio para generar confianza y aumentar tu visibilidad.",
+            ["Business information fields"] = "Campos de información del negocio",
+            ["Business Name"] = "Nombre del negocio",
+            ["License Status"] = "Estado de la licencia",
+            ["Add office address"] = "Agregar dirección de oficina",
+            ["Add languages"] = "Agregar idiomas",
+            ["Add business name"] = "Agregar nombre del negocio",
+            ["Add brokerage"] = "Agregar agencia",
+            ["Add email"] = "Agregar correo",
+            ["Brokerage"] = "Agencia",
+            ["Office Address"] = "Dirección de oficina",
+            ["Languages"] = "Idiomas",
+            ["INDOR Messaging"] = "Mensajería de INDOR",
+            ["Company & Contact Details"] = "Datos de empresa y contacto",
+            ["Add the contact and public business information clients will see."] =
+                "Agrega la información de contacto y del negocio que verán los clientes.",
+            ["Define the cities and neighborhoods where you work with clients."] =
+                "Define las ciudades y vecindarios donde trabajas con clientes.",
+            ["List the cities, counties, or neighborhoods you serve. Separate multiple areas with commas."] =
+                "Lista las ciudades, condados o vecindarios que atiendes. Separa varias áreas con comas.",
+            ["License & Professional Details"] = "Licencia y detalles profesionales",
+            ["Build trust with licensing, experience, specialties, and verification."] =
+                "Genera confianza con licencia, experiencia, especialidades y verificación.",
+            ["Review & Save"] = "Revisar y guardar",
+            ["Review your business information before updating your public profile."] =
+                "Revisa la información de tu negocio antes de actualizar tu perfil público.",
+            ["Final Step"] = "Paso final",
+            ["Public display name"] = "Nombre público",
+            ["Select experience"] = "Selecciona la experiencia",
+            ["(select up to 3)"] = "(selecciona hasta 3)",
+            ["Service Area (Preview)"] = "Área de servicio (vista previa)",
+            ["Preview Public Profile"] = "Vista previa del perfil público",
+            ["Public Profile Preview"] = "Vista previa del perfil público",
+            ["Save &amp; Continue"] = "Guardar y continuar",
+            ["Save &amp; continue"] = "Guardar y continuar",
+            ["Your phone number stays private. Clients contact you through INDOR messaging."] =
+                "Tu número de teléfono permanece privado. Los clientes te contactan mediante la mensajería de INDOR.",
+            ["Packages you've shared with clients, and their view status."] =
+                "Paquetes que has compartido con clientes y su estado de visualización.",
+            ["Share a property file package with a client and it will appear here."] =
+                "Comparte un paquete de expediente con un cliente y aparecerá aquí.",
+            ["Create new property file"] = "Crear nuevo expediente de propiedad",
+            ["Search quotes by address, client or provider..."] =
+                "Buscar cotizaciones por dirección, cliente o proveedor...",
+            ["No quotes match your filters."] = "Ninguna cotización coincide con tus filtros.",
+            ["Invitation sent to {0} for {1}"] = "Invitación enviada a {0} para {1}",
+            ["{0} accepted the invitation for {1}"] = "{0} aceptó la invitación para {1}",
+            ["Licensed Realtor"] = "Agente inmobiliario licenciado",
+            ["Background Verified"] = "Antecedentes verificados",
+            ["INDOR Verified"] = "Verificado por INDOR",
+            ["Open Houses"] = "Casas abiertas",
+            ["OPEN HOUSE"] = "CASA ABIERTA",
+            ["Open House This Saturday"] = "Casa abierta este sábado",
+            ["Looking for a 3–4 bed home in Charlotte"] =
+                "Busca una casa de 3–4 habitaciones en Charlotte",
+            ["Licensed plumbers responding in your ZIP"] =
+                "Plomeros licenciados respondiendo en tu código postal",
+            ["Stunning Home in Ballantyne"] = "Hermosa casa en Ballantyne",
+            ["Buyer Interested Nearby"] = "Comprador interesado cerca",
+            ["Emergency Help Nearby"] = "Ayuda de emergencia cerca",
+            ["NEW LEAD"] = "NUEVO PROSPECTO",
+            ["HOME FOR SALE"] = "CASA EN VENTA",
+            ["EMERGENCY"] = "EMERGENCIA",
+            ["Suggested from city and state. Change it if your office uses a different ZIP."] =
+                "Sugerido según ciudad y estado. Cámbialo si tu oficina usa un código postal diferente.",
+            ["Upload license and ID to unlock the Verified Realtor badge."] =
+                "Sube tu licencia e identificación para obtener la insignia de agente verificado.",
+            ["Not provided"] = "No proporcionado",
+            ["Charlotte, NC or Miami-Dade, Broward"] = "Charlotte, NC o Miami-Dade, Broward",
         };
 }

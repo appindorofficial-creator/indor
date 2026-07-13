@@ -9,23 +9,23 @@
         <div class="rl-ep-review-row">
             <span class="rl-ep-row-icon"><i class="fas @row.Icon"></i></span>
             <div class="rl-ep-review-row-body">
-                <span class="rl-ep-row-label">@row.Label</span>
+                <span class="rl-ep-row-label">@UiDisplayLocalization.Localize(L, row.Label)</span>
                 @if (row.Label == "Verification")
                 {
                     <span class="rl-ep-row-value rl-ep-row-value--license">
                         @if (!string.IsNullOrWhiteSpace(row.StatusBadge))
                         {
-                            <span class="rl-ep-status @row.StatusCss">@row.StatusBadge</span>
+                            <span class="rl-ep-status @row.StatusCss">@UiDisplayLocalization.Localize(L, row.StatusBadge)</span>
                         }
                         @if (!string.IsNullOrWhiteSpace(row.Value))
                         {
-                            <span>· @row.Value</span>
+                            <span>· @UiDisplayLocalization.Localize(L, row.Value)</span>
                         }
                     </span>
                 }
                 else
                 {
-                    <span class="rl-ep-row-value">@(string.IsNullOrWhiteSpace(row.Value) ? "Not provided" : row.Value)</span>
+                    <span class="rl-ep-row-value">@(string.IsNullOrWhiteSpace(row.Value) ? L["Not provided"] : UiDisplayLocalization.Localize(L, row.Value))</span>
                 }
             </div>
             <a asp-controller="Realtor" asp-action="@row.EditAction" class="rl-ep-review-edit">@L["Edit"] <i class="fas fa-chevron-right"></i></a>
