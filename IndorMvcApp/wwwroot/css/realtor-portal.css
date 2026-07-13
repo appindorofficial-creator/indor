@@ -4209,6 +4209,10 @@ button.rl-premium-link {
     font-weight: 600;
     cursor: pointer;
     font-family: inherit;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    z-index: 2;
 }
 
 .rl-profile-photo-change-btn i {

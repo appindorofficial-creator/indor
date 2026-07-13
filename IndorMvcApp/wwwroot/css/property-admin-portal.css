@@ -26,9 +26,14 @@
 .pa-file-picker:focus-within{border-color:#93C5FD;box-shadow:0 0 0 3px rgba(46,139,255,.15)}
 .pa-file-picker.has-file{border-color:#BFDBFE}
 .pa-file-picker-icon{color:#94A3B8;width:18px;text-align:center;flex-shrink:0;pointer-events:none}
+/* Keep native file chrome fully off-screen — opacity overlays can still paint OS-language labels on iOS/WebKit. */
 .pa-file-picker-input{
-    position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0;border:0;padding:0;margin:0
+    position:absolute!important;left:-9999px!important;top:auto!important;width:1px!important;height:1px!important;
+    padding:0!important;margin:0!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;
+    white-space:nowrap!important;border:0!important;opacity:0!important;font-size:0!important;z-index:-1
 }
+.pa-file-picker-input::-webkit-file-upload-button,
+.pa-file-picker-input::file-selector-button{display:none!important}
 .pa-file-picker-btn{
     display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border-radius:10px;border:1.5px solid #0066CC;background:#fff;color:#0066CC;font-size:.82rem;font-weight:700;cursor:pointer;flex-shrink:0;line-height:1.2;pointer-events:none
 }
@@ -152,6 +157,7 @@
 .pa-page .pa-reg-actions .ob-btn-primary{flex:1;max-width:220px;margin:0;padding:15px 20px;border-radius:14px;font-size:.95rem;font-weight:700}
 .pa-page.ob-page .ob-shell-inner{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .pa-summary-error{background:#FEF2F2;color:#B91C1C;border-radius:10px;padding:10px 12px;font-size:.82rem;margin-bottom:14px}
+.pa-summary-error[hidden]{display:none!important}
 .pa-summary-error ul{margin:0;padding-left:18px}
 .pa-summary-error li{margin-bottom:4px}
 .pa-summary-error li:last-child{margin-bottom:0}

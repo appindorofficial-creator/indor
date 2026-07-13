@@ -97,10 +97,15 @@
 .rl-ep-photo-preview .rl-profile-photo-preview > [hidden] {
     display: none !important;
 }
+.rl-ep-photo-preview .rl-profile-photo-preview.has-image > .rl-profile-photo--placeholder {
+    display: none !important;
+}
 .rl-ep-photo-preview .rl-profile-photo,
 .rl-ep-photo-preview .rl-profile-photo--placeholder {
     width: 100%;
     height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
 }
 .rl-ep-photo-preview .rl-profile-photo-edit {
     right: 0;

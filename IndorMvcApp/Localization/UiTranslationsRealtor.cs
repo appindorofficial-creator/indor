@@ -699,9 +699,9 @@ public static class UiTranslationsRealtor
             ["Push notifications"] = "Push notifications",
             ["Qualified leads"] = "Qualified leads",
             ["Quality guarantee"] = "Quality guarantee",
-            ["Quick actions"] = "Acciones rápidas",
-            ["Quick Actions"] = "Acciones rápidas",
-            ["Quick details"] = "Quick details",
+            ["Quick actions"] = "Acciones r\u00e1pidas",
+            ["Quick Actions"] = "Acciones r\u00e1pidas",
+            ["Quick details"] = "Detalles rápidos",
             ["Quick notes"] = "Quick notes",
             ["Quiet hours"] = "Quiet hours",
             ["Quote Details"] = "Detalles de la cotización",
@@ -2050,5 +2050,28 @@ public static class UiTranslationsRealtor
             ["{0} sq ft"] = "{0} pies²",
             ["Quote #{0}"] = "Cotización #{0}",
             ["INDOR Provider"] = "Proveedor INDOR",
+
+            // Realtor Clients page (Bug 22)
+            ["Buyers"] = "Compradores",
+            ["Sellers"] = "Vendedores",
+            ["Homeowners"] = "Propietarios",
+            ["Connect"] = "Conectados",
+            ["Follow-up"] = "Seguimiento",
+            ["Tips & Insights"] = "Consejos e información",
+            ["Sent {0}"] = "Enviado {0}",
+            ["{0} File"] = "{0} expediente",
+            ["{0} Files"] = "{0} expedientes",
+            ["No buyers yet. Invited buyers will show up here."] =
+                "Aún no hay compradores. Los compradores invitados aparecerán aquí.",
+            ["No sellers yet. Invited sellers will show up here."] =
+                "Aún no hay vendedores. Los vendedores invitados aparecerán aquí.",
+            ["No homeowners yet. Invited homeowners will show up here."] =
+                "Aún no hay propietarios. Los propietarios invitados aparecerán aquí.",
+            ["No pending invitations right now."] = "No hay invitaciones pendientes en este momento.",
+            ["No connected clients yet. Accepted invitations will appear here."] =
+                "Aún no hay clientes conectados. Las invitaciones aceptadas aparecerán aquí.",
+            ["No follow-ups needed right now."] = "No hay seguimientos pendientes en este momento.",
+            ["No clients match your filters."] = "Ningún cliente coincide con tus filtros.",
+            ["No clients match \"{0}\"."] = "Ningún cliente coincide con \"{0}\".",
         };
 }

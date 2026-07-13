@@ -183,6 +183,12 @@ public static class UiTranslationsFinal
             ["miles away"] = "millas de distancia",
 
             // Proveedor hybrid fixes (override broken entries in UiTranslationsProveedor)
+            ["Back to Home"] = "Volver al inicio",
+            ["Back to profile"] = "Volver al perfil",
+            ["Back to queue"] = "Volver a la cola",
+            ["Back to Templates"] = "Volver a las plantillas",
+            ["Background, license, and reviews look great"] = "Antecedentes, licencia y reseñas se ven excelentes",
+            ["Create a free account"] = "Crear una cuenta gratuita",
             ["Add a closing note..."] = "Agrega una nota de cierre...",
             ["Add any details about access, gate codes, parking, etc."] = "Agrega detalles sobre acceso, códigos de portón, estacionamiento, etc.",
             ["Add details, notes, and photos for this report."] = "Agrega detalles, notas y fotos para este informe.",
@@ -1899,5 +1905,57 @@ public static class UiTranslationsFinal
             ["NEW LEAD"] = "NUEVO CLIENTE",
             ["LEAD REQUEST"] = "SOLICITUD DE CLIENTE",
             ["Requested {0}"] = "Solicitado {0}",
+
+            // Realtor Clients page (Bug 22) — last-wins Spanish, encoding-safe accents
+            ["Manage buyers, sellers, homeowners, and invitations."] =
+                "Administra compradores, vendedores, propietarios e invitaciones.",
+            ["Add Client"] = "Agregar cliente",
+            ["Add client — start invite wizard"] = "Agregar cliente — iniciar asistente de invitaci\u00f3n",
+            ["Search clients by name, email or phone"] =
+                "Buscar clientes por nombre, correo o tel\u00e9fono",
+            ["Filter"] = "Filtrar",
+            ["All"] = "Todos",
+            ["Buyers"] = "Compradores",
+            ["Sellers"] = "Vendedores",
+            ["Homeowners"] = "Propietarios",
+            ["Invited"] = "Invitados",
+            ["Connect"] = "Conectados",
+            ["Follow-up"] = "Seguimiento",
+            ["Clients"] = "Clientes",
+            ["Active Files"] = "Expedientes activos",
+            ["View details"] = "Ver detalles",
+            ["Quick Actions"] = "Acciones r\u00e1pidas",
+            ["Quick actions"] = "Acciones r\u00e1pidas",
+            ["Invite Client"] = "Invitar cliente",
+            ["Create File"] = "Crear expediente",
+            ["New Quote"] = "Nueva cotizaci\u00f3n",
+            ["Pending Invitations"] = "Invitaciones pendientes",
+            ["Connected Clients"] = "Clientes conectados",
+            ["Awaiting acceptance"] = "Esperando aceptaci\u00f3n",
+            ["Sent {0}"] = "Enviado {0}",
+            ["No clients yet"] = "A\u00fan no hay clientes",
+            ["Start by adding your first client or sending an invitation."] =
+                "Comienza agregando tu primer cliente o enviando una invitaci\u00f3n.",
+            ["Add First Client"] = "Agregar primer cliente",
+            ["Invite clients and create files to keep everything organized in one place."] =
+                "Invita clientes y crea expedientes para mantener todo organizado en un solo lugar.",
+            ["Tips & Insights"] = "Consejos e informaci\u00f3n",
+            ["Learn more"] = "Saber m\u00e1s",
+            ["No buyers yet. Invited buyers will show up here."] =
+                "A\u00fan no hay compradores. Los compradores invitados aparecer\u00e1n aqu\u00ed.",
+            ["No sellers yet. Invited sellers will show up here."] =
+                "A\u00fan no hay vendedores. Los vendedores invitados aparecer\u00e1n aqu\u00ed.",
+            ["No homeowners yet. Invited homeowners will show up here."] =
+                "A\u00fan no hay propietarios. Los propietarios invitados aparecer\u00e1n aqu\u00ed.",
+            ["No pending invitations right now."] = "No hay invitaciones pendientes en este momento.",
+            ["No connected clients yet. Accepted invitations will appear here."] =
+                "A\u00fan no hay clientes conectados. Las invitaciones aceptadas aparecer\u00e1n aqu\u00ed.",
+            ["No follow-ups needed right now."] = "No hay seguimientos pendientes en este momento.",
+            ["No clients match your filters."] = "Ning\u00fan cliente coincide con tus filtros.",
+            ["No clients match \"{0}\"."] = "Ning\u00fan cliente coincide con \"{0}\".",
+            ["{0} File"] = "{0} expediente",
+            ["{0} Files"] = "{0} expedientes",
+            ["{0} Quote"] = "{0} cotizaci\u00f3n",
+            ["{0} Quotes"] = "{0} cotizaciones",
         };
 }

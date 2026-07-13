@@ -1187,7 +1187,9 @@ public static class UiTranslationsHome
             ["Select the urgent issue so we can find the right pro near you."] = "Selecciona el problema urgente para que podamos encontrar al profesional adecuado cerca de ti.",
             ["Quick details"] = "Detalles rápidos",
             ["Quick details - INDOR"] = "Detalles rápidos - INDOR",
-            ["Tell us about your {0} emergency."] = "Cuéntanos sobre tu emergencia de {0}.",
+            // ServiceTitle already includes "Emergency"/"Emergencia" (e.g. "HVAC Emergency", "Emergencia HVAC").
+            ["Tell us about your {0}."] = "Cuéntanos sobre tu {0}.",
+            ["Tell us about your {0} emergency."] = "Cuéntanos sobre tu {0}.",
             ["Describe the problem"] = "Describe el problema",
             ["Example: No AC in the living room and it's getting hot fast."] = "Ejemplo: No hay AC en la sala y se está calentando rápido.",
             ["When do you need help?"] = "¿Cuándo necesitas ayuda?",
@@ -1203,6 +1205,7 @@ public static class UiTranslationsHome
             ["Request ID: {0}"] = "ID de solicitud: {0}",
             ["View Request Status"] = "Ver estado de la solicitud",
             ["Back to Home"] = "Volver al inicio",
+            ["Create a free account"] = "Crear una cuenta gratuita",
             ["Stay on top of maintenance and home tasks."] = "Mantente al día con el mantenimiento y las tareas del hogar.",
             ["Free"] = "Gratis",
             ["Quick add"] = "Agregar rápido",

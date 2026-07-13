@@ -62,7 +62,7 @@ public static class UiTranslationsRemaining
             ["Open Calendar"] = "Abrir calendario",
             ["Open Job"] = "Abrir trabajo",
             ["Payment Received"] = "Pago recibido",
-            ["Quick Actions"] = "Acciones rápidas",
+            ["Quick Actions"] = "Acciones r\u00e1pidas",
             ["Reschedule"] = "Reprogramar",
             ["Scheduled"] = "Programado",
             ["Send Invoice"] = "Enviar factura",

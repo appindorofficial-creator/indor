@@ -267,7 +267,10 @@
         placeholderId: 'rlBusinessPhotoPlaceholder',
         alertsId: 'rlBusinessPhotoAlerts',
         fieldName: 'photo',
-        alertClass: 'rl-profile-photo-alert'
+        alertClass: 'rl-profile-photo-alert',
+        // One-tap OS picker (Take Photo + Library). Avoids forced capture="environment"
+        // WebView failures that left the control looking "not enabled".
+        openPickerOnButton: 'library'
     });
 
     wirePhotoPicker({

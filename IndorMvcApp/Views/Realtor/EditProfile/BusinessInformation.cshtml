@@ -22,7 +22,7 @@
         @Html.AntiForgeryToken()
         <div class="rl-ep-photo-row">
             <div class="rl-profile-photo-wrap rl-ep-photo-preview">
-                <div class="rl-profile-photo-preview" id="rlBusinessPhotoPreview">
+                <div class="rl-profile-photo-preview@(string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl) ? "" : " has-image")" id="rlBusinessPhotoPreview">
                     @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
                     {
                         <img src="@Model.ProfilePhotoUrl" alt="" class="rl-profile-photo" id="rlBusinessPhotoImg" />
@@ -34,24 +34,27 @@
                         <img src="" alt="" class="rl-profile-photo" id="rlBusinessPhotoImg" hidden />
                     }
                 </div>
-                <button type="button" class="rl-profile-photo-edit" id="rlBusinessPhotoBtn" aria-label="@L["Change profile photo"]" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-camera"></i>
+                <button type="button" class="rl-profile-photo-edit" id="rlBusinessPhotoBtn" aria-label="@L["Change profile photo"]">
+                    <i class="fas fa-camera" aria-hidden="true"></i>
                 </button>
             </div>
             <div class="rl-ep-photo-actions">
-                <button type="button" class="rl-profile-photo-change-btn" id="rlBusinessPhotoChangeBtn" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-camera"></i> @L["Change photo"]
+                <button type="button" class="rl-profile-photo-change-btn" id="rlBusinessPhotoChangeBtn">
+                    <i class="fas fa-camera" aria-hidden="true"></i> @L["Change photo"]
                 </button>
+                @* Menu kept for shared-script take+choose IDs; buttons open the OS picker directly. *@
                 <div class="rl-profile-photo-menu" id="rlBusinessPhotoMenu" role="menu" hidden>
                     <button type="button" class="rl-profile-photo-menu-item" id="rlBusinessPhotoTake" role="menuitem">
-                        <i class="fas fa-camera"></i> @L["Take photo"]
+                        <i class="fas fa-camera" aria-hidden="true"></i> @L["Take photo"]
                     </button>
                     <button type="button" class="rl-profile-photo-menu-item" id="rlBusinessPhotoChoose" role="menuitem">
-                        <i class="fas fa-image"></i> @L["Choose from library"]
+                        <i class="fas fa-image" aria-hidden="true"></i> @L["Choose from library"]
                     </button>
                 </div>
-                <input type="file" id="rlBusinessPhotoCamera" name="photo" accept="image/*" capture="environment" class="rl-profile-photo-input" />
-                <input type="file" id="rlBusinessPhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" class="rl-profile-photo-input" />
+                @* No capture= attribute: forced capture fails in WebViews with "camera not enabled".
+                   accept=image/* still offers Take Photo + Library on iOS when the OS allows camera. *@
+                <input type="file" id="rlBusinessPhotoCamera" name="photo" accept="image/*" class="rl-profile-photo-input" tabindex="-1" aria-hidden="true" />
+                <input type="file" id="rlBusinessPhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" class="rl-profile-photo-input" tabindex="-1" aria-hidden="true" />
                 <small class="rl-ep-photo-hint">@L["JPG, PNG or WEBP · Max 10 MB"]</small>
             </div>
         </div>

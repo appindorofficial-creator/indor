@@ -461,29 +461,43 @@ public class PropertyAdministratorPortalService(
             .ToListAsync(cancellationToken);
 
         // Emergency Services must render last among category sections (banner/CTA stays above).
+        // Runtime sort is authoritative — older seeds stored emergency with CategoryOrder=1.
         var categories = catalog
-            .GroupBy(c => new { c.CategoryKey, c.CategoryTitle, c.CategoryOrder })
-            .OrderBy(g => IsEmergencyCategory(g.Key.CategoryKey) ? int.MaxValue : g.Key.CategoryOrder)
-            .ThenBy(g => g.Key.CategoryOrder)
+            .GroupBy(c => new
+            {
+                CategoryKey = (c.CategoryKey ?? string.Empty).Trim().ToLowerInvariant(),
+                c.CategoryTitle,
+                DisplayOrder = IsEmergencyCategory(c.CategoryKey) ? int.MaxValue : c.CategoryOrder
+            })
+            .OrderBy(g => g.Key.DisplayOrder)
+            .ThenBy(g => g.Key.CategoryTitle, StringComparer.OrdinalIgnoreCase)
             .Select(g => new PropertyAdministratorServiceCategoryViewModel
             {
                 CategoryKey = g.Key.CategoryKey,
                 CategoryTitle = g.Key.CategoryTitle,
-                CategoryOrder = g.Key.CategoryOrder,
-                Items = g.Select(item => new PropertyAdministratorServiceCatalogItemViewModel
-                {
-                    ServiceName = item.ServiceName,
-                    IconClass = item.IconClass,
-                    ToneClass = item.ToneClass,
-                    ImageUrl = ResolveCatalogImageUrl(item.ServiceSlug),
-                    Url = BuildCatalogUrl(url, item)
-                })
-                .Where(item => IsUsableCatalogUrl(item.Url))
-                .ToList()
+                CategoryOrder = g.Key.DisplayOrder,
+                Items = g.OrderBy(item => item.Orden).ThenBy(item => item.ServiceName, StringComparer.OrdinalIgnoreCase)
+                    .Select(item => new PropertyAdministratorServiceCatalogItemViewModel
+                    {
+                        ServiceName = item.ServiceName,
+                        IconClass = item.IconClass,
+                        ToneClass = item.ToneClass,
+                        ImageUrl = ResolveCatalogImageUrl(item.ServiceSlug, item.ServiceName),
+                        Url = BuildCatalogUrl(url, item)
+                    })
+                    .Where(item => IsUsableCatalogUrl(item.Url))
+                    .ToList()
             }).ToList();
 
         // Drop empty categories (e.g. only placeholder rows with no portal flow).
         categories = categories.Where(c => c.Items.Count > 0).ToList();
+
+        // Final guard: keep any Emergency section at the end even if key/title casing drifts in older DBs.
+        categories = categories
+            .OrderBy(c => IsEmergencyCategory(c.CategoryKey) ? 1 : 0)
+            .ThenBy(c => c.CategoryOrder)
+            .ThenBy(c => c.CategoryTitle, StringComparer.OrdinalIgnoreCase)
+            .ToList();
 
         return new PropertyAdministratorServicesViewModel
         {
@@ -1088,49 +1102,77 @@ public class PropertyAdministratorPortalService(
         };
 
     private static bool IsEmergencyCategory(string? categoryKey) =>
-        string.Equals(categoryKey, "emergency", StringComparison.OrdinalIgnoreCase);
+        string.Equals(categoryKey?.Trim(), "emergency", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
-    /// Maps catalog slugs to the same service images used on homeowner emergency / priorities grids.
+    /// Maps catalog slugs/names to the same service images used on homeowner emergency / priorities grids.
     /// </summary>
-    private static string? ResolveCatalogImageUrl(string? serviceSlug)
+    private static string? ResolveCatalogImageUrl(string? serviceSlug, string? serviceName = null)
     {
-        if (string.IsNullOrWhiteSpace(serviceSlug))
+        var slug = NormalizeCatalogKey(serviceSlug);
+        if (!string.IsNullOrEmpty(slug))
         {
-            return null;
+            var fromSlug = MapCatalogImageByKey(slug);
+            if (fromSlug is not null)
+            {
+                return fromSlug;
+            }
         }
 
-        return serviceSlug.Trim().ToLowerInvariant() switch
+        var nameKey = NormalizeCatalogKey(serviceName);
+        return string.IsNullOrEmpty(nameKey) ? null : MapCatalogImageByKey(nameKey);
+    }
+
+    private static string NormalizeCatalogKey(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
         {
-            "emergency-ac" => "/emergency-hvac.png",
+            return string.Empty;
+        }
+
+        var trimmed = value.Trim().ToLowerInvariant();
+        var chars = trimmed.Select(ch => char.IsLetterOrDigit(ch) ? ch : '-').ToArray();
+        var normalized = new string(chars);
+        while (normalized.Contains("--", StringComparison.Ordinal))
+        {
+            normalized = normalized.Replace("--", "-", StringComparison.Ordinal);
+        }
+
+        return normalized.Trim('-');
+    }
+
+    private static string? MapCatalogImageByKey(string key) =>
+        key switch
+        {
+            "emergency-ac" or "emergency-hvac" => "/emergency-hvac.png",
             "emergency-plumbing" => "/emergency-plumbing.png",
             "emergency-electrical" => "/emergency-electrical.png",
             "emergency-flood" => "/emergency-flood.png",
-            "emergency-roof-leak" => "/emergency-roof-leak.png",
-            "emergency-tree-branch" => "/emergency-tree-damage.png",
-            "emergency-water-heater" => "/emergency-water-heater.png",
-            "lockout-access" => "/inspeccion6.jpeg",
+            "emergency-roof-leak" or "roof-leak" => "/emergency-roof-leak.png",
+            "emergency-tree-branch" or "tree-branch-emergency" or "tree-damage" => "/emergency-tree-damage.png",
+            "emergency-water-heater" or "water-heater-emergency" or "water-heater" => "/emergency-water-heater.png",
+            "lockout-access" or "lockout" => "/inspeccion6.jpeg",
+            "broken-window-board-up" or "broken-window" or "broken-window-board-up" => "/inspeccion9.jpeg",
             "broken-window-board-up" => "/inspeccion9.jpeg",
             "sewer-backup" => "/emergency-plumbing.png",
             "preventive-maintenance" => "/priority-hvac-maintenance.png",
-            "hvac-filter" => "/images/schedule/schedule-filter.png",
-            "smoke-detector" => "/priority-smoke-detector.png",
+            "hvac-filter" or "hvac-filter-change" => "/images/schedule/schedule-filter.png",
+            "smoke-detector" or "smoke-detector-check" => "/priority-smoke-detector.png",
             "turnover-cleaning" => "/limpieza.jpeg",
             "standard-cleaning" => "/limpieza.jpeg",
             "pet-deep-clean" => "/servicio4.jpeg",
-            "linen-restock" => "/servicio3.jpeg",
-            "trashout" => "/basura.jpeg",
-            "lawn-care" => "/cesped.jpeg",
+            "linen-restock" or "linen-supply-restock" => "/servicio3.jpeg",
+            "trashout" or "trash-out" => "/basura.jpeg",
+            "lawn-care" or "lawn-care-grass-cutting" or "grass-cutting" => "/cesped.jpeg",
             "landscaping" => "/images/quickjob/qj-yard-work.png",
-            "pressure-washing" => "/priority-power-wash-exterior.png",
+            "pressure-washing" or "power-wash" => "/priority-power-wash-exterior.png",
             "pest-control" => "/priority-pest-control.png",
-            "pool-hot-tub" => "/servicio8.jpeg",
+            "pool-hot-tub" or "pool-hot-tub-service" => "/servicio8.jpeg",
             "moving-help" => "/images/quickjob/qj-moving-furniture.png",
             "junk-removal" => "/images/quickjob/qj-junk-removal.png",
             "furniture-haul-away" => "/images/quickjob/qj-carry-boxes.png",
             _ => null
         };
-    }
 
     /// <summary>Designed INDOR emergency dispatch line (same vanity number as Help &amp; Support).</summary>
     private const string EmergencyHelpPhoneDisplay = "1-800-555-INDOR";

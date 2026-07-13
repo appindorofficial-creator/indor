@@ -14,7 +14,7 @@
     </div>
 
     <h1>@L["Quick details"]</h1>
-    <p class="xp-guest-wiz-lead">@L.T("Tell us about your {0} emergency.", Model.ServiceTitle)</p>
+    <p class="xp-guest-wiz-lead">@L.T("Tell us about your {0}.", Model.ServiceTitle)</p>
 
     <form asp-action="EmergencyDetails" method="post">
         @Html.AntiForgeryToken()
