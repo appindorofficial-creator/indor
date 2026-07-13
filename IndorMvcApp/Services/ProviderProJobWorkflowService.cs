@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 
 using IndorMvcApp.Data;
@@ -227,15 +228,17 @@ public class ProviderProJobWorkflowService(AppDbContext db) : IProviderProJobWor
             CompanyName = ResolveCompanyName(proveedor),
             DateIso = day.ToString("yyyy-MM-dd"),
             DateLabel = day == today
-                ? $"Today, {day:dddd, MMM d, yyyy}"
-                : day.ToString("dddd, MMM d, yyyy"),
+                ? ProviderProDisplayLocalization.T(
+                    "Today, {0}",
+                    day.ToString("dddd, MMM d, yyyy", CultureInfo.CurrentCulture))
+                : day.ToString("dddd, MMM d, yyyy", CultureInfo.CurrentCulture),
             EventsTodayCount = jobs.Count,
             InProgressCount = inProgress,
-            NextJobTime = nextJob?.ScheduledAt?.ToLocalTime().ToString("h:mm tt"),
+            NextJobTime = nextJob?.ScheduledAt?.ToLocalTime().ToString("h:mm tt", CultureInfo.CurrentCulture),
             NextJobTitle = nextJob?.Title,
             EventsDeltaLabel = jobs.Count >= yesterdayCount
-                ? $"+{jobs.Count - yesterdayCount} vs yesterday"
-                : $"{jobs.Count - yesterdayCount} vs yesterday",
+                ? ProviderProDisplayLocalization.T("+{0} vs yesterday", jobs.Count - yesterdayCount)
+                : ProviderProDisplayLocalization.T("{0} vs yesterday", jobs.Count - yesterdayCount),
             Items = jobs.Select(j => new ProviderProDayScheduleItemViewModel
             {
                 Id = j.Id,

@@ -1151,5 +1151,12 @@ public static class UiTranslationsFinal
             ["Getting Started"] = "Comenzando",
             ["Top 20% of providers"] = "Top 20% de proveedores",
             ["Complete activation to unlock INDOR leads"] = "Completa la activación para desbloquear clientes potenciales en INDOR",
+            // Provider PRO screen overrides (must win over earlier Final Spanglish / stale values)
+            ["Ready to Send"] = "Listas para enviar",
+            ["{0} new · {1} high urgency"] = "{0} nuevos · {1} de alta urgencia",
+            ["Pending Estimates - INDOR PRO"] = "Cotizaciones pendientes - INDOR PRO",
+            ["Step {0} of {1} · Pending Estimates"] = "Paso {0} de {1} · Cotizaciones pendientes",
+            ["{0} invoice(s) awaiting payment"] = "{0} factura(s) pendiente(s) de pago",
+            ["{0} invoice(s) past due"] = "{0} factura(s) vencida(s)",
         };
 }
