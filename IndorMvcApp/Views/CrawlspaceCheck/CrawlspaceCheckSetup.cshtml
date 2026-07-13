@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.CrawlspaceCheckSetupViewModel
 @{
     ViewData["Title"] = L["Tell us about your crawlspace - INDOR"];
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("CrawlspaceCheckService", "CrawlspaceCheck", new { id = Model.HomeCarePriorityId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;

@@ -38,7 +38,7 @@
                id="inviteClientFullName"
                name="fullName"
                value="@Model.FullName"
-               placeholder="@L["Enter full name"]"
+               placeholder="@(L["Enter full name"])"
                autocomplete="name"
                aria-required="true"
                aria-invalid="@(fullNameError.Length > 0)"
@@ -52,7 +52,7 @@
                id="inviteClientEmail"
                name="email"
                value="@Model.Email"
-               placeholder="@L["Enter email address (e.g. name@email.com)"]"
+               placeholder="@(L["Enter email address (e.g. name@email.com)"])"
                autocomplete="email"
                inputmode="email"
                aria-required="true"
@@ -67,7 +67,7 @@
                id="inviteClientPhone"
                name="phone"
                value="@Model.Phone"
-               placeholder="@L["Enter 10-digit phone number"]"
+               placeholder="@(L["Enter 10-digit phone number"])"
                autocomplete="tel"
                inputmode="numeric"
                maxlength="10"
@@ -95,7 +95,7 @@
     <p class="rl-invite-section-title">@L["Quick Note"] <small>@L["(optional)"]</small></p>
     <label class="rl-field rl-field--textarea">
         <i class="fas fa-note-sticky"></i>
-        <textarea name="quickNote" maxlength="250" placeholder="@L["Add a note about this client..."]" rows="3">@Model.QuickNote</textarea>
+        <textarea name="quickNote" maxlength="250" placeholder="@(L["Add a note about this client..."])" rows="3">@Model.QuickNote</textarea>
     </label>
     <span class="rl-char-count"><span id="noteCount">@Model.QuickNote.Length</span>/250</span>
 

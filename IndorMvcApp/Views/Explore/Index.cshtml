@@ -70,7 +70,8 @@
     OfferingCarouselViewModel BuildMicroCarousel(IEnumerable<IndorMvcApp.Models.Microservicio> items, string subtitle) =>
         new()
         {
-            Title = L["Home Care Essentials"],
+            // English catalog key — localized in _OfferingCarousel via UiDisplayLocalization
+            Title = "Home Care Essentials",
             Subtitle = subtitle,
             Icon = "fa-layer-group",
             BlockId = "home-care-essentials",
@@ -101,7 +102,7 @@
         IReadOnlyDictionary<string, int> homeCarePriorityIds) =>
         new()
         {
-            Title = L["Services"],
+            Title = "Services",
             Subtitle = subtitle,
             Icon = "fa-screwdriver-wrench",
             BlockId = "services",
@@ -137,7 +138,7 @@
     OfferingCarouselViewModel BuildInspeccionCarousel(IEnumerable<IndorMvcApp.Models.Inspeccion> items, string subtitle) =>
         new()
         {
-            Title = L["Inspections"],
+            Title = "Inspections",
             Subtitle = subtitle,
             Icon = "fa-magnifying-glass-chart",
             BlockId = "inspections",

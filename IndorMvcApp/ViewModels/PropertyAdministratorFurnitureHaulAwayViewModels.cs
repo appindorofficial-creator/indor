@@ -13,22 +13,22 @@ public class PropertyAdministratorFurnitureHaulAwayStep1ViewModel : PropertyAdmi
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? PropertyStatusLabel { get; set; }
-    public string FurnitureItems { get; set; } = "Couch,Mattress";
-    public string ItemCount { get; set; } = "TwoThree";
-    public string PickupSize { get; set; } = "HalfLoad";
-    public string IsOccupied { get; set; } = "No";
-    public string GuestsInside { get; set; } = "No";
+    public string FurnitureItems { get; set; } = "";
+    public string ItemCount { get; set; } = "";
+    public string PickupSize { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
     public string QuickDetails { get; set; } = "";
 }
 
 public class PropertyAdministratorFurnitureHaulAwayStep1Input
 {
     public int PropertyId { get; set; }
-    public List<string> FurnitureItemsList { get; set; } = ["Couch", "Mattress"];
-    public string ItemCount { get; set; } = "TwoThree";
-    public string PickupSize { get; set; } = "HalfLoad";
-    public string IsOccupied { get; set; } = "No";
-    public string GuestsInside { get; set; } = "No";
+    public List<string> FurnitureItemsList { get; set; } = [];
+    public string ItemCount { get; set; } = "";
+    public string PickupSize { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
     public string? QuickDetails { get; set; }
 }
 
@@ -40,31 +40,31 @@ public class PropertyAdministratorFurnitureHaulAwayStep2ViewModel : PropertyAdmi
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? PropertyStatusLabel { get; set; }
     public string FurnitureItems { get; set; } = "";
-    public string ItemCount { get; set; } = "TwoThree";
-    public string PickupSize { get; set; } = "HalfLoad";
-    public string IsOccupied { get; set; } = "No";
-    public string GuestsInside { get; set; } = "No";
+    public string ItemCount { get; set; } = "";
+    public string PickupSize { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
     public string QuickDetails { get; set; } = "";
-    public string PickupWhen { get; set; } = "TodayAfterCheckout";
-    public string TimeWindow { get; set; } = "Afternoon";
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string PickupWhen { get; set; } = "";
+    public string TimeWindow { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
     public string EntryCode { get; set; } = "";
-    public string ItemLocations { get; set; } = "LivingRoom";
-    public string AccessLevel { get; set; } = "GroundFloor";
-    public string UpdateRecipient { get; set; } = "Me";
+    public string ItemLocations { get; set; } = "";
+    public string AccessLevel { get; set; } = "";
+    public string UpdateRecipient { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string CrewEtaLabel { get; set; } = "Earliest available haul-away crew: 3:10 PM today";
 }
 
 public class PropertyAdministratorFurnitureHaulAwaySubmitInput : PropertyAdministratorFurnitureHaulAwayStep1Input
 {
-    public string PickupWhen { get; set; } = "TodayAfterCheckout";
-    public string TimeWindow { get; set; } = "Afternoon";
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string PickupWhen { get; set; } = "";
+    public string TimeWindow { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
     public string? EntryCode { get; set; }
-    public List<string> ItemLocationsList { get; set; } = ["LivingRoom"];
-    public string AccessLevel { get; set; } = "GroundFloor";
-    public List<string> UpdateRecipientsList { get; set; } = ["Me"];
+    public List<string> ItemLocationsList { get; set; } = [];
+    public string AccessLevel { get; set; } = "";
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string? ContactPhone { get; set; }
 }
 

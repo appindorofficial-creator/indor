@@ -1,10 +1,10 @@
 @model IndorMvcApp.ViewModels.CleaningProCustomizeViewModel
 @using IndorMvcApp.Services
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
 var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
     var selectedAddons = (Model.AddonsSeleccionados ?? string.Empty).Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("CleaningProSetup", "CleaningPro", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;
@@ -34,7 +34,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
                 {
                     <button type="button" class="area-chip @(selectedAreas.Contains(area.Code) ? "active" : "")" data-code="@area.Code">
                         <i class="fas @area.Icon"></i>
-                        <span>@area.Label</span>
+                        <span>@L[area.Label]</span>
                         <span class="check"><i class="fas fa-check"></i></span>
                     </button>
                 }
@@ -82,7 +82,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
             <div class="hours-row" id="hoursGroup">
                 @foreach (var hr in new[] { 2m, 3m, 4m, 5m })
                 {
-                    <button type="button" class="hour-btn" data-value="@hr.ToString(System.Globalization.CultureInfo.InvariantCulture)">@hr.ToString("0") hr</button>
+                    <button type="button" class="hour-btn" data-value="@hr.ToString(System.Globalization.CultureInfo.InvariantCulture)">@hr.ToString("0") @L["hr"]</button>
                 }
             </div>
         </div>
@@ -95,7 +95,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
                 {
                     <button type="button" class="addon-row @(selectedAddons.Contains(addon.Code) ? "active" : "")" data-code="@addon.Code" data-price="@addon.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)">
                         <i class="fas @addon.Icon main"></i>
-                        <span class="copy">@addon.Label</span>
+                        <span class="copy">@L[addon.Label]</span>
                         <span class="price">$@addon.Price.ToString("0")</span>
                         <span class="check"><i class="fas fa-check"></i></span>
                     </button>
@@ -106,7 +106,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
         <div class="sticky-footer">
             <div class="summary-bar" id="summaryBar">@Model.SummaryLine</div>
             <button type="submit" name="action" value="continue" class="btn-primary">
-                Next: Review <i class="fas fa-chevron-right"></i>
+                @L["Next: Review"] <i class="fas fa-chevron-right"></i>
             </button>
             <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
         </div>
@@ -131,10 +131,8 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
             chip.addEventListener('click', () => {
                 const code = chip.dataset.code;
                 if (selectedAreas.has(code)) {
-                    if (selectedAreas.size > 1) {
-                        selectedAreas.delete(code);
-                        chip.classList.remove('active');
-                    }
+                    selectedAreas.delete(code);
+                    chip.classList.remove('active');
                 } else {
                     selectedAreas.add(code);
                     chip.classList.add('active');
@@ -161,14 +159,15 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
 
         function normalizeCrewCode(value) {
             const map = { '1': 'One', '2': 'Two', '3': 'Three', One: 'One', Two: 'Two', Three: 'Three' };
-            return map[value] || value || 'Two';
+            return map[value] || value || '';
         }
 
         function getSelectedHours() {
             const activeHour = document.querySelector('#hoursGroup .hour-btn.active');
             if (activeHour?.dataset.value) return parseFloat(activeHour.dataset.value);
             const hiddenHours = document.getElementById('HorasEstimadas');
-            return parseFloat(hiddenHours?.value || '3') || 3;
+            const parsed = parseFloat(hiddenHours?.value || '0');
+            return Number.isFinite(parsed) && parsed > 0 ? parsed : 0;
         }
 
         function getAddonsTotal() {
@@ -191,7 +190,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
             }
             const match = document.querySelector('#crewGroup .crew-card[data-value="' + crewCode + '"]');
             if (match?.dataset.rate) return parseFloat(match.dataset.rate);
-            return rates[normalizeCrewCode(crewCode)] || 70;
+            return rates[normalizeCrewCode(crewCode)] || 0;
         }
 
         function initSingle(groupId, selector, hiddenId, initial) {
@@ -200,6 +199,8 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
 
             const buttons = document.querySelectorAll('#' + groupId + ' ' + selector);
             const initialValue = (initial || hidden.value || '').trim();
+            const treatZeroAsEmpty = hiddenId === 'HorasEstimadas' && (initialValue === '0' || Number(initialValue) === 0);
+            const effectiveInitial = treatZeroAsEmpty ? '' : initialValue;
 
             function activate(btn) {
                 buttons.forEach(b => b.classList.remove('active'));
@@ -208,46 +209,59 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
                 updateSummary();
             }
 
-            let matched = false;
             buttons.forEach(btn => {
-                if (btn.dataset.value === initialValue) {
+                if (effectiveInitial && btn.dataset.value === effectiveInitial) {
                     btn.classList.add('active');
                     hidden.value = btn.dataset.value;
-                    matched = true;
                 }
                 btn.addEventListener('click', () => activate(btn));
             });
-
-            if (!matched && buttons.length > 0) {
-                activate(buttons[0]);
-            }
         }
 
+        const labels = {
+            OneTime: @Json.Serialize(L["One-time"]),
+            Weekly: @Json.Serialize(L["Weekly"]),
+            Biweekly: @Json.Serialize(L["Biweekly"]),
+            Monthly: @Json.Serialize(L["Monthly"]),
+            One: @Json.Serialize(L["1 cleaner"]),
+            Two: @Json.Serialize(L["2 cleaners"]),
+            Three: @Json.Serialize(L["3 cleaners"]),
+            Est: @Json.Serialize(L["Est."]),
+            Hr: @Json.Serialize(L["hr"]),
+            From: @Json.Serialize(L["From"]),
+            SelectOptions: @Json.Serialize(L["Select your cleaning options"])
+        };
+
         function formatFreq(v) {
-            return ({ OneTime: 'One-time', Weekly: 'Weekly', Biweekly: 'Biweekly', Monthly: 'Monthly' }[v] || v);
+            return labels[v] || v;
         }
 
         function formatCrew(v) {
             const code = normalizeCrewCode(v);
-            return ({ One: '1 cleaner', Two: '2 cleaners', Three: '3 cleaners' }[code] || v);
+            return labels[code] || v;
         }
 
         function updateSummary() {
             const crewHidden = document.getElementById('CantidadLimpiadores');
             const activeCrew = getActiveCrewCard();
-            const crew = normalizeCrewCode(activeCrew?.dataset.value || crewHidden?.value || 'Two');
+            const crew = normalizeCrewCode(activeCrew?.dataset.value || crewHidden?.value || '');
             if (crewHidden) crewHidden.value = crew;
 
             const hours = getSelectedHours();
             const hourlyRate = getHourlyRateForCrew(crew);
             const subtotal = (hourlyRate * hours) + getAddonsTotal();
-            const freq = document.getElementById('Frecuencia')?.value || 'OneTime';
+            const freq = document.getElementById('Frecuencia')?.value || '';
 
             const summary = document.getElementById('summaryBar');
-            if (summary) {
-                summary.textContent =
-                    formatFreq(freq) + ' • ' + formatCrew(crew) + ' • Est. ' + hours + ' hr • From $' + Math.round(subtotal);
+            if (!summary) return;
+
+            if (!freq || !crew || hours <= 0) {
+                summary.textContent = labels.SelectOptions;
+                return;
             }
+
+            summary.textContent =
+                formatFreq(freq) + ' • ' + formatCrew(crew) + ' • ' + labels.Est + ' ' + hours + ' ' + labels.Hr + ' • ' + labels.From + ' $' + Math.round(subtotal);
         }
 
         initSingle('freqGroup', '.freq-chip', 'Frecuencia', '@Model.Frecuencia');

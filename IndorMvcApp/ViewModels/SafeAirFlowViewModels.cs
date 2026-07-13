@@ -32,10 +32,10 @@ public class SafeAirDetailsViewModel
     public string PageTitle { get; set; } = "Safe Air 365";
 
     [Required]
-    public string TipoNecesidad { get; set; } = "IndorReplaces";
+    public string TipoNecesidad { get; set; } = string.Empty;
 
     [Required]
-    public string CantidadFiltros { get; set; } = "One";
+    public string CantidadFiltros { get; set; } = string.Empty;
 
     public decimal? FiltroAncho { get; set; }
     public decimal? FiltroAlto { get; set; }
@@ -43,10 +43,10 @@ public class SafeAirDetailsViewModel
     public bool FiltroTamanioDesconocido { get; set; }
 
     [Required]
-    public string UbicacionFiltro { get; set; } = "Ceiling";
+    public string UbicacionFiltro { get; set; } = string.Empty;
 
-    public string? ProveedorFiltro { get; set; } = "IndorBrings";
-    public bool RecordatorioActivo { get; set; } = true;
+    public string? ProveedorFiltro { get; set; }
+    public bool RecordatorioActivo { get; set; }
 }
 
 public class SafeAirScheduleViewModel
@@ -54,12 +54,12 @@ public class SafeAirScheduleViewModel
     public int SolicitudId { get; set; }
     public int MicroservicioId { get; set; }
     public string PageTitle { get; set; } = "Safe Air 365";
-    public string TipoNecesidad { get; set; } = "IndorReplaces";
+    public string TipoNecesidad { get; set; } = string.Empty;
 
     [Required]
-    public string VentanaTiempo { get; set; } = "NextAvailable";
+    public string VentanaTiempo { get; set; } = string.Empty;
 
-    public string DetallesAcceso { get; set; } = "House";
+    public string DetallesAcceso { get; set; } = string.Empty;
 
     [MaxLength(500)]
     public string? NotasAcceso { get; set; }

@@ -33,15 +33,19 @@
             <div class="prv-pro-profile-tags prv-pro-edit-profile-service-grid">
                 @foreach (var option in Model.Options)
                 {
-                    <label class="prv-pro-edit-profile-service-chip @(option.IsSelected ? "is-selected" : "")" aria-pressed="@(option.IsSelected ? "true" : "false")">
-                        <input type="checkbox" name="serviceIds" value="@option.Id" @(option.IsSelected ? "checked" : "") />
-                        <i class="fas @option.IconClass"></i>
+                    <div class="prv-pro-edit-profile-service-chip @(option.IsSelected ? "is-selected" : "")"
+                         role="checkbox"
+                         tabindex="0"
+                         aria-checked="@(option.IsSelected ? "true" : "false")"
+                         aria-pressed="@(option.IsSelected ? "true" : "false")">
+                        <input type="checkbox" name="serviceIds" value="@option.Id" tabindex="-1" @(option.IsSelected ? "checked" : "") />
+                        <i class="fas @option.IconClass" aria-hidden="true"></i>
                         <span>@UiDisplayLocalization.Localize(L, option.Label)</span>
                         @if (option.IsCategory)
                         {
                             <small>@L["Category"]</small>
                         }
-                    </label>
+                    </div>
                 }
             </div>
         </section>
@@ -55,21 +59,5 @@
 </div>
 
 @section Scripts {
-<script>
-(function () {
-    function syncServiceChip(input) {
-        var chip = input.closest('.prv-pro-edit-profile-service-chip');
-        if (!chip) return;
-        chip.classList.toggle('is-selected', input.checked);
-        chip.setAttribute('aria-pressed', input.checked ? 'true' : 'false');
-    }
-
-    document.querySelectorAll('.prv-pro-edit-profile-service-chip input[type="checkbox"]').forEach(function (input) {
-        input.addEventListener('change', function () {
-            syncServiceChip(input);
-        });
-        syncServiceChip(input);
-    });
-})();
-</script>
+    <script src="~/js/provider-profile-flow.js" asp-append-version="true"></script>
 }

@@ -1,7 +1,7 @@
 @using IndorMvcApp.Localization
 @{
     var stepModel = Model as IndorMvcApp.ViewModels.RealtorInspectionUploadStepViewModel;
-    var pageTitle = stepModel?.Title ?? L["Upload Inspection Report"];
+    var pageTitle = L[stepModel?.Title ?? "Upload Inspection Report"];
 }
 <!DOCTYPE html>
 <html lang="@UiCulture.HtmlLang(L.CurrentCulture)">

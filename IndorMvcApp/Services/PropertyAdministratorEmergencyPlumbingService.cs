@@ -39,10 +39,7 @@ public class PropertyAdministratorEmergencyPlumbingService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = mapped,
-            QuickDetails = mapped.OccupancyLabel != null
-                ? "Guests report the upstairs bathroom toilet is overflowing."
-                : ""
+            ViewingProperty = mapped
         };
     }
 
@@ -83,10 +80,7 @@ public class PropertyAdministratorEmergencyPlumbingService(
             Urgency = step1.Urgency,
             ProblemLocation = step1.ProblemLocation,
             QuickDetails = step1.QuickDetails ?? "",
-            EntryCode = $"Front door code: {1000 + property.Id}",
-            WaterShutoffAccess = "Main shutoff is on the left exterior wall.",
-            AccessNotes = "Use driveway on left side. No gate code needed.",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }
 

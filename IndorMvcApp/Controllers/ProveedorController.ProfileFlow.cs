@@ -1,4 +1,5 @@
 using IndorMvcApp.Models;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -48,6 +49,21 @@ public partial class ProveedorController
         if (proveedor.Result != null)
         {
             return proveedor.Result;
+        }
+
+        if (!UsPhoneOptionalAttribute.IsValidOptional(input.Phone))
+        {
+            ModelState.AddModelError(nameof(ProviderProfileBusinessInput.Phone),
+                "Enter a valid 10-digit US phone number (e.g. 555 123 4567).");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            var invalid = await proData.GetProfileBusinessAsync(proveedor.Entity!, input, cancellationToken);
+            ViewBag.CompanyInitial = invalid.CompanyInitial;
+            ViewBag.ProfileFlowStep = 2;
+            ViewData["ProviderProExtraCss"] = "provider-profile-flow.css";
+            return View(invalid);
         }
 
         var saved = await proData.SaveProfileBusinessAsync(proveedor.Entity!.Id, input, cancellationToken);
@@ -117,6 +133,20 @@ public partial class ProveedorController
                 TempData["ProfileSectionError"] = uploadError;
                 return RedirectToAction(nameof(ProfileDocuments), new { section = input.Section ?? documentType });
             }
+
+            TempData["ProfileSaved"] = true;
+
+            if (string.Equals(input.SaveMode, "upload", StringComparison.OrdinalIgnoreCase))
+            {
+                // Persist any filled section fields alongside the file, then stay on this section.
+                await proData.SaveProfileDocumentsAsync(proveedorId, input, cancellationToken);
+                return RedirectToAction(nameof(ProfileDocuments), new { section = input.Section });
+            }
+        }
+        else if (string.Equals(input.SaveMode, "upload", StringComparison.OrdinalIgnoreCase))
+        {
+            TempData["ProfileSectionError"] = localizer["Choose a file to upload."].ToString();
+            return RedirectToAction(nameof(ProfileDocuments), new { section = input.Section });
         }
 
         await proData.SaveProfileDocumentsAsync(proveedorId, input, cancellationToken);

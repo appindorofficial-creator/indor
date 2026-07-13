@@ -30,10 +30,11 @@
         <form asp-controller="Administrador" asp-action="UploadPersonalPhoto" method="post" enctype="multipart/form-data" id="paPersonalPhotoForm">
             @Html.AntiForgeryToken()
             <div class="pa-personal-photo-wrap">
-                <div class="pa-personal-photo-preview" id="paPersonalPhotoPreview">
+                <div class="pa-personal-photo-preview@(string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl) ? "" : " has-image")" id="paPersonalPhotoPreview">
                     @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
                     {
                         <img src="@Model.ProfilePhotoUrl" alt="" class="pa-personal-photo" id="paPersonalPhotoImg" />
+                        <span class="pa-personal-photo pa-personal-photo--placeholder" id="paPersonalPhotoPlaceholder" hidden><i class="fas fa-user"></i></span>
                     }
                     else
                     {
@@ -41,19 +42,22 @@
                         <img src="" alt="" class="pa-personal-photo" id="paPersonalPhotoImg" hidden />
                     }
                 </div>
-                <button type="button" class="pa-personal-photo-edit" id="paPersonalPhotoBtn" aria-label="@L["Change profile photo"]" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-camera"></i>
+                <button type="button" class="pa-personal-photo-edit" id="paPersonalPhotoBtn" aria-label="@L["Change profile photo"]">
+                    <i class="fas fa-camera" aria-hidden="true"></i>
                 </button>
+                @* Menu kept for progressive enhancement / shared-script take+choose IDs; camera button opens the OS picker directly. *@
                 <div class="pa-personal-photo-menu" id="paPersonalPhotoMenu" role="menu" hidden>
                     <button type="button" class="pa-personal-photo-menu-item" id="paPersonalPhotoTake" role="menuitem">
-                        <i class="fas fa-camera"></i> Take photo
+                        <i class="fas fa-camera" aria-hidden="true"></i> @L["Take photo"]
                     </button>
                     <button type="button" class="pa-personal-photo-menu-item" id="paPersonalPhotoChoose" role="menuitem">
-                        <i class="fas fa-image"></i> Choose from library
+                        <i class="fas fa-image" aria-hidden="true"></i> @L["Choose from library"]
                     </button>
                 </div>
-                <input type="file" id="paPersonalPhotoCamera" name="photo" accept="image/*" capture="environment" hidden />
-                <input type="file" id="paPersonalPhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" hidden />
+                @* No capture= attribute: forced capture fails in WebViews with "camera not enabled".
+                   accept=image/* still offers Take Photo + Library on iOS when the OS allows camera. *@
+                <input type="file" id="paPersonalPhotoCamera" name="photo" accept="image/*" class="pa-personal-photo-input" tabindex="-1" aria-hidden="true" />
+                <input type="file" id="paPersonalPhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" class="pa-personal-photo-input" tabindex="-1" aria-hidden="true" />
             </div>
         </form>
         <strong>@Model.FullName</strong>
@@ -127,131 +131,5 @@
 </div>
 
 @section Scripts {
-<script>
-    (function () {
-        var form = document.getElementById('paPersonalPhotoForm');
-        var menuBtn = document.getElementById('paPersonalPhotoBtn');
-        var menu = document.getElementById('paPersonalPhotoMenu');
-        var takeBtn = document.getElementById('paPersonalPhotoTake');
-        var chooseBtn = document.getElementById('paPersonalPhotoChoose');
-        var cameraInput = document.getElementById('paPersonalPhotoCamera');
-        var libraryInput = document.getElementById('paPersonalPhotoLibrary');
-        var previewImg = document.getElementById('paPersonalPhotoImg');
-        var placeholder = document.getElementById('paPersonalPhotoPlaceholder');
-
-        if (!form || !menuBtn || !menu) {
-            return;
-        }
-
-        function closeMenu() {
-            menu.hidden = true;
-            menuBtn.setAttribute('aria-expanded', 'false');
-        }
-
-        menuBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var willOpen = menu.hidden;
-            menu.hidden = !willOpen;
-            menuBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-        });
-
-        document.addEventListener('click', closeMenu);
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') {
-                closeMenu();
-            }
-        });
-
-        if (takeBtn && cameraInput) {
-            takeBtn.addEventListener('click', function (e) {
-                e.stopPropagation();
-                closeMenu();
-                cameraInput.click();
-            });
-        }
-
-        if (chooseBtn && libraryInput) {
-            chooseBtn.addEventListener('click', function (e) {
-                e.stopPropagation();
-                closeMenu();
-                libraryInput.click();
-            });
-        }
-
-        function showPhotoAlert(message, tone) {
-            var wrap = document.getElementById('paPersonalPhotoAlerts');
-            if (!wrap) {
-                return;
-            }
-
-            wrap.innerHTML = '';
-            var alert = document.createElement('div');
-            alert.className = 'pa-personal-alert pa-personal-alert--' + tone;
-            alert.setAttribute('role', tone === 'success' ? 'status' : 'alert');
-            alert.textContent = message;
-            wrap.appendChild(alert);
-        }
-
-        function handlePhotoSelected(input) {
-            if (!input.files || input.files.length === 0) {
-                return;
-            }
-
-            var file = input.files[0];
-            if (previewImg && file.type.startsWith('image/')) {
-                previewImg.src = URL.createObjectURL(file);
-                previewImg.hidden = false;
-                if (placeholder) {
-                    placeholder.hidden = true;
-                }
-            }
-
-            var formData = new FormData(form);
-            formData.delete('photo');
-            formData.append('photo', file);
-
-            fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-                .then(function (response) {
-                    return response.json().then(function (data) {
-                        if (!response.ok || !data.ok) {
-                            throw new Error(data.message || 'Could not upload photo.');
-                        }
-                        return data;
-                    });
-                })
-                .then(function (data) {
-                    if (previewImg && data.photoUrl) {
-                        previewImg.src = data.photoUrl;
-                        previewImg.hidden = false;
-                        if (placeholder) {
-                            placeholder.hidden = true;
-                        }
-                    }
-                    showPhotoAlert(data.message || 'Profile photo updated.', 'success');
-                })
-                .catch(function (error) {
-                    showPhotoAlert(error.message || 'Could not upload photo.', 'error');
-                })
-                .finally(function () {
-                    input.value = '';
-                });
-        }
-
-        if (cameraInput) {
-            cameraInput.addEventListener('change', function () {
-                handlePhotoSelected(cameraInput);
-            });
-        }
-
-        if (libraryInput) {
-            libraryInput.addEventListener('change', function () {
-                handlePhotoSelected(libraryInput);
-            });
-        }
-    })();
-</script>
+<script src="~/js/profile-photo-upload.js" asp-append-version="true"></script>
 }

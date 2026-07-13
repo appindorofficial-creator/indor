@@ -46,10 +46,7 @@ public class PropertyAdministratorFurnitureHaulAwayService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = MapProperty(property),
-            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest checkout today" : null,
-            QuickDetails = property?.PropertyType == "ShortTermRental"
-                ? "1 couch, 1 mattress, and 2 chairs after guest move-out."
-                : ""
+            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest checkout today" : null
         };
     }
 
@@ -89,9 +86,7 @@ public class PropertyAdministratorFurnitureHaulAwayService(
             IsOccupied = step1.IsOccupied,
             GuestsInside = step1.GuestsInside,
             QuickDetails = step1.QuickDetails ?? "",
-            PickupWhen = property.PropertyType == "ShortTermRental" ? "TodayAfterCheckout" : "Asap",
-            EntryCode = $"{2000 + property.Id}#",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(305) 555-0198"
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }
 

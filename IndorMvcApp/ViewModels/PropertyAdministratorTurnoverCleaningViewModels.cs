@@ -9,16 +9,16 @@ public class PropertyAdministratorTurnoverCleaningFeaturedViewModel
 
 public class PropertyAdministratorTurnoverCleaningFormViewModel : PropertyAdministratorPortalShellViewModel
 {
-    public int FlowStep { get; set; } = 2;
+    public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string ServiceType { get; set; } = "FullTurnover";
-    public string GuestArrival { get; set; } = "Today";
-    public string GuestArrivalTime { get; set; } = "4:00 PM";
-    public string IncludedTasks { get; set; } = "Bathrooms,KitchenReset,FreshLinens,RestockToiletries,TrashOut";
-    public string UrgentIssue { get; set; } = "No";
-    public string EntryAccess { get; set; } = "SmartLock";
-    public string UpdateRecipients { get; set; } = "Me,CoHost";
+    public string ServiceType { get; set; } = "";
+    public string GuestArrival { get; set; } = "";
+    public string GuestArrivalTime { get; set; } = "";
+    public string IncludedTasks { get; set; } = "";
+    public string UrgentIssue { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
+    public string UpdateRecipients { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string Details { get; set; } = "";
     public string EstimatedPrice { get; set; } = "$149–$249";
@@ -30,13 +30,13 @@ public class PropertyAdministratorTurnoverCleaningFormViewModel : PropertyAdmini
 public class PropertyAdministratorTurnoverCleaningSubmitInput
 {
     public int PropertyId { get; set; }
-    public string ServiceType { get; set; } = "FullTurnover";
-    public string GuestArrival { get; set; } = "Today";
-    public string GuestArrivalTime { get; set; } = "4:00 PM";
-    public List<string> IncludedTasksList { get; set; } = ["Bathrooms", "KitchenReset", "FreshLinens", "RestockToiletries", "TrashOut"];
-    public string UrgentIssue { get; set; } = "No";
-    public string EntryAccess { get; set; } = "SmartLock";
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "CoHost"];
+    public string ServiceType { get; set; } = "";
+    public string GuestArrival { get; set; } = "";
+    public string GuestArrivalTime { get; set; } = "";
+    public List<string> IncludedTasksList { get; set; } = [];
+    public string UrgentIssue { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
     public string? Details { get; set; }
 }

@@ -50,9 +50,14 @@ public static class PropertyAdministratorDisplayLocalization
         T("{0} at {1}", title, propertyName);
 
     public static string MapPropertyStatusLabel(string? status) =>
-        string.IsNullOrWhiteSpace(status) || status is "Added" or "Active"
-            ? L("Active")
-            : L(status);
+        status is PropertyAdministratorPortfolioPropertyStatuses.Removed
+            or "Deleted"
+            or "Inactive"
+            or "Eliminado"
+            ? L("Removed")
+            : string.IsNullOrWhiteSpace(status) || status is "Added" or "Active"
+                ? L("Active")
+                : L(status);
 
     public static (string Label, string Css) MapRecentRequestStatus(string status) => status switch
     {

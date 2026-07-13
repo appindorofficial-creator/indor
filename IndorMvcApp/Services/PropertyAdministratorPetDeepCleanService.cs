@@ -45,10 +45,7 @@ public class PropertyAdministratorPetDeepCleanService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest checkout today" : null,
-            Details = property?.PropertyType == "ShortTermRental"
-                ? "Guests checked out with 2 dogs. Please deep clean sofas, rugs, and bedrooms."
-                : ""
+            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest checkout today" : null
         };
     }
 

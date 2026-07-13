@@ -13,25 +13,25 @@ public class PropertyAdministratorLawnCareStep1ViewModel : PropertyAdministrator
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? PropertyStatusLabel { get; set; }
-    public string ServiceType { get; set; } = "GrassCutting";
-    public string YardArea { get; set; } = "Both";
-    public string YardSize { get; set; } = "Medium";
-    public string Frequency { get; set; } = "OneTime";
-    public string IsOccupied { get; set; } = "Yes";
+    public string ServiceType { get; set; } = "";
+    public string YardArea { get; set; } = "";
+    public string YardSize { get; set; } = "";
+    public string Frequency { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
     public string AccessDetails { get; set; } = "";
     public string QuickNotes { get; set; } = "";
     public string AvailabilityLabel { get; set; } = "Available tomorrow morning";
-    public string AvailabilityWindow { get; set; } = "8:00 AM – 12:00 PM";
+    public string AvailabilityWindow { get; set; } = "";
 }
 
 public class PropertyAdministratorLawnCareStep1Input
 {
     public int PropertyId { get; set; }
-    public string ServiceType { get; set; } = "GrassCutting";
-    public string YardArea { get; set; } = "Both";
-    public string YardSize { get; set; } = "Medium";
-    public string Frequency { get; set; } = "OneTime";
-    public string IsOccupied { get; set; } = "Yes";
+    public string ServiceType { get; set; } = "";
+    public string YardArea { get; set; } = "";
+    public string YardSize { get; set; } = "";
+    public string Frequency { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
     public string? AccessDetails { get; set; }
     public string? QuickNotes { get; set; }
 }
@@ -43,29 +43,29 @@ public class PropertyAdministratorLawnCareStep2ViewModel : PropertyAdministrator
     public int PropertyId { get; set; }
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? PropertyStatusLabel { get; set; }
-    public string ServiceType { get; set; } = "GrassCutting";
-    public string YardArea { get; set; } = "Both";
-    public string YardSize { get; set; } = "Medium";
-    public string Frequency { get; set; } = "OneTime";
-    public string IsOccupied { get; set; } = "Yes";
+    public string ServiceType { get; set; } = "";
+    public string YardArea { get; set; } = "";
+    public string YardSize { get; set; } = "";
+    public string Frequency { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
     public string AccessDetails { get; set; } = "";
     public string QuickNotes { get; set; } = "";
-    public string ScheduleWhen { get; set; } = "Asap";
-    public string ArrivalWindow { get; set; } = "Morning";
-    public string AddOns { get; set; } = "Edging,BlowDebris";
-    public string BagClippings { get; set; } = "Yes";
-    public string UpdateRecipients { get; set; } = "Me,Guest";
-    public string AccessNotes { get; set; } = "Park in driveway. Enter through left gate.";
-    public string AvoidNotes { get; set; } = "Please avoid flower bed near the front porch.";
+    public string ScheduleWhen { get; set; } = "";
+    public string ArrivalWindow { get; set; } = "";
+    public string AddOns { get; set; } = "";
+    public string BagClippings { get; set; } = "";
+    public string UpdateRecipients { get; set; } = "";
+    public string AccessNotes { get; set; } = "";
+    public string AvoidNotes { get; set; } = "";
 }
 
 public class PropertyAdministratorLawnCareSubmitInput : PropertyAdministratorLawnCareStep1Input
 {
-    public string ScheduleWhen { get; set; } = "Asap";
-    public string ArrivalWindow { get; set; } = "Morning";
-    public List<string> AddOnsList { get; set; } = ["Edging", "BlowDebris"];
-    public string BagClippings { get; set; } = "Yes";
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public string ScheduleWhen { get; set; } = "";
+    public string ArrivalWindow { get; set; } = "";
+    public List<string> AddOnsList { get; set; } = [];
+    public string BagClippings { get; set; } = "";
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string? AccessNotes { get; set; }
     public string? AvoidNotes { get; set; }
 }

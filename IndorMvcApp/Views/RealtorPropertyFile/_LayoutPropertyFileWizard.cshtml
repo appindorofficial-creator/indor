@@ -1,7 +1,9 @@
 @using IndorMvcApp.Localization
 @{
     var stepModel = Model as IndorMvcApp.ViewModels.RealtorPropertyFileStepViewModel;
-    var pageTitle = stepModel?.Title ?? L["Create Property File"];
+    var pageTitle = stepModel != null
+        ? L[stepModel.Title]
+        : L["Create Property File"];
 }
 <!DOCTYPE html>
 <html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
@@ -21,6 +23,7 @@
         @RenderBody()
     </div>
     @await Html.PartialAsync("~/Views/Realtor/_RealtorBottomNav.cshtml")
+    @await Html.PartialAsync("_PropertyFileI18n")
     @RenderSection("Scripts", required: false)
     <script src="~/js/realtor-property-file.js" asp-append-version="true"></script>
 </body>

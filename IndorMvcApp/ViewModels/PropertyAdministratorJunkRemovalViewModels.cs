@@ -12,22 +12,22 @@ public class PropertyAdministratorJunkRemovalStep1ViewModel : PropertyAdministra
     public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string RemovalItems { get; set; } = "Furniture,Boxes,BaggedTrash";
-    public string LoadSize { get; set; } = "HalfLoad";
-    public string IsOccupied { get; set; } = "No";
-    public string GuestsInside { get; set; } = "No";
-    public string PickupType { get; set; } = "InsidePickup";
+    public string RemovalItems { get; set; } = "";
+    public string LoadSize { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string PickupType { get; set; } = "";
     public string QuickDetails { get; set; } = "";
 }
 
 public class PropertyAdministratorJunkRemovalStep1Input
 {
     public int PropertyId { get; set; }
-    public List<string> RemovalItemsList { get; set; } = ["Furniture", "Boxes", "BaggedTrash"];
-    public string LoadSize { get; set; } = "HalfLoad";
-    public string IsOccupied { get; set; } = "No";
-    public string GuestsInside { get; set; } = "No";
-    public string PickupType { get; set; } = "InsidePickup";
+    public List<string> RemovalItemsList { get; set; } = [];
+    public string LoadSize { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string PickupType { get; set; } = "";
     public string? QuickDetails { get; set; }
 }
 
@@ -39,29 +39,29 @@ public class PropertyAdministratorJunkRemovalStep2ViewModel : PropertyAdministra
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? PropertyStatusLabel { get; set; }
     public string RemovalItems { get; set; } = "";
-    public string LoadSize { get; set; } = "HalfLoad";
-    public string IsOccupied { get; set; } = "No";
-    public string GuestsInside { get; set; } = "No";
-    public string PickupType { get; set; } = "InsidePickup";
+    public string LoadSize { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string PickupType { get; set; } = "";
     public string QuickDetails { get; set; } = "";
-    public string PickupWhen { get; set; } = "TodayAfterCheckout";
-    public string TimeWindow { get; set; } = "Afternoon";
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string PickupWhen { get; set; } = "";
+    public string TimeWindow { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
     public string EntryCode { get; set; } = "";
-    public string ItemLocations { get; set; } = "InsideHome";
-    public string UpdateRecipient { get; set; } = "Me";
+    public string ItemLocations { get; set; } = "";
+    public string UpdateRecipient { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string CrewEtaLabel { get; set; } = "Earliest available junk crew: 2:30 PM today";
 }
 
 public class PropertyAdministratorJunkRemovalSubmitInput : PropertyAdministratorJunkRemovalStep1Input
 {
-    public string PickupWhen { get; set; } = "TodayAfterCheckout";
-    public string TimeWindow { get; set; } = "Afternoon";
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string PickupWhen { get; set; } = "";
+    public string TimeWindow { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
     public string? EntryCode { get; set; }
-    public List<string> ItemLocationsList { get; set; } = ["InsideHome"];
-    public List<string> UpdateRecipientsList { get; set; } = ["Me"];
+    public List<string> ItemLocationsList { get; set; } = [];
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string? ContactPhone { get; set; }
 }
 

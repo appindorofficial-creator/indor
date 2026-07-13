@@ -136,34 +136,116 @@
         }
         else
         {
-            <form class="pa-network-search" asp-controller="Administrador" asp-action="Index" method="get">
+            var networkFilter = Model.NetworkFilter ?? "All";
+            var hasSearch = !string.IsNullOrWhiteSpace(Model.NetworkSearch);
+            var showListings = string.Equals(networkFilter, "All", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(networkFilter, "Listings", StringComparison.OrdinalIgnoreCase);
+            var showServices = string.Equals(networkFilter, "All", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(networkFilter, "Services", StringComparison.OrdinalIgnoreCase);
+            var showPromotions = string.Equals(networkFilter, "Promotions", StringComparison.OrdinalIgnoreCase);
+            var showEmergency = string.Equals(networkFilter, "All", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(networkFilter, "Emergency", StringComparison.OrdinalIgnoreCase);
+            var feedChips = new (string Key, string Label, string Icon, string Css)[]
+            {
+                ("All", L["All"], "fa-table-cells-large", ""),
+                ("Listings", L["Listings"], "fa-house", ""),
+                ("Services", L["Services"], "fa-screwdriver-wrench", ""),
+                ("Promotions", L["Promotions"], "fa-tag", ""),
+                ("Emergency", L["Emergency"], "fa-triangle-exclamation", "pa-network-chip--danger")
+            };
+
+            <form class="pa-network-search" id="paNetworkSearchForm" role="search" asp-controller="Administrador" asp-action="Index" method="get">
                 <input type="hidden" name="view" value="feed" />
-                <input type="hidden" name="filter" value="@Model.NetworkFilter" />
-                <i class="fas fa-magnifying-glass"></i>
-                <input type="search" name="q" value="@Model.NetworkSearch" placeholder="@L["Search in my portfolio neighborhoods..."]" aria-label="@L["Search neighborhoods"]" />
+                <input type="hidden" name="filter" value="@networkFilter" />
+                @if (Model.ViewingProperty != null)
+                {
+                    <input type="hidden" name="propertyId" value="@Model.ViewingProperty.Id" />
+                }
+                <button type="submit" class="pa-search-submit" aria-label="@L["Search"]" title="@L["Search"]">
+                    <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+                </button>
+                <input type="search"
+                       id="paNetworkSearch"
+                       name="q"
+                       value="@Model.NetworkSearch"
+                       placeholder="@L["Search in my portfolio neighborhoods..."]"
+                       aria-label="@L["Search neighborhoods"]"
+                       autocomplete="off"
+                       enterkeyhint="search" />
             </form>
 
             <div class="pa-network-chips">
-                <button type="button" class="pa-network-chip is-active"><i class="fas fa-table-cells-large"></i> @L["All"]</button>
-                <button type="button" class="pa-network-chip"><i class="fas fa-house"></i> @L["Listings"]</button>
-                <button type="button" class="pa-network-chip"><i class="fas fa-screwdriver-wrench"></i> @L["Services"]</button>
-                <button type="button" class="pa-network-chip"><i class="fas fa-tag"></i> @L["Promotions"]</button>
-                <button type="button" class="pa-network-chip pa-network-chip--danger"><i class="fas fa-triangle-exclamation"></i> @L["Emergency"]</button>
+                @foreach (var chip in feedChips)
+                {
+                    <a asp-controller="Administrador"
+                       asp-action="Index"
+                       asp-route-view="feed"
+                       asp-route-filter="@(chip.Key == "All" ? null : chip.Key)"
+                       asp-route-q="@Model.NetworkSearch"
+                       asp-route-propertyId="@(Model.ViewingProperty?.Id)"
+                       class="pa-network-chip @chip.Css @(string.Equals(networkFilter, chip.Key, StringComparison.OrdinalIgnoreCase) ? "is-active" : null)">
+                        <i class="fas @chip.Icon"></i> @chip.Label
+                    </a>
+                }
             </div>
 
-            <div class="pa-network-actions">
+            <div class="pa-empty-card" id="paNetworkSearchEmpty" hidden>
+                @L["No results match your search."]
+            </div>
+
+            <div class="pa-network-neighborhoods"
+                 id="paNetworkNeighborhoods"
+                 data-pa-network-block="listings"
+                 hidden="@(showListings && (hasSearch || string.Equals(networkFilter, "Listings", StringComparison.OrdinalIgnoreCase)) ? null : "hidden")">
+                <div class="pa-network-neighborhoods-head">
+                    <strong>@L["Portfolio neighborhoods"]</strong>
+                    <p>@L["Properties in your portfolio that match this search."]</p>
+                </div>
+                <div class="pa-network-neighborhood-list" role="list">
+                    @foreach (var property in Model.Properties)
+                    {
+                        var neighborhoodHaystack = $"{property.PropertyName} {property.Location} {property.PropertyTypeLabel} {property.PropertyType}".ToLowerInvariant();
+                        <a asp-controller="Administrador"
+                           asp-action="Index"
+                           asp-route-propertyId="@property.Id"
+                           asp-route-view="feed"
+                           class="pa-network-neighborhood"
+                           role="listitem"
+                           data-pa-network-item
+                           data-pa-network-kind="listings"
+                           data-search="@neighborhoodHaystack">
+                            <span class="pa-network-neighborhood-thumb">
+                                <img src="@(property.ImageUrl ?? "/inspeccion2.jpeg")" alt="" />
+                            </span>
+                            <span class="pa-network-neighborhood-body">
+                                <strong>@property.PropertyName</strong>
+                                <small>@property.Location</small>
+                            </span>
+                            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <div class="pa-network-actions"
+                 data-pa-network-block="services"
+                 hidden="@(showServices ? null : "hidden")">
                 @{
                     var neighborPropiedadId = Model.ViewingProperty?.PropiedadId
                         ?? Model.Properties.FirstOrDefault(p => p.PropiedadId is > 0)?.PropiedadId;
                 }
                 @if (neighborPropiedadId is > 0)
                 {
-                    <a asp-controller="NeighborRequest" asp-action="Create" asp-route-propiedadId="@neighborPropiedadId" class="pa-network-action">
+                    <a asp-controller="NeighborRequest" asp-action="Create" asp-route-propiedadId="@neighborPropiedadId"
+                       class="pa-network-action" data-pa-network-item data-pa-network-kind="services"
+                       data-search="post request help recommendations network services">
                         <span class="pa-network-action-icon"><i class="fas fa-plus"></i></span>
                         <strong>@L["Post a Request"]</strong>
                         <small>@L["Ask your network for help or recommendations"]</small>
                     </a>
-                    <a asp-controller="NeighborRequest" asp-action="Mine" asp-route-propiedadId="@neighborPropiedadId" class="pa-network-action">
+                    <a asp-controller="NeighborRequest" asp-action="Mine" asp-route-propiedadId="@neighborPropiedadId"
+                       class="pa-network-action" data-pa-network-item data-pa-network-kind="services"
+                       data-search="my requests track manage updates network services">
                         <span class="pa-network-action-icon pa-network-action-icon--chat"><i class="fas fa-comment-dots"></i></span>
                         <strong>@L["My Requests"]</strong>
                         <small>@L["Track &amp; manage your requests and updates"]</small>
@@ -171,54 +253,105 @@
                 }
                 else
                 {
-                    <a asp-controller="PropertyAdministratorRegistration" asp-action="Properties" class="pa-network-action">
+                    <a asp-controller="PropertyAdministratorRegistration" asp-action="Properties"
+                       class="pa-network-action" data-pa-network-item data-pa-network-kind="services"
+                       data-search="post request add property neighborhood services">
                         <span class="pa-network-action-icon"><i class="fas fa-plus"></i></span>
                         <strong>@L["Post a Request"]</strong>
                         <small>@L["Add a property first to post a neighborhood request"]</small>
                     </a>
-                    <a asp-controller="Administrador" asp-action="Tasks" class="pa-network-action">
+                    <a asp-controller="Administrador" asp-action="Tasks"
+                       class="pa-network-action" data-pa-network-item data-pa-network-kind="services"
+                       data-search="my requests track manage updates tasks services">
                         <span class="pa-network-action-icon pa-network-action-icon--chat"><i class="fas fa-comment-dots"></i></span>
                         <strong>@L["My Requests"]</strong>
                         <small>@L["Track &amp; manage your requests and updates"]</small>
                     </a>
                 }
+                <a asp-controller="Administrador" asp-action="Services"
+                   class="pa-network-action" data-pa-network-item data-pa-network-kind="services"
+                   data-search="browse services catalog plumbing cleaning outdoor moving emergency">
+                    <span class="pa-network-action-icon"><i class="fas fa-screwdriver-wrench"></i></span>
+                    <strong>@L["Browse services"]</strong>
+                    <small>@L["Find help across your portfolio neighborhoods"]</small>
+                </a>
             </div>
 
-            <a asp-controller="Administrador" asp-action="EmergencyPlumbingDetails" class="pa-network-emergency">
-                <span class="pa-network-emergency-badge">@L["EMERGENCY"]</span>
-                <div class="pa-network-emergency-main">
-                    <span class="pa-network-emergency-icon"><i class="fas fa-bell"></i></span>
-                    <div class="pa-network-emergency-text">
-                        <strong>@L["Emergency Help Nearby"]</strong>
-                        <p>@L["Licensed plumber available near your Airbnb property"]</p>
-                    </div>
+            <div class="pa-empty-card"
+                 data-pa-network-block="promotions"
+                 hidden="@(showPromotions ? null : "hidden")">
+                @L["No promotions in your portfolio neighborhoods right now."]
+            </div>
+
+            <div class="pa-network-emergency-section"
+                 data-pa-network-block="emergency"
+                 hidden="@(showEmergency ? null : "hidden")">
+                <div class="pa-network-emergency-section-head">
+                    <span class="pa-network-emergency-badge">@L["EMERGENCY"]</span>
+                    <strong>@L["Emergency Help Nearby"]</strong>
+                    <p>@L["Certified plumbers, electricians & more — often arriving within 60 minutes."]</p>
                 </div>
-                <div class="pa-network-emergency-foot">
-                    <div class="pa-network-emergency-meta">
-                        <span><i class="far fa-clock"></i> @L["Average arrival time: 28 mins"]</span>
-                        <span><i class="fas fa-location-dot"></i> @L["2.6 mi away"]</span>
+                @if (Model.EmergencyNearbyServices.Count > 0)
+                {
+                    <div class="pa-hscroll pa-network-emergency-scroll" role="list" aria-label="@L["Emergency Help Nearby"]">
+                        @foreach (var emergency in Model.EmergencyNearbyServices)
+                        {
+                            var emergencyLocalizedName = UiDisplayLocalization.Localize(L, emergency.ServiceName);
+                            var emergencyLocalizedSubtitle = UiDisplayLocalization.Localize(L, emergency.Subtitle);
+                            var emergencyHaystack = $"{emergency.ServiceName} {emergencyLocalizedName} {emergency.Subtitle} {emergencyLocalizedSubtitle} emergency".ToLowerInvariant();
+                            var callHref = string.IsNullOrWhiteSpace(emergency.CallUrl) ? "tel:18005554637" : emergency.CallUrl;
+                            <article class="pa-network-emergency"
+                                     role="listitem"
+                                     data-pa-network-item
+                                     data-pa-network-kind="emergency"
+                                     data-search="@emergencyHaystack">
+                                <a href="@emergency.Url"
+                                   class="pa-network-emergency-main"
+                                   aria-label="@emergencyLocalizedName">
+                                    <span class="pa-network-emergency-icon"><i class="fas @emergency.IconClass"></i></span>
+                                    <div class="pa-network-emergency-text">
+                                        <strong>@emergencyLocalizedName</strong>
+                                        <p>@emergencyLocalizedSubtitle</p>
+                                    </div>
+                                </a>
+                                <div class="pa-network-emergency-foot">
+                                    <div class="pa-network-emergency-meta">
+                                        <span><i class="far fa-clock"></i> @L.T("Average arrival time: {0} mins", emergency.ArrivalMinutes)</span>
+                                        <span><i class="fas fa-location-dot"></i> @L.T("{0} mi away", emergency.DistanceMiles)</span>
+                                    </div>
+                                    <a href="@callHref"
+                                       class="pa-network-emergency-call"
+                                       aria-label="@($"{L["Call now"]} — {emergency.PhoneNumber}")">
+                                        @L["Call now"] <i class="fas fa-phone" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                            </article>
+                        }
                     </div>
-                    <span class="pa-network-emergency-call">@L["Call now"] <i class="fas fa-chevron-right"></i></span>
-                </div>
-            </a>
+                }
+                else
+                {
+                    <a asp-controller="Administrador" asp-action="EmergencyServices"
+                       class="pa-network-emergency"
+                       data-pa-network-item
+                       data-pa-network-kind="emergency"
+                       data-search="emergency help nearby services">
+                        <div class="pa-network-emergency-main">
+                            <span class="pa-network-emergency-icon"><i class="fas fa-bell"></i></span>
+                            <div class="pa-network-emergency-text">
+                                <strong>@L["Emergency Help Nearby"]</strong>
+                                <p>@L["Call now to connect with an emergency service pro."]</p>
+                            </div>
+                        </div>
+                        <div class="pa-network-emergency-foot">
+                            <span class="pa-network-emergency-call">@L["View emergency services"] <i class="fas fa-chevron-right"></i></span>
+                        </div>
+                    </a>
+                }
+            </div>
         }
     </section>
 </div>
-
-@if (!isMapView)
-{
-    <script>
-        (function () {
-            var items = document.querySelectorAll('.pa-network-chip');
-            items.forEach(function (item) {
-                item.addEventListener('click', function () {
-                    items.forEach(function (i) { i.classList.remove('is-active'); });
-                    item.classList.add('is-active');
-                });
-            });
-        })();
-    </script>
-}
 
 @if (isMapView && Model.NearbyMap?.HasGoogleMaps == true)
 {

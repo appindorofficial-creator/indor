@@ -1,21 +1,20 @@
 @model IndorMvcApp.ViewModels.UtilitiesSetupCompletedViewModel
 @{
-    ViewData["Title"] = "Utilities Setup Completed - INDOR";
+    ViewData["Title"] = L["Utilities Setup Completed - INDOR"];
     string PhoneHref(string? phone)
     {
         if (string.IsNullOrWhiteSpace(phone)) return "#";
         var digits = new string(phone.Where(char.IsDigit).ToArray());
         return string.IsNullOrEmpty(digits) ? "#" : $"tel:{digits}";
     }
-    ViewData["WizardTitle"] = "Utilities Setup";
+    ViewData["WizardTitle"] = L["Utilities Setup"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
-
 }
 
 <div class="success-icon"><i class="fas fa-check"></i></div>
-    <h1 class="page-heading" style="text-align:center;font-size:1.2rem;">Utilities Setup Completed</h1>
-    <p class="page-lead" style="text-align:center;color:#0066CC;font-weight:600;">Congratulations! Your home setup is ready.</p>
-    <p class="page-lead" style="text-align:center;margin-top:-10px;">We organized your utility and internet information for this property.</p>
+    <h1 class="page-heading" style="text-align:center;font-size:1.2rem;">@L["Utilities Setup Completed"]</h1>
+    <p class="page-lead" style="text-align:center;color:#0066CC;font-weight:600;">@L["Congratulations! Your home setup is ready."]</p>
+    <p class="page-lead" style="text-align:center;margin-top:-10px;">@L["We organized your utility and internet information for this property."]</p>
 
     <div class="location-card">
         <div class="thumb"><i class="fas fa-house" style="color:#0066CC;"></i></div>
@@ -28,7 +27,7 @@
     @if (!string.IsNullOrWhiteSpace(Model.InternetProviderName))
     {
         <div class="summary-card" style="margin-bottom:12px;">
-            <div class="summary-row"><i class="fas fa-wifi"></i><div><div class="summary-label">Internet</div><div class="summary-value">@Model.InternetProviderName</div><div class="summary-value" style="font-size:0.78rem;color:#64748B;font-weight:500;">Saved as preferred provider</div></div></div>
+            <div class="summary-row"><i class="fas fa-wifi"></i><div><div class="summary-label">@L["Internet"]</div><div class="summary-value">@Model.InternetProviderName</div><div class="summary-value" style="font-size:0.78rem;color:#64748B;font-weight:500;">@L["Saved as preferred provider"]</div></div></div>
         </div>
     }
 
@@ -56,9 +55,9 @@
         }
     </div>
 
-    <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>You can call providers directly or return later from My Home.</span></div>
+    <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["You can call providers directly or return later from My Home."]</span></div>
 
-    <a asp-controller="MyHome" asp-action="Index" class="btn-primary">Go to My Home</a>
-    <a asp-action="UtilitiesSetupReview" asp-route-id="@Model.SolicitudId" class="btn-outline">View setup details</a>
-    <a asp-controller="Home" asp-action="Index" class="btn-outline">Done</a>
+    <a asp-controller="MyHome" asp-action="Index" class="btn-primary">@L["Go to My Home"]</a>
+    <a asp-action="UtilitiesSetupReview" asp-route-id="@Model.SolicitudId" class="btn-outline">@L["View setup details"]</a>
+    <a asp-controller="Home" asp-action="Index" class="btn-outline">@L["Done"]</a>
 </div>

@@ -181,22 +181,46 @@ public class NeighborRequestWizardService(
         bool useDraftFieldValues = true)
     {
         var categories = await LoadCategoriesAsync(ct);
-        var defaultAddress = draft?.LocationAddress;
-        if (string.IsNullOrWhiteSpace(defaultAddress))
+        propiedad ??= await db.Propiedades.AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == propiedadId, ct);
+
+        var availableProperties = await LoadAvailableLocationOptionsAsync(propiedad, propiedadId, ct);
+
+        var selectedPropiedadId = availableProperties.Any(p => p.Id == propiedadId)
+            ? propiedadId
+            : availableProperties.FirstOrDefault()?.Id ?? propiedadId;
+
+        var selectedAddress = availableProperties
+            .FirstOrDefault(p => p.Id == selectedPropiedadId)?.Address;
+
+        var fieldDraft = useDraftFieldValues ? draft : null;
+        var useHomeAddress = fieldDraft?.UseHomeAddress ?? true;
+
+        string? defaultAddress;
+        if (useHomeAddress)
         {
-            propiedad ??= await db.Propiedades.AsNoTracking()
-                .FirstOrDefaultAsync(p => p.Id == propiedadId, ct);
-            if (propiedad != null)
+            defaultAddress = selectedAddress;
+            if (string.IsNullOrWhiteSpace(defaultAddress) && propiedad != null)
             {
                 defaultAddress = await ResolveDefaultAddressAsync(propiedad, ct);
             }
         }
-
-        var fieldDraft = useDraftFieldValues ? draft : null;
+        else
+        {
+            defaultAddress = fieldDraft?.LocationAddress;
+            if (string.IsNullOrWhiteSpace(defaultAddress))
+            {
+                defaultAddress = selectedAddress;
+                if (string.IsNullOrWhiteSpace(defaultAddress) && propiedad != null)
+                {
+                    defaultAddress = await ResolveDefaultAddressAsync(propiedad, ct);
+                }
+            }
+        }
 
         return new NeighborRequestCategoryStepViewModel
         {
-            PropiedadId = propiedadId,
+            PropiedadId = selectedPropiedadId,
             PageTitle = "Post Quick Job",
             DisplayStep = 1,
             TotalSteps = 4,
@@ -205,11 +229,12 @@ public class NeighborRequestWizardService(
             CloseUrl = url.Action("Index", "Home")!,
             CategoryId = fieldDraft?.CategoryId ?? 0,
             SelectedCategoryId = fieldDraft?.CategoryId,
-            Title = fieldDraft?.Title ?? string.Empty,
+            JobTitle = fieldDraft?.Title ?? string.Empty,
             Description = fieldDraft?.Description,
             LocationAddress = defaultAddress ?? string.Empty,
-            UseHomeAddress = fieldDraft?.UseHomeAddress ?? true,
+            UseHomeAddress = useHomeAddress,
             ResumeDraft = useDraftFieldValues && draft is { CategoryId: > 0, EditingRequestId: null },
+            AvailableProperties = availableProperties,
             Categories = categories.Select(c => new NeighborRequestCategoryOptionViewModel
             {
                 Id = c.Id,
@@ -220,6 +245,80 @@ public class NeighborRequestWizardService(
                 ImageUrl = ResolveQuickJobCategoryImage(c.Code)
             }).ToList()
         };
+    }
+
+    public Task<string> GetDefaultAddressAsync(Propiedad propiedad, CancellationToken ct) =>
+        ResolveDefaultAddressAsync(propiedad, ct);
+
+    private async Task<List<NeighborRequestLocationOptionViewModel>> LoadAvailableLocationOptionsAsync(
+        Propiedad? propiedad,
+        int propiedadId,
+        CancellationToken ct)
+    {
+        var userId = propiedad?.UserId;
+        if (string.IsNullOrEmpty(userId))
+        {
+            userId = await db.Propiedades.AsNoTracking()
+                .Where(p => p.Id == propiedadId)
+                .Select(p => p.UserId)
+                .FirstOrDefaultAsync(ct);
+        }
+
+        if (string.IsNullOrEmpty(userId))
+        {
+            return [];
+        }
+
+        var properties = await db.Propiedades.AsNoTracking()
+            .Where(p => p.UserId == userId && p.Activo)
+            .OrderByDescending(p => p.FechaCreacion)
+            .ToListAsync(ct);
+
+        // Prefer portfolio display names (property administrators) when present.
+        Dictionary<int, string> portfolioNames = [];
+        try
+        {
+            var propiedadIds = properties.Select(p => p.Id).ToList();
+            if (propiedadIds.Count > 0)
+            {
+                var portfolioRows = await db.IndorPropertyAdminPortfolioProperties
+                    .AsNoTracking()
+                    .Where(p => p.PropiedadId != null && propiedadIds.Contains(p.PropiedadId.Value))
+                    .Select(p => new { PropiedadId = p.PropiedadId!.Value, p.PropertyName, p.Id })
+                    .ToListAsync(ct);
+
+                portfolioNames = portfolioRows
+                    .GroupBy(p => p.PropiedadId)
+                    .ToDictionary(
+                        g => g.Key,
+                        g => g.OrderByDescending(x => x.Id).Select(x => x.PropertyName).FirstOrDefault() ?? string.Empty);
+            }
+        }
+        catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
+        {
+            portfolioNames = [];
+        }
+
+        var options = new List<NeighborRequestLocationOptionViewModel>(properties.Count);
+        foreach (var property in properties)
+        {
+            var address = (await ResolveDefaultAddressAsync(property, ct)).Trim();
+            portfolioNames.TryGetValue(property.Id, out var portfolioName);
+            var label = !string.IsNullOrWhiteSpace(portfolioName)
+                ? portfolioName.Trim()
+                : !string.IsNullOrWhiteSpace(address)
+                    ? address
+                    : $"Property #{property.Id}";
+
+            options.Add(new NeighborRequestLocationOptionViewModel
+            {
+                Id = property.Id,
+                Address = address,
+                Label = label
+            });
+        }
+
+        return options;
     }
 
     public async Task<NeighborRequestDescribeStepViewModel?> BuildDescribeStepAsync(

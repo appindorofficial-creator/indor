@@ -10,8 +10,8 @@
             role="tab"
             aria-selected="@(isNetwork ? "true" : "false")">
         <span class="hn-v4-feature-card-copy">
-            <strong>@L["Nearby Network"]</strong>
-            <small>@L["Local feed, neighbors, and help around you."]</small>
+            <strong>@UiDisplayLocalization.Localize(L, "Nearby Network")</strong>
+            <small>@UiDisplayLocalization.Localize(L, "Local feed, neighbors, and help around you.")</small>
         </span>
         <span class="hn-v4-feature-card-art-wrap" aria-hidden="true">
             <img src="~/images/hn-v4-card-network.png" alt="" class="hn-v4-feature-card-art" loading="lazy" asp-append-version="true" />
@@ -26,8 +26,8 @@
             role="tab"
             aria-selected="@(isMyHome ? "true" : "false")">
         <span class="hn-v4-feature-card-copy">
-            <strong>@L["My Home"]</strong>
-            <small>@L["Your home dashboard, records, and details."]</small>
+            <strong>@UiDisplayLocalization.Localize(L, "My Home")</strong>
+            <small>@UiDisplayLocalization.Localize(L, "Your home dashboard, records, and details.")</small>
         </span>
         <span class="hn-v4-feature-card-art-wrap" aria-hidden="true">
             <img src="~/images/hn-v4-card-myhome.png" alt="" class="hn-v4-feature-card-art" loading="lazy" asp-append-version="true" />

@@ -78,7 +78,7 @@
             @Html.AntiForgeryToken()
             <input type="hidden" name="returnTo" value="editar" />
             <div class="prv-pro-edit-profile-photo-row">
-                <div class="prv-pro-edit-profile-photo-preview prv-pro-profile-photo-preview" id="prvEditProfilePhotoPreview">
+                <div class="prv-pro-edit-profile-photo-preview prv-pro-profile-photo-preview@(string.IsNullOrWhiteSpace(Model.LogoUrl) ? "" : " has-image")" id="prvEditProfilePhotoPreview">
                     @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
                     {
                         <img src="@Url.Content($"~{Model.LogoUrl}")" alt="@L["Current profile photo"]" class="prv-pro-profile-logo prv-pro-profile-logo--img" id="prvEditProfilePhotoImg" />
@@ -99,8 +99,8 @@
                         <button type="button" class="prv-pro-profile-photo-menu-item" id="prvEditProfilePhotoChoose" role="menuitem">
                             <i class="fas fa-image"></i> @L["Choose from library"]</button>
                     </div>
-                    <input type="file" id="prvEditProfilePhotoCamera" name="photo" accept="image/*" capture="environment" hidden />
-                    <input type="file" id="prvEditProfilePhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" hidden />
+                    <input type="file" id="prvEditProfilePhotoCamera" name="photo" accept="image/*" capture="environment" class="prv-pro-profile-photo-input" tabindex="-1" aria-hidden="true" />
+                    <input type="file" id="prvEditProfilePhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" class="prv-pro-profile-photo-input" tabindex="-1" aria-hidden="true" />
                     <small>@L["JPG, PNG or WEBP · Max 10 MB"]</small>
                 </div>
             </div>

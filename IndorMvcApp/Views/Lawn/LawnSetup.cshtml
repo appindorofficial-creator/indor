@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.LawnSetupViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("LawnService", "Lawn", new { id = Model.MicroservicioId });
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 4;
@@ -30,7 +30,7 @@
             <div class="segment-group" id="freqGroup">
                 @foreach (var freq in Model.FrequencyOptions)
                 {
-                    <button type="button" class="segment-btn" data-value="@freq.Code"><i class="fas @freq.Icon"></i> @freq.Label</button>
+                    <button type="button" class="segment-btn" data-value="@freq.Code"><i class="fas @freq.Icon"></i> @L.Catalog(freq.Label)</button>
                 }
             </div>
             <p class="field-hint">@L["You can activate it as a recurring service or just as a reminder."]</p>
@@ -44,8 +44,8 @@
                     <button type="button" class="area-card" data-value="@area.Code" data-price="@area.Price">
                         <span class="radio"></span>
                         <i class="fas @area.Icon main"></i>
-                        <div class="label">@area.Label</div>
-                        <div class="price">@area.PriceLabel</div>
+                        <div class="label">@L.Catalog(area.Label)</div>
+                        <div class="price">@(area.IsCustomQuote ? L["custom quote"] : string.Format(L["from ${0}"], area.Price.ToString("0")))</div>
                     </button>
                 }
             </div>
@@ -57,7 +57,7 @@
                 @foreach (var addon in Model.AddonOptions)
                 {
                     <button type="button" class="segment-btn addon-pill @(addon.Selected ? "active" : "")" data-code="@addon.Code" data-price="@addon.Price" data-single="@(addon.Code == "NoThanks" ? "true" : "false")">
-                        @addon.Label
+                        @L.Catalog(addon.Label)
                     </button>
                 }
             </div>
@@ -82,8 +82,9 @@
 
         function initSingle(groupId, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
+            const initialValue = (initial || hidden.value || '').trim();
             document.querySelectorAll('#' + groupId + ' .segment-btn:not(.addon-pill), #' + groupId + ' .area-card').forEach(btn => {
-                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                if (initialValue && btn.dataset.value === initialValue) btn.classList.add('active');
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('#' + groupId + ' .segment-btn:not(.addon-pill), #' + groupId + ' .area-card').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');

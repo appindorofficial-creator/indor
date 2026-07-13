@@ -1,8 +1,23 @@
 @model IndorMvcApp.ViewModels.RealtorInspectionUploadViewModel
+@using IndorMvcApp.Helpers
 @using IndorMvcApp.Services
 @{
     var maxFileBytes = RealtorInspectionUploadLimits.MaxFileBytes;
     var maxFileLabel = RealtorInspectionUploadLimits.MaxFileSizeLabel;
+    var hasSavedProperties = Model.Properties.Count > 0;
+    // New-property mode when explicitly selected, returning after validation with new details,
+    // or when the realtor has no saved properties yet.
+    var useNewProperty = Model.SelectedPropertyFileId is null or <= 0
+        && (!hasSavedProperties
+            || !string.IsNullOrWhiteSpace(Model.NewPropertyAddress)
+            || !string.IsNullOrWhiteSpace(Model.NewPropertyCityRegion));
+    var formErrors = ViewData.ModelState
+        .Where(x => x.Value?.Errors.Count > 0)
+        .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
+        .Where(m => !string.IsNullOrWhiteSpace(m))
+        .Distinct()
+        .Select(m => UiDisplayLocalization.Localize(L, m))
+        .ToList();
 }
 
 <div class="rl-info-box">
@@ -22,15 +37,28 @@
 
 <form id="inspUploadForm" asp-action="Upload" method="post" enctype="multipart/form-data" class="rl-invite-form" novalidate>
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="ob-summary"></div>
+    <div asp-validation-summary="All" class="ob-summary" hidden></div>
+    @if (formErrors.Count > 0)
+    {
+        <div class="ob-summary" role="alert">
+            <ul>
+                @foreach (var msg in formErrors)
+                {
+                    <li>@msg</li>
+                }
+            </ul>
+        </div>
+    }
     <div id="inspClientError" class="ob-summary" role="alert" hidden></div>
 
-    @if (Model.Properties.Count > 0)
+    @if (hasSavedProperties)
     {
         var firstProp = true;
         @foreach (var prop in Model.Properties)
         {
-            var selected = Model.SelectedPropertyFileId == prop.Id || (Model.SelectedPropertyFileId is null or 0 && firstProp);
+            var selected = !useNewProperty
+                && (Model.SelectedPropertyFileId == prop.Id
+                    || ((Model.SelectedPropertyFileId is null or 0) && firstProp));
             firstProp = false;
             <label class="rl-property-pick rl-property-pick--card @(selected ? "is-selected" : "")">
                 <input type="radio" name="propertyFileId" value="@prop.Id" @(selected ? "checked" : null) />
@@ -45,38 +73,61 @@
                 <span class="rl-card-status rl-card-status--active">@L["Active"]</span>
             </label>
         }
+
+        <label class="rl-property-pick rl-property-pick--card rl-property-pick--new @(useNewProperty ? "is-selected" : "")" id="inspNewPropertyPick">
+            <input type="radio" name="propertyFileId" value="0" @(useNewProperty ? "checked" : null) />
+            <span class="rl-property-pick-thumb rl-property-pick-thumb--icon" aria-hidden="true">
+                <i class="fas fa-plus"></i>
+            </span>
+            <span class="rl-property-pick-body">
+                <strong>@L["Or Add New Property"]</strong>
+                <span>@L["Enter street address and city below"]</span>
+            </span>
+        </label>
+    }
+    else
+    {
+        <input type="hidden" name="propertyFileId" value="0" />
     }
 
-    <h2 class="rl-invite-section-title">@L["2. Property Details"]</h2>
+    <div id="inspPropertyDetailsSection" @(useNewProperty || !hasSavedProperties ? null : "hidden")>
+        <h2 class="rl-invite-section-title">@L["2. Property Details"]</h2>
 
-    <div class="rl-property-fields">
-        <label class="rl-field-icon">
-            <i class="fas fa-location-dot" aria-hidden="true"></i>
-            <input type="text"
-                   name="newPropertyAddress"
-                   value="@Model.NewPropertyAddress"
-                   placeholder="@L["e.g. 123 Maple Street"]"
-                   autocomplete="street-address" />
-        </label>
-        <label class="rl-field-icon">
-            <i class="fas fa-building" aria-hidden="true"></i>
-            <input type="text"
-                   name="newPropertyCityRegion"
-                   value="@Model.NewPropertyCityRegion"
-                   placeholder="@L["e.g. Toronto, ON"]"
-                   autocomplete="address-level2" />
-        </label>
-        <label class="rl-field-icon">
-            <i class="fas fa-user" aria-hidden="true"></i>
-            <input type="text"
-                   name="newPropertyClientName"
-                   value="@Model.NewPropertyClientName"
-                   placeholder="@L["Client name (optional)"]"
-                   autocomplete="name" />
-        </label>
+        <div class="rl-property-fields">
+            <label class="rl-field-icon">
+                <i class="fas fa-location-dot" aria-hidden="true"></i>
+                <input type="text"
+                       name="newPropertyAddress"
+                       id="newPropertyAddress"
+                       value="@Model.NewPropertyAddress"
+                       placeholder="@L["e.g. 123 Maple Street"]"
+                       autocomplete="street-address"
+                       aria-required="true" />
+            </label>
+            <label class="rl-field-icon">
+                <i class="fas fa-building" aria-hidden="true"></i>
+                <input type="text"
+                       name="newPropertyCityRegion"
+                       id="newPropertyCityRegion"
+                       value="@Model.NewPropertyCityRegion"
+                       placeholder="@L["e.g. Toronto, ON"]"
+                       autocomplete="address-level2"
+                       aria-required="true" />
+            </label>
+            <label class="rl-field-icon">
+                <i class="fas fa-user" aria-hidden="true"></i>
+                <input type="text"
+                       name="newPropertyClientName"
+                       value="@Model.NewPropertyClientName"
+                       placeholder="@L["Client name (optional)"]"
+                       autocomplete="name" />
+            </label>
+        </div>
     </div>
 
-    <h2 class="rl-invite-section-title">@L["3. Add Report"]</h2>
+    <h2 class="rl-invite-section-title" id="inspAddReportTitle"
+        data-title-with-details="@L["3. Add Report"]"
+        data-title-without-details="@L["2. Add Report"]">@(useNewProperty || !hasSavedProperties ? L["3. Add Report"] : L["2. Add Report"])</h2>
 
     <div class="rl-upload-method-grid">
         <label class="rl-upload-method rl-upload-method--picker @(Model.UploadMethod == "Pdf" ? "is-selected" : "")">
@@ -141,7 +192,8 @@
      data-photos-hint="@L.T("Select one or more images • Up to {0}", maxFileLabel)"
      data-files-selected="@L["{0} files selected"]"
      data-mb-selected="@L["{0} MB selected"]"
-     data-error-property="@L["Select a property or enter the property address to continue."]"
+     data-error-property="@L["Select a property or enter the street address and city/state to continue."]"
+     data-error-new-details="@L["Enter the street address and city/state to continue."]"
      data-error-file="@L["Add an inspection report PDF or image to continue."]"
      data-error-size="@L["The file is too large. Maximum size is {0}."]"
      data-uploading="@L["Uploading..."]"
@@ -159,8 +211,12 @@
         const continueBtn = document.getElementById('inspContinueBtn');
         const cancelBtn = document.getElementById('inspCancelBtn');
         const cancelForm = document.getElementById('inspCancelForm');
-        const propertyRadios = form.querySelectorAll('input[name="propertyFileId"]');
+        const propertyRadios = form.querySelectorAll('input[name="propertyFileId"][type="radio"]');
+        const detailsSection = document.getElementById('inspPropertyDetailsSection');
+        const addReportTitle = document.getElementById('inspAddReportTitle');
         const newAddressInput = form.querySelector('input[name="newPropertyAddress"]');
+        const newCityInput = form.querySelector('input[name="newPropertyCityRegion"]');
+        const newClientInput = form.querySelector('input[name="newPropertyClientName"]');
         const searchInput = document.querySelector('.rl-search-form input[name="q"]');
         const methodRadios = form.querySelectorAll('.rl-upload-method--picker input[type=radio]');
         const maxFileBytes = @maxFileBytes;
@@ -183,6 +239,41 @@
                 icon: 'fa-image'
             }
         };
+
+        function getSelectedPropertyId() {
+            const checked = form.querySelector('input[name="propertyFileId"]:checked');
+            if (checked) {
+                return parseInt(checked.value, 10) || 0;
+            }
+            const hidden = form.querySelector('input[name="propertyFileId"][type="hidden"]');
+            return hidden ? (parseInt(hidden.value, 10) || 0) : 0;
+        }
+
+        function isNewPropertyMode() {
+            return getSelectedPropertyId() <= 0;
+        }
+
+        function syncPropertyDetailsVisibility() {
+            const showDetails = isNewPropertyMode();
+            if (detailsSection) {
+                detailsSection.hidden = !showDetails;
+            }
+            if (addReportTitle) {
+                addReportTitle.textContent = showDetails
+                    ? (addReportTitle.dataset.titleWithDetails || '3. Add Report')
+                    : (addReportTitle.dataset.titleWithoutDetails || '2. Add Report');
+            }
+        }
+
+        function selectNewPropertyMode() {
+            const newRadio = form.querySelector('input[name="propertyFileId"][value="0"]');
+            if (newRadio) {
+                newRadio.checked = true;
+                document.querySelectorAll('.rl-property-pick').forEach(p => p.classList.remove('is-selected'));
+                newRadio.closest('.rl-property-pick')?.classList.add('is-selected');
+            }
+            syncPropertyDetailsVisibility();
+        }
 
         function getUploadMethod() {
             return form.querySelector('input[name="uploadMethod"]:checked')?.value || 'Pdf';
@@ -264,20 +355,24 @@
             r.addEventListener('change', () => {
                 document.querySelectorAll('.rl-property-pick').forEach(p => p.classList.remove('is-selected'));
                 r.closest('.rl-property-pick')?.classList.add('is-selected');
-                if (newAddressInput) newAddressInput.value = '';
+                if (parseInt(r.value, 10) > 0) {
+                    if (newAddressInput) newAddressInput.value = '';
+                    if (newCityInput) newCityInput.value = '';
+                    if (newClientInput) newClientInput.value = '';
+                }
+                syncPropertyDetailsVisibility();
                 clearClientError();
             });
         });
 
-        if (newAddressInput) {
-            newAddressInput.addEventListener('input', () => {
-                if (newAddressInput.value.trim()) {
-                    propertyRadios.forEach(r => { r.checked = false; });
-                    document.querySelectorAll('.rl-property-pick').forEach(p => p.classList.remove('is-selected'));
+        [newAddressInput, newCityInput].forEach(input => {
+            input?.addEventListener('input', () => {
+                if (input.value.trim()) {
+                    selectNewPropertyMode();
                 }
                 clearClientError();
             });
-        }
+        });
 
         methodRadios.forEach(r => {
             r.addEventListener('change', () => {
@@ -308,21 +403,29 @@
         form.addEventListener('submit', (e) => {
             clearClientError();
 
-            const hasProperty = Array.from(propertyRadios).some(r => r.checked);
+            const selectedId = getSelectedPropertyId();
+            const hasSavedProperty = selectedId > 0;
             let hasNewAddress = (newAddressInput?.value?.trim().length ?? 0) > 0;
+            let hasNewCity = (newCityInput?.value?.trim().length ?? 0) > 0;
 
-            // If the user typed an address in the search box (and didn't select a
-            // saved property or fill the address field), use it as the new property address.
-            if (!hasProperty && !hasNewAddress && newAddressInput && (searchInput?.value?.trim().length ?? 0) > 0) {
+            // If creating a new property and the address field is empty but search has a value, use it.
+            if (!hasSavedProperty && !hasNewAddress && newAddressInput && (searchInput?.value?.trim().length ?? 0) > 0) {
                 newAddressInput.value = searchInput.value.trim();
                 hasNewAddress = true;
+                selectNewPropertyMode();
             }
 
+            hasNewCity = (newCityInput?.value?.trim().length ?? 0) > 0;
             const hasFile = (fileInput.files?.length ?? 0) > 0;
 
-            if (!hasProperty && !hasNewAddress) {
+            if (!hasSavedProperty && !(hasNewAddress && hasNewCity)) {
                 e.preventDefault();
-                showClientError(i18n.errorProperty || 'Select a property or enter the property address to continue.');
+                selectNewPropertyMode();
+                showClientError(
+                    hasNewAddress || hasNewCity
+                        ? (i18n.errorNewDetails || 'Enter the street address and city/state to continue.')
+                        : (i18n.errorProperty || 'Select a property or enter the street address and city/state to continue.')
+                );
                 return;
             }
 
@@ -343,6 +446,7 @@
             continueBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + (i18n.uploading || 'Uploading...');
         });
 
+        syncPropertyDetailsVisibility();
         updateFileAccept();
         updateFileLabel();
         updateMethodCopy();

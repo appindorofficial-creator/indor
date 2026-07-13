@@ -2,7 +2,7 @@
 @using IndorMvcApp.Validation
 @{
     ViewData["Title"] = L["Tell us about your water heater - INDOR"];
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("WaterHeaterFlushService", "WaterHeaterFlush", new { id = Model.HomeCarePriorityId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;

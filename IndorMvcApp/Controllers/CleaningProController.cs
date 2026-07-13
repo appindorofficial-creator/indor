@@ -87,8 +87,12 @@ public class CleaningProController : Controller
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
-            Frecuencia = solicitud.Frecuencia ?? "OneTime",
-            CantidadLimpiadores = solicitud.CantidadLimpiadores ?? "One",
+            Frecuencia = string.Equals(solicitud.Estado, "InProgress", StringComparison.OrdinalIgnoreCase)
+                ? string.Empty
+                : (solicitud.Frecuencia ?? string.Empty),
+            CantidadLimpiadores = string.Equals(solicitud.Estado, "InProgress", StringComparison.OrdinalIgnoreCase)
+                ? string.Empty
+                : (solicitud.CantidadLimpiadores ?? string.Empty),
             DireccionPropiedad = defaultAddress ?? string.Empty
         });
     }
@@ -367,12 +371,25 @@ public class CleaningProController : Controller
         SolicitudCleaningPro solicitud,
         CleaningProCustomizeViewModel? posted = null)
     {
-        var frequency = posted?.Frecuencia ?? solicitud.Frecuencia ?? "OneTime";
-        var crew = CleaningProPricingService.NormalizeCrewCode(
-            posted?.CantidadLimpiadores ?? solicitud.CantidadLimpiadores);
-        var hours = posted?.HorasEstimadas ?? solicitud.HorasEstimadas ?? 3m;
-        var addons = posted?.AddonsSeleccionados ?? solicitud.AddonsSeleccionados ?? string.Empty;
-        var breakdown = CleaningProPricingService.Calculate(crew, hours, addons);
+        var frequency = posted?.Frecuencia ?? solicitud.Frecuencia ?? string.Empty;
+        var rawCrew = posted?.CantidadLimpiadores ?? solicitud.CantidadLimpiadores;
+        var crew = string.IsNullOrWhiteSpace(rawCrew)
+            ? string.Empty
+            : CleaningProPricingService.NormalizeCrewCode(rawCrew);
+        var customizeSaved = string.Equals(solicitud.Estado, "CustomizeCompleted", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
+        var hours = posted?.HorasEstimadas
+            ?? (customizeSaved ? solicitud.HorasEstimadas : null)
+            ?? 0m;
+        var addons = posted?.AddonsSeleccionados
+            ?? (customizeSaved ? solicitud.AddonsSeleccionados : null)
+            ?? string.Empty;
+        var areas = posted?.AreasLimpieza
+            ?? (customizeSaved ? solicitud.AreasLimpieza : null)
+            ?? string.Empty;
+        var breakdown = hours > 0 && !string.IsNullOrWhiteSpace(crew)
+            ? CleaningProPricingService.Calculate(crew, hours, addons)
+            : new CleaningProPriceBreakdown(0, hours, 0, 0, 0, 0, 0);
 
         return new CleaningProCustomizeViewModel
         {
@@ -380,11 +397,13 @@ public class CleaningProController : Controller
             MicroservicioId = solicitud.MicroservicioId,
             Frecuencia = frequency,
             CantidadLimpiadores = crew,
-            AreasLimpieza = posted?.AreasLimpieza ?? solicitud.AreasLimpieza ?? "Bathrooms|Kitchen|LivingRoom|Baseboards|Floors|InsideFridge|Windows|Dusting",
+            AreasLimpieza = areas,
             HorasEstimadas = hours,
             AddonsSeleccionados = addons,
             FromTotal = breakdown.Subtotal,
-            SummaryLine = CleaningProDisplayLabels.FormatSummaryLine(frequency, crew, hours, breakdown.Subtotal)
+            SummaryLine = hours > 0 && !string.IsNullOrWhiteSpace(crew)
+                ? CleaningProDisplayLabels.FormatSummaryLine(frequency, crew, hours, breakdown.Subtotal)
+                : string.Empty
         };
     }
 
@@ -405,7 +424,7 @@ public class CleaningProController : Controller
             HoursLabel = CleaningProDisplayLabels.FormatHours(solicitud.HorasEstimadas),
             DireccionPropiedad = solicitud.DireccionPropiedad ?? "—",
             FechaServicio = solicitud.FechaServicio ?? GetNextTuesday(),
-            VentanaHorario = solicitud.VentanaHorario ?? "Morning10",
+            VentanaHorario = solicitud.VentanaHorario ?? string.Empty,
             NotasLimpiador = solicitud.NotasLimpiador,
             AddonsSeleccionados = solicitud.AddonsSeleccionados ?? string.Empty,
             TarifaHoraria = breakdown.HourlyRate,
@@ -503,12 +522,7 @@ public class CleaningProController : Controller
                 MicroservicioId = microservicioId,
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
-                FechaCreacion = DateTime.Now,
-                Frecuencia = "OneTime",
-                CantidadLimpiadores = "One",
-                AreasLimpieza = "Bathrooms|Kitchen|LivingRoom|Baseboards|Floors|InsideFridge|Windows|Dusting",
-                HorasEstimadas = 3m,
-                VentanaHorario = "Morning10"
+                FechaCreacion = DateTime.Now
             };
             _db.SolicitudesCleaningPro.Add(solicitud);
             await _db.SaveChangesAsync();

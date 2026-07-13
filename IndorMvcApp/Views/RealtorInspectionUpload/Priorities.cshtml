@@ -77,7 +77,7 @@ else if (!string.IsNullOrWhiteSpace(Model.ReportFileName))
         {
             <a asp-action="Priorities" asp-route-filter="@chip" asp-route-sort="@Model.SortBy"
                class="rl-filter-chip rl-filter-chip--@chip.ToLowerInvariant() @(Model.ActiveFilter == chip ? "is-active" : null)">
-                @chip
+                @L[chip]
                 @if (chip == "Urgent" && Model.UrgentCount > 0) { <text> (@Model.UrgentCount)</text> }
                 @if (chip == "High" && Model.HighCount > 0) { <text> (@Model.HighCount)</text> }
                 @if (chip == "Moderate" && Model.ModerateCount > 0) { <text> (@Model.ModerateCount)</text> }
@@ -104,7 +104,7 @@ else
         @Html.AntiForgeryToken()
 
         <div class="rl-insp-select-bar">
-            <span id="inspSelectedCount">@Model.TotalFindings issue@(Model.TotalFindings == 1 ? "" : "s") found</span>
+            <span id="inspSelectedCount">@L.T(Model.TotalFindings == 1 ? "{0} issue found" : "{0} issues found", Model.TotalFindings)</span>
             <div class="rl-insp-select-actions">
                 <button type="button" class="rl-insp-link-btn" id="inspSelectAll">@L["Select all"]</button>
                 <button type="button" class="rl-insp-link-btn" id="inspClearAll">@L["Clear"]</button>
@@ -126,9 +126,9 @@ else
                             <div class="rl-insp-finding-badges">
                                 @if (!string.IsNullOrWhiteSpace(finding.SourceSectionNumber))
                                 {
-                                    <span class="rl-insp-section-index" title="Report index">@finding.SourceSectionNumber</span>
+                                    <span class="rl-insp-section-index" title="@L["Report index"]">@finding.SourceSectionNumber</span>
                                 }
-                                <span class="rl-priority-tag rl-priority-tag--@finding.PriorityCss">@finding.Priority.ToUpperInvariant()</span>
+                                <span class="rl-priority-tag rl-priority-tag--@finding.PriorityCss">@L[finding.Priority]</span>
                                 <span class="rl-insp-ai-score"><i class="fas fa-check"></i> @finding.AiScore</span>
                             </div>
                         </div>
@@ -171,7 +171,7 @@ else
                                 {
                                     <div class="rl-insp-report-field">
                                         <i class="fas fa-layer-group"></i>
-                                        <span><small>@L["Section"]</small><strong>@finding.TradeLabel</strong></span>
+                                        <span><small>@L["Section"]</small><strong>@L[finding.TradeLabel]</strong></span>
                                     </div>
                                 }
                                 @if (!string.IsNullOrWhiteSpace(finding.SourceSection))
@@ -206,7 +206,7 @@ else
                                    asp-route-sort="@Model.SortBy"
                                    class="rl-insp-open-page-btn">
                                     <i class="fas fa-file-pdf"></i>
-                                    Open report page @finding.SourcePage
+                                    @L.T("Open report page {0}", finding.SourcePage)
                                     <i class="fas fa-chevron-right"></i>
                                 </a>
                             }
@@ -217,7 +217,7 @@ else
 
                     <div class="rl-insp-finding-meta">
                         <span class="rl-trade-chip rl-trade-chip--@finding.TradeCss">
-                            <i class="fas @finding.TradeIcon"></i> @finding.TradeLabel
+                            <i class="fas @finding.TradeIcon"></i> @L[finding.TradeLabel]
                         </span>
                     </div>
                 </label>
@@ -232,7 +232,7 @@ else
         <div class="rl-insp-sticky-actions">
             <a asp-action="Analyze" class="rl-invite-cancel"><i class="fas fa-chevron-left"></i> @L["Back"]</a>
             <button type="submit" id="inspSendProvidersBtn" class="ob-btn ob-btn-primary rl-insp-send-btn">
-                <i class="fas fa-paper-plane"></i> Send to providers
+                <i class="fas fa-paper-plane"></i> @L["Send to providers"]
             </button>
         </div>
         <div class="rl-insp-change-doc-wrap">
@@ -258,13 +258,23 @@ else
         const countEl = document.getElementById('inspSelectedCount');
         const sendBtn = document.getElementById('inspSendProvidersBtn');
         const totalIssues = @Model.TotalFindings;
+        const i18n = {
+            issuesFound: '@Html.Raw((Model.TotalFindings == 1 ? L["{0} issue found"] : L["{0} issues found"]).Replace("'", "\\'"))',
+            issuesFoundTap: '@Html.Raw(L["{0} issues found — tap to select"].Replace("'", "\\'"))',
+            issueFoundTap: '@Html.Raw(L["{0} issue found — tap to select"].Replace("'", "\\'"))',
+            selectedOf: '@Html.Raw(L["{0} of {1} selected"].Replace("'", "\\'"))',
+            selectAtLeastOne: '@Html.Raw(L["Select at least one issue"].Replace("'", "\\'"))',
+            sendToProviders: '@Html.Raw(L["Send to providers"].Replace("'", "\\'"))',
+            sendToProvidersCount: '@Html.Raw(L["Send to providers ({0})"].Replace("'", "\\'"))',
+            preparing: '@Html.Raw(L["Preparing providers..."].Replace("'", "\\'"))'
+        };
 
         function updateUi() {
             const selected = Array.from(checkboxes).filter(c => c.checked).length;
             if (countEl) {
                 countEl.textContent = selected === 0
-                    ? totalIssues + ' issue' + (totalIssues === 1 ? '' : 's') + ' found — tap to select'
-                    : selected + ' of ' + totalIssues + ' selected';
+                    ? (totalIssues === 1 ? i18n.issueFoundTap : i18n.issuesFoundTap).replace('{0}', totalIssues)
+                    : i18n.selectedOf.replace('{0}', selected).replace('{1}', totalIssues);
             }
             checkboxes.forEach(cb => {
                 cb.closest('.rl-insp-finding-card')?.classList.toggle('is-selected', cb.checked);
@@ -272,8 +282,8 @@ else
             if (sendBtn) {
                 sendBtn.disabled = selected === 0;
                 sendBtn.innerHTML = selected === 0
-                    ? '<i class="fas fa-paper-plane"></i> Select at least one issue'
-                    : '<i class="fas fa-paper-plane"></i> Send to providers (' + selected + ')';
+                    ? '<i class="fas fa-paper-plane"></i> ' + i18n.selectAtLeastOne
+                    : '<i class="fas fa-paper-plane"></i> ' + i18n.sendToProvidersCount.replace('{0}', selected);
             }
         }
 
@@ -297,7 +307,7 @@ else
             }
             if (sendBtn) {
                 sendBtn.disabled = true;
-                sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing providers...';
+                sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + i18n.preparing;
             }
         });
 

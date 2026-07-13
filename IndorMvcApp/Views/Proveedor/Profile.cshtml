@@ -183,19 +183,19 @@
                 <div class="prv-pro-profile-v2-biz-row">
                     <span class="prv-pro-profile-v2-biz-icon"><i class="fas fa-phone"></i></span>
                     <span>@L["Phone"]</span>
-                    <strong>@phoneLabel</strong>
+                    <strong class="prv-pro-profile-v2-biz-value" title="@phoneLabel">@phoneLabel</strong>
                     <i class="fas fa-chevron-right"></i>
                 </div>
                 <div class="prv-pro-profile-v2-biz-row">
                     <span class="prv-pro-profile-v2-biz-icon"><i class="fas fa-envelope"></i></span>
                     <span>@L["Email"]</span>
-                    <strong class="prv-pro-profile-v2-biz-value">@emailLabel</strong>
+                    <strong class="prv-pro-profile-v2-biz-value" title="@emailLabel">@emailLabel</strong>
                     <i class="fas fa-chevron-right"></i>
                 </div>
                 <div class="prv-pro-profile-v2-biz-row">
                     <span class="prv-pro-profile-v2-biz-icon"><i class="fas fa-clock"></i></span>
                     <span>@L["Business Hours"]</span>
-                    <strong>@hoursLabel</strong>
+                    <strong class="prv-pro-profile-v2-biz-value" title="@hoursLabel">@hoursLabel</strong>
                     <i class="fas fa-chevron-right"></i>
                 </div>
             </a>
@@ -269,7 +269,7 @@
                 }
             </a>
 
-            <a asp-controller="Proveedor" asp-action="ProfileDocuments" class="prv-pro-profile-v2-card" aria-label="@L["Verification and documents"]">
+            <a asp-controller="Proveedor" asp-action="EditProfileVerification" class="prv-pro-profile-v2-card" aria-label="@L["Verification and documents"]">
                 <header class="prv-pro-profile-v2-card-head">
                     <div class="prv-pro-profile-v2-card-head-main">
                         <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-shield-halved"></i></span>

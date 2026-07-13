@@ -5,22 +5,22 @@ public class PropertyAdministratorEmergencyRoofLeakStep1ViewModel : PropertyAdmi
     public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string RoofIssue { get; set; } = "ActiveLeak";
-    public string WaterEnteringNow { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string LeakLocation { get; set; } = "Bedroom";
+    public string RoofIssue { get; set; } = "";
+    public string WaterEnteringNow { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string LeakLocation { get; set; } = "";
     public string QuickDetails { get; set; } = "";
 }
 
 public class PropertyAdministratorEmergencyRoofLeakStep1Input
 {
     public int PropertyId { get; set; }
-    public string RoofIssue { get; set; } = "ActiveLeak";
-    public string WaterEnteringNow { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string LeakLocation { get; set; } = "Bedroom";
+    public string RoofIssue { get; set; } = "";
+    public string WaterEnteringNow { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string LeakLocation { get; set; } = "";
     public string? QuickDetails { get; set; }
 }
 
@@ -31,19 +31,19 @@ public class PropertyAdministratorEmergencyRoofLeakStep2ViewModel : PropertyAdmi
     public int PropertyId { get; set; }
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? GuestsOnSiteLabel { get; set; }
-    public string RoofIssue { get; set; } = "ActiveLeak";
-    public string WaterEnteringNow { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string LeakLocation { get; set; } = "Bedroom";
+    public string RoofIssue { get; set; } = "";
+    public string WaterEnteringNow { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string LeakLocation { get; set; } = "";
     public string QuickDetails { get; set; } = "";
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string EntryAccess { get; set; } = "";
     public string EntryCode { get; set; } = "";
-    public string AreaProtection { get; set; } = "BucketPlaced";
-    public string InteriorDamage { get; set; } = "Ceiling,Floor";
-    public string InsuranceInfo { get; set; } = "UploadLater";
+    public string AreaProtection { get; set; } = "";
+    public string InteriorDamage { get; set; } = "";
+    public string InsuranceInfo { get; set; } = "";
     public string AccessNotes { get; set; } = "";
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
     public string ProEtaLabel { get; set; } = "Earliest available roof leak pro: 26 min";
 }
@@ -51,19 +51,19 @@ public class PropertyAdministratorEmergencyRoofLeakStep2ViewModel : PropertyAdmi
 public class PropertyAdministratorEmergencyRoofLeakSubmitInput
 {
     public int PropertyId { get; set; }
-    public string RoofIssue { get; set; } = "ActiveLeak";
-    public string WaterEnteringNow { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string LeakLocation { get; set; } = "Bedroom";
+    public string RoofIssue { get; set; } = "";
+    public string WaterEnteringNow { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string LeakLocation { get; set; } = "";
     public string? QuickDetails { get; set; }
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string EntryAccess { get; set; } = "";
     public string? EntryCode { get; set; }
-    public string AreaProtection { get; set; } = "BucketPlaced";
-    public List<string> InteriorDamageList { get; set; } = ["Ceiling", "Floor"];
-    public string InsuranceInfo { get; set; } = "UploadLater";
+    public string AreaProtection { get; set; } = "";
+    public List<string> InteriorDamageList { get; set; } = [];
+    public string InsuranceInfo { get; set; } = "";
     public string? AccessNotes { get; set; }
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
 }
 

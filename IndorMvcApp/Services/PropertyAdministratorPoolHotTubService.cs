@@ -36,7 +36,6 @@ public class PropertyAdministratorPoolHotTubService(
             ?? throw new InvalidOperationException("Property administrator not found.");
         var shell = await BuildShellAsync(admin, cancellationToken);
         var property = ResolveProperty(admin, propertyId);
-        var isRental = property?.PropertyType == "ShortTermRental";
 
         return new PropertyAdministratorPoolHotTubStep1ViewModel
         {
@@ -46,14 +45,7 @@ public class PropertyAdministratorPoolHotTubService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = MapProperty(property),
-            ServiceHelpType = isRental ? "HotTubRepair" : "PoolRepair",
-            MainIssue = isRental ? "HeaterIssue" : "PumpNotWorking",
-            GuestStayAffected = isRental ? "Yes" : "No",
-            Urgency = isRental ? "Urgent" : "Routine",
-            QuickDetails = isRental
-                ? "Guests say the hot tub is not heating and the water is getting cooler."
-                : ""
+            ViewingProperty = MapProperty(property)
         };
     }
 
@@ -95,13 +87,7 @@ public class PropertyAdministratorPoolHotTubService(
             Urgency = step1.Urgency,
             QuickDetails = step1.QuickDetails ?? "",
             Step1Summary = BuildStep1SummaryChips(step1),
-            EquipmentLocation = step1.ServiceHelpType is "HotTubRepair" or "SpaHotTubService"
-                ? "BackyardSpa"
-                : "PoolPad",
-            EntryAccess = "GateCode",
-            AccessCode = $"Gate code: {2840 + property.Id}",
-            UpdateRecipients = isRental ? "Me,Guest" : "Me",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(704) 555-0132",
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
             ProEtaLabel = $"Nearest pool & spa pro available in {etaMinutes} minutes",
             DiagnosticEstimate = "$129 – $169",
             EmergencyFeeLabel = step1.Urgency is "Urgent" or "Emergency" ? "Included" : "Not applicable"

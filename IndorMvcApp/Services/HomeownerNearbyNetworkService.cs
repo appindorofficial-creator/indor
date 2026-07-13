@@ -1230,7 +1230,7 @@ public class HomeownerNearbyNetworkService(
                 new()
                 {
                     Label = "Certified Providers",
-                    Subtitle = "Find verified professionals in your area.",
+                    Subtitle = "Certified professionals in your area",
                     Icon = "fa-shield-halved",
                     Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.Providers, searchQuery)
                 },
@@ -1251,7 +1251,7 @@ public class HomeownerNearbyNetworkService(
                 new()
                 {
                     Label = "My Requests",
-                    Subtitle = "Track your requests and responses in one place.",
+                    Subtitle = "Track & manage your requests",
                     Icon = "fa-comment-dots",
                     Url = mineUrl
                 }

@@ -17,6 +17,10 @@ namespace IndorMvcApp.Services;
 /// with <c>NO ACTION</c> (EF Core default for optional relationships). Those would otherwise
 /// block the delete, so they are unlinked (UserId set to null) first. Tables keyed only by a
 /// plain <c>UserId</c> string (neighbor requests, password reset codes) are removed explicitly.
+///
+/// Multi-Property (property administrator) portfolio rows reference <c>Propiedad</c> with
+/// <c>FK_IndorPropAdminProp_Propiedad</c> (NO ACTION), so they must be cleared before the
+/// Identity cascade deletes the user's properties.
 /// </summary>
 public sealed class AccountDeletionService
 {
@@ -57,9 +61,20 @@ public sealed class AccountDeletionService
             _db.IndorRealtors.Where(x => x.UserId == userId)
                .ExecuteUpdateAsync(s => s.SetProperty(x => x.UserId, (string?)null), cancellationToken));
 
-        await BestEffortAsync("property administrator profile unlink", () =>
-            _db.IndorPropertyAdministrators.Where(x => x.UserId == userId)
-               .ExecuteUpdateAsync(s => s.SetProperty(x => x.UserId, (string?)null), cancellationToken));
+        // Multi-Property: portfolio rows hold PropiedadId with NO ACTION. Must succeed before
+        // AspNetUsers cascade deletes Propiedades (FK_IndorPropAdminProp_Propiedad).
+        try
+        {
+            await ClearPropertyAdministratorDataAsync(userId, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(
+                ex,
+                "Account deletion aborted for {UserId}: property administrator cleanup failed.",
+                userId);
+            return false;
+        }
 
         // Deletes the Identity user. Database cascades remove homes, service requests, files,
         // memberships, payments, history, support messages and the Identity rows (roles, logins,
@@ -75,6 +90,60 @@ public sealed class AccountDeletionService
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Removes property-administrator rows that would block cascade-delete of the user's
+    /// <c>Propiedad</c> records, then deletes the administrator profile itself.
+    /// </summary>
+    private async Task ClearPropertyAdministratorDataAsync(string userId, CancellationToken cancellationToken)
+    {
+        var adminIds = await _db.IndorPropertyAdministrators
+            .Where(a => a.UserId == userId)
+            .Select(a => a.Id)
+            .ToListAsync(cancellationToken);
+
+        // Also clear portfolio links to this user's properties (covers any orphaned/admin-mismatch rows).
+        var propiedadIds = await _db.Propiedades
+            .Where(p => p.UserId == userId)
+            .Select(p => p.Id)
+            .ToListAsync(cancellationToken);
+
+        if (adminIds.Count > 0)
+        {
+            // PortfolioPropertyId is a plain int on these tables (no formal FK), but clear them
+            // before removing portfolio/admin rows so account data does not linger.
+            await _db.IndorPropertyAdminPreventivePlans
+                .Where(x => adminIds.Contains(x.AdministratorId))
+                .ExecuteDeleteAsync(cancellationToken);
+
+            await _db.IndorPropertyAdminServiceRequests
+                .Where(x => adminIds.Contains(x.AdministratorId))
+                .ExecuteDeleteAsync(cancellationToken);
+
+            await _db.IndorPropertyAdminHomecarePlans
+                .Where(x => adminIds.Contains(x.AdministratorId))
+                .ExecuteDeleteAsync(cancellationToken);
+
+            await _db.IndorPropertyAdminScheduledVisits
+                .Where(x => adminIds.Contains(x.AdministratorId))
+                .ExecuteDeleteAsync(cancellationToken);
+
+            await _db.IndorPropertyAdminPortfolioProperties
+                .Where(x => adminIds.Contains(x.AdministratorId))
+                .ExecuteDeleteAsync(cancellationToken);
+
+            await _db.IndorPropertyAdministrators
+                .Where(a => adminIds.Contains(a.Id))
+                .ExecuteDeleteAsync(cancellationToken);
+        }
+
+        if (propiedadIds.Count > 0)
+        {
+            await _db.IndorPropertyAdminPortfolioProperties
+                .Where(x => x.PropiedadId != null && propiedadIds.Contains(x.PropiedadId.Value))
+                .ExecuteDeleteAsync(cancellationToken);
+        }
     }
 
     private async Task BestEffortAsync(string step, Func<Task> action)

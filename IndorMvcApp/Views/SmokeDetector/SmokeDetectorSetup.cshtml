@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.SmokeDetectorSetupViewModel
 @{
     ViewData["Title"] = L["Tell us about your alarms - INDOR"];
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("SmokeDetectorService", "SmokeDetector", new { id = Model.HomeCarePriorityId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;

@@ -30,7 +30,7 @@ public static class CleaningProPricingService
         "1" or "One" => "One",
         "2" or "Two" => "Two",
         "3" or "Three" => "Three",
-        _ => string.IsNullOrWhiteSpace(crewCode) ? "Two" : crewCode!
+        _ => string.IsNullOrWhiteSpace(crewCode) ? string.Empty : crewCode!
     };
 
     public static decimal GetHourlyRate(string? crewCode) => NormalizeCrewCode(crewCode) switch

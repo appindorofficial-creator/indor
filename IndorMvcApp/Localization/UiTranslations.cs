@@ -14,11 +14,12 @@ public static class UiTranslations
             UiTranslationsRealtor.Entries,
             UiTranslationsFlows.Entries,
             UiTranslationsPropietarioServices.Entries,
-            UiTranslationsMovingSetup.Entries,
             UiTranslationsInspeccionesEmergency.Entries,
             UiTranslationsServiceWizards.Entries,
             UiTranslationsValidation.Entries,
             UiTranslationsRemaining.Entries,
             UiTranslationsFinal.Entries,
-            UiTranslationsPropertyAdministratorFlows.Entries);
+            UiTranslationsPropertyAdministratorFlows.Entries,
+            // Last so Bug 20 moving-setup fixes override incomplete Flows Spanish.
+            UiTranslationsMovingSetup.Entries);
 }

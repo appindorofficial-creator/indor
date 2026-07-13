@@ -12,22 +12,22 @@ public class PropertyAdministratorPestControlStep1ViewModel : PropertyAdministra
     public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string PestType { get; set; } = "Roaches";
-    public string IssueLocation { get; set; } = "Kitchen";
-    public string Urgency { get; set; } = "Urgent";
-    public string GuestsStaying { get; set; } = "Yes";
-    public string LivePestsToday { get; set; } = "Yes";
+    public string PestType { get; set; } = "";
+    public string IssueLocation { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string GuestsStaying { get; set; } = "";
+    public string LivePestsToday { get; set; } = "";
     public string QuickDetails { get; set; } = "";
 }
 
 public class PropertyAdministratorPestControlStep1Input
 {
     public int PropertyId { get; set; }
-    public string PestType { get; set; } = "Roaches";
-    public string IssueLocation { get; set; } = "Kitchen";
-    public string Urgency { get; set; } = "Urgent";
-    public string GuestsStaying { get; set; } = "Yes";
-    public string LivePestsToday { get; set; } = "Yes";
+    public string PestType { get; set; } = "";
+    public string IssueLocation { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string GuestsStaying { get; set; } = "";
+    public string LivePestsToday { get; set; } = "";
     public string? QuickDetails { get; set; }
 }
 
@@ -38,18 +38,18 @@ public class PropertyAdministratorPestControlStep2ViewModel : PropertyAdministra
     public int PropertyId { get; set; }
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? PropertyStatusLabel { get; set; }
-    public string PestType { get; set; } = "Roaches";
-    public string IssueLocation { get; set; } = "Kitchen";
-    public string Urgency { get; set; } = "Urgent";
-    public string GuestsStaying { get; set; } = "Yes";
-    public string LivePestsToday { get; set; } = "Yes";
+    public string PestType { get; set; } = "";
+    public string IssueLocation { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string GuestsStaying { get; set; } = "";
+    public string LivePestsToday { get; set; } = "";
     public string QuickDetails { get; set; } = "";
-    public string ServiceType { get; set; } = "OneTimeTreatment";
-    public string PreferredArrival { get; set; } = "Asap";
-    public string EntryAccess { get; set; } = "SmartLock";
-    public string HasPets { get; set; } = "Yes";
-    public string TreatAreas { get; set; } = "Kitchen,Pantry";
-    public string UpdateRecipients { get; set; } = "Me,Guest";
+    public string ServiceType { get; set; } = "";
+    public string PreferredArrival { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
+    public string HasPets { get; set; } = "";
+    public string TreatAreas { get; set; } = "";
+    public string UpdateRecipients { get; set; } = "";
     public string AccessNotes { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string ProEtaLabel { get; set; } = "Earliest available pest control pro: 38 min";
@@ -57,12 +57,12 @@ public class PropertyAdministratorPestControlStep2ViewModel : PropertyAdministra
 
 public class PropertyAdministratorPestControlSubmitInput : PropertyAdministratorPestControlStep1Input
 {
-    public string ServiceType { get; set; } = "OneTimeTreatment";
-    public string PreferredArrival { get; set; } = "Asap";
-    public string EntryAccess { get; set; } = "SmartLock";
-    public string HasPets { get; set; } = "Yes";
-    public List<string> TreatAreasList { get; set; } = ["Kitchen", "Pantry"];
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public string ServiceType { get; set; } = "";
+    public string PreferredArrival { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
+    public string HasPets { get; set; } = "";
+    public List<string> TreatAreasList { get; set; } = [];
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string? AccessNotes { get; set; }
     public string? ContactPhone { get; set; }
 }

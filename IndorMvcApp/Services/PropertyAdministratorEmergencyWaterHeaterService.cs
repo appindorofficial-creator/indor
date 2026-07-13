@@ -39,10 +39,7 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = mapped,
-            QuickDetails = mapped.OccupancyLabel != null
-                ? "Guests report no hot water and water around the unit in the garage."
-                : ""
+            ViewingProperty = mapped
         };
     }
 
@@ -75,10 +72,7 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
             Urgency = step1.Urgency,
             HeaterType = step1.HeaterType,
             QuickDetails = step1.QuickDetails,
-            EntryAccess = "GarageSide",
-            AccessNotes = "Garage side entry available",
-            UpdateRecipientsList = ["Me", "Guest"],
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
 
         return new PropertyAdministratorEmergencyWaterHeaterReviewViewModel

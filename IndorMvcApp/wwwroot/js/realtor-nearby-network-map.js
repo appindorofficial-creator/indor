@@ -4,11 +4,15 @@ window.rlShowNearbyMapError = function (message) {
         return;
     }
 
+    var i18n = (window.rlNearbyNetworkI18n) || {};
     root.innerHTML = '';
     var panel = document.createElement('div');
     panel.className = 'rl-map-error';
-    panel.innerHTML = '<i class="fas fa-map-location-dot"></i><strong>Map unavailable</strong><span>' +
-        (message || 'Google Maps could not load. Check your connection and try again.') + '</span>';
+    panel.innerHTML = '<i class="fas fa-map-location-dot"></i><strong>' +
+        (i18n.mapUnavailable || 'Map unavailable') +
+        '</strong><span>' +
+        (message || i18n.mapsLoadFailed || 'Google Maps could not load. Check your connection and try again.') +
+        '</span>';
     root.appendChild(panel);
 };
 
@@ -37,6 +41,14 @@ window.rlInitNearbyNetworkMap = function () {
         return;
     }
 
+    window.rlNearbyNetworkI18n = config.i18n || {};
+    var i18n = window.rlNearbyNetworkI18n;
+
+    function formatMiAway(miles) {
+        var template = i18n.miAway || '{0} mi away';
+        return template.replace('{0}', Number(miles).toFixed(1));
+    }
+
     function parseCoord(value, fallback) {
         var num = typeof value === 'number' ? value : parseFloat(value);
         return Number.isFinite(num) ? num : fallback;
@@ -61,7 +73,6 @@ window.rlInitNearbyNetworkMap = function () {
     var searchInput = document.getElementById('rlMapSearchInput');
     var searchForm = document.getElementById('rlMapSearchForm');
     var locateBtn = document.getElementById('rlMapLocateBtn');
-    var filterBtn = document.getElementById('rlMapFilterBtn');
     var infoWindow = new google.maps.InfoWindow();
 
     var state = {
@@ -313,7 +324,7 @@ window.rlInitNearbyNetworkMap = function () {
 
             var overlay = new ZillowMarkerOverlay(new google.maps.LatLng(plat, plng), {
                 kind: 'provider',
-                label: shortLabel(provider.name || 'Provider', 14),
+                label: shortLabel(provider.name || i18n.provider || 'Provider', 14),
                 verified: !!provider.verified,
                 onClick: function () {
                     document.querySelectorAll('.rl-zillow-marker.is-active').forEach(function (el) {
@@ -323,12 +334,12 @@ window.rlInitNearbyNetworkMap = function () {
                         overlay.div.classList.add('is-active');
                     }
 
-                    var html = '<div class="rl-map-info"><strong>' + (provider.name || 'Provider') + '</strong>';
+                    var html = '<div class="rl-map-info"><strong>' + (provider.name || i18n.provider || 'Provider') + '</strong>';
                     if (provider.category) {
                         html += '<span>' + provider.category + '</span>';
                     }
                     if (provider.distanceMiles != null) {
-                        html += '<span>' + Number(provider.distanceMiles).toFixed(1) + ' mi away</span>';
+                        html += '<span>' + formatMiAway(provider.distanceMiles) + '</span>';
                     }
                     html += '</div>';
                     infoWindow.setContent(html);
@@ -349,7 +360,7 @@ window.rlInitNearbyNetworkMap = function () {
                 return;
             }
 
-            var label = pin.label || 'Listing';
+            var label = pin.label || i18n.listing || 'Listing';
             if (label.charAt(0) === '$') {
                 label = shortLabel(label, 10);
             } else {
@@ -360,7 +371,7 @@ window.rlInitNearbyNetworkMap = function () {
                 kind: pin.type || 'home',
                 label: label,
                 onClick: function () {
-                    infoWindow.setContent('<div class="rl-map-info"><strong>' + (pin.label || 'Listing') + '</strong></div>');
+                    infoWindow.setContent('<div class="rl-map-info"><strong>' + (pin.label || i18n.listing || 'Listing') + '</strong></div>');
                     infoWindow.setPosition({ lat: plat, lng: plng });
                     infoWindow.open(map);
                 }
@@ -437,9 +448,26 @@ window.rlInitNearbyNetworkMap = function () {
         });
     }
 
-    function loadFromGps() {
+    function loadFromGps(options) {
+        options = options || {};
         if (!navigator.geolocation) {
             return;
+        }
+
+        var highAccuracy = !!options.highAccuracy;
+        if (locateBtn) {
+            locateBtn.classList.add('is-loading');
+            locateBtn.setAttribute('aria-busy', 'true');
+            locateBtn.disabled = true;
+        }
+
+        function clearLocateLoading() {
+            if (!locateBtn) {
+                return;
+            }
+            locateBtn.classList.remove('is-loading');
+            locateBtn.removeAttribute('aria-busy');
+            locateBtn.disabled = false;
         }
 
         navigator.geolocation.getCurrentPosition(
@@ -465,12 +493,18 @@ window.rlInitNearbyNetworkMap = function () {
                             providers: config.providers || [],
                             listings: config.listings || []
                         }, { showUserCenter: true });
-                    });
+                    })
+                    .finally(clearLocateLoading);
             },
             function () {
+                clearLocateLoading();
                 updateFootLabel(config.centerLabel || 'Your service area', 'Location unavailable \u00b7 enable GPS for best results');
             },
-            { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
+            {
+                enableHighAccuracy: highAccuracy,
+                timeout: highAccuracy ? 12000 : 5000,
+                maximumAge: 60000
+            }
         );
     }
 
@@ -497,15 +531,8 @@ window.rlInitNearbyNetworkMap = function () {
     }
 
     if (locateBtn) {
-        locateBtn.addEventListener('click', loadFromGps);
-    }
-
-    if (filterBtn) {
-        filterBtn.addEventListener('click', function () {
-            var filters = document.querySelector('.rl-zillow-map-filters');
-            if (filters) {
-                filters.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
+        locateBtn.addEventListener('click', function () {
+            loadFromGps({ highAccuracy: true });
         });
     }
 
@@ -518,8 +545,10 @@ window.rlInitNearbyNetworkMap = function () {
     });
 
     window.rlNearbyNetworkMapReady = true;
+    root.removeAttribute('aria-busy');
 
     if (config.useDeviceLocation) {
-        loadFromGps();
+        // Faster initial fix so the map feels ready sooner; locate button still uses high accuracy.
+        loadFromGps({ highAccuracy: false });
     }
 };

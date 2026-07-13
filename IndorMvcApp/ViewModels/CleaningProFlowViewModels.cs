@@ -31,10 +31,10 @@ public class CleaningProSetupViewModel
     public string PageTitle { get; set; } = "Cleaning Pro";
 
     [Required]
-    public string Frecuencia { get; set; } = "OneTime";
+    public string Frecuencia { get; set; } = string.Empty;
 
     [Required]
-    public string CantidadLimpiadores { get; set; } = "One";
+    public string CantidadLimpiadores { get; set; } = string.Empty;
 
     [Required, MaxLength(300)]
     public string DireccionPropiedad { get; set; } = string.Empty;
@@ -47,16 +47,16 @@ public class CleaningProCustomizeViewModel
     public string PageTitle { get; set; } = "Customize your cleaning";
 
     [Required]
-    public string Frecuencia { get; set; } = "OneTime";
+    public string Frecuencia { get; set; } = string.Empty;
 
     [Required]
-    public string CantidadLimpiadores { get; set; } = "Two";
+    public string CantidadLimpiadores { get; set; } = string.Empty;
 
     [Required]
-    public string AreasLimpieza { get; set; } = "Bathrooms|Kitchen|LivingRoom|Baseboards|Floors|InsideFridge|Windows|Dusting";
+    public string AreasLimpieza { get; set; } = string.Empty;
 
-    [Required]
-    public decimal HorasEstimadas { get; set; } = 3m;
+    [Range(2, 5)]
+    public decimal HorasEstimadas { get; set; }
 
     public string AddonsSeleccionados { get; set; } = string.Empty;
     public string SummaryLine { get; set; } = string.Empty;
@@ -79,7 +79,7 @@ public class CleaningProReviewViewModel
     public DateTime FechaServicio { get; set; }
 
     [Required]
-    public string VentanaHorario { get; set; } = "Morning10";
+    public string VentanaHorario { get; set; } = string.Empty;
 
     [MaxLength(500)]
     public string? NotasLimpiador { get; set; }

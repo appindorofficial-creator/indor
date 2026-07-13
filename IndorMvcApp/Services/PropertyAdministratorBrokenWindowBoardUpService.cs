@@ -39,10 +39,7 @@ public class PropertyAdministratorBrokenWindowBoardUpService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = mapped,
-            QuickDetails = mapped.OccupancyLabel != null
-                ? "Guest reported shattered living room window after storm impact."
-                : ""
+            ViewingProperty = mapped
         };
     }
 
@@ -83,8 +80,7 @@ public class PropertyAdministratorBrokenWindowBoardUpService(
             GuestsInside = step1.GuestsInside,
             ExposedToRisk = step1.ExposedToRisk,
             QuickDetails = step1.QuickDetails ?? "",
-            EntryInstructions = $"Front door code: {1000 + property.Id}",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }
 

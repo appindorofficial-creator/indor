@@ -31,8 +31,6 @@ public class PropertyAdministratorPreventiveMaintenanceService(
         ["Full"] = ("Full Preventive Plan", "Comprehensive protection for your entire home.", 79m, 229m)
     };
 
-    private static readonly string[] DefaultSelectedServices = ["HvacTuneUp", "WaterHeaterFlush", "SmokeDetectorCheck"];
-
     public PropertyAdministratorPreventiveFeaturedViewModel BuildFeaturedCta(IUrlHelper url, int? propertyId) =>
         new()
         {
@@ -49,8 +47,8 @@ public class PropertyAdministratorPreventiveMaintenanceService(
         var catalog = await db.IndorPropertyAdminPreventiveServiceCatalog.AsNoTracking()
             .Where(c => c.Activo).OrderBy(c => c.Orden).ToListAsync(cancellationToken);
 
-        var selected = DefaultSelectedServices.ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var tier = "Basic";
+        var selected = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var tier = "";
         if (planId.HasValue)
         {
             var existing = await db.IndorPropertyAdminPreventivePlans
@@ -91,7 +89,7 @@ public class PropertyAdministratorPreventiveMaintenanceService(
                 PriceLabel = $"${t.Value.Monthly:0} /mo",
                 MonthlyPrice = t.Value.Monthly,
                 BundlePrice = t.Value.Bundle,
-                IsSelected = tier == t.Key
+                IsSelected = !string.IsNullOrEmpty(tier) && tier == t.Key
             }).ToList()
         };
     }
@@ -105,7 +103,7 @@ public class PropertyAdministratorPreventiveMaintenanceService(
             ?? throw new InvalidOperationException("Property not found.");
 
         var tier = TierCatalog.TryGetValue(input.PlanTier, out var tierInfo) ? tierInfo : TierCatalog["Basic"];
-        var services = input.SelectedServices.Count > 0 ? input.SelectedServices : DefaultSelectedServices.ToList();
+        var services = input.SelectedServices;
         var json = JsonSerializer.Serialize(services);
 
         IndorPropertyAdminPreventivePlan plan;
@@ -172,7 +170,7 @@ public class PropertyAdministratorPreventiveMaintenanceService(
             PreferredDay = plan.PreferredDay,
             EntryAccess = plan.EntryAccess,
             UpdateRecipients = plan.UpdateRecipients,
-            Notes = plan.Notes ?? "Please service the HVAC and flush the water heater between guest stays if possible.",
+            Notes = plan.Notes ?? "",
             AutoReminders = plan.AutoReminders,
             FrequencyHint = BuildFrequencyHint(plan.Frequency),
             EstimatedPrice = $"${plan.BundlePrice:0}–${plan.BundlePrice + 80:0}"

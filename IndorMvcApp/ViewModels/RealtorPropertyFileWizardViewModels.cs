@@ -84,6 +84,7 @@ public class RealtorPropertyFileReviewViewModel : RealtorPropertyFileStepViewMod
 public class RealtorPropertyFileReviewItemViewModel
 {
     public string Label { get; set; } = "";
+    public int ItemCount { get; set; }
     public string CountLabel { get; set; } = "";
     public string Icon { get; set; } = "";
 }

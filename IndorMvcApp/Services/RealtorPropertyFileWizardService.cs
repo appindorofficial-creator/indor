@@ -318,6 +318,7 @@ public class RealtorPropertyFileWizardService(
                 {
                     Label = meta.Label,
                     Icon = meta.Icon,
+                    ItemCount = count,
                     CountLabel = count == 1 ? "1 item" : $"{count} items"
                 };
             }).ToList();
@@ -435,27 +436,21 @@ public class RealtorPropertyFileWizardService(
                 var meta = RealtorPropertyFileCategoryTypes.All.FirstOrDefault(a =>
                     a.Type.Equals(g.Key, StringComparison.OrdinalIgnoreCase));
                 var count = g.Count();
-                var shortLabel = meta.Label switch
-                {
-                    var l when l.Contains("Photos") => $"{count} Photo{(count == 1 ? "" : "s")}",
-                    var l when l.Contains("Inspection") => $"{count} Inspection Report{(count == 1 ? "" : "s")}",
-                    var l when l.Contains("Warrant") => $"{count} Warrant{(count == 1 ? "y" : "ies")}",
-                    var l when l.Contains("Notes") => $"{count} Note{(count == 1 ? "" : "s")}/Document{(count == 1 ? "" : "s")}",
-                    _ => $"{count} {meta.Label}"
-                };
-                return shortLabel;
+                return FormatAddedNowPart(localizer, meta.Label, count);
             }).ToList();
 
         return new RealtorPropertyFileSuccessViewModel
         {
             PropertyFileId = file.Id,
-            FilePhaseLabel = FormatFilePhaseLabel(file.FilePhase),
+            FilePhaseLabel = RealtorDisplayLocalization.FilePhaseLabel(localizer, file.FilePhase),
             PropertyDisplay = string.IsNullOrWhiteSpace(file.CityRegion)
                 ? file.Address
                 : $"{file.Address}, {file.CityRegion}",
             ClientName = file.ClientName ?? "",
-            AddedNowLabel = parts.Count > 0 ? string.Join(", ", parts) : "No items added yet",
-            StatusLabel = file.Status
+            AddedNowLabel = parts.Count > 0
+                ? string.Join(", ", parts)
+                : localizer.T("No items added yet"),
+            StatusLabel = localizer.T(string.IsNullOrWhiteSpace(file.Status) ? "Active" : file.Status)
         };
     }
 
@@ -559,14 +554,14 @@ public class RealtorPropertyFileWizardService(
             PhotoUrl = string.IsNullOrWhiteSpace(file.PhotoUrl) ? "/welcome-house.png" : file.PhotoUrl,
             ClientName = file.ClientName ?? "",
             FilePhaseLabel = RealtorDisplayLocalization.FilePhaseLabel(localizer, file.FilePhase),
-            StatusBadge = localizer.T(badge),
+            StatusBadge = badge,
             StatusCss = css,
             RepairItemsCount = file.RepairItemsCount,
             QuotesReceivedCount = file.QuotesReceivedCount,
-            UpdatedLabel = localizer.T("Last updated {0}", FormatRelativeTime(file.UpdatedUtc ?? file.FechaCreacion)),
-            PrimaryActionLabel = string.IsNullOrWhiteSpace(primaryLabel) ? "" : localizer.T(primaryLabel),
+            UpdatedLabel = $"Last updated {FormatRelativeTime(file.UpdatedUtc ?? file.FechaCreacion)}",
+            PrimaryActionLabel = string.IsNullOrWhiteSpace(primaryLabel) ? "" : primaryLabel,
             PrimaryActionUrl = primaryUrl,
-            SecondaryActionLabel = string.IsNullOrWhiteSpace(secondaryLabel) ? null : localizer.T(secondaryLabel),
+            SecondaryActionLabel = string.IsNullOrWhiteSpace(secondaryLabel) ? null : secondaryLabel,
             SecondaryActionUrl = secondaryUrl,
             Sections = sections.Select(section => new RealtorPropertyFileViewSectionViewModel
             {
@@ -626,6 +621,52 @@ public class RealtorPropertyFileWizardService(
         var opt = RealtorPropertyFilePhases.Options.FirstOrDefault(o =>
             string.Equals(o.Value, phase, StringComparison.OrdinalIgnoreCase));
         return opt.Label ?? $"{phase} File";
+    }
+
+    private static string FormatAddedNowPart(IIndorLocalizer localizer, string? categoryLabel, int count)
+    {
+        var label = categoryLabel ?? string.Empty;
+        if (label.Contains("Photos", StringComparison.Ordinal))
+        {
+            return localizer.T(count == 1 ? "{0} Photo" : "{0} Photos", count);
+        }
+
+        if (label.Contains("Inspection", StringComparison.Ordinal))
+        {
+            return localizer.T(count == 1 ? "{0} Inspection Report" : "{0} Inspection Reports", count);
+        }
+
+        if (label.Contains("Warrant", StringComparison.Ordinal))
+        {
+            return localizer.T(count == 1 ? "{0} Warranty" : "{0} Warranties", count);
+        }
+
+        if (label.Contains("Notes", StringComparison.Ordinal))
+        {
+            return localizer.T(count == 1 ? "{0} Note/Document" : "{0} Notes/Documents", count);
+        }
+
+        if (label.Contains("Repair", StringComparison.Ordinal))
+        {
+            return localizer.T(count == 1 ? "{0} Repair Item" : "{0} Repair Items", count);
+        }
+
+        if (label.Contains("Quotes", StringComparison.Ordinal))
+        {
+            return localizer.T(count == 1 ? "{0} Quote" : "{0} Quotes", count);
+        }
+
+        if (label.Contains("Invoices", StringComparison.Ordinal))
+        {
+            return localizer.T(count == 1 ? "{0} Invoice" : "{0} Invoices", count);
+        }
+
+        if (label.Contains("Manuals", StringComparison.Ordinal))
+        {
+            return localizer.T(count == 1 ? "{0} Manual" : "{0} Manuals", count);
+        }
+
+        return $"{count} {localizer.T(label)}";
     }
 
     private static string FormatFileSize(long bytes) =>

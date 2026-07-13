@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -18,6 +19,7 @@ public class SafeAirController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
     private readonly ILogger<SafeAirController> _logger;
+    private readonly IIndorLocalizer _l;
 
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"];
     private const long MaxFileSize = 10_000_000;
@@ -29,12 +31,14 @@ public class SafeAirController : Controller
         AppDbContext db,
         UserManager<ApplicationUser> userManager,
         IWebHostEnvironment env,
-        ILogger<SafeAirController> logger)
+        ILogger<SafeAirController> logger,
+        IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
         _env = env;
         _logger = logger;
+        _l = localizer;
     }
 
     [HttpGet]
@@ -83,7 +87,7 @@ public class SafeAirController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Safe Air service start failed for microservicio {MicroservicioId}", model.MicroservicioId);
-            ModelState.AddModelError("", FormatSafeAirPersistenceError(ex, "start your Safe Air 365 request"));
+            ModelState.AddModelError("", FormatSafeAirPersistenceError(ex, _l["start your Safe Air 365 request"]));
             return View(BuildServiceViewModel(bundle.Value.Microservicio, bundle.Value.Landing, null, model));
         }
     }
@@ -94,20 +98,22 @@ public class SafeAirController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id);
         if (solicitud == null) return NotFound();
 
+        var detailsSaved = !string.Equals(solicitud.Estado, "InProgress", StringComparison.OrdinalIgnoreCase);
+
         return View(new SafeAirDetailsViewModel
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
             PageTitle = solicitud.Microservicio?.Nombre ?? "Safe Air 365",
-            TipoNecesidad = solicitud.TipoNecesidad ?? "IndorReplaces",
-            CantidadFiltros = solicitud.CantidadFiltros ?? "One",
-            FiltroAncho = solicitud.FiltroAncho,
-            FiltroAlto = solicitud.FiltroAlto,
-            FiltroProfundidad = solicitud.FiltroProfundidad,
-            FiltroTamanioDesconocido = solicitud.FiltroTamanioDesconocido,
-            UbicacionFiltro = solicitud.UbicacionFiltro ?? "Ceiling",
-            ProveedorFiltro = solicitud.ProveedorFiltro ?? "IndorBrings",
-            RecordatorioActivo = solicitud.RecordatorioActivo
+            TipoNecesidad = solicitud.TipoNecesidad ?? string.Empty,
+            CantidadFiltros = detailsSaved ? (solicitud.CantidadFiltros ?? string.Empty) : string.Empty,
+            FiltroAncho = detailsSaved ? solicitud.FiltroAncho : null,
+            FiltroAlto = detailsSaved ? solicitud.FiltroAlto : null,
+            FiltroProfundidad = detailsSaved ? solicitud.FiltroProfundidad : null,
+            FiltroTamanioDesconocido = detailsSaved && solicitud.FiltroTamanioDesconocido,
+            UbicacionFiltro = detailsSaved ? (solicitud.UbicacionFiltro ?? string.Empty) : string.Empty,
+            ProveedorFiltro = detailsSaved ? solicitud.ProveedorFiltro : null,
+            RecordatorioActivo = detailsSaved && solicitud.RecordatorioActivo
         });
     }
 
@@ -171,7 +177,7 @@ public class SafeAirController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Safe Air details save failed for solicitud {SolicitudId}", model.SolicitudId);
-            ModelState.AddModelError("", FormatSafeAirPersistenceError(ex, "save filter details"));
+            ModelState.AddModelError("", FormatSafeAirPersistenceError(ex, _l["save filter details"]));
             return View(model);
         }
     }
@@ -444,11 +450,7 @@ public class SafeAirController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                TipoNecesidad = "IndorReplaces",
-                CantidadFiltros = "One",
-                UbicacionFiltro = "Ceiling",
-                ProveedorFiltro = "IndorBrings",
-                RecordatorioActivo = true
+                RecordatorioActivo = false
             };
             _db.SolicitudesSafeAir.Add(solicitud);
             await _db.SaveChangesAsync();
@@ -479,9 +481,9 @@ public class SafeAirController : Controller
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
             PageTitle = solicitud.Microservicio?.Nombre ?? "Safe Air 365",
-            TipoNecesidad = solicitud.TipoNecesidad ?? "IndorReplaces",
-            VentanaTiempo = solicitud.VentanaTiempo ?? "NextAvailable",
-            DetallesAcceso = solicitud.DetallesAcceso ?? "House",
+            TipoNecesidad = solicitud.TipoNecesidad ?? string.Empty,
+            VentanaTiempo = solicitud.VentanaTiempo ?? string.Empty,
+            DetallesAcceso = solicitud.DetallesAcceso ?? string.Empty,
             NotasAcceso = solicitud.NotasAcceso,
             NombreServicio = solicitud.Microservicio?.Nombre ?? "Safe Air 365",
             CantidadFiltrosLabel = SafeAirDisplayLabels.FormatFilterCount(solicitud.CantidadFiltros),
@@ -523,7 +525,7 @@ public class SafeAirController : Controller
         var incoming = files.Where(f => f.Length > 0).ToList();
         if (currentCount + incoming.Count > MaxFiles)
         {
-            ModelState.AddModelError("", $"You can upload up to {MaxFiles} photos.");
+            ModelState.AddModelError("", _l.T("You can upload up to {0} photos.", MaxFiles));
             return;
         }
 
@@ -543,7 +545,7 @@ public class SafeAirController : Controller
                 || file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase);
             if (!allowedType)
             {
-                ModelState.AddModelError("", $"File type not allowed: {file.FileName}. Use JPG or PNG.");
+                ModelState.AddModelError("", _l.T("File type not allowed: {0}. Use JPG or PNG.", file.FileName));
                 continue;
             }
 
@@ -651,7 +653,7 @@ public class SafeAirController : Controller
         if (!decimal.TryParse(raw.Trim(), NumberStyles.Number, CultureInfo.InvariantCulture, out var value))
         {
             ModelState.Remove(fieldName);
-            ModelState.AddModelError(fieldName, "Please enter a number.");
+            ModelState.AddModelError(fieldName, _l["Please enter a number."]);
             return;
         }
 
@@ -659,23 +661,25 @@ public class SafeAirController : Controller
         {
             ModelState.Remove(fieldName);
             ModelState.AddModelError(fieldName,
-                $"Enter a realistic size in inches (e.g. 20 x 25 x 1). Each side must be between {FilterSizeMinInches} and {FilterSizeMaxInches}.");
+                _l["Enter a realistic size in inches (e.g. 20 x 25 x 1). Each side must be between 0.25 and 99.99."]);
         }
     }
 
-    private static string FormatSafeAirPersistenceError(Exception ex, string actionPhrase)
+    private string FormatSafeAirPersistenceError(Exception ex, string actionPhrase)
     {
         if (HomeDashboardDataService.IsMissingTable(ex))
         {
-            return $"Could not {actionPhrase}. The Safe Air tables are missing in the database — run Scripts/CreateSafeAirFlowTables.sql on the server and try again.";
+            return _l.T(
+                "Could not {0}. The Safe Air tables are missing in the database — run Scripts/CreateSafeAirFlowTables.sql on the server and try again.",
+                actionPhrase);
         }
 
         if (IsSqlOverflowOrTruncation(ex))
         {
-            return "Could not save filter details. One or more dimensions are too large — use inches (typical filter: 20 x 25 x 1). Each side must be 99.99 or less.";
+            return _l["Could not save filter details. One or more dimensions are too large — use inches (typical filter: 20 x 25 x 1). Each side must be 99.99 or less."];
         }
 
-        return $"Could not {actionPhrase}. Please check your entries and try again.";
+        return _l.T("Could not {0}. Please check your entries and try again.", actionPhrase);
     }
 
     private static bool IsSqlOverflowOrTruncation(Exception ex)

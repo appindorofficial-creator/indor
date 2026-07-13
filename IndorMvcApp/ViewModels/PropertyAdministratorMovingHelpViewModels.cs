@@ -13,25 +13,25 @@ public class PropertyAdministratorMovingHelpFormViewModel : PropertyAdministrato
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? PropertyStatusLabel { get; set; }
-    public string ServiceType { get; set; } = "TurnoverSetup";
-    public string ItemsToMove { get; set; } = "SmallFurniture,BeddingLinens";
-    public string HelperCount { get; set; } = "Two";
-    public string ScheduleWhen { get; set; } = "Tomorrow";
-    public string ScheduleTimeWindow { get; set; } = "10:00 AM – 1:00 PM";
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string ServiceType { get; set; } = "";
+    public string ItemsToMove { get; set; } = "";
+    public string HelperCount { get; set; } = "";
+    public string ScheduleWhen { get; set; } = "";
+    public string ScheduleTimeWindow { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
     public string Details { get; set; } = "";
 }
 
 public class PropertyAdministratorMovingHelpSubmitInput
 {
     public int PropertyId { get; set; }
-    public string ServiceType { get; set; } = "TurnoverSetup";
-    public List<string> ItemsToMoveList { get; set; } = ["SmallFurniture", "BeddingLinens"];
-    public string HelperCount { get; set; } = "Two";
-    public string ScheduleWhen { get; set; } = "Tomorrow";
-    public string ScheduleTimeWindow { get; set; } = "10:00 AM – 1:00 PM";
-    public string EntryAccess { get; set; } = "SmartLock";
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "CoHost"];
+    public string ServiceType { get; set; } = "";
+    public List<string> ItemsToMoveList { get; set; } = [];
+    public string HelperCount { get; set; } = "";
+    public string ScheduleWhen { get; set; } = "";
+    public string ScheduleTimeWindow { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string? Details { get; set; }
 }
 
@@ -42,7 +42,7 @@ public class PropertyAdministratorMovingHelpReviewViewModel : PropertyAdministra
     public PropertyAdministratorMovingHelpSubmitInput Input { get; set; } = new();
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public IReadOnlyList<PropertyAdministratorMovingHelpReviewRowViewModel> SummaryRows { get; set; } = [];
-    public string TeamEtaLabel { get; set; } = "Nearest moving team available in 23 minutes";
+    public string TeamEtaLabel { get; set; } = "";
     public string EstimatedPrice { get; set; } = "$95–$145";
 }
 

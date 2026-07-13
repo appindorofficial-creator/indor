@@ -126,7 +126,7 @@
                         {
                             <span class="rl-premium-client"><i class="fas fa-user"></i> @file.ClientName</span>
                         }
-                        <span class="rl-file-code">@L["File ID:"] @file.FileCode</span>
+                        <span class="rl-file-code">@L.T("File ID: {0}", file.FileCode)</span>
                         @if (!string.IsNullOrWhiteSpace(file.DetailNote))
                         {
                             <span class="rl-premium-muted">@UiDisplayLocalization.Localize(L, file.DetailNote)</span>

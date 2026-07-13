@@ -28,7 +28,7 @@
                 <div class="rl-network-card-side">
                     @if (!string.IsNullOrWhiteSpace(Model.StatusBadge))
                     {
-                        <span class="rl-network-status rl-network-status--@Model.StatusCss">@Model.StatusBadge</span>
+                        <span class="rl-network-status rl-network-status--@Model.StatusCss">@UiDisplayLocalization.Localize(L, Model.StatusBadge)</span>
                     }
                 </div>
             </div>
@@ -40,15 +40,15 @@
                 }
                 else
                 {
-                    <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@Model.PrimaryActionLabel</a>
+                    <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@UiDisplayLocalization.Localize(L, Model.PrimaryActionLabel)</a>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionLabel))
                 {
                     if (Model.SecondaryActionOpensShare && !string.IsNullOrWhiteSpace(Model.SecondaryActionUrl) && Model.SecondaryActionUrl != "#")
                     {
                         var shareText = !string.IsNullOrWhiteSpace(Model.Subtitle)
-                            ? $"Open house: {Model.Subtitle}"
-                            : "Open house on INDOR";
+                            ? L.T("Open house: {0}", Model.Subtitle)
+                            : L["Open house on INDOR"];
                         <button type="button"
                                 class="rl-btn-primary rl-btn-primary--sm"
                                 data-network-share
@@ -64,7 +64,7 @@
                     }
                     else
                     {
-                        <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@Model.SecondaryActionLabel</a>
+                        <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@UiDisplayLocalization.Localize(L, Model.SecondaryActionLabel)</a>
                     }
                 }
             </div>
@@ -114,7 +114,7 @@ else
                     <div class="rl-network-card-tags">
                         @foreach (var tag in Model.Tags)
                         {
-                            <span class="rl-network-tag">@tag</span>
+                            <span class="rl-network-tag">@UiDisplayLocalization.Localize(L, tag)</span>
                         }
                     </div>
                 }
@@ -138,15 +138,15 @@ else
                 }
                 else
                 {
-                    <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@Model.PrimaryActionLabel</a>
+                    <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@UiDisplayLocalization.Localize(L, Model.PrimaryActionLabel)</a>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionLabel))
                 {
                     if (Model.SecondaryActionOpensShare && !string.IsNullOrWhiteSpace(Model.SecondaryActionUrl) && Model.SecondaryActionUrl != "#")
                     {
                         var shareText = !string.IsNullOrWhiteSpace(Model.Subtitle)
-                            ? $"Open house: {Model.Subtitle}"
-                            : "Open house on INDOR";
+                            ? L.T("Open house: {0}", Model.Subtitle)
+                            : L["Open house on INDOR"];
                         <button type="button"
                                 class="rl-btn-primary rl-btn-primary--sm"
                                 data-network-share
@@ -162,7 +162,7 @@ else
                     }
                     else
                     {
-                        <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@Model.SecondaryActionLabel</a>
+                        <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@UiDisplayLocalization.Localize(L, Model.SecondaryActionLabel)</a>
                     }
                 }
             </div>

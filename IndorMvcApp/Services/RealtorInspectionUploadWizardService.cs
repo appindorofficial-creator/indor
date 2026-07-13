@@ -231,7 +231,7 @@ public class RealtorInspectionUploadWizardService(
 
         var property = await db.IndorRealtorPropertyFiles.AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == resolvedPropertyId && p.RealtorId == realtor.Id, cancellationToken)
-            ?? throw new InvalidOperationException("Select a property or enter the property address to continue.");
+            ?? throw new InvalidOperationException("Select a property or enter the street address and city/state to continue.");
 
         draft.PropertyFileId = property.Id;
         draft.Address = property.Address;
@@ -394,8 +394,9 @@ public class RealtorInspectionUploadWizardService(
         return new RealtorInspectionAnalyzeViewModel
         {
             DisplayStep = 2,
-            Title = localizer.T("AI Analysis"),
-            Subtitle = localizer.T("INDOR AI scans the inspection report to find, organize, and prioritize findings automatically."),
+            // Keep English keys so views can localize via L[] (same pattern as Upload step).
+            Title = "AI Analysis",
+            Subtitle = "INDOR AI scans the inspection report to find, organize, and prioritize findings automatically.",
             PropertyDisplay = FormatDisplayAddress(draft.Address ?? "", draft.CityRegion),
             ReportFileName = draft.ReportFileName ?? localizer.T("Home Inspection Report"),
             ReportPageCount = pageCount,
@@ -670,10 +671,10 @@ public class RealtorInspectionUploadWizardService(
             Title = "AI Inspection Findings",
             Subtitle = "",
             PropertyDisplay = FormatDisplayAddress(draft.Address ?? "", draft.CityRegion),
-            ReportFileName = draft.ReportFileName ?? "Inspection Report",
+            ReportFileName = draft.ReportFileName ?? localizer.T("Inspection Report"),
             ReportPdfUrl = draft.ReportFileUrl,
             AnalysisSummary = draft.AnalysisSummary,
-            ReportDateLabel = draft.FechaCreacion.ToLocalTime().ToString("MMM d, yyyy"),
+            ReportDateLabel = draft.FechaCreacion.ToLocalTime().ToString("MMM d, yyyy", CultureInfo.CurrentCulture),
             InspectorLabel = FormatInspectorLabel(draft.ReportFileName),
             AnalyzedLabel = FormatAnalyzedLabel(draft.FechaActualizacion ?? draft.FechaCreacion),
             TotalFindings = all.Count,
@@ -748,7 +749,7 @@ public class RealtorInspectionUploadWizardService(
             groups.Add(new RealtorInspectionTradeProviderGroupViewModel
             {
                 Trade = trade,
-                TradeLabel = $"{tradeMeta.Label} needed",
+                TradeLabel = localizer.T("{0} needed", localizer.T(tradeMeta.Label)),
                 PriorityNote = FormatTradePriorityNote(topPriority, tradeFindings.Count),
                 Providers = providers.Select(p => MapProveedorCard(p, selectedForTrade)).ToList()
             });
@@ -825,7 +826,7 @@ public class RealtorInspectionUploadWizardService(
 
             requests.Add(new RealtorInspectionReviewRequestViewModel
             {
-                TradeLabel = $"{tradeMeta.Label} request",
+                TradeLabel = localizer.T("{0} request", localizer.T(tradeMeta.Label)),
                 PriorityTag = FormatPriorityTag(topPriority),
                 PriorityCss = topPriority.ToLowerInvariant(),
                 ProviderCount = providerCount
@@ -843,7 +844,12 @@ public class RealtorInspectionUploadWizardService(
             PhotoUrl = draft.PhotoUrl ?? "/welcome-house.png",
             FindingsSelected = selectedFindings.Count,
             UrgentItems = selectedFindings.Count(f => f.Priority == RealtorInspectionFindingPriorities.Urgent),
-            TradesIncluded = string.Join(", ", trades.Select(t => RealtorInspectionTrades.All.FirstOrDefault(x => x.Value == t).Label.Split(' ')[0])),
+            TradesIncluded = string.Join(", ", trades.Select(t =>
+            {
+                var label = RealtorInspectionTrades.All.FirstOrDefault(x => x.Value == t).Label;
+                var shortLabel = string.IsNullOrWhiteSpace(label) ? t : label.Split(' ')[0];
+                return localizer.T(shortLabel);
+            })),
             ProvidersSelected = draft.TradeProviders.Count,
             ResponseDeadlineHours = draft.ResponseDeadlineHours,
             RequestsToCreate = requests
@@ -969,7 +975,7 @@ public class RealtorInspectionUploadWizardService(
                     ProviderId = proveedor.Id,
                     ProveedorId = proveedor.Id,
                     LeadId = lead.Id,
-                    ProviderName = TruncateText(ResolveProveedorName(proveedor), 120) ?? "INDOR Provider"
+                    ProviderName = TruncateText(ResolveProveedorName(proveedor), 120) ?? localizer.T("INDOR Provider")
                 });
             }
 
@@ -1011,8 +1017,8 @@ public class RealtorInspectionUploadWizardService(
             ClientName = draft.ClientName ?? "",
             QuotesCreated = quoteCodes.Count,
             FindingsAdded = selectedFindings.Count,
-            TradesSummary = string.Join(", ", trades),
-            QuoteCodes = quoteCodes.Select(c => $"Quote #{c}").ToList()
+            TradesSummary = string.Join(", ", trades.Select(t => localizer.T(t))),
+            QuoteCodes = quoteCodes.Select(c => localizer.T("Quote #{0}", c)).ToList()
         };
 
         db.IndorRealtorInspectionUploadDrafts.Remove(draft);
@@ -1115,9 +1121,12 @@ public class RealtorInspectionUploadWizardService(
         string? cityRegion,
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(address))
+        if (string.IsNullOrWhiteSpace(address) || string.IsNullOrWhiteSpace(cityRegion))
         {
-            throw new InvalidOperationException("Select a property or enter the property address to continue.");
+            throw new InvalidOperationException(
+                string.IsNullOrWhiteSpace(address) && string.IsNullOrWhiteSpace(cityRegion)
+                    ? "Select a property or enter the street address and city/state to continue."
+                    : "Enter the street address and city/state to continue.");
         }
 
         var normalizedAddress = address.Trim();
@@ -1194,7 +1203,7 @@ public class RealtorInspectionUploadWizardService(
         return Path.Combine(hostEnv.WebRootPath, relative);
     }
 
-    private static RealtorQuoteProviderCardViewModel MapProveedorCard(
+    private RealtorQuoteProviderCardViewModel MapProveedorCard(
         IndorProveedor proveedor, HashSet<int> selectedForTrade) =>
         new()
         {
@@ -1204,15 +1213,15 @@ public class RealtorInspectionUploadWizardService(
             Rating = 0m,
             DistanceMiles = proveedor.TravelRadiusMiles > 0 ? proveedor.TravelRadiusMiles : 5m,
             BadgeLabel = string.Equals(proveedor.RegistrationStatus, ProviderRegistrationStatuses.IndorProActive, StringComparison.OrdinalIgnoreCase)
-                ? "INDOR PRO" : "Verified",
+                ? "INDOR PRO" : localizer.T("Verified"),
             IsVerified = true,
             Selected = selectedForTrade.Contains(proveedor.Id)
         };
 
-    private static string ResolveProveedorName(IndorProveedor proveedor) =>
+    private string ResolveProveedorName(IndorProveedor proveedor) =>
         !string.IsNullOrWhiteSpace(proveedor.DbaName) ? proveedor.DbaName!
         : !string.IsNullOrWhiteSpace(proveedor.BusinessName) ? proveedor.BusinessName!
-        : "INDOR Provider";
+        : localizer.T("INDOR Provider");
 
     private async Task<string> GenerateQuoteCodeAsync(int realtorId, CancellationToken cancellationToken)
     {
@@ -1265,11 +1274,12 @@ public class RealtorInspectionUploadWizardService(
         var pages = pageCount > 0 ? pageCount : 1;
         var pagesRead = progress >= 20 ? pages : Math.Max(1, (int)(pages * progress / 20.0));
         var method = string.IsNullOrWhiteSpace(uploadMethod) ? "Pdf" : uploadMethod;
+        // Labels stay as English keys for L[] in the view; details are pre-formatted for display.
         var readLabel = method switch
         {
-            "Scan" => localizer.T("Reading scanned pages"),
-            "Photos" => localizer.T("Reading report photos"),
-            _ => localizer.T("Reading report pages")
+            "Scan" => "Reading scanned pages",
+            "Photos" => "Reading report photos",
+            _ => "Reading report pages"
         };
         var unitDetail = method switch
         {
@@ -1293,7 +1303,7 @@ public class RealtorInspectionUploadWizardService(
             },
             new()
             {
-                Label = localizer.T("Extracting repair findings"),
+                Label = "Extracting repair findings",
                 Detail = findingCount > 0
                     ? (findingCount == 1
                         ? localizer.T("{0} finding", findingCount)
@@ -1303,7 +1313,7 @@ public class RealtorInspectionUploadWizardService(
             },
             new()
             {
-                Label = localizer.T("Classifying by trade"),
+                Label = "Classifying by trade",
                 Detail = status == RealtorInspectionAnalysisStatuses.Complete
                     ? localizer.T("Trades assigned from AI")
                     : progress >= 30
@@ -1313,7 +1323,7 @@ public class RealtorInspectionUploadWizardService(
             },
             new()
             {
-                Label = localizer.T("Scoring urgency"),
+                Label = "Scoring urgency",
                 Detail = status == RealtorInspectionAnalysisStatuses.Complete
                     ? localizer.T("Complete")
                     : localizer.T("In progress"),
@@ -1417,11 +1427,11 @@ public class RealtorInspectionUploadWizardService(
         return parts.Count == 0 ? null : string.Join(" · ", parts);
     }
 
-    private static string FormatInspectorLabel(string? fileName)
+    private string FormatInspectorLabel(string? fileName)
     {
         if (string.IsNullOrWhiteSpace(fileName))
         {
-            return "Residential Home Inspection";
+            return localizer.T("Residential Home Inspection");
         }
 
         var name = Path.GetFileNameWithoutExtension(fileName)
@@ -1431,16 +1441,18 @@ public class RealtorInspectionUploadWizardService(
 
         if (name.Contains("Residential Home Inspection", StringComparison.OrdinalIgnoreCase))
         {
-            return "Residential Home Inspection";
+            return localizer.T("Residential Home Inspection");
         }
 
-        return TruncateText(name, 60) ?? "Residential Home Inspection";
+        return TruncateText(name, 60) ?? localizer.T("Residential Home Inspection");
     }
 
-    private static string FormatAnalyzedLabel(DateTime timestampUtc)
+    private string FormatAnalyzedLabel(DateTime timestampUtc)
     {
         var local = timestampUtc.ToLocalTime();
-        return local.Date == DateTime.Today ? "Today" : local.ToString("MMM d, yyyy");
+        return local.Date == DateTime.Today
+            ? localizer.T("Today")
+            : local.ToString("MMM d, yyyy", CultureInfo.CurrentCulture);
     }
 
     private static string? FormatSourceLineItem(string? description, string title)
@@ -1460,29 +1472,35 @@ public class RealtorInspectionUploadWizardService(
         _ => 1
     };
 
-    private static string FormatTradePriorityNote(string priority, int count) => priority switch
+    private string FormatTradePriorityNote(string priority, int count) => priority switch
     {
-        RealtorInspectionFindingPriorities.Urgent => $"{count} urgent item{(count == 1 ? "" : "s")}",
-        RealtorInspectionFindingPriorities.High => $"{count} high-priority item{(count == 1 ? "" : "s")}",
-        _ => $"{count} moderate item{(count == 1 ? "" : "s")}"
+        RealtorInspectionFindingPriorities.Urgent => count == 1
+            ? localizer.T("{0} urgent item", count)
+            : localizer.T("{0} urgent items", count),
+        RealtorInspectionFindingPriorities.High => count == 1
+            ? localizer.T("{0} high-priority item", count)
+            : localizer.T("{0} high-priority items", count),
+        _ => count == 1
+            ? localizer.T("{0} moderate item", count)
+            : localizer.T("{0} moderate items", count)
     };
 
-    private static string FormatPriorityTag(string priority) => priority switch
+    private string FormatPriorityTag(string priority) => priority switch
     {
-        RealtorInspectionFindingPriorities.Urgent => "Urgent",
-        RealtorInspectionFindingPriorities.High => "High priority",
-        _ => "Moderate priority"
+        RealtorInspectionFindingPriorities.Urgent => localizer.T("Urgent"),
+        RealtorInspectionFindingPriorities.High => localizer.T("High priority"),
+        _ => localizer.T("Moderate priority")
     };
 
     private static string FormatDisplayAddress(string address, string? cityRegion) =>
         string.IsNullOrWhiteSpace(cityRegion) ? address : $"{address}, {cityRegion}";
 
-    private static string FormatSpecs(int? beds, decimal? baths, int? sqFt)
+    private string FormatSpecs(int? beds, decimal? baths, int? sqFt)
     {
         var parts = new List<string>();
-        if (beds is > 0) parts.Add($"{beds} beds");
-        if (baths is > 0) parts.Add($"{baths:0.#} baths");
-        if (sqFt is > 0) parts.Add($"{sqFt:N0} sq ft");
+        if (beds is > 0) parts.Add(localizer.T("{0} beds", beds));
+        if (baths is > 0) parts.Add(localizer.T("{0} baths", baths.Value.ToString("0.#")));
+        if (sqFt is > 0) parts.Add(localizer.T("{0} sq ft", sqFt.Value.ToString("N0")));
         return string.Join(", ", parts);
     }
 }

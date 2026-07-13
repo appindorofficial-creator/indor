@@ -39,12 +39,14 @@
     </div>
 
     <form asp-controller="Proveedor" asp-action="InsuranceBusinessDetails" method="post">
+        <div asp-validation-summary="All" class="ins-error"></div>
+
         <div class="ins-fc">
             <div class="ins-bx-row">
                 <div class="ins-bx">
                     <span class="ins-bx-lbl">@L["Number of Employees"]</span>
                     <div class="ins-bx-ctl">
-                        <select asp-for="NumberOfEmployees" class="ins-bx-select">
+                        <select asp-for="NumberOfEmployees" class="ins-bx-select" required>
                             <option value="">@L["Select number"]</option>
                             @foreach (var e in IndorMvcApp.ViewModels.InsuranceCatalog.EmployeeOptions)
                             {
@@ -53,20 +55,23 @@
                         </select>
                         <i class="fas fa-chevron-down ins-bx-caret"></i>
                     </div>
+                    <span asp-validation-for="NumberOfEmployees" class="ins-field-err"></span>
                 </div>
                 <div class="ins-bx">
                     <span class="ins-bx-lbl">@L["Annual Payroll"]</span>
                     <div class="ins-bx-ctl">
-                        <input asp-for="EmployeePayroll" type="number" min="0" step="any" class="ins-bx-input" placeholder="@L["Enter amount in USD"]" />
+                        <input asp-for="EmployeePayroll" type="number" min="0" step="any" class="ins-bx-input" placeholder="@L["Enter amount in USD"]" required />
                     </div>
+                    <span asp-validation-for="EmployeePayroll" class="ins-field-err"></span>
                 </div>
             </div>
 
             <div class="ins-bx">
                 <span class="ins-bx-lbl">@L["Annual Gross Revenue"]</span>
                 <div class="ins-bx-ctl">
-                    <input asp-for="CompanyGrossRevenue" type="number" min="0" step="any" class="ins-bx-input" placeholder="@L["Enter amount in USD"]" />
+                    <input asp-for="CompanyGrossRevenue" type="number" min="0" step="any" class="ins-bx-input" placeholder="@L["Enter amount in USD"]" required />
                 </div>
+                <span asp-validation-for="CompanyGrossRevenue" class="ins-field-err"></span>
             </div>
 
             <div class="ins-bx">

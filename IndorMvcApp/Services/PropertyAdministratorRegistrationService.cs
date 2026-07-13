@@ -108,6 +108,12 @@ public class PropertyAdministratorRegistrationService(
         return await db.IndorPropertyAdminPortfolioProperties
             .AsNoTracking()
             .Where(p => p.AdministratorId == adminId)
+            .Where(p => p.Status != PropertyAdministratorPortfolioPropertyStatuses.Removed
+                && p.Status != "Deleted"
+                && p.Status != "Inactive"
+                && p.Status != "Eliminado")
+            .Where(p => p.PropiedadId == null
+                || db.Propiedades.Any(x => x.Id == p.PropiedadId && x.Activo))
             .OrderByDescending(p => p.FechaCreacion)
             .Select(p => new PropertyAdministratorPropertyItemViewModel
             {
@@ -161,7 +167,7 @@ public class PropertyAdministratorRegistrationService(
             PropertyType = input.PropertyType.Trim(),
             ImageUrl = PropertyAdministratorCatalog.DefaultImageForType(input.PropertyType.Trim()),
             PropiedadId = propiedadId,
-            Status = "Added",
+            Status = PropertyAdministratorPortfolioPropertyStatuses.Added,
             FechaCreacion = DateTime.UtcNow
         };
 
@@ -221,8 +227,14 @@ public class PropertyAdministratorRegistrationService(
 
         var portfolioProperty = await db.IndorPropertyAdminPortfolioProperties
             .AsNoTracking()
+            .Include(p => p.Propiedad)
             .FirstOrDefaultAsync(p => p.Id == portfolioPropertyId && p.AdministratorId == adminId, cancellationToken)
             ?? throw new InvalidOperationException("Select a property from your portfolio.");
+
+        if (!PropertyAdministratorFlowServiceSupport.IsActivePortfolioProperty(portfolioProperty))
+        {
+            throw new InvalidOperationException("This property is no longer in your portfolio.");
+        }
 
         if (portfolioProperty.PropiedadId is not > 0)
         {
@@ -292,7 +304,27 @@ public class PropertyAdministratorRegistrationService(
             return;
         }
 
-        db.IndorPropertyAdminPortfolioProperties.Remove(row);
+        // Soft-delete so service-request / plan history can keep PortfolioPropertyId,
+        // and so portal lists can exclude removed rows via Status / Propiedad.Activo.
+        row.Status = PropertyAdministratorPortfolioPropertyStatuses.Removed;
+
+        if (row.PropiedadId is > 0)
+        {
+            var propiedad = await db.Propiedades
+                .FirstOrDefaultAsync(p => p.Id == row.PropiedadId.Value, cancellationToken);
+            if (propiedad != null)
+            {
+                propiedad.Activo = false;
+            }
+        }
+
+        var admin = await db.IndorPropertyAdministrators
+            .FirstOrDefaultAsync(a => a.Id == adminId, cancellationToken);
+        if (admin != null)
+        {
+            admin.FechaActualizacion = DateTime.UtcNow;
+        }
+
         await db.SaveChangesAsync(cancellationToken);
     }
 
@@ -388,7 +420,11 @@ public class PropertyAdministratorRegistrationService(
         return await db.IndorPropertyAdministrators
             .AsNoTracking()
             .Include(a => a.PortfolioProperties)
-            .FirstOrDefaultAsync(a => a.UserId == userId, cancellationToken);
+            .Where(a => a.UserId == userId)
+            .OrderByDescending(a => a.RegistrationStatus == PropertyAdministratorRegistrationStatuses.Completed)
+            .ThenByDescending(a => a.RegistrationCompletedUtc)
+            .ThenByDescending(a => a.Id)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     public string ResolveWizardResumeAction(int currentStep) => currentStep switch
@@ -410,24 +446,29 @@ public class PropertyAdministratorRegistrationService(
             ?? throw new InvalidOperationException("Session is not available.");
 
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
-        var id = session.GetInt32(AdminIdSessionKey);
-        if (id is > 0)
+
+        // Prefer the same completed admin the portal loads, so add/remove stay in sync.
+        if (!string.IsNullOrEmpty(userId))
         {
-            var exists = await db.IndorPropertyAdministrators.AnyAsync(a => a.Id == id, cancellationToken);
-            if (exists)
+            var preferredId = await ResolvePreferredAdministratorIdForUserAsync(userId, cancellationToken);
+            if (preferredId is > 0)
             {
-                return id.Value;
+                session.SetInt32(AdminIdSessionKey, preferredId.Value);
+                return preferredId.Value;
             }
         }
 
-        if (!string.IsNullOrEmpty(userId))
+        var id = session.GetInt32(AdminIdSessionKey);
+        if (id is > 0)
         {
-            var byUser = await db.IndorPropertyAdministrators
-                .FirstOrDefaultAsync(a => a.UserId == userId, cancellationToken);
-            if (byUser != null)
+            var sessionAdmin = await db.IndorPropertyAdministrators
+                .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
+            if (sessionAdmin != null
+                && (string.IsNullOrEmpty(userId)
+                    || string.IsNullOrEmpty(sessionAdmin.UserId)
+                    || sessionAdmin.UserId == userId))
             {
-                session.SetInt32(AdminIdSessionKey, byUser.Id);
-                return byUser.Id;
+                return id.Value;
             }
         }
 
@@ -448,27 +489,45 @@ public class PropertyAdministratorRegistrationService(
     private async Task<int?> ResolveAdministratorIdAsync(CancellationToken cancellationToken)
     {
         var session = httpContextAccessor.HttpContext?.Session;
+        var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
+
+        if (!string.IsNullOrEmpty(userId))
+        {
+            var preferredId = await ResolvePreferredAdministratorIdForUserAsync(userId, cancellationToken);
+            if (preferredId is > 0)
+            {
+                session?.SetInt32(AdminIdSessionKey, preferredId.Value);
+                return preferredId;
+            }
+        }
+
         var id = session?.GetInt32(AdminIdSessionKey);
         if (id is > 0)
         {
-            return id;
-        }
-
-        var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
-        if (string.IsNullOrEmpty(userId))
-        {
-            return null;
-        }
-
-        var admin = await db.IndorPropertyAdministrators.AsNoTracking()
-            .FirstOrDefaultAsync(a => a.UserId == userId, cancellationToken);
-        if (admin != null)
-        {
-            session?.SetInt32(AdminIdSessionKey, admin.Id);
-            return admin.Id;
+            var sessionAdmin = await db.IndorPropertyAdministrators.AsNoTracking()
+                .FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
+            if (sessionAdmin != null
+                && (string.IsNullOrEmpty(userId)
+                    || string.IsNullOrEmpty(sessionAdmin.UserId)
+                    || sessionAdmin.UserId == userId))
+            {
+                return id;
+            }
         }
 
         return null;
+    }
+
+    private async Task<int?> ResolvePreferredAdministratorIdForUserAsync(
+        string userId, CancellationToken cancellationToken)
+    {
+        return await db.IndorPropertyAdministrators.AsNoTracking()
+            .Where(a => a.UserId == userId)
+            .OrderByDescending(a => a.RegistrationStatus == PropertyAdministratorRegistrationStatuses.Completed)
+            .ThenByDescending(a => a.RegistrationCompletedUtc)
+            .ThenByDescending(a => a.Id)
+            .Select(a => (int?)a.Id)
+            .FirstOrDefaultAsync(cancellationToken);
     }
 
     private static PropertyAdministratorRegistrationState MapFromEntity(IndorPropertyAdministrator entity) =>

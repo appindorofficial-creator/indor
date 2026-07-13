@@ -44,12 +44,12 @@
         @if (Model.BestForOptions.Count > 0)
         {
             <div class="field-card">
-                <span class="field-label">@Model.BestForLabel</span>
+                <span class="field-label">@L.Catalog(Model.BestForLabel)</span>
                 <div class="chip-row" id="bestForGroup" style="flex-wrap:wrap;">
                     @foreach (var opt in Model.BestForOptions)
                     {
                         <button type="button" class="chip-btn @(opt.Value == Model.BestForSelection ? "active" : "")" data-value="@opt.Value">
-                            <i class="fas @opt.Icon"></i> @opt.Label
+                            <i class="fas @opt.Icon"></i> @L.Catalog(opt.Label)
                         </button>
                     }
                 </div>
@@ -64,18 +64,18 @@
         <div class="info-cards">
             <div class="info-card">
                 <i class="fas fa-clock"></i>
-                <div class="label">@Model.EstimatedTimeLabel</div>
-                <div class="value">@Model.EstimatedTimeValue</div>
+                <div class="label">@L.Catalog(Model.EstimatedTimeLabel)</div>
+                <div class="value">@L.Catalog(Model.EstimatedTimeValue)</div>
             </div>
             <div class="info-card">
                 <i class="fas fa-calendar"></i>
-                <div class="label">@Model.BestTimingLabel</div>
-                <div class="value">@Model.BestTimingValue</div>
+                <div class="label">@L.Catalog(Model.BestTimingLabel)</div>
+                <div class="value">@L.Catalog(Model.BestTimingValue)</div>
             </div>
         </div>
 
-        <button type="submit" name="action" value="continue" class="btn-primary">@Model.CtaContinueTexto</button>
-        <button type="submit" name="action" value="upload" class="btn-outline"><i class="fas fa-cloud-arrow-up"></i> @Model.CtaUploadTexto</button>
+        <button type="submit" name="action" value="continue" class="btn-primary">@L.Catalog(Model.CtaContinueTexto)</button>
+        <button type="submit" name="action" value="upload" class="btn-outline"><i class="fas fa-cloud-arrow-up"></i> @L.Catalog(Model.CtaUploadTexto)</button>
     </form>
 </div>
 @section Scripts {

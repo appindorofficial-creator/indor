@@ -4,7 +4,7 @@
 
     var totalSteps = ViewData["WizardTotalSteps"] as int? ?? 3;
 
-    var title = ViewData["WizardTitle"] as string ?? L["Service"];
+    var title = L.Catalog(ViewData["WizardTitle"] as string ?? L["Service"]);
 
     var backUrl = HomeNavigationUrls.NormalizeWizardBackUrl(ViewData["WizardBackUrl"] as string);
 

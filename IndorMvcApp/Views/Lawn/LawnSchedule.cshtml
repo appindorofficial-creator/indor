@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.LawnScheduleViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("LawnSetup", "Lawn", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;
@@ -24,8 +24,8 @@
                 <img src="@Url.Content("~" + Model.ImagenUrl)" alt="Lawn service" loading="lazy" />
             }
             <div class="review-list">
-                <div class="review-item"><i class="fas fa-rotate"></i><span>@Model.FrequencyLabel</span></div>
-                <div class="review-item"><i class="fas fa-house"></i><span>@Model.AreaLabel</span></div>
+                <div class="review-item"><i class="fas fa-rotate"></i><span>@L.Catalog(Model.FrequencyLabel)</span></div>
+                <div class="review-item"><i class="fas fa-house"></i><span>@L.Catalog(Model.AreaLabel)</span></div>
                 <div class="review-item"><i class="fas fa-tag"></i><span>@L["Estimated total"] <strong>$@Model.PrecioTotal.ToString("0")</strong></span></div>
             </div>
         </div>
@@ -38,9 +38,9 @@
                     <button type="button"
                             class="date-chip @(date.Selected ? "active" : "")"
                             data-date="@date.Date.ToString("yyyy-MM-dd")">
-                        <div class="day">@date.DayLabel</div>
+                        <div class="day">@L.Catalog(date.DayLabel)</div>
                         <div class="num">@date.DateLabel</div>
-                        <div class="day" style="font-size:.62rem;">@date.MonthLabel</div>
+                        <div class="day" style="font-size:.62rem;">@L.Catalog(date.MonthLabel)</div>
                     </button>
                 }
             </div>
@@ -52,7 +52,7 @@
                 @foreach (var slot in Model.TimeWindowOptions)
                 {
                     <button type="button" class="time-btn" data-value="@slot.Code">
-                        @slot.Label<span class="check"><i class="fas fa-check"></i></span>
+                        @L.Catalog(slot.Label)<span class="check"><i class="fas fa-check"></i></span>
                     </button>
                 }
             </div>
@@ -73,14 +73,14 @@
             <div class="reminder-settings" id="reminderSettings">
                 <div class="reminder-setting-row">
                     <span>@L["Repeat reminder"]</span>
-                    <strong id="repeatLabel">@Model.FrequencyLabel</strong>
+                    <strong id="repeatLabel">@L.Catalog(Model.FrequencyLabel)</strong>
                 </div>
                 <div class="field-card" style="margin:10px 0 0;padding:10px 0 0;border:none;box-shadow:none;">
                     <span class="field-label" style="font-size:.78rem;">@L["Notify me"]</span>
                     <div class="segment-group" id="leadGroup">
                         @foreach (var lead in Model.ReminderLeadOptions)
                         {
-                            <button type="button" class="segment-btn" data-value="@lead.Code">@lead.Label</button>
+                            <button type="button" class="segment-btn" data-value="@lead.Code">@L.Catalog(lead.Label)</button>
                         }
                     </div>
                 </div>
@@ -89,8 +89,9 @@
                     <div class="segment-group" id="channelGroup">
                         @foreach (var channel in Model.ReminderChannelOptions)
                         {
-                            var selected = Model.RecordatorioCanales.Contains(channel.Code, StringComparison.OrdinalIgnoreCase);
-                            <button type="button" class="segment-btn @(selected ? "active" : "")" data-value="@channel.Code">@channel.Label</button>
+                            var selected = !string.IsNullOrWhiteSpace(Model.RecordatorioCanales)
+                                && Model.RecordatorioCanales.Contains(channel.Code, StringComparison.OrdinalIgnoreCase);
+                            <button type="button" class="segment-btn @(selected ? "active" : "")" data-value="@channel.Code">@L.Catalog(channel.Label)</button>
                         }
                     </div>
                 </div>
@@ -104,13 +105,14 @@
 @section Scripts {
 <script>
     (function () {
-        const channels = new Set((document.getElementById('RecordatorioCanales').value || 'Push').split('|').filter(Boolean));
+        const channels = new Set((document.getElementById('RecordatorioCanales').value || '').split('|').filter(Boolean));
 
         function initSingle(groupId, selector, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
+            const initialValue = (initial || hidden.value || '').trim();
             document.querySelectorAll('#' + groupId + ' ' + selector).forEach(btn => {
                 const val = btn.dataset.value || btn.dataset.date;
-                if (val === (initial || hidden.value)) btn.classList.add('active');
+                if (initialValue && val === initialValue) btn.classList.add('active');
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('#' + groupId + ' ' + selector).forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
@@ -132,10 +134,6 @@
                 } else {
                     channels.add(code);
                     btn.classList.add('active');
-                }
-                if (channels.size === 0) {
-                    channels.add('Push');
-                    document.querySelector('#channelGroup .segment-btn[data-value="Push"]')?.classList.add('active');
                 }
                 document.getElementById('RecordatorioCanales').value = Array.from(channels).join('|');
             });

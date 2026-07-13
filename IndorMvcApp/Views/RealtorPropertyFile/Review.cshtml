@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.RealtorPropertyFileReviewViewModel
+@using IndorMvcApp.Helpers
 
 <div class="rl-review-card rl-review-card--property">
     @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
@@ -19,7 +20,7 @@
 <ul class="rl-included-list">
     @foreach (var item in Model.IncludedItems)
     {
-        <li><i class="fas @item.Icon"></i> <span>@L[item.Label]</span> <strong>@L[item.CountLabel]</strong></li>
+        <li><i class="fas @item.Icon"></i> <span>@L[item.Label]</span> <strong>@RealtorDisplayLocalization.ItemCountLabel(L, item.ItemCount)</strong></li>
     }
 </ul>
 

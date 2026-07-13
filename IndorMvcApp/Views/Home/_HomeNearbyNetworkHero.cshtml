@@ -12,8 +12,8 @@
        aria-selected="@(Model.ActiveView == "map" ? "true" : "false")">
         <span class="hn-v4-view-tab-icon"><i class="fas fa-map"></i></span>
         <span class="hn-v4-view-tab-copy">
-            <strong>@L["Map"]</strong>
-            <small>@L["See nearby places"]</small>
+            <strong>@UiDisplayLocalization.Localize(L, "Map")</strong>
+            <small>@UiDisplayLocalization.Localize(L, "See nearby places")</small>
         </span>
     </a>
     <a href="@BuildViewUrl("feed")"
@@ -22,8 +22,8 @@
        aria-selected="@(Model.ActiveView == "feed" ? "true" : "false")">
         <span class="hn-v4-view-tab-icon"><i class="fas fa-list"></i></span>
         <span class="hn-v4-view-tab-copy">
-            <strong>@L["Feed"]</strong>
-            <small>@L["See local updates"]</small>
+            <strong>@UiDisplayLocalization.Localize(L, "Feed")</strong>
+            <small>@UiDisplayLocalization.Localize(L, "See local updates")</small>
         </span>
     </a>
 </div>

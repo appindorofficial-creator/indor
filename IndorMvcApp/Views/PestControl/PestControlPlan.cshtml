@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.PestControlPlanViewModel
 @{
     ViewData["Title"] = L["Choose reminder or service - INDOR"];
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("PestControlSetup", "PestControl", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;

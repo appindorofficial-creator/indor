@@ -27,9 +27,9 @@
                 <span class="rl-premium-client"><i class="fas fa-user"></i> @Model.ClientName</span>
             }
             <span class="rl-file-code">@L.T("File ID: {0}", Model.FileCode)</span>
-            <span class="rl-phase-badge rl-phase-badge--pre-closing">@Model.FilePhaseLabel</span>
-            <span class="rl-status-pill rl-status-pill--@Model.StatusCss">@Model.StatusBadge</span>
-            <span class="rl-premium-muted">@Model.UpdatedLabel</span>
+            <span class="rl-phase-badge rl-phase-badge--pre-closing">@L[Model.FilePhaseLabel]</span>
+            <span class="rl-status-pill rl-status-pill--@Model.StatusCss">@UiDisplayLocalization.Localize(L, Model.StatusBadge)</span>
+            <span class="rl-premium-muted">@UiDisplayLocalization.Localize(L, Model.UpdatedLabel)</span>
             @if (Model.RepairItemsCount > 0)
             {
                 <span class="rl-premium-muted">@L.T("Repair items: {0}", Model.RepairItemsCount)</span>
@@ -46,11 +46,11 @@
         <div class="rl-file-view-actions">
             @if (!string.IsNullOrWhiteSpace(Model.PrimaryActionLabel) && !string.IsNullOrWhiteSpace(Model.PrimaryActionUrl))
             {
-                <a href="@Model.PrimaryActionUrl" class="ob-btn ob-btn-primary">@Model.PrimaryActionLabel</a>
+                <a href="@Model.PrimaryActionUrl" class="ob-btn ob-btn-primary">@UiDisplayLocalization.Localize(L, Model.PrimaryActionLabel)</a>
             }
             @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionLabel) && !string.IsNullOrWhiteSpace(Model.SecondaryActionUrl))
             {
-                <a href="@Model.SecondaryActionUrl" class="rl-btn-outline">@Model.SecondaryActionLabel</a>
+                <a href="@Model.SecondaryActionUrl" class="rl-btn-outline">@UiDisplayLocalization.Localize(L, Model.SecondaryActionLabel!)</a>
             }
         </div>
     }
@@ -74,7 +74,7 @@
         {
             <div class="rl-dash-section">
                 <div class="rl-dash-section-head">
-                    <h2><i class="fas @fileSection.Icon"></i> @fileSection.Label</h2>
+                    <h2><i class="fas @fileSection.Icon"></i> @L[fileSection.Label]</h2>
                 </div>
                 <ul class="rl-file-view-items">
                     @foreach (var item in fileSection.Items)

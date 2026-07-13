@@ -6,7 +6,7 @@ public class RealtorUrgentQuoteStepViewModel
 {
     public int DisplayStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 4;
-    public string Title { get; set; } = "Urgente Quote";
+    public string Title { get; set; } = "Urgent Quote";
     public string Subtitle { get; set; } = "";
 }
 

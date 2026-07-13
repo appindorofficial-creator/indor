@@ -46,11 +46,7 @@ public class PropertyAdministratorLandscapingService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = MapProperty(property),
-            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest check-in this week" : null,
-            ServiceReason = property?.PropertyType == "ShortTermRental" ? "CarDroveOverPlants" : "RoutineUpgrade",
-            QuickNotes = property?.PropertyType == "ShortTermRental"
-                ? "Car damaged the flower bed near the driveway. Need plants replaced and the front entry refreshed before next guest arrival."
-                : ""
+            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest check-in this week" : null
         };
     }
 
@@ -88,10 +84,7 @@ public class PropertyAdministratorLandscapingService(
             Timeline = step1.Timeline,
             IsOccupied = step1.IsOccupied,
             QuickNotes = step1.QuickNotes ?? "",
-            HaulAwayType = step1.ServiceReason == "CarDroveOverPlants" ? "RemoveDamagedPlants" : "NoHaulAway",
-            ProjectNotes = !string.IsNullOrWhiteSpace(step1.QuickNotes)
-                ? step1.QuickNotes
-                : "Front flower bed near driveway was damaged. Need replacement plants, fresh mulch, and cleanup before Friday guest arrival."
+            ProjectNotes = step1.QuickNotes ?? ""
         };
     }
 

@@ -24,20 +24,22 @@
     <p class="pa-step-hint" style="margin:0;">@L["Accepted formats: PDF, JPG, PNG, WEBP, HEIC. Max 10 MB per file."]</p>
 </div>
 
-<form asp-action="UploadPropertyDocuments" method="post" enctype="multipart/form-data" id="uploadDocumentsForm">
+<form asp-action="UploadPropertyDocuments" method="post" enctype="multipart/form-data" id="uploadDocumentsForm" novalidate>
     @Html.AntiForgeryToken()
 
-    <div class="pa-file-picker" id="documentFilesPicker">
+    <label class="pa-file-picker" id="documentFilesPicker" for="documentFiles">
         <i class="fas fa-file-arrow-up pa-file-picker-icon" aria-hidden="true"></i>
+        <span class="pa-file-picker-btn">@L["Choose files"]</span>
+        <span class="pa-file-picker-name" id="documentFilesName" data-empty-label="@L["No files selected"]" data-multi-label="@L["{0} files selected"]">@L["No files selected"]</span>
         <input type="file"
                id="documentFiles"
                name="documentFiles"
                class="pa-file-picker-input"
                accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,image/*,application/pdf"
-               multiple />
-        <label for="documentFiles" class="pa-file-picker-btn">@L["Choose files"]</label>
-        <span class="pa-file-picker-name" id="documentFilesName" data-empty-label="No files selected">@L["No files selected"]</span>
-    </div>
+               multiple
+               aria-label="@L["Choose files"]" />
+    </label>
+    <div class="pa-summary-error" id="documentFilesError" hidden>@L["Please choose at least one file."]</div>
 
     <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">@L["Upload documents"]</button>
 </form>
@@ -49,15 +51,27 @@
 @section Scripts {
 <script>
     (function () {
+        const form = document.getElementById('uploadDocumentsForm');
         const input = document.getElementById('documentFiles');
         const nameEl = document.getElementById('documentFilesName');
         const picker = document.getElementById('documentFilesPicker');
+        const errorEl = document.getElementById('documentFilesError');
         if (!input || !nameEl || !picker) return;
 
         const emptyLabel = nameEl.dataset.emptyLabel || 'No files selected';
+        const multiLabel = nameEl.dataset.multiLabel || '{0} files selected';
+
+        function filesList() {
+            return input.files ? Array.from(input.files) : [];
+        }
+
+        function setErrorVisible(visible) {
+            if (!errorEl) return;
+            errorEl.hidden = !visible;
+        }
 
         function syncFileLabel() {
-            const files = input.files ? Array.from(input.files) : [];
+            const files = filesList();
             if (files.length === 0) {
                 nameEl.textContent = emptyLabel;
                 nameEl.classList.remove('is-selected');
@@ -68,13 +82,22 @@
             if (files.length === 1) {
                 nameEl.textContent = files[0].name;
             } else {
-                nameEl.textContent = files.length + ' files selected';
+                nameEl.textContent = multiLabel.replace('{0}', String(files.length));
             }
             nameEl.classList.add('is-selected');
             picker.classList.add('has-file');
+            setErrorVisible(false);
         }
 
         input.addEventListener('change', syncFileLabel);
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                if (filesList().length > 0) return;
+                e.preventDefault();
+                setErrorVisible(true);
+                picker.focus();
+            });
+        }
         syncFileLabel();
     })();
 </script>

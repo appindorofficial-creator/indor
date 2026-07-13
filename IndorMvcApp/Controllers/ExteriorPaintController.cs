@@ -333,8 +333,8 @@ public class ExteriorPaintController : Controller
             PageTitle = landing?.LandingTitulo ?? "Exterior Paint Review",
             LandingSubtitulo = landing?.LandingSubtitulo ?? "Add a few details before we schedule your review.",
             ImagenUrl = ResolveImageUrl(landing?.ImagenUrl ?? solicitud.HomeCarePriority?.ImagenUrl),
-            NumeroPisos = solicitud.NumeroPisos ?? "One",
-            TimingPreferido = solicitud.TimingPreferido ?? "AsSoonAsPossible",
+            NumeroPisos = solicitud.NumeroPisos ?? string.Empty,
+            TimingPreferido = solicitud.TimingPreferido ?? string.Empty,
             Notas = solicitud.Notas,
             SurfaceLabel = ExteriorPaintDisplayLabels.FormatSurface(solicitud.TipoSuperficie),
             IssuesLabel = ExteriorPaintDisplayLabels.FormatPipeList(solicitud.ProblemasSeleccionados, ExteriorPaintDisplayLabels.FormatIssue),
@@ -509,7 +509,7 @@ public class ExteriorPaintController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                TimingPreferido = "AsSoonAsPossible"
+                TimingPreferido = string.Empty
             };
             _db.SolicitudesExteriorPaint.Add(solicitud);
             await _db.SaveChangesAsync();

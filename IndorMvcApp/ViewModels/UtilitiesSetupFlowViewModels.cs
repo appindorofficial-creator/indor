@@ -20,12 +20,12 @@ public class UtilitiesSetupAddressViewModel
     public string DireccionPropiedad { get; set; } = string.Empty;
 
     [Required]
-    public string ServiciosConectar { get; set; } = "Internet|Electricity|Water|Gas";
+    public string ServiciosConectar { get; set; } = string.Empty;
 
     public DateTime? FechaServicio { get; set; }
 
     [Required]
-    public string PreferenciaContacto { get; set; } = "ContactMyself";
+    public string PreferenciaContacto { get; set; } = string.Empty;
 }
 
 public class UtilitiesSetupInternetProviderViewModel

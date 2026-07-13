@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.TrashHelpViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("TrashSetup", "Trash", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 3;
@@ -70,7 +70,7 @@
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
-            <i class="fas fa-calendar-plus"></i> Review request
+            <i class="fas fa-calendar-plus"></i> @L["Review request"]
         </button>
         <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
     </form>
@@ -80,8 +80,9 @@
     (function () {
         function initSingle(groupId, selector, hiddenId, initial, onChange) {
             const hidden = document.getElementById(hiddenId);
+            const initialValue = (initial || hidden.value || '').trim();
             document.querySelectorAll('#' + groupId + ' ' + selector).forEach(btn => {
-                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                if (initialValue && btn.dataset.value === initialValue) btn.classList.add('active');
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('#' + groupId + ' ' + selector).forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
@@ -97,7 +98,11 @@
         const windowHidden = document.getElementById('VentanaRecoleccion');
         const windowSelect = document.getElementById('VentanaRecoleccionSelect');
         if (windowHidden && windowSelect) {
-            windowSelect.value = windowHidden.value || 'Morning7_12';
+            if (windowHidden.value) {
+                windowSelect.value = windowHidden.value;
+            } else {
+                windowSelect.selectedIndex = -1;
+            }
             windowSelect.addEventListener('change', () => { windowHidden.value = windowSelect.value; });
         }
     })();

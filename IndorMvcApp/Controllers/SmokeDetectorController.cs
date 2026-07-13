@@ -303,7 +303,7 @@ public class SmokeDetectorController : Controller
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = solicitud.HomeCarePriority?.Nombre ?? "Smoke / CO Check",
-            AlarmCountLabel = SmokeDetectorDisplayLabels.FormatAlarmCountShort(solicitud.CantidadAlarmas) + " alarms",
+            AlarmCountLabel = SmokeDetectorDisplayLabels.FormatAlarmCount(solicitud.CantidadAlarmas),
             AlarmTypeLabel = SmokeDetectorDisplayLabels.FormatPrimaryAlarmType(solicitud.TiposAlarmas),
             LocationsLabel = SmokeDetectorDisplayLabels.FormatPipeList(solicitud.UbicacionesSeleccionadas, SmokeDetectorDisplayLabels.FormatLocation),
             InstalledLabel = SmokeDetectorDisplayLabels.FormatInstalledDate(solicitud.AnioInstalacion, solicitud.AnioInstalacionDesconocido, reference),
@@ -315,7 +315,7 @@ public class SmokeDetectorController : Controller
             RecordatorioBateriaAnual = solicitud.RecordatorioBateriaAnual,
             RecordatorioReemplazo10Anos = solicitud.RecordatorioReemplazo10Anos,
             RecordatorioRevisionEstacional = solicitud.RecordatorioRevisionEstacional,
-            TipoAccionAyuda = solicitud.TipoAccionAyuda ?? "ReminderOnly"
+            TipoAccionAyuda = solicitud.TipoAccionAyuda ?? string.Empty
         };
     }
 
@@ -398,11 +398,11 @@ public class SmokeDetectorController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                RecordatorioMensual = true,
-                RecordatorioBateriaAnual = true,
-                RecordatorioReemplazo10Anos = true,
-                RecordatorioRevisionEstacional = true,
-                TipoAccionAyuda = "ReminderOnly"
+                RecordatorioMensual = false,
+                RecordatorioBateriaAnual = false,
+                RecordatorioReemplazo10Anos = false,
+                RecordatorioRevisionEstacional = false,
+                TipoAccionAyuda = string.Empty
             };
             _db.SolicitudesSmokeDetector.Add(solicitud);
             await _db.SaveChangesAsync();

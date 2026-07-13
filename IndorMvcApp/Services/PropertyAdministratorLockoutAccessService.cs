@@ -39,10 +39,7 @@ public class PropertyAdministratorLockoutAccessService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = mapped,
-            QuickDetails = mapped.OccupancyLabel != null || property?.PropertyType == "ShortTermRental"
-                ? "Guest cannot get inside and the keypad is not responding."
-                : ""
+            ViewingProperty = mapped
         };
     }
 
@@ -83,8 +80,7 @@ public class PropertyAdministratorLockoutAccessService(
             Urgency = step1.Urgency,
             WhoNeedsAccess = step1.WhoNeedsAccess,
             QuickDetails = step1.QuickDetails ?? "",
-            EntryNotes = "Guest is waiting at front door. Parking available in driveway.",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }
 

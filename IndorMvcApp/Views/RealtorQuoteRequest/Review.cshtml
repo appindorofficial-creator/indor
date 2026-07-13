@@ -70,12 +70,44 @@
             </span>
         </label>
     </div>
-    <div id="scheduleField" class="@(Model.SendNow ? "rl-hidden" : "")">
-        <input type="datetime-local"
+    @{
+        var scheduleLocal = Model.ScheduledSendUtc;
+        var scheduleDateValue = scheduleLocal?.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture) ?? "";
+        var scheduleTimeValue = scheduleLocal?.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture) ?? "";
+        var scheduleCombined = scheduleLocal?.ToString("yyyy-MM-ddTHH:mm", System.Globalization.CultureInfo.InvariantCulture) ?? "";
+        var minScheduleDate = DateTime.Now.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+    }
+    <div id="scheduleField" class="rl-schedule-panel @(Model.SendNow ? "rl-hidden" : "")" data-schedule-panel>
+        <span class="rl-field-label" id="scheduleFieldLabel">@L["Send date and time"]</span>
+        <p class="rl-field-hint">@L["Pick when providers should receive this request."]</p>
+        <div class="rl-schedule-inputs">
+            <label class="rl-schedule-input">
+                <span class="rl-schedule-sublabel">@L["Date"]</span>
+                <input type="date"
+                       id="scheduledSendDate"
+                       class="rl-field-select rl-field-select--full"
+                       lang="en-US"
+                       min="@minScheduleDate"
+                       value="@scheduleDateValue"
+                       aria-labelledby="scheduleFieldLabel"
+                       data-schedule-date />
+            </label>
+            <label class="rl-schedule-input">
+                <span class="rl-schedule-sublabel">@L["Time"]</span>
+                <input type="time"
+                       id="scheduledSendTime"
+                       class="rl-field-select rl-field-select--full"
+                       lang="en-US"
+                       value="@scheduleTimeValue"
+                       aria-labelledby="scheduleFieldLabel"
+                       data-schedule-time />
+            </label>
+        </div>
+        <input type="hidden"
                name="scheduledSendUtc"
-               class="rl-field-select rl-field-select--full"
-               lang="en-US"
-               value="@(Model.ScheduledSendUtc?.ToString("yyyy-MM-ddTHH:mm", System.Globalization.CultureInfo.InvariantCulture))" />
+               id="scheduledSendUtc"
+               value="@scheduleCombined"
+               data-schedule-combined />
     </div>
 
     <h2 class="rl-invite-section-title">@L["Response preferences"]</h2>
@@ -122,12 +154,70 @@
     const msgCount = document.getElementById('msgCount');
     msgArea?.addEventListener('input', () => { msgCount.textContent = msgArea.value.length; });
 
+    const schedulePanel = document.querySelector('[data-schedule-panel]');
+    const scheduleDate = document.querySelector('[data-schedule-date]');
+    const scheduleTime = document.querySelector('[data-schedule-time]');
+    const scheduleCombined = document.querySelector('[data-schedule-combined]');
+
+    function defaultScheduleParts() {
+        const when = new Date();
+        when.setDate(when.getDate() + 1);
+        when.setHours(9, 0, 0, 0);
+        const yyyy = when.getFullYear();
+        const mm = String(when.getMonth() + 1).padStart(2, '0');
+        const dd = String(when.getDate()).padStart(2, '0');
+        return { date: `${yyyy}-${mm}-${dd}`, time: '09:00' };
+    }
+
+    function syncScheduledSend() {
+        if (!scheduleCombined) return;
+        const date = scheduleDate?.value?.trim() || '';
+        const time = scheduleTime?.value?.trim() || '';
+        scheduleCombined.value = date && time ? `${date}T${time}` : '';
+    }
+
+    function ensureScheduleDefaults() {
+        if (!scheduleDate || !scheduleTime) return;
+        if (!scheduleDate.value || !scheduleTime.value) {
+            const defaults = defaultScheduleParts();
+            if (!scheduleDate.value) scheduleDate.value = defaults.date;
+            if (!scheduleTime.value) scheduleTime.value = defaults.time;
+        }
+        syncScheduledSend();
+    }
+
+    function isSendLater() {
+        return !!document.querySelector('[data-send-radio][value="false"]')?.checked;
+    }
+
+    function setScheduleVisible(sendLater) {
+        schedulePanel?.classList.toggle('rl-hidden', !sendLater);
+        if (sendLater) {
+            ensureScheduleDefaults();
+        } else if (scheduleCombined) {
+            scheduleCombined.value = '';
+        }
+        if (scheduleDate) scheduleDate.required = sendLater;
+        if (scheduleTime) scheduleTime.required = sendLater;
+    }
+
+    scheduleDate?.addEventListener('change', syncScheduledSend);
+    scheduleTime?.addEventListener('change', syncScheduledSend);
+    scheduleDate?.addEventListener('input', syncScheduledSend);
+    scheduleTime?.addEventListener('input', syncScheduledSend);
+
     document.querySelectorAll('[data-send-radio]').forEach(r => {
         r.addEventListener('change', () => {
             document.querySelectorAll('.rl-file-type-option').forEach(p => p.classList.remove('is-selected'));
             r.closest('.rl-file-type-option')?.classList.add('is-selected');
-            document.getElementById('scheduleField')?.classList.toggle('rl-hidden', r.value === 'true');
+            setScheduleVisible(r.value === 'false');
         });
+    });
+
+    setScheduleVisible(isSendLater());
+
+    document.getElementById('quoteReviewForm')?.addEventListener('submit', () => {
+        if (isSendLater()) syncScheduledSend();
     });
 </script>
 }

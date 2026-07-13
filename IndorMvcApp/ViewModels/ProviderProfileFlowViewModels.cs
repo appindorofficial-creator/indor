@@ -1,3 +1,5 @@
+using IndorMvcApp.Validation;
+
 namespace IndorMvcApp.ViewModels;
 
 public sealed class ProviderProfileCompletionViewModel : ProviderProPageBaseViewModel
@@ -64,6 +66,8 @@ public sealed class ProviderProfileBusinessInput
 {
     public string? BusinessName { get; set; }
     public string? PrimaryCategoryId { get; set; }
+
+    [UsPhoneOptional]
     public string? Phone { get; set; }
     public string? Email { get; set; }
     public string? Website { get; set; }

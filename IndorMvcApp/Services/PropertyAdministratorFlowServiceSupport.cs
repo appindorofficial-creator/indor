@@ -8,11 +8,33 @@ namespace IndorMvcApp.Services;
 /// <summary>Shared shell, property mapping, and timeline helpers for PA service wizards.</summary>
 public static class PropertyAdministratorFlowServiceSupport
 {
+    public static bool IsRemovedPortfolioPropertyStatus(string? status) =>
+        status is PropertyAdministratorPortfolioPropertyStatuses.Removed
+            or "Deleted"
+            or "Inactive"
+            or "Eliminado";
+
+    public static bool IsActivePortfolioProperty(IndorPropertyAdminPortfolioProperty? property)
+    {
+        if (property == null || IsRemovedPortfolioPropertyStatus(property.Status))
+        {
+            return false;
+        }
+
+        // When Propiedad is loaded, honor its soft-delete flag as well.
+        return property.Propiedad == null || property.Propiedad.Activo;
+    }
+
+    public static IReadOnlyList<IndorPropertyAdminPortfolioProperty> ActivePortfolioProperties(
+        IEnumerable<IndorPropertyAdminPortfolioProperty> properties) =>
+        properties.Where(IsActivePortfolioProperty).ToList();
+
     public static PropertyAdministratorPortalShellViewModel BuildShell(IndorPropertyAdministrator admin)
     {
         var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()
             ?? PropertyAdministratorDisplayLocalization.L("there");
         var hour = DateTime.Now.Hour;
+        var activeProperties = ActivePortfolioProperties(admin.PortfolioProperties);
 
         return new PropertyAdministratorPortalShellViewModel
         {
@@ -20,13 +42,27 @@ public static class PropertyAdministratorFlowServiceSupport
             PortfolioName = PropertyAdministratorDisplayLocalization.BuildPortfolioName(
                 firstName,
                 admin.PortfolioBusinessName),
-            ActivePropertyCount = admin.PortfolioProperties.Count,
+            ActivePropertyCount = activeProperties.Count,
             Greeting = PropertyAdministratorDisplayLocalization.BuildGreeting(hour, firstName),
             NotificationCount = admin.ServiceRequests.Count(r =>
                 r.Status is PropertyAdministratorRequestStatuses.Open
                     or PropertyAdministratorRequestStatuses.Emergency
                     or PropertyAdministratorRequestStatuses.InProgress)
         };
+    }
+
+    public static IndorPropertyAdminPortfolioProperty? ResolveActiveProperty(
+        IEnumerable<IndorPropertyAdminPortfolioProperty> properties,
+        int? propertyId)
+    {
+        var active = ActivePortfolioProperties(properties);
+        if (propertyId is > 0)
+        {
+            return active.FirstOrDefault(p => p.Id == propertyId.Value)
+                ?? active.OrderByDescending(p => p.FechaCreacion).FirstOrDefault();
+        }
+
+        return active.OrderByDescending(p => p.FechaCreacion).FirstOrDefault();
     }
 
     public static async Task ApplyProfilePhotoAsync(

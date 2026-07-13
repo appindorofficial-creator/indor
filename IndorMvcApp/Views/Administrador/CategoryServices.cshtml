@@ -1,0 +1,66 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorServicesViewModel
+@{
+    Layout = "_PropertyAdminLayout";
+    ViewBag.NavActive = "services";
+    var category = Model.Categories.FirstOrDefault();
+    var categoryKey = category?.CategoryKey ?? Model.ActiveFilter ?? "all";
+    var isEmergency = string.Equals(categoryKey, "emergency", StringComparison.OrdinalIgnoreCase);
+    var title = category != null
+        ? UiDisplayLocalization.Localize(L, category.CategoryTitle)
+        : (isEmergency ? L["Emergency Services"].ToString() : L["Services"].ToString());
+    ViewData["Title"] = title;
+    var items = Model.Categories.SelectMany(c => c.Items).ToList();
+    var subtitle = isEmergency
+        ? L["Fast help for urgent home problems."].ToString()
+        : L["Choose a service to continue."].ToString();
+}
+
+<div class="pa-portal-shell pa-portal-shell--category">
+    <div class="pa-eg-top">
+        <a asp-controller="Administrador" asp-action="Services" class="pa-eg-back" aria-label="@L["Back"]">
+            <i class="fas fa-chevron-left" aria-hidden="true"></i>
+        </a>
+        <div class="pa-eg-title-row">
+            <h1 class="pa-eg-title">@title</h1>
+            @if (isEmergency)
+            {
+                <span class="pa-eg-badge-247">24/7</span>
+            }
+        </div>
+    </div>
+    <p class="pa-eg-sub">@subtitle</p>
+
+    @if (items.Count == 0)
+    {
+        <div class="pa-empty-card">@L["No services match your search."]</div>
+    }
+    else
+    {
+        <div class="pa-eg-grid @(isEmergency ? "pa-eg-grid--emergency" : null)" role="list" aria-label="@title">
+            @foreach (var item in items)
+            {
+                var imgSrc = !string.IsNullOrWhiteSpace(item.ImageUrl)
+                    ? Url.Content("~" + (item.ImageUrl.StartsWith("/") ? item.ImageUrl : "/" + item.ImageUrl))
+                    : null;
+                <a href="@item.Url" class="pa-eg-card @(isEmergency ? "pa-eg-card--emergency" : null)" role="listitem">
+                    <span class="pa-eg-card-media @item.ToneClass">
+                        @if (!string.IsNullOrWhiteSpace(imgSrc))
+                        {
+                            <img src="@imgSrc" alt="" loading="lazy" decoding="async" asp-append-version="true" />
+                        }
+                        else
+                        {
+                            <span class="pa-eg-card-fallback"><i class="fas @item.IconClass"></i></span>
+                        }
+                        <span class="pa-eg-card-icon" aria-hidden="true"><i class="fas @item.IconClass"></i></span>
+                    </span>
+                    <span class="pa-eg-card-label">@UiDisplayLocalization.Localize(L, item.ServiceName)</span>
+                    @if (isEmergency)
+                    {
+                        <span class="pa-eg-card-sub">24/7</span>
+                    }
+                </a>
+            }
+        </div>
+    }
+</div>

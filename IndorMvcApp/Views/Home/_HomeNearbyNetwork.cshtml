@@ -35,10 +35,10 @@
     };
     var landingQuickActions = isLandingFeed ? new List<RealtorQuickActionViewModel>
     {
-        new() { Label = "Certified Providers", Subtitle = "Find verified professionals in your area.", Icon = "fa-shield-halved", Url = BuildFilterUrl(NearbyNetworkHomeownerFilters.Providers) },
+        new() { Label = "Certified Providers", Subtitle = "Certified professionals in your area", Icon = "fa-shield-halved", Url = BuildFilterUrl(NearbyNetworkHomeownerFilters.Providers) },
         new() { Label = "House Facts", Subtitle = "See your property details, history, and records.", Icon = "fa-house-circle-check", Url = (Url.Action("Index", "Home") ?? "/") + "#section-myhome" },
-        new() { Label = "Post a Request", Subtitle = "Ask neighbors for help.", Icon = "fa-plus", Url = Model.QuickActions.FirstOrDefault(a => a.Label == "Post a Request")?.Url ?? Model.PostQuickJobUrl },
-        new() { Label = "My Requests", Subtitle = "Track your requests and responses in one place.", Icon = "fa-comment-dots", Url = Model.MyRequestsUrl }
+        new() { Label = "Post a Request", Subtitle = "Ask neighbors or providers for help.", Icon = "fa-plus", Url = Model.QuickActions.FirstOrDefault(a => a.Label == "Post a Request")?.Url ?? Model.PostQuickJobUrl },
+        new() { Label = "My Requests", Subtitle = "Track & manage your requests", Icon = "fa-comment-dots", Url = Model.MyRequestsUrl }
     } : Model.QuickActions;
     var emptyFilterMessage = Model.ActiveFilter switch
     {
@@ -99,7 +99,7 @@
                 <a href="@BuildFilterUrl(chip.Value)"
                    class="hn-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)"
                    aria-current="@(Model.ActiveFilter == chip.Value ? "page" : null)">
-                    <i class="fas @chip.Icon"></i> @L[chip.Label]
+                    <i class="fas @chip.Icon"></i> @UiDisplayLocalization.Localize(L, chip.Label)
                 </a>
             }
         </div>
@@ -168,7 +168,7 @@
                 <a href="@BuildFilterUrl(chip.Value)"
                    class="hn-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)"
                    aria-current="@(Model.ActiveFilter == chip.Value ? "page" : null)">
-                    <i class="fas @chip.Icon"></i> @L[chip.Label]
+                    <i class="fas @chip.Icon"></i> @UiDisplayLocalization.Localize(L, chip.Label)
                 </a>
             }
         </div>
@@ -187,7 +187,7 @@
                             <span class="hn-v4-tile-badge">@badge</span>
                         }
                         <span class="hn-quick-action-icon"><i class="fas @action.Icon"></i></span>
-                        <span class="hn-quick-action-label">@L[action.Label]</span>
+                        <span class="hn-quick-action-label">@UiDisplayLocalization.Localize(L, action.Label)</span>
                         @if (!string.IsNullOrWhiteSpace(action.Subtitle))
                         {
                             <span class="hn-quick-action-sub">@UiDisplayLocalization.Localize(L, action.Subtitle)</span>

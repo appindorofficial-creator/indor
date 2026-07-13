@@ -1921,6 +1921,15 @@ ul.rl-next-steps li > span:first-child {
 }
 .rl-property-pick--card { align-items: center; }
 .rl-property-pick-thumb { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; }
+.rl-property-pick-thumb--icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #EFF6FF;
+    color: #0066CC;
+    font-size: 1.1rem;
+}
+.rl-property-pick--new .rl-property-pick-body span { color: #64748B; }
 .rl-file-type-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
 .rl-file-type-option {
     display: flex; align-items: center; gap: 12px;
@@ -2039,8 +2048,45 @@ ul.rl-next-steps li > span:first-child {
 .rl-field-select {
     border: 1px solid #E2E8F0; border-radius: 8px; padding: 8px 10px;
     font-size: .84rem; font-family: inherit; width: 100%; max-width: 220px;
+    background: #fff; color: #0F172A;
 }
 .rl-field-select--full { max-width: none; }
+.rl-schedule-panel {
+    margin: 0 0 16px;
+    padding: 14px;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    background: #F8FAFC;
+}
+.rl-schedule-panel .rl-field-label { margin-bottom: 4px; }
+.rl-schedule-panel .rl-field-hint { margin: 0 0 12px; }
+.rl-schedule-inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+.rl-schedule-input { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.rl-schedule-sublabel {
+    font-size: .72rem;
+    font-weight: 700;
+    color: #64748B;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+}
+.rl-schedule-input .rl-field-select {
+    max-width: none;
+    width: 100%;
+    min-height: 44px;
+    margin-bottom: 0;
+    box-sizing: border-box;
+}
+.rl-schedule-input input[type="date"],
+.rl-schedule-input input[type="time"] {
+    color-scheme: light;
+}
+@media (max-width: 480px) {
+    .rl-schedule-inputs { grid-template-columns: 1fr; }
+}
 .rl-toggle-row--card { background: #fff; border: 1px solid #E2E8F0; border-radius: 12px; margin-bottom: 8px; padding: 12px 14px; }
 .rl-hidden { display: none !important; }
 .rl-char-count { text-align: right; font-size: .72rem; color: #94A3B8; margin-bottom: 12px; }
@@ -4095,16 +4141,18 @@ button.rl-premium-link {
 .rl-profile-photo-wrap {
     position: relative;
     flex-shrink: 0;
+    overflow: visible;
 }
 
 .rl-profile-photo-preview {
     width: 64px;
     height: 64px;
+    pointer-events: none;
 }
 
 .rl-profile-photo-edit {
     position: absolute;
-    left: 0;
+    right: 0;
     bottom: 0;
     width: 24px;
     height: 24px;
@@ -4118,7 +4166,21 @@ button.rl-premium-link {
     border: 2px solid #fff;
     cursor: pointer;
     padding: 0;
-    z-index: 2;
+    z-index: 6;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.rl-profile-photo-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 .rl-ep-photo-row {
@@ -4131,6 +4193,7 @@ button.rl-premium-link {
     position: relative;
     flex: 1;
     min-width: 0;
+    overflow: visible;
 }
 
 .rl-profile-photo-change-btn {
@@ -4163,7 +4226,7 @@ button.rl-premium-link {
     position: absolute;
     top: calc(100% + 8px);
     left: 0;
-    z-index: 20;
+    z-index: 30;
     min-width: 190px;
     background: #fff;
     border: 1px solid #E2E8F0;
@@ -5217,6 +5280,45 @@ button.rl-profile-nav-item {
     min-height: 420px;
 }
 
+.rl-map-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    height: 100%;
+    min-height: 420px;
+    padding: 24px;
+    text-align: center;
+    color: #475569;
+    background:
+        linear-gradient(135deg, rgba(226, 232, 240, 0.95) 0%, rgba(241, 245, 249, 0.98) 55%, rgba(219, 234, 254, 0.9) 100%);
+}
+
+.rl-map-loading strong {
+    font-size: .92rem;
+    font-weight: 700;
+    color: #0F172A;
+}
+
+.rl-map-loading-spinner {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid rgba(0, 102, 204, 0.18);
+    border-top-color: #0066CC;
+    animation: rl-network-view-spin .75s linear infinite;
+}
+
+.rl-zillow-map-locate.is-loading {
+    opacity: 0.72;
+    pointer-events: none;
+}
+
+.rl-zillow-map-locate.is-loading i {
+    animation: rl-network-view-spin .75s linear infinite;
+}
+
 .rl-map-error {
     display: flex;
     flex-direction: column;
@@ -5287,6 +5389,11 @@ button.rl-profile-nav-item {
     color: #0F172A;
 }
 
+.rl-zillow-map-filter-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
 .rl-zillow-map-filter-btn,
 .rl-zillow-map-locate {
     border: none;
@@ -5304,6 +5411,33 @@ button.rl-profile-nav-item {
     height: 48px;
     border-radius: 50%;
     flex-shrink: 0;
+}
+
+.rl-zillow-map-filter-btn[aria-expanded="true"] {
+    color: #0066CC;
+    box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.22), 0 4px 18px rgba(15, 23, 42, 0.14);
+}
+
+.rl-zillow-map-filter-menu {
+    z-index: 6;
+    min-width: 200px;
+}
+
+.rl-zillow-map-filter-menu-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.rl-zillow-map-filter-menu-label > i {
+    width: 1em;
+    text-align: center;
+    color: #64748B;
+    font-size: .78rem;
+}
+
+.rl-zillow-map-filter-menu .rl-filter-menu-item.is-active .rl-zillow-map-filter-menu-label > i {
+    color: #0066CC;
 }
 
 .rl-zillow-map-locate {
@@ -5478,11 +5612,34 @@ button.rl-profile-nav-item {
     color: #64748B;
     font-size: .88rem;
     font-weight: 700;
+    transition: background-color .15s ease, color .15s ease, box-shadow .15s ease, transform .12s ease;
+}
+.rl-network-view-btn:active {
+    transform: scale(0.98);
 }
 .rl-network-view-btn.is-active {
     background: #0066CC;
     color: #fff;
     box-shadow: 0 4px 12px rgba(0, 102, 204, 0.22);
+}
+.rl-network-view-btn.is-pending {
+    pointer-events: none;
+}
+.rl-network-view-btn.is-pending .fa-map,
+.rl-network-view-btn.is-pending .fa-list {
+    display: none;
+}
+.rl-network-view-btn.is-pending::before {
+    content: "";
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    animation: rl-network-view-spin .7s linear infinite;
+}
+@keyframes rl-network-view-spin {
+    to { transform: rotate(360deg); }
 }
 .rl-network-filters { margin-bottom: 16px; }
 .rl-network-filters .rl-filter-chip {

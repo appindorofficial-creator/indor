@@ -23,15 +23,19 @@
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
 
-    <div class="prv-chip-grid prv-chip-grid--assessment">
+    <div class="prv-chip-grid prv-chip-grid--assessment" data-chip-group>
         @foreach (var cat in displayCategories)
         {
             var isChecked = selected.Contains(cat.Id, StringComparer.OrdinalIgnoreCase);
-            <label class="prv-chip prv-chip--assessment @(isChecked ? "is-selected" : "")">
-                <input type="checkbox" name="categoryIds" value="@cat.Id" @(isChecked ? "checked" : null) />
-                <i class="fas @cat.IconClass"></i>
+            <div class="prv-chip prv-chip--assessment @(isChecked ? "is-selected" : "")"
+                 role="checkbox"
+                 tabindex="0"
+                 aria-checked="@(isChecked ? "true" : "false")"
+                 aria-pressed="@(isChecked ? "true" : "false")">
+                <input type="checkbox" name="categoryIds" value="@cat.Id" tabindex="-1" @(isChecked ? "checked" : null) />
+                <i class="fas @cat.IconClass" aria-hidden="true"></i>
                 <span>@cat.Label</span>
-            </label>
+            </div>
         }
     </div>
 

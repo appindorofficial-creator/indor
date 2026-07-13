@@ -16,16 +16,16 @@ public class PropertyAdministratorAirFilterBenefitViewModel
 
 public class PropertyAdministratorAirFilterFormViewModel : PropertyAdministratorPortalShellViewModel
 {
-    public int FlowStep { get; set; } = 2;
+    public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string ServiceType { get; set; } = "ReplaceFilter";
-    public string IsOccupied { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string FilterSize { get; set; } = "20x20x1";
-    public string Frequency { get; set; } = "Every3Months";
-    public string EntryAccess { get; set; } = "SmartLock";
-    public string UpdateRecipients { get; set; } = "Me,Guest";
+    public string ServiceType { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string FilterSize { get; set; } = "";
+    public string Frequency { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
+    public string UpdateRecipients { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string Details { get; set; } = "";
     public string EstimatedPrice { get; set; } = "$59–$89";
@@ -35,13 +35,13 @@ public class PropertyAdministratorAirFilterFormViewModel : PropertyAdministrator
 public class PropertyAdministratorAirFilterSubmitInput
 {
     public int PropertyId { get; set; }
-    public string ServiceType { get; set; } = "ReplaceFilter";
-    public string IsOccupied { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string FilterSize { get; set; } = "20x20x1";
-    public string Frequency { get; set; } = "Every3Months";
-    public string EntryAccess { get; set; } = "SmartLock";
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public string ServiceType { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string FilterSize { get; set; } = "";
+    public string Frequency { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
     public string? Details { get; set; }
 }

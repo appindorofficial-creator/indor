@@ -71,21 +71,21 @@ public class FurnitureAssemblyPreferencesViewModel : IValidatableObject
     public string DireccionPropiedad { get; set; } = string.Empty;
 
     [Required]
-    public string Habitacion { get; set; } = "LivingRoom";
+    public string Habitacion { get; set; } = string.Empty;
 
     [Required]
-    public string DetallesAcceso { get; set; } = "FirstFloor";
+    public string DetallesAcceso { get; set; } = string.Empty;
 
     [Required]
-    public string AyudaMover { get; set; } = "NotSure";
+    public string AyudaMover { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Select a preferred date.")]
     [DataType(DataType.Date)]
     [Display(Name = "Preferred date")]
-    public DateTime FechaServicio { get; set; }
+    public DateTime? FechaServicio { get; set; }
 
     [Required]
-    public string VentanaHorario { get; set; } = "Morning";
+    public string VentanaHorario { get; set; } = string.Empty;
 
     [MaxLength(250)]
     public string? NotaCorta { get; set; }
@@ -94,7 +94,7 @@ public class FurnitureAssemblyPreferencesViewModel : IValidatableObject
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (FechaServicio.Date < DateTime.Today)
+        if (FechaServicio is null || FechaServicio.Value.Date < DateTime.Today)
         {
             yield return new ValidationResult(
                 "Please select today or a future date.",

@@ -47,30 +47,93 @@ document.querySelectorAll('.prv-wiz-card--selectable').forEach(card => {
     });
 })();
 
-document.querySelectorAll('[data-chip-group]').forEach(group => {
-    const single = group.dataset.singleSelect === 'true' || group.classList.contains('prv-chip-grid--single');
+(function wireProviderChips() {
+    function syncChipGroup(group, input) {
+        const single = group && (group.dataset.singleSelect === 'true' || group.classList.contains('prv-chip-grid--single'));
+        const chip = input.closest('.prv-chip');
+        if (!chip) return;
 
-    group.querySelectorAll('.prv-chip input').forEach(input => {
-        input.addEventListener('change', () => {
-            if (single && input.type === 'radio') {
-                group.querySelectorAll('.prv-chip').forEach(chip => {
-                    chip.classList.remove('is-selected');
-                    const check = chip.querySelector('.prv-chip-check');
-                    if (check) check.remove();
-                });
-                const chip = input.closest('.prv-chip');
-                chip?.classList.add('is-selected');
-                if (chip && !chip.querySelector('.prv-chip-check')) {
-                    const icon = document.createElement('i');
-                    icon.className = 'fas fa-circle-check prv-chip-check';
-                    chip.appendChild(icon);
-                }
-            } else {
-                input.closest('.prv-chip')?.classList.toggle('is-selected', input.checked);
+        if (single && input.type === 'radio') {
+            const scope = group || document;
+            scope.querySelectorAll('.prv-chip').forEach(other => {
+                other.classList.remove('is-selected');
+                other.setAttribute('aria-pressed', 'false');
+                other.setAttribute('aria-checked', 'false');
+                const check = other.querySelector('.prv-chip-check');
+                if (check) check.remove();
+            });
+            chip.classList.add('is-selected');
+            chip.setAttribute('aria-pressed', 'true');
+            chip.setAttribute('aria-checked', 'true');
+            if (!chip.querySelector('.prv-chip-check')) {
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-circle-check prv-chip-check';
+                chip.appendChild(icon);
             }
-        });
+            return;
+        }
+
+        if (input.type === 'radio' && input.name) {
+            document.querySelectorAll(`.prv-chip input[type="radio"][name="${CSS.escape(input.name)}"]`).forEach(radio => {
+                const other = radio.closest('.prv-chip');
+                if (!other) return;
+                other.classList.toggle('is-selected', radio.checked);
+                other.setAttribute('aria-pressed', radio.checked ? 'true' : 'false');
+                other.setAttribute('aria-checked', radio.checked ? 'true' : 'false');
+            });
+            return;
+        }
+
+        chip.classList.toggle('is-selected', input.checked);
+        chip.setAttribute('aria-pressed', input.checked ? 'true' : 'false');
+        chip.setAttribute('aria-checked', input.checked ? 'true' : 'false');
+    }
+
+    function toggleChip(chip, input, group) {
+        if (input.disabled) return;
+
+        if (input.type === 'radio') {
+            if (!input.checked) {
+                input.checked = true;
+                syncChipGroup(group, input);
+                input.dispatchEvent(new Event('change', { bubbles: true }));
+            } else {
+                syncChipGroup(group, input);
+            }
+            return;
+        }
+
+        input.checked = !input.checked;
+        syncChipGroup(group, input);
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    document.querySelectorAll('.prv-chip').forEach(chip => {
+        const input = chip.querySelector('input[type="checkbox"], input[type="radio"]');
+        if (!input || chip.dataset.chipToggleBound === 'true') return;
+        chip.dataset.chipToggleBound = 'true';
+
+        const group = chip.closest('[data-chip-group]');
+        const isLabel = chip.tagName === 'LABEL';
+
+        // Div-based chips need an explicit toggle. Label chips keep native activation
+        // and only sync visuals on change (avoids double-toggle).
+        if (!isLabel) {
+            chip.addEventListener('click', e => {
+                e.preventDefault();
+                toggleChip(chip, input, group);
+            });
+            chip.addEventListener('keydown', e => {
+                if (e.key !== 'Enter' && e.key !== ' ') return;
+                e.preventDefault();
+                toggleChip(chip, input, group);
+            });
+        }
+
+        input.addEventListener('change', () => syncChipGroup(group, input));
+        syncChipGroup(group, input);
     });
-});
+})();
 
 function wireChipSearch(searchId, gridId) {
     const searchInput = document.getElementById(searchId);

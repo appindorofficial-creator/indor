@@ -12,7 +12,7 @@
         </a>
         <div class="rl-listing-detail-head-copy">
             <h1>@Model.ReportFileName</h1>
-            <p>@(Model.SourcePage is > 0 ? $"Page {Model.SourcePage}" : "Inspection report")</p>
+            <p>@(Model.SourcePage is > 0 ? L.T("Page {0}", Model.SourcePage) : L["Inspection report"])</p>
         </div>
     </header>
 

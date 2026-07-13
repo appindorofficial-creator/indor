@@ -131,14 +131,17 @@ public class TrashController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id);
         if (solicitud == null) return NotFound();
 
+        var helpSaved = string.Equals(solicitud.Estado, "HelpCompleted", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
+
         return View(new TrashHelpViewModel
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
-            TipoAyuda = solicitud.TipoAyuda ?? "TakeOutReturn",
-            RecordatorioCuando = solicitud.RecordatorioCuando ?? "OneDayBefore",
-            VentanaRecoleccion = solicitud.VentanaRecoleccion ?? "Morning7_12",
-            NotasEspeciales = solicitud.NotasEspeciales
+            TipoAyuda = helpSaved ? (solicitud.TipoAyuda ?? string.Empty) : string.Empty,
+            RecordatorioCuando = helpSaved ? (solicitud.RecordatorioCuando ?? string.Empty) : string.Empty,
+            VentanaRecoleccion = helpSaved ? (solicitud.VentanaRecoleccion ?? string.Empty) : string.Empty,
+            NotasEspeciales = helpSaved ? solicitud.NotasEspeciales : null
         });
     }
 
@@ -307,17 +310,29 @@ public class TrashController : Controller
         };
     }
 
-    private TrashSetupViewModel BuildSetupViewModel(SolicitudTrash solicitud, TrashSetupViewModel? posted = null) =>
-        new()
+    private TrashSetupViewModel BuildSetupViewModel(SolicitudTrash solicitud, TrashSetupViewModel? posted = null)
+    {
+        var setupSaved = !string.Equals(solicitud.Estado, "InProgress", StringComparison.OrdinalIgnoreCase);
+        return new()
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
-            BinsSeleccionados = posted?.BinsSeleccionados ?? solicitud.BinsSeleccionados ?? "Trash",
-            CantidadBins = posted?.CantidadBins ?? solicitud.CantidadBins ?? "One",
-            Frecuencia = posted?.Frecuencia ?? solicitud.Frecuencia ?? "OneTime",
-            DiaRecoleccion = posted?.DiaRecoleccion ?? solicitud.DiaRecoleccion ?? "Tue",
-            PrecioMensual = TrashPricingService.GetMonthlyPrice(posted?.CantidadBins ?? solicitud.CantidadBins)
+            BinsSeleccionados = posted?.BinsSeleccionados
+                ?? (setupSaved ? solicitud.BinsSeleccionados : null)
+                ?? string.Empty,
+            CantidadBins = posted?.CantidadBins
+                ?? (setupSaved ? solicitud.CantidadBins : null)
+                ?? string.Empty,
+            Frecuencia = posted?.Frecuencia
+                ?? (setupSaved ? solicitud.Frecuencia : null)
+                ?? string.Empty,
+            DiaRecoleccion = posted?.DiaRecoleccion
+                ?? (setupSaved ? solicitud.DiaRecoleccion : null)
+                ?? string.Empty,
+            PrecioMensual = TrashPricingService.GetMonthlyPrice(
+                posted?.CantidadBins ?? (setupSaved ? solicitud.CantidadBins : null))
         };
+    }
 
     private static TrashReviewViewModel BuildReviewViewModel(SolicitudTrash solicitud, string? infoBox) =>
         new()
@@ -394,15 +409,7 @@ public class TrashController : Controller
                 MicroservicioId = microservicioId,
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
-                FechaCreacion = DateTime.Now,
-                BinsSeleccionados = "Trash",
-                CantidadBins = "One",
-                Frecuencia = "OneTime",
-                DiaRecoleccion = "Tue",
-                TipoAyuda = "TakeOutReturn",
-                RecordatorioCuando = "OneDayBefore",
-                VentanaRecoleccion = "Morning7_12",
-                PrecioMensual = 20
+                FechaCreacion = DateTime.Now
             };
             _db.SolicitudesTrash.Add(solicitud);
             await _db.SaveChangesAsync();

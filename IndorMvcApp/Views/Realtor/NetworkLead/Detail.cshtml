@@ -36,7 +36,7 @@
                     }
                     @if (!string.IsNullOrWhiteSpace(Model.MetaLabel))
                     {
-                        <p class="rl-listing-detail-specs">@Model.MetaLabel</p>
+                        <p class="rl-listing-detail-specs">@UiDisplayLocalization.Localize(L, Model.MetaLabel)</p>
                     }
                     <span class="rl-listing-detail-distance"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.DistanceLabel)</span>
                 </div>

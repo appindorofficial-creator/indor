@@ -97,26 +97,66 @@ BEGIN
     INSERT INTO dbo.IndorPropertyAdminServiceCatalog
         (CategoryKey, CategoryTitle, CategoryOrder, ServiceName, ServiceSlug, IconClass, ToneClass, LinkController, LinkAction, Orden)
     VALUES
-    (N'emergency', N'Emergency Services', 1, N'Emergency AC', N'emergency-ac', N'fa-snowflake', N'tone-red', N'Administrador', N'EmergencyAcDetails', 1),
-    (N'emergency', N'Emergency Services', 1, N'Emergency Plumbing', N'emergency-plumbing', N'fa-droplet', N'tone-red', N'Administrador', N'EmergencyPlumbingDetails', 2),
-    (N'emergency', N'Emergency Services', 1, N'Emergency Electrical', N'emergency-electrical', N'fa-bolt', N'tone-red', N'Administrador', N'EmergencyElectricalDetails', 3),
-    (N'emergency', N'Emergency Services', 1, N'Emergency Flood', N'emergency-flood', N'fa-water', N'tone-red', N'Administrador', N'EmergencyFloodDetails', 4),
-    (N'homecare', N'Homecare & Maintenance', 2, N'Preventive Maintenance', N'preventive-maintenance', N'fa-screwdriver-wrench', N'tone-blue', N'Administrador', N'PreventiveMaintenanceServices', 1),
-    (N'homecare', N'Homecare & Maintenance', 2, N'HVAC Filter Change', N'hvac-filter', N'fa-fan', N'tone-blue', N'Administrador', N'AirFilterDetails', 2),
-    (N'homecare', N'Homecare & Maintenance', 2, N'Smoke Detector Check', N'smoke-detector', N'fa-bell', N'tone-green', N'Administrador', N'SmokeDetectorDetails', 3),
-    (N'cleaning', N'Cleaning & Turnover', 3, N'Turnover Cleaning', N'turnover-cleaning', N'fa-broom', N'tone-purple', N'Administrador', N'TurnoverCleaningDetails', 1),
-    (N'cleaning', N'Cleaning & Turnover', 3, N'Standard Cleaning', N'standard-cleaning', N'fa-spray-can-sparkles', N'tone-purple', N'Administrador', N'StandardCleaningDetails', 2),
-    (N'cleaning', N'Cleaning & Turnover', 3, N'Pet Deep Clean', N'pet-deep-clean', N'fa-paw', N'tone-purple', N'Administrador', N'PetDeepCleanDetails', 3),
-    (N'cleaning', N'Cleaning & Turnover', 3, N'Linen / Supply Restock', N'linen-restock', N'fa-box', N'tone-purple', NULL, NULL, 4),
-    (N'cleaning', N'Cleaning & Turnover', 3, N'Trashout', N'trashout', N'fa-trash', N'tone-purple', N'Trash', N'TrashService', 5),
-    (N'outdoor', N'Outdoor & Exterior', 4, N'Lawn Care / Grass Cutting', N'lawn-care', N'fa-seedling', N'tone-green', N'Lawn', N'LawnService', 1),
-    (N'outdoor', N'Outdoor & Exterior', 4, N'Landscaping', N'landscaping', N'fa-leaf', N'tone-green', NULL, NULL, 2),
-    (N'outdoor', N'Outdoor & Exterior', 4, N'Pressure Washing', N'pressure-washing', N'fa-spray-can', N'tone-green', N'PowerWash', N'PowerWashService', 3),
-    (N'outdoor', N'Outdoor & Exterior', 4, N'Pest Control', N'pest-control', N'fa-bug', N'tone-green', N'PestControl', N'PestControlService', 4),
-    (N'outdoor', N'Outdoor & Exterior', 4, N'Pool / Hot Tub Service', N'pool-hot-tub', N'fa-water-ladder', N'tone-green', NULL, NULL, 5),
-    (N'moving', N'Moving & Logistics', 5, N'Moving Help', N'moving-help', N'fa-truck', N'tone-blue', N'Moving', N'MovingService', 1);
+    (N'homecare', N'Homecare & Maintenance', 1, N'Preventive Maintenance', N'preventive-maintenance', N'fa-screwdriver-wrench', N'tone-blue', N'Administrador', N'PreventiveMaintenanceServices', 1),
+    (N'homecare', N'Homecare & Maintenance', 1, N'HVAC Filter Change', N'hvac-filter', N'fa-fan', N'tone-blue', N'Administrador', N'AirFilterDetails', 2),
+    (N'homecare', N'Homecare & Maintenance', 1, N'Smoke Detector Check', N'smoke-detector', N'fa-bell', N'tone-green', N'Administrador', N'SmokeDetectorDetails', 3),
+    (N'cleaning', N'Cleaning & Turnover', 2, N'Turnover Cleaning', N'turnover-cleaning', N'fa-broom', N'tone-purple', N'Administrador', N'TurnoverCleaningDetails', 1),
+    (N'cleaning', N'Cleaning & Turnover', 2, N'Standard Cleaning', N'standard-cleaning', N'fa-spray-can-sparkles', N'tone-purple', N'Administrador', N'StandardCleaningDetails', 2),
+    (N'cleaning', N'Cleaning & Turnover', 2, N'Pet Deep Clean', N'pet-deep-clean', N'fa-paw', N'tone-purple', N'Administrador', N'PetDeepCleanDetails', 3),
+    (N'cleaning', N'Cleaning & Turnover', 2, N'Linen / Supply Restock', N'linen-restock', N'fa-box', N'tone-purple', NULL, NULL, 4),
+    (N'cleaning', N'Cleaning & Turnover', 2, N'Trashout', N'trashout', N'fa-trash', N'tone-purple', N'Trash', N'TrashService', 5),
+    (N'outdoor', N'Outdoor & Exterior', 3, N'Lawn Care / Grass Cutting', N'lawn-care', N'fa-seedling', N'tone-green', N'Lawn', N'LawnService', 1),
+    (N'outdoor', N'Outdoor & Exterior', 3, N'Landscaping', N'landscaping', N'fa-leaf', N'tone-green', NULL, NULL, 2),
+    (N'outdoor', N'Outdoor & Exterior', 3, N'Pressure Washing', N'pressure-washing', N'fa-spray-can', N'tone-green', N'PowerWash', N'PowerWashService', 3),
+    (N'outdoor', N'Outdoor & Exterior', 3, N'Pest Control', N'pest-control', N'fa-bug', N'tone-green', N'PestControl', N'PestControlService', 4),
+    (N'outdoor', N'Outdoor & Exterior', 3, N'Pool / Hot Tub Service', N'pool-hot-tub', N'fa-water-ladder', N'tone-green', NULL, NULL, 5),
+    (N'moving', N'Moving & Logistics', 4, N'Moving Help', N'moving-help', N'fa-truck', N'tone-blue', N'Moving', N'MovingService', 1),
+    (N'emergency', N'Emergency Services', 5, N'Emergency AC', N'emergency-ac', N'fa-snowflake', N'tone-red', N'Administrador', N'EmergencyAcDetails', 1),
+    (N'emergency', N'Emergency Services', 5, N'Emergency Plumbing', N'emergency-plumbing', N'fa-droplet', N'tone-red', N'Administrador', N'EmergencyPlumbingDetails', 2),
+    (N'emergency', N'Emergency Services', 5, N'Emergency Electrical', N'emergency-electrical', N'fa-bolt', N'tone-red', N'Administrador', N'EmergencyElectricalDetails', 3),
+    (N'emergency', N'Emergency Services', 5, N'Emergency Flood', N'emergency-flood', N'fa-water', N'tone-red', N'Administrador', N'EmergencyFloodDetails', 4),
+    (N'emergency', N'Emergency Services', 5, N'Emergency Roof Leak', N'emergency-roof-leak', N'fa-house-chimney-crack', N'tone-red', N'Administrador', N'EmergencyRoofLeakDetails', 5),
+    (N'emergency', N'Emergency Services', 5, N'Tree / Branch Emergency', N'emergency-tree-branch', N'fa-tree', N'tone-red', N'Administrador', N'EmergencyTreeBranchDetails', 6),
+    (N'emergency', N'Emergency Services', 5, N'Lockout / Access', N'lockout-access', N'fa-key', N'tone-red', N'Administrador', N'LockoutAccessDetails', 7),
+    (N'emergency', N'Emergency Services', 5, N'Broken Window / Board-Up', N'broken-window-board-up', N'fa-window-maximize', N'tone-red', N'Administrador', N'BrokenWindowDetails', 8),
+    (N'emergency', N'Emergency Services', 5, N'Sewer Backup', N'sewer-backup', N'fa-toilet', N'tone-red', N'Administrador', N'SewerBackupDetails', 9),
+    (N'emergency', N'Emergency Services', 5, N'Water Heater Emergency', N'emergency-water-heater', N'fa-fire-flame-simple', N'tone-red', N'Administrador', N'WaterHeaterDetails', 10);
     PRINT 'Service catalog seeded.';
 END
+GO
+
+-- Ensure full Emergency Services catalog even when an older partial seed already ran
+MERGE dbo.IndorPropertyAdminServiceCatalog AS t
+USING (VALUES
+    (N'emergency', N'Emergency Services', 5, N'Emergency AC', N'emergency-ac', N'fa-snowflake', N'tone-red', N'Administrador', N'EmergencyAcDetails', 1),
+    (N'emergency', N'Emergency Services', 5, N'Emergency Plumbing', N'emergency-plumbing', N'fa-droplet', N'tone-red', N'Administrador', N'EmergencyPlumbingDetails', 2),
+    (N'emergency', N'Emergency Services', 5, N'Emergency Electrical', N'emergency-electrical', N'fa-bolt', N'tone-red', N'Administrador', N'EmergencyElectricalDetails', 3),
+    (N'emergency', N'Emergency Services', 5, N'Emergency Flood', N'emergency-flood', N'fa-water', N'tone-red', N'Administrador', N'EmergencyFloodDetails', 4),
+    (N'emergency', N'Emergency Services', 5, N'Emergency Roof Leak', N'emergency-roof-leak', N'fa-house-chimney-crack', N'tone-red', N'Administrador', N'EmergencyRoofLeakDetails', 5),
+    (N'emergency', N'Emergency Services', 5, N'Tree / Branch Emergency', N'emergency-tree-branch', N'fa-tree', N'tone-red', N'Administrador', N'EmergencyTreeBranchDetails', 6),
+    (N'emergency', N'Emergency Services', 5, N'Lockout / Access', N'lockout-access', N'fa-key', N'tone-red', N'Administrador', N'LockoutAccessDetails', 7),
+    (N'emergency', N'Emergency Services', 5, N'Broken Window / Board-Up', N'broken-window-board-up', N'fa-window-maximize', N'tone-red', N'Administrador', N'BrokenWindowDetails', 8),
+    (N'emergency', N'Emergency Services', 5, N'Sewer Backup', N'sewer-backup', N'fa-toilet', N'tone-red', N'Administrador', N'SewerBackupDetails', 9),
+    (N'emergency', N'Emergency Services', 5, N'Water Heater Emergency', N'emergency-water-heater', N'fa-fire-flame-simple', N'tone-red', N'Administrador', N'WaterHeaterDetails', 10)
+) AS s (CategoryKey, CategoryTitle, CategoryOrder, ServiceName, ServiceSlug, IconClass, ToneClass, LinkController, LinkAction, Orden)
+ON t.ServiceSlug = s.ServiceSlug
+WHEN MATCHED THEN
+    UPDATE SET
+        CategoryKey = s.CategoryKey,
+        CategoryTitle = s.CategoryTitle,
+        CategoryOrder = s.CategoryOrder,
+        ServiceName = s.ServiceName,
+        IconClass = s.IconClass,
+        ToneClass = s.ToneClass,
+        LinkController = s.LinkController,
+        LinkAction = s.LinkAction,
+        Orden = s.Orden,
+        Activo = 1
+WHEN NOT MATCHED THEN
+    INSERT (CategoryKey, CategoryTitle, CategoryOrder, ServiceName, ServiceSlug, IconClass, ToneClass, LinkController, LinkAction, Orden)
+    VALUES (s.CategoryKey, s.CategoryTitle, s.CategoryOrder, s.ServiceName, s.ServiceSlug, s.IconClass, s.ToneClass, s.LinkController, s.LinkAction, s.Orden);
+
+PRINT 'Emergency service catalog ensured (full set).';
 GO
 
 -- Outdoor & Exterior + catalog updates (idempotent — safe if seed already ran)
@@ -126,12 +166,12 @@ DECLARE @PestPriorityId INT = (SELECT TOP 1 Id FROM dbo.HomeCarePriorities WHERE
 
 MERGE dbo.IndorPropertyAdminServiceCatalog AS t
 USING (VALUES
-    (N'outdoor', N'Outdoor & Exterior', 4, N'Lawn Care / Grass Cutting', N'lawn-care', N'fa-seedling', N'tone-green', N'Lawn', N'LawnService', @LawnMicroId, 1),
-    (N'outdoor', N'Outdoor & Exterior', 4, N'Landscaping', N'landscaping', N'fa-leaf', N'tone-green', NULL, NULL, NULL, 2),
-    (N'outdoor', N'Outdoor & Exterior', 4, N'Pressure Washing', N'pressure-washing', N'fa-spray-can', N'tone-green', N'PowerWash', N'PowerWashService', @PowerWashPriorityId, 3),
-    (N'outdoor', N'Outdoor & Exterior', 4, N'Pest Control', N'pest-control', N'fa-bug', N'tone-green', N'PestControl', N'PestControlService', @PestPriorityId, 4),
-    (N'outdoor', N'Outdoor & Exterior', 4, N'Pool / Hot Tub Service', N'pool-hot-tub', N'fa-water-ladder', N'tone-green', NULL, NULL, NULL, 5),
-    (N'cleaning', N'Cleaning & Turnover', 3, N'Linen / Supply Restock', N'linen-restock', N'fa-box', N'tone-purple', NULL, NULL, NULL, 4)
+    (N'outdoor', N'Outdoor & Exterior', 3, N'Lawn Care / Grass Cutting', N'lawn-care', N'fa-seedling', N'tone-green', N'Lawn', N'LawnService', @LawnMicroId, 1),
+    (N'outdoor', N'Outdoor & Exterior', 3, N'Landscaping', N'landscaping', N'fa-leaf', N'tone-green', NULL, NULL, NULL, 2),
+    (N'outdoor', N'Outdoor & Exterior', 3, N'Pressure Washing', N'pressure-washing', N'fa-spray-can', N'tone-green', N'PowerWash', N'PowerWashService', @PowerWashPriorityId, 3),
+    (N'outdoor', N'Outdoor & Exterior', 3, N'Pest Control', N'pest-control', N'fa-bug', N'tone-green', N'PestControl', N'PestControlService', @PestPriorityId, 4),
+    (N'outdoor', N'Outdoor & Exterior', 3, N'Pool / Hot Tub Service', N'pool-hot-tub', N'fa-water-ladder', N'tone-green', NULL, NULL, NULL, 5),
+    (N'cleaning', N'Cleaning & Turnover', 2, N'Linen / Supply Restock', N'linen-restock', N'fa-box', N'tone-purple', NULL, NULL, NULL, 4)
 ) AS s (CategoryKey, CategoryTitle, CategoryOrder, ServiceName, ServiceSlug, IconClass, ToneClass, LinkController, LinkAction, LinkRouteId, Orden)
 ON t.ServiceSlug = s.ServiceSlug
 WHEN NOT MATCHED THEN
@@ -139,12 +179,16 @@ WHEN NOT MATCHED THEN
     VALUES (s.CategoryKey, s.CategoryTitle, s.CategoryOrder, s.ServiceName, s.ServiceSlug, s.IconClass, s.ToneClass, s.LinkController, s.LinkAction, s.LinkRouteId, s.Orden);
 
 UPDATE dbo.IndorPropertyAdminServiceCatalog
-SET CategoryKey = N'cleaning', CategoryTitle = N'Cleaning & Turnover', CategoryOrder = 3, Orden = 5
+SET CategoryKey = N'cleaning', CategoryTitle = N'Cleaning & Turnover', CategoryOrder = 2, Orden = 5
 WHERE ServiceSlug = N'trashout' AND CategoryKey = N'moving';
 
 UPDATE dbo.IndorPropertyAdminServiceCatalog
-SET CategoryOrder = 5
+SET CategoryOrder = 4
 WHERE CategoryKey = N'moving';
+
+UPDATE dbo.IndorPropertyAdminServiceCatalog
+SET CategoryOrder = 5
+WHERE CategoryKey = N'emergency';
 
 UPDATE dbo.IndorPropertyAdminServiceCatalog
 SET LinkController = N'Lawn', LinkAction = N'LawnService', LinkRouteId = @LawnMicroId

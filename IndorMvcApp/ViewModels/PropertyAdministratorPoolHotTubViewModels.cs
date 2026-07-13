@@ -12,20 +12,20 @@ public class PropertyAdministratorPoolHotTubStep1ViewModel : PropertyAdministrat
     public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string ServiceHelpType { get; set; } = "HotTubRepair";
-    public string MainIssue { get; set; } = "HeaterIssue";
-    public string GuestStayAffected { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Urgent";
+    public string ServiceHelpType { get; set; } = "";
+    public string MainIssue { get; set; } = "";
+    public string GuestStayAffected { get; set; } = "";
+    public string Urgency { get; set; } = "";
     public string QuickDetails { get; set; } = "";
 }
 
 public class PropertyAdministratorPoolHotTubStep1Input
 {
     public int PropertyId { get; set; }
-    public string ServiceHelpType { get; set; } = "HotTubRepair";
-    public string MainIssue { get; set; } = "HeaterIssue";
-    public string GuestStayAffected { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Urgent";
+    public string ServiceHelpType { get; set; } = "";
+    public string MainIssue { get; set; } = "";
+    public string GuestStayAffected { get; set; } = "";
+    public string Urgency { get; set; } = "";
     public string? QuickDetails { get; set; }
 }
 
@@ -43,16 +43,16 @@ public class PropertyAdministratorPoolHotTubStep2ViewModel : PropertyAdministrat
     public int PropertyId { get; set; }
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? PropertyStatusLabel { get; set; }
-    public string ServiceHelpType { get; set; } = "HotTubRepair";
-    public string MainIssue { get; set; } = "HeaterIssue";
-    public string GuestStayAffected { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Urgent";
+    public string ServiceHelpType { get; set; } = "";
+    public string MainIssue { get; set; } = "";
+    public string GuestStayAffected { get; set; } = "";
+    public string Urgency { get; set; } = "";
     public string QuickDetails { get; set; } = "";
     public IReadOnlyList<PropertyAdministratorPoolHotTubSummaryChipViewModel> Step1Summary { get; set; } = [];
-    public string EquipmentLocation { get; set; } = "BackyardSpa";
-    public string EntryAccess { get; set; } = "GateCode";
+    public string EquipmentLocation { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
     public string AccessCode { get; set; } = "";
-    public string UpdateRecipients { get; set; } = "Me,Guest";
+    public string UpdateRecipients { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string ProEtaLabel { get; set; } = "Nearest pool & spa pro available in 27 minutes";
     public string DiagnosticEstimate { get; set; } = "$129 – $169";
@@ -61,10 +61,10 @@ public class PropertyAdministratorPoolHotTubStep2ViewModel : PropertyAdministrat
 
 public class PropertyAdministratorPoolHotTubSubmitInput : PropertyAdministratorPoolHotTubStep1Input
 {
-    public string EquipmentLocation { get; set; } = "BackyardSpa";
-    public string EntryAccess { get; set; } = "GateCode";
+    public string EquipmentLocation { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
     public string? AccessCode { get; set; }
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string? ContactPhone { get; set; }
 }
 

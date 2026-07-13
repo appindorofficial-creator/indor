@@ -580,6 +580,22 @@ public partial class ProveedorController(
         draft.NeedsCOI = model.NeedsCOI;
         draft.AutoPayMonthly = model.AutoPayMonthly;
 
+        // The insurance carrier requires these to underwrite the policy, so make them mandatory.
+        if (string.IsNullOrWhiteSpace(draft.NumberOfEmployees))
+            ModelState.AddModelError(nameof(model.NumberOfEmployees), localizer["Select the number of employees."]);
+        if (draft.EmployeePayroll is null or < 0)
+            ModelState.AddModelError(nameof(model.EmployeePayroll), localizer["Enter your annual payroll."]);
+        if (draft.CompanyGrossRevenue is null or < 0)
+            ModelState.AddModelError(nameof(model.CompanyGrossRevenue), localizer["Enter your annual gross revenue."]);
+
+        if (!ModelState.IsValid)
+        {
+            model.CompanyInitial = CompanyInitial(proveedor.Entity!);
+            model.Plan = draft.Plan;
+            model.FirstBillingDate = DateTime.Today.AddDays(30);
+            return View(model);
+        }
+
         SaveInsuranceDraft(draft);
         await HttpContext.Session.CommitAsync(cancellationToken);
         return RedirectToAction(nameof(InsuranceReview));
@@ -1850,10 +1866,18 @@ public partial class ProveedorController(
             return RedirectToAction(nameof(EditProfileVerification));
         }
 
-        var uploadError = await SaveProviderDocumentAsync(proveedor.Entity!.Id, documentType.Trim(), documentFile);
-        if (!string.IsNullOrWhiteSpace(uploadError))
+        try
         {
-            TempData["ProfileSectionError"] = uploadError;
+            var uploadError = await SaveProviderDocumentAsync(proveedor.Entity!.Id, documentType.Trim(), documentFile);
+            if (!string.IsNullOrWhiteSpace(uploadError))
+            {
+                TempData["ProfileSectionError"] = uploadError;
+                return RedirectToAction(nameof(EditProfileVerification));
+            }
+        }
+        catch (Exception)
+        {
+            TempData["ProfileSectionError"] = localizer["We couldn't upload that document. Please try again."].ToString();
             return RedirectToAction(nameof(EditProfileVerification));
         }
 

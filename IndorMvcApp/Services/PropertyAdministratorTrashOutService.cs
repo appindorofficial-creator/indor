@@ -47,9 +47,6 @@ public class PropertyAdministratorTrashOutService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = MapProperty(property),
             PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest checkout tomorrow" : null,
-            QuickNotes = property?.PropertyType == "ShortTermRental"
-                ? "Two large curbside bins are by the side gate. Please roll them out tonight after guest checkout."
-                : "",
             FlatRateLabel = ResolveFlatRate("TakeOutBringBack")
         };
     }
@@ -91,8 +88,7 @@ public class PropertyAdministratorTrashOutService(
             BinLocation = step1.BinLocation,
             PickupDay = step1.PickupDay,
             QuickNotes = step1.QuickNotes ?? "",
-            UpdateRecipients = step1.ServiceNeed == "TakeOutBringBack" ? "Me,Guest" : "Me",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(305) 555-0198",
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
             ServiceTotalLabel = flatRate,
             ServiceTotalDescription = LabelServiceNeed(step1.ServiceNeed),
             AvailabilityLabel = step1.PickupDay == "Tomorrow" ? "Available tomorrow evening" : "Available for scheduling"

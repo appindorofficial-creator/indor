@@ -40,7 +40,7 @@
 
             <i class="fas fa-circle-check"></i>
 
-            <strong>@Model.QuotesCreated quote request@(Model.QuotesCreated == 1 ? "" : "s") created</strong>
+            <strong>@L.T(Model.QuotesCreated == 1 ? "{0} quote request created" : "{0} quote requests created", Model.QuotesCreated)</strong>
 
         </div>
 
@@ -54,7 +54,7 @@
 
         }
 
-        <div class="rl-success-detail"><strong>@L["Findings added:"]</strong> @Model.FindingsAdded repair items</div>
+        <div class="rl-success-detail"><strong>@L["Findings added:"]</strong> @L.T("{0} repair items", Model.FindingsAdded)</div>
 
         <div class="rl-success-detail"><strong>@L["Trades:"]</strong> @Model.TradesSummary</div>
 

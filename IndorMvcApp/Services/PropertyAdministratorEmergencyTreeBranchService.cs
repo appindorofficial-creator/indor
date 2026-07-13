@@ -39,10 +39,7 @@ public class PropertyAdministratorEmergencyTreeBranchService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = mapped,
-            QuickDetails = mapped.OccupancyLabel != null
-                ? "Large branch is hanging over the roof after the storm and could fall near the guest entry."
-                : ""
+            ViewingProperty = mapped
         };
     }
 
@@ -75,11 +72,7 @@ public class PropertyAdministratorEmergencyTreeBranchService(
             DamageAreasList = step1.DamageAreasList,
             TarpNeeded = step1.TarpNeeded,
             QuickDetails = step1.QuickDetails,
-            EntryAccess = "ExteriorOnly",
-            GateParkingNotes = "Use front drive",
-            UpdateRecipientsList = ["Me", "Guest"],
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187",
-            InsuranceHelp = "NeedDocumentation"
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
 
         return new PropertyAdministratorEmergencyTreeBranchReviewViewModel

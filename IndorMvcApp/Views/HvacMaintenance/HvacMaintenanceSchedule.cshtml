@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.HvacMaintenanceScheduleViewModel
 @{
     ViewData["Title"] = L["Choose your visit - INDOR"];
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("HvacMaintenanceDetails", "HvacMaintenance", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;
@@ -54,10 +54,10 @@
             <div class="field-head"><i class="fas fa-wrench"></i><span>@L["Service type"]</span></div>
             <div class="service-type-row">
                 <button type="button" class="service-type-btn" data-type="OneTime">
-                    <i class="fas fa-check"></i> One-time tune-up
+                    <i class="fas fa-check"></i> @L["One-time tune-up"]
                 </button>
                 <button type="button" class="service-type-btn" data-type="YearlyReminder">
-                    <i class="fas fa-bell"></i> Add yearly reminder
+                    <i class="fas fa-bell"></i> @L["Add yearly reminder"]
                 </button>
             </div>
         </div>
@@ -76,7 +76,7 @@
         {
             <div class="info-box-blue">
                 <i class="fas fa-shield-halved"></i>
-                <span>@Model.InfoBoxTexto</span>
+                <span>@L.Catalog(Model.InfoBoxTexto)</span>
             </div>
         }
 
@@ -84,11 +84,11 @@
             <div class="sticky-footer-row">
                 <div>
                     <div class="price-label"><i class="fas fa-tag"></i> @L["Estimated starting price"]</div>
-                    <div class="price-value">@(Model.PrecioTexto ?? $"from ${Model.PrecioEstimado:0}")</div>
+                    <div class="price-value">@(string.IsNullOrWhiteSpace(Model.PrecioTexto) ? L.T("from ${0}", Model.PrecioEstimado.ToString("0")) : L.Catalog(Model.PrecioTexto))</div>
                 </div>
             </div>
             <button type="submit" name="action" value="continue" class="btn-primary">
-                Review request <i class="fas fa-chevron-right"></i>
+                @L["Review request"] <i class="fas fa-chevron-right"></i>
             </button>
         </div>
     </form>

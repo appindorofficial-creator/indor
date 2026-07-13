@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.PowerWashDetailsViewModel
 @{
     ViewData["Title"] = L["Property & Surface Details - INDOR"];
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("PowerWashService", "PowerWash", new { id = Model.HomeCarePriorityId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;

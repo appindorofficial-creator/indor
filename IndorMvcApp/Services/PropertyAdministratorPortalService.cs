@@ -61,7 +61,7 @@ public class PropertyAdministratorPortalService(
             ?? throw new InvalidOperationException("Property administrator not found.");
         var shell = await BuildShellAsync(admin, url, cancellationToken);
 
-        var properties = admin.PortfolioProperties
+        var properties = PropertyAdministratorFlowServiceSupport.ActivePortfolioProperties(admin.PortfolioProperties)
             .OrderByDescending(p => p.FechaCreacion)
             .Select(p => new PropertyAdministratorPropertyItemViewModel
             {
@@ -91,8 +91,12 @@ public class PropertyAdministratorPortalService(
         var catalog = await db.IndorPropertyAdminServiceCatalog.AsNoTracking()
             .Where(c => c.Activo)
             .OrderBy(c => c.CategoryOrder).ThenBy(c => c.Orden)
-            .Take(12)
             .ToListAsync(cancellationToken);
+
+        var viewingPropertyId = viewingProperty?.Id;
+        // Always resolve the full emergency set. Partial DB seeds (e.g. only plumbing)
+        // previously short-circuited the carousel because fallback ran only when count == 0.
+        var emergencyNearby = ResolveEmergencyNearbyServices(url, catalog, viewingPropertyId);
 
         return new PropertyAdministratorHomeViewModel
         {
@@ -124,7 +128,7 @@ public class PropertyAdministratorPortalService(
                     IconClass = "fa-truck-medical",
                     ToneClass = "tone-red",
                     LinkLabel = PaL("Call now"),
-                    LinkUrl = url.Action("Services", "Administrador", new { filter = "emergency" }) ?? "#"
+                    LinkUrl = url.Action("EmergencyServices", "Administrador") ?? "#"
                 },
                 new PropertyAdministratorStatCardViewModel
                 {
@@ -145,16 +149,17 @@ public class PropertyAdministratorPortalService(
                     LinkUrl = url.Action("Calendar", "Administrador") ?? "#"
                 }
             ],
-            ServiceHub = catalog.Select(c => new PropertyAdministratorServiceHubItemViewModel
+            ServiceHub = catalog.Take(12).Select(c => new PropertyAdministratorServiceHubItemViewModel
             {
                 Label = c.ServiceName,
                 IconClass = c.IconClass,
                 ToneClass = c.ToneClass,
                 Url = BuildCatalogUrl(url, c)
             }).ToList(),
+            EmergencyNearbyServices = emergencyNearby,
             TodayActivity =
             [
-                new() { Label = PaL("Check-ins"), Value = Math.Max(1, admin.PortfolioProperties.Count / 2).ToString(), IconClass = "fa-key" },
+                new() { Label = PaL("Check-ins"), Value = Math.Max(1, properties.Count / 2).ToString(), IconClass = "fa-key" },
                 new() { Label = PaL("Cleanings"), Value = admin.HomecarePlans.Count(p => p.PlanName.Contains("Clean", StringComparison.OrdinalIgnoreCase)).ToString(), IconClass = "fa-broom" },
                 new() { Label = PaL("Guest messages"), Value = admin.ToolGuestMessaging ? "12" : "0", IconClass = "fa-comment" },
                 new() { Label = PaL("Service requests"), Value = openRequests.ToString(), IconClass = "fa-wrench" }
@@ -307,7 +312,10 @@ public class PropertyAdministratorPortalService(
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
         var shell = await BuildShellAsync(admin, url, cancellationToken);
-        var properties = admin.PortfolioProperties.OrderByDescending(p => p.FechaCreacion).ToList();
+        var properties = PropertyAdministratorFlowServiceSupport
+            .ActivePortfolioProperties(admin.PortfolioProperties)
+            .OrderByDescending(p => p.FechaCreacion)
+            .ToList();
         var fromProfile = string.Equals(from, "profile", StringComparison.OrdinalIgnoreCase);
 
         return new PropertyAdministratorPropertiesPortalViewModel
@@ -323,7 +331,7 @@ public class PropertyAdministratorPortalService(
             PortfolioTypeLabel = PropertyAdministratorDisplayLocalization.LabelPortfolioType(admin.PortfolioType),
             ManagementStyleLabel = PropertyAdministratorDisplayLocalization.LabelManagementStyle(admin.ManagementStyle),
             TotalPropertyCount = properties.Count,
-            ActivePropertiesCount = properties.Count(p => IsActivePropertyStatus(p.Status)),
+            ActivePropertiesCount = properties.Count,
             ServiceTasksPendingCount = admin.ServiceRequests.Count(r =>
                 r.Status is PropertyAdministratorRequestStatuses.Open
                     or PropertyAdministratorRequestStatuses.Emergency
@@ -350,7 +358,7 @@ public class PropertyAdministratorPortalService(
             .AsNoTracking()
             .Include(p => p.Propiedad)
             .FirstOrDefaultAsync(p => p.Id == propertyId && p.AdministratorId == admin.Id, cancellationToken);
-        if (property == null)
+        if (property == null || !PropertyAdministratorFlowServiceSupport.IsActivePortfolioProperty(property))
         {
             return null;
         }
@@ -452,9 +460,11 @@ public class PropertyAdministratorPortalService(
             .OrderBy(c => c.CategoryOrder).ThenBy(c => c.Orden)
             .ToListAsync(cancellationToken);
 
+        // Emergency Services must render last among category sections (banner/CTA stays above).
         var categories = catalog
             .GroupBy(c => new { c.CategoryKey, c.CategoryTitle, c.CategoryOrder })
-            .OrderBy(g => g.Key.CategoryOrder)
+            .OrderBy(g => IsEmergencyCategory(g.Key.CategoryKey) ? int.MaxValue : g.Key.CategoryOrder)
+            .ThenBy(g => g.Key.CategoryOrder)
             .Select(g => new PropertyAdministratorServiceCategoryViewModel
             {
                 CategoryKey = g.Key.CategoryKey,
@@ -465,9 +475,15 @@ public class PropertyAdministratorPortalService(
                     ServiceName = item.ServiceName,
                     IconClass = item.IconClass,
                     ToneClass = item.ToneClass,
+                    ImageUrl = ResolveCatalogImageUrl(item.ServiceSlug),
                     Url = BuildCatalogUrl(url, item)
-                }).ToList()
+                })
+                .Where(item => IsUsableCatalogUrl(item.Url))
+                .ToList()
             }).ToList();
+
+        // Drop empty categories (e.g. only placeholder rows with no portal flow).
+        categories = categories.Where(c => c.Items.Count > 0).ToList();
 
         return new PropertyAdministratorServicesViewModel
         {
@@ -887,6 +903,7 @@ public class PropertyAdministratorPortalService(
         return await db.IndorPropertyAdministrators
             .AsNoTracking()
             .Include(a => a.PortfolioProperties)
+                .ThenInclude(p => p.Propiedad)
             .Include(a => a.ServiceRequests)
             .Include(a => a.HomecarePlans)
             .Include(a => a.ScheduledVisits)
@@ -950,7 +967,8 @@ public class PropertyAdministratorPortalService(
         {
             DisplayName = admin.DisplayName ?? PaL("Property Owner"),
             PortfolioName = portfolioName,
-            ActivePropertyCount = admin.PortfolioProperties.Count,
+            ActivePropertyCount = PropertyAdministratorFlowServiceSupport
+                .ActivePortfolioProperties(admin.PortfolioProperties).Count,
             Greeting = greeting,
             NotificationCount = admin.ServiceRequests.Count(r =>
                 r.Status is PropertyAdministratorRequestStatuses.Open
@@ -1000,17 +1018,230 @@ public class PropertyAdministratorPortalService(
         };
     }
 
-    private static string BuildCatalogUrl(IUrlHelper url, IndorPropertyAdminServiceCatalogItem item)
+    private static string BuildCatalogUrl(
+        IUrlHelper url, IndorPropertyAdminServiceCatalogItem item, int? propertyId = null)
     {
-        if (!string.IsNullOrWhiteSpace(item.LinkController) && !string.IsNullOrWhiteSpace(item.LinkAction))
+        // Prefer slug → Administrador portal flows. Stale seed rows still point outdoor/moving/
+        // cleaning cards at homeowner Lawn/PowerWash/Moving controllers (or LinkRouteId), which
+        // make CategoryServices / View-all second screens look open but unusable.
+        var portalAction = ResolveCatalogAction(item.ServiceSlug);
+        if (!string.IsNullOrWhiteSpace(portalAction))
         {
-            return item.LinkRouteId.HasValue
-                ? url.Action(item.LinkAction, item.LinkController, new { id = item.LinkRouteId }) ?? "#"
-                : url.Action(item.LinkAction, item.LinkController) ?? "#";
+            return BuildAdministradorActionUrl(url, portalAction, propertyId);
+        }
+
+        if (!string.IsNullOrWhiteSpace(item.LinkController)
+            && !string.IsNullOrWhiteSpace(item.LinkAction)
+            && string.Equals(item.LinkController, "Administrador", StringComparison.OrdinalIgnoreCase))
+        {
+            if (item.LinkRouteId.HasValue)
+            {
+                return url.Action(item.LinkAction, item.LinkController, new { id = item.LinkRouteId }) ?? "#";
+            }
+
+            return BuildAdministradorActionUrl(url, item.LinkAction, propertyId);
         }
 
         return url.Action("Services", "Administrador") ?? "#";
     }
+
+    private static bool IsUsableCatalogUrl(string? catalogUrl) =>
+        !string.IsNullOrWhiteSpace(catalogUrl)
+        && catalogUrl != "#"
+        && catalogUrl.IndexOf("/Administrador/Services", StringComparison.OrdinalIgnoreCase) < 0;
+
+    private static string BuildAdministradorActionUrl(IUrlHelper url, string action, int? propertyId) =>
+        propertyId.HasValue
+            ? url.Action(action, "Administrador", new { propertyId }) ?? "#"
+            : url.Action(action, "Administrador") ?? "#";
+
+    /// <summary>Canonical PA portal actions for catalog slugs (ignores stale DB LinkController).</summary>
+    private static string? ResolveCatalogAction(string? serviceSlug) =>
+        serviceSlug?.Trim().ToLowerInvariant() switch
+        {
+            "preventive-maintenance" => "PreventiveMaintenanceServices",
+            "hvac-filter" => "AirFilterDetails",
+            "smoke-detector" => "SmokeDetectorDetails",
+            "turnover-cleaning" => "TurnoverCleaningDetails",
+            "standard-cleaning" => "StandardCleaningDetails",
+            "pet-deep-clean" => "PetDeepCleanDetails",
+            "trashout" => "TrashOutDetails",
+            "lawn-care" => "LawnCareDetails",
+            "landscaping" => "LandscapingDetails",
+            "pressure-washing" => "PressureWashingDetails",
+            "pest-control" => "PestControlDetails",
+            "pool-hot-tub" => "PoolHotTubDetails",
+            "moving-help" => "MovingHelpDetails",
+            "junk-removal" => "JunkRemovalDetails",
+            "furniture-haul-away" => "FurnitureHaulAwayDetails",
+            "emergency-ac" => "EmergencyAcDetails",
+            "emergency-plumbing" => "EmergencyPlumbingDetails",
+            "emergency-electrical" => "EmergencyElectricalDetails",
+            "emergency-flood" => "EmergencyFloodDetails",
+            "emergency-roof-leak" => "EmergencyRoofLeakDetails",
+            "emergency-tree-branch" => "EmergencyTreeBranchDetails",
+            "lockout-access" => "LockoutAccessDetails",
+            "broken-window-board-up" => "BrokenWindowDetails",
+            "sewer-backup" => "SewerBackupDetails",
+            "emergency-water-heater" => "WaterHeaterDetails",
+            _ => null
+        };
+
+    private static bool IsEmergencyCategory(string? categoryKey) =>
+        string.Equals(categoryKey, "emergency", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Maps catalog slugs to the same service images used on homeowner emergency / priorities grids.
+    /// </summary>
+    private static string? ResolveCatalogImageUrl(string? serviceSlug)
+    {
+        if (string.IsNullOrWhiteSpace(serviceSlug))
+        {
+            return null;
+        }
+
+        return serviceSlug.Trim().ToLowerInvariant() switch
+        {
+            "emergency-ac" => "/emergency-hvac.png",
+            "emergency-plumbing" => "/emergency-plumbing.png",
+            "emergency-electrical" => "/emergency-electrical.png",
+            "emergency-flood" => "/emergency-flood.png",
+            "emergency-roof-leak" => "/emergency-roof-leak.png",
+            "emergency-tree-branch" => "/emergency-tree-damage.png",
+            "emergency-water-heater" => "/emergency-water-heater.png",
+            "lockout-access" => "/inspeccion6.jpeg",
+            "broken-window-board-up" => "/inspeccion9.jpeg",
+            "sewer-backup" => "/emergency-plumbing.png",
+            "preventive-maintenance" => "/priority-hvac-maintenance.png",
+            "hvac-filter" => "/images/schedule/schedule-filter.png",
+            "smoke-detector" => "/priority-smoke-detector.png",
+            "turnover-cleaning" => "/limpieza.jpeg",
+            "standard-cleaning" => "/limpieza.jpeg",
+            "pet-deep-clean" => "/servicio4.jpeg",
+            "linen-restock" => "/servicio3.jpeg",
+            "trashout" => "/basura.jpeg",
+            "lawn-care" => "/cesped.jpeg",
+            "landscaping" => "/images/quickjob/qj-yard-work.png",
+            "pressure-washing" => "/priority-power-wash-exterior.png",
+            "pest-control" => "/priority-pest-control.png",
+            "pool-hot-tub" => "/servicio8.jpeg",
+            "moving-help" => "/images/quickjob/qj-moving-furniture.png",
+            "junk-removal" => "/images/quickjob/qj-junk-removal.png",
+            "furniture-haul-away" => "/images/quickjob/qj-carry-boxes.png",
+            _ => null
+        };
+    }
+
+    /// <summary>Designed INDOR emergency dispatch line (same vanity number as Help &amp; Support).</summary>
+    private const string EmergencyHelpPhoneDisplay = "1-800-555-INDOR";
+    /// <summary>tel: target — vanity INDOR mapped to keypad digits (I=4 N=6 D=3 O=6 R=7).</summary>
+    private const string EmergencyHelpPhoneTel = "tel:18005554637";
+
+    private static readonly (string Name, string Slug, string Icon, string Action)[] DefaultEmergencyNearbyDefinitions =
+    [
+        ("Emergency AC", "emergency-ac", "fa-snowflake", "EmergencyAcDetails"),
+        ("Emergency Plumbing", "emergency-plumbing", "fa-droplet", "EmergencyPlumbingDetails"),
+        ("Emergency Electrical", "emergency-electrical", "fa-bolt", "EmergencyElectricalDetails"),
+        ("Emergency Flood", "emergency-flood", "fa-water", "EmergencyFloodDetails"),
+        ("Emergency Roof Leak", "emergency-roof-leak", "fa-house-chimney-crack", "EmergencyRoofLeakDetails"),
+        ("Tree / Branch Emergency", "emergency-tree-branch", "fa-tree", "EmergencyTreeBranchDetails"),
+        ("Lockout / Access", "lockout-access", "fa-key", "LockoutAccessDetails"),
+        ("Broken Window / Board-Up", "broken-window-board-up", "fa-window-maximize", "BrokenWindowDetails"),
+        ("Sewer Backup", "sewer-backup", "fa-toilet", "SewerBackupDetails"),
+        ("Water Heater Emergency", "emergency-water-heater", "fa-fire-flame-simple", "WaterHeaterDetails")
+    ];
+
+    /// <summary>
+    /// Home "Emergency Help Nearby" always returns the full emergency set.
+    /// Catalog rows overlay name/icon/url when present; missing slugs come from defaults
+    /// so a partial IndorPropertyAdminServiceCatalog seed cannot leave a single plumbing card.
+    /// </summary>
+    private static List<PropertyAdministratorEmergencyNearbyItemViewModel> ResolveEmergencyNearbyServices(
+        IUrlHelper url,
+        IReadOnlyList<IndorPropertyAdminServiceCatalogItem> catalog,
+        int? propertyId)
+    {
+        var catalogEmergency = catalog
+            .Where(c => IsEmergencyCategory(c.CategoryKey))
+            .OrderBy(c => c.Orden)
+            .ThenBy(c => c.ServiceName, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var unusedCatalog = new List<IndorPropertyAdminServiceCatalogItem>(catalogEmergency);
+        var result = new List<PropertyAdministratorEmergencyNearbyItemViewModel>(
+            DefaultEmergencyNearbyDefinitions.Length + catalogEmergency.Count);
+
+        foreach (var definition in DefaultEmergencyNearbyDefinitions)
+        {
+            var match = unusedCatalog.FirstOrDefault(c =>
+                string.Equals(c.ServiceSlug, definition.Slug, StringComparison.OrdinalIgnoreCase));
+            if (match != null)
+            {
+                unusedCatalog.Remove(match);
+                result.Add(MapEmergencyNearbyItem(url, match, propertyId, result.Count));
+            }
+            else
+            {
+                result.Add(MapDefaultEmergencyNearbyItem(url, definition, propertyId, result.Count));
+            }
+        }
+
+        foreach (var extra in unusedCatalog)
+        {
+            result.Add(MapEmergencyNearbyItem(url, extra, propertyId, result.Count));
+        }
+
+        return result;
+    }
+
+    private static PropertyAdministratorEmergencyNearbyItemViewModel MapEmergencyNearbyItem(
+        IUrlHelper url, IndorPropertyAdminServiceCatalogItem item, int? propertyId, int index) =>
+        new()
+        {
+            ServiceName = item.ServiceName,
+            Subtitle = BuildEmergencyNearbySubtitle(item.ServiceSlug, item.ServiceName),
+            IconClass = string.IsNullOrWhiteSpace(item.IconClass) ? "fa-bell" : item.IconClass,
+            Url = BuildCatalogUrl(url, item, propertyId),
+            PhoneNumber = EmergencyHelpPhoneDisplay,
+            CallUrl = EmergencyHelpPhoneTel,
+            ArrivalMinutes = 18 + index % 6 * 2,
+            DistanceMiles = (1.4m + index * 0.3m).ToString("0.0", CultureInfo.InvariantCulture)
+        };
+
+    private static PropertyAdministratorEmergencyNearbyItemViewModel MapDefaultEmergencyNearbyItem(
+        IUrlHelper url,
+        (string Name, string Slug, string Icon, string Action) definition,
+        int? propertyId,
+        int index) =>
+        new()
+        {
+            ServiceName = definition.Name,
+            Subtitle = BuildEmergencyNearbySubtitle(definition.Slug, definition.Name),
+            IconClass = definition.Icon,
+            Url = propertyId.HasValue
+                ? url.Action(definition.Action, "Administrador", new { propertyId }) ?? "#"
+                : url.Action(definition.Action, "Administrador") ?? "#",
+            PhoneNumber = EmergencyHelpPhoneDisplay,
+            CallUrl = EmergencyHelpPhoneTel,
+            ArrivalMinutes = 18 + index % 6 * 2,
+            DistanceMiles = (1.4m + index * 0.3m).ToString("0.0", CultureInfo.InvariantCulture)
+        };
+
+    private static string BuildEmergencyNearbySubtitle(string serviceSlug, string serviceName) =>
+        serviceSlug.ToLowerInvariant() switch
+        {
+            "emergency-plumbing" => "Licensed plumber available near your Airbnb property",
+            "emergency-electrical" => "Licensed electrician available near your Airbnb property",
+            "emergency-ac" => "Licensed HVAC tech available near your Airbnb property",
+            "emergency-flood" => "Water mitigation team available near your Airbnb property",
+            "emergency-roof-leak" => "Roof leak pros available near your Airbnb property",
+            "emergency-tree-branch" => "Tree emergency crew available near your Airbnb property",
+            "lockout-access" => "Locksmith available near your Airbnb property",
+            "broken-window-board-up" => "Board-up crew available near your Airbnb property",
+            "sewer-backup" => "Sewer backup pros available near your Airbnb property",
+            "emergency-water-heater" => "Water heater tech available near your Airbnb property",
+            _ => $"{serviceName} available near your Airbnb property"
+        };
 
     private static PropertyAdministratorPropertyItemViewModel MapPropertyListItem(
         IndorPropertyAdminPortfolioProperty property, IUrlHelper url) =>
@@ -1031,9 +1262,6 @@ public class PropertyAdministratorPortalService(
 
     private static string MapPropertyStatusLabel(string? status) =>
         PropertyAdministratorDisplayLocalization.MapPropertyStatusLabel(status);
-
-    private static bool IsActivePropertyStatus(string? status) =>
-        string.IsNullOrWhiteSpace(status) || status is "Added" or "Active";
 
     private static string NormalizePropertyTab(string? tab) => tab?.Trim().ToLowerInvariant() switch
     {

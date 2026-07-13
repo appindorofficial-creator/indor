@@ -359,7 +359,7 @@ public class HvacMaintenanceController : Controller
             phone = user?.Telefono;
         }
 
-        var tipoServicio = solicitud.TipoServicio ?? "OneTime";
+        var tipoServicio = solicitud.TipoServicio ?? string.Empty;
 
         return new HvacMaintenanceScheduleViewModel
         {
@@ -367,7 +367,7 @@ public class HvacMaintenanceController : Controller
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = landing?.LandingTitulo ?? "HVAC Tune-Up",
             FechaVisita = NormalizeVisitDate(solicitud.FechaVisita),
-            VentanaHorario = solicitud.VentanaHorario ?? "Morning",
+            VentanaHorario = solicitud.VentanaHorario ?? string.Empty,
             TipoServicio = tipoServicio,
             DireccionPropiedad = address ?? string.Empty,
             TelefonoContacto = phone ?? string.Empty,
@@ -490,8 +490,8 @@ public class HvacMaintenanceController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                VentanaHorario = "Morning",
-                TipoServicio = "OneTime"
+                VentanaHorario = string.Empty,
+                TipoServicio = string.Empty
             };
             _db.SolicitudesHvacMaintenance.Add(solicitud);
             await _db.SaveChangesAsync();

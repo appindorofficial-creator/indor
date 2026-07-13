@@ -5279,19 +5279,36 @@ public partial class ProviderProDataService(
         }
     }
 
-    public Task<ProviderProEditProfileVerificationViewModel> GetEditProfileVerificationAsync(
+    public async Task<ProviderProEditProfileVerificationViewModel> GetEditProfileVerificationAsync(
         IndorProveedor proveedor,
         CancellationToken cancellationToken = default)
     {
         var companyName = ResolveCompanyName(proveedor);
-        var docs = proveedor.Documentos;
-        bool HasDoc(string type) =>
-            docs.Any(d => string.Equals(d.DocumentType, type, StringComparison.OrdinalIgnoreCase)
-                && !string.IsNullOrWhiteSpace(d.FileUrl));
+
+        // Always reload documents from DB so a successful upload is reflected even when
+        // the navigation collection on the resolved entity is empty/stale.
+        var docs = await db.IndorProveedorDocumentos
+            .AsNoTracking()
+            .Where(d => d.ProveedorId == proveedor.Id)
+            .ToListAsync(cancellationToken);
+
+        bool HasDoc(params string[] types) =>
+            types.Any(t => docs.Any(d => string.Equals(d.DocumentType, t, StringComparison.OrdinalIgnoreCase)
+                && !string.IsNullOrWhiteSpace(d.FileUrl)));
 
         string? GetDocUrl(string type) =>
             docs.FirstOrDefault(d => string.Equals(d.DocumentType, type, StringComparison.OrdinalIgnoreCase)
                 && !string.IsNullOrWhiteSpace(d.FileUrl))?.FileUrl;
+
+        var flags = await db.IndorProveedores
+            .AsNoTracking()
+            .Where(p => p.Id == proveedor.Id)
+            .Select(p => new { p.IsLicensed, p.IsInsured, p.BackgroundCheckConsent })
+            .FirstOrDefaultAsync(cancellationToken);
+
+        var licensed = flags?.IsLicensed ?? proveedor.IsLicensed;
+        var insured = flags?.IsInsured ?? proveedor.IsInsured;
+        var background = flags?.BackgroundCheckConsent ?? proveedor.BackgroundCheckConsent;
 
         var slots = new[]
         {
@@ -5307,13 +5324,43 @@ public partial class ProviderProDataService(
             IsUploaded = HasDoc(slot.Item1)
         }).ToList();
 
-        return Task.FromResult(new ProviderProEditProfileVerificationViewModel
+        var items = new List<ProviderProProfileVerificationItemViewModel>
+        {
+            new()
+            {
+                Label = ProviderProDisplayLocalization.L("License Verified"),
+                IsComplete = licensed && HasDoc(
+                    ProviderDocumentTypes.License,
+                    ProviderDocumentTypes.HvacLicense,
+                    ProviderDocumentTypes.PlumbingLicense,
+                    ProviderDocumentTypes.ContractorLicense)
+            },
+            new()
+            {
+                Label = ProviderProDisplayLocalization.L("Insurance Active"),
+                IsComplete = insured && HasDoc(
+                    ProviderDocumentTypes.Insurance,
+                    ProviderDocumentTypes.LiabilityInsurance)
+            },
+            new()
+            {
+                Label = ProviderProDisplayLocalization.L("Background Check Complete"),
+                IsComplete = background
+            },
+            new()
+            {
+                Label = ProviderProDisplayLocalization.L("W-9 on File"),
+                IsComplete = HasDoc(ProviderDocumentTypes.W9)
+            }
+        };
+
+        return new ProviderProEditProfileVerificationViewModel
         {
             CompanyName = companyName,
             CompanyInitial = BuildCompanyInitial(companyName),
-            Items = BuildVerificationItems(proveedor),
+            Items = items,
             DocumentSlots = slots
-        });
+        };
     }
 
     public async Task ApplyVerificationDocumentFlagsAsync(

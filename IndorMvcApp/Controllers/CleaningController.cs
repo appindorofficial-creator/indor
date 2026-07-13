@@ -51,7 +51,8 @@ public class CleaningController : Controller
 
         if (string.IsNullOrWhiteSpace(model.BestForSelection))
         {
-            model.BestForSelection = "MoveIn";
+            ModelState.AddModelError(nameof(model.BestForSelection), "Select a cleaning option.");
+            return View(BuildServiceViewModel(bundle.Value.Servicio, bundle.Value.Landing, null, model));
         }
 
         try
@@ -402,7 +403,12 @@ public class CleaningController : Controller
             InfoBoxTexto = landing.InfoBoxTexto,
             CtaContinueTexto = landing.CtaContinueTexto,
             CtaUploadTexto = landing.CtaUploadTexto,
-            BestForSelection = posted?.BestForSelection ?? bestFor.FirstOrDefault()?.Value ?? "MoveIn"
+            BestForSelection = posted?.BestForSelection
+                ?? (existing != null
+                    && !string.Equals(existing.Estado, "InProgress", StringComparison.OrdinalIgnoreCase)
+                        ? bestFor.FirstOrDefault()?.Value
+                        : null)
+                ?? string.Empty
         };
     }
 

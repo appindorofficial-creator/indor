@@ -5,11 +5,11 @@
     ViewBag.NavActive = "services";
     var filters = new[] {
         ("all", L["All services"], "fa-grid-2"),
-        ("emergency", L["Emergency"], "fa-truck-medical"),
         ("homecare", L["Homecare"], "fa-house-chimney"),
         ("cleaning", L["Cleaning"], "fa-broom"),
         ("outdoor", L["Outdoor"], "fa-seedling"),
-        ("moving", L["Moving"], "fa-truck")
+        ("moving", L["Moving"], "fa-truck"),
+        ("emergency", L["Emergency"], "fa-truck-medical")
     };
 }
 
@@ -18,42 +18,95 @@
 
     @await Html.PartialAsync("_PropertyAdminPortfolioCard", Model)
 
-    <div class="pa-search-bar">
-        <i class="fas fa-magnifying-glass"></i>
-        <input type="search" placeholder="@L["Search services (e.g., plumbing, cleaning)"]" aria-label="@L["Search services"]" />
-        <button type="button" class="pa-portal-icon-btn" aria-label="@L["Filter"]"><i class="fas fa-sliders"></i></button>
-    </div>
+    <form class="pa-search-bar" id="paServicesSearchForm" role="search" action="#" method="get">
+        <button type="submit" class="pa-search-submit" aria-label="@L["Search"]" title="@L["Search"]">
+            <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+        </button>
+        <input type="search"
+               id="paServicesSearch"
+               name="q"
+               placeholder="@L["Search services (e.g., plumbing, cleaning)"]"
+               aria-label="@L["Search services"]"
+               autocomplete="off"
+               enterkeyhint="search" />
+        <button type="button" class="pa-portal-icon-btn" id="paServicesFilterBtn" aria-label="@L["Filter"]" title="@L["Filter"]">
+            <i class="fas fa-sliders" aria-hidden="true"></i>
+        </button>
+    </form>
 
-    <div class="pa-filter-pills">
+    <div class="pa-filter-pills" id="paServicesFilterPills">
         @foreach (var (key, label, icon) in filters)
         {
-            <a asp-controller="Administrador" asp-action="Services" asp-route-filter="@(key == "all" ? null : key)"
-               class="pa-filter-pill @(Model.ActiveFilter == key ? "is-active" : null)">
-                <i class="fas @icon"></i> @label
-            </a>
+            if (key == "all")
+            {
+                <a asp-controller="Administrador" asp-action="Services"
+                   class="pa-filter-pill @(Model.ActiveFilter == key ? "is-active" : null)">
+                    <i class="fas @icon"></i> @label
+                </a>
+            }
+            else if (key == "emergency")
+            {
+                <a asp-controller="Administrador" asp-action="EmergencyServices"
+                   class="pa-filter-pill @(Model.ActiveFilter == key ? "is-active" : null)">
+                    <i class="fas @icon"></i> @label
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Administrador" asp-action="CategoryServices" asp-route-category="@key"
+                   class="pa-filter-pill @(Model.ActiveFilter == key ? "is-active" : null)">
+                    <i class="fas @icon"></i> @label
+                </a>
+            }
         }
     </div>
 
-    <div class="pa-emergency-banner">
+    <div class="pa-emergency-banner" data-pa-search-hide>
         <div>
             <strong><i class="fas fa-phone"></i> @L["Help is available 24/7"]</strong>
             <p>@L["Call now to connect with an emergency service pro."]</p>
         </div>
-        <a asp-controller="Administrador" asp-action="Services" asp-route-filter="emergency" class="pa-emergency-btn">@L["View emergency services"]</a>
+        <a asp-controller="Administrador" asp-action="EmergencyServices" class="pa-emergency-btn">@L["View emergency services"]</a>
+    </div>
+
+    <div class="pa-empty-card" id="paServicesSearchEmpty" hidden>
+        @L["No services match your search."]
     </div>
 
     @foreach (var category in Model.Categories)
     {
-        <section class="pa-section">
+        var isEmergencyCategory = string.Equals(category.CategoryKey, "emergency", StringComparison.OrdinalIgnoreCase);
+        <section class="pa-section" data-pa-service-section>
             <div class="pa-section-head">
                 <h2>@UiDisplayLocalization.Localize(L, category.CategoryTitle)</h2>
-                <a asp-controller="Administrador" asp-action="Services" asp-route-filter="@category.CategoryKey">@L["View all"] <i class="fas fa-chevron-right"></i></a>
+                @if (isEmergencyCategory)
+                {
+                    <a asp-controller="Administrador" asp-action="EmergencyServices" class="pa-section-view-all">@L["View all"] <i class="fas fa-chevron-right" aria-hidden="true"></i></a>
+                }
+                else
+                {
+                    <a asp-controller="Administrador" asp-action="CategoryServices" asp-route-category="@category.CategoryKey" class="pa-section-view-all">@L["View all"] <i class="fas fa-chevron-right" aria-hidden="true"></i></a>
+                }
             </div>
             <div class="pa-service-grid">
                 @foreach (var item in category.Items)
                 {
-                    <a href="@item.Url" class="pa-service-grid-item">
-                        <span class="pa-service-hub-icon @item.ToneClass"><i class="fas @item.IconClass"></i></span>
+                    var searchHaystack = $"{item.ServiceName} {UiDisplayLocalization.Localize(L, item.ServiceName)} {category.CategoryKey} {category.CategoryTitle} {UiDisplayLocalization.Localize(L, category.CategoryTitle)}".ToLowerInvariant();
+                    var imgSrc = !string.IsNullOrWhiteSpace(item.ImageUrl)
+                        ? Url.Content("~" + (item.ImageUrl.StartsWith("/") ? item.ImageUrl : "/" + item.ImageUrl))
+                        : null;
+                    <a href="@item.Url" class="pa-service-grid-item" data-search="@searchHaystack">
+                        <span class="pa-service-card-media @item.ToneClass">
+                            @if (!string.IsNullOrWhiteSpace(imgSrc))
+                            {
+                                <img src="@imgSrc" alt="" loading="lazy" decoding="async" asp-append-version="true" />
+                            }
+                            else
+                            {
+                                <span class="pa-service-card-fallback"><i class="fas @item.IconClass"></i></span>
+                            }
+                            <span class="pa-service-card-icon" aria-hidden="true"><i class="fas @item.IconClass"></i></span>
+                        </span>
                         <span>@UiDisplayLocalization.Localize(L, item.ServiceName)</span>
                     </a>
                 }
@@ -66,7 +119,7 @@
         <section class="pa-section">
             <div class="pa-section-head">
                 <h2>@L["Your service plans"]</h2>
-                <a asp-controller="Administrador" asp-action="Services" asp-route-filter="homecare">@L["Manage all"] <i class="fas fa-chevron-right"></i></a>
+                <a asp-controller="Administrador" asp-action="CategoryServices" asp-route-category="homecare">@L["Manage all"] <i class="fas fa-chevron-right"></i></a>
             </div>
             <div class="pa-hscroll">
                 @foreach (var plan in Model.ActivePlans)

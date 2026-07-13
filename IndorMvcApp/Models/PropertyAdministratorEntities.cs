@@ -264,24 +264,24 @@ public class IndorPropertyAdminPreventivePlan
     [MaxLength(20)]
     public string Status { get; set; } = PropertyAdministratorPreventivePlanStatuses.Draft;
     [MaxLength(30)]
-    public string PlanTier { get; set; } = "Basic";
+    public string PlanTier { get; set; } = "";
     public decimal MonthlyPrice { get; set; }
     public decimal BundlePrice { get; set; }
     [MaxLength(2000)]
     public string SelectedServicesJson { get; set; } = "[]";
     [MaxLength(30)]
-    public string Frequency { get; set; } = "Every3Months";
+    public string Frequency { get; set; } = "";
     [MaxLength(30)]
-    public string PreferredTiming { get; set; } = "Flexible";
+    public string PreferredTiming { get; set; } = "";
     [MaxLength(20)]
-    public string PreferredDay { get; set; } = "Tue";
+    public string PreferredDay { get; set; } = "";
     [MaxLength(30)]
-    public string EntryAccess { get; set; } = "HostPresent";
+    public string EntryAccess { get; set; } = "";
     [MaxLength(80)]
-    public string UpdateRecipients { get; set; } = "Me";
+    public string UpdateRecipients { get; set; } = "";
     [MaxLength(500)]
     public string? Notes { get; set; }
-    public bool AutoReminders { get; set; } = true;
+    public bool AutoReminders { get; set; }
     public DateTime? NextVisitDate { get; set; }
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
     public DateTime? ActivatedUtc { get; set; }
@@ -297,6 +297,13 @@ public static class PropertyAdministratorRegistrationStatuses
 {
     public const string Draft = "Draft";
     public const string Completed = "Completed";
+}
+
+public static class PropertyAdministratorPortfolioPropertyStatuses
+{
+    public const string Added = "Added";
+    public const string Active = "Active";
+    public const string Removed = "Removed";
 }
 
 public static class PropertyAdministratorRequestStatuses

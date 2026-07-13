@@ -28,15 +28,15 @@ public class PropertyAdministratorRecentRequestViewModel
 
 public class PropertyAdministratorEmergencyElectricalFormViewModel : PropertyAdministratorPortalShellViewModel
 {
-    public int FlowStep { get; set; } = 2;
+    public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string IssueType { get; set; } = "PowerOutage";
-    public string PowerFullyOut { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string ProblemLocation { get; set; } = "LivingRoom";
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string IssueType { get; set; } = "";
+    public string PowerFullyOut { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string ProblemLocation { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string Notes { get; set; } = "";
     public string ProEtaLabel { get; set; } = "Nearest electrician pro available in 24 minutes";
@@ -45,12 +45,12 @@ public class PropertyAdministratorEmergencyElectricalFormViewModel : PropertyAdm
 public class PropertyAdministratorEmergencyElectricalSubmitInput
 {
     public int PropertyId { get; set; }
-    public string IssueType { get; set; } = "PowerOutage";
-    public string PowerFullyOut { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string ProblemLocation { get; set; } = "LivingRoom";
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string IssueType { get; set; } = "";
+    public string PowerFullyOut { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string ProblemLocation { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string? Notes { get; set; }
 }

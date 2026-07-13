@@ -6,7 +6,7 @@
     var frontPhoto = PhotoFor("Front");
     var backPhoto = PhotoFor("Back");
     var problemPhoto = PhotoFor("ProblemArea");
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("ExteriorPaintCondition", "ExteriorPaint", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;
@@ -19,7 +19,7 @@
             <h1 class="page-heading" style="margin-bottom:4px;font-size:1.05rem;">@Model.PageTitle</h1>
             @if (!string.IsNullOrWhiteSpace(Model.LandingSubtitulo))
             {
-                <p class="page-lead" style="margin-bottom:0;">@Model.LandingSubtitulo</p>
+                <p class="page-lead" style="margin-bottom:0;">@L.Catalog(Model.LandingSubtitulo)</p>
             }
         </div>
         @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))

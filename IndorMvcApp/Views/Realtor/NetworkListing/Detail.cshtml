@@ -25,23 +25,23 @@
 
     <section class="rl-listing-detail-hero">
         <img src="@Url.Content("~" + heroPhoto)" alt="" class="rl-listing-detail-hero-img" />
-        <span class="rl-network-card-badge rl-network-card-badge--@Model.ListingBadgeCss">@Model.ListingBadgeLabel</span>
+        <span class="rl-network-card-badge rl-network-card-badge--@Model.ListingBadgeCss">@UiDisplayLocalization.Localize(L, Model.ListingBadgeLabel)</span>
     </section>
 
     <section class="rl-listing-detail-summary">
         <div class="rl-listing-detail-summary-top">
             <div>
-                <span class="rl-listing-detail-type">@Model.ListingTypeLabel</span>
+                <span class="rl-listing-detail-type">@UiDisplayLocalization.Localize(L, Model.ListingTypeLabel)</span>
                 <strong class="rl-listing-detail-price">@Model.PriceLabel</strong>
                 <h2 class="rl-listing-detail-address">@Model.Address</h2>
                 @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
                 {
-                    <span class="rl-listing-detail-distance"><i class="fas fa-location-dot"></i> @Model.DistanceLabel</span>
+                    <span class="rl-listing-detail-distance"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.DistanceLabel)</span>
                 }
             </div>
             @if (!string.IsNullOrWhiteSpace(Model.StatusBadge))
             {
-                <span class="rl-network-status rl-network-status--@Model.StatusCss">@Model.StatusBadge</span>
+                <span class="rl-network-status rl-network-status--@Model.StatusCss">@UiDisplayLocalization.Localize(L, Model.StatusBadge)</span>
             }
         </div>
 
@@ -49,7 +49,7 @@
         {
             <div class="rl-listing-detail-openhouse">
                 <i class="fas fa-calendar-days"></i>
-                <span>@Model.OpenHouseMeta</span>
+                <span>@UiDisplayLocalization.Localize(L, Model.OpenHouseMeta)</span>
             </div>
         }
 
@@ -72,14 +72,17 @@
             </div>
         </div>
 
-        @if (!string.IsNullOrWhiteSpace(Model.PropertySubtypeLabel))
+        @{
+            var subtypeLabel = RealtorDisplayLocalization.PropertySubtypeLabel(L, Model.PropertySubtypeLabel);
+        }
+        @if (!string.IsNullOrWhiteSpace(subtypeLabel))
         {
-            <p class="rl-listing-detail-subtype">@Model.PropertySubtypeLabel</p>
+            <p class="rl-listing-detail-subtype">@subtypeLabel</p>
         }
 
         @if (!string.IsNullOrWhiteSpace(Model.SpecsLabel))
         {
-            <p class="rl-listing-detail-specs">@Model.SpecsLabel</p>
+            <p class="rl-listing-detail-specs">@UiDisplayLocalization.Localize(L, Model.SpecsLabel)</p>
         }
     </section>
 
@@ -87,7 +90,7 @@
     {
         <section class="rl-listing-detail-card">
             <h3>@L["About this home"]</h3>
-            <p>@Model.Description</p>
+            <p>@UiDisplayLocalization.Localize(L, Model.Description)</p>
         </section>
     }
 

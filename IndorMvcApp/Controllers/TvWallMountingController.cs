@@ -96,18 +96,22 @@ public class TvWallMountingController : Controller
                 .FirstOrDefaultAsync();
         }
 
+        var projectEntered = string.Equals(solicitud.Estado, "ProjectCompleted", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "PrepareCompleted", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "Confirmed", StringComparison.OrdinalIgnoreCase);
+
         return View(new TvWallMountingProjectViewModel
         {
             SolicitudId = solicitud.Id,
             MovingSetupServicioId = solicitud.MovingSetupServicioId,
             NombreServicio = solicitud.MovingSetupServicio!.Nombre,
             DireccionPropiedad = defaultAddress ?? string.Empty,
-            TipoSolicitud = solicitud.TipoSolicitud ?? "MountTv",
-            TamanoTv = solicitud.TamanoTv ?? "Size43_55",
-            CantidadTvs = solicitud.CantidadTvs ?? "One",
-            Habitacion = solicitud.Habitacion ?? "LivingRoom",
-            TipoPared = solicitud.TipoPared ?? "Drywall",
-            TieneSoporte = solicitud.TieneSoporte ?? "YesHaveIt"
+            TipoSolicitud = projectEntered ? (solicitud.TipoSolicitud ?? string.Empty) : string.Empty,
+            TamanoTv = projectEntered ? (solicitud.TamanoTv ?? string.Empty) : string.Empty,
+            CantidadTvs = projectEntered ? (solicitud.CantidadTvs ?? string.Empty) : string.Empty,
+            Habitacion = projectEntered ? (solicitud.Habitacion ?? string.Empty) : string.Empty,
+            TipoPared = projectEntered ? (solicitud.TipoPared ?? string.Empty) : string.Empty,
+            TieneSoporte = projectEntered ? (solicitud.TieneSoporte ?? string.Empty) : string.Empty
         });
     }
 
@@ -162,6 +166,9 @@ public class TvWallMountingController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id, includeArchivos: true);
         if (solicitud == null) return NotFound();
 
+        var prepareEntered = string.Equals(solicitud.Estado, "PrepareCompleted", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "Confirmed", StringComparison.OrdinalIgnoreCase);
+
         return View(new TvWallMountingPrepareViewModel
         {
             SolicitudId = solicitud.Id,
@@ -169,13 +176,13 @@ public class TvWallMountingController : Controller
             NombreServicio = solicitud.MovingSetupServicio!.Nombre,
             DireccionPropiedad = solicitud.DireccionPropiedad ?? string.Empty,
             HabitacionLabel = TvWallMountingDisplayLabels.FormatRoom(solicitud.Habitacion),
-            ConfiguracionCables = solicitud.ConfiguracionCables ?? "BasicVisible",
-            TomaCercana = solicitud.TomaCercana ?? "Yes",
-            MontajePrevio = solicitud.MontajePrevio ?? "No",
-            DetallesAcceso = solicitud.DetallesAcceso ?? "GroundFloor",
-            VentanaHorario = solicitud.VentanaHorario ?? "Afternoon",
-            FechaServicio = solicitud.FechaServicio ?? DateTime.Today.AddDays(30),
-            NotaCorta = solicitud.NotaCorta,
+            ConfiguracionCables = prepareEntered ? (solicitud.ConfiguracionCables ?? string.Empty) : string.Empty,
+            TomaCercana = prepareEntered ? (solicitud.TomaCercana ?? string.Empty) : string.Empty,
+            MontajePrevio = prepareEntered ? (solicitud.MontajePrevio ?? string.Empty) : string.Empty,
+            DetallesAcceso = prepareEntered ? (solicitud.DetallesAcceso ?? string.Empty) : string.Empty,
+            VentanaHorario = prepareEntered ? (solicitud.VentanaHorario ?? string.Empty) : string.Empty,
+            FechaServicio = prepareEntered ? solicitud.FechaServicio : null,
+            NotaCorta = prepareEntered ? solicitud.NotaCorta : null,
             ArchivosExistentes = solicitud.Archivos
                 .OrderByDescending(a => a.FechaSubida)
                 .Select(a => new ExistingTvWallMountingFileViewModel

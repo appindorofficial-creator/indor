@@ -837,20 +837,29 @@ public class ProviderRegistrationService(
         int? proveedorId = null,
         CancellationToken cancellationToken = default)
     {
+        // When the caller already knows the provider id (profile / verification uploads),
+        // do not touch registration session draft slots — that path can fail or write to
+        // the wrong draft while the file was saved under the real proveedor id.
         var resolvedProveedorId = proveedorId ?? await EnsureDraftAsync(cancellationToken);
-        await EnsureDocumentSlotsAsync(cancellationToken);
+        if (proveedorId is null)
+        {
+            await EnsureDocumentSlotsAsync(cancellationToken);
+        }
 
-        var doc = await db.IndorProveedorDocumentos.FirstOrDefaultAsync(
-            d => d.ProveedorId == resolvedProveedorId &&
-                 d.DocumentType == documentType,
-            cancellationToken);
+        var normalizedType = documentType.Trim();
+        var docs = await db.IndorProveedorDocumentos
+            .Where(d => d.ProveedorId == resolvedProveedorId)
+            .ToListAsync(cancellationToken);
+
+        var doc = docs.FirstOrDefault(d =>
+            string.Equals(d.DocumentType, normalizedType, StringComparison.OrdinalIgnoreCase));
 
         if (doc == null)
         {
             doc = new IndorProveedorDocumento
             {
                 ProveedorId = resolvedProveedorId,
-                DocumentType = documentType,
+                DocumentType = normalizedType,
             };
             db.IndorProveedorDocumentos.Add(doc);
         }
@@ -859,7 +868,7 @@ public class ProviderRegistrationService(
         doc.Status = "Uploaded";
         doc.UploadedUtc = DateTime.UtcNow;
 
-        if (documentType.Equals(ProviderDocumentTypes.Logo, StringComparison.OrdinalIgnoreCase))
+        if (normalizedType.Equals(ProviderDocumentTypes.Logo, StringComparison.OrdinalIgnoreCase))
         {
             var entity = await db.IndorProveedores.FirstAsync(p => p.Id == resolvedProveedorId, cancellationToken);
             entity.LogoUploaded = true;

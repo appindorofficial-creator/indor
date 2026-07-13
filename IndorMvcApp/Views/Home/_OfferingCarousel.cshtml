@@ -5,10 +5,10 @@
     <div class="category-header">
         <div class="category-icon @(Model.IconClass)"><i class="fas @Model.Icon"></i></div>
         <div class="category-info">
-            <h3 class="category-title">@Model.Title</h3>
+            <h3 class="category-title">@UiDisplayLocalization.Localize(L, Model.Title)</h3>
             @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
             {
-                <span class="category-sub">@Model.Subtitle</span>
+                <span class="category-sub">@UiDisplayLocalization.Localize(L, Model.Subtitle)</span>
             }
         </div>
         <span class="category-badge @(Model.BadgeClass)">@Model.Items.Count</span>

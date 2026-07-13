@@ -27,8 +27,11 @@ public class NeighborRequestCategoryStepViewModel : NeighborRequestWizardShellVi
     [Required]
     public int CategoryId { get; set; }
 
-    [Required, MaxLength(60)]
-    public string Title { get; set; } = string.Empty;
+    // Named JobTitle (not Title) to avoid ViewData["Title"] / page-title collisions
+    // that falsely fail validation as "The Title field is required."
+    [Required(ErrorMessage = "Enter a job title."), MaxLength(60)]
+    [Display(Name = "Job title")]
+    public string JobTitle { get; set; } = string.Empty;
 
     [MaxLength(300)]
     public string? Description { get; set; }
@@ -39,6 +42,18 @@ public class NeighborRequestCategoryStepViewModel : NeighborRequestWizardShellVi
     public bool UseHomeAddress { get; set; } = true;
 
     public List<NeighborRequestCategoryOptionViewModel> Categories { get; set; } = [];
+
+    /// <summary>Active properties/viviendas the user can choose for this job location.</summary>
+    public List<NeighborRequestLocationOptionViewModel> AvailableProperties { get; set; } = [];
+
+    public bool HasMultipleProperties => AvailableProperties.Count > 1;
+}
+
+public class NeighborRequestLocationOptionViewModel
+{
+    public int Id { get; set; }
+    public string Label { get; set; } = string.Empty;
+    public string Address { get; set; } = string.Empty;
 }
 
 public class NeighborRequestCategoryOptionViewModel

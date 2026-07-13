@@ -75,6 +75,23 @@ public class AdministradorController(
         return null;
     }
 
+    private static string NormalizeNetworkFilter(string? filter)
+    {
+        if (string.IsNullOrWhiteSpace(filter))
+        {
+            return "All";
+        }
+
+        return filter.Trim() switch
+        {
+            var f when f.Equals("listings", StringComparison.OrdinalIgnoreCase) => "Listings",
+            var f when f.Equals("services", StringComparison.OrdinalIgnoreCase) => "Services",
+            var f when f.Equals("promotions", StringComparison.OrdinalIgnoreCase) => "Promotions",
+            var f when f.Equals("emergency", StringComparison.OrdinalIgnoreCase) => "Emergency",
+            _ => "All"
+        };
+    }
+
     [HttpGet]
     public IActionResult Dashboard() => RedirectToAction(nameof(Index));
 
@@ -91,8 +108,8 @@ public class AdministradorController(
         var activePropertyId = propertyId ?? model.ViewingProperty?.Id;
 
         model.NetworkView = string.Equals(view, "map", StringComparison.OrdinalIgnoreCase) ? "map" : "feed";
-        model.NetworkFilter = string.IsNullOrWhiteSpace(filter) ? "All" : filter.Trim();
-        model.NetworkSearch = q;
+        model.NetworkFilter = NormalizeNetworkFilter(filter);
+        model.NetworkSearch = string.IsNullOrWhiteSpace(q) ? null : q.Trim();
         if (model.NetworkView == "map")
         {
             var centerAddress = model.ViewingProperty?.Location;
@@ -2013,8 +2030,75 @@ public class AdministradorController(
             return redirect;
         }
 
+        // Category filter URLs used to re-render the hub (same-page / broken second screen).
+        // Send them to the dedicated CategoryServices picker instead.
+        var categoryKey = NormalizeServiceCategory(filter);
+        if (categoryKey is not null)
+        {
+            return categoryKey == "emergency"
+                ? RedirectToAction(nameof(EmergencyServices))
+                : RedirectToAction(nameof(CategoryServices), new { category = categoryKey });
+        }
+
         ViewBag.NavActive = "services";
         return View(await portal.GetServicesAsync(Url, filter));
+    }
+
+    private static readonly HashSet<string> ServiceCategoryKeys = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "homecare", "cleaning", "outdoor", "moving", "emergency"
+    };
+
+    private static string? NormalizeServiceCategory(string? category)
+    {
+        if (string.IsNullOrWhiteSpace(category))
+        {
+            return null;
+        }
+
+        var key = category.Trim().ToLowerInvariant();
+        return ServiceCategoryKeys.Contains(key) ? key : null;
+    }
+
+    /// <summary>
+    /// Dedicated full-category listing (Bug 8 / 15 / 16).
+    /// Avoids Services?filter=… same-page no-ops when the hub already shows every item.
+    /// </summary>
+    [HttpGet]
+    public async Task<IActionResult> CategoryServices(string category)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var key = NormalizeServiceCategory(category);
+        if (key is null)
+        {
+            return RedirectToAction(nameof(Services));
+        }
+
+        // Stable public URL for emergency deep links / banner CTA.
+        if (key == "emergency")
+        {
+            return RedirectToAction(nameof(EmergencyServices));
+        }
+
+        ViewBag.NavActive = "services";
+        return View(await portal.GetServicesAsync(Url, key));
+    }
+
+    /// <summary>Full emergency catalog picker (not a same-page filter no-op on Services).</summary>
+    [HttpGet]
+    public async Task<IActionResult> EmergencyServices()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.NavActive = "services";
+        return View("CategoryServices", await portal.GetServicesAsync(Url, "emergency"));
     }
 
     [HttpGet]
@@ -2108,7 +2192,12 @@ public class AdministradorController(
             return PhotoUploadResult(photoError);
         }
 
-        await userManager.UpdateAsync(user);
+        var updateResult = await userManager.UpdateAsync(user);
+        if (!updateResult.Succeeded)
+        {
+            return PhotoUploadResult("Could not save profile photo.");
+        }
+
         return PhotoUploadResult(null, user.FotoUrl);
     }
 
@@ -2118,15 +2207,15 @@ public class AdministradorController(
         {
             if (!string.IsNullOrWhiteSpace(error))
             {
-                return BadRequest(new { ok = false, message = error });
+                return BadRequest(new { ok = false, message = localizer[error].ToString() });
             }
 
-            return Json(new { ok = true, message = "Profile photo updated.", photoUrl });
+            return Json(new { ok = true, message = localizer["Profile photo updated."].ToString(), photoUrl });
         }
 
         if (!string.IsNullOrWhiteSpace(error))
         {
-            TempData["PersonalPhotoError"] = error;
+            TempData["PersonalPhotoError"] = localizer[error].ToString();
         }
         else
         {
@@ -2265,6 +2354,11 @@ public class AdministradorController(
             ext = photo.ContentType.Contains("png", StringComparison.OrdinalIgnoreCase) ? ".png"
                 : photo.ContentType.Contains("webp", StringComparison.OrdinalIgnoreCase) ? ".webp"
                 : ".jpg";
+        }
+
+        if (ext is ".heic" or ".heif")
+        {
+            return "Please choose a JPG or PNG photo. HEIC is not supported.";
         }
 
         if (!ProfilePhotoExtensions.Contains(ext))

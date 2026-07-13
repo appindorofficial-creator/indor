@@ -1,21 +1,19 @@
 @model IndorMvcApp.ViewModels.UtilitiesSetupInternetViewModel
 @using IndorMvcApp.Services
 @{
-    ViewData["Title"] = "Internet & Cable Options - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L["Internet & Cable Options - INDOR"];
+    ViewData["WizardTitle"] = L[Model.PageTitle];
     ViewData["WizardBackUrl"] = Url.Action("UtilitiesSetupAddress", "UtilitiesSetup", new { id = Model.MovingSetupServicioId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;
-
 }
 
-
-<h2 class="page-heading" style="font-size:1.1rem;">Internet & Cable Options</h2>
-    <p class="page-lead" style="margin-top:-8px;">Available at your address: @Model.DireccionPropiedad</p>
+<h2 class="page-heading" style="font-size:1.1rem;">@L["Internet & Cable Options"]</h2>
+    <p class="page-lead" style="margin-top:-8px;">@L["Available at your address:"] @Model.DireccionPropiedad</p>
 
     <div class="address-card">
         <div class="left"><i class="fas fa-house" style="color:#0066CC;"></i><span style="font-weight:600;font-size:0.92rem;">@Model.DireccionPropiedad</span></div>
-        <a asp-action="UtilitiesSetupAddress" asp-route-id="@Model.MovingSetupServicioId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;"><i class="fas fa-pen"></i> Edit</a>
+        <a asp-action="UtilitiesSetupAddress" asp-route-id="@Model.MovingSetupServicioId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;"><i class="fas fa-pen"></i> @L["Edit"]</a>
     </div>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
@@ -35,31 +33,31 @@
                     <strong>@provider.Nombre</strong>
                     @if (!string.IsNullOrWhiteSpace(provider.Etiqueta))
                     {
-                        <span class="provider-badge @badgeClass">@provider.Etiqueta</span>
+                        <span class="provider-badge @badgeClass">@L.Catalog(provider.Etiqueta)</span>
                     }
                 </div>
                 <div class="provider-meta">@provider.Velocidad · @provider.DetalleExtra</div>
-                <div class="provider-price">From $@provider.PrecioDesde.ToString("0.00") /mo</div>
+                <div class="provider-price">@L["From $"]@provider.PrecioDesde.ToString("0.00") @L["/mo"]</div>
                 <div class="provider-actions">
-                    <span class="mini">View plans</span>
+                    <span class="mini">@L["View plans"]</span>
                     @if (provider.Selected)
                     {
-                        <span class="selected-pill"><i class="fas fa-check"></i> Selected</span>
+                        <span class="selected-pill"><i class="fas fa-check"></i> @L["Selected"]</span>
                     }
                     else
                     {
-                        <span class="mini">Choose</span>
+                        <span class="mini">@L["Choose"]</span>
                     }
                 </div>
             </div>
         }
 
         <div class="field-card">
-            <span class="field-label">How would you like to get cable? (Optional)</span>
+            <span class="field-label">@L["How would you like to get cable? (Optional)"]</span>
             <div class="cable-grid" id="cableGroup">
-                <button type="button" class="cable-card" data-value="InternetOnly"><span class="radio"></span><i class="fas fa-desktop"></i>Internet only<span class="sub">No TV service</span></button>
-                <button type="button" class="cable-card" data-value="InternetTv"><span class="radio"></span><i class="fas fa-tv"></i>Internet + TV<span class="sub">Add TV service</span></button>
-                <button type="button" class="cable-card" data-value="BringMyOwn"><span class="radio"></span><i class="fas fa-router"></i>Bring my own<span class="sub">I'll use my provider</span></button>
+                <button type="button" class="cable-card" data-value="InternetOnly"><span class="radio"></span><i class="fas fa-desktop"></i>@L["Internet only"]<span class="sub">@L["No TV service"]</span></button>
+                <button type="button" class="cable-card" data-value="InternetTv"><span class="radio"></span><i class="fas fa-tv"></i>@L["Internet + TV"]<span class="sub">@L["Add TV service"]</span></button>
+                <button type="button" class="cable-card" data-value="BringMyOwn"><span class="radio"></span><i class="fas fa-router"></i>@L["Bring my own"]<span class="sub">@L["I'll use my provider"]</span></button>
             </div>
         </div>
 
@@ -73,6 +71,9 @@
     (function () {
         const providerHidden = document.getElementById('ProveedorInternetId');
         const cableHidden = document.getElementById('OpcionCable');
+        const labelViewPlans = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["View plans"].ToString()));
+        const labelChoose = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Choose"].ToString()));
+        const labelSelected = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Selected"].ToString()));
 
         document.querySelectorAll('.provider-card').forEach(card => {
             card.addEventListener('click', () => {
@@ -80,20 +81,20 @@
                     c.classList.remove('selected');
                     const actions = c.querySelector('.provider-actions');
                     if (actions) {
-                        actions.innerHTML = '<span class="mini">View plans</span><span class="mini">Choose</span>';
+                        actions.innerHTML = '<span class="mini">' + labelViewPlans + '</span><span class="mini">' + labelChoose + '</span>';
                     }
                 });
                 card.classList.add('selected');
                 providerHidden.value = card.dataset.providerId;
                 const actions = card.querySelector('.provider-actions');
                 if (actions) {
-                    actions.innerHTML = '<span class="mini">View plans</span><span class="selected-pill"><i class="fas fa-check"></i> Selected</span>';
+                    actions.innerHTML = '<span class="mini">' + labelViewPlans + '</span><span class="selected-pill"><i class="fas fa-check"></i> ' + labelSelected + '</span>';
                 }
             });
         });
 
         document.querySelectorAll('#cableGroup .cable-card').forEach(btn => {
-            if (btn.dataset.value === cableHidden.value) btn.classList.add('active');
+            if (btn.dataset.value === (cableHidden.value || '')) btn.classList.add('active');
             btn.addEventListener('click', () => {
                 document.querySelectorAll('#cableGroup .cable-card').forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
@@ -101,6 +102,5 @@
             });
         });
     })();
-
 </script>
 }

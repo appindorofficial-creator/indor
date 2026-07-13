@@ -266,7 +266,7 @@ public class PestControlController : Controller
             WhyItMattersItems = SplitPipePairs(landing.WhyItMattersItems, landing.WhyItMattersIconos),
             BestForTexto = landing.BestForTexto,
             CtaTexto = landing.CtaTexto,
-            TipoAccionInicial = existing?.TipoAccionInicial ?? posted?.TipoAccionInicial ?? "Reminder"
+            TipoAccionInicial = existing?.TipoAccionInicial ?? posted?.TipoAccionInicial ?? string.Empty
         };
 
     private async Task<PestControlPlanViewModel> BuildPlanViewModelAsync(SolicitudPestControl solicitud)
@@ -279,8 +279,8 @@ public class PestControlController : Controller
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = landing?.LandingTitulo ?? "Pest Control Check",
             InfoPlanTexto = landing?.InfoPlanTexto,
-            TipoServicio = solicitud.TipoServicio ?? MapInitialToServiceType(solicitud.TipoAccionInicial),
-            TimingPreferido = solicitud.TimingPreferido ?? "ThisMonth"
+            TipoServicio = solicitud.TipoServicio ?? string.Empty,
+            TimingPreferido = solicitud.TimingPreferido ?? string.Empty
         };
     }
 
@@ -348,9 +348,9 @@ public class PestControlController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                TipoAccionInicial = "Reminder",
-                TipoServicio = "ReminderOnly",
-                TimingPreferido = "ThisMonth"
+                TipoAccionInicial = string.Empty,
+                TipoServicio = string.Empty,
+                TimingPreferido = string.Empty
             };
             _db.SolicitudesPestControl.Add(solicitud);
             await _db.SaveChangesAsync();

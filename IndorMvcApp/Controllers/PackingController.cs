@@ -51,7 +51,8 @@ public class PackingController : Controller
 
         if (string.IsNullOrWhiteSpace(model.BestForSelection))
         {
-            model.BestForSelection = "MoveOut";
+            ModelState.AddModelError(nameof(model.BestForSelection), "Select a packing option.");
+            return View(BuildServiceViewModel(bundle.Value.Servicio, bundle.Value.Landing, null, model));
         }
 
         try
@@ -402,7 +403,12 @@ public class PackingController : Controller
             BestTimingValue = landing.BestTimingValue,
             CtaContinueTexto = landing.CtaContinueTexto,
             CtaUploadTexto = landing.CtaUploadTexto,
-            BestForSelection = posted?.BestForSelection ?? bestFor.FirstOrDefault()?.Value ?? "MoveOut"
+            BestForSelection = posted?.BestForSelection
+                ?? (existing != null
+                    && !string.Equals(existing.Estado, "InProgress", StringComparison.OrdinalIgnoreCase)
+                        ? bestFor.FirstOrDefault()?.Value
+                        : null)
+                ?? string.Empty
         };
     }
 

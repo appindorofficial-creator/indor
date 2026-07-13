@@ -5,42 +5,42 @@ public class PropertyAdministratorEmergencyTreeBranchStep1ViewModel : PropertyAd
     public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string IssueType { get; set; } = "LargeHangingBranch";
-    public string ImmediateDanger { get; set; } = "No";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public List<string> DamageAreasList { get; set; } = ["Roof", "FrontYard"];
-    public string TarpNeeded { get; set; } = "Yes";
+    public string IssueType { get; set; } = "";
+    public string ImmediateDanger { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public List<string> DamageAreasList { get; set; } = [];
+    public string TarpNeeded { get; set; } = "";
     public string QuickDetails { get; set; } = "";
 }
 
 public class PropertyAdministratorEmergencyTreeBranchStep1Input
 {
     public int PropertyId { get; set; }
-    public string IssueType { get; set; } = "LargeHangingBranch";
-    public string ImmediateDanger { get; set; } = "No";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public List<string> DamageAreasList { get; set; } = ["Roof", "FrontYard"];
-    public string TarpNeeded { get; set; } = "Yes";
+    public string IssueType { get; set; } = "";
+    public string ImmediateDanger { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public List<string> DamageAreasList { get; set; } = [];
+    public string TarpNeeded { get; set; } = "";
     public string? QuickDetails { get; set; }
 }
 
 public class PropertyAdministratorEmergencyTreeBranchSubmitInput
 {
     public int PropertyId { get; set; }
-    public string IssueType { get; set; } = "LargeHangingBranch";
-    public string ImmediateDanger { get; set; } = "No";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public List<string> DamageAreasList { get; set; } = ["Roof", "FrontYard"];
-    public string TarpNeeded { get; set; } = "Yes";
+    public string IssueType { get; set; } = "";
+    public string ImmediateDanger { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public List<string> DamageAreasList { get; set; } = [];
+    public string TarpNeeded { get; set; } = "";
     public string? QuickDetails { get; set; }
-    public string EntryAccess { get; set; } = "ExteriorOnly";
+    public string EntryAccess { get; set; } = "";
     public string GateParkingNotes { get; set; } = "";
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
-    public string InsuranceHelp { get; set; } = "NeedDocumentation";
+    public string InsuranceHelp { get; set; } = "";
 }
 
 public class PropertyAdministratorEmergencyTreeBranchReviewViewModel : PropertyAdministratorPortalShellViewModel

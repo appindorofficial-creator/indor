@@ -39,10 +39,7 @@ public class PropertyAdministratorEmergencySewerBackupService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = mapped,
-            QuickDetails = mapped.OccupancyLabel != null
-                ? "Guest reports sewage backing up in the downstairs bathroom and laundry drain."
-                : ""
+            ViewingProperty = mapped
         };
     }
 
@@ -74,10 +71,7 @@ public class PropertyAdministratorEmergencySewerBackupService(
             Urgency = step1.Urgency,
             LocationsList = step1.LocationsList,
             QuickDetails = step1.QuickDetails,
-            EntryAccess = "SmartLock",
-            EntryCode = $"Front door code: {1000 + property.Id}",
-            UpdateRecipientsList = ["Me", "Guest"],
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
 
         return new PropertyAdministratorEmergencySewerBackupReviewViewModel

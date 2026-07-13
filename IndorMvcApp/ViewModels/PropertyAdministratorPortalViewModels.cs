@@ -73,6 +73,7 @@ public class PropertyAdministratorHomeViewModel : PropertyAdministratorPortalShe
     public PropertyAdministratorPropertyItemViewModel? ViewingProperty { get; set; }
     public IReadOnlyList<PropertyAdministratorStatCardViewModel> SummaryStats { get; set; } = [];
     public IReadOnlyList<PropertyAdministratorServiceHubItemViewModel> ServiceHub { get; set; } = [];
+    public IReadOnlyList<PropertyAdministratorEmergencyNearbyItemViewModel> EmergencyNearbyServices { get; set; } = [];
     public IReadOnlyList<PropertyAdministratorActivityChipViewModel> TodayActivity { get; set; } = [];
     public IReadOnlyList<PropertyAdministratorVisitCardViewModel> UpcomingVisits { get; set; } = [];
     public IReadOnlyList<PropertyAdministratorHomecarePlanItemViewModel> HomecarePlans { get; set; } = [];
@@ -81,6 +82,21 @@ public class PropertyAdministratorHomeViewModel : PropertyAdministratorPortalShe
     public string NetworkFilter { get; set; } = "All";
     public string? NetworkSearch { get; set; }
     public HomeownerNearbyNetworkViewModel? NearbyMap { get; set; }
+}
+
+public class PropertyAdministratorEmergencyNearbyItemViewModel
+{
+    public string ServiceName { get; set; } = "";
+    public string Subtitle { get; set; } = "";
+    public string IconClass { get; set; } = "fa-bell";
+    /// <summary>Full emergency request flow URL (card title / request CTA).</summary>
+    public string Url { get; set; } = "#";
+    /// <summary>Display phone for emergency dispatch (e.g. 1-800-555-INDOR).</summary>
+    public string PhoneNumber { get; set; } = "1-800-555-INDOR";
+    /// <summary>tel: href digits/letters for Call now (never the request form).</summary>
+    public string CallUrl { get; set; } = "tel:18005554637";
+    public int ArrivalMinutes { get; set; } = 28;
+    public string DistanceMiles { get; set; } = "2.6";
 }
 
 public class PropertyAdministratorCalendarViewModel : PropertyAdministratorPortalShellViewModel
@@ -157,6 +173,7 @@ public class PropertyAdministratorServiceCatalogItemViewModel
     public string ServiceName { get; set; } = "";
     public string IconClass { get; set; } = "";
     public string ToneClass { get; set; } = "";
+    public string? ImageUrl { get; set; }
     public string Url { get; set; } = "#";
 }
 

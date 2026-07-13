@@ -1,6 +1,14 @@
 (function () {
     'use strict';
 
+    function propFileMsg(text) {
+        var i18n = window.IndorPropertyFileI18n;
+        if (i18n && Object.prototype.hasOwnProperty.call(i18n, text)) {
+            return i18n[text];
+        }
+        return text;
+    }
+
     function showFormErrorBanner(formId, bannerId, messages) {
         var form = document.getElementById(formId);
         if (!form || !messages.length) {
@@ -18,7 +26,7 @@
         banner.setAttribute('role', 'alert');
         banner.innerHTML =
             '<i class="fas fa-circle-exclamation"></i>' +
-            '<div><strong>Please fix the following to continue:</strong>' +
+            '<div><strong>' + propFileMsg('Please fix the following to continue:') + '</strong>' +
             '<ul class="rl-error-list">' +
             messages.map(function (msg) { return '<li>' + msg + '</li>'; }).join('') +
             '</ul></div>';
@@ -49,13 +57,13 @@
         var hasProperties = form.querySelectorAll('input[name="sourcePropertyId"]').length > 0;
 
         if (hasProperties && !propertySelected) {
-            errors.push('Select a property from the list below to continue.');
+            errors.push(propFileMsg('Select a property from the list below to continue.'));
             document.querySelector('.rl-prop-file-property-list, .rl-invite-form')?.classList.add('is-error');
         }
 
         var filePhaseSelected = form.querySelector('input[name="filePhase"]:checked');
         if (!filePhaseSelected) {
-            errors.push('Select a file type.');
+            errors.push(propFileMsg('Select a file type.'));
             document.querySelector('.rl-file-type-list')?.classList.add('is-error');
         }
 
@@ -80,7 +88,7 @@
 
         var checked = form.querySelectorAll('input[name="categoryTypes"]:checked');
         if (!checked.length) {
-            showFormErrorBanner('addItemsForm', 'propFileAddItemsErrors', ['Select at least one item type.']);
+            showFormErrorBanner('addItemsForm', 'propFileAddItemsErrors', [propFileMsg('Select at least one item type.')]);
             document.querySelector('.rl-category-grid')?.classList.add('is-error');
             return false;
         }

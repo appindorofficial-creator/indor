@@ -32,7 +32,15 @@
                     type = p.PinType,
                     lat = p.Latitude,
                     lng = p.Longitude
-                })
+                }),
+            i18n = new
+            {
+                miAway = L["{0} mi away"],
+                provider = L["Provider"],
+                listing = L["Listing"],
+                mapUnavailable = L["Map unavailable"],
+                mapsLoadFailed = L["Google Maps could not load. Check your connection and try again."]
+            }
         }, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
         : null;
 }
@@ -59,15 +67,23 @@
                asp-route-view="map"
                asp-route-filter="@Model.ActiveFilter"
                asp-route-q="@Model.SearchQuery"
-               class="rl-network-view-btn @(Model.ActiveView == "map" ? "is-active" : null)">
-                <i class="fas fa-map"></i> @L["Map"]
+               class="rl-network-view-btn @(Model.ActiveView == "map" ? "is-active" : null)"
+               role="tab"
+               aria-selected="@(Model.ActiveView == "map" ? "true" : "false")"
+               data-rl-network-view="map">
+                <i class="fas fa-map" aria-hidden="true"></i>
+                <span class="rl-network-view-btn-label">@L["Map"]</span>
             </a>
             <a asp-action="Network"
                asp-route-view="feed"
                asp-route-filter="@Model.ActiveFilter"
                asp-route-q="@Model.SearchQuery"
-               class="rl-network-view-btn @(Model.ActiveView == "feed" ? "is-active" : null)">
-                <i class="fas fa-list"></i> @L["Feed"]
+               class="rl-network-view-btn @(Model.ActiveView == "feed" ? "is-active" : null)"
+               role="tab"
+               aria-selected="@(Model.ActiveView == "feed" ? "true" : "false")"
+               data-rl-network-view="feed">
+                <i class="fas fa-list" aria-hidden="true"></i>
+                <span class="rl-network-view-btn-label">@L["Feed"]</span>
             </a>
         </div>
 
@@ -119,7 +135,12 @@
         @if (Model.HasGoogleMaps)
         {
             <section class="rl-zillow-map-shell" aria-label="@L["Nearby map"]">
-                <div id="rlNearbyNetworkMap" class="rl-zillow-map-canvas" style="min-height:420px;"></div>
+                <div id="rlNearbyNetworkMap" class="rl-zillow-map-canvas" style="min-height:420px;" aria-busy="true">
+                    <div class="rl-map-loading" role="status">
+                        <span class="rl-map-loading-spinner" aria-hidden="true"></span>
+                        <strong>@L["Loading map..."]</strong>
+                    </div>
+                </div>
 
                 <form class="rl-zillow-map-search" id="rlMapSearchForm" autocomplete="off">
                     <div class="rl-zillow-map-search-inner">
@@ -129,9 +150,37 @@
                                value="@Model.SearchQuery"
                                placeholder="@L["Search address or neighborhood"]" />
                     </div>
-                    <button type="button" class="rl-zillow-map-filter-btn" id="rlMapFilterBtn" aria-label="@L["Filters"]">
-                        <i class="fas fa-sliders"></i>
-                    </button>
+                    <div class="rl-zillow-map-filter-wrap">
+                        <button type="button"
+                                class="rl-zillow-map-filter-btn"
+                                id="rlMapFilterBtn"
+                                aria-haspopup="true"
+                                aria-expanded="false"
+                                aria-controls="rlMapFilterMenu"
+                                aria-label="@L["Filters"]">
+                            <i class="fas fa-sliders"></i>
+                        </button>
+                        <div class="rl-filter-menu rl-zillow-map-filter-menu" id="rlMapFilterMenu" role="menu" hidden>
+                            @foreach (var chip in Model.Filters)
+                            {
+                                <a asp-action="Network"
+                                   asp-route-filter="@chip.Value"
+                                   asp-route-view="map"
+                                   asp-route-q="@Model.SearchQuery"
+                                   class="rl-filter-menu-item @(Model.ActiveFilter == chip.Value ? "is-active" : null)"
+                                   role="menuitem">
+                                    <span class="rl-zillow-map-filter-menu-label">
+                                        <i class="fas @chip.Icon"></i>
+                                        @UiDisplayLocalization.Localize(L, chip.Label)
+                                    </span>
+                                    @if (Model.ActiveFilter == chip.Value)
+                                    {
+                                        <i class="fas fa-check"></i>
+                                    }
+                                </a>
+                            }
+                        </div>
+                    </div>
                 </form>
 
                 <button type="button" class="rl-zillow-map-locate" id="rlMapLocateBtn" aria-label="@L["My location"]">
@@ -203,6 +252,30 @@
 @section Scripts {
     <script>
         (function () {
+            // Immediate Map/Feed feedback so the toggle doesn't feel dead while the page loads.
+            document.querySelectorAll('[data-rl-network-view]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    if (btn.classList.contains('is-active') && !btn.classList.contains('is-pending')) {
+                        return;
+                    }
+
+                    var toggle = btn.closest('.rl-network-view-toggle');
+                    if (!toggle) {
+                        return;
+                    }
+
+                    toggle.querySelectorAll('[data-rl-network-view]').forEach(function (other) {
+                        other.classList.remove('is-active', 'is-pending');
+                        other.setAttribute('aria-selected', 'false');
+                        other.removeAttribute('aria-busy');
+                    });
+
+                    btn.classList.add('is-active', 'is-pending');
+                    btn.setAttribute('aria-selected', 'true');
+                    btn.setAttribute('aria-busy', 'true');
+                });
+            });
+
             function resolveShareUrl(path) {
                 if (!path) {
                     return window.location.href;
@@ -219,7 +292,7 @@
                     var shareUrl = resolveShareUrl(sharePath);
                     var payload = {
                         title: btn.getAttribute('data-share-title') || document.title,
-                        text: btn.getAttribute('data-share-text') || 'View on INDOR',
+                        text: btn.getAttribute('data-share-text') || @Html.Raw(JsonSerializer.Serialize(L["View on INDOR"])),
                         url: shareUrl
                     };
 
@@ -237,13 +310,41 @@
                     try {
                         await navigator.clipboard.writeText(shareUrl);
                         var original = btn.textContent;
-                        btn.textContent = 'Link copied';
+                        btn.textContent = @Html.Raw(JsonSerializer.Serialize(L["Link copied"]));
                         window.setTimeout(function () { btn.textContent = original; }, 2000);
                     } catch (_) {
-                        window.prompt('Copy link:', shareUrl);
+                        window.prompt(@Html.Raw(JsonSerializer.Serialize(L["Copy link:"])), shareUrl);
                     }
                 });
             });
+
+            var filterBtn = document.getElementById('rlMapFilterBtn');
+            var filterMenu = document.getElementById('rlMapFilterMenu');
+            if (filterBtn && filterMenu) {
+                function closeMapFilterMenu() {
+                    filterMenu.hidden = true;
+                    filterBtn.setAttribute('aria-expanded', 'false');
+                }
+
+                filterBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var willOpen = filterMenu.hidden;
+                    filterMenu.hidden = !willOpen;
+                    filterBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+                });
+
+                filterMenu.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                });
+
+                document.addEventListener('click', closeMapFilterMenu);
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') {
+                        closeMapFilterMenu();
+                    }
+                });
+            }
         })();
     </script>
     @if (Model.ActiveView == "map" && Model.HasGoogleMaps)

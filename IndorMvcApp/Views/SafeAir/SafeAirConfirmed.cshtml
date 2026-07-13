@@ -15,7 +15,7 @@ var reminderDate = Model.FechaProximoRecordatorio?.ToString("MMMM d, yyyy") ?? D
         <div class="summary-row"><i class="fas fa-wind"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.NombreServicio)</div></div></div>
         <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Visit"]</div><div class="summary-value">@Model.VisitaLabel</div></div></div>
         <div class="summary-row"><i class="fas fa-ruler-combined"></i><div><div class="summary-label">@L["Filter size"]</div><div class="summary-value">@Model.FiltroTamanioLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-user-gear"></i><div><div class="summary-label">@L["Provider"]</div><div class="summary-value">@Model.ProveedorLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-user-gear"></i><div><div class="summary-label">@L["Provider"]</div><div class="summary-value">@L.Catalog(Model.ProveedorLabel)</div></div></div>
         <div class="summary-row"><i class="fas fa-shield-check"></i><div><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-confirmed"><i class="fas fa-check"></i> @L["Confirmed"]</span></div></div></div>
     </div>
 

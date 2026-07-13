@@ -783,6 +783,9 @@ public class PropertyAdministratorRegistrationController(
         var state = await registration.GetAsync();
         var properties = await registration.GetPortfolioPropertiesAsync();
         var isComplete = await IsRegistrationCompleteAsync();
+        // Post-registration: users enter Add property from Multi-Property Home; back must return there.
+        // Done still lands on the portfolio Properties list after finishing adds.
+        var homeUrl = Url.Action("Index", "Administrador") ?? "#";
         var doneUrl = Url.Action("Properties", "Administrador") ?? "#";
         return new PropertyAdministratorPropertiesStepViewModel
         {
@@ -792,7 +795,7 @@ public class PropertyAdministratorRegistrationController(
             Subtitle = isComplete
                 ? "Add manually, import a CSV, or upload documents for your portfolio."
                 : "Start building your portfolio inside INDOR.",
-            BackUrl = isComplete ? doneUrl : Url.Action(nameof(Portfolio))!,
+            BackUrl = isComplete ? homeUrl : Url.Action(nameof(Portfolio))!,
             State = state,
             Properties = properties,
             DraftProperty = draft,

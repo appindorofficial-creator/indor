@@ -110,14 +110,18 @@ public class GeneralHelpController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id, includeArchivos: true);
         if (solicitud == null) return NotFound();
 
+        var detailsEntered = string.Equals(solicitud.Estado, "DetailsCompleted", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "Confirmed", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
+
         return View(new GeneralHelpDetailsViewModel
         {
             SolicitudId = solicitud.Id,
             MovingSetupServicioId = solicitud.MovingSetupServicioId,
             DireccionPropiedad = solicitud.DireccionPropiedad ?? string.Empty,
-            Descripcion = solicitud.Descripcion ?? string.Empty,
-            ContactoPreferido = solicitud.ContactoPreferido ?? "Text",
-            NotasAcceso = solicitud.NotasAcceso ?? "Apartment",
+            Descripcion = detailsEntered ? (solicitud.Descripcion ?? string.Empty) : string.Empty,
+            ContactoPreferido = detailsEntered ? (solicitud.ContactoPreferido ?? string.Empty) : string.Empty,
+            NotasAcceso = detailsEntered ? (solicitud.NotasAcceso ?? string.Empty) : string.Empty,
             ArchivosExistentes = solicitud.Archivos
                 .OrderByDescending(a => a.FechaSubida)
                 .Select(a => new ExistingGeneralHelpFileViewModel

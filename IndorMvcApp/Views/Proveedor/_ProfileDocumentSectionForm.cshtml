@@ -7,25 +7,62 @@
 <div class="prv-flow-detail-panel" id="section-@Model.Id">
     @if (Model.Id != "background")
     {
-        <div class="prv-flow-upload-row">
-            @if (Model.Id == "license")
-            {
-                <label class="prv-pro-btn prv-pro-btn--ghost prv-flow-upload-btn">
-                    <i class="fas fa-upload"></i> @L["Upload file"]
-                    <input type="file" class="prv-flow-doc-input" data-doc-type="@Model.DocumentType" data-section="@Model.Id" accept="image/jpeg,image/png,image/webp,application/pdf" />
+        var fileInputId = $"prvFlowDocFile_{Model.Id}";
+        var chooseLabel = Model.Id == "w9"
+            ? L["Upload W-9"]
+            : Model.Id == "insurance"
+                ? L["Upload COI"]
+                : L["Choose file"];
+
+        <div class="prv-flow-upload-row" data-doc-upload>
+            <div class="prv-flow-doc-picker">
+                <input type="file"
+                       id="@fileInputId"
+                       class="prv-flow-doc-input"
+                       name="documentFile"
+                       data-doc-type="@Model.DocumentType"
+                       data-section="@Model.Id"
+                       data-role="file-input"
+                       accept="image/jpeg,image/png,image/webp,application/pdf,.pdf,.jpg,.jpeg,.png,.webp" />
+
+                <label class="prv-pro-btn prv-pro-btn--ghost prv-flow-upload-btn" for="@fileInputId" data-role="file-trigger">
+                    <i class="fas fa-upload"></i> @chooseLabel
                 </label>
-                <label class="prv-pro-btn prv-pro-btn--ghost prv-flow-upload-btn">
-                    <i class="fas fa-camera"></i> @L["Take photo"]
-                    <input type="file" class="prv-flow-doc-input" data-doc-type="@Model.DocumentType" data-section="@Model.Id" accept="image/*" capture="environment" />
-                </label>
-            }
-            else
-            {
-                <label class="prv-pro-btn prv-pro-btn--ghost prv-flow-upload-btn">
-                    <i class="fas fa-upload"></i> @(Model.Id == "w9" ? L["Upload W-9"] : L["Upload COI"])
-                    <input type="file" class="prv-flow-doc-input" data-doc-type="@Model.DocumentType" data-section="@Model.Id" accept="image/jpeg,image/png,image/webp,application/pdf" />
-                </label>
-            }
+
+                @if (Model.Id == "license")
+                {
+                    var cameraInputId = $"{fileInputId}_camera";
+                    <input type="file"
+                           id="@cameraInputId"
+                           class="prv-flow-doc-input"
+                           data-doc-type="@Model.DocumentType"
+                           data-section="@Model.Id"
+                           data-role="camera-input"
+                           accept="image/*"
+                           capture="environment" />
+                    <label class="prv-pro-btn prv-pro-btn--ghost prv-flow-upload-btn" for="@cameraInputId">
+                        <i class="fas fa-camera"></i> @L["Take photo"]
+                    </label>
+                }
+
+                <div class="prv-flow-doc-pending is-hidden" data-role="pending" aria-live="polite">
+                    <span class="prv-flow-doc-pending-name" data-role="file-name"></span>
+                    <span class="prv-flow-doc-pending-hint">@L["Ready to upload"]</span>
+                    <button type="button" class="prv-flow-doc-pending-clear" data-role="clear-pending" aria-label="@L["Clear selected file"]">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                </div>
+
+                <button type="submit"
+                        name="SaveMode"
+                        value="upload"
+                        class="prv-pro-btn prv-pro-btn--primary prv-flow-doc-upload-btn"
+                        data-role="upload-btn"
+                        disabled>
+                    <i class="fas fa-cloud-arrow-up"></i> @L["Upload"]
+                </button>
+            </div>
+
             @if (!string.IsNullOrWhiteSpace(Model.FileUrl))
             {
                 <a href="@Url.Content($"~{Model.FileUrl}")" target="_blank" rel="noopener" class="prv-flow-doc-link">

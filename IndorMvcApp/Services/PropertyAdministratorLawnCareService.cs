@@ -46,11 +46,7 @@ public class PropertyAdministratorLawnCareService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = MapProperty(property),
-            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest check-in tomorrow" : null,
-            AccessDetails = property != null ? $"Side gate code {1000 + property.Id}. Enter through left gate." : "",
-            QuickNotes = property?.PropertyType == "ShortTermRental"
-                ? "Please make it guest-ready before tomorrow afternoon."
-                : ""
+            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest check-in tomorrow" : null
         };
     }
 
@@ -88,8 +84,7 @@ public class PropertyAdministratorLawnCareService(
             Frequency = step1.Frequency,
             IsOccupied = step1.IsOccupied,
             AccessDetails = step1.AccessDetails ?? "",
-            QuickNotes = step1.QuickNotes ?? "",
-            UpdateRecipients = property.PropertyType == "ShortTermRental" ? "Me,Guest" : "Me"
+            QuickNotes = step1.QuickNotes ?? ""
         };
     }
 

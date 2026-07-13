@@ -21,6 +21,8 @@ public static class UiDisplayLocalization
         (new Regex(@"^(\d+)\s+beds$", RegexOptions.IgnoreCase), "{0} beds"),
         (new Regex(@"^(\d+(?:\.\d+)?)\s+baths?$", RegexOptions.IgnoreCase), "{0} baths"),
         (new Regex(@"^(\d{1,3}(?:,\d{3})*)\s+sqft$", RegexOptions.IgnoreCase), "{0} sqft"),
+        (new Regex(@"^(\d{1,3}(?:,\d{3})*)\s+sq\s*ft$", RegexOptions.IgnoreCase), "{0} sq ft"),
+        (new Regex(@"^Built\s+(\d{4})$", RegexOptions.IgnoreCase), "Built {0}"),
         (new Regex(@"^([\d.]+) mi away$", RegexOptions.IgnoreCase), "{0} mi away"),
         (new Regex(@"^([\d.]+)\s+miles away$", RegexOptions.IgnoreCase), "{0} miles away"),
         (new Regex(@"^([\d.]+) miles around you$", RegexOptions.IgnoreCase), "{0} miles around you"),
@@ -41,6 +43,23 @@ public static class UiDisplayLocalization
             {
                 return direct;
             }
+        }
+
+        if (text.StartsWith("You expressed interest in ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("You expressed interest in {0}", text["You expressed interest in ".Length..].Trim());
+        }
+
+        var interestedListingMatch = Regex.Match(
+            text,
+            @"^(.+) is interested in your listing at (.+)$",
+            RegexOptions.IgnoreCase);
+        if (interestedListingMatch.Success)
+        {
+            return localizer.T(
+                "{0} is interested in your listing at {1}",
+                interestedListingMatch.Groups[1].Value.Trim(),
+                interestedListingMatch.Groups[2].Value.Trim());
         }
 
         if (text.StartsWith("Today, ", StringComparison.OrdinalIgnoreCase))
@@ -120,20 +139,20 @@ public static class UiDisplayLocalization
             return localizer.T(key, inspectionCount);
         }
 
-        var followUpMatch = Regex.Match(text, @"^(\d+) files? need client follow-up$", RegexOptions.IgnoreCase);
+        var followUpMatch = Regex.Match(text, @"^(\d+) files? needs? client follow-up$", RegexOptions.IgnoreCase);
         if (followUpMatch.Success && int.TryParse(followUpMatch.Groups[1].Value, out var followUpCount))
         {
             var key = followUpCount == 1
-                ? "{0} file needs client follow-up"
+                ? "{0} file need client follow-up"
                 : "{0} files need client follow-up";
             return localizer.T(key, followUpCount);
         }
 
-        var providerSelectionMatch = Regex.Match(text, @"^(\d+) quote requests? need provider selection$", RegexOptions.IgnoreCase);
+        var providerSelectionMatch = Regex.Match(text, @"^(\d+) quote requests? needs? provider selection$", RegexOptions.IgnoreCase);
         if (providerSelectionMatch.Success && int.TryParse(providerSelectionMatch.Groups[1].Value, out var selectionCount))
         {
             var key = selectionCount == 1
-                ? "{0} quote request needs provider selection"
+                ? "{0} quote request need provider selection"
                 : "{0} quote requests need provider selection";
             return localizer.T(key, selectionCount);
         }
@@ -191,11 +210,11 @@ public static class UiDisplayLocalization
             return localizer.T(key, parsingCount);
         }
 
-        var contractorSelectionMatch = Regex.Match(text, @"^(\d+) files? need contractor selection$", RegexOptions.IgnoreCase);
+        var contractorSelectionMatch = Regex.Match(text, @"^(\d+) files? needs? contractor selection$", RegexOptions.IgnoreCase);
         if (contractorSelectionMatch.Success && int.TryParse(contractorSelectionMatch.Groups[1].Value, out var contractorCount))
         {
             var key = contractorCount == 1
-                ? "{0} file needs contractor selection"
+                ? "{0} file need contractor selection"
                 : "{0} files need contractor selection";
             return localizer.T(key, contractorCount);
         }
@@ -248,9 +267,42 @@ public static class UiDisplayLocalization
             return localizer.T("Approved {0}", text["Approved ".Length..].Trim());
         }
 
+        if (text.StartsWith("Budget ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Budget {0}", text["Budget ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Requested: ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Requested: {0}", text["Requested: ".Length..].Trim());
+        }
+
         if (text.StartsWith("Requested ", StringComparison.OrdinalIgnoreCase))
         {
             return localizer.T("Requested {0}", text["Requested ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Due: ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Due: {0}", text["Due: ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Due: ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Due: {0}", text["Due: ".Length..].Trim());
+        }
+
+        var inspectionPackageMatch = Regex.Match(text, @"^(.+) - Inspection Package$", RegexOptions.IgnoreCase);
+        if (inspectionPackageMatch.Success)
+        {
+            return localizer.T("{0} - Inspection Package", inspectionPackageMatch.Groups[1].Value.Trim());
+        }
+
+        if (text.StartsWith("Shared ", StringComparison.OrdinalIgnoreCase)
+            && !text.StartsWith("Shared with ", StringComparison.OrdinalIgnoreCase)
+            && !text.StartsWith("Shared Packages", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Shared {0}", text["Shared ".Length..].Trim());
         }
 
         if (text.StartsWith("Connected ", StringComparison.OrdinalIgnoreCase))
@@ -650,6 +702,16 @@ public static class UiDisplayLocalization
 
     private static string LocalizeRelativeTimestamp(IIndorLocalizer localizer, string value)
     {
+        if (string.Equals(value, "Today", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Today");
+        }
+
+        if (string.Equals(value, "Yesterday", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Yesterday");
+        }
+
         if (value.StartsWith("Today, ", StringComparison.OrdinalIgnoreCase))
         {
             return localizer.T("Today, {0}", value["Today, ".Length..].Trim());
@@ -660,6 +722,6 @@ public static class UiDisplayLocalization
             return localizer.T("Yesterday, {0}", value["Yesterday, ".Length..].Trim());
         }
 
-        return value;
+        return localizer[value];
     }
 }

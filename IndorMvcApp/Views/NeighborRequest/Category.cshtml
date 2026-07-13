@@ -1,11 +1,11 @@
 @model IndorMvcApp.ViewModels.NeighborRequestCategoryStepViewModel
-@{
-    ViewData["Title"] = L["Post Quick Job"];
-}
 
 <form asp-action="Category" method="post" class="nr-step-form" id="nrStep1Form" autocomplete="off">
     @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="PropiedadId" />
+    @if (!Model.HasMultipleProperties)
+    {
+        <input type="hidden" asp-for="PropiedadId" />
+    }
     <input type="hidden" asp-for="ResumeDraft" />
 
     <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
@@ -69,10 +69,10 @@
         </header>
         <div class="nr-field nr-field--count">
             <div class="nr-counted-control">
-                <input asp-for="Title" class="nr-input" placeholder="@L["Need help moving a sofa"]" maxlength="60" autocomplete="off" />
+                <input asp-for="JobTitle" class="nr-input" placeholder="@L["Need help moving a sofa"]" maxlength="60" autocomplete="off" />
             </div>
             <span class="nr-char-count"><span id="nrTitleCount">0</span>/60</span>
-            <span asp-validation-for="Title" class="field-validation-error"></span>
+            <span asp-validation-for="JobTitle" class="field-validation-error"></span>
         </div>
     </section>
 
@@ -94,9 +94,42 @@
             <span class="nr-card-icon"><i class="fas fa-location-dot"></i></span>
             <h2>@L["Location"]</h2>
         </header>
-        <label class="nr-location-picker">
-            <span class="nr-location-picker-icon"><i class="fas fa-house"></i></span>
+
+        @if (Model.HasMultipleProperties)
+        {
+            <p class="nr-location-hint">@L["Choose which property this job is for."]</p>
+            <div class="nr-property-chooser" role="radiogroup" aria-label="@L["Property"]" id="nrPropertyChooser">
+                @foreach (var property in Model.AvailableProperties)
+                {
+                    var isSelected = property.Id == Model.PropiedadId;
+                    <label class="nr-property-choice @(isSelected ? "is-selected" : null)">
+                        <input type="radio"
+                               name="PropiedadId"
+                               value="@property.Id"
+                               data-address="@property.Address"
+                               @(isSelected ? "checked" : null)
+                               required />
+                        <span class="nr-property-choice-icon" aria-hidden="true"><i class="fas fa-house"></i></span>
+                        <span class="nr-property-choice-copy">
+                            <span class="nr-property-choice-label">@property.Label</span>
+                            @if (!string.IsNullOrWhiteSpace(property.Address)
+                                 && !string.Equals(property.Address, property.Label, StringComparison.OrdinalIgnoreCase))
+                            {
+                                <span class="nr-property-choice-address">@property.Address</span>
+                            }
+                        </span>
+                        <span class="nr-property-choice-check" aria-hidden="true"><i class="fas fa-check"></i></span>
+                    </label>
+                }
+            </div>
+        }
+
+        <label class="nr-location-picker @(Model.HasMultipleProperties ? "nr-location-picker--custom" : null)"
+               id="nrLocationAddressWrap"
+               @(Model.HasMultipleProperties && Model.UseHomeAddress ? "hidden" : null)>
+            <span class="nr-location-picker-icon"><i class="fas fa-location-dot"></i></span>
             <input asp-for="LocationAddress"
+                   id="nrLocationAddress"
                    class="nr-location-picker-input"
                    readonly="@Model.UseHomeAddress"
                    tabindex="@(Model.UseHomeAddress ? "-1" : null)" />
@@ -140,7 +173,7 @@
                 field.addEventListener('input', update);
                 update();
             }
-            bindCounter('[name="Title"]', 'nrTitleCount', 60);
+            bindCounter('[name="JobTitle"]', 'nrTitleCount', 60);
             bindCounter('[name="Description"]', 'nrDescCount', 300);
 
             document.querySelectorAll('.nr-cat-tile input').forEach(function (input) {
@@ -152,20 +185,62 @@
             });
 
             var homeToggle = document.querySelector('[name="UseHomeAddress"]');
-            var addressInput = document.querySelector('[name="LocationAddress"]');
-            if (homeToggle && addressInput) {
-                var syncHomeAddressState = function () {
-                    var useHome = homeToggle.checked;
-                    addressInput.readOnly = useHome;
-                    if (useHome) {
-                        addressInput.setAttribute('tabindex', '-1');
-                    } else {
-                        addressInput.removeAttribute('tabindex');
-                    }
-                };
-                homeToggle.addEventListener('change', syncHomeAddressState);
-                syncHomeAddressState();
+            var addressInput = document.getElementById('nrLocationAddress')
+                || document.querySelector('[name="LocationAddress"]');
+            var propertyRadios = document.querySelectorAll('#nrPropertyChooser input[name="PropiedadId"]');
+            var addressWrap = document.getElementById('nrLocationAddressWrap');
+            var hasPropertyChooser = propertyRadios.length > 0;
+
+            function selectedPropertyAddress() {
+                if (!hasPropertyChooser) return '';
+                var checked = document.querySelector('#nrPropertyChooser input[name="PropiedadId"]:checked');
+                return checked ? (checked.getAttribute('data-address') || '').trim() : '';
             }
+
+            function syncPropertyChoiceUi() {
+                document.querySelectorAll('#nrPropertyChooser .nr-property-choice').forEach(function (choice) {
+                    var input = choice.querySelector('input[type="radio"]');
+                    choice.classList.toggle('is-selected', !!(input && input.checked));
+                });
+            }
+
+            function syncHomeAddressState() {
+                if (!homeToggle || !addressInput) return;
+                var useHome = homeToggle.checked;
+                addressInput.readOnly = useHome;
+                if (useHome) {
+                    addressInput.setAttribute('tabindex', '-1');
+                    var homeAddress = selectedPropertyAddress();
+                    if (homeAddress) {
+                        addressInput.value = homeAddress;
+                    }
+                } else {
+                    addressInput.removeAttribute('tabindex');
+                }
+                if (addressWrap) {
+                    addressWrap.classList.toggle('is-home-locked', useHome);
+                    addressWrap.hidden = useHome && hasPropertyChooser;
+                }
+            }
+
+            if (homeToggle && addressInput) {
+                homeToggle.addEventListener('change', syncHomeAddressState);
+            }
+
+            propertyRadios.forEach(function (radio) {
+                radio.addEventListener('change', function () {
+                    syncPropertyChoiceUi();
+                    if (homeToggle && homeToggle.checked) {
+                        var homeAddress = selectedPropertyAddress();
+                        if (homeAddress) {
+                            addressInput.value = homeAddress;
+                        }
+                    }
+                });
+            });
+
+            syncPropertyChoiceUi();
+            syncHomeAddressState();
         })();
     </script>
 }

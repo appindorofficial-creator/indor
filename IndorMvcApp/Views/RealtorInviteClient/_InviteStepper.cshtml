@@ -5,10 +5,10 @@
 @await Html.PartialAsync("~/Views/Realtor/_RealtorTopbar.cshtml", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel { HideNotifications = true })
 
 <div class="rl-invite-head">
-    <h1>@UiDisplayLocalization.Localize(L, Model.Title)</h1>
+    <h1>@L[Model.Title]</h1>
     @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
     {
-        <p>@UiDisplayLocalization.Localize(L, Model.Subtitle)</p>
+        <p>@L[Model.Subtitle]</p>
     }
 </div>
 

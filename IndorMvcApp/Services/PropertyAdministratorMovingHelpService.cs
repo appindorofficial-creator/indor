@@ -46,10 +46,7 @@ public class PropertyAdministratorMovingHelpService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest checkout today" : null,
-            Details = property?.PropertyType == "ShortTermRental"
-                ? "Need help resetting furniture, moving supply bins, and staging bedrooms after checkout."
-                : ""
+            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest checkout today" : null
         };
     }
 

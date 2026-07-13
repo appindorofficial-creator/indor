@@ -331,9 +331,16 @@ public class LawnController(
         var areaOptions = await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.Area, ct);
         var addonOptions = await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.Addon, ct);
 
-        var frequency = posted?.Frecuencia ?? solicitud.Frecuencia ?? "Every15Days";
-        var area = posted?.AreaServicio ?? solicitud.AreaServicio ?? "FrontBack";
-        var addonsPipe = posted?.AddonsSeleccionados ?? solicitud.AddonsSeleccionados ?? string.Empty;
+        var setupSaved = !string.Equals(solicitud.Estado, "InProgress", StringComparison.OrdinalIgnoreCase);
+        var frequency = posted?.Frecuencia
+            ?? (setupSaved ? solicitud.Frecuencia : null)
+            ?? string.Empty;
+        var area = posted?.AreaServicio
+            ?? (setupSaved ? solicitud.AreaServicio : null)
+            ?? string.Empty;
+        var addonsPipe = posted?.AddonsSeleccionados
+            ?? (setupSaved ? solicitud.AddonsSeleccionados : null)
+            ?? string.Empty;
         var selectedAddons = addonsPipe.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
@@ -399,11 +406,11 @@ public class LawnController(
             PrecioTotal = solicitud.PrecioTotal ?? await catalog.CalculateTotalAsync(
                 solicitud.MicroservicioId, solicitud.Frecuencia, solicitud.AreaServicio, solicitud.AddonsSeleccionados, ct),
             FechaPreferida = fecha,
-            VentanaHorario = posted?.VentanaHorario ?? solicitud.VentanaHorario ?? "Morning8_11",
+            VentanaHorario = posted?.VentanaHorario ?? solicitud.VentanaHorario ?? string.Empty,
             RecordatorioActivo = posted?.RecordatorioActivo ?? solicitud.RecordatorioActivo,
-            Frecuencia = solicitud.Frecuencia ?? "Every15Days",
+            Frecuencia = solicitud.Frecuencia ?? string.Empty,
             RecordatorioAvisoDias = posted?.RecordatorioAvisoDias ?? solicitud.RecordatorioAvisoDias,
-            RecordatorioCanales = posted?.RecordatorioCanales ?? solicitud.RecordatorioCanales ?? "Push",
+            RecordatorioCanales = posted?.RecordatorioCanales ?? solicitud.RecordatorioCanales ?? string.Empty,
             DateOptions = BuildDateOptions(fecha),
             TimeWindowOptions = timeWindows.Select(o => new LawnOptionCardViewModel
             {
@@ -593,13 +600,9 @@ public class LawnController(
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
                 ModoServicio = LawnServiceModes.FullService,
-                TipoServicio = "Subscription",
-                Frecuencia = "Every15Days",
-                AreaServicio = "FrontBack",
-                AddonsSeleccionados = "NoThanks",
-                RecordatorioActivo = true,
-                RecordatorioAvisoDias = 1,
-                RecordatorioCanales = "Push"
+                TipoServicio = "OneTime",
+                RecordatorioActivo = false,
+                RecordatorioAvisoDias = 0
             };
             db.SolicitudesLawn.Add(solicitud);
             await db.SaveChangesAsync(ct);

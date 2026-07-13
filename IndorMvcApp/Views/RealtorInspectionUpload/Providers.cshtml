@@ -20,7 +20,7 @@
 
         <a asp-action="Providers" asp-route-trade="@(chip == "All" ? null : chip)"
 
-           class="rl-filter-chip @(Model.ActiveTradeFilter == chip ? "is-active" : null)">@(chip == "All" ? L["All trades"] : chip)</a>
+           class="rl-filter-chip @(Model.ActiveTradeFilter == chip ? "is-active" : null)">@(chip == "All" ? L["All trades"] : L[chip])</a>
 
     }
 
@@ -70,7 +70,7 @@
 
                         {
 
-                            <span class="rl-provider-badge">@provider.BadgeLabel</span>
+                            <span class="rl-provider-badge">@L[provider.BadgeLabel]</span>
 
                         }
 
@@ -83,7 +83,7 @@
                             <span>@provider.Categories</span>
                         }
 
-                        <span>@provider.DistanceMiles.ToString("0.0") km away</span>
+            <span>@L.T("{0} km away", provider.DistanceMiles.ToString("0.0"))</span>
 
                     </span>
 
@@ -117,9 +117,9 @@
 
 <div class="rl-provider-selected-count">
 
-    <span><i class="fas fa-users"></i> @Model.TradesReadyCount trades ready</span>
+    <span><i class="fas fa-users"></i> @(Model.TradesReadyCount == 1 ? L["1 trade ready"] : L.T("{0} trades ready", Model.TradesReadyCount))</span>
 
-    <span id="providerCountLabel"><i class="fas fa-circle-check"></i> @Model.ProvidersSelectedCount providers selected</span>
+    <span id="providerCountLabel"><i class="fas fa-circle-check"></i> @(Model.ProvidersSelectedCount == 1 ? L["1 provider selected"] : L.T("{0} providers selected", Model.ProvidersSelectedCount))</span>
 
 </div>
 
@@ -138,6 +138,11 @@
 @section Scripts {
 
 <script>
+    (function () {
+        var i18n = {
+            providersSelected: '@Html.Raw(L["{0} providers selected"].Replace("'", "\\'"))',
+            providerSelected: '@Html.Raw(L["1 provider selected"].Replace("'", "\\'"))'
+        };
 
     function updateCount() {
 
@@ -145,7 +150,7 @@
 
         document.getElementById('providerCountLabel').innerHTML =
 
-            '<i class="fas fa-circle-check"></i> ' + count + ' providers selected';
+            '<i class="fas fa-circle-check"></i> ' + (count === 1 ? i18n.providerSelected : i18n.providersSelected.replace('{0}', count));
 
     }
 
@@ -160,7 +165,7 @@
         });
 
     });
-
+    })();
 </script>
 
 }

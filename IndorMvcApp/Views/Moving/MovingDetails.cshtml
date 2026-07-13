@@ -83,6 +83,7 @@
                 <div class="input-wrap">
                     <i class="fas fa-clock"></i>
                     <select id="VentanaHorarioSelect">
+                        <option value="">@L["Preferred arrival time"]</option>
                         <option value="Morning">@L["9:00 AM – 11:00 AM"]</option>
                         <option value="MidMorning">@L["11:00 AM – 1:00 PM"]</option>
                         <option value="Afternoon">@L["2:00 PM – 4:00 PM"]</option>
@@ -141,7 +142,7 @@
 
         const timeHidden = document.getElementById('VentanaHorario');
         const timeSelect = document.getElementById('VentanaHorarioSelect');
-        timeSelect.value = timeHidden.value || 'Morning';
+        timeSelect.value = timeHidden.value || '';
         timeSelect.addEventListener('change', () => timeHidden.value = timeSelect.value);
 
         const form = document.getElementById('movingDetailsForm');

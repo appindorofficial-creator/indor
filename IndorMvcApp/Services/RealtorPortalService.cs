@@ -56,10 +56,10 @@ public class RealtorPortalService(
             Stats = stats,
             QuickActions =
             [
-                new() { Label = localizer.T("Invite client"), Icon = "fa-user-plus", Url = RealtorWizardReturnNavigation.AppendReturnTo("/RealtorInviteClient/New", RealtorWizardReturnNavigation.Dashboard) },
-                new() { Label = localizer.T("New property file"), Icon = "fa-folder-plus", Url = RealtorWizardReturnNavigation.AppendReturnTo("/RealtorPropertyFile/Details", RealtorWizardReturnNavigation.Dashboard) },
-                new() { Label = localizer.T("Upload inspection report"), Icon = "fa-cloud-arrow-up", Url = "/RealtorInspectionUpload/Upload" },
-                new() { Label = localizer.T("Urgent quote"), Icon = "fa-comment-dollar", Url = "/RealtorUrgentQuote/Property" }
+                new() { Label = "Invite client", Icon = "fa-user-plus", Url = RealtorWizardReturnNavigation.AppendReturnTo("/RealtorInviteClient/New", RealtorWizardReturnNavigation.Dashboard) },
+                new() { Label = "New property file", Icon = "fa-folder-plus", Url = RealtorWizardReturnNavigation.AppendReturnTo("/RealtorPropertyFile/Details", RealtorWizardReturnNavigation.Dashboard) },
+                new() { Label = "Upload inspection report", Icon = "fa-cloud-arrow-up", Url = "/RealtorInspectionUpload/Upload" },
+                new() { Label = "Urgent quote", Icon = "fa-comment-dollar", Url = "/RealtorUrgentQuote/Property" }
             ],
             PropertyFiles = properties.Select(p => MapPropertyCard(p)).ToList(),
             PendingQuotes = quotes.Select(MapQuoteCard).ToList(),
@@ -2041,8 +2041,8 @@ public class RealtorPortalService(
             insights.Add(new()
             {
                 Text = inspectionReady == 1
-                    ? localizer.T("{0} inspection report ready for review", inspectionReady)
-                    : localizer.T("{0} inspection reports ready for review", inspectionReady),
+                    ? $"{inspectionReady} inspection report ready for review"
+                    : $"{inspectionReady} inspection reports ready for review",
                 Icon = "fa-file-circle-check",
                 ColorClass = "teal",
                 TargetUrl = "/Realtor/Files?filter=Inspection"
@@ -2054,8 +2054,8 @@ public class RealtorPortalService(
             insights.Add(new()
             {
                 Text = followUp == 1
-                    ? localizer.T("{0} file need client follow-up", followUp)
-                    : localizer.T("{0} files need client follow-up", followUp),
+                    ? $"{followUp} file need client follow-up"
+                    : $"{followUp} files need client follow-up",
                 Icon = "fa-user-clock",
                 ColorClass = "blue",
                 TargetUrl = "/Realtor/Clients"
@@ -2067,8 +2067,8 @@ public class RealtorPortalService(
             insights.Add(new()
             {
                 Text = needsSelection == 1
-                    ? localizer.T("{0} quote request need provider selection", needsSelection)
-                    : localizer.T("{0} quote requests need provider selection", needsSelection),
+                    ? $"{needsSelection} quote request need provider selection"
+                    : $"{needsSelection} quote requests need provider selection",
                 Icon = "fa-hand-pointer",
                 ColorClass = "orange",
                 TargetUrl = "/Realtor/Quotes?filter=Compare"
@@ -2079,7 +2079,7 @@ public class RealtorPortalService(
         {
             insights.Add(new()
             {
-                Text = localizer.T("You're all caught up — no urgent tasks right now"),
+                Text = "You're all caught up — no urgent tasks right now",
                 Icon = "fa-circle-check",
                 ColorClass = "teal"
             });
@@ -2101,8 +2101,8 @@ public class RealtorPortalService(
             insights.Add(new()
             {
                 Text = readyParse == 1
-                    ? localizer.T("{0} report ready for parsing", readyParse)
-                    : localizer.T("{0} reports ready for parsing", readyParse),
+                    ? $"{readyParse} report ready for parsing"
+                    : $"{readyParse} reports ready for parsing",
                 Icon = "fa-wand-magic-sparkles",
                 ColorClass = "teal"
             });
@@ -2113,8 +2113,8 @@ public class RealtorPortalService(
             insights.Add(new()
             {
                 Text = needQuotes == 1
-                    ? localizer.T("{0} file need contractor selection", needQuotes)
-                    : localizer.T("{0} files need contractor selection", needQuotes),
+                    ? $"{needQuotes} file need contractor selection"
+                    : $"{needQuotes} files need contractor selection",
                 Icon = "fa-hard-hat",
                 ColorClass = "orange"
             });
@@ -2255,9 +2255,9 @@ public class RealtorPortalService(
             ClientName = file.ClientName ?? "",
             SpecsLabel = BuildSpecsLabel(file),
             PhotoUrl = string.IsNullOrWhiteSpace(file.PhotoUrl) ? "/welcome-house.png" : file.PhotoUrl,
-            StatusLabel = localizer.T(badge),
+            StatusLabel = badge,
             StatusCss = css,
-            ActionLabel = localizer.T(actionLabel),
+            ActionLabel = actionLabel,
             ActionUrl = actionUrl
         };
     }
@@ -2276,15 +2276,15 @@ public class RealtorPortalService(
             Address = quote.Address,
             ClientName = quote.ClientName ?? "",
             ServiceType = quote.ServiceType,
-            RequestedLabel = localizer.T("Requested: {0}", quote.RequestedUtc.ToLocalTime().ToString("d", culture)),
+            RequestedLabel = string.Format(culture, "Requested: {0}", quote.RequestedUtc.ToLocalTime().ToString("d", culture)),
             DueLabel = quote.ResponseDeadlineHours is > 0
-                ? localizer.T("Due: {0}", quote.RequestedUtc.AddHours(quote.ResponseDeadlineHours.Value).ToLocalTime().ToString("d", culture))
+                ? string.Format(culture, "Due: {0}", quote.RequestedUtc.AddHours(quote.ResponseDeadlineHours.Value).ToLocalTime().ToString("d", culture))
                 : "",
-            StatusLabel = localizer.T(label),
+            StatusLabel = label,
             StatusCss = css,
             PhotoUrl = string.IsNullOrWhiteSpace(quote.PhotoUrl) ? "/welcome-house.png" : quote.PhotoUrl,
             ProviderQuotesReceived = quote.ProviderQuotesReceived,
-            ActionLabel = quote.Status == "Compare" ? localizer.T("Compare Quotes") : localizer.T("View Request"),
+            ActionLabel = quote.Status == "Compare" ? "Compare Quotes" : "View Request",
             ProviderInitials = DeriveProviderInitials(quote.ProviderQuotesReceived)
         };
     }
@@ -2299,12 +2299,12 @@ public class RealtorPortalService(
             Id = package.Id,
             ClientName = package.ClientName,
             Address = package.Address,
-            PackageTitle = localizer.T("{0} - Inspection Package", package.Address),
-            SharedLabel = localizer.T("Shared {0}", package.SharedUtc.ToLocalTime().ToString("d", culture)),
-            StatusLabel = isViewed ? localizer.T("Viewed") : localizer.T("Pending"),
+            PackageTitle = string.Format(culture, "{0} - Inspection Package", package.Address),
+            SharedLabel = string.Format(culture, "Shared {0}", package.SharedUtc.ToLocalTime().ToString("d", culture)),
+            StatusLabel = isViewed ? "Viewed" : "Pending",
             StatusCss = isViewed ? "viewed" : "pending",
             IconColor = isViewed ? "teal" : "purple",
-            ActionLabel = localizer.T("Open Package")
+            ActionLabel = "Open Package"
         };
     }
 
@@ -2375,15 +2375,16 @@ public class RealtorPortalService(
             CityRegion = file.CityRegion ?? "",
             PhotoUrl = string.IsNullOrWhiteSpace(file.PhotoUrl) ? "/welcome-house.png" : file.PhotoUrl,
             FilePhase = file.FilePhase ?? file.Status,
-            StatusBadge = localizer.T(badge),
+            // Keep English catalog keys; Files.cshtml localizes via UiDisplayLocalization.
+            StatusBadge = badge,
             StatusCss = css,
             ClientName = file.ClientName ?? "",
             RepairItemsCount = file.RepairItemsCount,
             QuotesReceivedCount = file.QuotesReceivedCount,
-            UpdatedLabel = localizer.T("Last updated {0}", FormatRelativeTime(file.UpdatedUtc ?? file.FechaCreacion)),
-            ActionLabel = localizer.T(actionLabel),
+            UpdatedLabel = $"Last updated {FormatRelativeTime(file.UpdatedUtc ?? file.FechaCreacion)}",
+            ActionLabel = actionLabel,
             ActionUrl = actionUrl,
-            DetailNote = RealtorDisplayLocalization.FileDetailNote(localizer, detailNote)
+            DetailNote = detailNote
         };
     }
 
@@ -2737,19 +2738,19 @@ public class RealtorPortalService(
             ? $"{quote.ProviderQuotesReceived} quotes received"
             : "Waiting on providers";
 
-    private string FormatRelativeTime(DateTime utc)
+    private static string FormatRelativeTime(DateTime utc)
     {
         var local = utc.ToLocalTime();
         var culture = CultureInfo.CurrentCulture;
         var today = DateTime.Today;
         if (local.Date == today)
         {
-            return localizer.T("Today, {0}", local.ToString("h:mm tt", culture));
+            return string.Format(culture, "Today, {0}", local.ToString("h:mm tt", culture));
         }
 
         if (local.Date == today.AddDays(-1))
         {
-            return localizer.T("Yesterday, {0}", local.ToString("h:mm tt", culture));
+            return string.Format(culture, "Yesterday, {0}", local.ToString("h:mm tt", culture));
         }
 
         return local.ToString("MMM d, yyyy", culture);

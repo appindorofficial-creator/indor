@@ -100,18 +100,38 @@ public class NeighborRequestController(
             return RedirectToAction("Index", "Home");
         }
 
+        // Clear any page-title / ViewData["Title"] collision left in ModelState.
+        ModelState.Remove("Title");
+
         var categories = await wizardService.LoadCategoriesAsync(cancellationToken);
         if (model.CategoryId <= 0 || categories.All(c => c.Id != model.CategoryId))
         {
             ModelState.AddModelError(nameof(model.CategoryId), localizer["Choose a category to continue."]);
         }
 
+        if (string.IsNullOrWhiteSpace(model.JobTitle))
+        {
+            ModelState.Remove(nameof(model.JobTitle));
+            ModelState.AddModelError(nameof(model.JobTitle), localizer["Enter a job title."]);
+        }
+
+        if (model.UseHomeAddress)
+        {
+            model.LocationAddress = await wizardService.GetDefaultAddressAsync(propiedad, cancellationToken);
+            ModelState.Remove(nameof(model.LocationAddress));
+        }
+
+        if (string.IsNullOrWhiteSpace(model.LocationAddress))
+        {
+            ModelState.AddModelError(nameof(model.LocationAddress), localizer["Enter a valid home address."]);
+        }
+
         if (!ModelState.IsValid)
         {
-            var invalidVm = await wizardService.BuildCategoryStepAsync(model.PropiedadId, null, Url, cancellationToken);
+            var invalidVm = await wizardService.BuildCategoryStepAsync(propiedad, model.PropiedadId, null, Url, cancellationToken);
             invalidVm.CategoryId = model.CategoryId;
             invalidVm.SelectedCategoryId = model.CategoryId;
-            invalidVm.Title = model.Title;
+            invalidVm.JobTitle = model.JobTitle;
             invalidVm.Description = model.Description;
             invalidVm.LocationAddress = model.LocationAddress;
             invalidVm.UseHomeAddress = model.UseHomeAddress;
@@ -136,8 +156,9 @@ public class NeighborRequestController(
             draft = await wizardService.CreateNewDraftAsync(HttpContext.Session, propiedad, model.CategoryId, cancellationToken);
         }
 
-        draft!.CategoryId = model.CategoryId;
-        draft.Title = model.Title.Trim();
+        draft!.PropiedadId = model.PropiedadId;
+        draft.CategoryId = model.CategoryId;
+        draft.Title = model.JobTitle.Trim();
         draft.Description = model.Description?.Trim() ?? string.Empty;
         draft.LocationAddress = model.LocationAddress.Trim();
         draft.UseHomeAddress = model.UseHomeAddress;

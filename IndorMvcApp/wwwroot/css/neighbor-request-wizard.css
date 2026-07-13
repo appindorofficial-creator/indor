@@ -1332,15 +1332,100 @@
 .nr-cat-tip strong { color: #0A2540; }
 .nr-cat-tip-icon { color: #0066CC; flex-shrink: 0; margin-top: 1px; }
 
+.nr-location-hint {
+    margin: 0 0 10px;
+    font-size: .74rem;
+    color: #64748B;
+    line-height: 1.4;
+}
+.nr-property-chooser {
+    display: grid;
+    gap: 8px;
+    margin: 0 0 4px;
+}
+.nr-property-choice {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid #E5E7EB;
+    border-radius: 14px;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color .15s ease, background-color .15s ease;
+}
+.nr-property-choice input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+.nr-property-choice-icon {
+    color: #0066CC;
+    flex-shrink: 0;
+}
+.nr-property-choice-copy {
+    flex: 1;
+    min-width: 0;
+    display: grid;
+    gap: 2px;
+}
+.nr-property-choice-label {
+    font-size: .82rem;
+    font-weight: 600;
+    color: #0A2540;
+    line-height: 1.35;
+    word-break: break-word;
+}
+.nr-property-choice-address {
+    font-size: .72rem;
+    color: #64748B;
+    line-height: 1.35;
+    word-break: break-word;
+}
+.nr-property-choice-check {
+    display: none;
+    color: #0066CC;
+    flex-shrink: 0;
+    font-size: .85rem;
+}
+.nr-property-choice.is-selected {
+    border-color: #0066CC;
+    background: #F0F7FF;
+}
+.nr-property-choice.is-selected .nr-property-choice-check {
+    display: inline-flex;
+}
 .nr-location-picker {
     display: flex; align-items: center; gap: 10px;
     padding: 12px 14px; border: 1px solid #E5E7EB; border-radius: 14px; background: #fff;
 }
+.nr-location-picker--select { position: relative; cursor: pointer; }
+.nr-location-picker--custom { margin-top: 10px; }
 .nr-location-picker:focus-within {
     border-color: #E5E7EB !important;
     box-shadow: none !important;
 }
 .nr-location-picker-icon { color: #0066CC; flex-shrink: 0; }
+.nr-location-picker-chevron {
+    color: #94A3B8;
+    flex-shrink: 0;
+    pointer-events: none;
+    font-size: .75rem;
+}
+.nr-location-picker-select {
+    flex: 1; min-width: 0;
+    border: 0 !important;
+    background: transparent !important;
+    font: inherit; font-size: .82rem; color: #0A2540; font-weight: 600;
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 0 4px 0 0;
+    margin: 0;
+    cursor: pointer;
+}
 .nr-location-picker-input {
     flex: 1; min-width: 0;
     border: 0 !important;

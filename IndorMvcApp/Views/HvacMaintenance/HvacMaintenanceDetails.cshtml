@@ -4,7 +4,7 @@
 @{
     ViewData["Title"] = L["Tell us about your system - INDOR"];
 var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("HvacMaintenanceService", "HvacMaintenance", new { id = Model.HomeCarePriorityId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;

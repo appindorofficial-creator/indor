@@ -18,7 +18,7 @@
             <div class="addr">@Model.DireccionPropiedad</div>
             <div class="room">@Model.HabitacionLabel</div>
         </div>
-        <a asp-action="TvWallMountingProject" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;white-space:nowrap;">Edit ></a>
+        <a asp-action="TvWallMountingProject" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;white-space:nowrap;">@L["Edit >"]</a>
     </div>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>

@@ -12,22 +12,22 @@ public class PropertyAdministratorPressureWashingStep1ViewModel : PropertyAdmini
     public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string WashAreas { get; set; } = "Walkway,Patio";
-    public string AreaSize { get; set; } = "Medium";
-    public string ServiceReason { get; set; } = "GuestTurnover";
-    public string IsOccupied { get; set; } = "Yes";
-    public string GuestNotification { get; set; } = "Both";
+    public string WashAreas { get; set; } = "";
+    public string AreaSize { get; set; } = "";
+    public string ServiceReason { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
+    public string GuestNotification { get; set; } = "";
     public string QuickNotes { get; set; } = "";
 }
 
 public class PropertyAdministratorPressureWashingStep1Input
 {
     public int PropertyId { get; set; }
-    public List<string> WashAreasList { get; set; } = ["Walkway", "Patio"];
-    public string AreaSize { get; set; } = "Medium";
-    public string ServiceReason { get; set; } = "GuestTurnover";
-    public string IsOccupied { get; set; } = "Yes";
-    public string GuestNotification { get; set; } = "Both";
+    public List<string> WashAreasList { get; set; } = [];
+    public string AreaSize { get; set; } = "";
+    public string ServiceReason { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
+    public string GuestNotification { get; set; } = "";
     public string? QuickNotes { get; set; }
 }
 
@@ -39,30 +39,30 @@ public class PropertyAdministratorPressureWashingStep2ViewModel : PropertyAdmini
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? PropertyStatusLabel { get; set; }
     public string WashAreas { get; set; } = "";
-    public string AreaSize { get; set; } = "Medium";
-    public string ServiceReason { get; set; } = "GuestTurnover";
-    public string IsOccupied { get; set; } = "Yes";
-    public string GuestNotification { get; set; } = "Both";
+    public string AreaSize { get; set; } = "";
+    public string ServiceReason { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
+    public string GuestNotification { get; set; } = "";
     public string QuickNotes { get; set; } = "";
-    public string ServiceTiming { get; set; } = "AfterCheckOut";
-    public string ArrivalWindow { get; set; } = "Midday";
-    public string HasWaterAccess { get; set; } = "Yes";
-    public string HasPower { get; set; } = "Yes";
-    public string EntryMethod { get; set; } = "GateCode";
+    public string ServiceTiming { get; set; } = "";
+    public string ArrivalWindow { get; set; } = "";
+    public string HasWaterAccess { get; set; } = "";
+    public string HasPower { get; set; } = "";
+    public string EntryMethod { get; set; } = "";
     public string AccessNotes { get; set; } = "";
-    public string UpdateRecipients { get; set; } = "Me,CoHost";
+    public string UpdateRecipients { get; set; } = "";
     public string CrewEtaLabel { get; set; } = "Earliest available exterior crew: Tomorrow, 11:00 AM";
 }
 
 public class PropertyAdministratorPressureWashingSubmitInput : PropertyAdministratorPressureWashingStep1Input
 {
-    public string ServiceTiming { get; set; } = "AfterCheckOut";
-    public string ArrivalWindow { get; set; } = "Midday";
-    public string HasWaterAccess { get; set; } = "Yes";
-    public string HasPower { get; set; } = "Yes";
-    public string EntryMethod { get; set; } = "GateCode";
+    public string ServiceTiming { get; set; } = "";
+    public string ArrivalWindow { get; set; } = "";
+    public string HasWaterAccess { get; set; } = "";
+    public string HasPower { get; set; } = "";
+    public string EntryMethod { get; set; } = "";
     public string? AccessNotes { get; set; }
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "CoHost"];
+    public List<string> UpdateRecipientsList { get; set; } = [];
 }
 
 public class PropertyAdministratorPressureWashingSummaryItemViewModel

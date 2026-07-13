@@ -19,7 +19,7 @@ public class LawnServiceViewModel
     public string ReminderBannerTitulo { get; set; } = "Automatic reminder";
     public string ReminderBannerTexto { get; set; } = string.Empty;
     public string RemindOnlyCtaTexto { get; set; } = "Only remind me";
-    public bool RecordatorioActivo { get; set; } = true;
+    public bool RecordatorioActivo { get; set; }
 }
 
 public class LawnFeatureItemViewModel
@@ -36,10 +36,10 @@ public class LawnSetupViewModel
     public bool IsReminderOnly { get; set; }
 
     [Required]
-    public string Frecuencia { get; set; } = "Every15Days";
+    public string Frecuencia { get; set; } = string.Empty;
 
     [Required]
-    public string AreaServicio { get; set; } = "FrontBack";
+    public string AreaServicio { get; set; } = string.Empty;
 
     public string AddonsSeleccionados { get; set; } = string.Empty;
     public decimal EstimatedTotal { get; set; }
@@ -89,12 +89,12 @@ public class LawnScheduleViewModel
     public DateTime FechaPreferida { get; set; }
 
     [Required]
-    public string VentanaHorario { get; set; } = "Morning8_11";
+    public string VentanaHorario { get; set; } = string.Empty;
 
-    public bool RecordatorioActivo { get; set; } = true;
-    public string Frecuencia { get; set; } = "Every15Days";
-    public int RecordatorioAvisoDias { get; set; } = 1;
-    public string RecordatorioCanales { get; set; } = "Push";
+    public bool RecordatorioActivo { get; set; }
+    public string Frecuencia { get; set; } = string.Empty;
+    public int RecordatorioAvisoDias { get; set; }
+    public string RecordatorioCanales { get; set; } = string.Empty;
     public List<LawnDateOptionViewModel> DateOptions { get; set; } = [];
     public List<LawnOptionCardViewModel> TimeWindowOptions { get; set; } = [];
     public List<LawnOptionCardViewModel> ReminderLeadOptions { get; set; } = [];

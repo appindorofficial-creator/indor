@@ -5,40 +5,40 @@ public class PropertyAdministratorEmergencyWaterHeaterStep1ViewModel : PropertyA
     public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string ProblemType { get; set; } = "NoHotWater";
-    public string ActivelyLeaking { get; set; } = "Yes";
-    public string HomeOccupied { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string HeaterType { get; set; } = "Gas";
+    public string ProblemType { get; set; } = "";
+    public string ActivelyLeaking { get; set; } = "";
+    public string HomeOccupied { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string HeaterType { get; set; } = "";
     public string QuickDetails { get; set; } = "";
 }
 
 public class PropertyAdministratorEmergencyWaterHeaterStep1Input
 {
     public int PropertyId { get; set; }
-    public string ProblemType { get; set; } = "NoHotWater";
-    public string ActivelyLeaking { get; set; } = "Yes";
-    public string HomeOccupied { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string HeaterType { get; set; } = "Gas";
+    public string ProblemType { get; set; } = "";
+    public string ActivelyLeaking { get; set; } = "";
+    public string HomeOccupied { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string HeaterType { get; set; } = "";
     public string? QuickDetails { get; set; }
 }
 
 public class PropertyAdministratorEmergencyWaterHeaterSubmitInput
 {
     public int PropertyId { get; set; }
-    public string ProblemType { get; set; } = "NoHotWater";
-    public string ActivelyLeaking { get; set; } = "Yes";
-    public string HomeOccupied { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string HeaterType { get; set; } = "Gas";
+    public string ProblemType { get; set; } = "";
+    public string ActivelyLeaking { get; set; } = "";
+    public string HomeOccupied { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string HeaterType { get; set; } = "";
     public string? QuickDetails { get; set; }
-    public string EntryAccess { get; set; } = "GarageSide";
+    public string EntryAccess { get; set; } = "";
     public string? AccessNotes { get; set; }
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
 }
 

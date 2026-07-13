@@ -53,8 +53,8 @@
                         {
                             <span class="rl-provider-badge">@provider.BadgeLabel</span>
                         }
-                        <span><i class="fas fa-star"></i> @provider.Rating.ToString("0.0") · @provider.Categories</span>
-                        <span>@provider.DistanceLabel</span>
+                        <span><i class="fas fa-star"></i> @provider.Rating.ToString("0.0") · @UiDisplayLocalization.Localize(L, provider.Categories)</span>
+                        <span>@UiDisplayLocalization.Localize(L, provider.DistanceLabel)</span>
                     </span>
                     @if (provider.IsVerified)
                     {

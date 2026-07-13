@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.WaterHeaterFlushDetailsViewModel
 @{
     ViewData["Title"] = L["Maintenance details - INDOR"];
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("WaterHeaterFlushSetup", "WaterHeaterFlush", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;
@@ -87,11 +87,11 @@
 
         <div class="estimate-box">
             <i class="fas fa-clipboard-list"></i>
-            <span>Estimated service: @Model.ResumenServicioTexto</span>
+            <span>@L.T("Estimated service: {0}", L.Catalog(Model.ResumenServicioTexto))</span>
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
-            Review request <i class="fas fa-chevron-right"></i>
+            @L["Review request"] <i class="fas fa-chevron-right"></i>
         </button>
     </form>
 

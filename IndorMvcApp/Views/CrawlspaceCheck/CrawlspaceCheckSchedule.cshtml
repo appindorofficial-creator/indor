@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = L["Schedule crawlspace check - INDOR"];
 var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks", "PestSigns", "Cracks", "PipeLeaks", "DamagedDucts" };
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("CrawlspaceCheckSetup", "CrawlspaceCheck", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;
@@ -78,12 +78,12 @@ var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks
         {
             <div class="tip-box">
                 <i class="fas fa-lightbulb"></i>
-                <span>@Model.TipTexto</span>
+                <span>@L.Catalog(Model.TipTexto)</span>
             </div>
         }
 
         <button type="submit" name="action" value="continue" class="btn-primary">
-            Review request <i class="fas fa-chevron-right"></i>
+            @L["Review request"] <i class="fas fa-chevron-right"></i>
         </button>
     </form>
 </div>

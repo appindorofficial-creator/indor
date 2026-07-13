@@ -64,8 +64,8 @@
     {
         <form asp-controller="Proveedor" asp-action="ProfileDocuments" method="post" enctype="multipart/form-data" class="prv-flow-form prv-flow-docs-form" id="prvFlowDocsForm" novalidate>
             @Html.AntiForgeryToken()
-            <input type="hidden" name="documentType" id="prvFlowDocType" value="" />
-            <input type="hidden" name="Section" value="@activeSection.Id" />
+            <input type="hidden" name="documentType" id="prvFlowDocType" value="@activeSection.DocumentType" />
+            <input type="hidden" name="Section" id="prvFlowActiveSection" value="@activeSection.Id" />
 
             <section class="prv-flow-detail-card">
                 <header class="prv-flow-detail-head">

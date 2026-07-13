@@ -37,7 +37,7 @@ public class MovingServiceViewModel
     public string CtaEstimateTexto { get; set; } = "Get estimate";
 
     [Required]
-    public string TipoMovimiento { get; set; } = "MoveIn";
+    public string TipoMovimiento { get; set; } = string.Empty;
 }
 
 public class MovingDetailsViewModel
@@ -48,13 +48,13 @@ public class MovingDetailsViewModel
     public string PageTitle { get; set; } = "Moving Details";
 
     [Required]
-    public string TipoMovimiento { get; set; } = "MoveIn";
+    public string TipoMovimiento { get; set; } = string.Empty;
 
     [Required]
-    public string TipoPropiedad { get; set; } = "Apartment";
+    public string TipoPropiedad { get; set; } = string.Empty;
 
     [Required]
-    public string TamanoHogar { get; set; } = "OneTwoBedrooms";
+    public string TamanoHogar { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Please enter the pick-up address."), MaxLength(300)]
     [ValidStreetAddress(RequireCityOrZip = true)]
@@ -68,10 +68,10 @@ public class MovingDetailsViewModel
     public DateTime? FechaMovimiento { get; set; }
 
     [Required]
-    public string VentanaHorario { get; set; } = "Morning";
+    public string VentanaHorario { get; set; } = string.Empty;
 
     [Required]
-    public string TipoServicio { get; set; } = "MoversOnly";
+    public string TipoServicio { get; set; } = string.Empty;
 }
 
 public class MovingItemsViewModel

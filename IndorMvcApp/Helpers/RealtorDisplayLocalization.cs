@@ -83,7 +83,8 @@ public static class RealtorDisplayLocalization
     public static string UrgentQuoteStepLabel(IIndorLocalizer localizer, string step) => localizer.T(step);
 
     public static string DistanceMilesAway(IIndorLocalizer localizer, double miles) =>
-        localizer.T("{0} mi away", miles.ToString("0.#", CultureInfo.InvariantCulture));
+        // Keep English key shape ("1.2 mi away") so views can Localize() via UiDisplayLocalization patterns.
+        $"{miles.ToString("0.#", CultureInfo.InvariantCulture)} mi away";
 
     public static string PropertySpecsSummary(
         IIndorLocalizer localizer,

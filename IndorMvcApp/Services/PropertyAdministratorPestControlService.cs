@@ -36,7 +36,6 @@ public class PropertyAdministratorPestControlService(
             ?? throw new InvalidOperationException("Property administrator not found.");
         var shell = await BuildShellAsync(admin, cancellationToken);
         var property = ResolveProperty(admin, propertyId);
-        var isRental = property?.PropertyType == "ShortTermRental";
 
         return new PropertyAdministratorPestControlStep1ViewModel
         {
@@ -46,15 +45,7 @@ public class PropertyAdministratorPestControlService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = MapProperty(property),
-            PestType = isRental ? "Roaches" : "Ants",
-            IssueLocation = "Kitchen",
-            Urgency = isRental ? "Urgent" : "Normal",
-            GuestsStaying = isRental ? "Yes" : "No",
-            LivePestsToday = isRental ? "Yes" : "No",
-            QuickDetails = isRental
-                ? "Guest reported roaches in the kitchen last night."
-                : ""
+            ViewingProperty = MapProperty(property)
         };
     }
 
@@ -96,15 +87,7 @@ public class PropertyAdministratorPestControlService(
             GuestsStaying = step1.GuestsStaying,
             LivePestsToday = step1.LivePestsToday,
             QuickDetails = step1.QuickDetails ?? "",
-            PreferredArrival = step1.Urgency is "Urgent" or "Emergency" ? "Asap" : "Tomorrow",
-            EntryAccess = isRental ? "SmartLock" : "HostOnSite",
-            HasPets = isRental ? "Yes" : "No",
-            TreatAreas = string.Join(",", InferTreatAreas(step1)),
-            UpdateRecipients = isRental ? "Me,Guest" : "Me",
-            AccessNotes = isRental
-                ? "Front door smart lock code will be shared after booking. Please avoid spraying near pet bowls."
-                : "",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(305) 555-0187",
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
             ProEtaLabel = $"Earliest available pest control pro: {etaMinutes} min"
         };
     }

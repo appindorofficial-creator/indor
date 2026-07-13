@@ -5,22 +5,22 @@ public class PropertyAdministratorEmergencyPlumbingStep1ViewModel : PropertyAdmi
     public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string IssueType { get; set; } = "ActiveLeak";
-    public string ActivelyLeaking { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string ProblemLocation { get; set; } = "Bathroom";
+    public string IssueType { get; set; } = "";
+    public string ActivelyLeaking { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string ProblemLocation { get; set; } = "";
     public string QuickDetails { get; set; } = "";
 }
 
 public class PropertyAdministratorEmergencyPlumbingStep1Input
 {
     public int PropertyId { get; set; }
-    public string IssueType { get; set; } = "ActiveLeak";
-    public string ActivelyLeaking { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string ProblemLocation { get; set; } = "Bathroom";
+    public string IssueType { get; set; } = "";
+    public string ActivelyLeaking { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string ProblemLocation { get; set; } = "";
     public string? QuickDetails { get; set; }
 }
 
@@ -31,19 +31,19 @@ public class PropertyAdministratorEmergencyPlumbingStep2ViewModel : PropertyAdmi
     public int PropertyId { get; set; }
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? GuestsOnSiteLabel { get; set; }
-    public string IssueType { get; set; } = "ActiveLeak";
-    public string ActivelyLeaking { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string ProblemLocation { get; set; } = "Bathroom";
+    public string IssueType { get; set; } = "";
+    public string ActivelyLeaking { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string ProblemLocation { get; set; } = "";
     public string QuickDetails { get; set; } = "";
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string EntryAccess { get; set; } = "";
     public string EntryCode { get; set; } = "";
     public string WaterShutoffAccess { get; set; } = "";
     public string AccessNotes { get; set; } = "";
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
-    public string PermissionToEnter { get; set; } = "Yes";
+    public string PermissionToEnter { get; set; } = "";
     public string EstimatedPrice { get; set; } = "$129–$169";
     public string ProEtaLabel { get; set; } = "Nearest plumbing pro available in 22 minutes";
 }
@@ -51,19 +51,19 @@ public class PropertyAdministratorEmergencyPlumbingStep2ViewModel : PropertyAdmi
 public class PropertyAdministratorEmergencyPlumbingSubmitInput
 {
     public int PropertyId { get; set; }
-    public string IssueType { get; set; } = "ActiveLeak";
-    public string ActivelyLeaking { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string ProblemLocation { get; set; } = "Bathroom";
+    public string IssueType { get; set; } = "";
+    public string ActivelyLeaking { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string ProblemLocation { get; set; } = "";
     public string? QuickDetails { get; set; }
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string EntryAccess { get; set; } = "";
     public string? EntryCode { get; set; }
     public string? WaterShutoffAccess { get; set; }
     public string? AccessNotes { get; set; }
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
-    public string PermissionToEnter { get; set; } = "Yes";
+    public string PermissionToEnter { get; set; } = "";
 }
 
 public class PropertyAdministratorEmergencyPlumbingConfirmedViewModel : PropertyAdministratorPortalShellViewModel

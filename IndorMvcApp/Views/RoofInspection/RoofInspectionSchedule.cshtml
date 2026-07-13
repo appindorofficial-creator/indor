@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.RoofInspectionScheduleViewModel
 @{
     ViewData["Title"] = L["Schedule roof check - INDOR"];
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("RoofInspectionDetails", "RoofInspection", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 3;
@@ -13,7 +13,7 @@
 
     
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Schedule roof check"]</h1>
-    <p class="page-lead" style="margin-bottom:16px;">@Model.ScheduleIntro</p>
+    <p class="page-lead" style="margin-bottom:16px;">@L.Catalog(Model.ScheduleIntro)</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 

@@ -1,12 +1,22 @@
 @model IndorMvcApp.ViewModels.TrashSetupViewModel
 @using IndorMvcApp.Services
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("TrashService", "Trash", new { id = Model.MicroservicioId });
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 3;
-    var selectedBins = (Model.BinsSeleccionados ?? "Trash").Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+    var selectedBins = (Model.BinsSeleccionados ?? string.Empty).Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+    var dayLabels = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Sun"] = L["Sun"],
+        ["Mon"] = L["Mon"],
+        ["Tue"] = L["Tue"],
+        ["Wed"] = L["Wed"],
+        ["Thu"] = L["Thu"],
+        ["Fri"] = L["Fri"],
+        ["Sat"] = L["Sat"]
+    };
 }
 
 <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
@@ -31,7 +41,7 @@
                         <div class="thumb tone-@bin.ThumbTone">
                             @if (!string.IsNullOrWhiteSpace(bin.ImageUrl))
                             {
-                                <img src="@Url.Content("~" + bin.ImageUrl)" alt="@bin.Label" loading="lazy" />
+                                <img src="@Url.Content("~" + bin.ImageUrl)" alt="@L[bin.Label]" loading="lazy" />
                             }
                             else
                             {
@@ -80,7 +90,7 @@
             <div class="day-row" id="dayGroup">
                 @foreach (var day in new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" })
                 {
-                    <button type="button" class="day-btn" data-value="@day">@day</button>
+                    <button type="button" class="day-btn" data-value="@day">@dayLabels[day]</button>
                 }
             </div>
         </div>
@@ -98,7 +108,7 @@
 @section Scripts {
 <script>
     (function () {
-        const selectedBins = new Set((document.getElementById('BinsSeleccionados').value || 'Trash').split('|').map(s => s.trim()).filter(Boolean));
+        const selectedBins = new Set((document.getElementById('BinsSeleccionados').value || '').split('|').map(s => s.trim()).filter(Boolean));
 
         function syncBins() {
             document.getElementById('BinsSeleccionados').value = Array.from(selectedBins).join('|');
@@ -108,10 +118,8 @@
             card.addEventListener('click', () => {
                 const code = card.dataset.code;
                 if (selectedBins.has(code)) {
-                    if (selectedBins.size > 1) {
-                        selectedBins.delete(code);
-                        card.classList.remove('active');
-                    }
+                    selectedBins.delete(code);
+                    card.classList.remove('active');
                 } else {
                     selectedBins.add(code);
                     card.classList.add('active');
@@ -122,8 +130,9 @@
 
         function initSingle(groupId, selector, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
+            const initialValue = (initial || hidden.value || '').trim();
             document.querySelectorAll('#' + groupId + ' ' + selector).forEach(btn => {
-                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                if (initialValue && btn.dataset.value === initialValue) btn.classList.add('active');
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('#' + groupId + ' ' + selector).forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
@@ -134,7 +143,7 @@
         }
 
         function updateTotal(price) {
-            const p = price || document.querySelector('#countGroup .count-card.active')?.dataset.price || '20';
+            const p = price || document.querySelector('#countGroup .count-card.active')?.dataset.price || '0';
             document.getElementById('PrecioMensual').value = p;
             document.getElementById('totalDisplay').textContent = '$' + p;
         }

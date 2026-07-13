@@ -121,7 +121,7 @@ public class RealtorUrgentQuoteWizardService(
         return new RealtorUrgentQuotePropertyViewModel
         {
             DisplayStep = 1,
-            Title = "Urgente Quote",
+            Title = "Urgent Quote",
             Subtitle = "For urgent closing needs, fill only the essentials: property, issue, urgency, and photos.",
             SearchQuery = search,
             SelectedPropertyFileId = draft.PropertyFileId,
@@ -396,7 +396,7 @@ public class RealtorUrgentQuoteWizardService(
         return new RealtorUrgentQuoteSendViewModel
         {
             DisplayStep = 4,
-            Title = "Urgente Quote",
+            Title = "Urgent Quote",
             Subtitle = "Review the essentials and send the request.",
             Property = BuildSummary(draft),
             PhotoCount = draft.Photos.Count,

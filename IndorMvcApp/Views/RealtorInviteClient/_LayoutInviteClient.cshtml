@@ -1,7 +1,7 @@
 @using IndorMvcApp.Localization
 @{
     var stepModel = Model as IndorMvcApp.ViewModels.RealtorInviteStepViewModel;
-    var pageTitle = UiDisplayLocalization.Localize(L, stepModel?.Title ?? "Invite Client");
+    var pageTitleKey = string.IsNullOrWhiteSpace(stepModel?.Title) ? "Invite Client" : stepModel.Title;
 }
 <!DOCTYPE html>
 <html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
@@ -9,7 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="theme-color" content="#0066CC" />
-    <title>@L[pageTitle] - INDOR</title>
+    <title>@L[pageTitleKey] - INDOR</title>
     @await Html.PartialAsync("_RealtorPortalHead")
 </head>
 <body class="rl-dash-page">

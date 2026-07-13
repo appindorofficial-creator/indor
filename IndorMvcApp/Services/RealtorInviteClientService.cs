@@ -105,6 +105,7 @@ public class RealtorInviteClientService(
         return new RealtorInviteClientInfoViewModel
         {
             DisplayStep = 1,
+            Title = "Invite Client",
             Subtitle = "Invite a client to collaborate on properties and projects.",
             FullName = draft.FullName,
             Email = draft.Email,
@@ -163,6 +164,7 @@ public class RealtorInviteClientService(
         return new RealtorInvitePropertyViewModel
         {
             DisplayStep = 2,
+            Title = "Invite Client",
             Subtitle = "Choose the property this client will collaborate on",
             SearchQuery = search,
             SelectedPropertyFileId = draft.PropertyFileId,
@@ -386,6 +388,7 @@ public class RealtorInviteClientService(
         return new RealtorInviteAccessViewModel
         {
             DisplayStep = 3,
+            Title = "Invite Client",
             Subtitle = "Choose what the client can access",
             AccessPropertyOverview = accessSaved && draft.AccessPropertyOverview,
             AccessFilesReports = accessSaved && draft.AccessFilesReports,

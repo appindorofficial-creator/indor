@@ -43,15 +43,38 @@ public class RealtorNearbyNetworkService(
         var activeFilter = NormalizeFilter(filter);
         var mineOnly = string.Equals(scope, "mine", StringComparison.OrdinalIgnoreCase);
 
-        var items = await LoadItemsAsync(realtor, settings, activeFilter, search, mineOnly, ct);
-        var cards = items.Select(i => MapToCard(i, realtor.Id)).ToList();
-
         const bool useDeviceLocation = true;
         var centerLat = ToDouble(settings.CenterLatitude, _googleMaps.DefaultLatitude);
         var centerLng = ToDouble(settings.CenterLongitude, _googleMaps.DefaultLongitude);
         var radiusMiles = (double)settings.RadiusMiles;
-        var mapProviders = await LoadNearbyProvidersAsync(centerLat, centerLng, radiusMiles, activeFilter, ct);
-        var mapPins = BuildMapPins(settings, items, useDeviceLocation);
+
+        // Map clicks felt dead because BuildAsync always loaded feed + geocoded providers
+        // before HTML returned. Load only what the active view needs, skip geocode on
+        // first paint (client refresh via NetworkMapData after GPS), and parallelize map work.
+        List<IndorNearbyNetworkItem> items;
+        List<RealtorNetworkFeedCardViewModel> cards;
+        List<RealtorNetworkMapProviderViewModel> mapProviders;
+        List<RealtorNetworkMapPinViewModel> mapPins;
+
+        if (activeView == "map")
+        {
+            var itemsTask = LoadItemsAsync(realtor, settings, activeFilter, search, mineOnly, ct);
+            var providersTask = LoadNearbyProvidersAsync(
+                centerLat, centerLng, radiusMiles, activeFilter, allowGeocode: false, ct);
+            await Task.WhenAll(itemsTask, providersTask);
+            items = await itemsTask;
+            mapProviders = await providersTask;
+            cards = [];
+            mapPins = BuildMapPins(settings, items, useDeviceLocation);
+        }
+        else
+        {
+            items = await LoadItemsAsync(realtor, settings, activeFilter, search, mineOnly, ct);
+            cards = items.Select(i => MapToCard(i, realtor.Id)).ToList();
+            mapProviders = [];
+            mapPins = [];
+        }
+
         var listingPinCount = mapPins.Count;
 
         return new RealtorNearbyNetworkViewModel
@@ -116,7 +139,7 @@ public class RealtorNearbyNetworkService(
             centerLabel = settings.CenterLabel;
         }
 
-        var providers = await LoadNearbyProvidersAsync(lat.Value, lng.Value, radiusMiles, activeFilter, ct);
+        var providers = await LoadNearbyProvidersAsync(lat.Value, lng.Value, radiusMiles, activeFilter, allowGeocode: true, ct);
         var listings = await LoadMapListingsNearAsync(realtor, lat.Value, lng.Value, radiusMiles, activeFilter, ct);
 
         return new RealtorNetworkMapDataViewModel
@@ -286,9 +309,9 @@ public class RealtorNearbyNetworkService(
             ItemId = item.Id,
             IsOwned = isOwned,
             IsOpenHouse = isOpenHouse,
-            ListingBadgeLabel = localizer.T(ResolveListingBadgeLabel(item, isOwned)),
+            ListingBadgeLabel = ResolveListingBadgeLabel(item, isOwned),
             ListingBadgeCss = item.BadgeCss,
-            StatusBadge = string.IsNullOrWhiteSpace(item.StatusBadge) ? "" : localizer.T(item.StatusBadge),
+            StatusBadge = item.StatusBadge ?? "",
             StatusCss = item.StatusCss,
             PriceLabel = item.Price is > 0 ? FormatCurrency(item.Price.Value) : item.Title,
             Title = item.Title,
@@ -297,8 +320,8 @@ public class RealtorNearbyNetworkService(
             DistanceLabel = item.DistanceMiles is > 0
                 ? RealtorDisplayLocalization.DistanceMilesAway(localizer, (double)item.DistanceMiles.Value)
                 : localizer.T("Nearby"),
-            ListingTypeLabel = extras.ListingType == "rent" ? localizer.T("For Rent") : localizer.T("For Sale"),
-            PropertySubtypeLabel = RealtorDisplayLocalization.PropertySubtypeLabel(localizer, extras.PropertySubtype),
+            ListingTypeLabel = extras.ListingType == "rent" ? "For Rent" : "For Sale",
+            PropertySubtypeLabel = extras.PropertySubtype,
             Description = extras.Description,
             OpenHouseMeta = item.MetaLabel,
             PhotoUrls = photos,
@@ -386,11 +409,13 @@ public class RealtorNearbyNetworkService(
 
         var address = item.Subtitle ?? item.Title;
         var now = DateTime.UtcNow;
+        var realtorName = realtor.DisplayName ?? "A realtor";
 
         db.IndorRealtorActivities.Add(new IndorRealtorActivity
         {
             RealtorId = realtor.Id,
             ActivityType = "network",
+            // Store English chrome; Localize when rendered on the dashboard.
             Description = $"You expressed interest in {address}",
             CategoryTag = "Nearby",
             OccurredUtc = now
@@ -402,7 +427,7 @@ public class RealtorNearbyNetworkService(
             {
                 RealtorId = item.OwnerRealtorId.Value,
                 ActivityType = "network",
-                Description = $"{realtor.DisplayName ?? "A realtor"} is interested in your listing at {address}",
+                Description = $"{realtorName} is interested in your listing at {address}",
                 CategoryTag = "Nearby",
                 OccurredUtc = now
             });
@@ -807,7 +832,6 @@ public class RealtorNearbyNetworkService(
         var isOwned = item.OwnerRealtorId == currentRealtorId && item.IsOwnedListing;
         var (primaryUrl, secondaryUrl) = ResolveFeedActionUrls(item, cardType, isOwned);
         var (primaryLabel, secondaryLabel) = ResolveFeedActionLabels(item, cardType, isOwned);
-        var badgeLabel = localizer.T(ResolveListingBadgeLabel(item, isOwned));
 
         var imageUrl = NearbyNetworkImageResolver.ResolveFeedImage(item);
         if (cardType is "lead" or "emergency")
@@ -819,7 +843,8 @@ public class RealtorNearbyNetworkService(
         {
             ItemId = item.Id,
             CardType = cardType,
-            BadgeLabel = badgeLabel,
+            // Keep English chrome keys; Localize in the feed card view.
+            BadgeLabel = ResolveListingBadgeLabel(item, isOwned),
             BadgeCss = item.BadgeCss,
             ImageUrl = imageUrl,
             IconClass = NearbyNetworkImageResolver.ResolveIconClass(item, imageUrl),
@@ -830,17 +855,20 @@ public class RealtorNearbyNetworkService(
                 ? FormatCurrency(item.Price.Value)
                 : null,
             Subtitle = item.Subtitle,
-            SpecsLabel = item.SpecsLabel ?? RealtorDisplayLocalization.PropertySpecsSummary(localizer, item.Bedrooms, item.Bathrooms, item.SquareFeet),
+            SpecsLabel = item.Bedrooms is > 0 || item.Bathrooms is > 0 || item.SquareFeet is > 0
+                ? RealtorDisplayLocalization.PropertySpecsSummary(localizer, item.Bedrooms, item.Bathrooms, item.SquareFeet)
+                : item.SpecsLabel,
             MetaLabel = item.MetaLabel,
             Tags = ParseTags(item.TagsJson),
             DistanceLabel = item.DistanceMiles is > 0
                 ? RealtorDisplayLocalization.DistanceMilesAway(localizer, (double)item.DistanceMiles.Value)
-                : localizer.T("Nearby"),
-            StatusBadge = string.IsNullOrWhiteSpace(item.StatusBadge) ? "" : localizer.T(item.StatusBadge),
+                : "Close by",
+            StatusBadge = string.IsNullOrWhiteSpace(item.StatusBadge) ? "" : item.StatusBadge,
             StatusCss = item.StatusCss ?? "active",
-            PrimaryActionLabel = localizer.T(primaryLabel),
+            // Keep English chrome keys so the view Localize() path always resolves dictionary entries.
+            PrimaryActionLabel = primaryLabel,
             PrimaryActionUrl = primaryUrl,
-            SecondaryActionLabel = string.IsNullOrWhiteSpace(secondaryLabel) ? null : localizer.T(secondaryLabel),
+            SecondaryActionLabel = secondaryLabel,
             SecondaryActionUrl = secondaryUrl,
             SecondaryActionOpensShare = cardType == "openhouse"
         };
@@ -876,6 +904,7 @@ public class RealtorNearbyNetworkService(
         double centerLng,
         double radiusMiles,
         string activeFilter,
+        bool allowGeocode,
         CancellationToken ct)
     {
         if (activeFilter is not ("All" or "Providers"))
@@ -910,7 +939,7 @@ public class RealtorNearbyNetworkService(
             .ToDictionaryAsync(c => c.Id, c => c.LabelEn, ct);
 
         var results = new List<RealtorNetworkMapProviderViewModel>();
-        var geocodeBudget = 6;
+        var geocodeBudget = allowGeocode ? 6 : 0;
 
         foreach (var provider in providers)
         {

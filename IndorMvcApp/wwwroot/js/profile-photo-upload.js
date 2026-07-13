@@ -26,13 +26,20 @@
         var alertsId = options.alertsId;
         var alertClass = options.alertClass || 'more-profile-photo-alert';
 
-        if (!photoForm || menuBtns.length === 0 || !menu) {
+        if (!photoForm || menuBtns.length === 0) {
+            return;
+        }
+
+        if (!options.openPickerOnButton && !menu) {
             return;
         }
 
         var menuBtn = menuBtns[0];
 
         function closePhotoMenu() {
+            if (!menu) {
+                return;
+            }
             menu.hidden = true;
             menuBtns.forEach(function (btn) {
                 btn.setAttribute('aria-expanded', 'false');
@@ -42,6 +49,9 @@
         var pickerRoot = photoForm;
 
         function togglePhotoMenu(e) {
+            if (!menu) {
+                return;
+            }
             e.preventDefault();
             e.stopPropagation();
             var willOpen = menu.hidden;
@@ -51,11 +61,38 @@
             });
         }
 
+        function openFilePicker(input) {
+            if (!input) {
+                return;
+            }
+            closePhotoMenu();
+            // Use click() only — showPicker() can no-op without throwing in some WebViews
+            // when the input is visually-hidden, leaving the camera control looking "not enabled".
+            input.click();
+        }
+
         menuBtns.forEach(function (btn) {
-            btn.addEventListener('click', togglePhotoMenu);
+            if (options.openPickerOnButton === 'library' && libraryInput) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openFilePicker(libraryInput);
+                });
+            } else if (options.openPickerOnButton === 'camera' && cameraInput) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    openFilePicker(cameraInput);
+                });
+            } else {
+                btn.addEventListener('click', togglePhotoMenu);
+            }
         });
 
         document.addEventListener('click', function (e) {
+            if (!menu) {
+                return;
+            }
             if (pickerRoot && pickerRoot.contains(e.target)) {
                 return;
             }
@@ -67,27 +104,20 @@
             }
         });
 
-        function openFilePicker(input) {
-            if (!input) {
-                return;
-            }
-            closePhotoMenu();
-            input.click();
-        }
-
-        if (takeBtn && cameraInput) {
+        if (takeBtn && (cameraInput || libraryInput)) {
             takeBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                openFilePicker(cameraInput);
+                // Prefer the camera-labeled input; fall back to library if capture/camera is unavailable.
+                openFilePicker(cameraInput || libraryInput);
             });
         }
 
-        if (chooseBtn && libraryInput) {
+        if (chooseBtn && (libraryInput || cameraInput)) {
             chooseBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                openFilePicker(libraryInput);
+                openFilePicker(libraryInput || cameraInput);
             });
         }
 
@@ -109,44 +139,67 @@
             wrap.appendChild(alert);
         }
 
+        function showPhotoInPreview(url) {
+            if (!previewImg || !url) {
+                return;
+            }
+
+            previewImg.src = url;
+            previewImg.hidden = false;
+            previewImg.removeAttribute('hidden');
+            previewImg.style.display = 'block';
+            if (placeholder) {
+                placeholder.hidden = true;
+                placeholder.setAttribute('hidden', '');
+                placeholder.style.display = 'none';
+            }
+
+            var previewRoot = previewImg.closest(
+                '.prv-pro-profile-photo-preview, .rl-profile-photo-preview, .pa-personal-photo-preview, .pf-edit-photo-preview, .pa-profile-photo-preview'
+            );
+            if (previewRoot) {
+                previewRoot.classList.add('has-image');
+            }
+        }
+
         function handlePhotoSelected(input) {
             if (!input.files || input.files.length === 0) {
                 return;
             }
 
             var file = input.files[0];
-            if (previewImg && file.type.startsWith('image/')) {
-                previewImg.src = URL.createObjectURL(file);
-                previewImg.hidden = false;
-                if (placeholder) {
-                    placeholder.hidden = true;
-                }
+            if (file.type && file.type.startsWith('image/')) {
+                showPhotoInPreview(URL.createObjectURL(file));
             }
 
+            var fieldName = options.fieldName || 'photo';
             var formData = new FormData(photoForm);
-            formData.delete(options.fieldName || 'photo');
-            formData.append(options.fieldName || 'photo', file);
+            formData.delete(fieldName);
+            formData.append(fieldName, file, file.name || 'profile-photo.jpg');
 
             fetch(photoForm.action, {
                 method: 'POST',
                 body: formData,
+                credentials: 'same-origin',
                 headers: { 'X-Requested-With': 'XMLHttpRequest' }
             })
                 .then(function (response) {
-                    return response.json().then(function (data) {
-                        if (!response.ok || !data.ok) {
-                            throw new Error(data.message || 'Could not upload photo.');
+                    return response.text().then(function (text) {
+                        var data = null;
+                        try {
+                            data = text ? JSON.parse(text) : null;
+                        } catch (err) {
+                            throw new Error('Could not upload photo.');
+                        }
+                        if (!response.ok || !data || !data.ok) {
+                            throw new Error((data && data.message) || 'Could not upload photo.');
                         }
                         return data;
                     });
                 })
                 .then(function (data) {
-                    if (previewImg && data.photoUrl) {
-                        previewImg.src = data.photoUrl;
-                        previewImg.hidden = false;
-                        if (placeholder) {
-                            placeholder.hidden = true;
-                        }
+                    if (data.photoUrl) {
+                        showPhotoInPreview(data.photoUrl);
                     }
                     showPhotoAlert(data.message || 'Profile photo updated.', 'success');
                 })
@@ -215,5 +268,23 @@
         alertsId: 'rlBusinessPhotoAlerts',
         fieldName: 'photo',
         alertClass: 'rl-profile-photo-alert'
+    });
+
+    wirePhotoPicker({
+        formId: 'paPersonalPhotoForm',
+        btnId: 'paPersonalPhotoBtn',
+        menuId: 'paPersonalPhotoMenu',
+        takeId: 'paPersonalPhotoTake',
+        chooseId: 'paPersonalPhotoChoose',
+        cameraId: 'paPersonalPhotoCamera',
+        libraryId: 'paPersonalPhotoLibrary',
+        imgId: 'paPersonalPhotoImg',
+        placeholderId: 'paPersonalPhotoPlaceholder',
+        alertsId: 'paPersonalPhotoAlerts',
+        fieldName: 'photo',
+        alertClass: 'pa-personal-alert',
+        // One-tap OS picker (Take Photo + Library). Avoids forced capture="environment"
+        // WebView failures that left the control looking "not enabled".
+        openPickerOnButton: 'library'
     });
 })();

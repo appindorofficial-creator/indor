@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.SafeAirScheduleViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("SafeAirDetails", "SafeAir", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 2;
@@ -39,11 +39,11 @@
                 </div>
                 <div class="photo-example">
                     <span class="photo-badge">@L["Good example"]</span>
-                    <img src="@Url.Content("~/aire.jpeg")" alt="Ceiling vent example" loading="lazy" onerror="this.style.display='none'" />
+                    <img src="@Url.Content("~/aire.jpeg")" alt="@L["Ceiling vent example"]" loading="lazy" onerror="this.style.display='none'" />
                 </div>
                 <div class="photo-example">
                     <span class="photo-badge">@L["Good example"]</span>
-                    <img src="@Url.Content("~/aire.jpeg")" alt="Filter size example" loading="lazy" onerror="this.style.display='none'" />
+                    <img src="@Url.Content("~/aire.jpeg")" alt="@L["Filter size example"]" loading="lazy" onerror="this.style.display='none'" />
                 </div>
             </div>
             @if (Model.ArchivosExistentes.Count > 0)
@@ -61,7 +61,7 @@
                                 <i class="fas fa-image"></i>
                             }
                             <span>@file.NombreArchivo</span>
-                            <button type="submit" form="removeSafeAirPhoto@(file.Id)" class="photo-remove-btn" aria-label="@L["Remove @file.NombreArchivo"]">
+                            <button type="submit" form="removeSafeAirPhoto@(file.Id)" class="photo-remove-btn" aria-label="@L.T("Remove {0}", file.NombreArchivo)">
                                 <i class="fas fa-xmark"></i>
                             </button>
                         </div>
@@ -133,11 +133,17 @@
 @section Scripts {
 <script>
     (function () {
+        const selectedPhotoLabel = @Json.Serialize(L["Selected photo {0}"]);
+        const photoLabel = @Json.Serialize(L["Photo {0}"]);
+        const removePhotoLabel = @Json.Serialize(L["Remove photo"]);
+        const removeNamedPhotoLabel = @Json.Serialize(L["Remove {0}"]);
+
         function initSingle(groupId, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
             if (!hidden) return;
+            const initialValue = (initial || hidden.value || '').trim();
             document.querySelectorAll('#' + groupId + ' .chip-option').forEach(btn => {
-                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                if (initialValue && btn.dataset.value === initialValue) btn.classList.add('active');
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('#' + groupId + ' .chip-option').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
@@ -202,7 +208,7 @@
                 if (!file.type || file.type.indexOf('image/') === 0) {
                     const img = document.createElement('img');
                     img.className = 'photo-preview-thumb';
-                    img.alt = 'Selected photo ' + (index + 1);
+                    img.alt = selectedPhotoLabel.replace('{0}', String(index + 1));
                     row.appendChild(img);
                     const reader = new FileReader();
                     reader.onload = function (e) { img.src = e.target.result; };
@@ -213,12 +219,14 @@
                     row.appendChild(icon);
                 }
                 const name = document.createElement('span');
-                name.textContent = file.name || ('Photo ' + (index + 1));
+                name.textContent = file.name || photoLabel.replace('{0}', String(index + 1));
                 row.appendChild(name);
                 const removeBtn = document.createElement('button');
                 removeBtn.type = 'button';
                 removeBtn.className = 'photo-remove-btn';
-                removeBtn.setAttribute('aria-label', 'Remove ' + (file.name || 'photo'));
+                removeBtn.setAttribute('aria-label', file.name
+                    ? removeNamedPhotoLabel.replace('{0}', file.name)
+                    : removePhotoLabel);
                 removeBtn.innerHTML = '<i class="fas fa-xmark"></i>';
                 removeBtn.addEventListener('click', function (e) {
                     e.preventDefault();

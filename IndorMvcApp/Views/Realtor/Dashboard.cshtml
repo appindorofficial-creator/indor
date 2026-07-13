@@ -158,7 +158,7 @@
                     <article class="rl-premium-card rl-premium-card--package">
                         <span class="rl-pkg-folder rl-pkg-folder--@pkg.IconColor"><i class="fas fa-folder"></i></span>
                         <div class="rl-premium-card-body">
-                            <strong>@pkg.PackageTitle</strong>
+                            <strong>@UiDisplayLocalization.Localize(L, pkg.PackageTitle)</strong>
                             <span class="rl-premium-muted">@L.T("Shared with {0}", pkg.ClientName)</span>
                             <span class="rl-status-pill rl-status-pill--@pkg.StatusCss">
                                 @if (pkg.StatusCss == "viewed") { <i class="fas fa-circle-check"></i> }

@@ -1,4 +1,4 @@
-﻿namespace IndorMvcApp.Services;
+namespace IndorMvcApp.Services;
 
 // Localized via DisplayLabelsLocalization.L
 
@@ -43,8 +43,8 @@ public static class RoofInspectionDisplayLabels
 
     public static string FormatRoofAge(string? code) => code switch
     {
-        "ZeroToTen" => DisplayLabelsLocalization.L("0â€“10 yrs"),
-        "ElevenToTwenty" => DisplayLabelsLocalization.L("11â€“20 yrs"),
+        "ZeroToTen" => DisplayLabelsLocalization.L("0-10 yrs"),
+        "ElevenToTwenty" => DisplayLabelsLocalization.L("11-20 yrs"),
         "TwentyPlus" => DisplayLabelsLocalization.L("20+ yrs"),
         _ => "Not sure"
     };
@@ -52,7 +52,7 @@ public static class RoofInspectionDisplayLabels
     public static string FormatLastInspection(string? code) => code switch
     {
         "ThisYear" => DisplayLabelsLocalization.L("This year"),
-        "OneToTwoYears" => DisplayLabelsLocalization.L("1â€“2 years ago"),
+        "OneToTwoYears" => DisplayLabelsLocalization.L("1-2 years ago"),
         "ThreePlusYears" => DisplayLabelsLocalization.L("3+ years ago"),
         _ => "I don't know"
     };

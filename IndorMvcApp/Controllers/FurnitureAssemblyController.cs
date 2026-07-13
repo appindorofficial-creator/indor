@@ -188,18 +188,23 @@ public class FurnitureAssemblyController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id);
         if (solicitud == null) return NotFound();
 
+        var prefsEntered = string.Equals(solicitud.Estado, "PreferencesCompleted", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "Confirmed", StringComparison.OrdinalIgnoreCase);
+
         return View(new FurnitureAssemblyPreferencesViewModel
         {
             SolicitudId = solicitud.Id,
             MovingSetupServicioId = solicitud.MovingSetupServicioId,
             NombreServicio = solicitud.MovingSetupServicio!.Nombre,
             DireccionPropiedad = solicitud.DireccionPropiedad ?? string.Empty,
-            Habitacion = solicitud.Habitacion ?? "Bedroom",
-            DetallesAcceso = solicitud.DetallesAcceso ?? "Stairs",
-            AyudaMover = solicitud.AyudaMover ?? "No",
-            FechaServicio = NormalizeServiceDate(solicitud.FechaServicio),
-            VentanaHorario = solicitud.VentanaHorario ?? "Afternoon",
-            NotaCorta = solicitud.NotaCorta,
+            Habitacion = prefsEntered ? (solicitud.Habitacion ?? string.Empty) : string.Empty,
+            DetallesAcceso = prefsEntered ? (solicitud.DetallesAcceso ?? string.Empty) : string.Empty,
+            AyudaMover = prefsEntered ? (solicitud.AyudaMover ?? string.Empty) : string.Empty,
+            FechaServicio = prefsEntered
+                ? NormalizeServiceDate(solicitud.FechaServicio)
+                : (DateTime?)null,
+            VentanaHorario = prefsEntered ? (solicitud.VentanaHorario ?? string.Empty) : string.Empty,
+            NotaCorta = prefsEntered ? solicitud.NotaCorta : null,
             MinServiceDateIso = DateTime.Today.ToString("yyyy-MM-dd")
         });
     }
@@ -216,7 +221,7 @@ public class FurnitureAssemblyController : Controller
             return RedirectToAction(nameof(FurnitureAssemblyItems), new { id = solicitud.Id });
         }
 
-        if (model.FechaServicio.Date < DateTime.Today)
+        if (model.FechaServicio is null || model.FechaServicio.Value.Date < DateTime.Today)
         {
             ModelState.AddModelError(nameof(model.FechaServicio), "Please select today or a future date.");
         }
@@ -234,7 +239,7 @@ public class FurnitureAssemblyController : Controller
             solicitud.Habitacion = model.Habitacion;
             solicitud.DetallesAcceso = model.DetallesAcceso;
             solicitud.AyudaMover = model.AyudaMover;
-            solicitud.FechaServicio = model.FechaServicio.Date;
+            solicitud.FechaServicio = model.FechaServicio!.Value.Date;
             solicitud.VentanaHorario = model.VentanaHorario;
             solicitud.NotaCorta = model.NotaCorta?.Trim();
             solicitud.Estado = "PreferencesCompleted";

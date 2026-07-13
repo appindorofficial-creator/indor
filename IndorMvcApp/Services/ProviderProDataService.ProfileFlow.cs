@@ -1,4 +1,5 @@
 using IndorMvcApp.Models;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -121,7 +122,7 @@ public partial class ProviderProDataService
         }
 
         entity.BusinessName = TrimOrEmpty(input.BusinessName);
-        entity.Phone = TrimOrEmpty(input.Phone);
+        entity.Phone = UsPhoneOptionalAttribute.NormalizeToStorage(input.Phone) ?? "";
         entity.Email = TrimOrEmpty(input.Email);
         entity.ServiceDescription = TrimOrEmpty(input.ServiceDescription);
         entity.PreferredHours = TrimOrEmpty(input.PreferredHours);
@@ -300,43 +301,65 @@ public partial class ProviderProDataService
             return false;
         }
 
+        var section = (input.Section ?? string.Empty).Trim().ToLowerInvariant();
+
         UpdateOnboardingMeta(entity, meta =>
         {
-            meta.ProfileDocuments.LicenseNumber = TrimOrNull(input.LicenseNumber);
-            meta.ProfileDocuments.LicenseType = TrimOrNull(input.LicenseType);
-            meta.ProfileDocuments.LicenseState = TrimOrNull(input.LicenseState);
-            meta.ProfileDocuments.LicenseExpiry = TrimOrNull(input.LicenseExpiry);
-            meta.ProfileDocuments.LicenseNotApplicable = input.LicenseNotApplicable;
-            meta.ProfileDocuments.LicenseUnknown = input.LicenseUnknown;
-
-            meta.ProfileDocuments.InsuranceCompany = TrimOrNull(input.InsuranceCompany);
-            meta.ProfileDocuments.PolicyNumber = TrimOrNull(input.PolicyNumber);
-            meta.ProfileDocuments.CoverageAmount = TrimOrNull(input.CoverageAmount);
-            meta.ProfileDocuments.InsuranceExpiry = TrimOrNull(input.InsuranceExpiry);
-            meta.ProfileDocuments.InsuranceNotApplicable = input.InsuranceNotApplicable;
-            meta.ProfileDocuments.InsuranceUnknown = input.InsuranceUnknown;
-
-            meta.ProfileDocuments.W9LegalName = TrimOrNull(input.W9LegalName);
-            meta.ProfileDocuments.W9DbaName = TrimOrNull(input.W9DbaName);
-            meta.ProfileDocuments.W9TaxClassification = TrimOrNull(input.W9TaxClassification);
-            meta.ProfileDocuments.W9Ein = TrimOrNull(input.W9Ein);
-            meta.ProfileDocuments.W9NotApplicable = input.W9NotApplicable;
-            meta.ProfileDocuments.W9Unknown = input.W9Unknown;
-
-            meta.ProfileDocuments.BackgroundFullName = TrimOrNull(input.BackgroundFullName);
-            meta.ProfileDocuments.BackgroundDob = TrimOrNull(input.BackgroundDob);
-            meta.ProfileDocuments.BackgroundSsnLast4 = TrimOrNull(input.BackgroundSsnLast4);
-            meta.ProfileDocuments.BackgroundState = TrimOrNull(input.BackgroundState);
-            meta.ProfileDocuments.BackgroundConsent = input.BackgroundConsent;
-
-            if (!string.IsNullOrWhiteSpace(input.W9Ein))
+            if (section is "" or "license")
             {
-                meta.EinNumber = TrimOrNull(input.W9Ein);
+                meta.ProfileDocuments.LicenseNumber = TrimOrNull(input.LicenseNumber);
+                meta.ProfileDocuments.LicenseType = TrimOrNull(input.LicenseType);
+                meta.ProfileDocuments.LicenseState = TrimOrNull(input.LicenseState);
+                meta.ProfileDocuments.LicenseExpiry = TrimOrNull(input.LicenseExpiry);
+                meta.ProfileDocuments.LicenseNotApplicable = input.LicenseNotApplicable;
+                meta.ProfileDocuments.LicenseUnknown = input.LicenseUnknown;
+            }
+
+            if (section is "" or "insurance")
+            {
+                meta.ProfileDocuments.InsuranceCompany = TrimOrNull(input.InsuranceCompany);
+                meta.ProfileDocuments.PolicyNumber = TrimOrNull(input.PolicyNumber);
+                meta.ProfileDocuments.CoverageAmount = TrimOrNull(input.CoverageAmount);
+                meta.ProfileDocuments.InsuranceExpiry = TrimOrNull(input.InsuranceExpiry);
+                meta.ProfileDocuments.InsuranceNotApplicable = input.InsuranceNotApplicable;
+                meta.ProfileDocuments.InsuranceUnknown = input.InsuranceUnknown;
+            }
+
+            if (section is "" or "w9")
+            {
+                meta.ProfileDocuments.W9LegalName = TrimOrNull(input.W9LegalName);
+                meta.ProfileDocuments.W9DbaName = TrimOrNull(input.W9DbaName);
+                meta.ProfileDocuments.W9TaxClassification = TrimOrNull(input.W9TaxClassification);
+                meta.ProfileDocuments.W9Ein = TrimOrNull(input.W9Ein);
+                meta.ProfileDocuments.W9NotApplicable = input.W9NotApplicable;
+                meta.ProfileDocuments.W9Unknown = input.W9Unknown;
+
+                if (!string.IsNullOrWhiteSpace(input.W9Ein))
+                {
+                    meta.EinNumber = TrimOrNull(input.W9Ein);
+                }
+            }
+
+            if (section is "" or "background")
+            {
+                meta.ProfileDocuments.BackgroundFullName = TrimOrNull(input.BackgroundFullName);
+                meta.ProfileDocuments.BackgroundDob = TrimOrNull(input.BackgroundDob);
+                meta.ProfileDocuments.BackgroundSsnLast4 = TrimOrNull(input.BackgroundSsnLast4);
+                meta.ProfileDocuments.BackgroundState = TrimOrNull(input.BackgroundState);
+                meta.ProfileDocuments.BackgroundConsent = input.BackgroundConsent;
             }
         });
 
-        entity.LicenseNumber = TrimOrNull(input.LicenseNumber) ?? entity.LicenseNumber;
-        entity.BackgroundCheckConsent = input.BackgroundConsent;
+        if (section is "" or "license")
+        {
+            entity.LicenseNumber = TrimOrNull(input.LicenseNumber) ?? entity.LicenseNumber;
+        }
+
+        if (section is "" or "background")
+        {
+            entity.BackgroundCheckConsent = input.BackgroundConsent;
+        }
+
         entity.FechaActualizacion = DateTime.UtcNow;
 
         await db.SaveChangesAsync(cancellationToken);

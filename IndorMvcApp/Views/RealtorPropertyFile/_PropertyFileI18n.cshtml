@@ -1,0 +1,10 @@
+@using System.Text.Json
+<script>
+window.IndorPropertyFileI18n = @Html.Raw(JsonSerializer.Serialize(new Dictionary<string, string>
+{
+    ["Please fix the following to continue:"] = L["Please fix the following to continue:"],
+    ["Select a property from the list below to continue."] = L["Select a property from the list below to continue."],
+    ["Select a file type."] = L["Select a file type."],
+    ["Select at least one item type."] = L["Select at least one item type."]
+}));
+</script>

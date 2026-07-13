@@ -5,6 +5,7 @@
     ViewBag.NavActive = "profile";
     ViewBag.CompanyInitial = Model.CompanyInitial;
     ViewBag.ProfileFlowStep = 2;
+    var phoneValidationMessage = L["Enter a valid 10-digit US phone number (e.g. 555 123 4567)."].ToString();
     string TriChecked(string pref, bool fallback) =>
         string.Equals(pref, "yes", StringComparison.OrdinalIgnoreCase) || (pref == null && fallback) ? "checked" : "";
     string TriNa(string pref) => string.Equals(pref, "na", StringComparison.OrdinalIgnoreCase) ? "checked" : "";
@@ -37,6 +38,13 @@
             <i class="fas fa-circle-exclamation"></i> @UiDisplayLocalization.Localize(L, Model.ErrorMessage)
         </div>
     }
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error" role="alert">
+            <i class="fas fa-circle-exclamation"></i>
+            @Html.ValidationSummary(false)
+        </div>
+    }
 
     <form asp-controller="Proveedor" asp-action="ProfileBusiness" method="post" class="prv-pro-edit-profile-form prv-flow-form" novalidate>
         @Html.AntiForgeryToken()
@@ -67,7 +75,7 @@
                 </label>
                 <label>
                     <span>@L["Phone"]</span>
-                    <input type="tel" name="Phone" value="@Model.Phone" placeholder="@L["(555) 555-5555"]" />
+                    <input type="tel" name="Phone" value="@Model.Phone" placeholder="@L["(555) 555-5555"]" data-phone-input />
                 </label>
                 <label>
                     <span>@L["Email"]</span>
@@ -120,11 +128,15 @@
             <div class="prv-pro-profile-tags prv-pro-edit-profile-service-grid">
                 @foreach (var option in Model.ServiceOptions)
                 {
-                    <label class="prv-pro-edit-profile-service-chip @(option.IsSelected ? "is-selected" : "")">
-                        <input type="checkbox" name="ServiceIds" value="@option.Id" @(option.IsSelected ? "checked" : "") />
-                        <i class="fas @option.IconClass"></i>
+                    <div class="prv-pro-edit-profile-service-chip @(option.IsSelected ? "is-selected" : "")"
+                         role="checkbox"
+                         tabindex="0"
+                         aria-checked="@(option.IsSelected ? "true" : "false")"
+                         aria-pressed="@(option.IsSelected ? "true" : "false")">
+                        <input type="checkbox" name="ServiceIds" value="@option.Id" tabindex="-1" @(option.IsSelected ? "checked" : "") />
+                        <i class="fas @option.IconClass" aria-hidden="true"></i>
                         <span>@UiDisplayLocalization.Localize(L, option.Label)</span>
-                    </label>
+                    </div>
                 }
             </div>
         </section>
@@ -168,4 +180,29 @@
 
 @section Scripts {
     <script src="~/js/provider-profile-flow.js" asp-append-version="true"></script>
+    <script>
+    (function () {
+        var form = document.querySelector('.prv-flow-form');
+        if (!form) {
+            return;
+        }
+
+        form.addEventListener('submit', function (e) {
+            var phone = form.querySelector('[data-phone-input]');
+            if (!phone || !phone.value.trim()) {
+                return;
+            }
+
+            var valid = window.IndorPhoneInput
+                ? window.IndorPhoneInput.isValidOptional(phone.value)
+                : phone.value.replace(/\D/g, '').length === 10;
+
+            if (!valid) {
+                e.preventDefault();
+                phone.setCustomValidity(@Json.Serialize(phoneValidationMessage));
+                phone.reportValidity();
+            }
+        });
+    })();
+    </script>
 }

@@ -20,7 +20,8 @@
     @if (TempData["ProfileSaved"] is true)
     {
         <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success">
-            <i class="fas fa-circle-check"></i> @L["Document uploaded successfully."]</div>
+            <i class="fas fa-circle-check"></i> @L["Document uploaded successfully."]
+        </div>
     }
     @if (TempData["ProfileSectionError"] is string sectionError)
     {
@@ -58,6 +59,7 @@
             <div class="prv-pro-edit-profile-doc-head">
                 <div>
                     <h2>@UiDisplayLocalization.Localize(L, slot.Label)</h2>
+                    <p class="prv-pro-doc-head-note">@L["Upload a clear photo or PDF"]</p>
                 </div>
                 @if (slot.IsUploaded)
                 {
@@ -88,52 +90,40 @@
                         </span>
                         <span class="prv-pro-doc-file-open" aria-hidden="true"><i class="fas fa-arrow-up-right-from-square"></i></span>
                     </a>
-                    <label class="prv-pro-doc-replace-btn" for="@fileInputId" data-role="file-trigger">
-                        <span class="prv-pro-doc-empty-icon prv-pro-doc-empty-icon--btn" aria-hidden="true">
-                            <i class="fas fa-cloud-arrow-up"></i>
-                        </span>
-                        <span>@L["Replace"]</span>
-                    </label>
                 </div>
             }
 
-            <form asp-controller="Proveedor" asp-action="EditProfileVerification" method="post" enctype="multipart/form-data" class="prv-pro-edit-profile-doc-form prv-pro-doc-upload-form">
+            <form asp-controller="Proveedor"
+                  asp-action="EditProfileVerification"
+                  method="post"
+                  enctype="multipart/form-data"
+                  class="prv-pro-edit-profile-doc-form prv-pro-doc-upload-form"
+                  novalidate
+                  data-doc-upload-form>
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="documentType" value="@slot.DocumentType" />
 
-                <input type="file"
-                       id="@fileInputId"
-                       name="documentFile"
-                       class="prv-pro-doc-file-input"
-                       data-role="file-input"
-                       accept="image/jpeg,image/png,image/webp,application/pdf,.pdf,.jpg,.jpeg,.png,.webp"
-                       @(slot.IsUploaded ? null : "required") />
-
-                @if (!slot.IsUploaded)
-                {
-                    <label class="prv-pro-doc-empty" for="@fileInputId" data-role="file-trigger">
-                        <span class="prv-pro-doc-empty-icon" aria-hidden="true"><i class="fas fa-cloud-arrow-up"></i></span>
-                        <div class="prv-pro-doc-empty-copy">
-                            <strong>@L["Upload a clear photo or PDF"]</strong>
-                            <span>@L["JPG, PNG, WEBP or PDF · Max 10 MB"]</span>
-                        </div>
-                    </label>
-                }
-
-                <div class="prv-pro-doc-pending is-hidden" data-role="pending" aria-live="polite">
-                    <img src="" alt="" class="prv-pro-doc-file-thumb prv-pro-doc-pending-thumb is-hidden" />
-                    <span class="prv-pro-doc-file-icon prv-pro-doc-pending-icon is-hidden"><i class="fas fa-file"></i></span>
-                    <span class="prv-pro-doc-file-meta">
-                        <strong class="prv-pro-doc-pending-name"></strong>
-                        <span>@L["Ready to upload"]</span>
+                <label class="prv-pro-file-picker" for="@fileInputId" data-role="file-trigger">
+                    <input type="file"
+                           id="@fileInputId"
+                           name="documentFile"
+                           class="prv-pro-file-picker-input"
+                           data-role="file-input"
+                           accept="image/jpeg,image/png,image/webp,application/pdf,.pdf,.jpg,.jpeg,.png,.webp" />
+                    <span class="prv-pro-file-picker-btn">
+                        <i class="fas fa-upload"></i> @(slot.IsUploaded ? L["Replace"] : L["Choose file"])
                     </span>
-                    <button type="button" class="prv-pro-doc-pending-clear" data-role="clear-pending" aria-label="@L["Clear selected file"]">
-                        <i class="fas fa-xmark"></i>
-                    </button>
-                </div>
+                    <span class="prv-pro-file-picker-name" data-role="file-name" data-empty-label="@L["No file selected"]">
+                        @L["No file selected"]
+                    </span>
+                </label>
 
-                <button type="submit" class="prv-pro-btn prv-pro-btn--primary is-hidden" data-role="upload-btn">
-                    <i class="fas fa-cloud-arrow-up"></i> @L["Upload"]</button>
+                <button type="submit"
+                        class="prv-pro-btn prv-pro-btn--primary"
+                        data-role="upload-btn"
+                        disabled>
+                    <i class="fas fa-cloud-arrow-up"></i> @L["Upload"]
+                </button>
             </form>
         </section>
     }
@@ -146,112 +136,48 @@
 @section Scripts {
 <script>
 (function () {
-    function isImageFile(file) {
-        return file && file.type && file.type.startsWith('image/');
-    }
-
-    function isPdfFile(file) {
-        return file && ((file.type && file.type === 'application/pdf') || /\.pdf$/i.test(file.name || ''));
-    }
-
-    document.querySelectorAll('.prv-pro-doc-upload-form').forEach(function (form) {
+    document.querySelectorAll('[data-doc-upload-form]').forEach(function (form) {
         var input = form.querySelector('[data-role="file-input"]');
-        var slot = form.closest('.prv-pro-doc-slot');
-        var fileTrigger = slot ? slot.querySelector('[data-role="file-trigger"]') : null;
-        var onFile = slot ? slot.querySelector('[data-role="on-file"]') : null;
+        var picker = form.querySelector('[data-role="file-trigger"]');
         var uploadBtn = form.querySelector('[data-role="upload-btn"]');
-        var pending = form.querySelector('[data-role="pending"]');
-        var pendingThumb = pending ? pending.querySelector('.prv-pro-doc-pending-thumb') : null;
-        var pendingIcon = pending ? pending.querySelector('.prv-pro-doc-pending-icon') : null;
-        var pendingName = pending ? pending.querySelector('.prv-pro-doc-pending-name') : null;
-        var clearBtn = pending ? pending.querySelector('[data-role="clear-pending"]') : null;
-        var previewUrl = null;
+        var nameEl = form.querySelector('[data-role="file-name"]');
+        var emptyLabel = nameEl ? (nameEl.getAttribute('data-empty-label') || 'No file selected') : 'No file selected';
 
-        if (!input || !pending) {
+        if (!input || !uploadBtn) {
             return;
         }
 
-        function revokePreview() {
-            if (previewUrl) {
-                URL.revokeObjectURL(previewUrl);
-                previewUrl = null;
-            }
-        }
-
-        function hidePending() {
-            revokePreview();
-            pending.classList.add('is-hidden');
-            if (pendingThumb) {
-                pendingThumb.classList.add('is-hidden');
-                pendingThumb.removeAttribute('src');
-            }
-            if (pendingIcon) {
-                pendingIcon.classList.add('is-hidden');
-            }
-            if (pendingName) {
-                pendingName.textContent = '';
-            }
-            if (fileTrigger) {
-                fileTrigger.classList.remove('is-hidden');
-            }
-            if (onFile) {
-                onFile.classList.remove('is-hidden');
-            }
-            if (uploadBtn) {
-                uploadBtn.classList.add('is-hidden');
-            }
-        }
-
-        function showPending(file) {
-            if (!file) {
-                hidePending();
-                return;
-            }
-
-            revokePreview();
-            pendingName.textContent = file.name;
-            pending.classList.remove('is-hidden');
-            if (fileTrigger) {
-                fileTrigger.classList.add('is-hidden');
-            }
-            if (onFile) {
-                onFile.classList.add('is-hidden');
-            }
-            if (uploadBtn) {
-                uploadBtn.classList.remove('is-hidden');
-            }
-
-            if (isImageFile(file)) {
-                previewUrl = URL.createObjectURL(file);
-                pendingThumb.src = previewUrl;
-                pendingThumb.classList.remove('is-hidden');
-                pendingIcon.classList.add('is-hidden');
-            } else {
-                pendingThumb.classList.add('is-hidden');
-                pendingIcon.classList.remove('is-hidden');
-                pendingIcon.classList.toggle('is-pdf', isPdfFile(file));
-                pendingIcon.querySelector('i').className = isPdfFile(file) ? 'fas fa-file-pdf' : 'fas fa-file-lines';
-            }
-        }
-
-        input.addEventListener('change', function () {
+        function syncSelection() {
             var file = input.files && input.files[0];
-            if (!file) {
-                hidePending();
+            if (nameEl) {
+                nameEl.textContent = file ? file.name : emptyLabel;
+            }
+            if (picker) {
+                picker.classList.toggle('has-file', !!file);
+            }
+            uploadBtn.disabled = !file;
+        }
+
+        input.addEventListener('change', syncSelection);
+        syncSelection();
+
+        form.addEventListener('submit', function (e) {
+            if (!input.files || !input.files[0]) {
+                e.preventDefault();
+                uploadBtn.disabled = true;
+                if (typeof input.reportValidity === 'function') {
+                    input.setCustomValidity('Choose a file to upload.');
+                    input.reportValidity();
+                    input.setCustomValidity('');
+                }
                 return;
             }
 
-            showPending(file);
+            uploadBtn.disabled = true;
+            if (typeof window.indorShowNavigationLoading === 'function') {
+                window.indorShowNavigationLoading();
+            }
         });
-
-        if (clearBtn) {
-            clearBtn.addEventListener('click', function () {
-                input.value = '';
-                hidePending();
-            });
-        }
-
-        form.addEventListener('submit', revokePreview);
     });
 })();
 </script>

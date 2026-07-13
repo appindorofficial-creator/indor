@@ -350,7 +350,7 @@ public class GutterCleaningController : Controller
             ImagenUrl = ResolveImageUrl(landing.ImagenUrl ?? priority.ImagenUrl),
             WhyItMattersItems = SplitPipePairs(landing.WhyItMattersItems, landing.WhyItMattersIconos),
             CtaTexto = landing.CtaTexto,
-            TipoAccionInicial = existing?.TipoAccionInicial ?? posted?.TipoAccionInicial ?? "Reminder"
+            TipoAccionInicial = existing?.TipoAccionInicial ?? posted?.TipoAccionInicial ?? string.Empty
         };
 
     private static GutterCleaningPreferencesViewModel BuildPreferencesViewModel(SolicitudGutterCleaning solicitud) =>
@@ -360,9 +360,9 @@ public class GutterCleaningController : Controller
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = solicitud.HomeCarePriority?.Nombre ?? "Gutter Cleaning",
             ProblemasSeleccionados = solicitud.ProblemasSeleccionados ?? string.Empty,
-            AreaProblema = solicitud.AreaProblema ?? "WholeHouse",
-            ObjetivoHoy = solicitud.ObjetivoHoy ?? MapInitialToTodayGoalStatic(solicitud.TipoAccionInicial),
-            PreferenciaRecordatorio = solicitud.PreferenciaRecordatorio ?? "SpringFall",
+            AreaProblema = solicitud.AreaProblema ?? string.Empty,
+            ObjetivoHoy = solicitud.ObjetivoHoy ?? string.Empty,
+            PreferenciaRecordatorio = solicitud.PreferenciaRecordatorio ?? string.Empty,
             FechaRecordatorioPersonalizada = solicitud.FechaRecordatorioPersonalizada,
             Notas = solicitud.Notas,
             ArchivosExistentes = MapExistingFiles(solicitud)
@@ -537,9 +537,9 @@ public class GutterCleaningController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                TipoAccionInicial = "Reminder",
-                PreferenciaRecordatorio = "SpringFall",
-                RecordatorioPrimaveraOtono = true
+                TipoAccionInicial = string.Empty,
+                PreferenciaRecordatorio = string.Empty,
+                RecordatorioPrimaveraOtono = false
             };
             _db.SolicitudesGutterCleaning.Add(solicitud);
             await _db.SaveChangesAsync();

@@ -680,7 +680,7 @@ public class RealtorController(
 
     [HttpGet]
     public IActionResult EditProfile() =>
-        RedirectToAction(nameof(EditProfileContact), new { from = "public" });
+        RedirectToAction(nameof(BusinessInformation), new { from = "public" });
 
     [HttpGet]
     public async Task<IActionResult> EditProfileServiceArea(CancellationToken cancellationToken)
@@ -730,7 +730,7 @@ public class RealtorController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> BusinessInformation(CancellationToken cancellationToken)
+    public async Task<IActionResult> BusinessInformation(string? from, CancellationToken cancellationToken)
     {
         var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
         if (realtor == null)
@@ -744,6 +744,12 @@ public class RealtorController(
         }
 
         var model = await portalService.BuildBusinessInformationAsync(realtor, cancellationToken);
+        if (string.Equals(from, "public", StringComparison.OrdinalIgnoreCase))
+        {
+            model.BackAction = "PublicProfile";
+            model.BackController = "Realtor";
+        }
+
         return View("EditProfile/BusinessInformation", model);
     }
 

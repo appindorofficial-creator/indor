@@ -135,6 +135,12 @@
     background: linear-gradient(145deg, #3b93ff 0%, #0066cc 55%, #004999 100%);
     object-fit: cover;
     box-shadow: 0 4px 12px rgba(0, 102, 204, 0.25);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+img.prv-flow-hero-avatar-img {
+    display: block;
 }
 
 .prv-flow-hero-verified {
@@ -730,6 +736,15 @@
     flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 14px;
+    align-items: center;
+}
+
+.prv-flow-doc-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    width: 100%;
 }
 
 .prv-flow-upload-btn {
@@ -737,11 +752,69 @@
     cursor: pointer;
 }
 
-.prv-flow-upload-btn input {
+.prv-flow-upload-btn.is-hidden {
+    display: none !important;
+}
+
+.prv-flow-doc-input {
     position: absolute;
-    inset: 0;
-    opacity: 0;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.prv-flow-doc-pending {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1 1 180px;
+    min-width: 0;
+    padding: 8px 10px;
+    border-radius: 10px;
+    background: #f0f7ff;
+    border: 1px solid #c5daf0;
+    font-size: 0.85rem;
+    color: #0f172a;
+}
+
+.prv-flow-doc-pending.is-hidden {
+    display: none !important;
+}
+
+.prv-flow-doc-pending-name {
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 160px;
+}
+
+.prv-flow-doc-pending-hint {
+    color: #6b7c8f;
+    white-space: nowrap;
+}
+
+.prv-flow-doc-pending-clear {
+    margin-left: auto;
+    border: 0;
+    background: transparent;
+    color: #6b7c8f;
     cursor: pointer;
+    padding: 4px 6px;
+}
+
+.prv-flow-doc-upload-btn.is-hidden {
+    display: none !important;
+}
+
+.prv-flow-doc-upload-btn:disabled {
+    opacity: .45;
+    cursor: not-allowed;
 }
 
 .prv-flow-doc-link {

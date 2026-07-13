@@ -45,10 +45,7 @@ public class PropertyAdministratorJunkRemovalService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = MapProperty(property),
-            QuickDetails = property?.PropertyType == "ShortTermRental"
-                ? "Old couch, 8 moving boxes, and 6 trash bags after guest checkout."
-                : ""
+            ViewingProperty = MapProperty(property)
         };
     }
 
@@ -88,9 +85,7 @@ public class PropertyAdministratorJunkRemovalService(
             GuestsInside = step1.GuestsInside,
             PickupType = step1.PickupType,
             QuickDetails = step1.QuickDetails ?? "",
-            PickupWhen = property.PropertyType == "ShortTermRental" ? "TodayAfterCheckout" : "Asap",
-            EntryCode = $"Front gate code: {1000 + property.Id}",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }
 

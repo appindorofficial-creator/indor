@@ -306,7 +306,7 @@ public class CrawlspaceCheckController : Controller
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = landing?.LandingTitulo ?? "Crawlspace Check",
             PreocupacionesSeleccionadas = solicitud.PreocupacionesSeleccionadas ?? string.Empty,
-            TimingPreferido = solicitud.TimingPreferido ?? "AsSoonAsPossible",
+            TimingPreferido = solicitud.TimingPreferido ?? string.Empty,
             FechaPreferida = solicitud.FechaPreferida ?? GetDefaultDate(),
             Notas = solicitud.Notas,
             ConcernOptions = SplitPipePairs(landing?.PreocupacionItems, landing?.PreocupacionIconos),
