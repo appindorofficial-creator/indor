@@ -136,7 +136,17 @@
         });
     }
 
-    document.querySelectorAll('.prv-pro-wizard-form, .prv-pro-add-customer-form').forEach(bindLocalizedFormValidation);
+    function shouldBindForm(form) {
+        // Cover every provider POST/GET form that uses HTML5 required or phone fields.
+        // This script only loads on _ProviderProLayout, so scope stays provider-pro.
+        return !!form.querySelector('[required], [data-phone-input]');
+    }
+
+    document.querySelectorAll('form').forEach(function (form) {
+        if (shouldBindForm(form)) {
+            bindLocalizedFormValidation(form);
+        }
+    });
 
     function clearSearchInputChrome(input) {
         input.style.setProperty('box-shadow', 'none', 'important');

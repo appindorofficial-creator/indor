@@ -1020,7 +1020,7 @@ public static class UiTranslationsFinal
             // Add customer flow — property & preferences
             ["Single Family"] = "Casa unifamiliar",
             ["Condo"] = "Condominio",
-            ["Townhome"] = "Townhome",
+            ["Townhome"] = "Casa adosada",
             ["Multi-Family"] = "Multifamiliar",
             ["Beds (optional)"] = "Habitaciones (opcional)",
             ["Baths (optional)"] = "Baños (opcional)",
