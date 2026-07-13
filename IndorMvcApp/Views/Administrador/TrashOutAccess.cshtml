@@ -24,7 +24,7 @@
                 <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
                 {
-                    <span class="pa-checkout-badge"><i class="fas fa-clock"></i> @Model.PropertyStatusLabel</span>
+                    <span class="pa-checkout-badge"><i class="fas fa-clock"></i> @UiDisplayLocalization.Localize(L, Model.PropertyStatusLabel)</span>
                 }
                 <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
             </div>
@@ -150,8 +150,8 @@
         <article class="pa-trash-price-card">
             <i class="fas fa-tag"></i>
             <div>
-                <strong>Service total: @Model.ServiceTotalLabel</strong>
-                <small>@Model.ServiceTotalDescription</small>
+                <strong>@L.T("Service total: {0}", Model.ServiceTotalLabel)</strong>
+                <small>@UiDisplayLocalization.Localize(L, Model.ServiceTotalDescription)</small>
             </div>
             <span class="pa-trash-price-badge">@Model.ServiceTotalLabel</span>
         </article>

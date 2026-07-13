@@ -15,7 +15,7 @@
 
     <section class="pa-flow-intro">
         <h1>@L["Lawn Care request sent"]</h1>
-        <p>A lawn care pro is scheduled for @(Model.ViewingProperty?.PropertyName ?? "your property").</p>
+        <p>@L.T("A lawn care pro is scheduled for {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"])</p>
     </section>
 
     <div class="pa-success-banner">
@@ -33,7 +33,7 @@
                 <strong>@Model.TechnicianName</strong>
                 <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0")</span>
                 <small>@UiDisplayLocalization.Localize(L, Model.TechnicianTitle)</small>
-                <small class="pa-tech-badges">@Model.TechnicianBadges</small>
+                <small class="pa-tech-badges">@UiDisplayLocalization.Localize(L, Model.TechnicianBadges)</small>
             </div>
             <span class="pa-verified-badge"><i class="fas fa-check"></i> @L["Verified"]</span>
         </div>
@@ -87,7 +87,7 @@
                         }
                     </span>
                     <strong>@UiDisplayLocalization.Localize(L, step.Label)</strong>
-                    <small>@step.StatusLabel</small>
+                    <small>@UiDisplayLocalization.Localize(L, step.StatusLabel)</small>
                 </div>
             }
         </div>

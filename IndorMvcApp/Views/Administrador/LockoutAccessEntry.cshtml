@@ -34,10 +34,10 @@
             <label>@L["Do we have a working smart lock code?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.SmartLockCodeWorks == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="SmartLockCodeWorks" value="Yes" @(Model.SmartLockCodeWorks == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="SmartLockCodeWorks" value="Yes" @(Model.SmartLockCodeWorks == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.SmartLockCodeWorks == "No" ? "is-selected" : null)">
-                    <input type="radio" name="SmartLockCodeWorks" value="No" @(Model.SmartLockCodeWorks == "No" ? "checked" : null) /> No
+                    <input type="radio" name="SmartLockCodeWorks" value="No" @(Model.SmartLockCodeWorks == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>
@@ -91,10 +91,10 @@
             <label>@L["Can the pro enter immediately once access is restored?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.ProEnterImmediately == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="ProEnterImmediately" value="Yes" @(Model.ProEnterImmediately == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="ProEnterImmediately" value="Yes" @(Model.ProEnterImmediately == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.ProEnterImmediately == "No" ? "is-selected" : null)">
-                    <input type="radio" name="ProEnterImmediately" value="No" @(Model.ProEnterImmediately == "No" ? "checked" : null) /> No
+                    <input type="radio" name="ProEnterImmediately" value="No" @(Model.ProEnterImmediately == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>

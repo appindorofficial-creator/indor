@@ -46,10 +46,10 @@
                 </button>
                 <div class="pa-personal-photo-menu" id="paPersonalPhotoMenu" role="menu" hidden>
                     <button type="button" class="pa-personal-photo-menu-item" id="paPersonalPhotoTake" role="menuitem">
-                        <i class="fas fa-camera"></i> Take photo
+                        <i class="fas fa-camera"></i> @L["Take photo"]
                     </button>
                     <button type="button" class="pa-personal-photo-menu-item" id="paPersonalPhotoChoose" role="menuitem">
-                        <i class="fas fa-image"></i> Choose from library
+                        <i class="fas fa-image"></i> @L["Choose from library"]
                     </button>
                 </div>
                 <input type="file" id="paPersonalPhotoCamera" name="photo" accept="image/*" capture="environment" hidden />
@@ -57,7 +57,7 @@
             </div>
         </form>
         <strong>@Model.FullName</strong>
-        <span class="pa-profile-badge">@Model.RoleBadge</span>
+        <span class="pa-profile-badge">@UiDisplayLocalization.Localize(L, Model.RoleBadge)</span>
     </section>
 
     <section class="pa-personal-section">
@@ -82,7 +82,7 @@
             </div>
             <div class="pa-personal-row pa-personal-row--static">
                 <span class="pa-personal-row-label">@L["Date of birth"]</span>
-                <span class="pa-personal-row-value">@Model.DateOfBirthLabel</span>
+                <span class="pa-personal-row-value">@UiDisplayLocalization.Localize(L, Model.DateOfBirthLabel)</span>
             </div>
         </div>
     </section>
@@ -92,7 +92,7 @@
         <div class="pa-personal-list">
             <div class="pa-personal-row pa-personal-row--static">
                 <span class="pa-personal-row-label">@L["Preferred contact method"]</span>
-                <span class="pa-personal-row-value">@Model.PreferredContactMethod</span>
+                <span class="pa-personal-row-value">@UiDisplayLocalization.Localize(L, Model.PreferredContactMethod)</span>
             </div>
             <div class="pa-personal-row pa-personal-row--toggle">
                 <div>

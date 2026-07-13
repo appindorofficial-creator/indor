@@ -69,10 +69,10 @@
             <label>@L["Is a guest stay affected?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.GuestStayAffected == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="GuestStayAffected" value="Yes" @(Model.GuestStayAffected == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="GuestStayAffected" value="Yes" @(Model.GuestStayAffected == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.GuestStayAffected == "No" ? "is-selected" : null)">
-                    <input type="radio" name="GuestStayAffected" value="No" @(Model.GuestStayAffected == "No" ? "checked" : null) /> No
+                    <input type="radio" name="GuestStayAffected" value="No" @(Model.GuestStayAffected == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>

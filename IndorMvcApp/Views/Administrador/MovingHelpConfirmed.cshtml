@@ -15,7 +15,7 @@
 
     <section class="pa-flow-intro">
         <h1>@L["Moving Help scheduled"]</h1>
-        <p>Your team is confirmed for @(Model.ViewingProperty?.PropertyName ?? "your property").</p>
+        <p>@L.T("Your team is confirmed for {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"])</p>
     </section>
 
     <div class="pa-success-banner">
@@ -33,19 +33,19 @@
                 <strong>@Model.TechnicianName</strong>
                 <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0")</span>
                 <small>@UiDisplayLocalization.Localize(L, Model.TechnicianTitle)</small>
-                <small class="pa-tech-role">@Model.TechnicianRole</small>
+                <small class="pa-tech-role">@UiDisplayLocalization.Localize(L, Model.TechnicianRole)</small>
             </div>
             <span class="pa-verified-badge"><i class="fas fa-check"></i> @L["Verified"]</span>
         </div>
         <div class="pa-tech-stats">
             <div>
                 <i class="fas fa-calendar"></i>
-                <strong>@Model.ScheduleLabel</strong>
+                <strong>@UiDisplayLocalization.Localize(L, Model.ScheduleLabel)</strong>
                 <small>@L["ETA"]</small>
             </div>
             <div>
                 <i class="fas fa-clock"></i>
-                <strong>@Model.TimeWindowLabel</strong>
+                <strong>@UiDisplayLocalization.Localize(L, Model.TimeWindowLabel)</strong>
                 <small>@L["Window"]</small>
             </div>
             <div>
@@ -101,7 +101,7 @@
 
     <div class="pa-moving-info-box">
         <i class="fas fa-circle-info"></i>
-        <p>@Model.InfoBanner</p>
+        <p>@UiDisplayLocalization.Localize(L, Model.InfoBanner)</p>
     </div>
     @{ ViewBag.ConfirmedPropertyId = Model.ViewingProperty?.Id; }
     @await Html.PartialAsync("_PropertyAdminConfirmedFooter")

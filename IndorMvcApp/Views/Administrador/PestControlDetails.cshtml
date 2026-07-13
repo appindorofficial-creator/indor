@@ -69,10 +69,10 @@
             <label>@L["Are guests currently staying at the property?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.GuestsStaying == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="GuestsStaying" value="Yes" @(Model.GuestsStaying == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="GuestsStaying" value="Yes" @(Model.GuestsStaying == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.GuestsStaying == "No" ? "is-selected" : null)">
-                    <input type="radio" name="GuestsStaying" value="No" @(Model.GuestsStaying == "No" ? "checked" : null) /> No
+                    <input type="radio" name="GuestsStaying" value="No" @(Model.GuestsStaying == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>
@@ -82,10 +82,10 @@
             <label>@L["Have you seen live pests today?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.LivePestsToday == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="LivePestsToday" value="Yes" @(Model.LivePestsToday == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="LivePestsToday" value="Yes" @(Model.LivePestsToday == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.LivePestsToday == "No" ? "is-selected" : null)">
-                    <input type="radio" name="LivePestsToday" value="No" @(Model.LivePestsToday == "No" ? "checked" : null) /> No
+                    <input type="radio" name="LivePestsToday" value="No" @(Model.LivePestsToday == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>

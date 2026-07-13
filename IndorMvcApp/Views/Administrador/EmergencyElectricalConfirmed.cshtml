@@ -25,7 +25,7 @@
         }
         else
         {
-            <p>We're connecting you with a verified electrician near @(Model.ViewingProperty?.PropertyName ?? "your property").</p>
+            <p>@L.T("We're connecting you with a verified electrician near {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"])</p>
         }
     </section>
 
@@ -33,7 +33,7 @@
         <span class="pa-success-icon"><i class="fas fa-check"></i></span>
         <div>
             <strong>@L["Request received"]</strong>
-            <span>@(hasTechnician ? "We've dispatched a technician to help." : "We're matching your request with a verified, licensed electrician.")</span>
+            <span>@(hasTechnician ? L["We've dispatched a technician to help."] : L["We're matching your request with a verified, licensed electrician."])</span>
         </div>
     </div>
 

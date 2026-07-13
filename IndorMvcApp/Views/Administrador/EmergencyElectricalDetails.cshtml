@@ -53,10 +53,10 @@
             <label>@L["Is power fully out right now?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.PowerFullyOut == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="PowerFullyOut" value="Yes" @(Model.PowerFullyOut == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="PowerFullyOut" value="Yes" @(Model.PowerFullyOut == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.PowerFullyOut == "No" ? "is-selected" : null)">
-                    <input type="radio" name="PowerFullyOut" value="No" @(Model.PowerFullyOut == "No" ? "checked" : null) /> No
+                    <input type="radio" name="PowerFullyOut" value="No" @(Model.PowerFullyOut == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>
@@ -66,10 +66,10 @@
             <label>@L["Are guests currently inside?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.GuestsInside == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="GuestsInside" value="Yes" @(Model.GuestsInside == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="GuestsInside" value="Yes" @(Model.GuestsInside == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.GuestsInside == "No" ? "is-selected" : null)">
-                    <input type="radio" name="GuestsInside" value="No" @(Model.GuestsInside == "No" ? "checked" : null) /> No
+                    <input type="radio" name="GuestsInside" value="No" @(Model.GuestsInside == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>

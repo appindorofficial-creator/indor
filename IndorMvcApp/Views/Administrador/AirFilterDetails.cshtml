@@ -50,7 +50,7 @@
                 @foreach (var v in new[] { "Yes", "No" })
                 {
                     <label class="pa-toggle-btn @(Model.IsOccupied == v ? "is-selected" : null)">
-                        <input type="radio" name="IsOccupied" value="@v" @(Model.IsOccupied == v ? "checked" : null) /> @v
+                        <input type="radio" name="IsOccupied" value="@v" @(Model.IsOccupied == v ? "checked" : null) /> @L[v]
                     </label>
                 }
             </div>
@@ -63,7 +63,7 @@
                 @foreach (var v in new[] { "Yes", "No" })
                 {
                     <label class="pa-toggle-btn @(Model.GuestsInside == v ? "is-selected" : null)">
-                        <input type="radio" name="GuestsInside" value="@v" @(Model.GuestsInside == v ? "checked" : null) /> @v
+                        <input type="radio" name="GuestsInside" value="@v" @(Model.GuestsInside == v ? "checked" : null) /> @L[v]
                     </label>
                 }
             </div>

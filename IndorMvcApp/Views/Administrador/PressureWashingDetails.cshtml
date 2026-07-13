@@ -94,11 +94,11 @@
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.IsOccupied == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="IsOccupied" value="Yes" @(Model.IsOccupied == "Yes" ? "checked" : null) />
-                    <i class="fas fa-user"></i> Yes
+                    <i class="fas fa-user"></i> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.IsOccupied == "No" ? "is-selected" : null)">
                     <input type="radio" name="IsOccupied" value="No" @(Model.IsOccupied == "No" ? "checked" : null) />
-                    <i class="fas fa-house"></i> No
+                    <i class="fas fa-house"></i> @L["No"]
                 </label>
             </div>
         </div>

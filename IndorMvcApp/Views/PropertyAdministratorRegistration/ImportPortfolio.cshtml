@@ -4,7 +4,7 @@
 
 @if (!string.IsNullOrWhiteSpace(Model.FormError))
 {
-    <div class="pa-summary-error">@Model.FormError</div>
+    <div class="pa-summary-error">@UiDisplayLocalization.Localize(L, Model.FormError)</div>
 }
 
 <div class="pa-review-card" style="margin-bottom:16px;">

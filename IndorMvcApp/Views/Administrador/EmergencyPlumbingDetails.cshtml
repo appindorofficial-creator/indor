@@ -50,10 +50,10 @@
             <label>@L["Is water actively leaking right now?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.ActivelyLeaking == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="ActivelyLeaking" value="Yes" @(Model.ActivelyLeaking == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="ActivelyLeaking" value="Yes" @(Model.ActivelyLeaking == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.ActivelyLeaking == "No" ? "is-selected" : null)">
-                    <input type="radio" name="ActivelyLeaking" value="No" @(Model.ActivelyLeaking == "No" ? "checked" : null) /> No
+                    <input type="radio" name="ActivelyLeaking" value="No" @(Model.ActivelyLeaking == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>
@@ -63,10 +63,10 @@
             <label>@L["Are guests currently inside?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.GuestsInside == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="GuestsInside" value="Yes" @(Model.GuestsInside == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="GuestsInside" value="Yes" @(Model.GuestsInside == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.GuestsInside == "No" ? "is-selected" : null)">
-                    <input type="radio" name="GuestsInside" value="No" @(Model.GuestsInside == "No" ? "checked" : null) /> No
+                    <input type="radio" name="GuestsInside" value="No" @(Model.GuestsInside == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>

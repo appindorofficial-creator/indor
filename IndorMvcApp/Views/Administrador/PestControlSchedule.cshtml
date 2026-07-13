@@ -77,10 +77,10 @@
             <label>@L["Are pets currently at the property?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.HasPets == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="HasPets" value="Yes" @(Model.HasPets == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="HasPets" value="Yes" @(Model.HasPets == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.HasPets == "No" ? "is-selected" : null)">
-                    <input type="radio" name="HasPets" value="No" @(Model.HasPets == "No" ? "checked" : null) /> No
+                    <input type="radio" name="HasPets" value="No" @(Model.HasPets == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>

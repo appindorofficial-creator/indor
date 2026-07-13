@@ -15,7 +15,7 @@
 
     <section class="pa-flow-intro">
         <h1>@L["Air Filter Change scheduled"] <span class="pa-flow-step-pill pa-flow-step-pill--inline pa-flow-step-pill--green">@L.T("Step {0} of {1}", Model.FlowStep, Model.TotalSteps)</span></h1>
-        <p>Your filter service is scheduled for @(Model.ViewingProperty?.PropertyName ?? "your property").</p>
+        <p>@L.T("Your filter service is scheduled for {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"])</p>
     </section>
 
     <div class="pa-success-banner">
@@ -39,7 +39,7 @@
         <div class="pa-tech-stats">
             <div>
                 <i class="fas fa-calendar"></i>
-                <strong>@Model.ScheduleLabel</strong>
+                <strong>@UiDisplayLocalization.Localize(L, Model.ScheduleLabel)</strong>
                 <small>@L["Scheduled"]</small>
             </div>
             <div>

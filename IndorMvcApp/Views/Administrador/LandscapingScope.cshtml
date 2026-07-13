@@ -24,7 +24,7 @@
                 <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
                 {
-                    <span class="pa-checkout-badge"><i class="fas fa-calendar-day"></i> @Model.PropertyStatusLabel</span>
+                    <span class="pa-checkout-badge"><i class="fas fa-calendar-day"></i> @UiDisplayLocalization.Localize(L, Model.PropertyStatusLabel)</span>
                 }
                 <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
             </div>
@@ -64,10 +64,10 @@
             <label><i class="fas fa-seedling pa-q-icon pa-q-icon--green"></i> @L["Do you want us to provide plants/materials?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.ProvideMaterials == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="ProvideMaterials" value="Yes" @(Model.ProvideMaterials == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="ProvideMaterials" value="Yes" @(Model.ProvideMaterials == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.ProvideMaterials == "No" ? "is-selected" : null)">
-                    <input type="radio" name="ProvideMaterials" value="No" @(Model.ProvideMaterials == "No" ? "checked" : null) /> No
+                    <input type="radio" name="ProvideMaterials" value="No" @(Model.ProvideMaterials == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>

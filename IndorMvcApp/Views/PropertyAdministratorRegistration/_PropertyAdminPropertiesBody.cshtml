@@ -26,7 +26,7 @@
 
 @if (!string.IsNullOrWhiteSpace(Model.FormError))
 {
-    <div class="pa-summary-error">@Model.FormError</div>
+    <div class="pa-summary-error">@UiDisplayLocalization.Localize(L, Model.FormError)</div>
 }
 else if (TempData["PropertyAdminError"] is string err)
 {

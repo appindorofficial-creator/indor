@@ -116,10 +116,10 @@
             <label>@L["Do we have permission to enter while guests are inside?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.PermissionToEnter == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="PermissionToEnter" value="Yes" @(Model.PermissionToEnter == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="PermissionToEnter" value="Yes" @(Model.PermissionToEnter == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.PermissionToEnter == "No" ? "is-selected" : null)">
-                    <input type="radio" name="PermissionToEnter" value="No" @(Model.PermissionToEnter == "No" ? "checked" : null) /> No
+                    <input type="radio" name="PermissionToEnter" value="No" @(Model.PermissionToEnter == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>
@@ -130,9 +130,9 @@
                 <ul class="pa-summary-list">
                     <li><i class="fas fa-house"></i> @(Model.ViewingProperty?.PropertyName)</li>
                     <li><i class="fas fa-droplet"></i> @issueLabel / @locationLabel.ToLowerInvariant()</li>
-                    <li><i class="fas fa-users"></i> Occupied • Guests @(Model.GuestsInside.ToLowerInvariant())</li>
+                    <li><i class="fas fa-users"></i> @L.T("Occupied • Guests {0}", L[Model.GuestsInside == "Yes" ? "Yes" : "No"])</li>
                     <li><i class="fas fa-location-dot"></i> @locationLabel</li>
-                    <li><i class="fas fa-tint"></i> @(Model.ActivelyLeaking == "Yes" ? "Actively leaking" : "Not actively leaking")</li>
+                    <li><i class="fas fa-tint"></i> @(Model.ActivelyLeaking == "Yes" ? L["Actively leaking"] : L["Not actively leaking"])</li>
                     <li><i class="fas fa-key"></i> @L["Smart lock access"]</li>
                     <li><i class="fas fa-bell"></i> @L["Updates to you & guest"]</li>
                 </ul>

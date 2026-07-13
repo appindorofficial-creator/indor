@@ -51,10 +51,10 @@
             <label>@L["Is anyone in immediate danger?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.ImmediateDanger == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="ImmediateDanger" value="Yes" @(Model.ImmediateDanger == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="ImmediateDanger" value="Yes" @(Model.ImmediateDanger == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.ImmediateDanger == "No" ? "is-selected" : null)">
-                    <input type="radio" name="ImmediateDanger" value="No" @(Model.ImmediateDanger == "No" ? "checked" : null) /> No
+                    <input type="radio" name="ImmediateDanger" value="No" @(Model.ImmediateDanger == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>
@@ -65,11 +65,11 @@
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.GuestsInside == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="GuestsInside" value="Yes" @(Model.GuestsInside == "Yes" ? "checked" : null) />
-                    <i class="fas fa-users"></i> Yes
+                    <i class="fas fa-users"></i> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.GuestsInside == "No" ? "is-selected" : null)">
                     <input type="radio" name="GuestsInside" value="No" @(Model.GuestsInside == "No" ? "checked" : null) />
-                    <i class="fas fa-user-slash"></i> No
+                    <i class="fas fa-user-slash"></i> @L["No"]
                 </label>
             </div>
         </div>
@@ -117,10 +117,10 @@
             <label>@L["Do you need emergency tarp or temporary protection?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.TarpNeeded == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="TarpNeeded" value="Yes" @(Model.TarpNeeded == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="TarpNeeded" value="Yes" @(Model.TarpNeeded == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.TarpNeeded == "No" ? "is-selected" : null)">
-                    <input type="radio" name="TarpNeeded" value="No" @(Model.TarpNeeded == "No" ? "checked" : null) /> No
+                    <input type="radio" name="TarpNeeded" value="No" @(Model.TarpNeeded == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>

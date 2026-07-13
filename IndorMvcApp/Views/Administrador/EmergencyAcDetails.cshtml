@@ -53,10 +53,10 @@
             <label>@L["Is the home occupied right now?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.IsOccupied == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="IsOccupied" value="Yes" @(Model.IsOccupied == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="IsOccupied" value="Yes" @(Model.IsOccupied == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.IsOccupied == "No" ? "is-selected" : null)">
-                    <input type="radio" name="IsOccupied" value="No" @(Model.IsOccupied == "No" ? "checked" : null) /> No
+                    <input type="radio" name="IsOccupied" value="No" @(Model.IsOccupied == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>
@@ -66,10 +66,10 @@
             <label>@L["Are guests currently inside?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.GuestsInside == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="GuestsInside" value="Yes" @(Model.GuestsInside == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="GuestsInside" value="Yes" @(Model.GuestsInside == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.GuestsInside == "No" ? "is-selected" : null)">
-                    <input type="radio" name="GuestsInside" value="No" @(Model.GuestsInside == "No" ? "checked" : null) /> No
+                    <input type="radio" name="GuestsInside" value="No" @(Model.GuestsInside == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>
@@ -161,7 +161,7 @@
             <div class="pa-flow-summary-card">
                 <h3>@L["Request summary"]</h3>
                 <ul class="pa-summary-list">
-                    <li><i class="fas fa-house"></i> @(Model.ViewingProperty?.PropertyName ?? "Property")</li>
+                    <li><i class="fas fa-house"></i> @(Model.ViewingProperty?.PropertyName ?? L["Property"])</li>
                     <li><i class="fas fa-snowflake"></i> @L["No cooling"]</li>
                     <li><i class="fas fa-users"></i> @L["Occupied • Guests inside"]</li>
                     <li><i class="fas fa-temperature-half"></i> @Model.IndoorTemperature</li>

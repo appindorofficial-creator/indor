@@ -50,10 +50,10 @@
             <label>@L["Is someone currently outside?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.SomeoneOutside == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="SomeoneOutside" value="Yes" @(Model.SomeoneOutside == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="SomeoneOutside" value="Yes" @(Model.SomeoneOutside == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.SomeoneOutside == "No" ? "is-selected" : null)">
-                    <input type="radio" name="SomeoneOutside" value="No" @(Model.SomeoneOutside == "No" ? "checked" : null) /> No
+                    <input type="radio" name="SomeoneOutside" value="No" @(Model.SomeoneOutside == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>
@@ -63,10 +63,10 @@
             <label>@L["Is the home occupied right now?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.HomeOccupied == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="HomeOccupied" value="Yes" @(Model.HomeOccupied == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="HomeOccupied" value="Yes" @(Model.HomeOccupied == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.HomeOccupied == "No" ? "is-selected" : null)">
-                    <input type="radio" name="HomeOccupied" value="No" @(Model.HomeOccupied == "No" ? "checked" : null) /> No
+                    <input type="radio" name="HomeOccupied" value="No" @(Model.HomeOccupied == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>

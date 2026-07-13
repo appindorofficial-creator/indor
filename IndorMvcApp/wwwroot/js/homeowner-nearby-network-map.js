@@ -332,8 +332,11 @@ window.hnInitNearbyNetworkMap = function () {
                 return '<span class="hn-map-card-tag"><i class="fas fa-check-circle"></i> ' + escapeHtml(tag) + '</span>';
             }).join('');
 
+            var distanceAwayTemplate = config.distanceAwayTemplate || '{0} miles away';
             var distanceHtml = item.distanceMiles != null
-                ? '<span class="hn-map-card-distance"><i class="fas fa-location-dot"></i> ' + Number(item.distanceMiles).toFixed(1) + ' miles away</span>'
+                ? '<span class="hn-map-card-distance"><i class="fas fa-location-dot"></i> ' +
+                  escapeHtml(distanceAwayTemplate.replace('{0}', Number(item.distanceMiles).toFixed(1))) +
+                  '</span>'
                 : '';
 
             var actionsHtml = '';
