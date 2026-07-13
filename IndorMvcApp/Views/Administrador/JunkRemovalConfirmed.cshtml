@@ -31,7 +31,7 @@
             <img src="/inspeccion2.jpeg" alt="" class="pa-tech-avatar" />
             <div class="pa-tech-meta">
                 <strong>@Model.TechnicianName</strong>
-                <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0") • @Model.TechnicianRole</span>
+                <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0") • @UiDisplayLocalization.Localize(L, Model.TechnicianRole)</span>
                 <small>@UiDisplayLocalization.Localize(L, Model.TechnicianTitle)</small>
             </div>
             <button type="button" class="pa-pro-action-btn"><i class="fas fa-phone"></i></button>

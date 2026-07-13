@@ -22,22 +22,22 @@
         @Html.AntiForgeryToken()
 
         <label class="prv-pro-form-label">
-            Estimate Title <span class="prv-pro-required">*</span>
+            @L["Estimate Title"] <span class="prv-pro-required">*</span>
             <input type="text" name="Title" value="@Model.Title" required />
         </label>
 
         <label class="prv-pro-form-label">
-            Description / Scope of Work <span class="prv-pro-required">*</span>
+            @L["Description / Scope of Work"] <span class="prv-pro-required">*</span>
             <textarea name="Description" rows="5" required>@Model.Description</textarea>
         </label>
 
         <label class="prv-pro-form-label">
-            Customer <span class="prv-pro-required">*</span>
+            @L["Customer"] <span class="prv-pro-required">*</span>
             <input type="text" value="@Model.CustomerName" readonly />
         </label>
 
         <label class="prv-pro-form-label">
-            Property Address <span class="prv-pro-required">*</span>
+            @L["Property Address"] <span class="prv-pro-required">*</span>
             <input type="text" value="@Model.Address" readonly />
         </label>
 
@@ -48,7 +48,7 @@
                 {
                     <label class="prv-pro-priority-option @(Model.Priority == level ? "is-selected" : "")">
                         <input type="radio" name="Priority" value="@level" @(Model.Priority == level ? "checked" : "") />
-                        @level
+                        @UiDisplayLocalization.Localize(L, level)
                     </label>
                 }
             </div>
@@ -56,27 +56,27 @@
 
         <div class="prv-pro-estimate-date-grid">
             <label class="prv-pro-form-label">
-                Est. Start <span class="prv-pro-required">*</span>
+                @L["Est. Start"] <span class="prv-pro-required">*</span>
                 <input type="date" name="EstimatedStartDate" value="@Model.EstimatedStartDate" required />
             </label>
             <label class="prv-pro-form-label">
-                Est. End <span class="prv-pro-required">*</span>
+                @L["Est. End"] <span class="prv-pro-required">*</span>
                 <input type="date" name="EstimatedEndDate" value="@Model.EstimatedEndDate" required />
             </label>
         </div>
 
         <label class="prv-pro-form-label">
-            Warranty <span class="prv-pro-required">*</span>
+            @L["Warranty"] <span class="prv-pro-required">*</span>
             <select name="Warranty" required>
                 @foreach (var option in Model.WarrantyOptions)
                 {
-                    <option value="@option" selected="@(Model.Warranty == option)">@option</option>
+                    <option value="@option" selected="@(Model.Warranty == option)">@UiDisplayLocalization.Localize(L, option)</option>
                 }
             </select>
         </label>
 
         <label class="prv-pro-form-label">
-            Notes
+            @L["Notes"]
             <textarea name="Notes" rows="3" maxlength="500" placeholder="@L["Additional notes, assumptions, or exclusions..."]">@Model.Notes</textarea>
         </label>
 

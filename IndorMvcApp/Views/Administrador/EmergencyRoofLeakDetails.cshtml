@@ -51,11 +51,11 @@
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.WaterEnteringNow == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="WaterEnteringNow" value="Yes" @(Model.WaterEnteringNow == "Yes" ? "checked" : null) />
-                    <i class="fas fa-droplet"></i> Yes
+                    <i class="fas fa-droplet"></i> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.WaterEnteringNow == "No" ? "is-selected" : null)">
                     <input type="radio" name="WaterEnteringNow" value="No" @(Model.WaterEnteringNow == "No" ? "checked" : null) />
-                    <i class="fas fa-ban"></i> No
+                    <i class="fas fa-ban"></i> @L["No"]
                 </label>
             </div>
         </div>
@@ -66,11 +66,11 @@
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.GuestsInside == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="GuestsInside" value="Yes" @(Model.GuestsInside == "Yes" ? "checked" : null) />
-                    <i class="fas fa-users"></i> Yes
+                    <i class="fas fa-users"></i> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.GuestsInside == "No" ? "is-selected" : null)">
                     <input type="radio" name="GuestsInside" value="No" @(Model.GuestsInside == "No" ? "checked" : null) />
-                    <i class="fas fa-user-slash"></i> No
+                    <i class="fas fa-user-slash"></i> @L["No"]
                 </label>
             </div>
         </div>

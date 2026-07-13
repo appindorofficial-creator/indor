@@ -25,7 +25,7 @@
         <img src="/inspeccion2.jpeg" alt="" class="pa-pro-card-avatar" />
         <div class="pa-pro-card-body">
             <strong>@Model.TechnicianName</strong>
-            <span class="pa-pro-badge"><i class="fas fa-check"></i> @Model.TechnicianTitle</span>
+            <span class="pa-pro-badge"><i class="fas fa-check"></i> @UiDisplayLocalization.Localize(L, Model.TechnicianTitle)</span>
             <span class="pa-pro-rating"><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0") (@L.T("{0} reviews", Model.TechnicianReviewCount))</span>
             <small>@Model.TechnicianExperience</small>
         </div>

@@ -20,6 +20,7 @@ public static class UiTranslations
             UiTranslationsRemaining.Entries,
             UiTranslationsFinal.Entries,
             UiTranslationsPropertyAdministratorFlows.Entries,
+            UiTranslationsPropertyAdministratorUi.Entries,
             // Last so Bug 20 moving-setup fixes override incomplete Flows Spanish.
             UiTranslationsMovingSetup.Entries);
 }

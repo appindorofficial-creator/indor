@@ -67,7 +67,7 @@
 <script>
     document.getElementById('copyInviteLink')?.addEventListener('click', async function () {
         const link = this.dataset.link;
-        const promptLabel = this.dataset.prompt || 'Copy invite link:';
+        const promptLabel = this.dataset.prompt || '';
         try {
             await navigator.clipboard.writeText(link);
             this.querySelector('i.fa-link').className = 'fas fa-check';

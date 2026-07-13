@@ -34,10 +34,10 @@
             <img src="/inspeccion2.jpeg" alt="" class="pa-tech-avatar" />
             <div class="pa-tech-meta">
                 <strong>@Model.TechnicianName</strong>
-                <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0") • @Model.TechnicianRole</span>
-                <small><i class="fas fa-check"></i> @Model.TechnicianTitle</small>
+                <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0") • @UiDisplayLocalization.Localize(L, Model.TechnicianRole)</span>
+                <small><i class="fas fa-check"></i> @UiDisplayLocalization.Localize(L, Model.TechnicianTitle)</small>
             </div>
-            <span class="pa-eta-pill"><i class="fas fa-clock"></i> @Model.EtaLabel ETA</span>
+            <span class="pa-eta-pill"><i class="fas fa-clock"></i> @UiDisplayLocalization.Localize(L, Model.EtaLabel) @L["ETA"]</span>
         </div>
         <div class="pa-tech-stats">
             <div>

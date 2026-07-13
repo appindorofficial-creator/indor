@@ -11,6 +11,7 @@ public static class UiTranslationsValidation
             ["Enter a valid full name using letters (e.g. John Smith)."] = "Ingresa un nombre válido con letras (ej. Juan Pérez).",
             ["Full name cannot contain only numbers."] = "El nombre completo no puede contener solo números.",
             ["Enter the client's first and last name."] = "Ingresa el nombre y apellido del cliente.",
+            ["First name and last name are required."] = "El nombre y el apellido son obligatorios.",
             ["Email address is required."] = "El correo electrónico es obligatorio.",
             ["Enter a valid email address."] = "Ingresa un correo electrónico válido.",
             ["Enter a valid email address with a complete domain (e.g. name@email.com)."] = "Ingresa un correo válido con un dominio completo (ej. nombre@correo.com).",

@@ -1,48 +1,57 @@
 (function () {
-    function englishValidityMessage(field) {
+    function isSpanishUi() {
+        var lang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+        return lang === 'es' || lang.indexOf('es-') === 0;
+    }
+
+    function validityMessage(field) {
+        var es = isSpanishUi();
+
         if (field.validity.valueMissing) {
             if (field.type === 'radio') {
-                return 'Please choose one of these options.';
+                return es ? 'Elige una de estas opciones.' : 'Please choose one of these options.';
             }
 
             if (field.type === 'checkbox') {
-                return 'Please check this box if you want to proceed.';
+                return es ? 'Marca esta casilla si quieres continuar.' : 'Please check this box if you want to proceed.';
             }
 
             if (field.tagName === 'SELECT') {
-                return 'Please select an item in the list.';
+                return es ? 'Selecciona un elemento de la lista.' : 'Please select an item in the list.';
             }
 
             if (field.type === 'number') {
-                return 'Please enter a number.';
+                return es ? 'Ingresa un número.' : 'Please enter a number.';
             }
 
             if (field.type === 'date') {
-                return 'Please choose a date.';
+                return es ? 'Elige una fecha.' : 'Please choose a date.';
             }
 
-            return 'Please fill out this field.';
+            return es ? 'Completa este campo.' : 'Please fill out this field.';
         }
 
         if (field.validity.typeMismatch) {
-            return field.type === 'email'
-                ? 'Please enter a valid email address.'
-                : 'Please enter a valid value.';
+            if (field.type === 'email') {
+                return es ? 'Ingresa un correo electrónico válido.' : 'Please enter a valid email address.';
+            }
+
+            return es ? 'Ingresa un valor válido.' : 'Please enter a valid value.';
         }
 
         if (field.validity.tooLong) {
-            return 'Please shorten this text.';
+            return es ? 'Acorta este texto.' : 'Please shorten this text.';
         }
 
         if (field.validity.rangeUnderflow) {
-            return 'Please enter a higher value.';
+            return es ? 'Ingresa un valor más alto.' : 'Please enter a higher value.';
         }
 
         if (field.validity.rangeOverflow) {
-            return 'Please enter a lower value.';
+            return es ? 'Ingresa un valor más bajo.' : 'Please enter a lower value.';
         }
 
-        return 'Please enter a valid value.';
+        return es ? 'Ingresa un valor válido.' : 'Please enter a valid value.';
     }
 
     function clearFieldValidity(field) {
@@ -56,7 +65,9 @@
     }
 
     function phoneValidityMessage() {
-        return 'Enter a valid 10-digit US phone number (e.g. 555 123 4567).';
+        return isSpanishUi()
+            ? 'Ingresa un teléfono de EE. UU. de 10 dígitos (p. ej., 555 123 4567).'
+            : 'Enter a valid 10-digit US phone number (e.g. 555 123 4567).';
     }
 
     function isValidPhoneField(field) {
@@ -69,12 +80,12 @@
             : field.value.replace(/\D/g, '').length === 10;
     }
 
-    function bindEnglishFormValidation(form) {
-        if (form.dataset.prvEnglishValidation === 'true') {
+    function bindLocalizedFormValidation(form) {
+        if (form.dataset.prvLocalizedValidation === 'true') {
             return;
         }
 
-        form.dataset.prvEnglishValidation = 'true';
+        form.dataset.prvLocalizedValidation = 'true';
         form.noValidate = true;
         form.setAttribute('novalidate', 'novalidate');
 
@@ -107,7 +118,7 @@
             e.preventDefault();
             var message = firstInvalid.getAttribute('data-phone-input') !== null && firstInvalid.value.trim()
                 ? phoneValidityMessage()
-                : englishValidityMessage(firstInvalid);
+                : validityMessage(firstInvalid);
             firstInvalid.setCustomValidity(message);
             firstInvalid.reportValidity();
             if (typeof firstInvalid.focus === 'function') {
@@ -125,7 +136,17 @@
         });
     }
 
-    document.querySelectorAll('.prv-pro-wizard-form, .prv-pro-add-customer-form').forEach(bindEnglishFormValidation);
+    function shouldBindForm(form) {
+        // Cover every provider POST/GET form that uses HTML5 required or phone fields.
+        // This script only loads on _ProviderProLayout, so scope stays provider-pro.
+        return !!form.querySelector('[required], [data-phone-input]');
+    }
+
+    document.querySelectorAll('form').forEach(function (form) {
+        if (shouldBindForm(form)) {
+            bindLocalizedFormValidation(form);
+        }
+    });
 
     function clearSearchInputChrome(input) {
         input.style.setProperty('box-shadow', 'none', 'important');

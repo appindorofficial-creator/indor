@@ -79,6 +79,7 @@
                     homeLabel = nm.MapCenterLabel,
                     propertyAddress = nm.PropertyAddress,
                     radiusMiles = nm.RadiusMiles,
+                    distanceAwayTemplate = L["{0} miles away"].ToString(),
                     activeFilter = nm.ActiveFilter,
                     carouselItems = nm.MapCarouselItems.Select(i => new
                     {
@@ -107,7 +108,7 @@
                 <section class="hn-map-shell" aria-label="@L["Nearby map"]">
                     <div id="hnNearbyNetworkMap" class="hn-map-canvas"></div>
 
-                    <div class="hn-map-radius-badge" aria-hidden="true">@nm.RadiusMiles.ToString("0.#") mi</div>
+                    <div class="hn-map-radius-badge" aria-hidden="true">@L.T("{0} mi", nm.RadiusMiles.ToString("0.#"))</div>
 
                     <button type="button" class="hn-map-recenter" id="hnMapRecenterBtn" aria-label="@L["Recenter on your portfolio"]">
                         <i class="fas fa-location-arrow"></i>

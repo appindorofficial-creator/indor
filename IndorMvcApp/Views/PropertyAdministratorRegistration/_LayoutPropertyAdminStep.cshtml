@@ -5,7 +5,7 @@
 
         ?? ViewData["PropertyAdminStep"] as IndorMvcApp.ViewModels.PropertyAdministratorRegistrationStepViewModel;
 
-    var pageTitle = stepModel?.Title ?? ViewData["Title"] as string ?? L["Property Administrator"];
+    var pageTitle = UiDisplayLocalization.Localize(L, stepModel?.Title ?? ViewData["Title"] as string ?? "Property Administrator");
 
 }
 

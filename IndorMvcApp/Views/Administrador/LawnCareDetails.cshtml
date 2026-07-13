@@ -24,7 +24,7 @@
                 <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
                 {
-                    <span class="pa-checkout-badge"><i class="fas fa-calendar-day"></i> @Model.PropertyStatusLabel</span>
+                    <span class="pa-checkout-badge"><i class="fas fa-calendar-day"></i> @UiDisplayLocalization.Localize(L, Model.PropertyStatusLabel)</span>
                 }
                 <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
             </div>
@@ -73,7 +73,7 @@
                 {
                     <label class="pa-chip @(Model.YardSize == s ? "is-selected" : null)">
                         <input type="radio" name="YardSize" value="@s" @(Model.YardSize == s ? "checked" : null) />
-                        <span>@s</span>
+                        <span>@L[s]</span>
                     </label>
                 }
             </div>
@@ -98,10 +98,10 @@
             <label>@L["Is the property occupied right now?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.IsOccupied == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="IsOccupied" value="Yes" @(Model.IsOccupied == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="IsOccupied" value="Yes" @(Model.IsOccupied == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.IsOccupied == "No" ? "is-selected" : null)">
-                    <input type="radio" name="IsOccupied" value="No" @(Model.IsOccupied == "No" ? "checked" : null) /> No
+                    <input type="radio" name="IsOccupied" value="No" @(Model.IsOccupied == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>
@@ -129,8 +129,8 @@
 
         <div class="pa-lawn-availability-banner">
             <div>
-                <strong>@Model.AvailabilityLabel</strong>
-                <small>Our team can arrive between @Model.AvailabilityWindow. You'll get updates and photos when the job is done.</small>
+                <strong>@UiDisplayLocalization.Localize(L, Model.AvailabilityLabel)</strong>
+                <small>@L.T("Our team can arrive between {0}. You'll get updates and photos when the job is done.", Model.AvailabilityWindow)</small>
             </div>
             <i class="fas fa-circle-check"></i>
         </div>

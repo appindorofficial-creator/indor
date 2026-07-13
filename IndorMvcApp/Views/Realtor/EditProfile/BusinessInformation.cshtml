@@ -66,7 +66,7 @@
         <span>@Model.ProfileCompletionPercent%</span>
     </div>
     <div class="rl-ep-progress-copy">
-        <strong>Profile @Model.ProfileCompletionPercent% complete</strong>
+        <strong>@L.T("Profile {0}% complete", Model.ProfileCompletionPercent)</strong>
         <p>@L["Complete your business information to build trust and grow your visibility."]</p>
     </div>
     <img src="~/welcome-house.png" alt="" class="rl-ep-progress-art" />
@@ -81,23 +81,23 @@
             <a href="@row.EditUrl" class="@rowClass">
                 <span class="rl-ep-row-icon"><i class="fas @row.Icon"></i></span>
                 <span class="rl-ep-row-body">
-                    <span class="rl-ep-row-label">@row.Label</span>
+                    <span class="rl-ep-row-label">@UiDisplayLocalization.Localize(L, row.Label)</span>
                     @if (row.Key == "license")
                     {
                         <span class="rl-ep-row-value rl-ep-row-value--license">
                             @if (!string.IsNullOrWhiteSpace(row.StatusBadge))
                             {
-                                <span class="rl-ep-status @row.StatusCss">@row.StatusBadge</span>
+                                <span class="rl-ep-status @row.StatusCss">@UiDisplayLocalization.Localize(L, row.StatusBadge)</span>
                             }
                             @if (!string.IsNullOrWhiteSpace(row.Value))
                             {
-                                <span>@row.Value</span>
+                                <span>@UiDisplayLocalization.Localize(L, row.Value)</span>
                             }
                         </span>
                     }
                     else
                     {
-                        <span class="rl-ep-row-value">@row.Value</span>
+                        <span class="rl-ep-row-value">@UiDisplayLocalization.Localize(L, row.Value)</span>
                     }
                 </span>
                 <i class="fas fa-chevron-right rl-ep-row-chevron"></i>
@@ -108,8 +108,8 @@
             <div class="@rowClass">
                 <span class="rl-ep-row-icon"><i class="fas @row.Icon"></i></span>
                 <span class="rl-ep-row-body">
-                    <span class="rl-ep-row-label">@row.Label</span>
-                    <span class="rl-ep-row-value">@row.Value</span>
+                    <span class="rl-ep-row-label">@UiDisplayLocalization.Localize(L, row.Label)</span>
+                    <span class="rl-ep-row-value">@UiDisplayLocalization.Localize(L, row.Value)</span>
                 </span>
             </div>
         }

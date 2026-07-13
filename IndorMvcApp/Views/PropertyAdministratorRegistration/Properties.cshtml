@@ -37,8 +37,8 @@
 else
 {
     <div class="ob-head-block">
-        <h1>@Model.Title</h1>
-        <p>@Model.Subtitle</p>
+        <h1>@UiDisplayLocalization.Localize(L, Model.Title)</h1>
+        <p>@UiDisplayLocalization.Localize(L, Model.Subtitle)</p>
         <p class="pa-step-hint">@L["You can add properties now or skip and add them later from your dashboard."]</p>
     </div>
 

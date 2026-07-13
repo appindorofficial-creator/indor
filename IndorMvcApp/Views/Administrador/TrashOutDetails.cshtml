@@ -25,7 +25,7 @@
                 <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
                 {
-                    <span class="pa-checkout-badge"><i class="fas fa-clock"></i> @Model.PropertyStatusLabel</span>
+                    <span class="pa-checkout-badge"><i class="fas fa-clock"></i> @UiDisplayLocalization.Localize(L, Model.PropertyStatusLabel)</span>
                 }
                 <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
             </div>
@@ -129,7 +129,7 @@
         <div class="pa-trash-rate-banner">
             <i class="fas fa-circle-info"></i>
             <div>
-                <strong>Flat rate: @Model.FlatRateLabel for take-out and return service.</strong>
+                <strong>@L.T("Flat rate: {0} for take-out and return service.", Model.FlatRateLabel)</strong>
                 <small>@L["Includes taking bins out for collection and bringing them back in."]</small>
             </div>
             <i class="fas fa-tag"></i>

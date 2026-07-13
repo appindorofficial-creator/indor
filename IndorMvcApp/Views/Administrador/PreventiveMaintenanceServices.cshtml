@@ -26,7 +26,7 @@
             </div>
             @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
             {
-                <span class="pa-rental-ready-badge"><span class="pa-online-dot"></span> @Model.PropertyStatusLabel</span>
+                <span class="pa-rental-ready-badge"><span class="pa-online-dot"></span> @UiDisplayLocalization.Localize(L, Model.PropertyStatusLabel)</span>
             }
         </div>
     }

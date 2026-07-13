@@ -8,7 +8,12 @@
     @Html.AntiForgeryToken()
     @if (!ViewData.ModelState.IsValid)
     {
-        <div asp-validation-summary="All" class="pa-summary-error" role="alert"></div>
+        <div class="pa-summary-error" role="alert">
+            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+            {
+                <div>@UiDisplayLocalization.Localize(L, error.ErrorMessage)</div>
+            }
+        </div>
     }
 
     <div class="pa-field pa-field-readonly">
@@ -39,7 +44,7 @@
     </label>
     @if (ViewData.ModelState.TryGetValue("termsAccepted", out var termsState) && termsState.Errors.Count > 0)
     {
-        <div class="pa-inline-error" role="alert">@termsState.Errors[0].ErrorMessage</div>
+        <div class="pa-inline-error" role="alert">@UiDisplayLocalization.Localize(L, termsState.Errors[0].ErrorMessage)</div>
     }
 
     <label class="pa-terms">

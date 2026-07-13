@@ -25,7 +25,7 @@
                 <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
                 {
-                    <span class="pa-checkout-badge"><i class="fas fa-calendar-day"></i> @Model.PropertyStatusLabel</span>
+                    <span class="pa-checkout-badge"><i class="fas fa-calendar-day"></i> @UiDisplayLocalization.Localize(L, Model.PropertyStatusLabel)</span>
                 }
                 <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
             </div>
@@ -99,10 +99,10 @@
             <label>@L["Is the property occupied right now?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.IsOccupied == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="IsOccupied" value="Yes" @(Model.IsOccupied == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="IsOccupied" value="Yes" @(Model.IsOccupied == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.IsOccupied == "No" ? "is-selected" : null)">
-                    <input type="radio" name="IsOccupied" value="No" @(Model.IsOccupied == "No" ? "checked" : null) /> No
+                    <input type="radio" name="IsOccupied" value="No" @(Model.IsOccupied == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>
@@ -112,10 +112,10 @@
             <label>@L["Are guests currently inside?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.GuestsInside == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="GuestsInside" value="Yes" @(Model.GuestsInside == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="GuestsInside" value="Yes" @(Model.GuestsInside == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.GuestsInside == "No" ? "is-selected" : null)">
-                    <input type="radio" name="GuestsInside" value="No" @(Model.GuestsInside == "No" ? "checked" : null) /> No
+                    <input type="radio" name="GuestsInside" value="No" @(Model.GuestsInside == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>

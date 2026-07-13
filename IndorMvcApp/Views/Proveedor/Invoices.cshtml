@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderProInvoicesPageViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = $"{Model.PageTitle} - INDOR PRO";
+    ViewData["Title"] = $"{UiDisplayLocalization.Localize(L, Model.PageTitle)} - INDOR PRO";
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
@@ -15,7 +15,7 @@
     <header class="prv-pro-new-leads-head">
         <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>@Model.PageTitle</h1>
+            <h1>@UiDisplayLocalization.Localize(L, Model.PageTitle)</h1>
             @if (Model.ShowOverdueSummary)
             {
                 <small>@L.T("{0} invoice(s) past due", Model.OverdueCount)</small>
@@ -42,7 +42,7 @@
         <input type="hidden" name="tab" value="@Model.ActiveTab" />
         <div class="prv-pro-search-wrap">
             <i class="fas fa-magnifying-glass"></i>
-            <input type="search" name="q" value="@Model.SearchQuery" placeholder="@Model.SearchPlaceholder" />
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="@UiDisplayLocalization.Localize(L, Model.SearchPlaceholder)" />
         </div>
         <button type="button" class="prv-pro-filter-btn" title="@L["Filters"]"><i class="fas fa-sliders"></i></button>
     </form>

@@ -14,16 +14,16 @@
             {
                 <i class="fas fa-star"></i>
             }
-            @Model.HeaderBadge
+            @UiDisplayLocalization.Localize(L, Model.HeaderBadge)
         </span>
     }
 </header>
 
 <section class="rl-ep-hero">
-    <h1 class="rl-ep-title">@Model.Title</h1>
+    <h1 class="rl-ep-title">@UiDisplayLocalization.Localize(L, Model.Title)</h1>
     @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
     {
-        <p class="rl-ep-subtitle">@Model.Subtitle</p>
+        <p class="rl-ep-subtitle">@UiDisplayLocalization.Localize(L, Model.Subtitle)</p>
     }
     <p class="rl-ep-step-label">@L.T("Step {0} of {1}", Model.DisplayStep, Model.TotalSteps)</p>
     <div class="rl-ep-stepper" aria-label="@L["Edit profile progress"]">

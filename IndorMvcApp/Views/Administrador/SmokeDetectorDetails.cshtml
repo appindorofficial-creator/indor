@@ -66,7 +66,7 @@
                 @foreach (var v in new[] { "No", "Yes" })
                 {
                     <label class="pa-toggle-btn @(Model.UrgentSafetyIssue == v ? "is-selected" : null)">
-                        <input type="radio" name="UrgentSafetyIssue" value="@v" @(Model.UrgentSafetyIssue == v ? "checked" : null) /> @v
+                        <input type="radio" name="UrgentSafetyIssue" value="@v" @(Model.UrgentSafetyIssue == v ? "checked" : null) /> @L[v]
                     </label>
                 }
             </div>

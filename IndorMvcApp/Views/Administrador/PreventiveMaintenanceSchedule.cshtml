@@ -52,7 +52,7 @@
                 {
                     <label class="pa-toggle-btn @(Model.PreferredTiming == t ? "is-selected" : null)">
                         <input type="radio" name="PreferredTiming" value="@t" @(Model.PreferredTiming == t ? "checked" : null) />
-                        @t
+                        @L[t]
                     </label>
                 }
             </div>

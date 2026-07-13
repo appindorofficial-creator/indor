@@ -24,7 +24,7 @@
         </div>
         <div class="pa-profile-identity">
             <h1>@Model.DisplayName</h1>
-            <span class="pa-profile-badge">@Model.RoleBadge</span>
+            <span class="pa-profile-badge">@UiDisplayLocalization.Localize(L, Model.RoleBadge)</span>
             <ul class="pa-profile-contact">
                 @if (!string.IsNullOrWhiteSpace(Model.Email))
                 {

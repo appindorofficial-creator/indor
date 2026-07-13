@@ -30,8 +30,8 @@
                     <span class="pa-provider-avatar"><i class="fas fa-user-check"></i></span>
                     <div class="pa-provider-copy">
                         <strong>@provider.Name</strong>
-                        <small>@provider.TradeLabel</small>
-                        <span class="pa-provider-last">Last service: @provider.LastServiceLabel</span>
+                        <small>@UiDisplayLocalization.Localize(L, provider.TradeLabel)</small>
+                        <span class="pa-provider-last">@L.T("Last service: {0}", provider.LastServiceLabel)</span>
                     </div>
                     <div class="pa-provider-meta">
                         @if (!string.IsNullOrWhiteSpace(provider.RatingLabel))

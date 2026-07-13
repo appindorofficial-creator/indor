@@ -25,7 +25,7 @@
                 <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
                 {
-                    <span class="pa-checkout-badge">@Model.PropertyStatusLabel</span>
+                    <span class="pa-checkout-badge">@UiDisplayLocalization.Localize(L, Model.PropertyStatusLabel)</span>
                 }
                 <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
             </div>

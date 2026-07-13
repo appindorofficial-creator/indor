@@ -685,6 +685,24 @@ public static class UiDisplayLocalization
             return localizer.T("{0}h", workHoursOnlyMatch.Groups[1].Value);
         }
 
+        var invitationSentMatch = Regex.Match(text, @"^Invitation sent to (.+) for (.+)$");
+        if (invitationSentMatch.Success)
+        {
+            return localizer.T(
+                "Invitation sent to {0} for {1}",
+                invitationSentMatch.Groups[1].Value.Trim(),
+                invitationSentMatch.Groups[2].Value.Trim());
+        }
+
+        var invitationAcceptedMatch = Regex.Match(text, @"^(.+) accepted the invitation for (.+)$");
+        if (invitationAcceptedMatch.Success)
+        {
+            return localizer.T(
+                "{0} accepted the invitation for {1}",
+                invitationAcceptedMatch.Groups[1].Value.Trim(),
+                invitationAcceptedMatch.Groups[2].Value.Trim());
+        }
+
         return localizer[text];
     }
 

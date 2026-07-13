@@ -101,10 +101,10 @@
             <label>@L["Do you need emergency board-up tonight?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.EmergencyBoardUpTonight == "Yes" ? "is-selected" : null)">
-                    <input type="radio" name="EmergencyBoardUpTonight" value="Yes" @(Model.EmergencyBoardUpTonight == "Yes" ? "checked" : null) /> Yes
+                    <input type="radio" name="EmergencyBoardUpTonight" value="Yes" @(Model.EmergencyBoardUpTonight == "Yes" ? "checked" : null) /> @L["Yes"]
                 </label>
                 <label class="pa-toggle-btn @(Model.EmergencyBoardUpTonight == "No" ? "is-selected" : null)">
-                    <input type="radio" name="EmergencyBoardUpTonight" value="No" @(Model.EmergencyBoardUpTonight == "No" ? "checked" : null) /> No
+                    <input type="radio" name="EmergencyBoardUpTonight" value="No" @(Model.EmergencyBoardUpTonight == "No" ? "checked" : null) /> @L["No"]
                 </label>
             </div>
         </div>

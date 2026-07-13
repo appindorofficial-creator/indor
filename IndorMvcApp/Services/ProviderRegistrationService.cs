@@ -70,6 +70,14 @@ public class ProviderRegistrationService(
             return;
         }
 
+        // Never reassign a draft that already belongs to a different account.
+        if (!string.IsNullOrEmpty(entity.UserId)
+            && !string.Equals(entity.UserId, userId, StringComparison.Ordinal))
+        {
+            httpContextAccessor.HttpContext?.Session.Remove(ProveedorIdSessionKey);
+            return;
+        }
+
         entity.UserId = userId;
         entity.Email ??= user.Email;
         entity.FechaActualizacion = DateTime.UtcNow;
@@ -914,11 +922,19 @@ public class ProviderRegistrationService(
         var id = session.GetInt32(ProveedorIdSessionKey);
         if (id is > 0)
         {
-            var exists = await db.IndorProveedores.AnyAsync(p => p.Id == id, cancellationToken);
-            if (exists)
+            var fromSession = await db.IndorProveedores.AsNoTracking()
+                .Where(p => p.Id == id)
+                .Select(p => new { p.Id, p.UserId })
+                .FirstOrDefaultAsync(cancellationToken);
+
+            // Only reuse the session draft when it belongs to this user (or is still unclaimed).
+            // Otherwise a new signup in the same browser inherits the previous company profile.
+            if (fromSession != null && IsDraftOwnedByCurrentUser(fromSession.UserId, userId))
             {
-                return id.Value;
+                return fromSession.Id;
             }
+
+            session.Remove(ProveedorIdSessionKey);
         }
 
         if (!string.IsNullOrEmpty(userId))
@@ -952,13 +968,23 @@ public class ProviderRegistrationService(
     private async Task<int?> ResolveProveedorIdAsync(CancellationToken cancellationToken)
     {
         var session = httpContextAccessor.HttpContext?.Session;
+        var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         var id = session?.GetInt32(ProveedorIdSessionKey);
         if (id is > 0)
         {
-            return id;
+            var fromSession = await db.IndorProveedores.AsNoTracking()
+                .Where(p => p.Id == id)
+                .Select(p => new { p.Id, p.UserId })
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (fromSession != null && IsDraftOwnedByCurrentUser(fromSession.UserId, userId))
+            {
+                return fromSession.Id;
+            }
+
+            session?.Remove(ProveedorIdSessionKey);
         }
 
-        var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         if (string.IsNullOrEmpty(userId))
         {
             return null;
@@ -973,6 +999,17 @@ public class ProviderRegistrationService(
         }
 
         return null;
+    }
+
+    private static bool IsDraftOwnedByCurrentUser(string? draftUserId, string? currentUserId)
+    {
+        if (string.IsNullOrEmpty(draftUserId))
+        {
+            return true;
+        }
+
+        return !string.IsNullOrEmpty(currentUserId)
+               && string.Equals(draftUserId, currentUserId, StringComparison.Ordinal);
     }
 
     private static void SyncCategoriesOnEntity(IndorProveedor entity, List<string> ids)
