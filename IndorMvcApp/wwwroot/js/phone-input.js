@@ -34,11 +34,13 @@
         input.setAttribute('autocomplete', input.getAttribute('autocomplete') || 'tel');
         input.setAttribute('maxlength', '10');
 
+        var spanishUi = (document.documentElement.getAttribute('lang') || '').toLowerCase().indexOf('es') === 0;
         var invalidMessage = options.invalidMessage
             || (minDigits >= 10
-                ? 'Enter a valid 10-digit US phone number.'
-                : 'Enter a valid phone number (1–10 digits).');
-        var requiredMessage = options.requiredMessage || 'Phone number is required.';
+                ? (spanishUi ? 'Ingresa un teléfono de EE. UU. de 10 dígitos.' : 'Enter a valid 10-digit US phone number.')
+                : (spanishUi ? 'Ingresa un teléfono válido (1–10 dígitos).' : 'Enter a valid phone number (1–10 digits).'));
+        var requiredMessage = options.requiredMessage
+            || (spanishUi ? 'El número de teléfono es obligatorio.' : 'Phone number is required.');
 
         function syncValue() {
             var digits = normalizePhoneDigits(input.value);

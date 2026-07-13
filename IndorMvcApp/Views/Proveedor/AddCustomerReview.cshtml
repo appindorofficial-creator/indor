@@ -41,7 +41,7 @@
             <div><dt>@L["Address"]</dt><dd>@Model.FullAddress</dd></div>
             <div><dt>@L["Property Type"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.PropertyType)</dd></div>
             <div><dt>@L["Beds / Baths"]</dt><dd>@Model.BedsBathsLabel</dd></div>
-            <div><dt>@L["Billing same as property"]</dt><dd>@Model.BillingLabel</dd></div>
+            <div><dt>@L["Billing same as property"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.BillingLabel)</dd></div>
         </dl>
     </section>
 

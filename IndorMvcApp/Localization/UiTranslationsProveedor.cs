@@ -9,7 +9,7 @@ public static class UiTranslationsProveedor
             ["10:30 AM"] = "10:30 AM",
             ["123 Maple St, Austin, TX 78704"] = "123 Maple St, Austin, TX 78704",
             ["A few business details help our insurance partner prepare the quote."] = "A few business details help our insurance partner prepare the quote.",
-            ["Access Notes"] = "Access Notas",
+            ["Access Notes"] = "Notas de acceso",
             ["Access Notes (optional)"] = "Notas de acceso (opcional)",
             ["Account status"] = "Account status",
             ["Activation call"] = "Llamada de activación",
