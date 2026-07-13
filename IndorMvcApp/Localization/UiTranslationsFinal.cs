@@ -1254,6 +1254,7 @@ public static class UiTranslationsFinal
             ["View Customer Profile"] = "Ver perfil del cliente",
             ["Create Job for Customer"] = "Crear trabajo para el cliente",
             ["Name"] = "Nombre",
+            ["Options"] = "Opciones",
             ["ZIP Code"] = "Código ZIP",
 
             // Realtor — Profile subtree, edit wizard, activity feed
@@ -1347,5 +1348,67 @@ public static class UiTranslationsFinal
                 "Sube tu licencia e identificación para obtener la insignia de agente verificado.",
             ["Not provided"] = "No proporcionado",
             ["Charlotte, NC or Miami-Dade, Broward"] = "Charlotte, NC o Miami-Dade, Broward",
+
+            // Realtor portal crawl — Dashboard, Network, Files, Clients, Quotes
+            ["LEAD REQUEST"] = "Solicitud de prospecto",
+            ["Validate Client"] = "Validar cliente",
+            ["Buyer Lead"] = "Prospecto comprador",
+            ["Contact request saved"] = "Solicitud de contacto guardada",
+            ["Contact this buyer"] = "Contactar a este comprador",
+            ["INDOR recorded your follow-up on this buyer lead."] =
+                "INDOR registró tu seguimiento de este prospecto comprador.",
+            ["Open file"] = "Abrir expediente",
+            ["Copy File ID"] = "Copiar ID de expediente",
+            ["Copy File ID:"] = "Copiar ID de expediente:",
+            ["File ID:"] = "ID de expediente:",
+            ["No files match your filters."] = "Ningún expediente coincide con tus filtros.",
+            ["Open house on INDOR"] = "Casa abierta en INDOR",
+            ["Open house: {0}"] = "Casa abierta: {0}",
+            ["View on INDOR"] = "Ver en INDOR",
+            ["Link copied"] = "Enlace copiado",
+            ["Copy link:"] = "Copiar enlace:",
+            ["PROMOTION"] = "PROMOCIÓN",
+            ["Property brochure"] = "Folleto de la propiedad",
+            ["Viewed by client"] = "Visto por el cliente",
+            ["Waiting on providers"] = "Esperando proveedores",
+            ["1 quote received"] = "1 cotización recibida",
+            ["3 quotes received"] = "3 cotizaciones recibidas",
+            ["Last active"] = "Última actividad",
+            ["No property files yet. Create one to start organizing inspections, quotes, and documents."] =
+                "Aún no hay expedientes de propiedad. Crea uno para organizar inspecciones, cotizaciones y documentos.",
+
+            // Realtor Invite Client wizard
+            ["Choose the property this client will collaborate on"] =
+                "Elige la propiedad en la que colaborará este cliente",
+            ["Add the property and it will be added automatically for this client invitation."] =
+                "Agrega la propiedad y se añadirá automáticamente a esta invitación.",
+            ["Choose what the client can access"] = "Elige a qué puede acceder el cliente",
+            ["Confirm the client details before sending."] =
+                "Confirma los datos del cliente antes de enviar.",
+            ["Type an address and tap Next to create a new property, or pick one from the list below."] =
+                "Escribe una dirección y pulsa Siguiente para crear una propiedad nueva, o elige una de la lista.",
+            ["Hi! I'd like to invite you to view project details and stay updated in INDOR. Let me know if you have any questions."] =
+                "¡Hola! Me gustaría invitarte a ver los detalles del proyecto y mantenerte al día en INDOR. Avísame si tienes alguna pregunta.",
+            ["Client Info"] = "Info del cliente",
+            ["Invite client progress"] = "Progreso de invitación de cliente",
+            ["General Property File"] = "Expediente general de propiedad",
+            ["Repair Review"] = "Revisión de reparación",
+            ["Select a property from the list, or enter an address to create a new one."] =
+                "Selecciona una propiedad de la lista o ingresa una dirección para crear una nueva.",
+            ["Enter an address and tap Next to create a new property."] =
+                "Ingresa una dirección y pulsa Siguiente para crear una propiedad nueva.",
+            ["Select at least one access permission."] =
+                "Selecciona al menos un permiso de acceso.",
+            ["Select a collaboration level."] =
+                "Selecciona un nivel de colaboración.",
+            ["Select at least one invitation delivery method (email or text)."] =
+                "Selecciona al menos un método de entrega de la invitación (correo o mensaje de texto).",
+            ["Enter a complete street address with street name and type (e.g. 123 Main St)."] =
+                "Ingresa una dirección completa con nombre y tipo de calle (ej. 123 Main St).",
+            ["Pending Acceptance"] = "Pendiente de aceptación",
+            ["Copy invite link:"] = "Copiar enlace de invitación:",
+            ["Please select a property or create a new one."] =
+                "Selecciona una propiedad o crea una nueva.",
+            ["Select a valid US state."] = "Selecciona un estado válido de EE. UU.",
         };
 }

@@ -25,7 +25,7 @@
         <div class="rl-listing-detail-summary">
             <div class="rl-listing-detail-summary-top">
                 <div>
-                    <strong class="rl-listing-detail-address">@Model.Title</strong>
+                    <strong class="rl-listing-detail-address">@UiDisplayLocalization.Localize(L, Model.Title)</strong>
                     @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
                     {
                         <p class="rl-listing-detail-specs">@UiDisplayLocalization.Localize(L, Model.Subtitle)</p>
@@ -36,7 +36,7 @@
                     }
                     @if (!string.IsNullOrWhiteSpace(Model.MetaLabel))
                     {
-                        <p class="rl-listing-detail-specs">@Model.MetaLabel</p>
+                        <p class="rl-listing-detail-specs">@UiDisplayLocalization.Localize(L, Model.MetaLabel)</p>
                     }
                     <span class="rl-listing-detail-distance"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.DistanceLabel)</span>
                 </div>

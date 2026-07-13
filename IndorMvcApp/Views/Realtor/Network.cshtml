@@ -203,6 +203,10 @@
 @section Scripts {
     <script>
         (function () {
+            var shareViewOnIndor = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["View on INDOR"]));
+            var shareLinkCopied = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Link copied"]));
+            var shareCopyLinkPrompt = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Copy link:"]));
+
             function resolveShareUrl(path) {
                 if (!path) {
                     return window.location.href;
@@ -219,7 +223,7 @@
                     var shareUrl = resolveShareUrl(sharePath);
                     var payload = {
                         title: btn.getAttribute('data-share-title') || document.title,
-                        text: btn.getAttribute('data-share-text') || 'View on INDOR',
+                        text: btn.getAttribute('data-share-text') || shareViewOnIndor,
                         url: shareUrl
                     };
 
@@ -237,10 +241,10 @@
                     try {
                         await navigator.clipboard.writeText(shareUrl);
                         var original = btn.textContent;
-                        btn.textContent = 'Link copied';
+                        btn.textContent = shareLinkCopied;
                         window.setTimeout(function () { btn.textContent = original; }, 2000);
                     } catch (_) {
-                        window.prompt('Copy link:', shareUrl);
+                        window.prompt(shareCopyLinkPrompt, shareUrl);
                     }
                 });
             });
