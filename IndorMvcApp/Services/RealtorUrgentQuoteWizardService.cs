@@ -526,7 +526,7 @@ public class RealtorUrgentQuoteWizardService(
 
         var result = new RealtorUrgentQuoteSuccessViewModel
         {
-            QuoteCode = $"Quote #{quoteCode}",
+            QuoteCode = quoteCode,
             PropertyAddress = draft.Address ?? "",
             ServiceType = draft.ServiceType,
             UrgencyLabel = urgencyLabel,

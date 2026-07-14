@@ -1506,6 +1506,30 @@ public static class UiTranslationsFinal
             ["A/C not cooling upstairs."] = "El A/C no enfría el piso de arriba.",
             ["Can't find your property?"] = "¿No encuentras tu propiedad?",
             ["Add property quickly"] = "Agregar propiedad rápidamente",
+            ["Search address"] = "Buscar dirección",
+            ["Search address or neighborhood"] = "Buscar dirección o vecindario",
+            ["Select a saved property"] = "Selecciona una propiedad guardada",
+            ["Required for fast request: property + issue + urgency. Photos can be added next."] =
+                "Obligatorio para solicitud rápida: propiedad + problema + urgencia. Puedes agregar fotos después.",
+            ["Need quote today"] = "Necesito cotización hoy",
+            ["Closing repair"] = "Reparación de cierre",
+            ["Urgent issue"] = "Problema urgente",
+            ["Service type"] = "Tipo de servicio",
+            ["Urgency level"] = "Nivel de urgencia",
+            ["This week"] = "Esta semana",
+            ["Need quote"] = "Necesito cotización",
+            ["Need availability"] = "Necesito disponibilidad",
+            ["Need site visit"] = "Necesito visita al sitio",
+            ["Issue only"] = "Solo el problema",
+            ["Full property file"] = "Expediente completo de propiedad",
+            ["{0} photo"] = "{0} foto",
+            ["Your urgent request was sent to {0} provider."] =
+                "Tu solicitud urgente fue enviada a {0} proveedor.",
+            ["Your urgent request was sent to {0} providers."] =
+                "Tu solicitud urgente fue enviada a {0} proveedores.",
+            ["Urgent Quote Sent"] = "Cotización urgente enviada",
+            ["Quote #{0}"] = "Cotización #{0}",
+            ["Today, {0}"] = "Hoy, {0}",
             ["Choose the type of problem and the response speed needed. Keep it short so INDOR can send it fast."] =
                 "Elige el tipo de problema y la velocidad de respuesta. Manténlo breve para que INDOR lo envíe rápido.",
             ["For urgent closing needs, fill only the essentials: property, issue, urgency, and photos. INDOR can send this request in minutes."] =

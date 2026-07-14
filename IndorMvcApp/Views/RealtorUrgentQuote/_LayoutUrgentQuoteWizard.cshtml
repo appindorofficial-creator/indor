@@ -1,7 +1,7 @@
 @using IndorMvcApp.Localization
 @{
     var stepModel = Model as IndorMvcApp.ViewModels.RealtorUrgentQuoteStepViewModel;
-    var pageTitle = stepModel?.Title ?? L["Urgent Quote"];
+    var pageTitle = stepModel?.Title != null ? L[stepModel.Title] : L["Urgent Quote"];
 }
 <!DOCTYPE html>
 <html lang="@UiCulture.HtmlLang(L.CurrentCulture)">

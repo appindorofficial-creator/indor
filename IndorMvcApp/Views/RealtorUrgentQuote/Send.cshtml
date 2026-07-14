@@ -22,9 +22,9 @@
 
         <div class="rl-urgent-review-grid">
 
-            <div><i class="fas fa-wrench"></i><small>@L["Issue"]</small><strong>@Model.Property.ServiceType</strong></div>
+            <div><i class="fas fa-wrench"></i><small>@L["Issue"]</small><strong>@L[Model.Property.ServiceType ?? ""]</strong></div>
 
-            <div><i class="fas fa-clock"></i><small>@L["Response needed"]</small><strong>@Model.Property.UrgencyLabel</strong></div>
+            <div><i class="fas fa-clock"></i><small>@L["Response needed"]</small><strong>@L[Model.Property.UrgencyLabel ?? ""]</strong></div>
 
             <div><i class="fas fa-image"></i><small>@L["Photos"]</small><strong>@(Model.PhotoCount == 1 ? L.T("{0} photo", Model.PhotoCount) : L.T("{0} photos", Model.PhotoCount))</strong></div>
 
