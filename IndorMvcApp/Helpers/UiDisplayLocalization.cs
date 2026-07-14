@@ -161,7 +161,28 @@ public static class UiDisplayLocalization
         var clientFileMatch = Regex.Match(text, @"^(.+) File$", RegexOptions.IgnoreCase);
         if (clientFileMatch.Success)
         {
-            return localizer.T("{0} File", clientFileMatch.Groups[1].Value.Trim());
+            // Avoid mangling UI labels like "Send Entire File" into "Send Entire expediente".
+            var prefix = clientFileMatch.Groups[1].Value.Trim();
+            var looksLikeUiLabel =
+                prefix.Contains(' ', StringComparison.Ordinal) &&
+                (prefix.Contains("Entire", StringComparison.OrdinalIgnoreCase) ||
+                 prefix.Contains("Property", StringComparison.OrdinalIgnoreCase) ||
+                 prefix.StartsWith("Send", StringComparison.OrdinalIgnoreCase) ||
+                 prefix.StartsWith("Create", StringComparison.OrdinalIgnoreCase) ||
+                 prefix.StartsWith("Open", StringComparison.OrdinalIgnoreCase) ||
+                 prefix.StartsWith("Upload", StringComparison.OrdinalIgnoreCase) ||
+                 prefix.StartsWith("General", StringComparison.OrdinalIgnoreCase) ||
+                 prefix.StartsWith("Active", StringComparison.OrdinalIgnoreCase) ||
+                 prefix.StartsWith("Needs", StringComparison.OrdinalIgnoreCase) ||
+                 prefix.StartsWith("New", StringComparison.OrdinalIgnoreCase) ||
+                 prefix.StartsWith("View", StringComparison.OrdinalIgnoreCase) ||
+                 prefix.StartsWith("Repair", StringComparison.OrdinalIgnoreCase) ||
+                 prefix.StartsWith("Transfer", StringComparison.OrdinalIgnoreCase) ||
+                 prefix.StartsWith("Pre-", StringComparison.OrdinalIgnoreCase));
+            if (!looksLikeUiLabel)
+            {
+                return localizer.T("{0} File", prefix);
+            }
         }
 
         if (text.StartsWith("Last updated ", StringComparison.OrdinalIgnoreCase))

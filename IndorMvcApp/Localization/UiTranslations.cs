@@ -19,7 +19,7 @@ public static class UiTranslations
             UiTranslationsServiceWizards.Entries,
             UiTranslationsValidation.Entries,
             UiTranslationsRemaining.Entries,
-            UiTranslationsFinal.Entries,
             UiTranslationsPropertyAdministratorFlows.Entries,
-            UiTranslationsPropertyAdministratorUi.Entries);
+            UiTranslationsPropertyAdministratorUi.Entries,
+            UiTranslationsFinal.Entries);
 }

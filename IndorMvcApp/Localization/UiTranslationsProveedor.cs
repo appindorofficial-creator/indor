@@ -764,7 +764,7 @@ public static class UiTranslationsProveedor
             ["Reports &amp; property history"] = "Reportees &amp; property history",
             ["Request Approval"] = "Request Approval",
             ["Request Confirmed"] = "Request Confirmed",
-            ["Request Details"] = "Request Detalles",
+            ["Request Details"] = "Detalles de la solicitud",
             ["Require homeowner approval for this report."] = "Require homeowner approval para this report.",
             ["Required"] = "Obligatorio",
             ["Requirements to Receive INDOR Jobs"] = "Requirements to Receive INDOR Trabajos",
