@@ -1163,6 +1163,7 @@ public static class UiTranslationsRealtor
             // Property file status badges & actions
             ["Active"] = "Activo",
             ["Closed"] = "Cerrado",
+            ["Shared"] = "Compartido",
             ["Shared Package"] = "Paquete compartido",
             ["Quotes Pending"] = "Cotizaciones pendientes",
             ["Inspection Uploaded"] = "Inspección subida",

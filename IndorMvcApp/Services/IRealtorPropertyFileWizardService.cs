@@ -10,6 +10,10 @@ public interface IRealtorPropertyFileWizardService
     Task CancelDraftAsync(CancellationToken cancellationToken = default);
     string ResolveResumeAction(int currentStep);
 
+    Task PrepareBackToDetailsAsync(CancellationToken cancellationToken = default);
+    Task PrepareBackToAddItemsAsync(CancellationToken cancellationToken = default);
+    Task PrepareBackToAddContentAsync(CancellationToken cancellationToken = default);
+
     Task<RealtorPropertyFileDetailsViewModel> BuildDetailsAsync(string? search, CancellationToken cancellationToken = default);
     Task SaveDetailsAsync(int sourcePropertyId, string filePhase, CancellationToken cancellationToken = default);
 

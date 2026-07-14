@@ -49,6 +49,27 @@ public class RealtorPropertyFileController(
     public IActionResult Index() => RedirectToAction(nameof(Details));
 
     [HttpGet]
+    public async Task<IActionResult> BackToDetails()
+    {
+        await wizard.PrepareBackToDetailsAsync();
+        return RedirectToAction(nameof(Details));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> BackToAddItems()
+    {
+        await wizard.PrepareBackToAddItemsAsync();
+        return RedirectToAction(nameof(AddItems));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> BackToAddContent()
+    {
+        await wizard.PrepareBackToAddContentAsync();
+        return RedirectToAction(nameof(AddContent));
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Details(string? q, string? returnTo)
     {
         if (!string.IsNullOrWhiteSpace(returnTo))

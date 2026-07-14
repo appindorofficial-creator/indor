@@ -22,6 +22,7 @@
     </div>
     @await Html.PartialAsync("~/Views/Realtor/_RealtorBottomNav.cshtml")
     @RenderSection("Scripts", required: false)
+    @await Html.PartialAsync("_PropertyFileI18n")
     <script src="~/js/realtor-property-file.js" asp-append-version="true"></script>
 </body>
 </html>

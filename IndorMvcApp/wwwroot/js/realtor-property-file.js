@@ -1,6 +1,11 @@
 (function () {
     'use strict';
 
+    function pfMsg(text) {
+        var i18n = window.IndorPropertyFileI18n;
+        return (i18n && i18n[text]) || text;
+    }
+
     function showFormErrorBanner(formId, bannerId, messages) {
         var form = document.getElementById(formId);
         if (!form || !messages.length) {
@@ -18,9 +23,9 @@
         banner.setAttribute('role', 'alert');
         banner.innerHTML =
             '<i class="fas fa-circle-exclamation"></i>' +
-            '<div><strong>Please fix the following to continue:</strong>' +
+            '<div><strong>' + pfMsg('Please fix the following to continue:') + '</strong>' +
             '<ul class="rl-error-list">' +
-            messages.map(function (msg) { return '<li>' + msg + '</li>'; }).join('') +
+            messages.map(function (msg) { return '<li>' + pfMsg(msg) + '</li>'; }).join('') +
             '</ul></div>';
 
         var summary = form.querySelector('.ob-summary');

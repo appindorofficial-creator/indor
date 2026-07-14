@@ -5,6 +5,7 @@
         .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
         .Where(m => !string.IsNullOrWhiteSpace(m))
         .Distinct()
+        .Select(m => UiDisplayLocalization.Localize(L, m))
         .ToList();
 }
 

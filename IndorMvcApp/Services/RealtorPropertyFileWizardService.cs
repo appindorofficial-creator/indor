@@ -95,6 +95,45 @@ public class RealtorPropertyFileWizardService(
         _ => "Details"
     };
 
+    public async Task PrepareBackToDetailsAsync(CancellationToken cancellationToken = default)
+    {
+        var draft = await GetDraftAsync(cancellationToken);
+        if (draft == null || draft.CurrentStep < 2)
+        {
+            return;
+        }
+
+        draft.CurrentStep = 1;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task PrepareBackToAddItemsAsync(CancellationToken cancellationToken = default)
+    {
+        var draft = await GetDraftAsync(cancellationToken);
+        if (draft == null || draft.CurrentStep < 3)
+        {
+            return;
+        }
+
+        draft.CurrentStep = 2;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task PrepareBackToAddContentAsync(CancellationToken cancellationToken = default)
+    {
+        var draft = await GetDraftAsync(cancellationToken);
+        if (draft == null || draft.CurrentStep < 4)
+        {
+            return;
+        }
+
+        draft.CurrentStep = 3;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task<RealtorPropertyFileDetailsViewModel> BuildDetailsAsync(string? search, CancellationToken cancellationToken = default)
     {
         var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)

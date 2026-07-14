@@ -5,6 +5,7 @@
         .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
         .Where(m => !string.IsNullOrWhiteSpace(m))
         .Distinct()
+        .Select(m => UiDisplayLocalization.Localize(L, m))
         .ToList();
 }
 
@@ -59,7 +60,7 @@
 </form>
 
 <div class="rl-invite-actions">
-    <a asp-action="Details" class="rl-invite-cancel">@L["Back"]</a>
+    <a asp-action="BackToDetails" class="rl-invite-cancel">@L["Back"]</a>
     <button type="submit" form="addItemsForm" class="ob-btn ob-btn-primary">@L["Next"]</button>
 </div>
 

@@ -471,6 +471,9 @@ public static class UiTranslationsFinal
             ["Active"] = "Activo",
             ["Today"] = "Hoy",
             ["All"] = "Todos",
+            ["Shared"] = "Compartido",
+            ["Quotes"] = "Cotizaciones",
+            ["Closed"] = "Cerrado",
             ["Responded"] = "Respondidos",
             ["Verified Homeowner"] = "Propietario verificado",
             ["Materials Needed"] = "Materiales necesarios",
@@ -1485,5 +1488,149 @@ public static class UiTranslationsFinal
             ["Add Warranty"] = "Agregar garantía",
             ["Warranty name (e.g. HVAC Warranty)"] = "Nombre de la garantía (ej. Garantía HVAC)",
             ["Add a note..."] = "Agregar una nota...",
+
+            // Urgent quote wizard — remaining English/Spanglish
+            ["1. What type of issue is it?"] = "1. ¿Qué tipo de problema es?",
+            ["2. How fast do you need a response?"] = "2. ¿Qué tan rápido necesitas una respuesta?",
+            ["3. Quick description"] = "3. Descripción breve",
+            ["A/C not cooling upstairs."] = "El A/C no enfría el piso de arriba.",
+            ["Can't find your property?"] = "¿No encuentras tu propiedad?",
+            ["Add property quickly"] = "Agregar propiedad rápidamente",
+            ["Choose the type of problem and the response speed needed. Keep it short so INDOR can send it fast."] =
+                "Elige el tipo de problema y la velocidad de respuesta. Manténlo breve para que INDOR lo envíe rápido.",
+            ["For urgent closing needs, fill only the essentials: property, issue, urgency, and photos. INDOR can send this request in minutes."] =
+                "Para cierres urgentes, completa solo lo esencial: propiedad, problema, urgencia y fotos. INDOR puede enviar esta solicitud en minutos.",
+            ["Add 1–3 photos if you have them. This helps providers reply faster, but for urgent requests you can also skip this step."] =
+                "Agrega 1–3 fotos si las tienes. Ayuda a que los proveedores respondan más rápido, pero en solicitudes urgentes también puedes omitir este paso.",
+            ["Review the essentials and send the request. INDOR can automatically match providers so you can save time during closing."] =
+                "Revisa lo esencial y envía la solicitud. INDOR puede emparejar proveedores automáticamente para ahorrarte tiempo en el cierre.",
+            ["How should this be sent?"] = "¿Cómo se debe enviar?",
+            ["INDOR chooses providers for me"] = "INDOR elige los proveedores por mí",
+            ["Fastest option — we match 2–3 providers automatically."] =
+                "La opción más rápida: emparejamos 2–3 proveedores automáticamente.",
+            ["I want to choose providers myself"] = "Quiero elegir los proveedores yo mismo",
+            ["Search and choose providers manually."] = "Busca y elige proveedores manualmente.",
+            ["Send what?"] = "¿Qué enviar?",
+            ["Notify client"] = "Notificar al cliente",
+            ["Response needed"] = "Respuesta necesaria",
+            ["Response needed:"] = "Respuesta necesaria:",
+            ["Requested response time"] = "Tiempo de respuesta solicitado",
+            ["Optional note"] = "Nota opcional",
+            ["Skip for now"] = "Omitir por ahora",
+            ["Add photo"] = "Agregar foto",
+            ["Take photo"] = "Tomar foto",
+            ["Choose from library"] = "Elegir de la galería",
+            ["Client is in closing and needs a quote response today."] =
+                "El cliente está en cierre y necesita una respuesta de cotización hoy.",
+            ["Fast mode is designed for urgent or closing-related quote requests."] =
+                "El modo rápido está diseñado para cotizaciones urgentes o relacionadas con el cierre.",
+            ["INDOR can still send the request even if you only add one photo or no photo."] =
+                "INDOR igual puede enviar la solicitud aunque agregues solo una foto o ninguna.",
+            ["Fast mode keeps this simple so you can send the request in minutes."] =
+                "El modo rápido lo mantiene simple para que envíes la solicitud en minutos.",
+            ["Use this new property for this urgent quote"] =
+                "Usar esta nueva propiedad para esta cotización urgente",
+            ["e.g., 123 Main St"] = "ej., 123 Main St",
+            ["e.g., Charlotte"] = "ej., Charlotte",
+            ["e.g., 28202"] = "ej., 28202",
+            ["Issue:"] = "Problema:",
+            ["Urgente quote progress"] = "Progreso de cotización urgente",
+            ["Urgente Quote Sent"] = "Cotización urgente enviada",
+
+            // Inspection upload wizard — remaining English/Spanglish
+            ["1. Select Property"] = "1. Seleccionar propiedad",
+            ["2. Property Details"] = "2. Datos de la propiedad",
+            ["3. Add Report"] = "3. Agregar informe",
+            ["Best for full inspection reports."] = "Ideal para informes de inspección completos.",
+            ["Use your camera to scan pages."] = "Usa la cámara para escanear páginas.",
+            ["Upload report photos or findings."] = "Sube fotos del informe o hallazgos.",
+            ["Back to inspection findings"] = "Volver a los hallazgos de inspección",
+            ["By AI score"] = "Por puntuación de IA",
+            ["By trade"] = "Por oficio",
+            ["By urgency"] = "Por urgencia",
+            ["Could not restart analysis. Please try again."] =
+                "No se pudo reiniciar el análisis. Inténtalo de nuevo.",
+            ["Detected categories (so far)"] = "Categorías detectadas (hasta ahora)",
+            ["Findings added:"] = "Hallazgos agregados:",
+            ["Go back to upload a different PDF, scan, or photo."] =
+                "Vuelve para subir un PDF, escaneo o foto diferente.",
+            ["INDOR creates separate requests by trade so each contractor receives only the relevant items."] =
+                "INDOR crea solicitudes separadas por oficio para que cada contratista reciba solo los elementos relevantes.",
+            ["Inspector"] = "Inspector",
+            ["Inspector wording"] = "Texto del inspector",
+            ["Line / Item"] = "Línea / Elemento",
+            ["Page"] = "Página",
+            ["Related photos"] = "Fotos relacionadas",
+            ["Relevant findings only"] = "Solo hallazgos relevantes",
+            ["Report index"] = "Índice del informe",
+            ["Requests to be created"] = "Solicitudes a crear",
+            ["Retry analysis"] = "Reintentar análisis",
+            ["Return to dashboard — we'll keep analyzing."] =
+                "Volver al panel: seguiremos analizando.",
+            ["Review issues, urgency, and priority before sending to providers."] =
+                "Revisa problemas, urgencia y prioridad antes de enviar a los proveedores.",
+            ["Run AI extraction again on your inspection report."] =
+                "Vuelve a ejecutar la extracción con IA en tu informe de inspección.",
+            ["Run in background"] = "Ejecutar en segundo plano",
+            ["Section"] = "Sección",
+            ["Select all"] = "Seleccionar todo",
+            ["Select the issues you want to include. Only checked findings will be grouped by trade and sent to matching INDOR providers."] =
+                "Selecciona los problemas que quieres incluir. Solo los hallazgos marcados se agruparán por oficio y se enviarán a proveedores INDOR coincidentes.",
+            ["Sent:"] = "Enviado:",
+            ["Subsection"] = "Subsección",
+            ["They send itemized quotes back."] = "Ellos envían cotizaciones detalladas de vuelta.",
+            ["Trades:"] = "Oficios:",
+            ["View AI findings"] = "Ver hallazgos de IA",
+            ["What they will receive"] = "Qué recibirán",
+            ["You compare quotes and choose the best options."] =
+                "Tú comparas cotizaciones y eliges las mejores opciones.",
+            ["Open File"] = "Abrir expediente",
+            ["Select a property from the list below to continue."] =
+                "Selecciona una propiedad de la lista para continuar.",
+            ["Select a file type."] = "Selecciona un tipo de expediente.",
+            ["Select at least one item type."] = "Selecciona al menos un tipo de elemento.",
+            ["Choose Photos"] = "Elegir fotos",
+            ["Attach Document"] = "Adjuntar documento",
+            ["Upload File"] = "Subir archivo",
+            ["Save Note"] = "Guardar nota",
+            ["{0} item added"] = "{0} elemento agregado",
+            ["{0} items added"] = "{0} elementos agregados",
+            ["Expires {0}"] = "Vence {0}",
+            ["0 items"] = "0 elementos",
+            ["You can open the file after creation to upload more photos, inspection reports, warranties, repair items, quotes, and notes."] =
+                "Puedes abrir el expediente después de crearlo para subir más fotos, informes de inspección, garantías, reparaciones, cotizaciones y notas.",
+            ["You can add these now and add more later from inside the file."] =
+                "Puedes agregarlos ahora y agregar más después desde el expediente.",
+
+            // Inspection analyze progress copy
+            ["Change document"] = "Cambiar documento",
+            ["Uploaded {0}"] = "Subido {0}",
+            ["1 page"] = "1 página",
+            ["{0} pages"] = "{0} páginas",
+            ["1 scanned page"] = "1 página escaneada",
+            ["{0} scanned pages"] = "{0} páginas escaneadas",
+            ["1 photo"] = "1 foto",
+            ["{0} photos"] = "{0} fotos",
+            ["OpenAI is analyzing your real inspection report. Large PDFs (like 74 pages) are processed in sections and may take several minutes — keep this screen open."] =
+                "OpenAI está analizando tu informe de inspección. Los PDF grandes (como de 74 páginas) se procesan por secciones y pueden tardar varios minutos: mantén esta pantalla abierta.",
+            ["OpenAI is analyzing your scanned inspection pages. Keep this screen open while we extract findings from your camera capture."] =
+                "OpenAI está analizando tus páginas escaneadas. Mantén esta pantalla abierta mientras extraemos los hallazgos de tu captura.",
+            ["OpenAI is analyzing your inspection photos. Keep this screen open while we extract findings from the images you uploaded."] =
+                "OpenAI está analizando tus fotos de inspección. Mantén esta pantalla abierta mientras extraemos los hallazgos de las imágenes que subiste.",
+            ["OpenAI is reading your PDF and extracting repair issues by trade and urgency…"] =
+                "OpenAI está leyendo tu PDF y extrayendo problemas de reparación por oficio y urgencia…",
+            ["OpenAI is reading your scanned pages and extracting repair issues by trade and urgency…"] =
+                "OpenAI está leyendo tus páginas escaneadas y extrayendo problemas de reparación por oficio y urgencia…",
+            ["OpenAI is reading your report photos and extracting repair issues by trade and urgency…"] =
+                "OpenAI está leyendo las fotos de tu informe y extrayendo problemas de reparación por oficio y urgencia…",
+            ["Reading report pages"] = "Leyendo páginas del informe",
+            ["Extracting repair findings"] = "Extrayendo hallazgos de reparación",
+            ["Analyzing with OpenAI"] = "Analizando con OpenAI",
+            ["Classifying by trade"] = "Clasificando por oficio",
+            ["Waiting for AI"] = "Esperando IA",
+            ["Evaluating urgency"] = "Evaluando urgencia",
+            ["In progress"] = "En curso",
+            ["{0} / {1} page"] = "{0} / {1} página",
+            ["{0} / {1} pages"] = "{0} / {1} páginas",
         };
 }

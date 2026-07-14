@@ -5,21 +5,21 @@
         <span>@L["Property"]</span>
         <strong>@Model.PropertyDisplay</strong>
         <span>@L["File Type"]</span>
-        <strong>@Model.FilePhaseLabel</strong>
+        <strong>@L[Model.FilePhaseLabel]</strong>
     </div>
 </div>
 
 @foreach (var sec in Model.Sections)
 {
     <section class="rl-content-section">
-        <h2 class="rl-invite-section-title">@sec.Label</h2>
+        <h2 class="rl-invite-section-title">@L[sec.Label]</h2>
 
         @if (sec.CategoryType == IndorMvcApp.Models.RealtorPropertyFileCategoryTypes.PhotosVideos)
         {
             <form asp-action="UploadContent" method="post" enctype="multipart/form-data" class="rl-upload-row">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="categoryType" value="@sec.CategoryType" />
-                <label class="ob-btn ob-btn-outline"><i class="fas fa-camera"></i> Choose Photos
+                <label class="ob-btn ob-btn-outline"><i class="fas fa-camera"></i> @L["Choose Photos"]
                     <input type="file" name="uploadFile" accept="image/*" hidden onchange="this.form.submit()" />
                 </label>
             </form>
@@ -32,14 +32,14 @@
                     }
                 </div>
             }
-            <span class="rl-items-count">@sec.Items.Count item@(sec.Items.Count == 1 ? "" : "s") added</span>
+            <span class="rl-items-count">@(sec.Items.Count == 1 ? L.T("{0} item added", sec.Items.Count) : L.T("{0} items added", sec.Items.Count))</span>
         }
         else if (sec.CategoryType == IndorMvcApp.Models.RealtorPropertyFileCategoryTypes.InspectionReports)
         {
             <form asp-action="UploadContent" method="post" enctype="multipart/form-data" class="rl-upload-row">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="categoryType" value="@sec.CategoryType" />
-                <label class="ob-btn ob-btn-outline"><i class="fas fa-file-pdf"></i> Upload PDF
+                <label class="ob-btn ob-btn-outline"><i class="fas fa-file-pdf"></i> @L["Upload PDF"]
                     <input type="file" name="uploadFile" accept=".pdf" hidden onchange="this.form.submit()" />
                 </label>
             </form>
@@ -63,7 +63,7 @@
                     <i class="fas fa-shield-halved"></i> @item.ItemLabel
                     @if (!string.IsNullOrWhiteSpace(item.ExpirationLabel))
                     {
-                        <span class="rl-card-status rl-card-status--active">Expires @item.ExpirationLabel</span>
+                        <span class="rl-card-status rl-card-status--active">@L.T("Expires {0}", item.ExpirationLabel)</span>
                     }
                 </div>
             }
@@ -74,7 +74,7 @@
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="categoryType" value="@sec.CategoryType" />
                 <textarea name="noteText" rows="3" class="rl-note-area" placeholder="@L["Add a note..."]">@sec.NoteText</textarea>
-                <label class="rl-attach-link"><i class="fas fa-paperclip"></i> Attach Document
+                <label class="rl-attach-link"><i class="fas fa-paperclip"></i> @L["Attach Document"]
                     <input type="file" name="uploadFile" accept=".pdf,.jpg,.jpeg,.png" hidden onchange="this.form.submit()" />
                 </label>
                 <button type="submit" class="ob-btn ob-btn-outline">@L["Save Note"]</button>
@@ -85,7 +85,7 @@
             <form asp-action="UploadContent" method="post" enctype="multipart/form-data" class="rl-upload-row">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="categoryType" value="@sec.CategoryType" />
-                <label class="ob-btn ob-btn-outline"><i class="fas fa-upload"></i> Upload File
+                <label class="ob-btn ob-btn-outline"><i class="fas fa-upload"></i> @L["Upload File"]
                     <input type="file" name="uploadFile" hidden onchange="this.form.submit()" />
                 </label>
             </form>
@@ -105,7 +105,7 @@
 <form asp-action="CompleteContent" method="post">
     @Html.AntiForgeryToken()
     <div class="rl-invite-actions">
-        <a asp-action="AddItems" class="rl-invite-cancel">@L["Back"]</a>
+        <a asp-action="BackToAddItems" class="rl-invite-cancel">@L["Back"]</a>
         <button type="submit" class="ob-btn ob-btn-primary">@L["Next"]</button>
     </div>
 </form>
