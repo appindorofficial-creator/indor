@@ -157,7 +157,7 @@ public static class UiTranslationsProveedor
             ["Choose an available time"] = "Elegir an available time",
             ["Choose an existing customer from your list or add a new one to get started."] = "Elige un cliente existente de tu lista o agrega uno nuevo para empezar.",
             ["Choose Delivery Method"] = "Elige el método de entrega",
-            ["Choose file"] = "Elegir file",
+            ["Choose file"] = "Elegir archivo",
             ["Choose how to deliver the estimate and what happens after you send."] = "Elige cómo entregar la cotización y qué pasa después de enviarla.",
             ["Choose how you want to create this estimate."] = "Elige cómo quieres crear esta cotización.",
             ["Choose how you want to get started with INDOR."] = "Elige cómo quieres comenzar con INDOR.",

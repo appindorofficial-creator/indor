@@ -474,6 +474,16 @@ public static class UiTranslationsFinal
             ["Shared"] = "Compartido",
             ["Quotes"] = "Cotizaciones",
             ["Closed"] = "Cerrado",
+            ["Business card"] = "Tarjeta de presentación",
+            ["Business card (optional)"] = "Tarjeta de presentación (opcional)",
+            ["Choose file"] = "Elegir archivo",
+            ["Choose files"] = "Elegir archivos",
+            ["Save and continue"] = "Guardar y continuar",
+            ["Upload files"] = "Subir archivos",
+            ["You can do this now or update it later from your profile."] =
+                "Puedes hacerlo ahora o actualizarlo después desde tu perfil.",
+            ["Optional Verification"] = "Verificación opcional",
+            ["Realtor registration progress"] = "Progreso de registro de agente inmobiliario",
             ["Responded"] = "Respondidos",
             ["Verified Homeowner"] = "Propietario verificado",
             ["Materials Needed"] = "Materiales necesarios",
@@ -1463,11 +1473,11 @@ public static class UiTranslationsFinal
             ["Create file now and continue adding items later"] =
                 "Crear el expediente ahora y seguir agregando elementos después",
             ["You can open the file after creation to upload more photos, inspection reports, warranties, repair items, quotes, and notes."] =
-                "Puedes abrir el expediente después de crearlo para subir más fotos, informes, garantías, reparaciones, cotizaciones y notas.",
+                "Puedes abrir el expediente después de crearlo para subir más fotos, informes de inspección, garantías, reparaciones, cotizaciones y notas.",
             ["Create File"] = "Crear expediente",
             ["Select what to add"] = "Selecciona qué agregar",
             ["You can add these now and add more later from inside the file."] =
-                "Puedes agregar estos ahora y más después desde el expediente.",
+                "Puedes agregarlos ahora y agregar más después desde el expediente.",
             ["Search existing properties by address"] = "Buscar propiedades existentes por dirección",
             ["No properties in your account yet."] = "Aún no hay propiedades en tu cuenta.",
             ["Add a property first, then return here to create a file for it."] =
@@ -1597,10 +1607,6 @@ public static class UiTranslationsFinal
             ["{0} items added"] = "{0} elementos agregados",
             ["Expires {0}"] = "Vence {0}",
             ["0 items"] = "0 elementos",
-            ["You can open the file after creation to upload more photos, inspection reports, warranties, repair items, quotes, and notes."] =
-                "Puedes abrir el expediente después de crearlo para subir más fotos, informes de inspección, garantías, reparaciones, cotizaciones y notas.",
-            ["You can add these now and add more later from inside the file."] =
-                "Puedes agregarlos ahora y agregar más después desde el expediente.",
 
             // Inspection analyze progress copy
             ["Change document"] = "Cambiar documento",
@@ -1624,13 +1630,29 @@ public static class UiTranslationsFinal
             ["OpenAI is reading your report photos and extracting repair issues by trade and urgency…"] =
                 "OpenAI está leyendo las fotos de tu informe y extrayendo problemas de reparación por oficio y urgencia…",
             ["Reading report pages"] = "Leyendo páginas del informe",
+            ["Reading scanned pages"] = "Leyendo páginas escaneadas",
+            ["Reading report photos"] = "Leyendo fotos del informe",
             ["Extracting repair findings"] = "Extrayendo hallazgos de reparación",
             ["Analyzing with OpenAI"] = "Analizando con OpenAI",
             ["Classifying by trade"] = "Clasificando por oficio",
             ["Waiting for AI"] = "Esperando IA",
             ["Evaluating urgency"] = "Evaluando urgencia",
+            ["Scoring urgency"] = "Evaluando urgencia",
             ["In progress"] = "En curso",
             ["{0} / {1} page"] = "{0} / {1} página",
             ["{0} / {1} pages"] = "{0} / {1} páginas",
+            ["{0} / {1} photo"] = "{0} / {1} foto",
+            ["{0} / {1} photos"] = "{0} / {1} fotos",
+            ["{0} finding"] = "{0} hallazgo",
+            ["{0} findings"] = "{0} hallazgos",
+            ["Trades assigned from AI"] = "Oficios asignados por IA",
+            ["OpenAI classifying trades"] = "OpenAI clasificando oficios",
+            ["Home Inspection Report"] = "Informe de inspección de vivienda",
+            ["AI Analysis"] = "Análisis con IA",
+            ["INDOR AI scans the inspection report to find, organize, and prioritize findings automatically."] =
+                "INDOR IA escanea el informe de inspección para encontrar, organizar y priorizar hallazgos automáticamente.",
+            ["INDOR AI is reading your report and extracting repair items."] =
+                "INDOR IA está leyendo tu informe y extrayendo elementos de reparación.",
+            ["Analysis could not be completed."] = "No se pudo completar el análisis.",
         };
 }
