@@ -1654,5 +1654,26 @@ public static class UiTranslationsFinal
             ["INDOR AI is reading your report and extracting repair items."] =
                 "INDOR IA está leyendo tu informe y extrayendo elementos de reparación.",
             ["Analysis could not be completed."] = "No se pudo completar el análisis.",
+
+            // Nearby listing detail — demo description + highlight chips
+            ["Beautiful home in Charlotte with updated kitchen and large backyard. Perfect for families."] =
+                "Hermosa casa en Charlotte con cocina renovada y un amplio patio trasero. Ideal para familias.",
+            ["Move-in Ready"] = "Lista para mudarse",
+            ["Updated Kitchen"] = "Cocina renovada",
+            ["Big Backyard"] = "Patio amplio",
+            ["New Roof"] = "Techo nuevo",
+            ["Corner Lot"] = "Lote esquinero",
+            ["Gated Community"] = "Comunidad cerrada",
+            ["Back to Feed"] = "Volver a la red cercana",
+            ["Back to feed"] = "Volver a la red cercana",
+            ["{0} hour ago"] = "hace {0} hora",
+            ["{0} hours ago"] = "hace {0} horas",
+            ["{0} day ago"] = "hace {0} día",
+            ["{0} days ago"] = "hace {0} días",
+            ["Requested {0}"] = "Solicitado {0}",
+            ["Sat, May 17 · 12:00–3:00 PM"] = "Sáb, 17 de mayo · 12:00–3:00 p. m.",
+            ["Budget"] = "Presupuesto",
+            ["Budget {0}"] = "Presupuesto {0}",
+            ["Budget $450K – $650K"] = "Presupuesto $450K – $650K",
         };
 }

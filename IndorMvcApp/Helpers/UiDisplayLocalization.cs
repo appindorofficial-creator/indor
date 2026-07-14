@@ -250,7 +250,12 @@ public static class UiDisplayLocalization
 
         if (text.StartsWith("Requested ", StringComparison.OrdinalIgnoreCase))
         {
-            return localizer.T("Requested {0}", text["Requested ".Length..].Trim());
+            return localizer.T("Requested {0}", Localize(localizer, text["Requested ".Length..].Trim()));
+        }
+
+        if (text.StartsWith("Budget ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Budget {0}", Localize(localizer, text["Budget ".Length..].Trim()));
         }
 
         if (text.StartsWith("Connected ", StringComparison.OrdinalIgnoreCase))
@@ -421,6 +426,18 @@ public static class UiDisplayLocalization
         if (hrAgoMatch.Success && int.TryParse(hrAgoMatch.Groups[1].Value, out var hrsAgo))
         {
             return localizer.T("{0} hr ago", hrsAgo);
+        }
+
+        var hourAgoMatch = Regex.Match(text, @"^(\d+)\s+hours?\s+ago$", RegexOptions.IgnoreCase);
+        if (hourAgoMatch.Success && int.TryParse(hourAgoMatch.Groups[1].Value, out var hoursAgo))
+        {
+            return localizer.T(hoursAgo == 1 ? "{0} hour ago" : "{0} hours ago", hoursAgo);
+        }
+
+        var dayAgoMatch = Regex.Match(text, @"^(\d+)\s+days?\s+ago$", RegexOptions.IgnoreCase);
+        if (dayAgoMatch.Success && int.TryParse(dayAgoMatch.Groups[1].Value, out var daysAgo))
+        {
+            return localizer.T(daysAgo == 1 ? "{0} day ago" : "{0} days ago", daysAgo);
         }
 
         if (string.Equals(text, "just now", StringComparison.OrdinalIgnoreCase))
