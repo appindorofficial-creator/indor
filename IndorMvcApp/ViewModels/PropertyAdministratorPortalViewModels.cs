@@ -182,6 +182,7 @@ public class PropertyAdministratorServicesViewModel : PropertyAdministratorPorta
     public IReadOnlyList<PropertyAdministratorServiceCategoryViewModel> Categories { get; set; } = [];
     public IReadOnlyList<PropertyAdministratorHomecarePlanItemViewModel> ActivePlans { get; set; } = [];
     public string ActiveFilter { get; set; } = "all";
+    public string? SearchQuery { get; set; }
 }
 
 public class PropertyAdministratorHomecarePlanItemViewModel

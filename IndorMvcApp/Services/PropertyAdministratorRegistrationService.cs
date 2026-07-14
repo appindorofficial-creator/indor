@@ -108,12 +108,7 @@ public class PropertyAdministratorRegistrationService(
         return await db.IndorPropertyAdminPortfolioProperties
             .AsNoTracking()
             .Where(p => p.AdministratorId == adminId)
-            .Where(p => p.Status != PropertyAdministratorPortfolioPropertyStatuses.Removed
-                && p.Status != "Deleted"
-                && p.Status != "Inactive"
-                && p.Status != "Eliminado")
-            .Where(p => p.PropiedadId == null
-                || db.Propiedades.Any(x => x.Id == p.PropiedadId && x.Activo))
+            .WhereActivePortfolioProperties(db)
             .OrderByDescending(p => p.FechaCreacion)
             .Select(p => new PropertyAdministratorPropertyItemViewModel
             {
@@ -419,7 +414,12 @@ public class PropertyAdministratorRegistrationService(
 
         return await db.IndorPropertyAdministrators
             .AsNoTracking()
-            .Include(a => a.PortfolioProperties)
+            .Include(a => a.PortfolioProperties.Where(p =>
+                p.Status != PropertyAdministratorPortfolioPropertyStatuses.Removed
+                && p.Status != "Deleted"
+                && p.Status != "Inactive"
+                && p.Status != "Eliminado"))
+                .ThenInclude(p => p.Propiedad)
             .Where(a => a.UserId == userId)
             .OrderByDescending(a => a.RegistrationStatus == PropertyAdministratorRegistrationStatuses.Completed)
             .ThenByDescending(a => a.RegistrationCompletedUtc)

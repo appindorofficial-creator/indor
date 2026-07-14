@@ -29,17 +29,17 @@ USING (VALUES
     (N'moving', N'Moving & Logistics', 4, N'Junk Removal', N'junk-removal', N'fa-dolly', N'tone-blue', N'Administrador', N'JunkRemovalDetails', NULL, 2),
     (N'moving', N'Moving & Logistics', 4, N'Furniture Haul Away', N'furniture-haul-away', N'fa-couch', N'tone-blue', N'Administrador', N'FurnitureHaulAwayDetails', NULL, 3),
 
-    -- Emergency Services last (10)
-    (N'emergency', N'Emergency Services', 5, N'Emergency AC', N'emergency-ac', N'fa-snowflake', N'tone-red', N'Administrador', N'EmergencyAcDetails', NULL, 1),
-    (N'emergency', N'Emergency Services', 5, N'Emergency Plumbing', N'emergency-plumbing', N'fa-droplet', N'tone-red', N'Administrador', N'EmergencyPlumbingDetails', NULL, 2),
-    (N'emergency', N'Emergency Services', 5, N'Emergency Electrical', N'emergency-electrical', N'fa-bolt', N'tone-red', N'Administrador', N'EmergencyElectricalDetails', NULL, 3),
-    (N'emergency', N'Emergency Services', 5, N'Emergency Flood', N'emergency-flood', N'fa-water', N'tone-red', N'Administrador', N'EmergencyFloodDetails', NULL, 4),
-    (N'emergency', N'Emergency Services', 5, N'Emergency Roof Leak', N'emergency-roof-leak', N'fa-house-chimney-crack', N'tone-red', N'Administrador', N'EmergencyRoofLeakDetails', NULL, 5),
-    (N'emergency', N'Emergency Services', 5, N'Tree / Branch Emergency', N'emergency-tree-branch', N'fa-tree', N'tone-red', N'Administrador', N'EmergencyTreeBranchDetails', NULL, 6),
-    (N'emergency', N'Emergency Services', 5, N'Lockout / Access', N'lockout-access', N'fa-key', N'tone-red', N'Administrador', N'LockoutAccessDetails', NULL, 7),
-    (N'emergency', N'Emergency Services', 5, N'Broken Window / Board-Up', N'broken-window-board-up', N'fa-window-maximize', N'tone-red', N'Administrador', N'BrokenWindowDetails', NULL, 8),
-    (N'emergency', N'Emergency Services', 5, N'Sewer Backup', N'sewer-backup', N'fa-toilet', N'tone-red', N'Administrador', N'SewerBackupDetails', NULL, 9),
-    (N'emergency', N'Emergency Services', 5, N'Water Heater Emergency', N'emergency-water-heater', N'fa-fire-flame-simple', N'tone-red', N'Administrador', N'WaterHeaterDetails', NULL, 10)
+    -- Emergency Services last (CategoryOrder 99 — older seeds used 1)
+    (N'emergency', N'Emergency Services', 99, N'Emergency AC', N'emergency-ac', N'fa-snowflake', N'tone-red', N'Administrador', N'EmergencyAcDetails', NULL, 1),
+    (N'emergency', N'Emergency Services', 99, N'Emergency Plumbing', N'emergency-plumbing', N'fa-droplet', N'tone-red', N'Administrador', N'EmergencyPlumbingDetails', NULL, 2),
+    (N'emergency', N'Emergency Services', 99, N'Emergency Electrical', N'emergency-electrical', N'fa-bolt', N'tone-red', N'Administrador', N'EmergencyElectricalDetails', NULL, 3),
+    (N'emergency', N'Emergency Services', 99, N'Emergency Flood', N'emergency-flood', N'fa-water', N'tone-red', N'Administrador', N'EmergencyFloodDetails', NULL, 4),
+    (N'emergency', N'Emergency Services', 99, N'Emergency Roof Leak', N'emergency-roof-leak', N'fa-house-chimney-crack', N'tone-red', N'Administrador', N'EmergencyRoofLeakDetails', NULL, 5),
+    (N'emergency', N'Emergency Services', 99, N'Tree / Branch Emergency', N'emergency-tree-branch', N'fa-tree', N'tone-red', N'Administrador', N'EmergencyTreeBranchDetails', NULL, 6),
+    (N'emergency', N'Emergency Services', 99, N'Lockout / Access', N'lockout-access', N'fa-key', N'tone-red', N'Administrador', N'LockoutAccessDetails', NULL, 7),
+    (N'emergency', N'Emergency Services', 99, N'Broken Window / Board-Up', N'broken-window-board-up', N'fa-window-maximize', N'tone-red', N'Administrador', N'BrokenWindowDetails', NULL, 8),
+    (N'emergency', N'Emergency Services', 99, N'Sewer Backup', N'sewer-backup', N'fa-toilet', N'tone-red', N'Administrador', N'SewerBackupDetails', NULL, 9),
+    (N'emergency', N'Emergency Services', 99, N'Water Heater Emergency', N'emergency-water-heater', N'fa-fire-flame-simple', N'tone-red', N'Administrador', N'WaterHeaterDetails', NULL, 10)
 ) AS s (CategoryKey, CategoryTitle, CategoryOrder, ServiceName, ServiceSlug, IconClass, ToneClass, LinkController, LinkAction, LinkRouteId, Orden)
 ON t.ServiceSlug = s.ServiceSlug
 WHEN MATCHED THEN
@@ -58,6 +58,11 @@ WHEN MATCHED THEN
 WHEN NOT MATCHED THEN
     INSERT (CategoryKey, CategoryTitle, CategoryOrder, ServiceName, ServiceSlug, IconClass, ToneClass, LinkController, LinkAction, LinkRouteId, Orden)
     VALUES (s.CategoryKey, s.CategoryTitle, s.CategoryOrder, s.ServiceName, s.ServiceSlug, s.IconClass, s.ToneClass, s.LinkController, s.LinkAction, s.LinkRouteId, s.Orden);
+
+-- Older seeds used CategoryOrder=1 for emergency and rendered it first.
+UPDATE dbo.IndorPropertyAdminServiceCatalog
+SET CategoryOrder = 99
+WHERE CategoryKey = N'emergency';
 
 PRINT 'Property administrator service catalog synced to full Services mockup.';
 GO

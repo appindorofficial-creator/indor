@@ -87,7 +87,7 @@
                 {
                     <a href="tel:@Model.CustomerPhone" class="prv-pro-round-btn" aria-label="@L["Call"]"><i class="fas fa-phone"></i></a>
                 }
-                <button type="button" class="prv-pro-round-btn" aria-label="@L["Message"]"><i class="fas fa-message"></i></button>
+                <a asp-controller="Proveedor" asp-action="MessageJob" asp-route-id="@Model.JobId" class="prv-pro-round-btn" aria-label="@L["Message"]"><i class="fas fa-message"></i></a>
             </div>
         </div>
     </section>
@@ -172,6 +172,6 @@
             </a>
         }
         <a asp-controller="Proveedor" asp-action="RescheduleJob" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-calendar"></i> @L["Reschedule"]</a>
-        <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-message"></i> @L["Message Customer"]</button>
+        <a asp-controller="Proveedor" asp-action="MessageJob" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-message"></i> @L["Message Customer"]</a>
     </footer>
 </div>

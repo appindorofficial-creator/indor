@@ -916,7 +916,11 @@ public class PropertyAdministratorPortalService(
 
         return await db.IndorPropertyAdministrators
             .AsNoTracking()
-            .Include(a => a.PortfolioProperties)
+            .Include(a => a.PortfolioProperties.Where(p =>
+                p.Status != PropertyAdministratorPortfolioPropertyStatuses.Removed
+                && p.Status != "Deleted"
+                && p.Status != "Inactive"
+                && p.Status != "Eliminado"))
                 .ThenInclude(p => p.Propiedad)
             .Include(a => a.ServiceRequests)
             .Include(a => a.HomecarePlans)
@@ -1152,8 +1156,7 @@ public class PropertyAdministratorPortalService(
             "emergency-tree-branch" or "tree-branch-emergency" or "tree-damage" => "/emergency-tree-damage.png",
             "emergency-water-heater" or "water-heater-emergency" or "water-heater" => "/emergency-water-heater.png",
             "lockout-access" or "lockout" => "/inspeccion6.jpeg",
-            "broken-window-board-up" or "broken-window" or "broken-window-board-up" => "/inspeccion9.jpeg",
-            "broken-window-board-up" => "/inspeccion9.jpeg",
+            "broken-window-board-up" or "broken-window" => "/inspeccion9.jpeg",
             "sewer-backup" => "/emergency-plumbing.png",
             "preventive-maintenance" => "/priority-hvac-maintenance.png",
             "hvac-filter" or "hvac-filter-change" => "/images/schedule/schedule-filter.png",

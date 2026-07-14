@@ -87,6 +87,8 @@ public interface IProviderProDataService
     Task<int?> SaveExportReportFromDraftAsync(int proveedorId, ProviderProExportReportDraft draft, bool send, CancellationToken cancellationToken = default);
     Task<ProviderProMessagesInboxViewModel> GetMessagesInboxAsync(IndorProveedor proveedor, string? tab = "all", string? search = null, CancellationToken cancellationToken = default);
     Task<ProviderProConversationViewModel?> GetConversationAsync(IndorProveedor proveedor, int conversationId, CancellationToken cancellationToken = default);
+    Task<int?> ResolveOrCreateJobConversationAsync(int proveedorId, int jobId, CancellationToken cancellationToken = default);
+    Task<int?> ResolveOrCreateLeadConversationAsync(int proveedorId, int leadId, CancellationToken cancellationToken = default);
     Task<bool> SendConversationMessageAsync(int proveedorId, ProviderProSendMessageInput input, CancellationToken cancellationToken = default);
     Task<ProviderProMessageQuickActionsViewModel?> GetMessageQuickActionsAsync(IndorProveedor proveedor, int conversationId, string? selectedAction = null, CancellationToken cancellationToken = default);
     Task<bool> SendMessageQuickActionAsync(int proveedorId, ProviderProMessageActionDraft draft, CancellationToken cancellationToken = default);

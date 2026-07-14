@@ -200,9 +200,10 @@
             </a>
         }
 
-        <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-lead-action-btn prv-pro-lead-action-btn--full prv-pro-lead-message-btn">
+        <a asp-controller="Proveedor" asp-action="MessageLead" asp-route-id="@Model.LeadId"
+           class="prv-pro-btn prv-pro-btn--ghost prv-pro-lead-action-btn prv-pro-lead-action-btn--full prv-pro-lead-message-btn">
             <i class="fas fa-message"></i> @L["Message Homeowner"]
-        </button>
+        </a>
 
         @if (Model.CanDecline)
         {

@@ -1502,6 +1502,40 @@ public partial class ProveedorController(
     }
 
     [HttpGet]
+    public async Task<IActionResult> MessageJob(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var conversationId = await proData.ResolveOrCreateJobConversationAsync(
+            proveedor.Entity!.Id, id, cancellationToken);
+
+        return conversationId is > 0
+            ? RedirectToAction(nameof(Conversation), new { id = conversationId.Value })
+            : RedirectToAction(nameof(Messages));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> MessageLead(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var conversationId = await proData.ResolveOrCreateLeadConversationAsync(
+            proveedor.Entity!.Id, id, cancellationToken);
+
+        return conversationId is > 0
+            ? RedirectToAction(nameof(Conversation), new { id = conversationId.Value })
+            : RedirectToAction(nameof(Messages));
+    }
+
+    [HttpGet]
     public async Task<IActionResult> MessageQuickActions(int id, string? action, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);

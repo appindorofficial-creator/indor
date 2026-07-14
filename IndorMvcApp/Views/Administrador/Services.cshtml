@@ -18,13 +18,14 @@
 
     @await Html.PartialAsync("_PropertyAdminPortfolioCard", Model)
 
-    <form class="pa-search-bar" id="paServicesSearchForm" role="search" action="#" method="get">
+    <form class="pa-search-bar" id="paServicesSearchForm" role="search" asp-controller="Administrador" asp-action="Services" method="get">
         <button type="submit" class="pa-search-submit" aria-label="@L["Search"]" title="@L["Search"]">
             <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
         </button>
         <input type="search"
                id="paServicesSearch"
                name="q"
+               value="@Model.SearchQuery"
                placeholder="@L["Search services (e.g., plumbing, cleaning)"]"
                aria-label="@L["Search services"]"
                autocomplete="off"
@@ -34,7 +35,7 @@
         </button>
     </form>
 
-    <div class="pa-filter-pills" id="paServicesFilterPills">
+    <div class="pa-filter-pills" id="paServicesFilterPills" data-pa-search-hide>
         @foreach (var (key, label, icon) in filters)
         {
             if (key == "all")
@@ -92,22 +93,30 @@
                 @foreach (var item in category.Items)
                 {
                     var searchHaystack = $"{item.ServiceName} {UiDisplayLocalization.Localize(L, item.ServiceName)} {category.CategoryKey} {category.CategoryTitle} {UiDisplayLocalization.Localize(L, category.CategoryTitle)}".ToLowerInvariant();
+                    if (string.Equals(category.CategoryKey, "cleaning", StringComparison.OrdinalIgnoreCase)
+                        || searchHaystack.Contains("clean", StringComparison.Ordinal)
+                        || searchHaystack.Contains("limpi", StringComparison.Ordinal))
+                    {
+                        searchHaystack += " clean cleaning limpieza limpio turnover broom";
+                    }
                     var imgSrc = !string.IsNullOrWhiteSpace(item.ImageUrl)
                         ? Url.Content("~" + (item.ImageUrl.StartsWith("/") ? item.ImageUrl : "/" + item.ImageUrl))
                         : null;
                     <a href="@item.Url" class="pa-service-grid-item" data-search="@searchHaystack">
-                        <span class="pa-service-card-media @item.ToneClass">
+                        <span class="pa-service-card-media @item.ToneClass @(string.IsNullOrWhiteSpace(imgSrc) ? "is-fallback" : null)">
                             @if (!string.IsNullOrWhiteSpace(imgSrc))
                             {
-                                <img src="@imgSrc" alt="" loading="lazy" decoding="async" asp-append-version="true" />
+                                <img src="@imgSrc"
+                                     alt=""
+                                     loading="lazy"
+                                     decoding="async"
+                                     asp-append-version="true"
+                                     onerror="this.remove();this.parentElement.classList.add('is-fallback');" />
                             }
-                            else
-                            {
-                                <span class="pa-service-card-fallback"><i class="fas @item.IconClass"></i></span>
-                            }
+                            <span class="pa-service-card-fallback" aria-hidden="true"><i class="fas @item.IconClass"></i></span>
                             <span class="pa-service-card-icon" aria-hidden="true"><i class="fas @item.IconClass"></i></span>
                         </span>
-                        <span>@UiDisplayLocalization.Localize(L, item.ServiceName)</span>
+                        <span class="pa-service-grid-label">@UiDisplayLocalization.Localize(L, item.ServiceName)</span>
                     </a>
                 }
             </div>
@@ -116,7 +125,7 @@
 
     @if (Model.ActivePlans.Count > 0)
     {
-        <section class="pa-section">
+        <section class="pa-section" data-pa-search-hide>
             <div class="pa-section-head">
                 <h2>@L["Your service plans"]</h2>
                 <a asp-controller="Administrador" asp-action="CategoryServices" asp-route-category="homecare">@L["Manage all"] <i class="fas fa-chevron-right"></i></a>
@@ -136,10 +145,52 @@
         </section>
     }
 
-    <div class="pa-trust-row">
+    <div class="pa-trust-row" data-pa-search-hide>
         <div><strong>@L["Vetted & insured"]</strong><small>@L["Service pros you can trust"]</small></div>
         <div><strong>@L["On-time guarantee"]</strong><small>@L["We show up when we say"]</small></div>
         <div><strong>@L["Quality guarantee"]</strong><small>@L["100% satisfaction promise"]</small></div>
         <div><strong>@L["Transparent pricing"]</strong><small>@L["Upfront & always fair"]</small></div>
     </div>
 </div>
+
+@section Scripts {
+<script>
+(function () {
+    // Page-level failsafe if the shared portal script failed to wire search.
+    if (document.getElementById('paServicesSearchForm')
+        && document.getElementById('paServicesSearchForm').getAttribute('data-pa-search-wired') !== '1'
+        && typeof window !== 'undefined') {
+        var form = document.getElementById('paServicesSearchForm');
+        var input = document.getElementById('paServicesSearch');
+        if (!form || !input) return;
+        form.setAttribute('data-pa-search-wired', '1');
+        var empty = document.getElementById('paServicesSearchEmpty');
+        function setHidden(el, hide) {
+            if (!el) return;
+            el.classList.toggle('pa-search-hidden', !!hide);
+            el.hidden = !!hide;
+        }
+        function apply() {
+            var q = (input.value || '').trim().toLowerCase();
+            var any = false;
+            document.querySelectorAll('[data-pa-service-section]').forEach(function (section) {
+                var n = 0;
+                section.querySelectorAll('.pa-service-grid-item').forEach(function (item) {
+                    var hay = ((item.getAttribute('data-search') || '') + ' ' + (item.textContent || '')).toLowerCase();
+                    var show = !q || hay.indexOf(q) !== -1;
+                    setHidden(item, !show);
+                    if (show) n++;
+                });
+                setHidden(section, n === 0);
+                if (n > 0) any = true;
+            });
+            document.querySelectorAll('[data-pa-search-hide]').forEach(function (el) { setHidden(el, !!q); });
+            setHidden(empty, !q || any);
+        }
+        ['input', 'keyup', 'search', 'change'].forEach(function (evt) { input.addEventListener(evt, apply); });
+        form.addEventListener('submit', function (e) { e.preventDefault(); apply(); input.blur(); });
+        apply();
+    }
+})();
+</script>
+}

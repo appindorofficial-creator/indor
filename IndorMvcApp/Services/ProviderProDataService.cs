@@ -3974,6 +3974,87 @@ public partial class ProviderProDataService(
         };
     }
 
+    public async Task<int?> ResolveOrCreateJobConversationAsync(
+        int proveedorId,
+        int jobId,
+        CancellationToken cancellationToken = default)
+    {
+        var existing = await db.IndorProveedorConversations
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                c => c.ProveedorId == proveedorId && c.JobId == jobId,
+                cancellationToken);
+
+        if (existing != null)
+        {
+            return existing.Id;
+        }
+
+        var job = await db.IndorProveedorJobs
+            .AsNoTracking()
+            .FirstOrDefaultAsync(j => j.Id == jobId && j.ProveedorId == proveedorId, cancellationToken);
+
+        if (job == null)
+        {
+            return null;
+        }
+
+        var conversation = new IndorProveedorConversation
+        {
+            ProveedorId = proveedorId,
+            ClienteId = job.ClienteId,
+            JobId = job.Id,
+            Category = ProviderConversationCategories.Job,
+            Status = ProviderConversationStatuses.New,
+            LastMessagePreview = "No messages yet",
+            LastMessageAt = DateTime.UtcNow
+        };
+
+        db.IndorProveedorConversations.Add(conversation);
+        await db.SaveChangesAsync(cancellationToken);
+        return conversation.Id;
+    }
+
+    public async Task<int?> ResolveOrCreateLeadConversationAsync(
+        int proveedorId,
+        int leadId,
+        CancellationToken cancellationToken = default)
+    {
+        var existing = await db.IndorProveedorConversations
+            .AsNoTracking()
+            .FirstOrDefaultAsync(
+                c => c.ProveedorId == proveedorId && c.LeadId == leadId,
+                cancellationToken);
+
+        if (existing != null)
+        {
+            return existing.Id;
+        }
+
+        var lead = await db.IndorProveedorLeads
+            .AsNoTracking()
+            .FirstOrDefaultAsync(l => l.Id == leadId && l.ProveedorId == proveedorId, cancellationToken);
+
+        if (lead == null)
+        {
+            return null;
+        }
+
+        var conversation = new IndorProveedorConversation
+        {
+            ProveedorId = proveedorId,
+            LeadId = lead.Id,
+            Category = ProviderConversationCategories.Lead,
+            Status = ProviderConversationStatuses.New,
+            LastMessagePreview = "No messages yet",
+            LastMessageAt = DateTime.UtcNow
+        };
+
+        db.IndorProveedorConversations.Add(conversation);
+        await db.SaveChangesAsync(cancellationToken);
+        return conversation.Id;
+    }
+
     public async Task<ProviderProConversationViewModel?> GetConversationAsync(
         IndorProveedor proveedor,
         int conversationId,

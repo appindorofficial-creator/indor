@@ -71,7 +71,7 @@
         </label>
     </div>
     @{
-        var scheduleLocal = Model.ScheduledSendUtc;
+        var scheduleLocal = Model.ScheduledSendUtc?.ToLocalTime();
         var scheduleDateValue = scheduleLocal?.ToString("yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture) ?? "";
         var scheduleTimeValue = scheduleLocal?.ToString("HH:mm", System.Globalization.CultureInfo.InvariantCulture) ?? "";
         var scheduleCombined = scheduleLocal?.ToString("yyyy-MM-ddTHH:mm", System.Globalization.CultureInfo.InvariantCulture) ?? "";
@@ -108,6 +108,8 @@
                id="scheduledSendUtc"
                value="@scheduleCombined"
                data-schedule-combined />
+        <input type="hidden" name="scheduledSendDate" id="scheduledSendDateHidden" value="@scheduleDateValue" data-schedule-date-hidden />
+        <input type="hidden" name="scheduledSendTime" id="scheduledSendTimeHidden" value="@scheduleTimeValue" data-schedule-time-hidden />
     </div>
 
     <h2 class="rl-invite-section-title">@L["Response preferences"]</h2>
@@ -158,6 +160,17 @@
     const scheduleDate = document.querySelector('[data-schedule-date]');
     const scheduleTime = document.querySelector('[data-schedule-time]');
     const scheduleCombined = document.querySelector('[data-schedule-combined]');
+    const scheduleDateHidden = document.querySelector('[data-schedule-date-hidden]');
+    const scheduleTimeHidden = document.querySelector('[data-schedule-time-hidden]');
+
+    function syncScheduledSend() {
+        if (!scheduleCombined) return;
+        const date = scheduleDate?.value?.trim() || '';
+        const time = scheduleTime?.value?.trim() || '';
+        scheduleCombined.value = date && time ? `${date}T${time}` : '';
+        if (scheduleDateHidden) scheduleDateHidden.value = date;
+        if (scheduleTimeHidden) scheduleTimeHidden.value = time;
+    }
 
     function defaultScheduleParts() {
         const when = new Date();
@@ -167,13 +180,6 @@
         const mm = String(when.getMonth() + 1).padStart(2, '0');
         const dd = String(when.getDate()).padStart(2, '0');
         return { date: `${yyyy}-${mm}-${dd}`, time: '09:00' };
-    }
-
-    function syncScheduledSend() {
-        if (!scheduleCombined) return;
-        const date = scheduleDate?.value?.trim() || '';
-        const time = scheduleTime?.value?.trim() || '';
-        scheduleCombined.value = date && time ? `${date}T${time}` : '';
     }
 
     function ensureScheduleDefaults() {
@@ -216,8 +222,17 @@
 
     setScheduleVisible(isSendLater());
 
-    document.getElementById('quoteReviewForm')?.addEventListener('submit', () => {
-        if (isSendLater()) syncScheduledSend();
+    document.getElementById('quoteReviewForm')?.addEventListener('submit', (event) => {
+        if (isSendLater()) {
+            syncScheduledSend();
+            const date = scheduleDate?.value?.trim() || '';
+            const time = scheduleTime?.value?.trim() || '';
+            if (!date || !time) {
+                event.preventDefault();
+                (scheduleDate && !date ? scheduleDate : scheduleTime)?.reportValidity?.();
+                return;
+            }
+        }
     });
 </script>
 }

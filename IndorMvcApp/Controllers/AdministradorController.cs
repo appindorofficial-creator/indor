@@ -2023,7 +2023,7 @@ public class AdministradorController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> Services(string? filter)
+    public async Task<IActionResult> Services(string? filter, string? q)
     {
         if (await EnsureRegisteredAsync() is { } redirect)
         {
@@ -2041,7 +2041,9 @@ public class AdministradorController(
         }
 
         ViewBag.NavActive = "services";
-        return View(await portal.GetServicesAsync(Url, filter));
+        var model = await portal.GetServicesAsync(Url, filter);
+        model.SearchQuery = string.IsNullOrWhiteSpace(q) ? null : q.Trim();
+        return View(model);
     }
 
     private static readonly HashSet<string> ServiceCategoryKeys = new(StringComparer.OrdinalIgnoreCase)

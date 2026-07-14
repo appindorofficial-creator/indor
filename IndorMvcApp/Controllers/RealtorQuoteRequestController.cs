@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Globalization;
 
 namespace IndorMvcApp.Controllers;
 
@@ -227,17 +228,21 @@ public class RealtorQuoteRequestController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Send(
         bool sendNow,
-        DateTime? scheduledSendUtc,
+        string? scheduledSendUtc,
+        string? scheduledSendDate,
+        string? scheduledSendTime,
         int responseDeadlineHours,
         bool allowProviderQuestions,
         bool allowFullProjectQuote,
         bool allowItemizedQuote,
         string? optionalMessage)
     {
+        var parsedScheduledSendUtc = ParseScheduledSendUtc(sendNow, scheduledSendUtc, scheduledSendDate, scheduledSendTime);
+
         try
         {
             var quoteId = await quoteRequest.SendAsync(
-                sendNow, scheduledSendUtc, responseDeadlineHours,
+                sendNow, parsedScheduledSendUtc, responseDeadlineHours,
                 allowProviderQuestions, allowFullProjectQuote, allowItemizedQuote, optionalMessage);
             return RedirectToAction(nameof(Success), new { id = quoteId });
         }
@@ -249,7 +254,7 @@ public class RealtorQuoteRequestController(
 
             var vm = await quoteRequest.BuildReviewAsync();
             vm.SendNow = sendNow;
-            vm.ScheduledSendUtc = scheduledSendUtc;
+            vm.ScheduledSendUtc = parsedScheduledSendUtc;
             vm.ResponseDeadlineHours = responseDeadlineHours;
             vm.AllowProviderQuestions = allowProviderQuestions;
             vm.AllowFullProjectQuote = allowFullProjectQuote;
@@ -257,6 +262,61 @@ public class RealtorQuoteRequestController(
             vm.OptionalMessage = optionalMessage ?? "";
             return View("Review", vm);
         }
+    }
+
+    private static DateTime? ParseScheduledSendUtc(
+        bool sendNow,
+        string? scheduledSendUtc,
+        string? scheduledSendDate,
+        string? scheduledSendTime)
+    {
+        if (sendNow)
+        {
+            return null;
+        }
+
+        var combined = scheduledSendUtc?.Trim();
+        if (string.IsNullOrWhiteSpace(combined))
+        {
+            var date = scheduledSendDate?.Trim();
+            var time = scheduledSendTime?.Trim();
+            if (!string.IsNullOrWhiteSpace(date) && !string.IsNullOrWhiteSpace(time))
+            {
+                combined = $"{date}T{time}";
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(combined))
+        {
+            return null;
+        }
+
+        if (DateTime.TryParseExact(
+                combined,
+                "yyyy-MM-ddTHH:mm",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeLocal,
+                out var localSchedule)
+            || DateTime.TryParseExact(
+                combined,
+                "yyyy-MM-ddTHH:mm:ss",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeLocal,
+                out localSchedule))
+        {
+            return localSchedule.ToUniversalTime();
+        }
+
+        if (DateTime.TryParse(
+                combined,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeLocal,
+                out localSchedule))
+        {
+            return localSchedule.ToUniversalTime();
+        }
+
+        return null;
     }
 
     [HttpGet]

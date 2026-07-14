@@ -65,14 +65,35 @@
         });
     }
 
-    document.querySelectorAll('.pa-portal-page form').forEach(bindEnglishFormValidation);
+    /** Hide/show without relying solely on the HTML [hidden] UA rule (author display:flex wins). */
+    function setPaHidden(el, hide) {
+        if (!el) {
+            return;
+        }
+        el.classList.toggle('pa-search-hidden', !!hide);
+        el.hidden = !!hide;
+        if (hide) {
+            el.setAttribute('aria-hidden', 'true');
+        } else {
+            el.removeAttribute('aria-hidden');
+        }
+    }
+
+    function haystackMatch(el, q) {
+        if (!q) {
+            return true;
+        }
+        var haystack = ((el.getAttribute('data-search') || '') + ' ' + (el.textContent || '')).toLowerCase();
+        return haystack.indexOf(q) !== -1;
+    }
 
     function wireServicesSearch() {
         var form = document.getElementById('paServicesSearchForm');
         var input = document.getElementById('paServicesSearch');
-        if (!form || !input) {
+        if (!form || !input || form.getAttribute('data-pa-search-wired') === '1') {
             return;
         }
+        form.setAttribute('data-pa-search-wired', '1');
 
         var empty = document.getElementById('paServicesSearchEmpty');
         var filterBtn = document.getElementById('paServicesFilterBtn');
@@ -85,29 +106,28 @@
             document.querySelectorAll('[data-pa-service-section]').forEach(function (section) {
                 var visibleInSection = 0;
                 section.querySelectorAll('.pa-service-grid-item').forEach(function (item) {
-                    var haystack = ((item.getAttribute('data-search') || '') + ' ' + (item.textContent || '')).toLowerCase();
-                    var show = !q || haystack.indexOf(q) !== -1;
-                    item.hidden = !show;
+                    var show = haystackMatch(item, q);
+                    setPaHidden(item, !show);
                     if (show) {
                         visibleInSection++;
                     }
                 });
-                section.hidden = visibleInSection === 0;
+                setPaHidden(section, visibleInSection === 0);
                 if (visibleInSection > 0) {
                     anyVisible = true;
                 }
             });
 
             document.querySelectorAll('[data-pa-search-hide]').forEach(function (el) {
-                el.hidden = !!q;
+                setPaHidden(el, !!q);
             });
 
-            if (empty) {
-                empty.hidden = !q || anyVisible;
-            }
+            setPaHidden(empty, !q || anyVisible);
         }
 
-        input.addEventListener('input', applyFilter);
+        ['input', 'keyup', 'search', 'change'].forEach(function (evt) {
+            input.addEventListener(evt, applyFilter);
+        });
         form.addEventListener('submit', function (event) {
             event.preventDefault();
             applyFilter();
@@ -120,19 +140,16 @@
             });
         }
 
-        if ((input.value || '').trim()) {
-            applyFilter();
-        }
+        applyFilter();
     }
-
-    wireServicesSearch();
 
     function wireNetworkSearch() {
         var form = document.getElementById('paNetworkSearchForm');
         var input = document.getElementById('paNetworkSearch');
-        if (!form || !input) {
+        if (!form || !input || form.getAttribute('data-pa-search-wired') === '1') {
             return;
         }
+        form.setAttribute('data-pa-search-wired', '1');
 
         var empty = document.getElementById('paNetworkSearchEmpty');
         var neighborhoods = document.getElementById('paNetworkNeighborhoods');
@@ -153,13 +170,12 @@
             document.querySelectorAll('[data-pa-network-item]').forEach(function (item) {
                 var kind = (item.getAttribute('data-pa-network-kind') || '').toLowerCase();
                 if (!kindAllowed(kind)) {
-                    item.hidden = true;
+                    setPaHidden(item, true);
                     return;
                 }
 
-                var haystack = ((item.getAttribute('data-search') || '') + ' ' + (item.textContent || '')).toLowerCase();
-                var show = !q || haystack.indexOf(q) !== -1;
-                item.hidden = !show;
+                var show = haystackMatch(item, q);
+                setPaHidden(item, !show);
                 if (show) {
                     anyVisible = true;
                     if (kind === 'listings') {
@@ -171,12 +187,12 @@
             document.querySelectorAll('[data-pa-network-block]').forEach(function (block) {
                 var kind = (block.getAttribute('data-pa-network-block') || '').toLowerCase();
                 if (!kindAllowed(kind)) {
-                    block.hidden = true;
+                    setPaHidden(block, true);
                     return;
                 }
 
                 if (kind === 'promotions') {
-                    block.hidden = !!q;
+                    setPaHidden(block, !!q);
                     if (!q) {
                         anyVisible = true;
                     }
@@ -186,24 +202,24 @@
                 if (kind === 'listings') {
                     // Show neighborhood matches while searching, or when Listings filter is active.
                     var showBlock = listingsVisible > 0 && (q || activeFilter === 'listings');
-                    block.hidden = !showBlock;
+                    setPaHidden(block, !showBlock);
                     return;
                 }
 
-                var visibleItems = block.querySelectorAll('[data-pa-network-item]:not([hidden])');
-                block.hidden = visibleItems.length === 0;
+                var visibleItems = block.querySelectorAll('[data-pa-network-item]:not([hidden]):not(.pa-search-hidden)');
+                setPaHidden(block, visibleItems.length === 0);
             });
 
             if (neighborhoods && kindAllowed('listings') && q && listingsVisible === 0) {
-                neighborhoods.hidden = true;
+                setPaHidden(neighborhoods, true);
             }
 
-            if (empty) {
-                empty.hidden = !q || anyVisible;
-            }
+            setPaHidden(empty, !q || anyVisible);
         }
 
-        input.addEventListener('input', applyFilter);
+        ['input', 'keyup', 'search', 'change'].forEach(function (evt) {
+            input.addEventListener(evt, applyFilter);
+        });
         form.addEventListener('submit', function () {
             // Allow GET navigation so ?q= stays in sync with chip links.
             applyFilter();
@@ -212,5 +228,13 @@
         applyFilter();
     }
 
+    // Wire search before validation binding so a form validation setup error cannot skip filtering.
+    wireServicesSearch();
     wireNetworkSearch();
+
+    try {
+        document.querySelectorAll('.pa-portal-page form').forEach(bindEnglishFormValidation);
+    } catch (err) {
+        // Non-fatal: English validation messages are progressive enhancement only.
+    }
 })();

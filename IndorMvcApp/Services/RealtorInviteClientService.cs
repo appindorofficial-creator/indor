@@ -438,6 +438,7 @@ public class RealtorInviteClientService(
         return new RealtorInviteReviewViewModel
         {
             DisplayStep = 4,
+            Title = "Invite Client",
             Subtitle = "Confirm the client details before sending.",
             FullName = draft.FullName,
             Email = draft.Email,

@@ -43,15 +43,17 @@
                     ? Url.Content("~" + (item.ImageUrl.StartsWith("/") ? item.ImageUrl : "/" + item.ImageUrl))
                     : null;
                 <a href="@item.Url" class="pa-eg-card @(isEmergency ? "pa-eg-card--emergency" : null)" role="listitem">
-                    <span class="pa-eg-card-media @item.ToneClass">
+                    <span class="pa-eg-card-media @item.ToneClass @(string.IsNullOrWhiteSpace(imgSrc) ? "is-fallback" : null)">
                         @if (!string.IsNullOrWhiteSpace(imgSrc))
                         {
-                            <img src="@imgSrc" alt="" loading="lazy" decoding="async" asp-append-version="true" />
+                            <img src="@imgSrc"
+                                 alt=""
+                                 loading="lazy"
+                                 decoding="async"
+                                 asp-append-version="true"
+                                 onerror="this.remove();this.parentElement.classList.add('is-fallback');" />
                         }
-                        else
-                        {
-                            <span class="pa-eg-card-fallback"><i class="fas @item.IconClass"></i></span>
-                        }
+                        <span class="pa-eg-card-fallback" aria-hidden="true"><i class="fas @item.IconClass"></i></span>
                         <span class="pa-eg-card-icon" aria-hidden="true"><i class="fas @item.IconClass"></i></span>
                     </span>
                     <span class="pa-eg-card-label">@UiDisplayLocalization.Localize(L, item.ServiceName)</span>

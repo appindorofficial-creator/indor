@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Globalization;
+using IndorMvcApp.Data;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -21,9 +23,24 @@ public static class PropertyAdministratorFlowServiceSupport
             return false;
         }
 
-        // When Propiedad is loaded, honor its soft-delete flag as well.
-        return property.Propiedad == null || property.Propiedad.Activo;
+        if (property.PropiedadId is > 0)
+        {
+            return property.Propiedad?.Activo != false;
+        }
+
+        return true;
     }
+
+    public static IQueryable<IndorPropertyAdminPortfolioProperty> WhereActivePortfolioProperties(
+        this IQueryable<IndorPropertyAdminPortfolioProperty> query,
+        AppDbContext db) =>
+        query
+            .Where(p => p.Status != PropertyAdministratorPortfolioPropertyStatuses.Removed
+                && p.Status != "Deleted"
+                && p.Status != "Inactive"
+                && p.Status != "Eliminado")
+            .Where(p => p.PropiedadId == null
+                || db.Propiedades.Any(x => x.Id == p.PropiedadId && x.Activo));
 
     public static IReadOnlyList<IndorPropertyAdminPortfolioProperty> ActivePortfolioProperties(
         IEnumerable<IndorPropertyAdminPortfolioProperty> properties) =>

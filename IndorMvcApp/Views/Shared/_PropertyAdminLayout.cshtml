@@ -38,6 +38,7 @@
     <script src="~/js/property-admin-portal.js" asp-append-version="true"></script>
     <script src="~/js/property-admin-notifications.js" asp-append-version="true"></script>
 
+    @* Page scripts run after shared portal JS so they can failsafe-wire search if needed. *@
     @RenderSection("Scripts", required: false)
 
 </body>

@@ -116,6 +116,6 @@
             <button type="submit" class="prv-pro-btn prv-pro-btn--success prv-pro-job-action-btn">
                 <i class="fas fa-circle-check"></i> @L["Complete Job"]</button>
         </form>
-        <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-message"></i> @L["Message Homeowner"]</button>
+        <a asp-controller="Proveedor" asp-action="MessageJob" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-message"></i> @L["Message Homeowner"]</a>
     </footer>
 </div>

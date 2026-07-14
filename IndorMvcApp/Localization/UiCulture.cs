@@ -40,7 +40,8 @@ public static class UiCulture
 
         if (trimmed.Equals("es", StringComparison.OrdinalIgnoreCase)
             || trimmed.Equals("es-us", StringComparison.OrdinalIgnoreCase)
-            || trimmed.Equals("es-mx", StringComparison.OrdinalIgnoreCase))
+            || trimmed.Equals("es-mx", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("es-es", StringComparison.OrdinalIgnoreCase))
         {
             return Spanish;
         }

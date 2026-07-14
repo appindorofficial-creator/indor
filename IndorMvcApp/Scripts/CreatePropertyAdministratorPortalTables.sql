@@ -111,16 +111,16 @@ BEGIN
     (N'outdoor', N'Outdoor & Exterior', 3, N'Pest Control', N'pest-control', N'fa-bug', N'tone-green', N'PestControl', N'PestControlService', 4),
     (N'outdoor', N'Outdoor & Exterior', 3, N'Pool / Hot Tub Service', N'pool-hot-tub', N'fa-water-ladder', N'tone-green', NULL, NULL, 5),
     (N'moving', N'Moving & Logistics', 4, N'Moving Help', N'moving-help', N'fa-truck', N'tone-blue', N'Moving', N'MovingService', 1),
-    (N'emergency', N'Emergency Services', 5, N'Emergency AC', N'emergency-ac', N'fa-snowflake', N'tone-red', N'Administrador', N'EmergencyAcDetails', 1),
-    (N'emergency', N'Emergency Services', 5, N'Emergency Plumbing', N'emergency-plumbing', N'fa-droplet', N'tone-red', N'Administrador', N'EmergencyPlumbingDetails', 2),
-    (N'emergency', N'Emergency Services', 5, N'Emergency Electrical', N'emergency-electrical', N'fa-bolt', N'tone-red', N'Administrador', N'EmergencyElectricalDetails', 3),
-    (N'emergency', N'Emergency Services', 5, N'Emergency Flood', N'emergency-flood', N'fa-water', N'tone-red', N'Administrador', N'EmergencyFloodDetails', 4),
-    (N'emergency', N'Emergency Services', 5, N'Emergency Roof Leak', N'emergency-roof-leak', N'fa-house-chimney-crack', N'tone-red', N'Administrador', N'EmergencyRoofLeakDetails', 5),
-    (N'emergency', N'Emergency Services', 5, N'Tree / Branch Emergency', N'emergency-tree-branch', N'fa-tree', N'tone-red', N'Administrador', N'EmergencyTreeBranchDetails', 6),
-    (N'emergency', N'Emergency Services', 5, N'Lockout / Access', N'lockout-access', N'fa-key', N'tone-red', N'Administrador', N'LockoutAccessDetails', 7),
-    (N'emergency', N'Emergency Services', 5, N'Broken Window / Board-Up', N'broken-window-board-up', N'fa-window-maximize', N'tone-red', N'Administrador', N'BrokenWindowDetails', 8),
-    (N'emergency', N'Emergency Services', 5, N'Sewer Backup', N'sewer-backup', N'fa-toilet', N'tone-red', N'Administrador', N'SewerBackupDetails', 9),
-    (N'emergency', N'Emergency Services', 5, N'Water Heater Emergency', N'emergency-water-heater', N'fa-fire-flame-simple', N'tone-red', N'Administrador', N'WaterHeaterDetails', 10);
+    (N'emergency', N'Emergency Services', 99, N'Emergency AC', N'emergency-ac', N'fa-snowflake', N'tone-red', N'Administrador', N'EmergencyAcDetails', 1),
+    (N'emergency', N'Emergency Services', 99, N'Emergency Plumbing', N'emergency-plumbing', N'fa-droplet', N'tone-red', N'Administrador', N'EmergencyPlumbingDetails', 2),
+    (N'emergency', N'Emergency Services', 99, N'Emergency Electrical', N'emergency-electrical', N'fa-bolt', N'tone-red', N'Administrador', N'EmergencyElectricalDetails', 3),
+    (N'emergency', N'Emergency Services', 99, N'Emergency Flood', N'emergency-flood', N'fa-water', N'tone-red', N'Administrador', N'EmergencyFloodDetails', 4),
+    (N'emergency', N'Emergency Services', 99, N'Emergency Roof Leak', N'emergency-roof-leak', N'fa-house-chimney-crack', N'tone-red', N'Administrador', N'EmergencyRoofLeakDetails', 5),
+    (N'emergency', N'Emergency Services', 99, N'Tree / Branch Emergency', N'emergency-tree-branch', N'fa-tree', N'tone-red', N'Administrador', N'EmergencyTreeBranchDetails', 6),
+    (N'emergency', N'Emergency Services', 99, N'Lockout / Access', N'lockout-access', N'fa-key', N'tone-red', N'Administrador', N'LockoutAccessDetails', 7),
+    (N'emergency', N'Emergency Services', 99, N'Broken Window / Board-Up', N'broken-window-board-up', N'fa-window-maximize', N'tone-red', N'Administrador', N'BrokenWindowDetails', 8),
+    (N'emergency', N'Emergency Services', 99, N'Sewer Backup', N'sewer-backup', N'fa-toilet', N'tone-red', N'Administrador', N'SewerBackupDetails', 9),
+    (N'emergency', N'Emergency Services', 99, N'Water Heater Emergency', N'emergency-water-heater', N'fa-fire-flame-simple', N'tone-red', N'Administrador', N'WaterHeaterDetails', 10);
     PRINT 'Service catalog seeded.';
 END
 GO
@@ -128,16 +128,16 @@ GO
 -- Ensure full Emergency Services catalog even when an older partial seed already ran
 MERGE dbo.IndorPropertyAdminServiceCatalog AS t
 USING (VALUES
-    (N'emergency', N'Emergency Services', 5, N'Emergency AC', N'emergency-ac', N'fa-snowflake', N'tone-red', N'Administrador', N'EmergencyAcDetails', 1),
-    (N'emergency', N'Emergency Services', 5, N'Emergency Plumbing', N'emergency-plumbing', N'fa-droplet', N'tone-red', N'Administrador', N'EmergencyPlumbingDetails', 2),
-    (N'emergency', N'Emergency Services', 5, N'Emergency Electrical', N'emergency-electrical', N'fa-bolt', N'tone-red', N'Administrador', N'EmergencyElectricalDetails', 3),
-    (N'emergency', N'Emergency Services', 5, N'Emergency Flood', N'emergency-flood', N'fa-water', N'tone-red', N'Administrador', N'EmergencyFloodDetails', 4),
-    (N'emergency', N'Emergency Services', 5, N'Emergency Roof Leak', N'emergency-roof-leak', N'fa-house-chimney-crack', N'tone-red', N'Administrador', N'EmergencyRoofLeakDetails', 5),
-    (N'emergency', N'Emergency Services', 5, N'Tree / Branch Emergency', N'emergency-tree-branch', N'fa-tree', N'tone-red', N'Administrador', N'EmergencyTreeBranchDetails', 6),
-    (N'emergency', N'Emergency Services', 5, N'Lockout / Access', N'lockout-access', N'fa-key', N'tone-red', N'Administrador', N'LockoutAccessDetails', 7),
-    (N'emergency', N'Emergency Services', 5, N'Broken Window / Board-Up', N'broken-window-board-up', N'fa-window-maximize', N'tone-red', N'Administrador', N'BrokenWindowDetails', 8),
-    (N'emergency', N'Emergency Services', 5, N'Sewer Backup', N'sewer-backup', N'fa-toilet', N'tone-red', N'Administrador', N'SewerBackupDetails', 9),
-    (N'emergency', N'Emergency Services', 5, N'Water Heater Emergency', N'emergency-water-heater', N'fa-fire-flame-simple', N'tone-red', N'Administrador', N'WaterHeaterDetails', 10)
+    (N'emergency', N'Emergency Services', 99, N'Emergency AC', N'emergency-ac', N'fa-snowflake', N'tone-red', N'Administrador', N'EmergencyAcDetails', 1),
+    (N'emergency', N'Emergency Services', 99, N'Emergency Plumbing', N'emergency-plumbing', N'fa-droplet', N'tone-red', N'Administrador', N'EmergencyPlumbingDetails', 2),
+    (N'emergency', N'Emergency Services', 99, N'Emergency Electrical', N'emergency-electrical', N'fa-bolt', N'tone-red', N'Administrador', N'EmergencyElectricalDetails', 3),
+    (N'emergency', N'Emergency Services', 99, N'Emergency Flood', N'emergency-flood', N'fa-water', N'tone-red', N'Administrador', N'EmergencyFloodDetails', 4),
+    (N'emergency', N'Emergency Services', 99, N'Emergency Roof Leak', N'emergency-roof-leak', N'fa-house-chimney-crack', N'tone-red', N'Administrador', N'EmergencyRoofLeakDetails', 5),
+    (N'emergency', N'Emergency Services', 99, N'Tree / Branch Emergency', N'emergency-tree-branch', N'fa-tree', N'tone-red', N'Administrador', N'EmergencyTreeBranchDetails', 6),
+    (N'emergency', N'Emergency Services', 99, N'Lockout / Access', N'lockout-access', N'fa-key', N'tone-red', N'Administrador', N'LockoutAccessDetails', 7),
+    (N'emergency', N'Emergency Services', 99, N'Broken Window / Board-Up', N'broken-window-board-up', N'fa-window-maximize', N'tone-red', N'Administrador', N'BrokenWindowDetails', 8),
+    (N'emergency', N'Emergency Services', 99, N'Sewer Backup', N'sewer-backup', N'fa-toilet', N'tone-red', N'Administrador', N'SewerBackupDetails', 9),
+    (N'emergency', N'Emergency Services', 99, N'Water Heater Emergency', N'emergency-water-heater', N'fa-fire-flame-simple', N'tone-red', N'Administrador', N'WaterHeaterDetails', 10)
 ) AS s (CategoryKey, CategoryTitle, CategoryOrder, ServiceName, ServiceSlug, IconClass, ToneClass, LinkController, LinkAction, Orden)
 ON t.ServiceSlug = s.ServiceSlug
 WHEN MATCHED THEN
@@ -187,7 +187,7 @@ SET CategoryOrder = 4
 WHERE CategoryKey = N'moving';
 
 UPDATE dbo.IndorPropertyAdminServiceCatalog
-SET CategoryOrder = 5
+SET CategoryOrder = 99
 WHERE CategoryKey = N'emergency';
 
 UPDATE dbo.IndorPropertyAdminServiceCatalog
