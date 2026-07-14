@@ -12,12 +12,19 @@
     };
 }
 
-<div class="pa-portal-shell pa-portal-shell--tasks">
+<div class="pa-portal-shell">
     @await Html.PartialAsync("_PropertyAdminTopbar", Model)
 
     <section class="pa-hero-block">
-        <h1>@L["Service requests"]</h1>
-        <p>@L["Track all home service activity in one place."]</p>
+        <div class="pa-hero-block-head">
+            <div>
+                <h1>@L["Service requests"]</h1>
+                <p>@L["Track all home service activity in one place."]</p>
+            </div>
+            <a asp-controller="Administrador" asp-action="Services" class="pa-hero-create-btn">
+                <i class="fas fa-plus"></i> @L["Create request"]
+            </a>
+        </div>
     </section>
 
     @await Html.PartialAsync("_PropertyAdminPortfolioCard", Model)
@@ -63,8 +70,4 @@
             }
         }
     </section>
-
-    <a asp-controller="Administrador" asp-action="Services" class="pa-fab">
-        <i class="fas fa-plus"></i> @L["Create request"]
-    </a>
 </div>
