@@ -1341,7 +1341,6 @@ public static class UiTranslationsFinal
             ["Emergency Help Nearby"] = "Ayuda de emergencia cerca",
             ["NEW LEAD"] = "NUEVO PROSPECTO",
             ["HOME FOR SALE"] = "CASA EN VENTA",
-            ["EMERGENCY"] = "EMERGENCIA",
             ["Suggested from city and state. Change it if your office uses a different ZIP."] =
                 "Sugerido según ciudad y estado. Cámbialo si tu oficina usa un código postal diferente.",
             ["Upload license and ID to unlock the Verified Realtor badge."] =
@@ -1410,5 +1409,81 @@ public static class UiTranslationsFinal
             ["Please select a property or create a new one."] =
                 "Selecciona una propiedad o crea una nueva.",
             ["Select a valid US state."] = "Selecciona un estado válido de EE. UU.",
+
+            // Nuevo expediente / Urgent quote / Inspection upload wizards
+            ["Details"] = "Detalles",
+            ["Add Items"] = "Agregar elementos",
+            ["Create"] = "Crear",
+            ["Photos"] = "Fotos",
+            ["Send"] = "Enviar",
+            ["Analyze"] = "Analizar",
+            ["Findings"] = "Hallazgos",
+            ["Providers"] = "Proveedores",
+            ["Urgent Quote"] = "Cotización urgente",
+            ["Urgente Quote"] = "Cotización urgente",
+            ["Search and select a property from your account, then choose a file type."] =
+                "Busca y selecciona una propiedad de tu cuenta y luego elige un tipo de expediente.",
+            ["Choose the items you want to add to this file"] =
+                "Elige los elementos que quieres agregar a este expediente",
+            ["Add File Content"] = "Agregar contenido del expediente",
+            ["Upload and organize the items for this property file"] =
+                "Sube y organiza los elementos de este expediente de propiedad",
+            ["Confirm the file details before creating it"] =
+                "Confirma los datos del expediente antes de crearlo",
+            ["No property found for \"{0}\"."] = "No se encontró una propiedad para \"{0}\".",
+            ["For urgent closing needs, fill only the essentials: property, issue, urgency, and photos."] =
+                "Para cierres urgentes, completa solo lo esencial: propiedad, problema, urgencia y fotos.",
+            ["Describe the Issue"] = "Describe el problema",
+            ["Choose the type of problem and the response speed needed."] =
+                "Elige el tipo de problema y la velocidad de respuesta necesaria.",
+            ["Add Photos"] = "Agregar fotos",
+            ["Add 1–3 photos if you have them. You can also skip this step for urgent requests."] =
+                "Agrega 1–3 fotos si las tienes. También puedes omitir este paso en solicitudes urgentes.",
+            ["Review the essentials and send the request."] =
+                "Revisa lo esencial y envía la solicitud.",
+            ["Choose the property and upload the inspection report to start AI analysis."] =
+                "Elige la propiedad y sube el informe de inspección para iniciar el análisis con IA.",
+            ["AI Inspection Findings"] = "Hallazgos de inspección con IA",
+            ["Recommended Providers"] = "Proveedores recomendados",
+            ["INDOR groups findings by trade and recommends trusted providers for each."] =
+                "INDOR agrupa los hallazgos por oficio y recomienda proveedores de confianza para cada uno.",
+            ["Review & Create Requests"] = "Revisar y crear solicitudes",
+            ["Review which findings will be sent and how INDOR will create separate quote requests by trade."] =
+                "Revisa qué hallazgos se enviarán y cómo INDOR creará solicitudes de cotización separadas por oficio.",
+            ["Create property file progress"] = "Progreso de creación de expediente",
+            ["Inspection upload progress"] = "Progreso de carga de inspección",
+            ["Urgent quote progress"] = "Progreso de cotización urgente",
+            ["What will be created"] = "Qué se creará",
+            ["One organized property file"] = "Un expediente de propiedad organizado",
+            ["Easy to update later"] = "Fácil de actualizar después",
+            ["Ready to share with clients or team members"] = "Listo para compartir con clientes o el equipo",
+            ["Create file now and continue adding items later"] =
+                "Crear el expediente ahora y seguir agregando elementos después",
+            ["You can open the file after creation to upload more photos, inspection reports, warranties, repair items, quotes, and notes."] =
+                "Puedes abrir el expediente después de crearlo para subir más fotos, informes, garantías, reparaciones, cotizaciones y notas.",
+            ["Create File"] = "Crear expediente",
+            ["Select what to add"] = "Selecciona qué agregar",
+            ["You can add these now and add more later from inside the file."] =
+                "Puedes agregar estos ahora y más después desde el expediente.",
+            ["Search existing properties by address"] = "Buscar propiedades existentes por dirección",
+            ["No properties in your account yet."] = "Aún no hay propiedades en tu cuenta.",
+            ["Add a property first, then return here to create a file for it."] =
+                "Agrega una propiedad primero y luego vuelve aquí para crear un expediente.",
+            ["This step links a file to a property already in your account. Add the property first, then search again here."] =
+                "Este paso vincula un expediente a una propiedad ya en tu cuenta. Agrega la propiedad primero y luego busca aquí de nuevo.",
+            ["What this file can include"] = "Qué puede incluir este expediente",
+            ["Create one organized property file so clients, reports, quotes, and documents stay connected in one place."] =
+                "Crea un expediente organizado para que clientes, informes, cotizaciones y documentos queden conectados en un solo lugar.",
+            ["Your file is ready and can now be updated or shared."] =
+                "Tu expediente está listo y ya se puede actualizar o compartir.",
+            ["Add More Items"] = "Agregar más elementos",
+            ["Share with Client"] = "Compartir con el cliente",
+            ["Saved under Active Files"] = "Guardado en expedientes activos",
+            ["Added now:"] = "Agregado ahora:",
+            ["All uploaded items will stay organized inside this property file and can be shared later."] =
+                "Todos los elementos subidos permanecerán organizados en este expediente y podrán compartirse después.",
+            ["Add Warranty"] = "Agregar garantía",
+            ["Warranty name (e.g. HVAC Warranty)"] = "Nombre de la garantía (ej. Garantía HVAC)",
+            ["Add a note..."] = "Agregar una nota...",
         };
 }

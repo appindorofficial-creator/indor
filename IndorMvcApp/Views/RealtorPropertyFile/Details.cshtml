@@ -42,7 +42,7 @@
         if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
         {
             <div class="rl-prop-file-empty">
-                <p><strong>No property found for &ldquo;@Model.SearchQuery&rdquo;.</strong></p>
+                <p><strong>@L.T("No property found for \"{0}\".", Model.SearchQuery)</strong></p>
                 <p class="rl-prop-file-empty-hint">@L["This step links a file to a property already in your account. Add the property first, then search again here."]</p>
                 <a asp-controller="RealtorInviteClient" asp-action="CreateProperty" class="rl-btn-outline rl-btn-outline--sm">@L["Add property"]</a>
             </div>
