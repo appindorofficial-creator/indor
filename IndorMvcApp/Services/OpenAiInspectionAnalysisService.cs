@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -48,7 +49,9 @@ public class OpenAiInspectionAnalysisService(
 
         string reportFilePath,
 
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+
+        bool useSpanish = false)
 
     {
 
@@ -118,7 +121,7 @@ public class OpenAiInspectionAnalysisService(
 
                     propertyAddress);
 
-                return await AnalyzeInChunksAsync(propertyAddress, pages, pageCount, cancellationToken);
+                return await AnalyzeInChunksAsync(propertyAddress, pages, pageCount, cancellationToken, useSpanish);
 
             }
 
@@ -128,7 +131,7 @@ public class OpenAiInspectionAnalysisService(
 
             var userPrompt = InspectionAnalysisPrompt.BuildUserPrompt(propertyAddress, text, pageCount);
 
-            return await AnalyzeSinglePromptAsync(propertyAddress, userPrompt, pageCount, cancellationToken);
+            return await AnalyzeSinglePromptAsync(propertyAddress, userPrompt, pageCount, cancellationToken, useSpanish);
 
         }
 
@@ -168,13 +171,15 @@ public class OpenAiInspectionAnalysisService(
 
         int pageCount,
 
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+
+        bool useSpanish)
 
     {
 
         var (json, apiError) = await CallChatJsonAsync(
 
-            InspectionAnalysisPrompt.SystemMessage, userPrompt, cancellationToken);
+            InspectionAnalysisPrompt.BuildSystemMessage(useSpanish), userPrompt, cancellationToken);
 
         if (string.IsNullOrWhiteSpace(json))
 
@@ -206,7 +211,9 @@ public class OpenAiInspectionAnalysisService(
 
         int pageCount,
 
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken,
+
+        bool useSpanish)
 
     {
 
@@ -272,7 +279,7 @@ public class OpenAiInspectionAnalysisService(
 
                 var (json, apiError) = await CallChatJsonAsync(
 
-                    InspectionAnalysisPrompt.SystemMessage, userPrompt, cancellationToken);
+                    InspectionAnalysisPrompt.BuildSystemMessage(useSpanish), userPrompt, cancellationToken);
 
 
 

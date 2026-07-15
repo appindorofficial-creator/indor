@@ -54,6 +54,17 @@ public static class InspectionAnalysisPrompt
         - sourceExcerpt must be copied or closely paraphrased from the report; if you cannot find supporting text, omit that finding
         """;
 
+    public static string BuildSystemMessage(bool useSpanish) =>
+        useSpanish
+            ? SystemMessage + """
+
+        Language:
+        - Write summary, title, and description in Spanish (es-US).
+        - Keep priority and trade enum values exactly in English as specified in the schema.
+        - sourceExcerpt and sourceSection may remain in the report's original language.
+        """
+            : SystemMessage;
+
     public static string BuildUserPrompt(string propertyAddress, string reportText, int pageCount) =>
         $"""
         Property address: {propertyAddress}

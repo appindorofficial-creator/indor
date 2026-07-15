@@ -30,7 +30,7 @@ else if (!string.IsNullOrWhiteSpace(Model.ReportFileName))
         </div>
         @if (!string.IsNullOrWhiteSpace(Model.AnalysisSummary))
         {
-            <p class="rl-insp-findings-summary">@Model.AnalysisSummary</p>
+            <p class="rl-insp-findings-summary">@UiDisplayLocalization.Localize(L, Model.AnalysisSummary)</p>
         }
         <div class="rl-insp-findings-meta">
             <div class="rl-insp-findings-meta-item">
@@ -41,12 +41,12 @@ else if (!string.IsNullOrWhiteSpace(Model.ReportFileName))
             <div class="rl-insp-findings-meta-item">
                 <i class="fas fa-user-tie"></i>
                 <small>@L["Inspector"]</small>
-                <strong>@Model.InspectorLabel</strong>
+                <strong>@L.Catalog(Model.InspectorLabel)</strong>
             </div>
             <div class="rl-insp-findings-meta-item">
                 <i class="fas fa-wand-magic-sparkles"></i>
                 <small>@L["Analyzed"]</small>
-                <strong>@Model.AnalyzedLabel</strong>
+                <strong>@L.Catalog(Model.AnalyzedLabel)</strong>
             </div>
         </div>
     </div>
@@ -77,7 +77,7 @@ else if (!string.IsNullOrWhiteSpace(Model.ReportFileName))
         {
             <a asp-action="Priorities" asp-route-filter="@chip" asp-route-sort="@Model.SortBy"
                class="rl-filter-chip rl-filter-chip--@chip.ToLowerInvariant() @(Model.ActiveFilter == chip ? "is-active" : null)">
-                @chip
+                @L[chip]
                 @if (chip == "Urgent" && Model.UrgentCount > 0) { <text> (@Model.UrgentCount)</text> }
                 @if (chip == "High" && Model.HighCount > 0) { <text> (@Model.HighCount)</text> }
                 @if (chip == "Moderate" && Model.ModerateCount > 0) { <text> (@Model.ModerateCount)</text> }
@@ -104,10 +104,10 @@ else
         @Html.AntiForgeryToken()
 
         <div class="rl-insp-select-bar">
-            <span id="inspSelectedCount">@Model.TotalFindings issue@(Model.TotalFindings == 1 ? "" : "s") found</span>
+            <span id="inspSelectedCount">@L.T("{0} issues found — tap to select", Model.TotalFindings)</span>
             <div class="rl-insp-select-actions">
                 <button type="button" class="rl-insp-link-btn" id="inspSelectAll">@L["Select all"]</button>
-                <button type="button" class="rl-insp-link-btn" id="inspClearAll">@L["Clear"]</button>
+                <button type="button" class="rl-insp-link-btn" id="inspClearAll">@L["Clear selection"]</button>
             </div>
         </div>
 
@@ -128,7 +128,7 @@ else
                                 {
                                     <span class="rl-insp-section-index" title="Report index">@finding.SourceSectionNumber</span>
                                 }
-                                <span class="rl-priority-tag rl-priority-tag--@finding.PriorityCss">@finding.Priority.ToUpperInvariant()</span>
+                                <span class="rl-priority-tag rl-priority-tag--@finding.PriorityCss">@L[finding.Priority]</span>
                                 <span class="rl-insp-ai-score"><i class="fas fa-check"></i> @finding.AiScore</span>
                             </div>
                         </div>
@@ -258,13 +258,22 @@ else
         const countEl = document.getElementById('inspSelectedCount');
         const sendBtn = document.getElementById('inspSendProvidersBtn');
         const totalIssues = @Model.TotalFindings;
+        const msgTapToSelect = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L.T("{0} issues found — tap to select", Model.TotalFindings)));
+        const msgSelectedTpl = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["{0} of {1} selected"]));
+        const msgSelectOne = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select at least one issue"]));
+        const msgSendTpl = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Send to providers ({0})"]));
+        const msgPreparing = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Preparing providers..."]));
+
+        function formatTpl(template, ...args) {
+            return String(template).replace(/\{(\d+)\}/g, function (_, i) { return args[i] ?? ''; });
+        }
 
         function updateUi() {
             const selected = Array.from(checkboxes).filter(c => c.checked).length;
             if (countEl) {
                 countEl.textContent = selected === 0
-                    ? totalIssues + ' issue' + (totalIssues === 1 ? '' : 's') + ' found — tap to select'
-                    : selected + ' of ' + totalIssues + ' selected';
+                    ? msgTapToSelect
+                    : formatTpl(msgSelectedTpl, selected, totalIssues);
             }
             checkboxes.forEach(cb => {
                 cb.closest('.rl-insp-finding-card')?.classList.toggle('is-selected', cb.checked);
@@ -272,8 +281,8 @@ else
             if (sendBtn) {
                 sendBtn.disabled = selected === 0;
                 sendBtn.innerHTML = selected === 0
-                    ? '<i class="fas fa-paper-plane"></i> Select at least one issue'
-                    : '<i class="fas fa-paper-plane"></i> Send to providers (' + selected + ')';
+                    ? '<i class="fas fa-paper-plane"></i> ' + msgSelectOne
+                    : '<i class="fas fa-paper-plane"></i> ' + formatTpl(msgSendTpl, selected);
             }
         }
 
@@ -297,7 +306,7 @@ else
             }
             if (sendBtn) {
                 sendBtn.disabled = true;
-                sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing providers...';
+                sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + msgPreparing;
             }
         });
 

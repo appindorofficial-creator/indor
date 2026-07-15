@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
@@ -444,7 +445,7 @@ public class RealtorInspectionUploadWizardService(
         draft.FechaActualizacion = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);
 
-        StartAnalysisWorker(draft.Id);
+        StartAnalysisWorker(draft.Id, localizer.IsSpanish);
     }
 
     public async Task RetryAnalysisAsync(CancellationToken cancellationToken = default)
@@ -493,10 +494,10 @@ public class RealtorInspectionUploadWizardService(
         draft.FechaActualizacion = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);
 
-        StartAnalysisWorker(draft.Id);
+        StartAnalysisWorker(draft.Id, localizer.IsSpanish);
     }
 
-    private void StartAnalysisWorker(int draftId)
+    private void StartAnalysisWorker(int draftId, bool useSpanish)
     {
         _ = Task.Run(async () =>
         {
@@ -508,7 +509,7 @@ public class RealtorInspectionUploadWizardService(
                 var scopedBridge = scope.ServiceProvider.GetRequiredService<IRealtorProviderBridgeService>();
                 var scopedEnv = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
                 await ExecuteAnalysisInBackgroundAsync(
-                    draftId, scopedDb, scopedAnalysis, scopedBridge, scopedEnv);
+                    draftId, scopedDb, scopedAnalysis, scopedBridge, scopedEnv, useSpanish);
             }
             finally
             {
@@ -522,7 +523,8 @@ public class RealtorInspectionUploadWizardService(
         AppDbContext scopedDb,
         IOpenAiInspectionAnalysisService scopedAnalysis,
         IRealtorProviderBridgeService scopedBridge,
-        IWebHostEnvironment scopedEnv)
+        IWebHostEnvironment scopedEnv,
+        bool useSpanish)
     {
         var draft = await scopedDb.IndorRealtorInspectionUploadDrafts
             .FirstOrDefaultAsync(d => d.Id == draftId);
@@ -537,7 +539,7 @@ public class RealtorInspectionUploadWizardService(
 
         var reportPath = ResolveReportFullPath(scopedEnv, draft.ReportFileUrl);
         var address = FormatDisplayAddress(draft.Address ?? "", draft.CityRegion);
-        var result = await scopedAnalysis.AnalyzeReportAsync(address, reportPath, CancellationToken.None);
+        var result = await scopedAnalysis.AnalyzeReportAsync(address, reportPath, CancellationToken.None, useSpanish);
 
         draft = await scopedDb.IndorRealtorInspectionUploadDrafts.FirstAsync(d => d.Id == draftId);
         if (draft.CurrentStep < 2 || string.IsNullOrWhiteSpace(draft.ReportFileUrl))
@@ -673,7 +675,7 @@ public class RealtorInspectionUploadWizardService(
             ReportFileName = draft.ReportFileName ?? "Inspection Report",
             ReportPdfUrl = draft.ReportFileUrl,
             AnalysisSummary = draft.AnalysisSummary,
-            ReportDateLabel = draft.FechaCreacion.ToLocalTime().ToString("MMM d, yyyy"),
+            ReportDateLabel = FormatReportDateLabel(draft.FechaCreacion),
             InspectorLabel = FormatInspectorLabel(draft.ReportFileName),
             AnalyzedLabel = FormatAnalyzedLabel(draft.FechaActualizacion ?? draft.FechaCreacion),
             TotalFindings = all.Count,
@@ -1417,11 +1419,19 @@ public class RealtorInspectionUploadWizardService(
         return parts.Count == 0 ? null : string.Join(" · ", parts);
     }
 
+    private static string FormatReportDateLabel(DateTime timestampUtc)
+    {
+        var local = timestampUtc.ToLocalTime();
+        var culture = CultureInfo.CurrentUICulture;
+        var pattern = culture.TwoLetterISOLanguageName == "es" ? "d MMM yyyy" : "MMM d, yyyy";
+        return local.ToString(pattern, culture);
+    }
+
     private static string FormatInspectorLabel(string? fileName)
     {
         if (string.IsNullOrWhiteSpace(fileName))
         {
-            return "Residential Home Inspection";
+            return "Not specified";
         }
 
         var name = Path.GetFileNameWithoutExtension(fileName)
@@ -1429,18 +1439,52 @@ public class RealtorInspectionUploadWizardService(
             .Replace('-', ' ')
             .Trim();
 
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return "Not specified";
+        }
+
         if (name.Contains("Residential Home Inspection", StringComparison.OrdinalIgnoreCase))
         {
             return "Residential Home Inspection";
         }
 
-        return TruncateText(name, 60) ?? "Residential Home Inspection";
+        // Filenames are often the property address — do not show that as the inspector.
+        if (LooksLikeAddressLabel(name))
+        {
+            return "Not specified";
+        }
+
+        return TruncateText(name, 60) ?? "Not specified";
+    }
+
+    private static bool LooksLikeAddressLabel(string value)
+    {
+        if (Regex.IsMatch(value, @"\d"))
+        {
+            return true;
+        }
+
+        return value.Contains(" St", StringComparison.OrdinalIgnoreCase)
+            || value.Contains(" Street", StringComparison.OrdinalIgnoreCase)
+            || value.Contains(" Ave", StringComparison.OrdinalIgnoreCase)
+            || value.Contains(" Rd", StringComparison.OrdinalIgnoreCase)
+            || value.Contains(" Dr", StringComparison.OrdinalIgnoreCase)
+            || value.Contains(" Ln", StringComparison.OrdinalIgnoreCase)
+            || value.Contains(" Blvd", StringComparison.OrdinalIgnoreCase);
     }
 
     private static string FormatAnalyzedLabel(DateTime timestampUtc)
     {
         var local = timestampUtc.ToLocalTime();
-        return local.Date == DateTime.Today ? "Today" : local.ToString("MMM d, yyyy");
+        if (local.Date == DateTime.Today)
+        {
+            return "Today";
+        }
+
+        var culture = CultureInfo.CurrentUICulture;
+        var pattern = culture.TwoLetterISOLanguageName == "es" ? "d MMM yyyy" : "MMM d, yyyy";
+        return local.ToString(pattern, culture);
     }
 
     private static string? FormatSourceLineItem(string? description, string title)

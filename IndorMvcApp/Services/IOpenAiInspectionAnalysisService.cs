@@ -27,5 +27,6 @@ public interface IOpenAiInspectionAnalysisService
     Task<InspectionAnalysisResult> AnalyzeReportAsync(
         string propertyAddress,
         string reportFilePath,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default,
+        bool useSpanish = false);
 }

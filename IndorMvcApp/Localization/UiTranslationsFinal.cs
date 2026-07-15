@@ -2582,5 +2582,26 @@ public static class UiTranslationsFinal
             ["Closet"] = "Armario",
             ["JPG or PNG, up to 10 MB"] = "JPG o PNG, hasta 10 MB",
             ["JPG or PNG, up to 10 MB each"] = "JPG o PNG, hasta 10 MB cada uno",
+            // Realtor inspection report upload leftovers
+            ["Electrician"] = "Electricista",
+            ["Plumber"] = "Plomero",
+            ["HVAC Technician"] = "Técnico de HVAC",
+            ["Roofer"] = "Techador",
+            ["Painter"] = "Pintor",
+            ["Moderate"] = "Moderado",
+            ["Not specified"] = "No especificado",
+            ["Residential Home Inspection"] = "Inspección residencial",
+            ["Clear selection"] = "Limpiar",
+            ["{0} issues found — tap to select"] = "{0} problemas encontrados — toca para seleccionar",
+            ["{0} of {1} selected"] = "{0} de {1} seleccionados",
+            ["Select at least one issue"] = "Selecciona al menos un problema",
+            ["Send to providers ({0})"] = "Enviar a proveedores ({0})",
+            ["Preparing providers..."] = "Preparando proveedores...",
+            // Realtor inspection Analyze error leftovers
+            ["AI analysis is not configured. Enable OpenAI in application settings."] = "El análisis con IA no está configurado. Activa OpenAI en la configuración de la aplicación.",
+            ["Upload Inspection Report"] = "Subir informe de inspección",
+            ["Upload Inspection Report - INDOR"] = "Subir informe de inspección - INDOR",
+            ["This PDF has no readable text (it may be scanned images only). Upload a text-based PDF or OCR version."] = "Este PDF no tiene texto legible (puede ser solo imágenes escaneadas). Sube un PDF con texto o una versión OCR.",
+            ["Could not extract text from the inspection report."] = "No se pudo extraer texto del informe de inspección.",
         };
 }

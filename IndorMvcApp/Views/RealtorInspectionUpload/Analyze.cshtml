@@ -93,7 +93,7 @@
 
         {
 
-            <span class="rl-trade-chip rl-trade-chip--@cat.Css"><i class="fas @cat.Icon"></i> @cat.Label</span>
+            <span class="rl-trade-chip rl-trade-chip--@cat.Css"><i class="fas @cat.Icon"></i> @L[cat.Label]</span>
 
         }
 
@@ -119,7 +119,7 @@
     {
         <div class="rl-info-box rl-info-box--warn" id="analyzeErrorBox">
             <i class="fas fa-triangle-exclamation"></i>
-            <p>@(string.IsNullOrWhiteSpace(Model.AnalysisSummary) ? L["Analysis could not be completed."] : Model.AnalysisSummary)</p>
+            <p>@(string.IsNullOrWhiteSpace(Model.AnalysisSummary) ? L["Analysis could not be completed."] : L.Catalog(Model.AnalysisSummary))</p>
         </div>
         <button type="button" id="analyzeRetryBtn" class="ob-btn ob-btn-primary rl-analyze-btn rl-analyze-btn--full">
             <strong><i class="fas fa-rotate-right"></i> @L["Retry analysis"]</strong>
