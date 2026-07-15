@@ -7,8 +7,8 @@ public static class ExteriorPaintDisplayLabels
     public static string FormatLastPainted(string? code) => code switch
     {
         "LessThan3Years" => DisplayLabelsLocalization.L("Less than 3 years"),
-        "ThreeToFiveYears" => DisplayLabelsLocalization.L("3â€“5 years"),
-        "FiveToSevenYears" => DisplayLabelsLocalization.L("5â€“7 years"),
+        "ThreeToFiveYears" => DisplayLabelsLocalization.L("3–5 years"),
+        "FiveToSevenYears" => DisplayLabelsLocalization.L("5–7 years"),
         "SevenPlusYears" => DisplayLabelsLocalization.L("7+ years"),
         _ => DisplayLabelsLocalization.L("I don't know")
     };

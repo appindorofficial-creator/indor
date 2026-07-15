@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.RoofInspectionDetailsViewModel
 @{
     ViewData["Title"] = L["Roof details - INDOR"];
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("RoofInspectionService", "RoofInspection", new { id = Model.HomeCarePriorityId });
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 3;

@@ -28,7 +28,7 @@ public static class CrawlspaceCheckDisplayLabels
     public static string FormatLastCheck(string? code) => code switch
     {
         "Within1Year" => DisplayLabelsLocalization.L("Within 1 year"),
-        "OneToTwoYears" => DisplayLabelsLocalization.L("1â€“2 years"),
+        "OneToTwoYears" => DisplayLabelsLocalization.L("1–2 years"),
         "TwoPlusYears" => DisplayLabelsLocalization.L("2+ years"),
         _ => "Not sure"
     };

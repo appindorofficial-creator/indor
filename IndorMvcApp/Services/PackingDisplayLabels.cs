@@ -10,7 +10,7 @@ public static class PackingDisplayLabels
         "PartialPacking" => DisplayLabelsLocalization.L("Partial packing"),
         "FragileOnly" => DisplayLabelsLocalization.L("Fragile items only"),
         "LastMinute" => DisplayLabelsLocalization.L("Last-minute help"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatWhenMoving(string? value) => value switch
@@ -19,7 +19,7 @@ public static class PackingDisplayLabels
         "Tomorrow" => DisplayLabelsLocalization.L("Tomorrow"),
         "ThisWeek" => DisplayLabelsLocalization.L("This week"),
         "LaterDate" => DisplayLabelsLocalization.L("Later date"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatPropertyType(string? value) => value switch
@@ -28,7 +28,7 @@ public static class PackingDisplayLabels
         "House" => DisplayLabelsLocalization.L("House"),
         "Townhome" => DisplayLabelsLocalization.L("Townhome"),
         "Office" => DisplayLabelsLocalization.L("Office"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatHomeSize(string? value) => value switch
@@ -37,7 +37,7 @@ public static class PackingDisplayLabels
         "ThreeFourRooms" => DisplayLabelsLocalization.L("3-4 rooms"),
         "FivePlusRooms" => DisplayLabelsLocalization.L("5+ rooms"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatRoom(string value) => value switch
@@ -100,7 +100,7 @@ public static class PackingDisplayLabels
     {
         if (string.IsNullOrWhiteSpace(pipe))
         {
-            return DisplayLabelsLocalization.L("â€”");
+            return DisplayLabelsLocalization.L("—");
         }
 
         return string.Join(", ", pipe

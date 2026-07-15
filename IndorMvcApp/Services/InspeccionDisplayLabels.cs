@@ -57,7 +57,7 @@ public static class InspeccionDisplayLabels
                 trimmed = trimmed[..57] + "...";
             }
 
-            return $"{summary} â€” {trimmed}";
+            return $"{summary} — {trimmed}";
         }
 
         return $"{summary} ({RolComprador(rol)})";
@@ -359,8 +359,8 @@ public static class InspeccionDisplayLabels
     public static string DuracionProblemaStructural(string? value) => value switch
     {
         "LessThanWeek" => DisplayLabelsLocalization.L("Less than a week"),
-        "OneToThreeMonths" => DisplayLabelsLocalization.L("1â€“3 months"),
-        "ThreeToTwelveMonths" => DisplayLabelsLocalization.L("3â€“12 months"),
+        "OneToThreeMonths" => DisplayLabelsLocalization.L("1–3 months"),
+        "ThreeToTwelveMonths" => DisplayLabelsLocalization.L("3–12 months"),
         "MoreThanYear" => DisplayLabelsLocalization.L("More than a year"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Not sure"
@@ -420,7 +420,7 @@ public static class InspeccionDisplayLabels
     public static string EdadPropiedadStructural(string? value) => value switch
     {
         "LessThan10" => DisplayLabelsLocalization.L("Less than 10 years"),
-        "TenTo30" => DisplayLabelsLocalization.L("10â€“30 years"),
+        "TenTo30" => DisplayLabelsLocalization.L("10–30 years"),
         "ThirtyPlus" => DisplayLabelsLocalization.L("30+ years"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
         _ => value ?? "Not sure"
@@ -1247,7 +1247,7 @@ public static class InspeccionDisplayLabels
             return property;
         }
 
-        return $"{property} Â· {occupancy.ToLowerInvariant()}";
+        return $"{property} · {occupancy.ToLowerInvariant()}";
     }
 
     public static string FormatInvestorFilesSummary(IEnumerable<(string? CategoriaArchivo, string? NombreArchivo)> archivos)

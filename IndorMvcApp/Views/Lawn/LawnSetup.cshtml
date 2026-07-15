@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.LawnSetupViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("LawnService", "Lawn", new { id = Model.MicroservicioId });
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 4;
@@ -45,7 +45,7 @@
                         <span class="radio"></span>
                         <i class="fas @area.Icon main"></i>
                         <div class="label">@area.Label</div>
-                        <div class="price">@area.PriceLabel</div>
+                        <div class="price">@(area.IsCustomQuote ? L["custom quote"] : L.T("from ${0}", area.Price.ToString("0")))</div>
                     </button>
                 }
             </div>

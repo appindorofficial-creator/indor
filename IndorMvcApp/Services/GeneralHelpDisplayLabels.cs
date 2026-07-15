@@ -12,7 +12,7 @@ public static class GeneralHelpDisplayLabels
         "SuppliesPickup" => DisplayLabelsLocalization.L("Supplies pickup"),
         "DonationDropOff" => DisplayLabelsLocalization.L("Donation drop-off"),
         "Other" => DisplayLabelsLocalization.L("Other"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatTiming(string? value) => value switch
@@ -21,7 +21,7 @@ public static class GeneralHelpDisplayLabels
         "Tomorrow" => DisplayLabelsLocalization.L("Tomorrow"),
         "ThisWeek" => DisplayLabelsLocalization.L("This week"),
         "Flexible" => DisplayLabelsLocalization.L("Flexible"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatUrgency(string? value) => value switch
@@ -29,7 +29,7 @@ public static class GeneralHelpDisplayLabels
         "Normal" => DisplayLabelsLocalization.L("Normal"),
         "Priority" => DisplayLabelsLocalization.L("Priority"),
         "Urgent" => DisplayLabelsLocalization.L("Urgent"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatContact(string? value) => value switch
@@ -37,7 +37,7 @@ public static class GeneralHelpDisplayLabels
         "Call" => DisplayLabelsLocalization.L("Call"),
         "Text" => DisplayLabelsLocalization.L("Text"),
         "Either" => DisplayLabelsLocalization.L("Either"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatAccess(string? value) => value switch
@@ -47,12 +47,12 @@ public static class GeneralHelpDisplayLabels
         "GateCode" => DisplayLabelsLocalization.L("Gate code"),
         "Stairs" => DisplayLabelsLocalization.L("Stairs"),
         "Elevator" => DisplayLabelsLocalization.L("Elevator"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatAccessList(string? pipeValue) =>
         string.IsNullOrWhiteSpace(pipeValue)
-            ? "â€”"
+            ? "—"
             : string.Join(", ", pipeValue.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .Select(FormatAccess));
 }

@@ -9,7 +9,7 @@ public static class CleaningDisplayLabels
         "MoveIn" => DisplayLabelsLocalization.L("Move-In Cleaning"),
         "MoveOut" => DisplayLabelsLocalization.L("Move-Out Cleaning"),
         "Both" => DisplayLabelsLocalization.L("Move-In & Move-Out Cleaning"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatPropertyType(string? value) => value switch
@@ -18,7 +18,7 @@ public static class CleaningDisplayLabels
         "House" => DisplayLabelsLocalization.L("House"),
         "Condo" => DisplayLabelsLocalization.L("Condo"),
         "Townhome" => DisplayLabelsLocalization.L("Townhome"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatBedrooms(string? value) => value switch
@@ -27,7 +27,7 @@ public static class CleaningDisplayLabels
         "Two" => DisplayLabelsLocalization.L("2 bed"),
         "Three" => DisplayLabelsLocalization.L("3 bed"),
         "FourPlus" => DisplayLabelsLocalization.L("4+ bed"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatBathrooms(string? value) => value switch
@@ -35,7 +35,7 @@ public static class CleaningDisplayLabels
         "One" => DisplayLabelsLocalization.L("1 bath"),
         "Two" => DisplayLabelsLocalization.L("2 bath"),
         "ThreePlus" => DisplayLabelsLocalization.L("3+ bath"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatHomeSize(string? beds, string? baths) =>
@@ -46,7 +46,7 @@ public static class CleaningDisplayLabels
         "Empty" => DisplayLabelsLocalization.L("Empty property"),
         "LightlyFurnished" => DisplayLabelsLocalization.L("Lightly furnished"),
         "Occupied" => DisplayLabelsLocalization.L("Occupied"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatTimeWindow(string? value) => value switch
@@ -66,7 +66,7 @@ public static class CleaningDisplayLabels
         "Yes" => DisplayLabelsLocalization.L("Yes"),
         "No" => DisplayLabelsLocalization.L("No"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatAccessMethod(string? value) => value switch
@@ -107,7 +107,7 @@ public static class CleaningDisplayLabels
     {
         if (string.IsNullOrWhiteSpace(pipe))
         {
-            return DisplayLabelsLocalization.L("â€”");
+            return DisplayLabelsLocalization.L("—");
         }
 
         return string.Join(", ", pipe

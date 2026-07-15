@@ -57,7 +57,7 @@ public static class SmokeDetectorDisplayLabels
     public static string FormatLastTest(string? code) => code switch
     {
         "WithinLastMonth" => DisplayLabelsLocalization.L("Within last month"),
-        "OneToSixMonths" => DisplayLabelsLocalization.L("1â€“6 months ago"),
+        "OneToSixMonths" => DisplayLabelsLocalization.L("1–6 months ago"),
         "MoreThanSixMonths" => DisplayLabelsLocalization.L("More than 6 months ago"),
         _ => DisplayLabelsLocalization.L("Unknown")
     };
@@ -65,7 +65,7 @@ public static class SmokeDetectorDisplayLabels
     public static string FormatLastBatteryChange(string? code) => code switch
     {
         "WithinLast6Months" => DisplayLabelsLocalization.L("Within last 6 months"),
-        "SixToTwelveMonths" => DisplayLabelsLocalization.L("6â€“12 months ago"),
+        "SixToTwelveMonths" => DisplayLabelsLocalization.L("6–12 months ago"),
         "MoreThan12Months" => DisplayLabelsLocalization.L("More than 12 months ago"),
         _ => DisplayLabelsLocalization.L("Unknown")
     };

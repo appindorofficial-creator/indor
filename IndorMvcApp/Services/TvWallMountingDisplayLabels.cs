@@ -10,7 +10,7 @@ public static class TvWallMountingDisplayLabels
         "DismountTv" => DisplayLabelsLocalization.L("Dismount TV"),
         "RemountTv" => DisplayLabelsLocalization.L("Re-mount existing TV"),
         "AddSoundbar" => DisplayLabelsLocalization.L("Add soundbar"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatTvSize(string? value) => value switch
@@ -20,7 +20,7 @@ public static class TvWallMountingDisplayLabels
         "Size56_64" => DisplayLabelsLocalization.L("56-64\""),
         "Size65_75" => DisplayLabelsLocalization.L("65-75\""),
         "Size75Plus" => DisplayLabelsLocalization.L("75\"+"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatTvCount(string? value) => value switch
@@ -28,7 +28,7 @@ public static class TvWallMountingDisplayLabels
         "One" => DisplayLabelsLocalization.L("1 TV"),
         "Two" => DisplayLabelsLocalization.L("2 TVs"),
         "ThreePlus" => DisplayLabelsLocalization.L("3+ TVs"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatRoom(string? value) => value switch
@@ -37,7 +37,7 @@ public static class TvWallMountingDisplayLabels
         "Bedroom" => DisplayLabelsLocalization.L("Bedroom"),
         "Office" => DisplayLabelsLocalization.L("Office"),
         "OtherRoom" => DisplayLabelsLocalization.L("Other room"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatWallType(string? value) => value switch
@@ -46,7 +46,7 @@ public static class TvWallMountingDisplayLabels
         "Brick" => DisplayLabelsLocalization.L("Brick"),
         "Concrete" => DisplayLabelsLocalization.L("Concrete"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatWallMount(string? value) => value switch
@@ -54,7 +54,7 @@ public static class TvWallMountingDisplayLabels
         "YesHaveIt" => DisplayLabelsLocalization.L("Customer has wall mount"),
         "NeedProvided" => DisplayLabelsLocalization.L("Need one provided"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatCableSetup(string? value) => value switch
@@ -63,7 +63,7 @@ public static class TvWallMountingDisplayLabels
         "HideInCover" => DisplayLabelsLocalization.L("Hide cables in cover"),
         "InWallConcealment" => DisplayLabelsLocalization.L("In-wall concealment"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatYesNoNotSure(string? value) => value switch
@@ -71,7 +71,7 @@ public static class TvWallMountingDisplayLabels
         "Yes" => DisplayLabelsLocalization.L("Yes"),
         "No" => DisplayLabelsLocalization.L("No"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatAccess(string? value) => value switch
@@ -80,7 +80,7 @@ public static class TvWallMountingDisplayLabels
         "Stairs" => DisplayLabelsLocalization.L("Stairs"),
         "Elevator" => DisplayLabelsLocalization.L("Elevator"),
         "ParkingLimited" => DisplayLabelsLocalization.L("Parking limited"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatArrival(string? value) => value switch
@@ -89,7 +89,7 @@ public static class TvWallMountingDisplayLabels
         "Afternoon" => DisplayLabelsLocalization.L("Afternoon"),
         "Evening" => DisplayLabelsLocalization.L("Evening"),
         "AsSoonAsPossible" => DisplayLabelsLocalization.L("As soon as possible"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatTimeShort(string? value) => value switch

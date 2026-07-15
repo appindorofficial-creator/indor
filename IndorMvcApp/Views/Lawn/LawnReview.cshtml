@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.LawnReviewViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("LawnSchedule", "Lawn", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;
@@ -67,7 +67,7 @@
 
     <form asp-action="LawnReview" asp-route-id="@Model.SolicitudId" method="post">
         <button type="submit" name="action" value="continue" class="btn-primary">
-            @(Model.IsReminderOnly ? "Activate reminder" : "Confirm service")
+            @(Model.IsReminderOnly ? L["Activate reminder"] : L["Confirm service"])
         </button>
         <button type="submit" name="action" value="back" class="btn-outline">@L["Edit"]</button>
     </form>

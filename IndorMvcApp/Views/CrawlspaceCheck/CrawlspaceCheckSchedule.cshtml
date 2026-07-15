@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = L["Schedule crawlspace check - INDOR"];
 var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks", "PestSigns", "Cracks", "PipeLeaks", "DamagedDucts" };
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("CrawlspaceCheckSetup", "CrawlspaceCheck", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;

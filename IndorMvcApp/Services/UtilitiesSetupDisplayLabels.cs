@@ -11,12 +11,12 @@ public static class UtilitiesSetupDisplayLabels
         "Electricity" => DisplayLabelsLocalization.L("Electricity"),
         "Water" => DisplayLabelsLocalization.L("Water"),
         "Gas" => DisplayLabelsLocalization.L("Gas"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatServicesList(string? pipeValue) =>
         string.IsNullOrWhiteSpace(pipeValue)
-            ? "â€”"
+            ? "—"
             : string.Join(", ", pipeValue.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .Select(FormatService));
 
@@ -24,7 +24,7 @@ public static class UtilitiesSetupDisplayLabels
     {
         "ContactMyself" => DisplayLabelsLocalization.L("I'll contact providers myself"),
         "SaveForLater" => DisplayLabelsLocalization.L("Save providers for later"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatCableOption(string? value) => value switch
@@ -32,7 +32,7 @@ public static class UtilitiesSetupDisplayLabels
         "InternetOnly" => DisplayLabelsLocalization.L("Internet only"),
         "InternetTv" => DisplayLabelsLocalization.L("Internet + TV"),
         "BringMyOwn" => DisplayLabelsLocalization.L("Bring my own"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatUtilityType(string? value) => value switch
@@ -49,7 +49,7 @@ public static class UtilitiesSetupDisplayLabels
     public static string FormatInternetSummary(string? providerName, string? speed, decimal price) =>
         string.IsNullOrWhiteSpace(providerName)
             ? "Skipped"
-            : $"{providerName} â€” {speed ?? "Plans available"} â€” from ${price:0}/mo";
+            : $"{providerName} — {speed ?? "Plans available"} — from ${price:0}/mo";
 
     public static string UtilityIcon(string? tipo) => tipo switch
     {

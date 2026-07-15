@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.GutterCleaningPreferencesViewModel
 @{
     ViewData["Title"] = L["Condition & service preferences - INDOR"];
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("GutterCleaningSetup", "GutterCleaning", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;

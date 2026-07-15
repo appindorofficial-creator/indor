@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.WaterHeaterFlushDetailsViewModel
 @{
     ViewData["Title"] = L["Maintenance details - INDOR"];
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("WaterHeaterFlushSetup", "WaterHeaterFlush", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;

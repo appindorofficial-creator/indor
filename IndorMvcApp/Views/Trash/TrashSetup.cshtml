@@ -1,8 +1,8 @@
 @model IndorMvcApp.ViewModels.TrashSetupViewModel
 @using IndorMvcApp.Services
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("TrashService", "Trash", new { id = Model.MicroservicioId });
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 3;

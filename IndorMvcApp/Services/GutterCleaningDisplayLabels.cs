@@ -36,7 +36,7 @@ public static class GutterCleaningDisplayLabels
     public static string FormatLastCleaned(string? code) => code switch
     {
         "LessThan6Months" => DisplayLabelsLocalization.L("< 6 months"),
-        "SixToTwelveMonths" => DisplayLabelsLocalization.L("6â€“12 months"),
+        "SixToTwelveMonths" => DisplayLabelsLocalization.L("6–12 months"),
         "OnePlusYear" => DisplayLabelsLocalization.L("1+ year"),
         _ => "Not sure"
     };

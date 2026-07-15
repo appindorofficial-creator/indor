@@ -1,10 +1,10 @@
 @model IndorMvcApp.ViewModels.CleaningProCustomizeViewModel
 @using IndorMvcApp.Services
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
 var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
     var selectedAddons = (Model.AddonsSeleccionados ?? string.Empty).Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("CleaningProSetup", "CleaningPro", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;

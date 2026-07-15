@@ -1,12 +1,12 @@
 @model IndorMvcApp.ViewModels.ExteriorPaintScheduleViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
     string PhotoFor(string category) =>
         Model.ArchivosExistentes.FirstOrDefault(a => string.Equals(a.CategoriaFoto, category, StringComparison.OrdinalIgnoreCase))?.RutaArchivo ?? string.Empty;
     var frontPhoto = PhotoFor("Front");
     var backPhoto = PhotoFor("Back");
     var problemPhoto = PhotoFor("ProblemArea");
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("ExteriorPaintCondition", "ExteriorPaint", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;

@@ -10,7 +10,7 @@ public static class CleaningProDisplayLabels
         "Weekly" => DisplayLabelsLocalization.L("Weekly"),
         "Biweekly" => DisplayLabelsLocalization.L("Biweekly"),
         "Monthly" => DisplayLabelsLocalization.L("Monthly"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatCrew(string? value) => value switch
@@ -18,7 +18,7 @@ public static class CleaningProDisplayLabels
         "One" => DisplayLabelsLocalization.L("1 cleaner"),
         "Two" => DisplayLabelsLocalization.L("2 cleaners"),
         "Three" => DisplayLabelsLocalization.L("3 cleaners"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatCrewShort(string? value) => value switch
@@ -26,20 +26,20 @@ public static class CleaningProDisplayLabels
         "One" => DisplayLabelsLocalization.L("1 Cleaner"),
         "Two" => DisplayLabelsLocalization.L("2 Cleaners"),
         "Three" => DisplayLabelsLocalization.L("3 Cleaners"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatAreasList(string? pipeValue)
     {
         var areas = CleaningProPricingService.ParseAreas(pipeValue).Select(a => a.Label).ToList();
-        return areas.Count == 0 ? "â€”" : string.Join(", ", areas);
+        return areas.Count == 0 ? "—" : string.Join(", ", areas);
     }
 
     public static string FormatHours(decimal? hours) =>
-        hours.HasValue ? $"{hours.Value:0.#} hour{(hours.Value == 1 ? "" : "s")}" : "â€”";
+        hours.HasValue ? $"{hours.Value:0.#} hour{(hours.Value == 1 ? "" : "s")}" : "—";
 
     public static string FormatHoursShort(decimal? hours) =>
-        hours.HasValue ? $"{hours.Value:0.#} hr" : "â€”";
+        hours.HasValue ? $"{hours.Value:0.#} hr" : "—";
 
     public static string FormatDateTime(DateTime? fecha, string? ventana)
     {
@@ -47,7 +47,7 @@ public static class CleaningProDisplayLabels
 
         var day = fecha.Value.ToString("ddd, MMM d, yyyy");
         var time = FormatTimeWindow(ventana);
-        return string.IsNullOrWhiteSpace(time) || time == "â€”" ? day : $"{day} at {time}";
+        return string.IsNullOrWhiteSpace(time) || time == "—" ? day : $"{day} at {time}";
     }
 
     public static string FormatScheduledRange(DateTime? fecha, string? ventana)
@@ -57,7 +57,7 @@ public static class CleaningProDisplayLabels
         var day = fecha.Value.ToString("ddd, MMM d, yyyy");
         var range = ventana switch
         {
-            "Morning9_12" => DisplayLabelsLocalization.L("09:00 â€“ 12:00"),
+            "Morning9_12" => DisplayLabelsLocalization.L("09:00 – 12:00"),
             "Morning10" => DisplayLabelsLocalization.L("10:00"),
             _ => FormatTimeWindow(ventana)
         };
@@ -68,9 +68,9 @@ public static class CleaningProDisplayLabels
     public static string FormatTimeWindow(string? value) => value switch
     {
         "Morning10" => DisplayLabelsLocalization.L("10:00"),
-        "Morning9_12" => DisplayLabelsLocalization.L("09:00 â€“ 12:00"),
-        "Afternoon1_5" => DisplayLabelsLocalization.L("13:00 â€“ 17:00"),
-        _ => value ?? "â€”"
+        "Morning9_12" => DisplayLabelsLocalization.L("09:00 – 12:00"),
+        "Afternoon1_5" => DisplayLabelsLocalization.L("13:00 – 17:00"),
+        _ => value ?? "—"
     };
 
     public static string FormatSummaryLine(string? frequency, string? crew, decimal? hours, decimal fromTotal)
@@ -83,6 +83,6 @@ public static class CleaningProDisplayLabels
             $"From ${fromTotal:0}"
         };
 
-        return string.Join(" â€¢ ", parts.Where(p => p != "â€”"));
+        return string.Join(" â€¢ ", parts.Where(p => p != "—"));
     }
 }

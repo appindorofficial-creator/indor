@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.TvWallMountingProjectViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("TvWallMountingService", "TvWallMounting", new { id = Model.MovingSetupServicioId });
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 3;

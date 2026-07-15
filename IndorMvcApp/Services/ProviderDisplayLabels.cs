@@ -11,7 +11,7 @@ public static class ProviderDisplayLabels
         "Submitted" => DisplayLabelsLocalization.L("Submitted"),
         "PendingReview" => DisplayLabelsLocalization.L("Pending INDOR review"),
         "Approved" => DisplayLabelsLocalization.L("Approved"),
-        "Rejected" => DisplayLabelsLocalization.L("Not approved â€” contact support"),
+        "Rejected" => DisplayLabelsLocalization.L("Not approved — contact support"),
         _ => DisplayLabelsLocalization.L("Unknown")
     };
 

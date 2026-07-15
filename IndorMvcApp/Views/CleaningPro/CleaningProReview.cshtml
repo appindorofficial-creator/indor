@@ -1,12 +1,12 @@
 @model IndorMvcApp.ViewModels.CleaningProReviewViewModel
 @using IndorMvcApp.Services
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
 var dateOptions = Enumerable.Range(0, 14)
         .Select(offset => DateTime.Today.AddDays(offset + 1))
         .Select(d => new { Date = d, DayLabel = d.ToString("ddd"), DateLabel = d.ToString("MMM d"), Selected = d.Date == Model.FechaServicio.Date })
         .ToList();
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("CleaningProCustomize", "CleaningPro", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;

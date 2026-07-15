@@ -306,7 +306,7 @@ public static class EmergencyDisplayLabels
             return $"{location} ({amount.ToLowerInvariant()})";
         }
 
-        return $"{location} â€” {amount.ToLowerInvariant()}";
+        return $"{location} — {amount.ToLowerInvariant()}";
     }
 
     public static string TiempoLlegadaRango(int minutos)
@@ -320,7 +320,7 @@ public static class EmergencyDisplayLabels
     {
         var low = Math.Max(30, minutos);
         var high = minutos + 15;
-        return $"{low}â€“{high} min";
+        return $"{low}–{high} min";
     }
 
     public static string TipoProblemaElectrical(string? value) => value switch
@@ -514,7 +514,7 @@ public static class EmergencyDisplayLabels
     {
         var low = Math.Max(30, minutos);
         var high = minutos + 45;
-        return $"{low}â€“{high} min";
+        return $"{low}–{high} min";
     }
 
     public static string EstadoTreeDamageConfirmado(string? estado) => estado switch
@@ -590,7 +590,7 @@ public static class EmergencyDisplayLabels
     {
         var low = Math.Max(30, minutos);
         var high = minutos + 15;
-        return $"{low}â€“{high} min";
+        return $"{low}–{high} min";
     }
 
     public static string EstadoRoofLeakConfirmado(string? estado) => estado switch
@@ -714,7 +714,7 @@ public static class EmergencyDisplayLabels
     {
         var low = Math.Max(10, minutos / 4);
         var high = Math.Max(15, minutos / 3);
-        return $"{low}â€“{high} min";
+        return $"{low}–{high} min";
     }
 
     public static string EstadoSmokeDetectorConfirmado(string? estado) => estado switch

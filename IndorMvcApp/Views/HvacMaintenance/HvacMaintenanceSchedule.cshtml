@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.HvacMaintenanceScheduleViewModel
 @{
     ViewData["Title"] = L["Choose your visit - INDOR"];
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("HvacMaintenanceDetails", "HvacMaintenance", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;

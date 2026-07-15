@@ -12,7 +12,7 @@ public static class LawnDisplayLabels
         "Weekly" => DisplayLabelsLocalization.L("Weekly"),
         "Monthly" => DisplayLabelsLocalization.L("Monthly"),
         "Flexible" => DisplayLabelsLocalization.L("Flexible"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatFrequencyLabel(string? frequencyCode, string? serviceType = null)
@@ -34,7 +34,7 @@ public static class LawnDisplayLabels
             "FrontBack" => DisplayLabelsLocalization.L("Front + Backyard"),
             "SideYard" => DisplayLabelsLocalization.L("Side yard"),
             "FullProperty" => DisplayLabelsLocalization.L("Full property"),
-            _ => value ?? "â€”"
+            _ => value ?? "—"
         };
 
     public static string FormatAddonsList(IEnumerable<string> labels)
@@ -46,11 +46,11 @@ public static class LawnDisplayLabels
     public static string FormatTimeWindow(string? value, string? labelFromCatalog = null) =>
         labelFromCatalog ?? value switch
         {
-            "Morning8_11" => DisplayLabelsLocalization.L("8â€“11 AM"),
-            "Midday11_2" => DisplayLabelsLocalization.L("11 AMâ€“2 PM"),
-            "Afternoon2_5" => DisplayLabelsLocalization.L("2â€“5 PM"),
-            "Evening5_8" => DisplayLabelsLocalization.L("5â€“8 PM"),
-            _ => value ?? "â€”"
+            "Morning8_11" => DisplayLabelsLocalization.L("8–11 AM"),
+            "Midday11_2" => DisplayLabelsLocalization.L("11 AM–2 PM"),
+            "Afternoon2_5" => DisplayLabelsLocalization.L("2–5 PM"),
+            "Evening5_8" => DisplayLabelsLocalization.L("5–8 PM"),
+            _ => value ?? "—"
         };
 
     public static string FormatScheduledLabel(DateTime? fecha, string? ventana, string? ventanaLabel = null)
@@ -62,7 +62,7 @@ public static class LawnDisplayLabels
 
         var day = fecha.Value.ToString("dddd");
         var window = FormatTimeWindow(ventana, ventanaLabel);
-        return string.IsNullOrWhiteSpace(window) || window == "â€”"
+        return string.IsNullOrWhiteSpace(window) || window == "—"
             ? day
             : $"{day}, {window}";
     }
@@ -79,11 +79,11 @@ public static class LawnDisplayLabels
         }
 
         var freq = FormatFrequency(frequencyCode);
-        var lead = leadDays == 1 ? "1 day before" : $"{leadDays} days before";
+        var lead = DisplayLabelsLocalization.L(leadDays == 1 ? "1 day before" : $"{leadDays} days before");
         var channelText = channels == null ? string.Empty : string.Join(", ", channels);
         return string.IsNullOrWhiteSpace(channelText)
-            ? $"Active Â· {freq} Â· {lead}"
-            : $"Active Â· {freq} Â· {lead} Â· {channelText}";
+            ? $"{DisplayLabelsLocalization.L("Active")} · {freq} · {lead}"
+            : $"{DisplayLabelsLocalization.L("Active")} · {freq} · {lead} · {channelText}";
     }
 
     public static string FormatNextReminderLabel(DateTime? nextUtc, string? frequencyCode)
@@ -95,7 +95,7 @@ public static class LawnDisplayLabels
         }
 
         var days = LawnCatalogService.GetFrequencyIntervalDays(frequencyCode);
-        return days > 0 ? $"In {days} days" : "â€”";
+        return days > 0 ? $"In {days} days" : "—";
     }
 
     public static string FormatNotificationChannels(string? pipeValue, IReadOnlyDictionary<string, string>? labels = null)

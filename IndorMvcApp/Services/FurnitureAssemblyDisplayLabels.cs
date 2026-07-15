@@ -24,7 +24,7 @@ public static class FurnitureAssemblyDisplayLabels
         "Two" => DisplayLabelsLocalization.L("2"),
         "Three" => DisplayLabelsLocalization.L("3"),
         "FourPlus" => DisplayLabelsLocalization.L("4+"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatCondition(string? value) => value switch
@@ -33,7 +33,7 @@ public static class FurnitureAssemblyDisplayLabels
         "PartiallyAssembled" => DisplayLabelsLocalization.L("Partially assembled"),
         "NeedsReassembly" => DisplayLabelsLocalization.L("Needs re-assembly"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatWallAnchor(string? value) => value switch
@@ -41,7 +41,7 @@ public static class FurnitureAssemblyDisplayLabels
         "Yes" => DisplayLabelsLocalization.L("Yes"),
         "No" => DisplayLabelsLocalization.L("No"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatRoom(string? value) => value switch
@@ -52,7 +52,7 @@ public static class FurnitureAssemblyDisplayLabels
         "DiningRoom" => DisplayLabelsLocalization.L("Dining room"),
         "Patio" => DisplayLabelsLocalization.L("Patio"),
         "MultipleRooms" => DisplayLabelsLocalization.L("Multiple rooms"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatAccess(string value) => value switch
@@ -69,7 +69,7 @@ public static class FurnitureAssemblyDisplayLabels
         "Yes" => DisplayLabelsLocalization.L("Yes"),
         "No" => DisplayLabelsLocalization.L("No"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatTimeWindow(string? value) => value switch
@@ -77,7 +77,7 @@ public static class FurnitureAssemblyDisplayLabels
         "Morning" => DisplayLabelsLocalization.L("8:00 AM - 12:00 PM"),
         "Afternoon" => DisplayLabelsLocalization.L("12:00 PM - 5:00 PM"),
         "Evening" => DisplayLabelsLocalization.L("5:00 PM - 8:00 PM"),
-        _ => value ?? "â€”"
+        _ => value ?? "—"
     };
 
     public static string FormatTimeShort(string? value) => value switch
@@ -98,7 +98,7 @@ public static class FurnitureAssemblyDisplayLabels
     {
         if (string.IsNullOrWhiteSpace(pipe))
         {
-            return DisplayLabelsLocalization.L("â€”");
+            return DisplayLabelsLocalization.L("—");
         }
 
         return string.Join(", ", pipe
@@ -109,13 +109,13 @@ public static class FurnitureAssemblyDisplayLabels
     public static string FormatItemsSummary(string? types, string? count)
     {
         var list = FormatPipeList(types, FormatFurnitureType);
-        if (list == "â€”")
+        if (list == "—")
         {
-            return DisplayLabelsLocalization.L("â€”");
+            return DisplayLabelsLocalization.L("—");
         }
 
         var qty = FormatItemCount(count);
-        return qty == "â€”" ? list : $"{list} ({qty} items)";
+        return qty == "—" ? list : $"{list} ({qty} items)";
     }
 
     public static decimal CalculateEstimate(

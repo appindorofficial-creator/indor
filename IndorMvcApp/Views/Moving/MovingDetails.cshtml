@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.MovingDetailsViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 3;
     ViewData["WizardBackUrl"] = Url.Action("MovingService", "Moving", new { id = Model.MovingSetupServicioId });
