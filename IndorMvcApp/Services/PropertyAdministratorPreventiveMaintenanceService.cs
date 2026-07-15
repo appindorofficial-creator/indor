@@ -220,7 +220,7 @@ public class PropertyAdministratorPreventiveMaintenanceService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             PlanId = plan.Id,
             ViewingProperty = MapProperty(property),
-            PlanTierLabel = $"{tierLabel} Plan",
+            PlanTierLabel = tierLabel,
             NextVisitLabel = PropertyAdministratorDisplayLocalization.L("Next visit in 14 days"),
             BundlePriceLabel = $"${plan.BundlePrice:0}",
             SelectedServices = catalog.Where(c => selectedKeys.Contains(c.ServiceKey))

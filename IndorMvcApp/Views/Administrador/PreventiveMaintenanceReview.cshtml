@@ -25,8 +25,8 @@
                 <li>
                     <span class="pa-prev-service-icon @svc.ToneClass"><i class="fas @svc.IconClass"></i></span>
                     <div>
-                        <strong>@svc.ServiceName</strong>
-                        <small>@svc.DefaultFrequency</small>
+                        <strong>@UiDisplayLocalization.Localize(L, svc.ServiceName)</strong>
+                        <small>@UiDisplayLocalization.Localize(L, svc.DefaultFrequency)</small>
                     </div>
                 </li>
             }
@@ -41,8 +41,8 @@
                 <li>
                     <i class="fas @pref.IconClass"></i>
                     <div>
-                        <span>@pref.Label</span>
-                        <strong>@pref.Value</strong>
+                        <span>@UiDisplayLocalization.Localize(L, pref.Label)</span>
+                        <strong>@UiDisplayLocalization.Localize(L, pref.Value)</strong>
                     </div>
                 </li>
             }
@@ -54,7 +54,7 @@
         <div class="pa-prev-benefits">
             @foreach (var benefit in Model.PreventionBenefits)
             {
-                <span class="pa-prev-benefit-chip"><i class="fas fa-shield-halved"></i> @benefit</span>
+                <span class="pa-prev-benefit-chip"><i class="fas fa-shield-halved"></i> @UiDisplayLocalization.Localize(L, benefit)</span>
             }
         </div>
     </section>
@@ -62,8 +62,8 @@
     <article class="pa-prev-summary-card">
         <div class="pa-prev-summary-head">
             <div>
-                <strong>@Model.PlanTierLabel</strong>
-                <small>@Model.NextVisitLabel</small>
+                <strong>@L.T("{0} Plan", UiDisplayLocalization.Localize(L, Model.PlanTierLabel))</strong>
+                <small>@UiDisplayLocalization.Localize(L, Model.NextVisitLabel)</small>
             </div>
             <div class="pa-prev-summary-price">
                 <span>@L["Estimated bundle price"]</span>

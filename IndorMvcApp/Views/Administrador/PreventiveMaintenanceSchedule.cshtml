@@ -22,7 +22,7 @@
         <div class="pa-prev-selected-tags">
             @foreach (var label in Model.SelectedServiceLabels)
             {
-                <span class="pa-prev-tag">@label</span>
+                <span class="pa-prev-tag">@UiDisplayLocalization.Localize(L, label)</span>
             }
         </div>
     }
@@ -42,7 +42,7 @@
                     </label>
                 }
             </div>
-            <p class="pa-frequency-hint" id="frequencyHint">@Model.FrequencyHint</p>
+            <p class="pa-frequency-hint" id="frequencyHint">@UiDisplayLocalization.Localize(L, Model.FrequencyHint)</p>
         </div>
 
         <div class="pa-flow-question">
@@ -118,7 +118,7 @@
         <article class="pa-prev-price-card">
             <div>
                 <span>@L["Estimated preventive visit"]</span>
-                <strong>@Model.EstimatedPrice</strong>
+                <strong>@UiDisplayLocalization.Localize(L, Model.EstimatedPrice)</strong>
             </div>
             <span class="pa-bundle-badge">@L["Bundle savings included"]</span>
         </article>

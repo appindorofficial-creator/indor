@@ -48,8 +48,8 @@
                         <input type="checkbox" name="SelectedServices" value="@svc.ServiceKey" @(svc.IsSelected ? "checked" : null) />
                         <span class="pa-prev-service-check"><i class="fas fa-check"></i></span>
                         <span class="pa-prev-service-icon @svc.ToneClass"><i class="fas @svc.IconClass"></i></span>
-                        <strong>@svc.ServiceName</strong>
-                        <small>@svc.DefaultFrequency</small>
+                        <strong>@UiDisplayLocalization.Localize(L, svc.ServiceName)</strong>
+                        <small>@UiDisplayLocalization.Localize(L, svc.DefaultFrequency)</small>
                     </label>
                 }
             </div>
@@ -63,9 +63,9 @@
                     <label class="pa-plan-tier-card @(tier.IsSelected ? "is-selected" : null)">
                         <input type="radio" name="PlanTier" value="@tier.TierKey" @(tier.IsSelected ? "checked" : null) />
                         <span class="pa-prev-service-check"><i class="fas fa-check"></i></span>
-                        <strong>@tier.Title</strong>
-                        <small>@tier.Description</small>
-                        <span class="pa-plan-tier-price">@tier.PriceLabel</span>
+                        <strong>@UiDisplayLocalization.Localize(L, tier.Title)</strong>
+                        <small>@UiDisplayLocalization.Localize(L, tier.Description)</small>
+                        <span class="pa-plan-tier-price">@L.T("${0} /mo", tier.MonthlyPrice.ToString("0"))</span>
                     </label>
                 }
             </div>

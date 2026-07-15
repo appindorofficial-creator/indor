@@ -53,6 +53,17 @@ public static class UiDisplayLocalization
             return localizer.T("Yesterday, {0}", text["Yesterday, ".Length..].Trim());
         }
 
+        if (text.StartsWith("Tomorrow, ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Tomorrow, {0}", text["Tomorrow, ".Length..].Trim());
+        }
+
+        var monthPrice = Regex.Match(text, @"^\$(\d+(?:\.\d+)?)\s*/mo$", RegexOptions.IgnoreCase);
+        if (monthPrice.Success)
+        {
+            return localizer.T("${0} /mo", monthPrice.Groups[1].Value);
+        }
+
         foreach (var (regex, key) in CountPatterns)
         {
             var match = regex.Match(text);
