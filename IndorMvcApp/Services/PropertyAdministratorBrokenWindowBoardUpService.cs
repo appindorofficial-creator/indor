@@ -39,10 +39,7 @@ public class PropertyAdministratorBrokenWindowBoardUpService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = mapped,
-            QuickDetails = mapped.OccupancyLabel != null
-                ? "Guest reported shattered living room window after storm impact."
-                : ""
+            ViewingProperty = mapped
         };
     }
 

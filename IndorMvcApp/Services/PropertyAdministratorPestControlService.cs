@@ -36,8 +36,6 @@ public class PropertyAdministratorPestControlService(
             ?? throw new InvalidOperationException("Property administrator not found.");
         var shell = await BuildShellAsync(admin, cancellationToken);
         var property = ResolveProperty(admin, propertyId);
-        var isRental = property?.PropertyType == "ShortTermRental";
-
         return new PropertyAdministratorPestControlStep1ViewModel
         {
             DisplayName = shell.DisplayName,
@@ -46,15 +44,7 @@ public class PropertyAdministratorPestControlService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = MapProperty(property),
-            PestType = isRental ? "Roaches" : "Ants",
-            IssueLocation = "Kitchen",
-            Urgency = isRental ? "Urgent" : "Normal",
-            GuestsStaying = isRental ? "Yes" : "No",
-            LivePestsToday = isRental ? "Yes" : "No",
-            QuickDetails = isRental
-                ? "Guest reported roaches in the kitchen last night."
-                : ""
+            ViewingProperty = MapProperty(property)
         };
     }
 

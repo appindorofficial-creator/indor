@@ -46,7 +46,7 @@
         <div class="pa-portfolio-head">
             <span class="pa-portfolio-icon"><i class="fas fa-building"></i></span>
             <div class="pa-portfolio-body">
-                <strong>@Model.PortfolioName</strong>
+                <strong>@UiDisplayLocalization.Localize(L, Model.PortfolioName)</strong>
                 <small>@L.T(Model.ActivePropertyCount == 1 ? "{0} active property" : "{0} active properties", Model.ActivePropertyCount)</small>
             </div>
         </div>

@@ -75,7 +75,7 @@
                         <input type="checkbox" name="ItemsToMoveList" value="@i.Value" @(items.Contains(i.Value) ? "checked" : null) />
                         <span class="pa-prev-service-check pa-prev-service-check--blue"><i class="fas fa-check"></i></span>
                         <i class="fas @i.Icon"></i>
-                        <span>@L[i.Label]</span>
+                        <span>@i.Label</span>
                     </label>
                 }
             </div>
@@ -103,7 +103,7 @@
                 {
                     <label class="pa-toggle-btn @(Model.ScheduleWhen == w ? "is-selected" : null)">
                         <input type="radio" name="ScheduleWhen" value="@w" @(Model.ScheduleWhen == w ? "checked" : null) />
-                        <i class="fas fa-calendar-day"></i> @w
+                        <i class="fas fa-calendar-day"></i> @L[w]
                     </label>
                 }
             </div>

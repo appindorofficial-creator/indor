@@ -39,10 +39,7 @@ public class PropertyAdministratorLockoutAccessService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = mapped,
-            QuickDetails = mapped.OccupancyLabel != null || property?.PropertyType == "ShortTermRental"
-                ? "Guest cannot get inside and the keypad is not responding."
-                : ""
+            ViewingProperty = mapped
         };
     }
 

@@ -13,27 +13,27 @@ public class PropertyAdministratorPetDeepCleanFormViewModel : PropertyAdministra
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? PropertyStatusLabel { get; set; }
-    public string ServiceType { get; set; } = "AfterPetStayCleanup";
-    public string PetCount { get; set; } = "2";
-    public string PetType { get; set; } = "Dog";
-    public string FocusAreas { get; set; } = "PetHair,OdorRemoval,AccidentsStains,BedsUpholstery,Floors";
-    public string ScheduleWhen { get; set; } = "Tomorrow";
-    public string ScheduleTimeWindow { get; set; } = "10:00 AM – 2:00 PM";
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string ServiceType { get; set; } = "";
+    public string PetCount { get; set; } = "";
+    public string PetType { get; set; } = "";
+    public string FocusAreas { get; set; } = "";
+    public string ScheduleWhen { get; set; } = "";
+    public string ScheduleTimeWindow { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
     public string Details { get; set; } = "";
 }
 
 public class PropertyAdministratorPetDeepCleanSubmitInput
 {
     public int PropertyId { get; set; }
-    public string ServiceType { get; set; } = "AfterPetStayCleanup";
-    public string PetCount { get; set; } = "2";
-    public string PetType { get; set; } = "Dog";
-    public List<string> FocusAreasList { get; set; } = ["PetHair", "OdorRemoval", "AccidentsStains", "BedsUpholstery", "Floors"];
-    public string ScheduleWhen { get; set; } = "Tomorrow";
-    public string ScheduleTimeWindow { get; set; } = "10:00 AM – 2:00 PM";
-    public string EntryAccess { get; set; } = "SmartLock";
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "CoHost"];
+    public string ServiceType { get; set; } = "";
+    public string PetCount { get; set; } = "";
+    public string PetType { get; set; } = "";
+    public List<string> FocusAreasList { get; set; } = [];
+    public string ScheduleWhen { get; set; } = "";
+    public string ScheduleTimeWindow { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string? Details { get; set; }
 }
 

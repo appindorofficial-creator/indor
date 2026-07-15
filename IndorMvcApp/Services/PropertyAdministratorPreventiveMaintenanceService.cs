@@ -49,8 +49,8 @@ public class PropertyAdministratorPreventiveMaintenanceService(
         var catalog = await db.IndorPropertyAdminPreventiveServiceCatalog.AsNoTracking()
             .Where(c => c.Activo).OrderBy(c => c.Orden).ToListAsync(cancellationToken);
 
-        var selected = DefaultSelectedServices.ToHashSet(StringComparer.OrdinalIgnoreCase);
-        var tier = "Basic";
+        var selected = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var tier = "";
         if (planId.HasValue)
         {
             var existing = await db.IndorPropertyAdminPreventivePlans

@@ -46,10 +46,7 @@ public class PropertyAdministratorStandardCleaningService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(786) 555-0134",
-            Details = mapped.OccupancyLabel != null
-                ? "Please clean bathrooms, kitchen, and common areas before the next guest arrives."
-                : ""
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(786) 555-0134"
         };
     }
 

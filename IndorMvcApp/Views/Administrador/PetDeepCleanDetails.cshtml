@@ -115,7 +115,7 @@
                 @foreach (var w in new[] { "Today", "Tomorrow", "Later" })
                 {
                     <label class="pa-toggle-btn @(Model.ScheduleWhen == w ? "is-selected" : null)">
-                        <input type="radio" name="ScheduleWhen" value="@w" @(Model.ScheduleWhen == w ? "checked" : null) /> @w
+                        <input type="radio" name="ScheduleWhen" value="@w" @(Model.ScheduleWhen == w ? "checked" : null) /> @L[w]
                     </label>
                 }
             </div>

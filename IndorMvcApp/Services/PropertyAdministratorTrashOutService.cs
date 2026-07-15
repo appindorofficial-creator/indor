@@ -47,9 +47,6 @@ public class PropertyAdministratorTrashOutService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = MapProperty(property),
             PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest checkout tomorrow" : null,
-            QuickNotes = property?.PropertyType == "ShortTermRental"
-                ? "Two large curbside bins are by the side gate. Please roll them out tonight after guest checkout."
-                : "",
             FlatRateLabel = ResolveFlatRate("TakeOutBringBack")
         };
     }

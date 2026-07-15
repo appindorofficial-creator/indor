@@ -49,10 +49,7 @@ public class PropertyAdministratorEmergencyElectricalService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187",
-            Notes = mapped.OccupancyLabel != null
-                ? "Guests report the living room outlets stopped working and lights went out."
-                : ""
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
         };
     }
 

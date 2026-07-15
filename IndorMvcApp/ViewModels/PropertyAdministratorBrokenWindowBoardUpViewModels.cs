@@ -5,22 +5,22 @@ public class PropertyAdministratorBrokenWindowBoardUpStep1ViewModel : PropertyAd
     public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string HelpType { get; set; } = "BrokenWindow";
-    public string Urgency { get; set; } = "Emergency";
-    public string DamageLocation { get; set; } = "FrontWindow";
-    public string GuestsInside { get; set; } = "Yes";
-    public string ExposedToRisk { get; set; } = "Yes";
+    public string HelpType { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string DamageLocation { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string ExposedToRisk { get; set; } = "";
     public string QuickDetails { get; set; } = "";
 }
 
 public class PropertyAdministratorBrokenWindowBoardUpStep1Input
 {
     public int PropertyId { get; set; }
-    public string HelpType { get; set; } = "BrokenWindow";
-    public string Urgency { get; set; } = "Emergency";
-    public string DamageLocation { get; set; } = "FrontWindow";
-    public string GuestsInside { get; set; } = "Yes";
-    public string ExposedToRisk { get; set; } = "Yes";
+    public string HelpType { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string DamageLocation { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string ExposedToRisk { get; set; } = "";
     public string? QuickDetails { get; set; }
 }
 
@@ -31,36 +31,36 @@ public class PropertyAdministratorBrokenWindowBoardUpStep2ViewModel : PropertyAd
     public int PropertyId { get; set; }
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? GuestsOnSiteLabel { get; set; }
-    public string HelpType { get; set; } = "BrokenWindow";
-    public string Urgency { get; set; } = "Emergency";
-    public string DamageLocation { get; set; } = "FrontWindow";
-    public string GuestsInside { get; set; } = "Yes";
-    public string ExposedToRisk { get; set; } = "Yes";
+    public string HelpType { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string DamageLocation { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string ExposedToRisk { get; set; } = "";
     public string QuickDetails { get; set; } = "";
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string EntryAccess { get; set; } = "";
     public string EntryInstructions { get; set; } = "";
-    public List<string> SecurityConcernsList { get; set; } = ["SecurityRisk", "GlassOnFloor"];
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public List<string> SecurityConcernsList { get; set; } = [];
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
-    public string EmergencyBoardUpTonight { get; set; } = "Yes";
+    public string EmergencyBoardUpTonight { get; set; } = "";
     public string ProEtaLabel { get; set; } = "Earliest available board-up pro: 26 min";
 }
 
 public class PropertyAdministratorBrokenWindowBoardUpSubmitInput
 {
     public int PropertyId { get; set; }
-    public string HelpType { get; set; } = "BrokenWindow";
-    public string Urgency { get; set; } = "Emergency";
-    public string DamageLocation { get; set; } = "FrontWindow";
-    public string GuestsInside { get; set; } = "Yes";
-    public string ExposedToRisk { get; set; } = "Yes";
+    public string HelpType { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string DamageLocation { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string ExposedToRisk { get; set; } = "";
     public string? QuickDetails { get; set; }
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string EntryAccess { get; set; } = "";
     public string? EntryInstructions { get; set; }
-    public List<string> SecurityConcernsList { get; set; } = ["SecurityRisk", "GlassOnFloor"];
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public List<string> SecurityConcernsList { get; set; } = [];
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
-    public string EmergencyBoardUpTonight { get; set; } = "Yes";
+    public string EmergencyBoardUpTonight { get; set; } = "";
 }
 
 public class PropertyAdministratorBrokenWindowBoardUpConfirmedViewModel : PropertyAdministratorPortalShellViewModel

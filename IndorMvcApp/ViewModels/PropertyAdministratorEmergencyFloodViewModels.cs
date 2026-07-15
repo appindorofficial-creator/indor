@@ -5,17 +5,17 @@ public class PropertyAdministratorEmergencyFloodFormViewModel : PropertyAdminist
     public int FlowStep { get; set; } = 2;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string ProblemType { get; set; } = "ActiveFlooding";
-    public string WaterActivelyComingIn { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string WaterLocation { get; set; } = "LivingRoom";
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string ProblemType { get; set; } = "";
+    public string WaterActivelyComingIn { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string WaterLocation { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string Notes { get; set; } = "";
-    public string ProcessThroughInsurance { get; set; } = "Yes";
-    public string InsuranceCarrier { get; set; } = "State Farm";
-    public string ClaimOpened { get; set; } = "No";
+    public string ProcessThroughInsurance { get; set; } = "";
+    public string InsuranceCarrier { get; set; } = "";
+    public string ClaimOpened { get; set; } = "";
     public string? ClaimNumber { get; set; }
     public string EstimatedPrice { get; set; } = "$149–$199";
     public string ProEtaLabel { get; set; } = "Nearest water mitigation pro available in 19 minutes";
@@ -24,17 +24,17 @@ public class PropertyAdministratorEmergencyFloodFormViewModel : PropertyAdminist
 public class PropertyAdministratorEmergencyFloodSubmitInput
 {
     public int PropertyId { get; set; }
-    public string ProblemType { get; set; } = "ActiveFlooding";
-    public string WaterActivelyComingIn { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string WaterLocation { get; set; } = "LivingRoom";
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string ProblemType { get; set; } = "";
+    public string WaterActivelyComingIn { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string WaterLocation { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string? Notes { get; set; }
-    public string ProcessThroughInsurance { get; set; } = "Yes";
+    public string ProcessThroughInsurance { get; set; } = "";
     public string? InsuranceCarrier { get; set; }
-    public string ClaimOpened { get; set; } = "No";
+    public string ClaimOpened { get; set; } = "";
     public string? ClaimNumber { get; set; }
 }
 

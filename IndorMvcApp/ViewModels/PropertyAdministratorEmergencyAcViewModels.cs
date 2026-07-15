@@ -22,13 +22,13 @@ public class PropertyAdministratorEmergencyAcFormViewModel : PropertyAdministrat
     public int FlowStep { get; set; } = 2;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string ProblemType { get; set; } = "NoCooling";
-    public string IsOccupied { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string IndoorTemperature { get; set; } = "82°F";
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string ProblemType { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string IndoorTemperature { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
     public string EntryCode { get; set; } = "";
-    public string UpdateRecipients { get; set; } = "Me,Guest";
+    public string UpdateRecipients { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string Details { get; set; } = "";
     public string EstimatedPrice { get; set; } = "$129–$169";
@@ -38,13 +38,13 @@ public class PropertyAdministratorEmergencyAcFormViewModel : PropertyAdministrat
 public class PropertyAdministratorEmergencyAcSubmitInput
 {
     public int PropertyId { get; set; }
-    public string ProblemType { get; set; } = "NoCooling";
-    public string IsOccupied { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
+    public string ProblemType { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
     public string IndoorTemperature { get; set; } = "";
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string EntryAccess { get; set; } = "";
     public string? EntryCode { get; set; }
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
     public string? Details { get; set; }
 }

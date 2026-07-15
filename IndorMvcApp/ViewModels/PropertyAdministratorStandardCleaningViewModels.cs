@@ -12,13 +12,13 @@ public class PropertyAdministratorStandardCleaningFormViewModel : PropertyAdmini
     public int FlowStep { get; set; } = 2;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string ServiceType { get; set; } = "RoutineCleaning";
-    public string ScheduleWhen { get; set; } = "Tomorrow";
-    public string ScheduleTimeWindow { get; set; } = "11:00 AM – 2:00 PM";
-    public string IncludedTasks { get; set; } = "Bathrooms,Kitchen,Bedrooms,Floors,TrashRemoval";
-    public string UrgentIssue { get; set; } = "No";
-    public string EntryAccess { get; set; } = "SmartLock";
-    public string UpdateRecipients { get; set; } = "Me,CoHost";
+    public string ServiceType { get; set; } = "";
+    public string ScheduleWhen { get; set; } = "";
+    public string ScheduleTimeWindow { get; set; } = "";
+    public string IncludedTasks { get; set; } = "";
+    public string UrgentIssue { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
+    public string UpdateRecipients { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string Details { get; set; } = "";
     public string EstimatedPrice { get; set; } = "$89–$149";
@@ -28,13 +28,13 @@ public class PropertyAdministratorStandardCleaningFormViewModel : PropertyAdmini
 public class PropertyAdministratorStandardCleaningSubmitInput
 {
     public int PropertyId { get; set; }
-    public string ServiceType { get; set; } = "RoutineCleaning";
-    public string ScheduleWhen { get; set; } = "Tomorrow";
-    public string ScheduleTimeWindow { get; set; } = "11:00 AM – 2:00 PM";
-    public List<string> IncludedTasksList { get; set; } = ["Bathrooms", "Kitchen", "Bedrooms", "Floors", "TrashRemoval"];
-    public string UrgentIssue { get; set; } = "No";
-    public string EntryAccess { get; set; } = "SmartLock";
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "CoHost"];
+    public string ServiceType { get; set; } = "";
+    public string ScheduleWhen { get; set; } = "";
+    public string ScheduleTimeWindow { get; set; } = "";
+    public List<string> IncludedTasksList { get; set; } = [];
+    public string UrgentIssue { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
     public string? Details { get; set; }
 }

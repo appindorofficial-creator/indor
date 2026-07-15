@@ -39,10 +39,7 @@ public class PropertyAdministratorEmergencyTreeBranchService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = mapped,
-            QuickDetails = mapped.OccupancyLabel != null
-                ? "Large branch is hanging over the roof after the storm and could fall near the guest entry."
-                : ""
+            ViewingProperty = mapped
         };
     }
 

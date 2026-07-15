@@ -39,10 +39,7 @@ public class PropertyAdministratorEmergencyPlumbingService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = mapped,
-            QuickDetails = mapped.OccupancyLabel != null
-                ? "Guests report the upstairs bathroom toilet is overflowing."
-                : ""
+            ViewingProperty = mapped
         };
     }
 

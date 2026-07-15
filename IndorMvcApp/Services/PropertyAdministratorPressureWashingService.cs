@@ -36,8 +36,6 @@ public class PropertyAdministratorPressureWashingService(
             ?? throw new InvalidOperationException("Property administrator not found.");
         var shell = await BuildShellAsync(admin, cancellationToken);
         var property = ResolveProperty(admin, propertyId);
-        var isRental = property?.PropertyType == "ShortTermRental";
-
         return new PropertyAdministratorPressureWashingStep1ViewModel
         {
             DisplayName = shell.DisplayName,
@@ -46,14 +44,7 @@ public class PropertyAdministratorPressureWashingService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = MapProperty(property),
-            WashAreas = isRental ? "Walkway,Patio" : "Driveway",
-            ServiceReason = isRental ? "GuestTurnover" : "RoutineUpkeep",
-            IsOccupied = isRental ? "Yes" : "No",
-            GuestNotification = isRental ? "Both" : "Me",
-            QuickNotes = isRental
-                ? "Need patio and front walkway cleaned before next guest check-in."
-                : ""
+            ViewingProperty = MapProperty(property)
         };
     }
 

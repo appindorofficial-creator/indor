@@ -46,11 +46,7 @@ public class PropertyAdministratorLandscapingService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = MapProperty(property),
-            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest check-in this week" : null,
-            ServiceReason = property?.PropertyType == "ShortTermRental" ? "CarDroveOverPlants" : "RoutineUpgrade",
-            QuickNotes = property?.PropertyType == "ShortTermRental"
-                ? "Car damaged the flower bed near the driveway. Need plants replaced and the front entry refreshed before next guest arrival."
-                : ""
+            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest check-in this week" : null
         };
     }
 

@@ -5,37 +5,37 @@ public class PropertyAdministratorEmergencySewerBackupStep1ViewModel : PropertyA
     public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string IssueType { get; set; } = "DrainBackingUp";
-    public string SewageBackingUp { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public List<string> LocationsList { get; set; } = ["Bathroom", "Laundry"];
+    public string IssueType { get; set; } = "";
+    public string SewageBackingUp { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public List<string> LocationsList { get; set; } = [];
     public string QuickDetails { get; set; } = "";
 }
 
 public class PropertyAdministratorEmergencySewerBackupStep1Input
 {
     public int PropertyId { get; set; }
-    public string IssueType { get; set; } = "DrainBackingUp";
-    public string SewageBackingUp { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public List<string> LocationsList { get; set; } = ["Bathroom", "Laundry"];
+    public string IssueType { get; set; } = "";
+    public string SewageBackingUp { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public List<string> LocationsList { get; set; } = [];
     public string? QuickDetails { get; set; }
 }
 
 public class PropertyAdministratorEmergencySewerBackupSubmitInput
 {
     public int PropertyId { get; set; }
-    public string IssueType { get; set; } = "DrainBackingUp";
-    public string SewageBackingUp { get; set; } = "Yes";
-    public string GuestsInside { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public List<string> LocationsList { get; set; } = ["Bathroom", "Laundry"];
+    public string IssueType { get; set; } = "";
+    public string SewageBackingUp { get; set; } = "";
+    public string GuestsInside { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public List<string> LocationsList { get; set; } = [];
     public string? QuickDetails { get; set; }
-    public string EntryAccess { get; set; } = "SmartLock";
+    public string EntryAccess { get; set; } = "";
     public string? EntryCode { get; set; }
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
 }
 

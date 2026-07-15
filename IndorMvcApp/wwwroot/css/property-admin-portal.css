@@ -353,6 +353,9 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-search-bar i{color:#94A3B8}
 .pa-search-bar input{flex:1;border:none!important;outline:none;box-shadow:none!important;font:inherit;font-size:.88rem;background:transparent}
 .pa-search-bar:focus-within{border-color:#93C5FD;box-shadow:0 0 0 3px rgba(46,139,255,.15)}
+.pa-service-search-empty{margin:8px 0 16px;padding:14px 16px;border-radius:14px;background:#F8FAFC;border:1.5px dashed #CBD5E1;color:#64748B;font-size:.86rem;text-align:center}
+[data-pa-service-item][hidden],[data-pa-service-section][hidden],
+.pa-emergency-banner[hidden],.pa-trust-row[hidden]{display:none!important}
 
 .pa-filter-pills{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:14px}
 .pa-filter-pill{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:999px;border:1.5px solid #E2E8F0;background:#fff;color:#475569;font-size:.76rem;font-weight:600;text-decoration:none}

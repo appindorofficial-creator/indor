@@ -36,8 +36,6 @@ public class PropertyAdministratorPoolHotTubService(
             ?? throw new InvalidOperationException("Property administrator not found.");
         var shell = await BuildShellAsync(admin, cancellationToken);
         var property = ResolveProperty(admin, propertyId);
-        var isRental = property?.PropertyType == "ShortTermRental";
-
         return new PropertyAdministratorPoolHotTubStep1ViewModel
         {
             DisplayName = shell.DisplayName,
@@ -46,14 +44,7 @@ public class PropertyAdministratorPoolHotTubService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = MapProperty(property),
-            ServiceHelpType = isRental ? "HotTubRepair" : "PoolRepair",
-            MainIssue = isRental ? "HeaterIssue" : "PumpNotWorking",
-            GuestStayAffected = isRental ? "Yes" : "No",
-            Urgency = isRental ? "Urgent" : "Routine",
-            QuickDetails = isRental
-                ? "Guests say the hot tub is not heating and the water is getting cooler."
-                : ""
+            ViewingProperty = MapProperty(property)
         };
     }
 

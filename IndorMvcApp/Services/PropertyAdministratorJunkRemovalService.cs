@@ -45,10 +45,7 @@ public class PropertyAdministratorJunkRemovalService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = MapProperty(property),
-            QuickDetails = property?.PropertyType == "ShortTermRental"
-                ? "Old couch, 8 moving boxes, and 6 trash bags after guest checkout."
-                : ""
+            ViewingProperty = MapProperty(property)
         };
     }
 

@@ -59,10 +59,7 @@ public class PropertyAdministratorEmergencyFloodService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187",
-            Notes = mapped.OccupancyLabel != null
-                ? "Guests report a ceiling leak and water on the living room floor."
-                : ""
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
         };
     }
 

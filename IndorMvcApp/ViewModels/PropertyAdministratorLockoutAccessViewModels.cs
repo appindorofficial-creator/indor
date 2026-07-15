@@ -5,22 +5,22 @@ public class PropertyAdministratorLockoutAccessStep1ViewModel : PropertyAdminist
     public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string IssueType { get; set; } = "GuestLockedOut";
-    public string SomeoneOutside { get; set; } = "Yes";
-    public string HomeOccupied { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string WhoNeedsAccess { get; set; } = "Guest";
+    public string IssueType { get; set; } = "";
+    public string SomeoneOutside { get; set; } = "";
+    public string HomeOccupied { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string WhoNeedsAccess { get; set; } = "";
     public string QuickDetails { get; set; } = "";
 }
 
 public class PropertyAdministratorLockoutAccessStep1Input
 {
     public int PropertyId { get; set; }
-    public string IssueType { get; set; } = "GuestLockedOut";
-    public string SomeoneOutside { get; set; } = "Yes";
-    public string HomeOccupied { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string WhoNeedsAccess { get; set; } = "Guest";
+    public string IssueType { get; set; } = "";
+    public string SomeoneOutside { get; set; } = "";
+    public string HomeOccupied { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string WhoNeedsAccess { get; set; } = "";
     public string? QuickDetails { get; set; }
 }
 
@@ -31,17 +31,17 @@ public class PropertyAdministratorLockoutAccessStep2ViewModel : PropertyAdminist
     public int PropertyId { get; set; }
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? GuestsWaitingLabel { get; set; }
-    public string IssueType { get; set; } = "GuestLockedOut";
-    public string SomeoneOutside { get; set; } = "Yes";
-    public string HomeOccupied { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string WhoNeedsAccess { get; set; } = "Guest";
+    public string IssueType { get; set; } = "";
+    public string SomeoneOutside { get; set; } = "";
+    public string HomeOccupied { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string WhoNeedsAccess { get; set; } = "";
     public string QuickDetails { get; set; } = "";
-    public string SmartLockCodeWorks { get; set; } = "Yes";
-    public string BackupAccess { get; set; } = "LockboxKey";
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public string SmartLockCodeWorks { get; set; } = "";
+    public string BackupAccess { get; set; } = "";
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
-    public string ProEnterImmediately { get; set; } = "Yes";
+    public string ProEnterImmediately { get; set; } = "";
     public string EntryNotes { get; set; } = "";
     public string ProEtaLabel { get; set; } = "Earliest available access pro: 18 min";
 }
@@ -49,17 +49,17 @@ public class PropertyAdministratorLockoutAccessStep2ViewModel : PropertyAdminist
 public class PropertyAdministratorLockoutAccessSubmitInput
 {
     public int PropertyId { get; set; }
-    public string IssueType { get; set; } = "GuestLockedOut";
-    public string SomeoneOutside { get; set; } = "Yes";
-    public string HomeOccupied { get; set; } = "Yes";
-    public string Urgency { get; set; } = "Emergency";
-    public string WhoNeedsAccess { get; set; } = "Guest";
+    public string IssueType { get; set; } = "";
+    public string SomeoneOutside { get; set; } = "";
+    public string HomeOccupied { get; set; } = "";
+    public string Urgency { get; set; } = "";
+    public string WhoNeedsAccess { get; set; } = "";
     public string? QuickDetails { get; set; }
-    public string SmartLockCodeWorks { get; set; } = "Yes";
-    public string BackupAccess { get; set; } = "LockboxKey";
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public string SmartLockCodeWorks { get; set; } = "";
+    public string BackupAccess { get; set; } = "";
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
-    public string ProEnterImmediately { get; set; } = "Yes";
+    public string ProEnterImmediately { get; set; } = "";
     public string? EntryNotes { get; set; }
 }
 

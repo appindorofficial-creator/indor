@@ -18,10 +18,13 @@
 
     @await Html.PartialAsync("_PropertyAdminPortfolioCard", Model)
 
-    <div class="pa-search-bar">
+    <div class="pa-search-bar" data-pa-service-search>
         <i class="fas fa-magnifying-glass"></i>
-        <input type="search" placeholder="@L["Search services (e.g., plumbing, cleaning)"]" aria-label="@L["Search services"]" />
-        <button type="button" class="pa-portal-icon-btn" aria-label="@L["Filter"]"><i class="fas fa-sliders"></i></button>
+        <input type="search" id="pa-service-search"
+               placeholder="@L["Search services (e.g., plumbing, cleaning)"]"
+               aria-label="@L["Search services"]"
+               autocomplete="off" />
+        <button type="button" class="pa-portal-icon-btn" data-pa-service-search-focus aria-label="@L["Filter"]"><i class="fas fa-sliders"></i></button>
     </div>
 
     <div class="pa-filter-pills">
@@ -42,9 +45,11 @@
         <a asp-controller="Administrador" asp-action="Services" asp-route-filter="emergency" class="pa-emergency-btn">@L["View emergency services"]</a>
     </div>
 
+    <p class="pa-service-search-empty" data-pa-service-search-empty hidden>@L["No services match your search."]</p>
+
     @foreach (var category in Model.Categories)
     {
-        <section class="pa-section">
+        <section class="pa-section" data-pa-service-section>
             <div class="pa-section-head">
                 <h2>@UiDisplayLocalization.Localize(L, category.CategoryTitle)</h2>
                 <a asp-controller="Administrador" asp-action="Services" asp-route-filter="@category.CategoryKey">@L["View all"] <i class="fas fa-chevron-right"></i></a>
@@ -52,9 +57,11 @@
             <div class="pa-service-grid">
                 @foreach (var item in category.Items)
                 {
-                    <a href="@item.Url" class="pa-service-grid-item">
+                    var localizedName = UiDisplayLocalization.Localize(L, item.ServiceName);
+                    <a href="@item.Url" class="pa-service-grid-item" data-pa-service-item
+                       data-search="@item.ServiceName @localizedName">
                         <span class="pa-service-hub-icon @item.ToneClass"><i class="fas @item.IconClass"></i></span>
-                        <span>@UiDisplayLocalization.Localize(L, item.ServiceName)</span>
+                        <span>@localizedName</span>
                     </a>
                 }
             </div>
@@ -63,7 +70,7 @@
 
     @if (Model.ActivePlans.Count > 0)
     {
-        <section class="pa-section">
+        <section class="pa-section" data-pa-service-section data-pa-plans-section>
             <div class="pa-section-head">
                 <h2>@L["Your service plans"]</h2>
                 <a asp-controller="Administrador" asp-action="Services" asp-route-filter="homecare">@L["Manage all"] <i class="fas fa-chevron-right"></i></a>
@@ -71,9 +78,10 @@
             <div class="pa-hscroll">
                 @foreach (var plan in Model.ActivePlans)
                 {
-                    <article class="pa-plan-card">
+                    var planName = UiDisplayLocalization.Localize(L, plan.PlanName);
+                    <article class="pa-plan-card" data-pa-service-item data-search="@plan.PlanName @planName">
                         <span class="pa-plan-icon @plan.ToneClass"><i class="fas @plan.IconClass"></i></span>
-                        <strong>@UiDisplayLocalization.Localize(L, plan.PlanName)</strong>
+                        <strong>@planName</strong>
                         <small>@UiDisplayLocalization.Localize(L, plan.Frequency)</small>
                         <span class="pa-plan-next">@L.T("Next: {0}", plan.NextDueLabel)</span>
                         <span class="pa-plan-status">@UiDisplayLocalization.Localize(L, plan.StatusLabel)</span>

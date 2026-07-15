@@ -39,10 +39,7 @@ public class PropertyAdministratorEmergencyRoofLeakService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = mapped,
-            QuickDetails = mapped.OccupancyLabel != null
-                ? "Water is dripping from the ceiling in the upstairs guest bedroom after heavy rain."
-                : ""
+            ViewingProperty = mapped
         };
     }
 

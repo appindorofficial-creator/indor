@@ -39,10 +39,7 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = mapped,
-            QuickDetails = mapped.OccupancyLabel != null
-                ? "Guests report no hot water and water around the unit in the garage."
-                : ""
+            ViewingProperty = mapped
         };
     }
 

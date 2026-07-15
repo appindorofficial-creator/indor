@@ -46,10 +46,7 @@ public class PropertyAdministratorSmokeDetectorService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187",
-            Details = mapped.OccupancyLabel != null
-                ? "Please test all upstairs and hallway detectors and replace weak batteries if needed."
-                : ""
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
         };
     }
 

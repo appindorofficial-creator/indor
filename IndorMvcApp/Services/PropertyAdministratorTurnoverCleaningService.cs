@@ -46,10 +46,7 @@ public class PropertyAdministratorTurnoverCleaningService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0123",
-            Details = mapped.OccupancyLabel != null
-                ? "Please finish before the next guest checks in and leave the welcome items on the kitchen counter."
-                : ""
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0123"
         };
     }
 

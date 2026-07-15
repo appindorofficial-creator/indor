@@ -12,12 +12,12 @@ public class PropertyAdministratorSmokeDetectorFormViewModel : PropertyAdministr
     public int FlowStep { get; set; } = 2;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
-    public string ServiceType { get; set; } = "FullDetectorCheck";
-    public string DetectorCount { get; set; } = "ThreeToFive";
-    public string UrgentSafetyIssue { get; set; } = "No";
-    public string DetectorType { get; set; } = "Hardwired";
-    public string EntryAccess { get; set; } = "SmartLock";
-    public string UpdateRecipients { get; set; } = "Me,Guest";
+    public string ServiceType { get; set; } = "";
+    public string DetectorCount { get; set; } = "";
+    public string UrgentSafetyIssue { get; set; } = "";
+    public string DetectorType { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
+    public string UpdateRecipients { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string Details { get; set; } = "";
     public string EstimatedPrice { get; set; } = "$69–$119";
@@ -27,12 +27,12 @@ public class PropertyAdministratorSmokeDetectorFormViewModel : PropertyAdministr
 public class PropertyAdministratorSmokeDetectorSubmitInput
 {
     public int PropertyId { get; set; }
-    public string ServiceType { get; set; } = "FullDetectorCheck";
-    public string DetectorCount { get; set; } = "ThreeToFive";
-    public string UrgentSafetyIssue { get; set; } = "No";
-    public string DetectorType { get; set; } = "Hardwired";
-    public string EntryAccess { get; set; } = "SmartLock";
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+    public string ServiceType { get; set; } = "";
+    public string DetectorCount { get; set; } = "";
+    public string UrgentSafetyIssue { get; set; } = "";
+    public string DetectorType { get; set; } = "";
+    public string EntryAccess { get; set; } = "";
+    public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
     public string? Details { get; set; }
 }

@@ -46,10 +46,7 @@ public class PropertyAdministratorFurnitureHaulAwayService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = MapProperty(property),
-            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest checkout today" : null,
-            QuickDetails = property?.PropertyType == "ShortTermRental"
-                ? "1 couch, 1 mattress, and 2 chairs after guest move-out."
-                : ""
+            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest checkout today" : null
         };
     }
 

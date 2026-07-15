@@ -39,10 +39,7 @@ public class PropertyAdministratorEmergencySewerBackupService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = mapped,
-            QuickDetails = mapped.OccupancyLabel != null
-                ? "Guest reports sewage backing up in the downstairs bathroom and laundry drain."
-                : ""
+            ViewingProperty = mapped
         };
     }
 

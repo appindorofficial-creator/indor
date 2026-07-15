@@ -46,11 +46,7 @@ public class PropertyAdministratorEmergencyAcService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187",
-            EntryCode = property != null ? $"Front door code: {1000 + property.Id}" : "",
-            Details = mapped.OccupancyLabel != null
-                ? "Guests report the upstairs is hot and the unit is blowing warm air."
-                : ""
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
         };
     }
 

@@ -13,22 +13,22 @@ public class PropertyAdministratorLandscapingStep1ViewModel : PropertyAdministra
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? PropertyStatusLabel { get; set; }
-    public string ServiceType { get; set; } = "GardenRefresh";
-    public string WorkArea { get; set; } = "FrontYard";
-    public string ServiceReason { get; set; } = "CarDroveOverPlants";
-    public string Timeline { get; set; } = "ThisWeek";
-    public string IsOccupied { get; set; } = "No";
+    public string ServiceType { get; set; } = "";
+    public string WorkArea { get; set; } = "";
+    public string ServiceReason { get; set; } = "";
+    public string Timeline { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
     public string QuickNotes { get; set; } = "";
 }
 
 public class PropertyAdministratorLandscapingStep1Input
 {
     public int PropertyId { get; set; }
-    public string ServiceType { get; set; } = "GardenRefresh";
+    public string ServiceType { get; set; } = "";
     public string WorkArea { get; set; } = "FrontYard";
-    public string ServiceReason { get; set; } = "CarDroveOverPlants";
-    public string Timeline { get; set; } = "ThisWeek";
-    public string IsOccupied { get; set; } = "No";
+    public string ServiceReason { get; set; } = "";
+    public string Timeline { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
     public string? QuickNotes { get; set; }
 }
 
@@ -39,34 +39,34 @@ public class PropertyAdministratorLandscapingStep2ViewModel : PropertyAdministra
     public int PropertyId { get; set; }
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string? PropertyStatusLabel { get; set; }
-    public string ServiceType { get; set; } = "GardenRefresh";
+    public string ServiceType { get; set; } = "";
     public string WorkArea { get; set; } = "FrontYard";
-    public string ServiceReason { get; set; } = "CarDroveOverPlants";
-    public string Timeline { get; set; } = "ThisWeek";
-    public string IsOccupied { get; set; } = "No";
+    public string ServiceReason { get; set; } = "";
+    public string Timeline { get; set; } = "";
+    public string IsOccupied { get; set; } = "";
     public string QuickNotes { get; set; } = "";
-    public string VisitType { get; set; } = "QuoteWalkthrough";
-    public string ProvideMaterials { get; set; } = "Yes";
-    public string HaulAwayType { get; set; } = "RemoveDamagedPlants";
-    public string HasIrrigation { get; set; } = "No";
-    public string YardAccess { get; set; } = "UnlockedAccess";
-    public string PreferredDate { get; set; } = "Tomorrow";
-    public string TimeWindow { get; set; } = "Morning";
+    public string VisitType { get; set; } = "";
+    public string ProvideMaterials { get; set; } = "";
+    public string HaulAwayType { get; set; } = "";
+    public string HasIrrigation { get; set; } = "";
+    public string YardAccess { get; set; } = "";
+    public string PreferredDate { get; set; } = "";
+    public string TimeWindow { get; set; } = "";
     public string ProjectNotes { get; set; } = "";
-    public string UpdateRecipients { get; set; } = "Me,CoHost";
+    public string UpdateRecipients { get; set; } = "";
 }
 
 public class PropertyAdministratorLandscapingSubmitInput : PropertyAdministratorLandscapingStep1Input
 {
-    public string VisitType { get; set; } = "QuoteWalkthrough";
-    public string ProvideMaterials { get; set; } = "Yes";
-    public string HaulAwayType { get; set; } = "RemoveDamagedPlants";
-    public string HasIrrigation { get; set; } = "No";
-    public string YardAccess { get; set; } = "UnlockedAccess";
-    public string PreferredDate { get; set; } = "Tomorrow";
-    public string TimeWindow { get; set; } = "Morning";
+    public string VisitType { get; set; } = "";
+    public string ProvideMaterials { get; set; } = "";
+    public string HaulAwayType { get; set; } = "";
+    public string HasIrrigation { get; set; } = "";
+    public string YardAccess { get; set; } = "";
+    public string PreferredDate { get; set; } = "";
+    public string TimeWindow { get; set; } = "";
     public string? ProjectNotes { get; set; }
-    public List<string> UpdateRecipientsList { get; set; } = ["Me", "CoHost"];
+    public List<string> UpdateRecipientsList { get; set; } = [];
 }
 
 public class PropertyAdministratorLandscapingSummaryItemViewModel
