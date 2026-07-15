@@ -1141,7 +1141,7 @@ public static class UiTranslationsHome
             ["{0} miles"] = "{0} millas",
             ["See nearby places"] = "Ver lugares cercanos",
             ["See local updates"] = "Ver actualizaciones locales",
-            ["Local feed, neighbors, and help around you."] = "Feed local, vecinos y ayuda a tu alrededor.",
+            ["Local feed, neighbors, and help around you."] = "Actividad local, vecinos y ayuda a tu alrededor.",
             ["Your home dashboard, records, and details."] = "Panel de tu hogar, registros y detalles.",
             ["Search neighbors, services, or local help..."] = "Buscar vecinos, servicios o ayuda local...",
             ["Search neighbors, services, or local help"] = "Buscar vecinos, servicios o ayuda local",

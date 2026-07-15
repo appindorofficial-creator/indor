@@ -1795,5 +1795,76 @@ public static class UiTranslationsFinal
             ["New Request"] = "Nueva solicitud",
             ["Track Quotes"] = "Seguir cotizaciones",
             ["Completed steps"] = "Pasos completados",
+            ["Back to Services"] = "Volver a Servicios",
+            ["We'll ask a few quick questions"] = "Te haremos unas preguntas rápidas",
+            ["We'll remind you when it's time."] = "Te recordaremos cuando sea el momento.",
+            ["We'll help you focus on what matters most."] = "Te ayudaremos a enfocarte en lo más importante.",
+            ["Tell us about this home review"] = "Cuéntanos sobre esta revisión del hogar",
+            ["What you'll track"] = "Qué vas a registrar",
+            ["Service Detail"] = "Detalle del servicio",
+            ["Continue"] = "Continuar",
+
+            // Home Care Essentials landings (Catalog titles/copy still English in DB)
+            ["Safe Air 365"] = "Aire Seguro 365",
+            ["Filter 365"] = "Filtro 365",
+            ["Always Perfect Lawn"] = "Césped Siempre Perfecto",
+            ["Your yard, always under control."] = "Tu jardín, siempre bajo control.",
+            ["Flexible lawn mowing and yard upkeep for one-time or recurring service."] =
+                "Corte de césped y mantenimiento flexible, para una vez o de forma recurrente.",
+            ["Back yard mowing"] = "Corte de patio trasero",
+            ["Front yard mowing"] = "Corte de patio delantero",
+            ["Basic cleanup."] = "Limpieza básica.",
+            ["Basic cleanup"] = "Limpieza básica",
+            ["Front yard"] = "Patio delantero",
+            ["Pricing updates based on selected areas."] = "El precio se actualiza según las áreas seleccionadas.",
+            ["Stress-Free Trash"] = "Basura Sin Estrés",
+            ["From $20 /mo"] = "Desde $20 /mes",
+            ["Cleaning Pro"] = "Limpieza Pro",
+            ["Customized cleaning, your way."] = "Limpieza personalizada, a tu manera.",
+            ["Flexible booking. Professional cleaners. Spotless results."] =
+                "Reservas flexibles. Limpiadores profesionales. Resultados impecables.",
+            ["Professional supplies"] = "Suministros profesionales",
+            ["From $35/hr per cleaner"] = "Desde $35/h por limpiador",
+            ["Customize cleaning"] = "Personalizar limpieza",
+
+            // Home nearby network cards
+            ["Local feed, neighbors, and help around you."] =
+                "Actividad local, vecinos y ayuda a tu alrededor.",
+
+            // High-traffic Home Care Guide / smoke detector leftovers
+            ["We'll match you with the right HVAC pro based on your system details."] =
+                "Te emparejaremos con el profesional HVAC adecuado según los detalles de tu sistema.",
+            ["Protect your home and the people in it."] = "Protege tu hogar y a las personas que viven en él.",
+            ["Smoke and carbon monoxide alarms are your first line of defense. Regular checks keep them ready when it matters most."] =
+                "Las alarmas de humo y monóxido de carbono son tu primera línea de defensa. Revisiones regulares las mantienen listas cuando más importa.",
+            ["Where to track"] = "Dónde registrar",
+            ["Start reminder setup"] = "Iniciar configuración de recordatorio",
+            ["INDOR will remind you when it's time to test, change batteries, or replace older alarms."] =
+                "INDOR te recordará cuándo probar, cambiar baterías o reemplazar alarmas antiguas.",
+            ["Press the test button to make sure your alarm is working."] =
+                "Presiona el botón de prueba para asegurarte de que la alarma funciona.",
+            ["Check and replace batteries at least once a year."] =
+                "Revisa y cambia las baterías al menos una vez al año.",
+            ["Alarms should be replaced 10 years from the install date."] =
+                "Las alarmas deben reemplazarse 10 años después de la fecha de instalación.",
+            ["I want to schedule service"] = "Quiero programar el servicio",
+            ["Upload photos"] = "Subir fotos",
+            ["Best for"] = "Ideal para",
+            ["Utilities Setup"] = "Configuración de servicios",
+            ["Connect internet, cable, electricity, water, and gas for your new home."] =
+                "Conecta internet, cable, electricidad, agua y gas para tu nuevo hogar.",
+            ["Service address"] = "Dirección del servicio",
+            ["Move-in setup"] = "Configuración de mudanza",
+            ["What do you need to connect?"] = "¿Qué necesitas conectar?",
+            ["When do you need service?"] = "¿Cuándo necesitas el servicio?",
+            ["Contact preference"] = "Preferencia de contacto",
+            ["I'll contact providers myself"] = "Contactaré a los proveedores yo mismo",
+            ["Save providers for later"] = "Guardar proveedores para después",
+            ["We'll show the providers that serve this address, plus phone numbers and websites so you can connect service faster."] =
+                "Te mostraremos los proveedores que atienden esta dirección, con teléfonos y sitios web para conectar el servicio más rápido.",
+            ["Electricity"] = "Electricidad",
+            ["Water"] = "Agua",
+            ["Gas"] = "Gas",
+            ["Cable"] = "Cable",
         };
 }

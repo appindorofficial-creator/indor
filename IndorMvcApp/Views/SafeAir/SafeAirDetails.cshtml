@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.SafeAirDetailsViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("SafeAirService", "SafeAir", new { id = Model.MicroservicioId });
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 2;
@@ -124,7 +124,7 @@
             unknownHidden.value = active ? 'true' : 'false';
             sizeInputs.style.opacity = active ? '0.45' : '1';
             sizeInputs.querySelectorAll('input').forEach(i => i.disabled = active);
-            unknownBtn.textContent = active ? '@L["Enter size manually"]' : '@L["I don't know"]';
+            unknownBtn.textContent = active ? @Json.Serialize(L["Enter size manually"]) : @Json.Serialize(L["I don't know"]);
         }
 
         unknownBtn.addEventListener('click', () => setUnknown(unknownHidden.value !== 'true'));
@@ -145,8 +145,8 @@
         initSingle('providerGroup', '.provider-card', 'ProveedorFiltro', '@Model.ProveedorFiltro');
         updateSections();
 
-        const sizeInvalidMessage = '@L["Please enter a number."]';
-        const sizeRangeMessage = '@L["Enter a realistic size in inches (e.g. 20 x 25 x 1). Each side must be between 0.25 and 99.99."]';
+        const sizeInvalidMessage = @Json.Serialize(L["Please enter a number."]);
+        const sizeRangeMessage = @Json.Serialize(L["Enter a realistic size in inches (e.g. 20 x 25 x 1). Each side must be between 0.25 and 99.99."]);
         const sizePattern = /^\d+(\.\d+)?$/;
         const sizeMin = 0.25;
         const sizeMax = 99.99;

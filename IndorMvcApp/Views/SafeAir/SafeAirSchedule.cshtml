@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.SafeAirScheduleViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("SafeAirDetails", "SafeAir", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 2;
