@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = L["Review & Confirm - INDOR"];
     ViewData["WizardTitle"] = L["Review & Confirm"];
-var priceLabel = string.Equals(Model.PrecioPrefijo, "From", StringComparison.OrdinalIgnoreCase) ? "Starting at" : Model.PrecioPrefijo;
+var priceLabel = string.Equals(Model.PrecioPrefijo, "From", StringComparison.OrdinalIgnoreCase) ? L["Starting at"] : L.Catalog(Model.PrecioPrefijo);
     ViewData["WizardBackUrl"] = Url.Action("InvestorUpload", "Inspecciones", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 4;
     ViewData["WizardTotalSteps"] = 4;
@@ -20,11 +20,11 @@ var priceLabel = string.Equals(Model.PrecioPrefijo, "From", StringComparison.Ord
         <div class="service-card">
             <div class="service-row">
                 <div>
-                    <div class="service-name">@Model.NombreInspeccion</div>
-                    <div class="service-subtitle">@Model.SubtituloInspeccion</div>
+                    <div class="service-name">@L.Catalog(Model.NombreInspeccion)</div>
+                    <div class="service-subtitle">@L.Catalog(Model.SubtituloInspeccion)</div>
                     @if (!string.IsNullOrWhiteSpace(Model.FrecuenciaInspeccion))
                     {
-                        <div class="freq-badge"><i class="fas fa-house"></i> @Model.FrecuenciaInspeccion</div>
+                        <div class="freq-badge"><i class="fas fa-house"></i> @L.Catalog(Model.FrecuenciaInspeccion)</div>
                     }
                 </div>
                 <div class="service-price">@priceLabel<br /><strong>$@Model.Precio.ToString("0") @Model.Moneda</strong></div>
@@ -36,7 +36,7 @@ var priceLabel = string.Equals(Model.PrecioPrefijo, "From", StringComparison.Ord
                 <i class="fas fa-bullseye"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Investment goal"]</div>
-                    <div class="summary-value">@Model.ObjetivoInversion</div>
+                    <div class="summary-value">@UiDisplayLocalization.Localize(L, Model.ObjetivoInversion)</div>
                 </div>
             </div>
             <div class="summary-row">
@@ -44,42 +44,42 @@ var priceLabel = string.Equals(Model.PrecioPrefijo, "From", StringComparison.Ord
                 <div style="flex:1;">
                     <div class="summary-label">@L["Property"]</div>
                     <div class="summary-value">@Model.DireccionPropiedad</div>
-                    <div class="summary-value" style="font-weight:500;color:#64748B;margin-top:4px;">@Model.PropiedadResumen</div>
+                    <div class="summary-value" style="font-weight:500;color:#64748B;margin-top:4px;">@UiDisplayLocalization.Localize(L, Model.PropiedadResumen)</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-wrench"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Rehab level"]</div>
-                    <div class="summary-value">@Model.NivelRehabResumen</div>
+                    <div class="summary-value">@UiDisplayLocalization.Localize(L, Model.NivelRehabResumen)</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-magnifying-glass"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Focus areas"]</div>
-                    <div class="summary-value">@Model.AreasRevisionResumen</div>
+                    <div class="summary-value">@UiDisplayLocalization.Localize(L, Model.AreasRevisionResumen)</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-user-group"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Access"]</div>
-                    <div class="summary-value">@Model.AccesoResumen</div>
+                    <div class="summary-value">@UiDisplayLocalization.Localize(L, Model.AccesoResumen)</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-file-lines"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Files"]</div>
-                    <div class="summary-value">@Model.ArchivosResumen</div>
+                    <div class="summary-value">@UiDisplayLocalization.Localize(L, Model.ArchivosResumen)</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-comment-dots"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Comments"]</div>
-                    <div class="summary-value">@(string.IsNullOrWhiteSpace(Model.ComentariosProveedor) ? "No additional comments were provided." : Model.ComentariosProveedor)</div>
+                    <div class="summary-value">@(string.IsNullOrWhiteSpace(Model.ComentariosProveedor) ? L["No additional comments were provided."] : Model.ComentariosProveedor)</div>
                 </div>
             </div>
         </div>

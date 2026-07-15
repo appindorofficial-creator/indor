@@ -2488,5 +2488,17 @@ public static class UiTranslationsFinal
             ["1 day before"] = "1 día antes",
             ["Next"] = "Siguiente",
             ["View appointment"] = "Ver cita",
+            // SmokeDetector + Investor inspection leftovers
+            ["Chirping"] = "Pitido",
+            ["Chirping alarm"] = "Alarma chirriando",
+            ["Someone home"] = "Alguien en casa",
+            ["Starting at"] = "Desde",
+            ["From"] = "Desde",
+            ["Comments"] = "Comentarios",
+            ["No additional comments were provided."] = "No se proporcionaron comentarios adicionales.",
+            ["Investor Details"] = "Detalles del inversionista",
+            ["Investor Details - INDOR"] = "Detalles del inversionista - INDOR",
+            ["Review your inspection request"] = "Revisa tu solicitud de inspección",
+            ["Confirm the details before scheduling your investor inspection."] = "Confirma los detalles antes de programar tu inspección para inversionistas.",
         };
 }

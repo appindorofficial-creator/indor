@@ -34,7 +34,7 @@ var unsafeInside = Model.SeguridadResumen.Contains("Not sure", StringComparison.
             <div class="summary-row"><i class="fas fa-location-dot"></i><div style="flex:1;"><div class="summary-label">@L["Locations"]</div><div class="summary-value">@Model.UbicacionesResumen</div></div></div>
             <div class="summary-row"><i class="fas fa-triangle-exclamation warn"></i><div style="flex:1;"><div class="summary-label">@L["Safety status"]</div><div class="summary-value @(unsafeInside ? "warn" : "")">@Model.SeguridadResumen</div></div></div>
             <div class="summary-row"><i class="fas fa-wind"></i><div style="flex:1;"><div class="summary-label">@L["Gas smell"]</div><div class="summary-value">@Model.OlorGasResumen</div></div></div>
-            <div class="summary-row"><i class="fas fa-user"></i><div style="flex:1;"><div class="summary-label">@L["Access"]</div><div class="summary-value">@Model.AccesoResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-user"></i><div style="flex:1;"><div class="summary-label">@L["Access"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.AccesoResumen)</div></div></div>
         </div>
 
         <label asp-for="NotaCorta" class="field-label">@L["Optional notes"]</label>

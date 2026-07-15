@@ -19,8 +19,8 @@
         <div class="service-card">
             <div class="service-row">
                 <div>
-                    <div class="service-name">@Model.NombreInspeccion</div>
-                    <div class="service-subtitle">@Model.SubtituloInspeccion</div>
+                    <div class="service-name">@L.Catalog(Model.NombreInspeccion)</div>
+                    <div class="service-subtitle">@L.Catalog(Model.SubtituloInspeccion)</div>
                 </div>
                 <div class="service-price">$@Model.Precio.ToString("0") @Model.Moneda</div>
             </div>
@@ -51,7 +51,7 @@
                 <i class="fas fa-user"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Access"]</div>
-                    <div class="summary-value">@Model.AccesoResumen</div>
+                    <div class="summary-value">@UiDisplayLocalization.Localize(L, Model.AccesoResumen)</div>
                 </div>
             </div>
             <div class="summary-row">
@@ -65,7 +65,7 @@
                 <i class="fas fa-comment-dots"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Comments"]</div>
-                    <div class="summary-value">@(string.IsNullOrWhiteSpace(Model.ComentariosProveedor) ? "No additional comments were provided." : Model.ComentariosProveedor)</div>
+                    <div class="summary-value">@(string.IsNullOrWhiteSpace(Model.ComentariosProveedor) ? L["No additional comments were provided."] : Model.ComentariosProveedor)</div>
                 </div>
             </div>
         </div>

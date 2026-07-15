@@ -19,8 +19,8 @@
         <div class="service-card">
             <div class="service-row">
                 <div>
-                    <div class="service-name">@Model.NombreInspeccion</div>
-                    <div class="service-subtitle">@Model.SubtituloInspeccion</div>
+                    <div class="service-name">@L.Catalog(Model.NombreInspeccion)</div>
+                    <div class="service-subtitle">@L.Catalog(Model.SubtituloInspeccion)</div>
                 </div>
                 <div class="service-price">@Model.Moneda @Model.Precio.ToString("0.##")</div>
             </div>
@@ -54,7 +54,7 @@
             <div class="detail-row"><span class="detail-label">@L["Reason"]</span><span class="detail-value">@Model.MotivoResumen</span></div>
             <div class="detail-row"><span class="detail-label">@L["Property type"]</span><span class="detail-value">@Model.TipoPropiedadResumen</span></div>
             <div class="detail-row"><span class="detail-label">@L["Report"]</span><span class="detail-value">@Model.ReporteResumen</span></div>
-            <div class="detail-row"><span class="detail-label">@L["Access"]</span><span class="detail-value">@Model.AccesoResumen</span></div>
+            <div class="detail-row"><span class="detail-label">@L["Access"]</span><span class="detail-value">@UiDisplayLocalization.Localize(L, Model.AccesoResumen)</span></div>
         </div>
 
         <div class="field-card">
@@ -87,7 +87,7 @@
 
         <div class="field-card">
             <div class="section-title">@L["Comments"]</div>
-            <div class="comments-box">@(string.IsNullOrWhiteSpace(Model.ComentariosProveedor) ? "No additional comments were provided." : Model.ComentariosProveedor)</div>
+            <div class="comments-box">@(string.IsNullOrWhiteSpace(Model.ComentariosProveedor) ? L["No additional comments were provided."] : Model.ComentariosProveedor)</div>
         </div>
 
         <button type="submit" class="btn-primary">@L["Confirm &amp; Continue"] <i class="fas fa-check"></i></button>
