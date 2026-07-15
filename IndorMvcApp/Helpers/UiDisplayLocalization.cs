@@ -608,7 +608,7 @@ public static class UiDisplayLocalization
             return localizer.T(
                 "{0} at {1}",
                 Localize(localizer, atPropertyMatch.Groups[1].Value.Trim()),
-                atPropertyMatch.Groups[2].Value.Trim());
+                Localize(localizer, atPropertyMatch.Groups[2].Value.Trim()));
         }
 
         var timestampAtMatch = Regex.Match(text, @"^(.+?) at (\d{1,2}:\d{2} [AP]M)$", RegexOptions.IgnoreCase);

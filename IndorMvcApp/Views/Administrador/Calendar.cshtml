@@ -31,7 +31,7 @@
                     <img src="@(visit.ImageUrl ?? "/inspeccion2.jpeg")" alt="" />
                     <div>
                         <strong>@UiDisplayLocalization.Localize(L, visit.Title)</strong>
-                        <span>@visit.PropertyName</span>
+                        <span>@UiDisplayLocalization.Localize(L, visit.PropertyName)</span>
                         <small>@UiDisplayLocalization.Localize(L, visit.DateLabel)</small>
                     </div>
                 </article>
@@ -53,7 +53,7 @@
                     <div class="pa-request-body">
                         <span class="pa-status-pill pa-status-pill--@request.StatusCss">@UiDisplayLocalization.Localize(L, request.StatusLabel)</span>
                         <strong>@UiDisplayLocalization.Localize(L, request.Title)</strong>
-                        <small>@request.PropertyName · @request.Location</small>
+                        <small>@UiDisplayLocalization.Localize(L, request.PropertyName) · @UiDisplayLocalization.Localize(L, request.Location)</small>
                         <span class="pa-request-meta"><i class="fas fa-calendar"></i> @UiDisplayLocalization.Localize(L, request.DateLabel)</span>
                     </div>
                 </article>

@@ -225,7 +225,7 @@ public class PropertyAdministratorPortalService(
             var recent = MapRecentRequest(url, request);
             items.Add((request.FechaCreacion, new PropertyAdministratorNotificationItemViewModel
             {
-                Description = PropertyAdministratorDisplayLocalization.EventAtProperty(PaL(request.Title), request.PropertyName),
+                Description = PropertyAdministratorDisplayLocalization.EventAtProperty(PaL(request.Title), PaL(request.PropertyName)),
                 OccurredLabel = FormatRelativeTime(request.FechaCreacion),
                 CategoryTag = recent.StatusLabel,
                 TagCssClass = $"pa-notify-tag--{recent.StatusCss}",
@@ -241,7 +241,7 @@ public class PropertyAdministratorPortalService(
         {
             items.Add((visit.VisitDate.ToUniversalTime(), new PropertyAdministratorNotificationItemViewModel
             {
-                Description = PropertyAdministratorDisplayLocalization.EventAtProperty(PaL(visit.Title), visit.PropertyName),
+                Description = PropertyAdministratorDisplayLocalization.EventAtProperty(PaL(visit.Title), PaL(visit.PropertyName)),
                 OccurredLabel = visit.VisitDate.ToString("MMM d, yyyy", CultureInfo.CurrentCulture),
                 CategoryTag = PaL("Visit"),
                 TagCssClass = "pa-notify-tag--visit",
@@ -963,7 +963,7 @@ public class PropertyAdministratorPortalService(
         new()
         {
             Title = PaL(visit.Title),
-            PropertyName = visit.PropertyName,
+            PropertyName = PaL(visit.PropertyName),
             DateLabel = PaT("{0} • {1}", visit.VisitDate.ToString("MMM d, yyyy", CultureInfo.CurrentCulture), visit.TimeWindow),
             ImageUrl = visit.ImageUrl
         };
@@ -987,8 +987,8 @@ public class PropertyAdministratorPortalService(
         {
             Id = request.Id,
             Title = PaL(request.Title),
-            PropertyName = request.PropertyName,
-            Location = request.Location,
+            PropertyName = PaL(request.PropertyName),
+            Location = PaL(request.Location),
             Status = request.Status,
             StatusLabel = label,
             StatusCss = css,
