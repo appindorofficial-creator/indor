@@ -74,7 +74,7 @@ public class SolicitudSafeAir
     public Propiedad? Propiedad { get; set; }
 
     [Required, MaxLength(30)]
-    public string TipoNecesidad { get; set; } = "IndorReplaces";
+    public string TipoNecesidad { get; set; } = string.Empty;
 
     [MaxLength(10)]
     public string? CantidadFiltros { get; set; }
@@ -96,7 +96,7 @@ public class SolicitudSafeAir
     [MaxLength(30)]
     public string? ProveedorFiltro { get; set; }
 
-    public bool RecordatorioActivo { get; set; } = true;
+    public bool RecordatorioActivo { get; set; }
 
     [MaxLength(30)]
     public string? VentanaTiempo { get; set; }

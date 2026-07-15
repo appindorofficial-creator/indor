@@ -7,10 +7,11 @@
     ViewData["WizardTotalSteps"] = 2;
 }
 
+
 <h2 class="page-heading" style="font-size:1.1rem;">@L["Filter details"]</h2>
     <p class="page-lead" style="margin-top:-8px;">@L["Help us identify the right filter for your home."]</p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
     <form asp-action="SafeAirDetails" method="post" novalidate id="safeAirDetailsForm">
         <input type="hidden" asp-for="SolicitudId" />
@@ -22,7 +23,7 @@
         <input type="hidden" asp-for="FiltroTamanioDesconocido" id="FiltroTamanioDesconocido" value="@(Model.FiltroTamanioDesconocido ? "true" : "false")" />
         <input type="hidden" asp-for="RecordatorioActivo" id="RecordatorioActivo" value="@(Model.RecordatorioActivo ? "true" : "false")" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoNecesidad">
             <div class="field-label-row"><span class="question-num">1</span><span class="field-label" style="margin:0;">@L["What do you need today?"]</span></div>
             <div class="need-grid" id="needGroup">
                 <button type="button" class="need-card" data-value="IndorReplaces"><i class="fas fa-box"></i>@L["INDOR replaces it"]</button>
@@ -31,7 +32,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="CantidadFiltros">
             <div class="field-label-row"><span class="question-num">2</span><span class="field-label" style="margin:0;">@L["How many filters?"]</span></div>
             <div class="count-row" id="countGroup">
                 <button type="button" class="count-btn" data-value="One">1</button>
@@ -40,7 +41,7 @@
             </div>
         </div>
 
-        <div class="field-card" id="sizeSection">
+        <div class="field-card" id="sizeSection" data-svc-or-unknown="FiltroTamanioDesconocido">
             <div class="field-label-row"><span class="question-num">3</span><span class="field-label" style="margin:0;">@L["Do you know the filter size?"]</span></div>
             <div class="size-row" id="sizeInputs">
                 <div class="size-field">
@@ -61,7 +62,7 @@
             <button type="button" class="link-btn" id="unknownSizeBtn">@L["I don't know"]</button>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="UbicacionFiltro">
             <div class="field-label-row"><span class="question-num">4</span><span class="field-label" style="margin:0;">@L["Where is the filter located?"]</span></div>
             <div class="location-grid" id="locationGroup">
                 <button type="button" class="location-tile" data-value="Ceiling"><i class="fas fa-border-all"></i>@L["Ceiling"]</button>
@@ -72,7 +73,7 @@
             </div>
         </div>
 
-        <div class="field-card" id="providerSection">
+        <div class="field-card" id="providerSection" data-svc-required="ProveedorFiltro">
             <div class="field-label-row"><span class="question-num">5</span><span class="field-label" style="margin:0;">@L["Who provides the filter?"]</span></div>
             <div class="provider-grid" id="providerGroup">
                 <button type="button" class="provider-card" data-value="IndorBrings"><i class="fas fa-truck"></i>@L["INDOR brings it"]</button>
@@ -80,7 +81,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <div class="field-label-row"><span class="question-num">6</span></div>
             <div class="toggle-row">
                 <div class="toggle-copy">
@@ -95,7 +96,7 @@
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">@L["Continue"]</button>
-        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline" formnovalidate>@L["Back"]</button>
     </form>
 
 @section Scripts {
@@ -103,8 +104,14 @@
     (function () {
         function initSingle(groupId, selector, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
+            if (!hidden) return;
+            const seed = (initial && String(initial).trim()) || '';
+            if (!seed) {
+                hidden.value = '';
+            }
+
             document.querySelectorAll('#' + groupId + ' ' + selector).forEach(btn => {
-                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                if (seed && btn.dataset.value === seed) btn.classList.add('active');
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('#' + groupId + ' ' + selector).forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
@@ -112,6 +119,7 @@
                     if (hiddenId === 'TipoNecesidad') updateSections();
                 });
             });
+            if (seed) hidden.value = seed;
         }
 
         const unknownHidden = document.getElementById('FiltroTamanioDesconocido');
@@ -136,7 +144,13 @@
 
         function updateSections() {
             const need = document.getElementById('TipoNecesidad').value;
-            document.getElementById('providerSection').style.display = need === 'RemindOnly' ? 'none' : 'block';
+            const providerSection = document.getElementById('providerSection');
+            const hideProvider = need === 'RemindOnly';
+            providerSection.style.display = hideProvider ? 'none' : '';
+            if (hideProvider) {
+                document.getElementById('ProveedorFiltro').value = '';
+                providerSection.querySelectorAll('.provider-card').forEach(b => b.classList.remove('active'));
+            }
         }
 
         initSingle('needGroup', '.need-card', 'TipoNecesidad', '@Model.TipoNecesidad');
@@ -150,18 +164,6 @@
         const sizePattern = /^\d+(\.\d+)?$/;
         const sizeMin = 0.25;
         const sizeMax = 99.99;
-
-        function isValidFilterSize(value) {
-            const trimmed = (value || '').trim();
-            if (trimmed === '') {
-                return true;
-            }
-            if (!sizePattern.test(trimmed)) {
-                return false;
-            }
-            const n = parseFloat(trimmed);
-            return !Number.isNaN(n) && n >= sizeMin && n <= sizeMax;
-        }
 
         function filterSizeErrorMessage(value) {
             const trimmed = (value || '').trim();

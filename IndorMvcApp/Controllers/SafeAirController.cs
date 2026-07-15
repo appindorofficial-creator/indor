@@ -94,20 +94,23 @@ public class SafeAirController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id);
         if (solicitud == null) return NotFound();
 
+        var detailsSaved = SafeAirDetailsWereSaved(solicitud);
+
         return View(new SafeAirDetailsViewModel
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
             PageTitle = solicitud.Microservicio?.Nombre ?? "Safe Air 365",
-            TipoNecesidad = solicitud.TipoNecesidad ?? "IndorReplaces",
-            CantidadFiltros = solicitud.CantidadFiltros ?? "One",
-            FiltroAncho = solicitud.FiltroAncho,
-            FiltroAlto = solicitud.FiltroAlto,
-            FiltroProfundidad = solicitud.FiltroProfundidad,
-            FiltroTamanioDesconocido = solicitud.FiltroTamanioDesconocido,
-            UbicacionFiltro = solicitud.UbicacionFiltro ?? "Ceiling",
-            ProveedorFiltro = solicitud.ProveedorFiltro ?? "IndorBrings",
-            RecordatorioActivo = solicitud.RecordatorioActivo
+            // Need type may come from the service CTA; other choices stay blank until saved.
+            TipoNecesidad = solicitud.TipoNecesidad ?? string.Empty,
+            CantidadFiltros = detailsSaved ? (solicitud.CantidadFiltros ?? string.Empty) : string.Empty,
+            FiltroAncho = detailsSaved ? solicitud.FiltroAncho : null,
+            FiltroAlto = detailsSaved ? solicitud.FiltroAlto : null,
+            FiltroProfundidad = detailsSaved ? solicitud.FiltroProfundidad : null,
+            FiltroTamanioDesconocido = detailsSaved && solicitud.FiltroTamanioDesconocido,
+            UbicacionFiltro = detailsSaved ? (solicitud.UbicacionFiltro ?? string.Empty) : string.Empty,
+            ProveedorFiltro = detailsSaved ? solicitud.ProveedorFiltro : null,
+            RecordatorioActivo = detailsSaved && solicitud.RecordatorioActivo
         });
     }
 
@@ -138,12 +141,28 @@ public class SafeAirController : Controller
             model.ProveedorFiltro = null;
             ModelState.Remove(nameof(model.ProveedorFiltro));
         }
+        else if (string.IsNullOrWhiteSpace(model.ProveedorFiltro))
+        {
+            ModelState.AddModelError(nameof(model.ProveedorFiltro), "Select who provides the filter.");
+        }
 
         if (!model.FiltroTamanioDesconocido)
         {
-            ValidateFilterSizeFormValue(Request.Form["FiltroAncho"].ToString(), nameof(model.FiltroAncho));
-            ValidateFilterSizeFormValue(Request.Form["FiltroAlto"].ToString(), nameof(model.FiltroAlto));
-            ValidateFilterSizeFormValue(Request.Form["FiltroProfundidad"].ToString(), nameof(model.FiltroProfundidad));
+            var widthRaw = Request.Form["FiltroAncho"].ToString();
+            var heightRaw = Request.Form["FiltroAlto"].ToString();
+            var depthRaw = Request.Form["FiltroProfundidad"].ToString();
+            if (string.IsNullOrWhiteSpace(widthRaw)
+                || string.IsNullOrWhiteSpace(heightRaw)
+                || string.IsNullOrWhiteSpace(depthRaw))
+            {
+                ModelState.AddModelError("", "Enter the filter size or tap \"I don't know\".");
+            }
+            else
+            {
+                ValidateFilterSizeFormValue(widthRaw, nameof(model.FiltroAncho));
+                ValidateFilterSizeFormValue(heightRaw, nameof(model.FiltroAlto));
+                ValidateFilterSizeFormValue(depthRaw, nameof(model.FiltroProfundidad));
+            }
         }
 
         if (!ModelState.IsValid)
@@ -210,6 +229,22 @@ public class SafeAirController : Controller
         if (files != null && files.Count > 0)
         {
             await SaveFilesAsync(solicitud, userId, files);
+        }
+
+        var showScheduleOptions = string.Equals(solicitud.TipoNecesidad, "IndorReplaces", StringComparison.OrdinalIgnoreCase);
+        if (!showScheduleOptions)
+        {
+            ModelState.Remove(nameof(model.VentanaTiempo));
+            model.VentanaTiempo = string.Empty;
+        }
+        else if (string.IsNullOrWhiteSpace(model.VentanaTiempo))
+        {
+            ModelState.AddModelError(nameof(model.VentanaTiempo), "Select a preferred time.");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.DetallesAcceso))
+        {
+            ModelState.AddModelError(nameof(model.DetallesAcceso), "Select access details.");
         }
 
         if (!ModelState.IsValid)
@@ -444,11 +479,8 @@ public class SafeAirController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                TipoNecesidad = "IndorReplaces",
-                CantidadFiltros = "One",
-                UbicacionFiltro = "Ceiling",
-                ProveedorFiltro = "IndorBrings",
-                RecordatorioActivo = true
+                TipoNecesidad = string.Empty,
+                RecordatorioActivo = false
             };
             _db.SolicitudesSafeAir.Add(solicitud);
             await _db.SaveChangesAsync();
@@ -473,15 +505,19 @@ public class SafeAirController : Controller
         return await query.FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
     }
 
-    private SafeAirScheduleViewModel BuildScheduleViewModel(SolicitudSafeAir solicitud) =>
-        new()
+    private SafeAirScheduleViewModel BuildScheduleViewModel(SolicitudSafeAir solicitud)
+    {
+        var scheduleSaved = !string.IsNullOrWhiteSpace(solicitud.VentanaTiempo)
+            || !string.IsNullOrWhiteSpace(solicitud.DetallesAcceso);
+
+        return new SafeAirScheduleViewModel
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
             PageTitle = solicitud.Microservicio?.Nombre ?? "Safe Air 365",
-            TipoNecesidad = solicitud.TipoNecesidad ?? "IndorReplaces",
-            VentanaTiempo = solicitud.VentanaTiempo ?? "NextAvailable",
-            DetallesAcceso = solicitud.DetallesAcceso ?? "House",
+            TipoNecesidad = solicitud.TipoNecesidad ?? string.Empty,
+            VentanaTiempo = scheduleSaved ? (solicitud.VentanaTiempo ?? string.Empty) : string.Empty,
+            DetallesAcceso = scheduleSaved ? (solicitud.DetallesAcceso ?? string.Empty) : string.Empty,
             NotasAcceso = solicitud.NotasAcceso,
             NombreServicio = solicitud.Microservicio?.Nombre ?? "Safe Air 365",
             CantidadFiltrosLabel = SafeAirDisplayLabels.FormatFilterCount(solicitud.CantidadFiltros),
@@ -492,6 +528,19 @@ public class SafeAirController : Controller
             ShowScheduleOptions = string.Equals(solicitud.TipoNecesidad, "IndorReplaces", StringComparison.OrdinalIgnoreCase),
             ArchivosExistentes = MapExistingFiles(solicitud)
         };
+    }
+
+    private static bool SafeAirDetailsWereSaved(SolicitudSafeAir solicitud)
+    {
+        // Only restore prior picks after the user saved this step (or later).
+        // Legacy InProgress rows may still have soft-seeded values in the DB.
+        if (string.Equals(solicitud.Estado, "DetailsCompleted", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return !string.IsNullOrWhiteSpace(solicitud.VentanaTiempo);
+    }
 
     private SafeAirScheduleViewModel MergeScheduleViewModel(SolicitudSafeAir solicitud, SafeAirScheduleViewModel posted)
     {

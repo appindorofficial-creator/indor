@@ -31,22 +31,22 @@ public class SafeAirDetailsViewModel
     public int MicroservicioId { get; set; }
     public string PageTitle { get; set; } = "Safe Air 365";
 
-    [Required]
-    public string TipoNecesidad { get; set; } = "IndorReplaces";
+    [Required(ErrorMessage = "Select what you need today.")]
+    public string TipoNecesidad { get; set; } = string.Empty;
 
-    [Required]
-    public string CantidadFiltros { get; set; } = "One";
+    [Required(ErrorMessage = "Select how many filters.")]
+    public string CantidadFiltros { get; set; } = string.Empty;
 
     public decimal? FiltroAncho { get; set; }
     public decimal? FiltroAlto { get; set; }
     public decimal? FiltroProfundidad { get; set; }
     public bool FiltroTamanioDesconocido { get; set; }
 
-    [Required]
-    public string UbicacionFiltro { get; set; } = "Ceiling";
+    [Required(ErrorMessage = "Select where the filter is located.")]
+    public string UbicacionFiltro { get; set; } = string.Empty;
 
-    public string? ProveedorFiltro { get; set; } = "IndorBrings";
-    public bool RecordatorioActivo { get; set; } = true;
+    public string? ProveedorFiltro { get; set; }
+    public bool RecordatorioActivo { get; set; }
 }
 
 public class SafeAirScheduleViewModel
@@ -54,12 +54,12 @@ public class SafeAirScheduleViewModel
     public int SolicitudId { get; set; }
     public int MicroservicioId { get; set; }
     public string PageTitle { get; set; } = "Safe Air 365";
-    public string TipoNecesidad { get; set; } = "IndorReplaces";
+    public string TipoNecesidad { get; set; } = string.Empty;
 
-    [Required]
-    public string VentanaTiempo { get; set; } = "NextAvailable";
+    public string VentanaTiempo { get; set; } = string.Empty;
 
-    public string DetallesAcceso { get; set; } = "House";
+    [Required(ErrorMessage = "Select access details.")]
+    public string DetallesAcceso { get; set; } = string.Empty;
 
     [MaxLength(500)]
     public string? NotasAcceso { get; set; }

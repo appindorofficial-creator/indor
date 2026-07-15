@@ -76,7 +76,7 @@
 
         @if (Model.ShowScheduleOptions)
         {
-            <div class="field-card">
+            <div class="field-card" data-svc-required="VentanaTiempo">
                 <span class="field-label">@L["Preferred time"]</span>
                 <div class="chip-scroll" id="timeGroup">
                     <button type="button" class="chip-option" data-value="NextAvailable"><i class="fas fa-clock"></i> @L["Next available"]</button>
@@ -87,7 +87,7 @@
             </div>
         }
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="DetallesAcceso">
             <span class="field-label">@L["Access details"]</span>
             <div class="chip-scroll" id="accessGroup">
                 <button type="button" class="chip-option" data-value="House"><i class="fas fa-house"></i> @L["House"]</button>
@@ -136,14 +136,19 @@
         function initSingle(groupId, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
             if (!hidden) return;
+            const seed = (initial && String(initial).trim()) || '';
+            if (!seed) {
+                hidden.value = '';
+            }
             document.querySelectorAll('#' + groupId + ' .chip-option').forEach(btn => {
-                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                if (seed && btn.dataset.value === seed) btn.classList.add('active');
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('#' + groupId + ' .chip-option').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     hidden.value = btn.dataset.value;
                 });
             });
+            if (seed) hidden.value = seed;
         }
 
         initSingle('timeGroup', 'VentanaTiempo', '@Model.VentanaTiempo');
