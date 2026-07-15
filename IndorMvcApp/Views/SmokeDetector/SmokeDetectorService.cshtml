@@ -31,7 +31,7 @@
                         <strong>@L.Catalog(item.Text)</strong>
                         @if (!string.IsNullOrWhiteSpace(item.Subtext))
                         {
-                            <span>@item.Subtext</span>
+                            <span>@L.Catalog(item.Subtext)</span>
                         }
                     </div>
                 }

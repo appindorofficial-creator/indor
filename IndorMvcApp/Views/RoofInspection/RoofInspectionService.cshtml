@@ -33,7 +33,7 @@
                     </summary>
                     @if (!string.IsNullOrWhiteSpace(item.Subtext))
                     {
-                        <p class="roof-rec-detail">@item.Subtext</p>
+                        <p class="roof-rec-detail">@L.Catalog(item.Subtext)</p>
                     }
                 </details>
             }
@@ -65,5 +65,5 @@
 
     @if (!string.IsNullOrWhiteSpace(Model.TrustTexto))
     {
-        <div class="trust-footer"><i class="fas fa-shield-halved"></i><span>@Model.TrustTexto</span></div>
+        <div class="trust-footer"><i class="fas fa-shield-halved"></i><span>@L.Catalog(Model.TrustTexto)</span></div>
     }
