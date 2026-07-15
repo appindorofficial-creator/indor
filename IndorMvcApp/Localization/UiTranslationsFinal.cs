@@ -2486,5 +2486,7 @@ public static class UiTranslationsFinal
             ["In {0} days"] = "En {0} días",
             ["custom quote"] = "cotización personalizada",
             ["1 day before"] = "1 día antes",
+            ["Next"] = "Siguiente",
+            ["View appointment"] = "Ver cita",
         };
 }

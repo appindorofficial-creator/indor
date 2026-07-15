@@ -106,7 +106,7 @@ var fechaTexto = Model.FechaCita.ToString("MMM dd, yyyy", System.Globalization.C
         </div>
 
         <a asp-action="BookingConfirmed" asp-route-type="@Model.FlowType" asp-route-id="@Model.SolicitudId" class="btn-primary">
-            View appointment <i class="fas fa-arrow-right"></i>
+            @L["View appointment"] <i class="fas fa-arrow-right"></i>
         </a>
         <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-secondary">
             <i class="far fa-calendar"></i> Go to Schedule
