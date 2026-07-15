@@ -4,6 +4,9 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Air Filter Change"].ToString();
+    ViewBag.FlowSubtitle = L["Tell us what you need and how the technician can access the property."].ToString();
+    ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
     ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     var propertyId = Model.ViewingProperty?.Id ?? 0;
     var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -12,10 +15,7 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    <section class="pa-flow-intro">
-        <h1>@L["Air Filter Change"] <span class="pa-flow-step-pill pa-flow-step-pill--inline">@L.T("Step {0} of {1}", Model.FlowStep, Model.TotalSteps)</span></h1>
-        <p>@L["Tell us what you need and how the technician can access the property."]</p>
-    </section>
+    
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
 

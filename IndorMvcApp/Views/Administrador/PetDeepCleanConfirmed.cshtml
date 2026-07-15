@@ -4,6 +4,9 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Pet Deep Cleaning scheduled"].ToString();
+    ViewBag.FlowSubtitle = L["You're all set! We've scheduled a licensed pro to get your rental guest-ready after a pet stay."].ToString();
+    ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
     ViewBag.FlowShowBack = false;
     var propertyLabel = Model.ViewingProperty != null
         ? $"{Model.ViewingProperty.PropertyTypeLabel} • {Model.ViewingProperty.Location}"

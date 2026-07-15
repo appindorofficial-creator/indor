@@ -2,21 +2,17 @@
 @{
     ViewData["Title"] = L["Emergency Plumbing request sent"];
     Layout = "_PropertyAdminLayout";
-    ViewBag.FlowStep = Model.FlowStep;
-    ViewBag.FlowTotalSteps = Model.TotalSteps;
-    ViewBag.FlowShowBack = false;
+    ViewBag.InviteFlowTitle = L["Emergency Plumbing request sent"].ToString();
+    ViewBag.InviteFlowSubtitle = L.T("A technician is on the way to {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"]).ToString();
+    ViewBag.InviteFlowStep = Model.FlowStep;
+    ViewBag.InviteFlowSteps = new[] { L["Details"].ToString(), L["Access"].ToString(), L["Done"].ToString() };
     var propertyLabel = Model.ViewingProperty != null
         ? $"{Model.ViewingProperty.PropertyTypeLabel} • {Model.ViewingProperty.Location}"
         : "";
 }
 
 <div class="pa-portal-shell pa-portal-shell--flow">
-    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
-
-    <section class="pa-flow-intro">
-        <h1>@L["Emergency Plumbing request sent"]</h1>
-        <p>@L.T("A technician is on the way to {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"])</p>
-    </section>
+    @await Html.PartialAsync("_PropertyAdminInviteFlowHeader")
 
     <div class="pa-success-banner">
         <span class="pa-success-icon"><i class="fas fa-check"></i></span>

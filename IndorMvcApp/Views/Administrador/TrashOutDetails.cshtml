@@ -4,6 +4,9 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Trash Out Service"].ToString();
+    ViewBag.FlowSubtitle = L["Set up curbside bin service for your rental or Airbnb property."].ToString();
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Access"].ToString(), L["Done"].ToString() };
     ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     var propertyId = Model.ViewingProperty?.Id ?? 0;
     var bins = Model.Bins.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -12,10 +15,7 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    <section class="pa-flow-intro">
-        <h1><i class="fas fa-trash-can pa-flow-title-icon pa-flow-title-icon--purple"></i> @L["Trash Out Service"]</h1>
-        <p>@L["Set up curbside bin service for your rental or Airbnb property."]</p>
-    </section>
+    
 
     @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
     {

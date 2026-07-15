@@ -204,6 +204,7 @@ public class PropertyAdministratorTasksViewModel : PropertyAdministratorPortalSh
 public class PropertyAdministratorProfileMenuItemViewModel
 {
     public string Label { get; set; } = "";
+    public string Description { get; set; } = "";
     public string IconClass { get; set; } = "";
     public string Url { get; set; } = "#";
     public bool IsDanger { get; set; }

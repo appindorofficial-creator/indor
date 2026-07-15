@@ -4,6 +4,9 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Smoke Detector Check scheduled"].ToString();
+    ViewBag.FlowSubtitle = L["Your safety check is booked and ready."].ToString();
+    ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
     ViewBag.FlowShowBack = false;
     var propertyLabel = Model.ViewingProperty != null
         ? $"{Model.ViewingProperty.PropertyTypeLabel} • {Model.ViewingProperty.Location}"
@@ -13,10 +16,7 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    <section class="pa-flow-intro">
-        <h1>@L["Smoke Detector Check scheduled"]</h1>
-        <p>@L["Your safety check is booked and ready."]</p>
-    </section>
+    
 
     <div class="pa-success-banner pa-success-banner--safety">
         <span class="pa-success-icon"><i class="fas fa-check"></i></span>

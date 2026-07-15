@@ -4,6 +4,9 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Pressure Washing"].ToString();
+    ViewBag.FlowSubtitle = L["Tell us what needs to be cleaned so we can prepare the right crew."].ToString();
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Schedule"].ToString(), L["Done"].ToString() };
     ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     var propertyId = Model.ViewingProperty?.Id ?? 0;
     var areas = Model.WashAreas.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -12,10 +15,7 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    <section class="pa-flow-intro">
-        <h1><i class="fas fa-spray-can pa-flow-title-icon pa-flow-title-icon--green"></i> @L["Pressure Washing"]</h1>
-        <p>@L["Tell us what needs to be cleaned so we can prepare the right crew."]</p>
-    </section>
+    
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
 

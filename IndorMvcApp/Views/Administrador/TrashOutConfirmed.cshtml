@@ -4,19 +4,14 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Trash Out service scheduled"].ToString();
+    ViewBag.FlowSubtitle = L.T("We'll take the bins out and bring them back for {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"]);
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Access"].ToString(), L["Done"].ToString() };
     ViewBag.FlowShowBack = false;
 }
 
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
-
-    <section class="pa-flow-intro pa-flow-intro--confirmed">
-        <span class="pa-trash-success-icon"><i class="fas fa-trash-can"></i><span class="pa-trash-success-check"><i class="fas fa-check"></i></span></span>
-        <div>
-            <h1>@L["Trash Out service scheduled"]</h1>
-            <p>@L.T("We'll take the bins out and bring them back for {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"])</p>
-        </div>
-    </section>
 
     <div class="pa-success-banner">
         <span class="pa-success-icon"><i class="fas fa-check"></i></span>

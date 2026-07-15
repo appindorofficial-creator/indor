@@ -4,6 +4,9 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Pest Control"].ToString();
+    ViewBag.FlowSubtitle = L["Choose service timing and access so the pro can arrive prepared."].ToString();
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Schedule"].ToString(), L["Done"].ToString() };
     ViewBag.FlowBackUrl = Url.Action("PestControlDetails", "Administrador", new { propertyId = Model.PropertyId });
     ViewBag.BadgeLabel = Model.PropertyStatusLabel;
     var treatAreas = Model.TreatAreas.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -13,10 +16,7 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    <section class="pa-flow-intro">
-        <h1><i class="fas fa-bug pa-flow-title-icon pa-flow-title-icon--green"></i> @L["Pest Control"]</h1>
-        <p>@L["Choose service timing and access so the pro can arrive prepared."]</p>
-    </section>
+    
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
 

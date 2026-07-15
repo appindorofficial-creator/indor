@@ -4,6 +4,9 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Access & review details"].ToString();
+    ViewBag.FlowSubtitle = L["Tell us how the technician can access the area and confirm the service request."].ToString();
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Access"].ToString(), L["Done"].ToString() };
     ViewBag.FlowBackUrl = Url.Action("PoolHotTubDetails", "Administrador", new { propertyId = Model.PropertyId });
     ViewBag.BadgeLabel = Model.PropertyStatusLabel;
     var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -12,10 +15,7 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    <section class="pa-flow-intro">
-        <h1>@L["Access &amp; review details"]</h1>
-        <p>@L["Tell us how the technician can access the area and confirm the service request."]</p>
-    </section>
+    
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
 

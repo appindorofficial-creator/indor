@@ -4,6 +4,9 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Landscaping details"].ToString();
+    ViewBag.FlowSubtitle = L["Help us understand access, scope, and scheduling."].ToString();
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Scope"].ToString(), L["Done"].ToString() };
     ViewBag.FlowBackUrl = Url.Action("LandscapingDetails", "Administrador", new { propertyId = Model.PropertyId });
     var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
 }
@@ -11,10 +14,7 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    <section class="pa-flow-intro">
-        <h1><i class="fas fa-leaf pa-flow-title-icon pa-flow-title-icon--green"></i> @L["Landscaping details"]</h1>
-        <p>@L["Help us understand access, scope, and scheduling."]</p>
-    </section>
+    
 
     @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
     {

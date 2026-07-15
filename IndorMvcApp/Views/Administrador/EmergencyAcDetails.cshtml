@@ -2,19 +2,16 @@
 @{
     ViewData["Title"] = L["Emergency AC"];
     Layout = "_PropertyAdminLayout";
-    ViewBag.FlowStep = Model.FlowStep;
-    ViewBag.FlowTotalSteps = Model.TotalSteps;
-    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     var propertyId = Model.ViewingProperty?.Id ?? 0;
+    ViewBag.InviteFlowTitle = L["Emergency AC"].ToString();
+    ViewBag.InviteFlowSubtitle = L["Tell us what's happening and how the technician can get in."].ToString();
+    ViewBag.InviteFlowStep = Model.FlowStep;
+    ViewBag.InviteFlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
+    ViewBag.InviteFlowAnchorId = "pa-emergency-form-top";
 }
 
 <div class="pa-portal-shell pa-portal-shell--flow">
-    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
-
-    <section class="pa-flow-intro" id="pa-emergency-form-top">
-        <h1>@L["Emergency AC"]</h1>
-        <p>@L["Tell us what's happening and how the technician can get in."]</p>
-    </section>
+    @await Html.PartialAsync("_PropertyAdminInviteFlowHeader")
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
 

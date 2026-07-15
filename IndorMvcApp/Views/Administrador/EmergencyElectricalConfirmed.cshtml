@@ -4,30 +4,20 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Emergency Electrical request sent"].ToString();
+    ViewBag.FlowSubtitle = !string.IsNullOrWhiteSpace(Model.TechnicianName)
+        ? L.T("An electrician is on the way to {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"])
+        : L.T("We're connecting you with a verified electrician near {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"]);
+    ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
     ViewBag.FlowShowBack = false;
     var propertyLabel = Model.ViewingProperty != null
         ? $"{Model.ViewingProperty.PropertyTypeLabel} • {Model.ViewingProperty.Location}"
         : "";
+    var hasTechnician = !string.IsNullOrWhiteSpace(Model.TechnicianName);
 }
 
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
-
-    @{
-        var hasTechnician = !string.IsNullOrWhiteSpace(Model.TechnicianName);
-    }
-
-    <section class="pa-flow-intro">
-        <h1>@L["Emergency Electrical request sent"]</h1>
-        @if (hasTechnician)
-        {
-            <p>@L.T("An electrician is on the way to {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"])</p>
-        }
-        else
-        {
-            <p>@L.T("We're connecting you with a verified electrician near {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"])</p>
-        }
-    </section>
 
     <div class="pa-success-banner">
         <span class="pa-success-icon"><i class="fas fa-check"></i></span>

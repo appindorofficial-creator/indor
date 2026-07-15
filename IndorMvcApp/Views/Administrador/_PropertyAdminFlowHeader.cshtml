@@ -1,21 +1,54 @@
-@model IndorMvcApp.ViewModels.PropertyAdministratorPortalShellViewModel
 @{
-    var flowStep = ViewBag.FlowStep as int? ?? 1;
-    var totalSteps = ViewBag.FlowTotalSteps as int? ?? 3;
-    var backUrl = ViewBag.FlowBackUrl as string ?? Url.Action("Index", "Administrador") ?? "#";
-    var showBack = ViewBag.FlowShowBack as bool? ?? true;
+    var title = (ViewBag.FlowTitle as string)
+        ?? (ViewBag.InviteFlowTitle as string)
+        ?? "";
+    var subtitle = (ViewBag.FlowSubtitle as string)
+        ?? (ViewBag.InviteFlowSubtitle as string)
+        ?? "";
+    var displayStep = ViewBag.InviteFlowStep as int?
+        ?? ViewBag.FlowStep as int?
+        ?? 1;
+    var flowSteps = ViewBag.InviteFlowSteps as string[]
+        ?? ViewBag.FlowSteps as string[]
+        ?? new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
+    var anchorId = ViewBag.InviteFlowAnchorId as string;
 }
-<header class="pa-flow-header">
-    @if (showBack)
-    {
-        <a href="@backUrl" class="pa-back-inline" aria-label="@L["Back"]"><i class="fas fa-arrow-left"></i></a>
-    }
-    else
-    {
-        <span class="pa-back-inline" style="visibility:hidden" aria-hidden="true"></span>
-    }
-    <a asp-controller="Administrador" asp-action="Index" class="pa-portal-logo pa-portal-logo--center" aria-label="@L["INDOR home"]">
-        <span class="pa-portal-logo-text">@L["ÎNDÔR"]</span>
+<header class="pa-svc-invite-topbar">
+    <a asp-controller="Administrador" asp-action="Index" class="pa-svc-invite-logo" aria-label="@L["INDOR home"]">
+        <i class="fas fa-house"></i> INDOR
     </a>
-    <span class="pa-flow-step-pill pa-flow-step-pill--sm">@L.T("Step {0} of {1}", flowStep, totalSteps)</span>
 </header>
+
+<div class="pa-svc-invite-head"@(string.IsNullOrWhiteSpace(anchorId) ? null : Html.Raw($" id=\"{anchorId}\""))>
+    @if (!string.IsNullOrWhiteSpace(title))
+    {
+        <h1>@title</h1>
+    }
+    @if (!string.IsNullOrWhiteSpace(subtitle))
+    {
+        <p>@subtitle</p>
+    }
+</div>
+
+<nav class="pa-svc-invite-stepper" aria-label="@L["Service request progress"]">
+    @for (var i = 0; i < flowSteps.Length; i++)
+    {
+        var stepNum = i + 1;
+        var cls = stepNum < displayStep ? "is-done" : stepNum == displayStep ? "is-active" : "";
+        <div class="pa-svc-invite-step @cls">
+            @if (stepNum < displayStep)
+            {
+                <i class="fas fa-check"></i>
+            }
+            else
+            {
+                <span>@stepNum</span>
+            }
+            <small>@flowSteps[i]</small>
+        </div>
+        @if (i < flowSteps.Length - 1)
+        {
+            <div class="pa-svc-invite-step-line @(stepNum < displayStep ? "is-done" : "")"></div>
+        }
+    }
+</nav>

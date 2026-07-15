@@ -4,6 +4,9 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Tree / Branch Emergency"].ToString();
+    ViewBag.FlowSubtitle = L["Tell us what happened so we can dispatch help fast."].ToString();
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Review"].ToString(), L["Done"].ToString() };
     ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     var propertyId = Model.ViewingProperty?.Id ?? 0;
     var damageAreas = Model.DamageAreasList.ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -12,10 +15,7 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    <section class="pa-flow-intro">
-        <h1>@L["Tree / Branch Emergency"]</h1>
-        <p>@L["Tell us what happened so we can dispatch help fast."]</p>
-    </section>
+    
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
 

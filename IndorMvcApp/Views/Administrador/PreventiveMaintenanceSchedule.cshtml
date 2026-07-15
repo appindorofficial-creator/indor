@@ -4,16 +4,16 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Schedule preventive services"].ToString();
+    ViewBag.FlowSubtitle = L["Set frequency, timing, and access details."].ToString();
+    ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Plan"].ToString(), L["Schedule"].ToString(), L["Review"].ToString() };
     ViewBag.NavActive = "home";
 }
 
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    <section class="pa-flow-intro">
-        <h1>@L["Schedule preventive services"]</h1>
-        <p>@L["Set frequency, timing, and access details."]</p>
-    </section>
+    
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
 

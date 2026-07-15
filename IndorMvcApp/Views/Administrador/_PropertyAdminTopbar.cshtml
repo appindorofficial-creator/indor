@@ -1,10 +1,20 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPortalShellViewModel
-<header class="pa-portal-topbar">
-    <a asp-controller="Administrador" asp-action="Index" class="pa-portal-logo" aria-label="@L["INDOR Portfolio"]">
+@{
+    var hideMyAccount = ViewBag.HideMyAccount as bool? ?? false;
+    var hidePortfolioLabel = ViewBag.HidePortfolioLabel as bool? ?? false;
+    var topbarClass = hideMyAccount || hidePortfolioLabel
+        ? "pa-portal-topbar pa-portal-topbar--compact"
+        : "pa-portal-topbar";
+}
+<header class="@topbarClass">
+    <a asp-controller="Administrador" asp-action="Index" class="pa-portal-logo" aria-label="@(hidePortfolioLabel ? L["INDOR home"] : L["INDOR Portfolio"])">
         <span class="pa-portal-logo-main">
             <i class="fas fa-house" aria-hidden="true"></i> INDOR
         </span>
-        <span class="pa-portal-logo-label">@L["Portfolio"]</span>
+        @if (!hidePortfolioLabel)
+        {
+            <span class="pa-portal-logo-label">@L["Portfolio"]</span>
+        }
     </a>
 
     <div class="pa-portal-topbar-actions">
@@ -75,7 +85,10 @@
             </div>
         </div>
     </div>
-    <a asp-controller="Administrador" asp-action="Profile" class="pa-portal-my-account">
-        @L["My account"] <i class="fas fa-chevron-right"></i>
-    </a>
+    @if (!hideMyAccount)
+    {
+        <a asp-controller="Administrador" asp-action="Profile" class="pa-portal-my-account">
+            @L["My account"] <i class="fas fa-chevron-right"></i>
+        </a>
+    }
 </header>

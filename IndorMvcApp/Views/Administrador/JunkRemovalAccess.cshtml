@@ -4,6 +4,9 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Junk Removal"].ToString();
+    ViewBag.FlowSubtitle = L["Tell us how the crew can access the pickup and when to arrive."].ToString();
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Access"].ToString(), L["Done"].ToString() };
     ViewBag.FlowBackUrl = Url.Action("JunkRemovalDetails", "Administrador", new { propertyId = Model.PropertyId });
     var locations = Model.ItemLocations.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
 }
@@ -11,10 +14,7 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    <section class="pa-flow-intro">
-        <h1>@L["Junk Removal"]</h1>
-        <p>@L["Tell us how the crew can access the pickup and when to arrive."]</p>
-    </section>
+    
 
     @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
     {

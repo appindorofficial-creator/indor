@@ -4,6 +4,9 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Trash Out Service"].ToString();
+    ViewBag.FlowSubtitle = L["Set timing, access, and updates for your bin service."].ToString();
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Access"].ToString(), L["Done"].ToString() };
     ViewBag.FlowBackUrl = Url.Action("TrashOutDetails", "Administrador", new { propertyId = Model.PropertyId });
     var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
 }
@@ -11,10 +14,7 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    <section class="pa-flow-intro">
-        <h1><i class="fas fa-trash-can pa-flow-title-icon pa-flow-title-icon--purple"></i> @L["Trash Out Service"]</h1>
-        <p>@L["Set timing, access, and updates for your bin service."]</p>
-    </section>
+    
 
     @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
     {

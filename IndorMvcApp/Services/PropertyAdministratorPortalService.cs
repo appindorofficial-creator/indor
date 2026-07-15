@@ -567,18 +567,21 @@ public class PropertyAdministratorPortalService(
                 new()
                 {
                     Label = PaL("Personal information"),
+                    Description = PaL("Update your name, contact details and photo."),
                     IconClass = "fa-user",
                     Url = url.Action("PersonalInformation", "Administrador") ?? "#"
                 },
                 new()
                 {
                     Label = PaL("Portfolio & properties"),
+                    Description = PaL("Manage the properties in your portfolio."),
                     IconClass = "fa-building",
                     Url = url.Action("Properties", "Administrador", new { from = "profile" }) ?? "#"
                 },
                 new()
                 {
                     Label = PaL("Notifications"),
+                    Description = PaL("Choose how you get updates."),
                     IconClass = "fa-bell",
                     Url = url.Action("NotificationPreferences", "Administrador") ?? "#",
                     BadgeCount = shell.NotificationCount > 0 ? shell.NotificationCount : null
@@ -586,30 +589,35 @@ public class PropertyAdministratorPortalService(
                 new()
                 {
                     Label = PaL("Payments & billing"),
+                    Description = PaL("Review plans, invoices and payment methods."),
                     IconClass = "fa-credit-card",
                     Url = url.Action("PaymentsBilling", "Administrador") ?? "#"
                 },
                 new()
                 {
                     Label = PaL("Saved providers"),
+                    Description = PaL("Your trusted providers for quick booking."),
                     IconClass = "fa-user-plus",
                     Url = url.Action("SavedProviders", "Administrador") ?? "#"
                 },
                 new()
                 {
                     Label = PaL("Homecare plans"),
+                    Description = PaL("View and manage recurring care plans."),
                     IconClass = "fa-shield-halved",
                     Url = url.Action("Services", "Administrador", new { filter = "homecare" }) ?? "#"
                 },
                 new()
                 {
                     Label = PaL("Security"),
+                    Description = PaL("Password and account security."),
                     IconClass = "fa-lock",
                     Url = url.Action("Security", "Administrador") ?? "#"
                 },
                 new()
                 {
                     Label = PaL("Help & support"),
+                    Description = PaL("Get help with your account and services."),
                     IconClass = "fa-circle-question",
                     Url = url.Action("HelpSupport", "Administrador") ?? "#"
                 },

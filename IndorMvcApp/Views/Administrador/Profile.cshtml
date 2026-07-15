@@ -2,45 +2,63 @@
 @{
     ViewData["Title"] = L["Profile"];
     Layout = "_PropertyAdminLayout";
+    ViewBag.HideMyAccount = true;
+    ViewBag.HidePortfolioLabel = true;
 }
 
 <div class="pa-portal-shell pa-portal-shell--profile">
-    <header class="pa-profile-header">
-        <a asp-controller="Administrador" asp-action="Index" class="pa-profile-back" aria-label="@L["Back"]">
-            <i class="fas fa-arrow-left"></i>
-        </a>
-    </header>
+    @await Html.PartialAsync("_PropertyAdminTopbar", Model)
 
-    <section class="pa-profile-hero">
-        <div class="pa-profile-photo-wrap">
-            @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
-            {
-                <img src="@Model.ProfilePhotoUrl" alt="" class="pa-profile-photo" />
-            }
-            else
-            {
-                <span class="pa-profile-photo pa-profile-photo--placeholder"><i class="fas fa-user"></i></span>
-            }
-        </div>
-        <div class="pa-profile-identity">
-            <h1>@Model.DisplayName</h1>
-            <span class="pa-profile-badge">@UiDisplayLocalization.Localize(L, Model.RoleBadge)</span>
-            <ul class="pa-profile-contact">
-                @if (!string.IsNullOrWhiteSpace(Model.Email))
-                {
-                    <li><i class="fas fa-envelope"></i> @Model.Email</li>
-                }
-                @if (!string.IsNullOrWhiteSpace(Model.Phone))
-                {
-                    <li><i class="fas fa-phone"></i> @Model.Phone</li>
-                }
-                @if (!string.IsNullOrWhiteSpace(Model.Location))
-                {
-                    <li><i class="fas fa-location-dot"></i> @Model.Location</li>
-                }
-            </ul>
+    <section class="pa-profile-hero-banner">
+        <div class="pa-profile-hero-banner-inner">
+            <div class="pa-profile-hero-banner-copy">
+                <h1 class="pa-profile-hero-banner-title">@L["Profile"]</h1>
+                <p class="pa-profile-hero-banner-subtitle">@UiDisplayLocalization.Localize(L, Model.RoleBadge)</p>
+            </div>
+            <div class="pa-profile-hero-banner-visual" aria-hidden="true">
+                <i class="fas fa-user pa-profile-hero-banner-icon"></i>
+            </div>
         </div>
     </section>
+
+    <section class="pa-profile-card-v2 pa-profile-card-v2--overlap">
+        <a asp-controller="Administrador" asp-action="PersonalInformation" class="pa-profile-card-link pa-profile-card-link--solo">
+            <div class="pa-profile-photo-wrap pa-profile-photo-wrap--card">
+                @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
+                {
+                    <img src="@Model.ProfilePhotoUrl" alt="" class="pa-profile-photo" />
+                }
+                else
+                {
+                    <span class="pa-profile-photo pa-profile-photo--placeholder"><i class="fas fa-user"></i></span>
+                }
+            </div>
+            <div class="pa-profile-card-info">
+                <strong>@Model.DisplayName</strong>
+                <div class="pa-profile-badge-row">
+                    <span class="pa-profile-badge pa-profile-badge--star">
+                        <i class="fas fa-star"></i>
+                        @UiDisplayLocalization.Localize(L, Model.RoleBadge)
+                    </span>
+                </div>
+                <ul class="pa-profile-contact">
+                    @if (!string.IsNullOrWhiteSpace(Model.Email))
+                    {
+                        <li><i class="fas fa-envelope"></i> @Model.Email</li>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.Phone))
+                    {
+                        <li><i class="fas fa-phone"></i> @Model.Phone</li>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.Location))
+                    {
+                        <li><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.Location)</li>
+                    }
+                </ul>
+            </div>
+        </a>
+    </section>
+
 
     <div class="pa-portfolio-panel pa-portfolio-panel--profile">
         <div class="pa-portfolio-head">
@@ -61,33 +79,35 @@
         </div>
     </div>
 
-    <section class="pa-profile-menu" id="account-preferences">
-        <h2>@L["Account &amp; preferences"]</h2>
-        <nav class="pa-profile-menu-list" aria-label="@L["Account and preferences"]">
-            @foreach (var item in Model.MenuItems.Where(i => !i.IsDanger))
-            {
-                <a href="@item.Url" class="pa-profile-menu-item">
-                    <span class="pa-profile-menu-icon"><i class="fas @item.IconClass"></i></span>
-                    <span class="pa-profile-menu-label">@UiDisplayLocalization.Localize(L, item.Label)</span>
-                    @if (item.BadgeCount is > 0)
+    <nav class="pa-profile-nav" aria-label="@L["Account and preferences"]">
+        @foreach (var item in Model.MenuItems.Where(i => !i.IsDanger))
+        {
+            <a href="@item.Url" class="pa-profile-nav-item">
+                <span class="pa-profile-nav-icon"><i class="fas @item.IconClass"></i></span>
+                <div class="pa-profile-nav-text">
+                    <strong>@UiDisplayLocalization.Localize(L, item.Label)</strong>
+                    @if (!string.IsNullOrWhiteSpace(item.Description))
                     {
-                        <span class="pa-profile-menu-badge">@item.BadgeCount</span>
+                        <span class="pa-profile-nav-desc">@UiDisplayLocalization.Localize(L, item.Description)</span>
                     }
-                    <i class="fas fa-chevron-right pa-profile-menu-chevron"></i>
-                </a>
-            }
-            <form asp-controller="Account" asp-action="Logout" method="post" class="pa-profile-signout-form">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="pa-profile-row pa-profile-row--danger pa-profile-row--center">
-                    <span><i class="fas fa-right-from-bracket"></i> @L["Sign Out"]</span>
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </form>
-            <a asp-controller="Account" asp-action="DeleteAccount" class="pa-profile-row pa-profile-row--danger pa-profile-row--center">
-                <span><i class="fas fa-user-xmark"></i> @L["Delete account"]</span>
+                </div>
+                @if (item.BadgeCount is > 0)
+                {
+                    <span class="pa-profile-menu-badge">@item.BadgeCount</span>
+                }
                 <i class="fas fa-chevron-right"></i>
             </a>
-        </nav>
-    </section>
+        }
+        <form asp-controller="Account" asp-action="Logout" method="post" class="pa-profile-signout-form">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="pa-profile-row pa-profile-row--danger pa-profile-row--center">
+                <span><i class="fas fa-right-from-bracket"></i> @L["Sign Out"]</span>
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </form>
+        <a asp-controller="Account" asp-action="DeleteAccount" class="pa-profile-row pa-profile-row--danger pa-profile-row--center">
+            <span><i class="fas fa-user-xmark"></i> @L["Delete account"]</span>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    </nav>
 </div>
-

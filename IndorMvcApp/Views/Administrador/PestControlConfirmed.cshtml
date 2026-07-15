@@ -4,6 +4,9 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Pest Control request sent"].ToString();
+    ViewBag.FlowSubtitle = L.T("A technician is on the way to {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"]).ToString();
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Schedule"].ToString(), L["Done"].ToString() };
     ViewBag.FlowShowBack = false;
     var propertyLabel = Model.ViewingProperty != null
         ? $"{Model.ViewingProperty.PropertyTypeLabel} • {Model.ViewingProperty.Location}"
@@ -13,10 +16,7 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    <section class="pa-flow-intro">
-        <h1>@L["Pest Control request sent"]</h1>
-        <p>@L.T("A technician is on the way to {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"])</p>
-    </section>
+    
 
     <div class="pa-success-banner pa-success-banner--green">
         <span class="pa-success-icon"><i class="fas fa-check"></i></span>

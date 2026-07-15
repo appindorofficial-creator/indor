@@ -257,6 +257,26 @@ public static class UiTranslationsFinal
             ["{0} Quote"] = "{0} cotización",
             ["Manage your realtor account, branding, and settings."] =
                 "Administra tu cuenta de agente inmobiliario, marca y configuración.",
+            ["Manage your property administrator account, portfolio, and settings."] =
+                "Administra tu cuenta de administrador de propiedades, portafolio y configuración.",
+            ["Update your name, contact details and photo."] =
+                "Actualiza tu nombre, datos de contacto y foto.",
+            ["Manage the properties in your portfolio."] =
+                "Administra las propiedades de tu portafolio.",
+            ["Choose how you get updates."] = "Elige cómo recibir actualizaciones.",
+            ["Review plans, invoices and payment methods."] =
+                "Revisa planes, facturas y métodos de pago.",
+            ["Your trusted providers for quick booking."] =
+                "Tus proveedores de confianza para reservar rápido.",
+            ["View and manage recurring care plans."] =
+                "Consulta y administra planes de cuidado recurrentes.",
+            ["Password and account security."] = "Contraseña y seguridad de la cuenta.",
+            ["Get help with your account and services."] =
+                "Obtén ayuda con tu cuenta y servicios.",
+            ["Service request progress"] = "Progreso de la solicitud de servicio",
+            ["Plan"] = "Plan",
+            ["Schedule"] = "Programar",
+            ["Active property"] = "Propiedad activa",
             ["Business Information"] = "Información del negocio",
             ["Manage your contact details, brokerage and license."] =
                 "Administra tus datos de contacto, agencia y licencia.",

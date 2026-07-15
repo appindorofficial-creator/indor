@@ -4,6 +4,9 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Broken Window / Board-Up"].ToString();
+    ViewBag.FlowSubtitle = L["Help us secure access and confirm the request."].ToString();
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Access"].ToString(), L["Done"].ToString() };
     ViewBag.FlowBackUrl = Url.Action("BrokenWindowDetails", "Administrador", new { propertyId = Model.PropertyId });
     ViewBag.BadgeLabel = Model.GuestsOnSiteLabel;
     var recipients = Model.UpdateRecipientsList.ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -13,10 +16,7 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    <section class="pa-flow-intro">
-        <h1>@L["Broken Window / Board-Up"]</h1>
-        <p>@L["Help us secure access and confirm the request."]</p>
-    </section>
+    
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
 

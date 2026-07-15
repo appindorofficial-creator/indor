@@ -4,6 +4,9 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Preventive Maintenance"].ToString();
+    ViewBag.FlowSubtitle = L["Choose the upkeep services your property needs."].ToString();
+    ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Plan"].ToString(), L["Schedule"].ToString(), L["Review"].ToString() };
     ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     var propertyId = Model.ViewingProperty?.Id ?? 0;
 }
@@ -11,10 +14,7 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    <section class="pa-flow-intro">
-        <h1>@L["Preventive Maintenance"]</h1>
-        <p>@L["Choose the upkeep services your property needs."]</p>
-    </section>
+    
 
     @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
     {

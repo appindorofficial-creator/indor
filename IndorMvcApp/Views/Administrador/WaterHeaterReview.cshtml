@@ -4,6 +4,9 @@
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Review emergency request"].ToString();
+    ViewBag.FlowSubtitle = L["Make sure everything looks right before we dispatch help."].ToString();
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Review"].ToString(), L["Done"].ToString() };
     ViewBag.FlowBackUrl = Url.Action("WaterHeaterDetails", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     var input = Model.Input;
 }
@@ -11,10 +14,7 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    <section class="pa-flow-intro">
-        <h1>@L["Review emergency request"]</h1>
-        <p>@L["Make sure everything looks right before we dispatch help."]</p>
-    </section>
+    
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
 
