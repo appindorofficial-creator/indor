@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.RemodelingDetailsViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("RemodelingService", "RemodelingServicio", new { id = Model.ServicioId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;
@@ -121,10 +121,10 @@
             if (e.submitter && e.submitter.value === 'back') return;
 
             const checks = [
-                { id: 'AlcanceProyecto', message: 'Select a project scope.' },
-                { id: 'VentanaTiempo', message: 'Select when you want to start.' },
-                { id: 'PresupuestoEstimado', message: 'Select an estimated budget.' },
-                { id: 'ContactoPreferido', message: 'Select a preferred contact method.' }
+                { id: 'AlcanceProyecto', message: @Html.Raw(Json.Serialize(L["Select a project scope."].ToString())) },
+                { id: 'VentanaTiempo', message: @Html.Raw(Json.Serialize(L["Select when you want to start."].ToString())) },
+                { id: 'PresupuestoEstimado', message: @Html.Raw(Json.Serialize(L["Select an estimated budget."].ToString())) },
+                { id: 'ContactoPreferido', message: @Html.Raw(Json.Serialize(L["Select a preferred contact method."].ToString())) }
             ];
 
             for (const check of checks) {

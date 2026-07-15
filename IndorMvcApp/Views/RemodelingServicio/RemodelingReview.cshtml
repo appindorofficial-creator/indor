@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.RemodelingReviewViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("RemodelingDetails", "RemodelingServicio", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;
@@ -16,7 +16,7 @@
 
     <div class="summary-card">
         <strong style="font-size:0.92rem;display:block;margin-bottom:10px;">@L["Project summary"]</strong>
-        <div class="summary-row"><i class="fas fa-screwdriver-wrench"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-screwdriver-wrench"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.NombreServicio)</div></div></div>
         <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Address"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
         <div class="summary-row"><i class="fas fa-hammer"></i><div><div class="summary-label">@L["Scope"]</div><div class="summary-value">@Model.AlcanceLabel</div></div></div>
         <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Timeline"]</div><div class="summary-value">@Model.VentanaTiempoLabel</div></div></div>

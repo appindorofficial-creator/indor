@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.RemodelingSentViewModel
 @{
     ViewData["Title"] = L["Request sent - INDOR"];
-    ViewData["WizardTitle"] = Model.NombreServicio;
+    ViewData["WizardTitle"] = L.Catalog(Model.NombreServicio);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home", new { fragment = "section-services" });
 
 }
@@ -12,7 +12,7 @@
             <i class="fas fa-check" style="font-size:2rem;color:#0066CC;"></i>
         </div>
         <h2 class="page-heading" style="font-size:1.2rem;">@L["We received your request"]</h2>
-        <p class="page-lead">@L["Our team will review"] <strong>@Model.NombreServicio</strong> @L["and follow up about your quote."]</p>
+        <p class="page-lead">@L["Our team will review"] <strong>@L.Catalog(Model.NombreServicio)</strong> @L["and follow up about your quote."]</p>
     </div>
 
     <div class="summary-card">
