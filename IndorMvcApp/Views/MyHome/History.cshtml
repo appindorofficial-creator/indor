@@ -5,20 +5,43 @@
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "history";
     var groups = Model.Items.GroupBy(i => i.MonthLabel).ToList();
+    var from = ViewBag.MyHomeNavFrom as string;
 }
 <div class="hf-title-row">
     <h1 class="hf-title">@L["House History"]</h1>
-    <a asp-action="HistoryCreate" asp-route-id="@Model.PropiedadId" class="hf-btn">@L["+ Add"]</a>
+    <a asp-controller="MyHome"
+       asp-action="HistoryCreate"
+       asp-route-id="@Model.PropiedadId"
+       asp-route-from="@from"
+       class="hf-btn">@L["+ Add"]</a>
 </div>
 <div class="hf-chip-row">
     @foreach (var f in new[] { "All", "Improvement", "Repair", "Maintenance" })
     {
-        <a asp-action="History" asp-route-id="@Model.PropiedadId" asp-route-filter="@f" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-chip @(string.Equals(Model.Filter, f, StringComparison.OrdinalIgnoreCase) ? "active" : "")">@L[f]</a>
+        <a asp-controller="MyHome"
+           asp-action="History"
+           asp-route-id="@Model.PropiedadId"
+           asp-route-filter="@f"
+           asp-route-from="@from"
+           class="hf-chip @(string.Equals(Model.Filter, f, StringComparison.OrdinalIgnoreCase) ? "active" : "")">@L[f]</a>
     }
 </div>
 @if (groups.Count == 0)
 {
-    <div class="hf-card" style="text-align:center;color:#64748B;">@L["No history records yet. Tap"] <strong>@L["+ Add"]</strong> @L["to log improvements, repairs, or maintenance."]</div>
+    <div class="hf-card" style="text-align:center;color:#64748B;">
+        @L["No history records yet. Tap"] <strong>@L["+ Add"]</strong> @L["to log improvements, repairs, or maintenance."]
+    </div>
+    <div class="hf-action-grid" style="margin-bottom:12px;">
+        <a asp-controller="MyHome" asp-action="HistoryCreate" asp-route-id="@Model.PropiedadId" asp-route-type="Improvement" asp-route-from="@from" class="hf-action">
+            <i class="fas fa-hammer"></i>@L["Improvement"]
+        </a>
+        <a asp-controller="MyHome" asp-action="HistoryCreate" asp-route-id="@Model.PropiedadId" asp-route-type="Repair" asp-route-from="@from" class="hf-action">
+            <i class="fas fa-wrench"></i>@L["Repair"]
+        </a>
+        <a asp-controller="MyHome" asp-action="HistoryCreate" asp-route-id="@Model.PropiedadId" asp-route-type="Maintenance" asp-route-from="@from" class="hf-action">
+            <i class="fas fa-screwdriver-wrench"></i>@L["Maintenance"]
+        </a>
+    </div>
 }
 else
 {
@@ -28,7 +51,7 @@ else
             <div class="hf-timeline-month">@UiDisplayLocalization.Localize(L, group.Key)</div>
             @foreach (var item in group)
             {
-                <a asp-action="HistoryDetail" asp-route-id="@item.Id" class="hf-timeline-item">
+                <a asp-controller="MyHome" asp-action="HistoryDetail" asp-route-id="@item.Id" class="hf-timeline-item">
                     <div class="hf-timeline-dot"><i class="fas @IndorMvcApp.Services.MyHomeDisplayService.RecordTypeIcon(item.RecordType)"></i></div>
                     <div class="hf-timeline-card">
                         <div class="body">

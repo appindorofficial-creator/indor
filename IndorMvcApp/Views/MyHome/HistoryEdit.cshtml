@@ -9,7 +9,8 @@
 <div class="hf-title-row">
     <h1 class="hf-title">@L["Edit record"]</h1>
 </div>
-<form asp-action="HistoryEdit" method="post">
+<form asp-controller="MyHome" asp-action="HistoryEdit" asp-route-id="@Model.Id" method="post">
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="PropiedadId" />
     <label asp-for="RecordType" class="hf-label">@L["Record type"]</label>

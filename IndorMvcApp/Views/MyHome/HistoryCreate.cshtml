@@ -1,19 +1,16 @@
 @model IndorMvcApp.ViewModels.MyHomeHistoryFormViewModel
 @{
-    var isEdit = Model.Id.HasValue;
-    ViewData["Title"] = isEdit ? L["Edit Record"] : L["Add Record"];
+    ViewData["Title"] = L["Add Record"];
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "history";
-    ViewBag.MyHomeBackUrl = isEdit
-        ? Url.Action("HistoryDetail", "MyHome", new { id = Model.Id })
-        : Url.Action("History", "MyHome", new { id = Model.PropiedadId });
+    ViewBag.MyHomeBackUrl = Url.Action("History", "MyHome", new { id = Model.PropiedadId });
 }
 <div class="hf-title-row">
-    <h1 class="hf-title">@(isEdit ? L["Edit record"] : L["Add record"])</h1>
+    <h1 class="hf-title">@L["Add record"]</h1>
 </div>
-<form asp-action="@(isEdit ? "HistoryEdit" : "HistoryCreate")" method="post">
-    @if (isEdit) { <input type="hidden" asp-for="Id" /> }
+<form asp-controller="MyHome" asp-action="HistoryCreate" asp-route-id="@Model.PropiedadId" method="post">
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="PropiedadId" />
     <label asp-for="RecordType" class="hf-label">@L["Record type"]</label>
     <select asp-for="RecordType" class="hf-select">

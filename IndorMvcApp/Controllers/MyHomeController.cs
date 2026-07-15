@@ -225,19 +225,46 @@ public class MyHomeController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> HistoryCreate(int id)
+    public async Task<IActionResult> HistoryCreate(int id, string? type, string? from)
     {
+        // Id-less deep links default id to 0; recover with the user's latest property.
+        if (id <= 0)
+        {
+            var fallbackPropId = await GetLatestOwnedPropertyIdAsync();
+            if (!fallbackPropId.HasValue)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            id = fallbackPropId.Value;
+        }
+
         var propiedad = await LoadPropertyAsync(id);
         if (propiedad == null) return NotFound();
-        return View(new MyHomeHistoryFormViewModel { PropiedadId = propiedad.Id });
+        ConfigureMyHomeView(propiedad.Id, from);
+
+        var recordType = NormalizeHistoryRecordType(type);
+        return View(new MyHomeHistoryFormViewModel
+        {
+            PropiedadId = propiedad.Id,
+            RecordType = recordType
+        });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> HistoryCreate(MyHomeHistoryFormViewModel model)
     {
+        // Route `{id}` is the property id and must never become the history record Id.
+        model.Id = null;
+
         if (!await UserOwnsPropertyAsync(model.PropiedadId)) return NotFound();
-        if (!ModelState.IsValid) return View(model);
+        model.RecordType = NormalizeHistoryRecordType(model.RecordType);
+        if (!ModelState.IsValid)
+        {
+            ConfigureMyHomeView(model.PropiedadId, from: null);
+            return View(model);
+        }
 
         _db.PropiedadHistorial.Add(new PropiedadHistorial
         {
@@ -293,11 +320,34 @@ public class MyHomeController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> HistoryEdit(int id)
+    public async Task<IActionResult> HistoryEdit(int id, int? propiedadId = null, string? from = null)
     {
-        var record = await LoadHistoryAsync(id);
-        if (record == null) return NotFound();
+        // Broken / id-less deep links (seen in mobile WebViews as /MyHome/HistoryEdit)
+        // should open the create form instead of returning a bare 404.
+        if (id <= 0)
+        {
+            var fallbackPropId = propiedadId ?? await GetLatestOwnedPropertyIdAsync();
+            if (fallbackPropId.HasValue)
+            {
+                return RedirectToAction(nameof(HistoryCreate), new { id = fallbackPropId.Value, from });
+            }
 
+            return RedirectToAction("Index", "Home");
+        }
+
+        var record = await LoadHistoryAsync(id);
+        if (record == null)
+        {
+            var fallbackPropId = propiedadId ?? await GetLatestOwnedPropertyIdAsync();
+            if (fallbackPropId.HasValue)
+            {
+                return RedirectToAction(nameof(HistoryCreate), new { id = fallbackPropId.Value, from });
+            }
+
+            return NotFound();
+        }
+
+        ConfigureMyHomeView(record.PropiedadId, from);
         return View(new MyHomeHistoryFormViewModel
         {
             Id = record.Id,
@@ -316,10 +366,19 @@ public class MyHomeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> HistoryEdit(MyHomeHistoryFormViewModel model)
     {
-        if (!model.Id.HasValue) return NotFound();
+        if (model.Id is not > 0)
+        {
+            return RedirectToAction(nameof(HistoryCreate), new { id = model.PropiedadId });
+        }
+
         var record = await LoadHistoryAsync(model.Id.Value);
         if (record == null) return NotFound();
-        if (!ModelState.IsValid) return View(model);
+        model.RecordType = NormalizeHistoryRecordType(model.RecordType);
+        if (!ModelState.IsValid)
+        {
+            ConfigureMyHomeView(record.PropiedadId, from: null);
+            return View(model);
+        }
 
         record.RecordType = model.RecordType;
         record.Title = model.Title.Trim();
@@ -805,6 +864,27 @@ public class MyHomeController : Controller
             .Where(p => p.UserId == userId && p.Activo)
             .OrderByDescending(p => p.FechaCreacion)
             .FirstOrDefaultAsync();
+    }
+
+    private async Task<int?> GetLatestOwnedPropertyIdAsync()
+    {
+        var propiedad = await LoadPropertyAsync(null);
+        return propiedad?.Id;
+    }
+
+    private static string NormalizeHistoryRecordType(string? type)
+    {
+        if (string.Equals(type, "Repair", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Repair";
+        }
+
+        if (string.Equals(type, "Maintenance", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Maintenance";
+        }
+
+        return "Improvement";
     }
 
     private async Task<bool> UserOwnsPropertyAsync(int propiedadId)
