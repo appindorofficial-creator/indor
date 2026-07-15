@@ -57,12 +57,12 @@
             </div>
             <div class="info-card">
                 <i class="fas fa-users"></i>
-                <div class="label">@Model.BestForLabel</div>
-                <div class="value">@Model.BestForValue</div>
-                @if (!string.IsNullOrWhiteSpace(Model.BestForNote)) { <div class="note">@Model.BestForNote</div> }
+                <div class="label">@L.Catalog(Model.BestForLabel)</div>
+                <div class="value">@L.Catalog(Model.BestForValue)</div>
+                @if (!string.IsNullOrWhiteSpace(Model.BestForNote)) { <div class="note">@L.Catalog(Model.BestForNote)</div> }
             </div>
         </div>
 
-        <button type="submit" name="action" value="continue" class="btn-primary">@Model.CtaContinueTexto <i class="fas fa-chevron-right"></i></button>
-        <button type="submit" name="action" value="upload" class="btn-outline"><i class="fas fa-cloud-arrow-up"></i> @Model.CtaUploadTexto</button>
+        <button type="submit" name="action" value="continue" class="btn-primary">@L.Catalog(Model.CtaContinueTexto) <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" name="action" value="upload" class="btn-outline"><i class="fas fa-cloud-arrow-up"></i> @L.Catalog(Model.CtaUploadTexto)</button>
     </form>

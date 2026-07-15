@@ -44,7 +44,7 @@
         @if (Model.BestForOptions.Count > 0)
         {
             <div class="field-card">
-                <span class="field-label">@Model.BestForLabel</span>
+                <span class="field-label">@L.Catalog(Model.BestForLabel)</span>
                 <div class="chip-row" id="bestForGroup" style="flex-wrap:wrap;">
                     @foreach (var opt in Model.BestForOptions)
                     {
@@ -74,8 +74,8 @@
             </div>
         </div>
 
-        <button type="submit" name="action" value="continue" class="btn-primary">@Model.CtaContinueTexto</button>
-        <button type="submit" name="action" value="upload" class="btn-outline"><i class="fas fa-cloud-arrow-up"></i> @Model.CtaUploadTexto</button>
+        <button type="submit" name="action" value="continue" class="btn-primary">@L.Catalog(Model.CtaContinueTexto)</button>
+        <button type="submit" name="action" value="upload" class="btn-outline"><i class="fas fa-cloud-arrow-up"></i> @L.Catalog(Model.CtaUploadTexto)</button>
     </form>
 </div>
 @section Scripts {

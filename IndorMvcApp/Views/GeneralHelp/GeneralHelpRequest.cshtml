@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.GeneralHelpRequestViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 4;
@@ -13,7 +13,7 @@
         <img src="@Url.Content("~/general-help-hero.png")" alt="Moving help" class="gh-hero-img" loading="lazy" />
     </div>
 
-    <h2 class="page-heading" style="font-size:1.1rem;text-align:center;">@Model.PageTitle</h2>
+    <h2 class="page-heading" style="font-size:1.1rem;text-align:center;">@L.Catalog(Model.PageTitle)</h2>
     <p class="page-lead" style="margin-top:-8px;text-align:center;">@L["Tell us what kind of moving help you need."]</p>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>

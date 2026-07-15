@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.GeneralHelpDetailsViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("GeneralHelpRequest", "GeneralHelp", new { id = Model.MovingSetupServicioId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;
@@ -9,7 +9,7 @@
 }
 
 
-<h2 class="page-heading" style="font-size:1.1rem;text-align:center;">@Model.PageTitle</h2>
+<h2 class="page-heading" style="font-size:1.1rem;text-align:center;">@L.Catalog(Model.PageTitle)</h2>
     <p class="page-lead" style="margin-top:-8px;text-align:center;">@L["Describe the request and add key details."]</p>
 
     <div class="location-card">

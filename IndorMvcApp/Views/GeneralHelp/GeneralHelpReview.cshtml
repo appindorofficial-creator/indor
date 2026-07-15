@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.GeneralHelpReviewViewModel
 @{
-    ViewData["Title"] = Model.PageTitle + " - INDOR";
-    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
+    ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("GeneralHelpDetails", "GeneralHelp", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;
@@ -9,7 +9,7 @@
 }
 
 
-<h2 class="page-heading" style="font-size:1.1rem;text-align:center;">@Model.PageTitle</h2>
+<h2 class="page-heading" style="font-size:1.1rem;text-align:center;">@L.Catalog(Model.PageTitle)</h2>
     <p class="page-lead" style="margin-top:-8px;text-align:center;">@L["Confirm your general help request before sending."]</p>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>

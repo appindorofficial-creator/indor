@@ -1866,5 +1866,108 @@ public static class UiTranslationsFinal
             ["Water"] = "Agua",
             ["Gas"] = "Gas",
             ["Cable"] = "Cable",
+
+            // Dirty Flows overrides
+            ["Tap to choose the areas you want included in your check."] =
+                "Toca para elegir las áreas que quieres incluir en tu revisión.",
+            ["I need a reminder"] = "Necesito un recordatorio",
+            ["Set a reminder"] = "Configurar un recordatorio",
+            ["Recommendations"] = "Recomendaciones",
+
+            // Cleaning Pro includes
+            ["Background-checked cleaners"] = "Limpiadores con verificación de antecedentes",
+            ["Flexible scheduling"] = "Horarios flexibles",
+
+            // Home Care Guide landings (DB English keys)
+            ["Recommended yearly"] = "Recomendado cada año",
+            ["Recommended yearly to keep your system clean and efficient."] =
+                "Recomendado cada año para mantener tu sistema limpio y eficiente.",
+            ["Over time, sediment builds up at the bottom of your water heater tank. This can reduce efficiency, cause rumbling noises, and shorten the life of your system."] =
+                "Con el tiempo, el sedimento se acumula en el fondo del tanque del calentador. Esto puede reducir la eficiencia, causar ruidos y acortar la vida del sistema.",
+            ["Remove sediment buildup"] = "Eliminar acumulación de sedimento",
+            ["Improve efficiency"] = "Mejorar la eficiencia",
+            ["Extend tank life"] = "Prolongar la vida del tanque",
+            ["Inspect moisture, insulation, structure, and air quality before small issues become expensive repairs."] =
+                "Revisa humedad, aislamiento, estructura y calidad del aire antes de que problemas pequeños se vuelvan costosos.",
+            ["Check yearly and after heavy rain or moisture events."] =
+                "Revisa cada año y después de lluvias fuertes o eventos de humedad.",
+            ["Start crawlspace check"] = "Iniciar revisión del espacio bajo el piso",
+            ["Regular roof inspections help catch loose shingles, failing sealant, damaged flashing, clogged drainage, and leak risks before they become major repairs."] =
+                "Las inspecciones regulares de techo ayudan a detectar tejas sueltas, sellador dañado, flashing defectuoso, drenaje obstruido y riesgos de fuga antes de que se vuelvan reparaciones mayores.",
+            ["Do a quick visual check from the ground each spring and fall. Note lifted shingles, damaged flashing, or debris buildup."] =
+                "Haz una revisión visual rápida desde el suelo cada primavera y otoño. Anota tejas levantadas, flashing dañado o acumulación de escombros.",
+            ["Professional inspection: every 1–2 years"] = "Inspección profesional: cada 1–2 años",
+            ["Schedule a licensed roofer every 1–2 years to inspect shingles, flashing, ventilation, and leak risks before they become costly repairs."] =
+                "Programa un techador con licencia cada 1–2 años para inspeccionar tejas, flashing, ventilación y riesgos de fuga antes de que se vuelvan costosas.",
+            ["After hail, high winds, or heavy storms, check for missing shingles, dents, granule loss, or water stains inside the home."] =
+                "Después de granizo, vientos fuertes o tormentas, revisa tejas faltantes, abolladuras, pérdida de gránulos o manchas de agua dentro del hogar.",
+            ["Older roof or active issues: inspect sooner"] = "Techo antiguo o problemas activos: inspecciona antes",
+            ["If your roof is older, leaking, sagging, or has repeat repair issues, book a professional inspection as soon as possible."] =
+                "Si tu techo es antiguo, tiene fugas, se hunde o necesita reparaciones repetidas, agenda una inspección profesional lo antes posible.",
+            ["Vetted professionals. Clear reports. Peace of mind."] =
+                "Profesionales verificados. Informes claros. Tranquilidad.",
+            ["Set roof check"] = "Configurar revisión de techo",
+            ["This service helps remove dirt, algae, mildew, pollen, and surface buildup from the exterior of your home."] =
+                "Este servicio ayuda a quitar suciedad, algas, moho, polen y acumulación de la superficie exterior de tu hogar.",
+            ["We'll use your answers to understand your surface type, condition, and access so we can recommend the right approach."] =
+                "Usaremos tus respuestas para entender el tipo de superficie, el estado y el acceso y recomendar el enfoque correcto.",
+            ["Recommended every 1–2 years"] = "Recomendado cada 1–2 años",
+            ["Start exterior check"] = "Iniciar revisión exterior",
+            ["Exterior Paint Review"] = "Revisión de pintura exterior",
+            ["Recommended every 5 years"] = "Recomendado cada 5 años",
+            ["Paint sooner if you see peeling, fading, or damaged caulk."] =
+                "Pinta antes si ves desprendimiento, decoloración o calafateo dañado.",
+            ["Gutters should be cleaned in the spring and fall to help prevent clogs, overflow, fascia damage, foundation issues, and water intrusion."] =
+                "Las canaletas deben limpiarse en primavera y otoño para evitar obstrucciones, desbordes, daño en la fascia, problemas de cimentación e ingreso de agua.",
+            ["Recommended twice a year"] = "Recomendado dos veces al año",
+            ["Pest Control Check"] = "Revisión de control de plagas",
+            ["Recommended yearly to help catch problems early and protect your home."] =
+                "Recomendado cada año para detectar problemas a tiempo y proteger tu hogar.",
+            ["Spot termites and other pests early"] = "Detecta termitas y otras plagas a tiempo",
+            ["Check for moisture, nests, droppings, and entry points"] =
+                "Revisa humedad, nidos, excrementos y puntos de entrada",
+            ["Help protect wood, insulation, and indoor air quality"] =
+                "Ayuda a proteger madera, aislamiento y la calidad del aire interior",
+            ["Best for: annual inspections, prevention plans, and homes with past pest activity."] =
+                "Ideal para: inspecciones anuales, planes de prevención y hogares con plagas previas.",
+            ["Smoke / CO Check"] = "Revisión de humo / CO",
+            ["Battery check yearly"] = "Revisión anual de batería",
+            ["Replace alarm every 10 years"] = "Reemplazar alarma cada 10 años",
+            ["Bedroom alarms"] = "Alarmas de dormitorio",
+            ["Hallway alarms"] = "Alarmas de pasillo",
+            ["Living area alarms"] = "Alarmas de áreas comunes",
+            ["CO combo units"] = "Unidades combo de CO",
+
+            // Moving / packing / furniture / TV / general help
+            ["Our pros help you organize, box, label, and protect your belongings so everything arrives safely and stress-free."] =
+                "Nuestros profesionales te ayudan a organizar, empacar, etiquetar y proteger tus pertenencias para que todo llegue seguro y sin estrés.",
+            ["Boxes & supplies guidance"] = "Guía de cajas y suministros",
+            ["Packing materials can be requested during booking. Final pricing may vary based on scope and materials."] =
+                "Los materiales de empaque se pueden solicitar al reservar. El precio final puede variar según el alcance y los materiales.",
+            ["Upload photos or list"] = "Subir fotos o lista",
+            ["Assembly help for move-in and home setup."] =
+                "Ayuda de ensamblaje para mudanzas y configuración del hogar.",
+            ["Upload photos or manuals"] = "Subir fotos o manuales",
+            ["Professional TV mounting with clean setup and basic safety check."] =
+                "Montaje profesional de TV con instalación limpia y revisión básica de seguridad.",
+            ["Great for new homes, re-mounting, or setting up entertainment spaces. Final pricing may vary based on wall type and cable concealment."] =
+                "Ideal para hogares nuevos, reinstalación o espacios de entretenimiento. El precio final puede variar según el tipo de pared y el ocultamiento de cables.",
+            ["General Help"] = "Ayuda general",
+            ["Professional cleaning for homes, apartments, and condos before move-in or after move-out."] =
+                "Limpieza profesional para casas, apartamentos y condominios antes de mudarte o después de salir.",
+            ["Tell us a few details"] = "Cuéntanos unos detalles",
+            ["Upload photos or report"] = "Subir fotos o informe",
+            ["Inspection follow-up"] = "Seguimiento de inspección",
+
+            // Remodeling taglines / titles
+            ["Transform the heart of your home."] = "Transforma el corazón de tu hogar.",
+            ["Comfort, style, and value in one space."] = "Comodidad, estilo y valor en un solo espacio.",
+            ["Give your home new life."] = "Dale nueva vida a tu hogar.",
+            ["Enjoy your home outdoors."] = "Disfruta tu hogar al aire libre.",
+            ["Professional installation"] = "Instalación profesional",
+            ["Professional Interior Painting"] = "Pintura interior profesional",
+            ["Home Security"] = "Seguridad del hogar",
+            ["Durability you can see."] = "Durabilidad que se nota.",
+            ["Dream Kitchen"] = "Cocina soñada",
         };
 }
