@@ -1,17 +1,16 @@
 @model IndorMvcApp.ViewModels.MyHomeProviderFormViewModel
 @{
-    var isEdit = Model.Id.HasValue;
-    ViewData["Title"] = isEdit ? L["Edit Provider"] : L["Add Provider"];
+    ViewData["Title"] = L["Add Provider"];
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "summary";
     ViewBag.MyHomeBackUrl = Url.Action("Providers", "MyHome", new { id = Model.PropiedadId });
 }
 <div class="hf-title-row">
-    <h1 class="hf-title">@(isEdit ? L["Edit provider"] : L["Add provider"])</h1>
+    <h1 class="hf-title">@L["Add provider"]</h1>
 </div>
-<form asp-action="@(isEdit ? "ProviderEdit" : "ProviderCreate")" method="post">
-    @if (isEdit) { <input type="hidden" asp-for="Id" /> }
+<form asp-controller="MyHome" asp-action="ProviderCreate" asp-route-id="@Model.PropiedadId" method="post">
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="PropiedadId" />
     <label asp-for="Name" class="hf-label">@L["Company name"]</label>
     <input asp-for="Name" class="hf-input" />

@@ -124,6 +124,17 @@ public class MyHomeController : Controller
     [HttpGet]
     public async Task<IActionResult> Edit(int id)
     {
+        if (id <= 0)
+        {
+            var fallbackPropId = await GetLatestOwnedPropertyIdAsync();
+            if (fallbackPropId.HasValue)
+            {
+                return RedirectToAction(nameof(Edit), new { id = fallbackPropId.Value });
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
         var propiedad = await LoadPropertyAsync(id);
         if (propiedad == null) return NotFound();
 
@@ -431,7 +442,19 @@ public class MyHomeController : Controller
     [HttpGet]
     public async Task<IActionResult> ProviderCreate(int id)
     {
+        if (id <= 0)
+        {
+            var fallbackPropId = await GetLatestOwnedPropertyIdAsync();
+            if (!fallbackPropId.HasValue)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            id = fallbackPropId.Value;
+        }
+
         if (!await UserOwnsPropertyAsync(id)) return NotFound();
+        ConfigureMyHomeView(id, from: null);
         return View(new MyHomeProviderFormViewModel { PropiedadId = id });
     }
 
@@ -439,8 +462,15 @@ public class MyHomeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ProviderCreate(MyHomeProviderFormViewModel model)
     {
+        // Route `{id}` is the property id and must never become the provider Id.
+        model.Id = null;
+
         if (!await UserOwnsPropertyAsync(model.PropiedadId)) return NotFound();
-        if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid)
+        {
+            ConfigureMyHomeView(model.PropiedadId, from: null);
+            return View(model);
+        }
 
         _db.PropiedadProveedores.Add(new PropiedadProveedor
         {
@@ -457,11 +487,33 @@ public class MyHomeController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> ProviderEdit(int id)
+    public async Task<IActionResult> ProviderEdit(int id, int? propiedadId = null)
     {
-        var provider = await LoadProviderAsync(id);
-        if (provider == null) return NotFound();
+        // Broken / id-less deep links should open create instead of a bare 404.
+        if (id <= 0)
+        {
+            var fallbackPropId = propiedadId ?? await GetLatestOwnedPropertyIdAsync();
+            if (fallbackPropId.HasValue)
+            {
+                return RedirectToAction(nameof(ProviderCreate), new { id = fallbackPropId.Value });
+            }
 
+            return RedirectToAction("Index", "Home");
+        }
+
+        var provider = await LoadProviderAsync(id);
+        if (provider == null)
+        {
+            var fallbackPropId = propiedadId ?? await GetLatestOwnedPropertyIdAsync();
+            if (fallbackPropId.HasValue)
+            {
+                return RedirectToAction(nameof(ProviderCreate), new { id = fallbackPropId.Value });
+            }
+
+            return NotFound();
+        }
+
+        ConfigureMyHomeView(provider.PropiedadId, from: null);
         return View(new MyHomeProviderFormViewModel
         {
             Id = provider.Id,
@@ -478,10 +530,18 @@ public class MyHomeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ProviderEdit(MyHomeProviderFormViewModel model)
     {
-        if (!model.Id.HasValue) return NotFound();
+        if (model.Id is not > 0)
+        {
+            return RedirectToAction(nameof(ProviderCreate), new { id = model.PropiedadId });
+        }
+
         var provider = await LoadProviderAsync(model.Id.Value);
         if (provider == null) return NotFound();
-        if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid)
+        {
+            ConfigureMyHomeView(provider.PropiedadId, from: null);
+            return View(model);
+        }
 
         provider.Name = model.Name.Trim();
         provider.ServiceCategory = model.ServiceCategory.Trim();
@@ -537,7 +597,19 @@ public class MyHomeController : Controller
     [HttpGet]
     public async Task<IActionResult> MaintenanceCreate(int id, string? from)
     {
+        if (id <= 0)
+        {
+            var fallbackPropId = await GetLatestOwnedPropertyIdAsync();
+            if (!fallbackPropId.HasValue)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            id = fallbackPropId.Value;
+        }
+
         if (!await UserOwnsPropertyAsync(id)) return NotFound();
+        ConfigureMyHomeView(id, from);
         return View(new MyHomeMaintenanceFormViewModel
         {
             PropiedadId = id,
@@ -549,8 +621,15 @@ public class MyHomeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> MaintenanceCreate(MyHomeMaintenanceFormViewModel model)
     {
+        // Route `{id}` is the property id and must never become the maintenance record Id.
+        model.Id = null;
+
         if (!await UserOwnsPropertyAsync(model.PropiedadId)) return NotFound();
-        if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid)
+        {
+            ConfigureMyHomeView(model.PropiedadId, model.NavigationFrom);
+            return View(model);
+        }
 
         var requestIndor = string.Equals(model.SaveMode, "IndorSpecialist", StringComparison.OrdinalIgnoreCase);
         var item = new PropiedadMantenimiento
@@ -607,11 +686,32 @@ public class MyHomeController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> MaintenanceEdit(int id, string? from)
+    public async Task<IActionResult> MaintenanceEdit(int id, string? from, int? propiedadId = null)
     {
-        var item = await LoadMaintenanceAsync(id);
-        if (item == null) return NotFound();
+        if (id <= 0)
+        {
+            var fallbackPropId = propiedadId ?? await GetLatestOwnedPropertyIdAsync();
+            if (fallbackPropId.HasValue)
+            {
+                return RedirectToAction(nameof(MaintenanceCreate), new { id = fallbackPropId.Value, from });
+            }
 
+            return RedirectToAction("Index", "Home");
+        }
+
+        var item = await LoadMaintenanceAsync(id);
+        if (item == null)
+        {
+            var fallbackPropId = propiedadId ?? await GetLatestOwnedPropertyIdAsync();
+            if (fallbackPropId.HasValue)
+            {
+                return RedirectToAction(nameof(MaintenanceCreate), new { id = fallbackPropId.Value, from });
+            }
+
+            return NotFound();
+        }
+
+        ConfigureMyHomeView(item.PropiedadId, from);
         return View(new MyHomeMaintenanceFormViewModel
         {
             Id = item.Id,
@@ -629,10 +729,18 @@ public class MyHomeController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> MaintenanceEdit(MyHomeMaintenanceFormViewModel model)
     {
-        if (!model.Id.HasValue) return NotFound();
+        if (model.Id is not > 0)
+        {
+            return RedirectToAction(nameof(MaintenanceCreate), new { id = model.PropiedadId, from = model.NavigationFrom });
+        }
+
         var item = await LoadMaintenanceAsync(model.Id.Value);
         if (item == null) return NotFound();
-        if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid)
+        {
+            ConfigureMyHomeView(item.PropiedadId, model.NavigationFrom);
+            return View(model);
+        }
 
         item.Title = model.Title.Trim();
         item.DueDate = model.DueDate;
@@ -737,6 +845,17 @@ public class MyHomeController : Controller
     [HttpGet]
     public async Task<IActionResult> DocumentCreate(int id, string? category, string? from)
     {
+        if (id <= 0)
+        {
+            var fallbackPropId = await GetLatestOwnedPropertyIdAsync();
+            if (!fallbackPropId.HasValue)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            id = fallbackPropId.Value;
+        }
+
         if (!await UserOwnsPropertyAsync(id)) return NotFound();
         ConfigureMyHomeView(id, from);
         ViewBag.MyHomeNav = "documents";

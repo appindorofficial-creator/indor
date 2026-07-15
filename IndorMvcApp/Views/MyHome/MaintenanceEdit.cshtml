@@ -9,7 +9,8 @@
 <div class="hf-title-row">
     <h1 class="hf-title">@L["Edit maintenance"]</h1>
 </div>
-<form asp-action="MaintenanceEdit" method="post">
+<form asp-controller="MyHome" asp-action="MaintenanceEdit" asp-route-id="@Model.Id" method="post">
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="PropiedadId" />
     <input type="hidden" asp-for="NavigationFrom" />

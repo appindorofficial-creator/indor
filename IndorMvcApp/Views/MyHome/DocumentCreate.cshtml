@@ -32,7 +32,7 @@
 <div class="hf-title-row">
     <h1 class="hf-title">@L["Upload document"]</h1>
 </div>
-<form asp-action="DocumentCreate" method="post" enctype="multipart/form-data" class="hf-document-form" id="documentCreateForm">
+<form asp-controller="MyHome" asp-action="DocumentCreate" asp-route-id="@Model.PropiedadId" method="post" enctype="multipart/form-data" class="hf-document-form" id="documentCreateForm">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="PropiedadId" />
     <div asp-validation-summary="All" class="hf-validation-summary"></div>
