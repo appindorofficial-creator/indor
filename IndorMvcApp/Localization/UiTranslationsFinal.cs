@@ -404,7 +404,7 @@ public static class UiTranslationsFinal
 
             // Proveedor PRO — Jobs hub, customers, messages, flow path
             ["Create Job"] = "Crear trabajo",
-            ["Filter"] = "Filtrar",
+            ["Filter"] = "Filtro",
             ["Smart Suggestions"] = "Sugerencias inteligentes",
             ["Report Insights"] = "Información de informes",
             ["New message"] = "Nuevo mensaje",

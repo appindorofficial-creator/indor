@@ -663,8 +663,13 @@ public static class ScheduleDisplayService
     private static string ShortenNotes(string notes) =>
         notes.Length <= 72 ? notes : notes[..69] + "…";
 
-    private static string FormatDateLabel(DateTime date) =>
-        date.ToString("ddd, MMM dd", CultureInfo.InvariantCulture);
+    private static string FormatDateLabel(DateTime date)
+    {
+        var culture = CultureInfo.CurrentUICulture;
+        // Spanish reads naturally as "mié, 15 jul"; English keeps "Wed, Jul 15".
+        var pattern = culture.TwoLetterISOLanguageName == "es" ? "ddd, d MMM" : "ddd, MMM dd";
+        return date.ToString(pattern, culture);
+    }
 
     private static (string icon, string tone) ResolveTone(
         int microservicioId,
