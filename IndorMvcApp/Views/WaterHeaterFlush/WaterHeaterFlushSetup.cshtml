@@ -40,7 +40,7 @@
         <div class="field-card">
             <div class="field-head"><i class="fas fa-barcode"></i><span>@L["Serial number"]</span></div>
             <input asp-for="NumeroSerie" placeholder="@L["Enter serial number"]" id="serialInput" maxlength="@EquipmentSerialNumberAttribute.MaxLength" autocomplete="off" autocapitalize="characters" spellcheck="false" />
-            <div class="field-hint" style="margin-top:6px;font-size:0.75rem;color:#64748B;">@EquipmentSerialNumberAttribute.HintText</div>
+            <div class="field-hint" style="margin-top:6px;font-size:0.75rem;color:#64748B;">@L[EquipmentSerialNumberAttribute.HintText]</div>
             <div class="toggle-row" style="margin-top:12px;">
                 <span>@L["I don't know"]</span>
                 <label class="toggle-switch">
@@ -97,7 +97,7 @@
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
-            Continue <i class="fas fa-chevron-right"></i>
+            @L["Continue"] <i class="fas fa-chevron-right"></i>
         </button>
     </form>
 
@@ -143,10 +143,10 @@
         function serialErrorMessage(value) {
             var serial = String(value || '').trim();
             if (!serial) return '';
-            if (serial.length < serialMin) return 'Serial number must be at least ' + serialMin + ' characters.';
-            if (serial.length > serialMax) return 'Serial number cannot exceed ' + serialMax + ' characters.';
-            if (!/^[A-Za-z0-9\-]+$/.test(serial)) return 'Use only letters, numbers, and hyphens.';
-            if (!/[A-Za-z]/.test(serial) || !/\d/.test(serial)) return 'Serial number must include at least one letter and one number.';
+            if (serial.length < serialMin) return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L.T("Serial number must be at least {0} characters.", EquipmentSerialNumberAttribute.MinLength)));
+            if (serial.length > serialMax) return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L.T("Serial number cannot exceed {0} characters.", EquipmentSerialNumberAttribute.MaxLength)));
+            if (!/^[A-Za-z0-9\-]+$/.test(serial)) return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Use only letters, numbers, and hyphens."]));
+            if (!/[A-Za-z]/.test(serial) || !/\d/.test(serial)) return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Serial number must include at least one letter and one number."]));
             return '';
         }
 

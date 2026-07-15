@@ -1,10 +1,11 @@
 @model IndorMvcApp.ViewModels.CrawlspaceCheckConfirmedViewModel
 @{
     ViewData["Title"] = L["Crawlspace Check Scheduled - INDOR"];
-    ViewData["WizardTitle"] = Model.NombreServicio;
+    ViewData["WizardTitle"] = L.Catalog(Model.NombreServicio);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
+
 
 
 <div class="success-wrap">
@@ -17,40 +18,44 @@
         <div class="summary-mini">
             <i class="fas fa-layer-group"></i>
             <div class="summary-label">@L["Encapsulation"]</div>
-            <div class="summary-value">@Model.EncapsulacionLabel</div>
+            <div class="summary-value">@UiDisplayLocalization.Localize(L, Model.EncapsulacionLabel)</div>
         </div>
         <div class="summary-mini">
             <i class="fas fa-scroll"></i>
             <div class="summary-label">@L["Insulation"]</div>
-            <div class="summary-value">@Model.AislamientoLabel</div>
+            <div class="summary-value">@UiDisplayLocalization.Localize(L, Model.AislamientoLabel)</div>
         </div>
         <div class="summary-mini">
             <i class="fas fa-droplet"></i>
             <div class="summary-label">@L["Vapor barrier"]</div>
-            <div class="summary-value">@Model.BarreraVaporLabel</div>
+            <div class="summary-value">@UiDisplayLocalization.Localize(L, Model.BarreraVaporLabel)</div>
         </div>
         <div class="summary-mini">
             <i class="fas fa-bug"></i>
             <div class="summary-label">@L["Concerns"]</div>
-            <div class="summary-value">@Model.ConcernsLabel</div>
+            <div class="summary-value">@UiDisplayLocalization.Localize(L, Model.ConcernsLabel)</div>
         </div>
         <div class="summary-mini">
             <i class="fas fa-calendar"></i>
             <div class="summary-label">@L["Timing"]</div>
-            <div class="summary-value">@Model.TimingLabel</div>
+            <div class="summary-value">@UiDisplayLocalization.Localize(L, Model.TimingLabel)</div>
         </div>
         <div class="summary-mini">
             <i class="fas fa-clock-rotate-left"></i>
             <div class="summary-label">@L["Reminder"]</div>
-            <div class="summary-value">@Model.ReminderLabel</div>
+            <div class="summary-value">@UiDisplayLocalization.Localize(L, Model.ReminderLabel)</div>
         </div>
     </div>
 
     @if (!string.IsNullOrWhiteSpace(Model.FrequencyTexto))
     {
+        var frequencyRaw = Model.FrequencyTexto.Trim();
+        var frequencyDisplay = frequencyRaw.StartsWith("Recommended frequency:", StringComparison.OrdinalIgnoreCase)
+            ? frequencyRaw
+            : $"Recommended frequency: {frequencyRaw}";
         <div class="info-box-blue">
             <i class="fas fa-circle-info"></i>
-            <span>Recommended frequency: @Model.FrequencyTexto</span>
+            <span>@L.Catalog(frequencyDisplay)</span>
         </div>
     }
 
@@ -58,26 +63,26 @@
     {
         <div class="service-desc-box">
             <i class="fas fa-shield-halved"></i>
-            <span>@Model.ResumenServicioTexto</span>
+            <span>@L.Catalog(Model.ResumenServicioTexto)</span>
         </div>
     }
 
     @if (Model.PropiedadId.HasValue)
     {
         <a asp-controller="MyHome" asp-action="Index" asp-route-id="@Model.PropiedadId" class="btn-primary">
-            <i class="fas fa-house"></i> Go to My Home
+            <i class="fas fa-house"></i> @L["Go to My Home"]
         </a>
     }
     else
     {
         <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="btn-primary">
-            <i class="fas fa-house"></i> Go to My Home
+            <i class="fas fa-house"></i> @L["Go to My Home"]
         </a>
     }
 
     @if (Model.PropiedadId.HasValue)
     {
         <a asp-controller="MyHome" asp-action="Maintenance" asp-route-id="@Model.PropiedadId" class="btn-outline" style="margin-top:10px;">
-            <i class="fas fa-bell"></i> View reminders
+            <i class="fas fa-bell"></i> @L["View reminders"]
         </a>
     }
