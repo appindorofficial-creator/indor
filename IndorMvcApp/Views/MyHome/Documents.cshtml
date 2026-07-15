@@ -4,6 +4,7 @@
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "documents";
+    var hasSearch = !string.IsNullOrWhiteSpace(Model.Search);
 
     string FolderIcon(string category) => category switch
     {
@@ -18,8 +19,56 @@
 }
 @section Styles {
     <style>
-        .hf-docs-search { margin-bottom: 14px; }
-        .hf-docs-search .hf-input { margin: 0; }
+        .hf-filter { margin-bottom: 14px; }
+        .hf-filter-row {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+        }
+        .hf-filter-field {
+            position: relative;
+            flex: 1;
+            min-width: 0;
+        }
+        .hf-filter-field .hf-input {
+            margin: 0;
+            padding-right: 40px;
+        }
+        .hf-filter-clear {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 50%;
+            background: #E2E8F0;
+            color: #475569;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 0.72rem;
+        }
+        .hf-filter-submit {
+            width: 48px;
+            flex-shrink: 0;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0066CC, #004FA3);
+            color: #FFF;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        .hf-filter-empty {
+            text-align: center;
+            color: #64748B;
+            padding: 28px 18px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            line-height: 1.45;
+        }
         .hf-doc-cat {
             display: flex;
             align-items: center;
@@ -58,9 +107,7 @@
             font-weight: 600;
             color: #64748B;
         }
-        .hf-doc-cat-count.has-docs {
-            color: #0066CC;
-        }
+        .hf-doc-cat-count.has-docs { color: #0066CC; }
         .hf-doc-cat-chevron {
             width: 28px;
             height: 28px;
@@ -79,27 +126,49 @@
     <h1 class="hf-title">@L["Documents"]</h1>
     <a asp-action="DocumentCreate" asp-route-id="@Model.PropiedadId" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-btn">@L["+ Upload document"]</a>
 </div>
-<form method="get" asp-action="Documents" asp-route-id="@Model.PropiedadId" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-docs-search">
-    <input type="search" name="search" value="@Model.Search" class="hf-input" placeholder="@L["Search documents"]" />
-</form>
-@foreach (var cat in Model.Categories)
-{
-    <a asp-action="DocumentList"
-       asp-route-id="@Model.PropiedadId"
-       asp-route-category="@cat.Category"
-       asp-route-from="@ViewBag.MyHomeNavFrom"
-       class="hf-doc-cat">
-        <span class="hf-doc-cat-icon" aria-hidden="true">
-            <i class="fas @FolderIcon(cat.Category)"></i>
-        </span>
-        <div class="hf-doc-cat-meta">
-            <div class="hf-doc-cat-title">@L[cat.Category]</div>
-            <div class="hf-doc-cat-count @(cat.Count > 0 ? "has-docs" : null)">
-                @(cat.Count == 1 ? L.T("{0} document", cat.Count) : L.T("{0} documents", cat.Count))
-            </div>
+<form method="get" asp-action="Documents" asp-route-id="@Model.PropiedadId" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-filter" role="search">
+    <div class="hf-filter-row">
+        <div class="hf-filter-field">
+            <input type="search" name="search" value="@Model.Search" class="hf-input" placeholder="@L["Search documents"]" autocomplete="off" />
+            @if (hasSearch)
+            {
+                <a asp-action="Documents" asp-route-id="@Model.PropiedadId" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-filter-clear" aria-label="@L["Clear search"]" title="@L["Clear search"]">
+                    <i class="fas fa-xmark"></i>
+                </a>
+            }
         </div>
-        <span class="hf-doc-cat-chevron" aria-hidden="true">
-            <i class="fas fa-chevron-right"></i>
-        </span>
-    </a>
+        <button type="submit" class="hf-filter-submit" aria-label="@L["Search documents"]">
+            <i class="fas fa-magnifying-glass"></i>
+        </button>
+    </div>
+</form>
+@if (Model.Categories.Count == 0)
+{
+    <div class="hf-card hf-filter-empty">
+        @(hasSearch ? L["No documents match your search."] : L["No documents in this category yet."])
+    </div>
+}
+else
+{
+    @foreach (var cat in Model.Categories)
+    {
+        <a asp-action="DocumentList"
+           asp-route-id="@Model.PropiedadId"
+           asp-route-category="@cat.Category"
+           asp-route-from="@ViewBag.MyHomeNavFrom"
+           class="hf-doc-cat">
+            <span class="hf-doc-cat-icon" aria-hidden="true">
+                <i class="fas @FolderIcon(cat.Category)"></i>
+            </span>
+            <div class="hf-doc-cat-meta">
+                <div class="hf-doc-cat-title">@L[cat.Category]</div>
+                <div class="hf-doc-cat-count @(cat.Count > 0 ? "has-docs" : null)">
+                    @(cat.Count == 1 ? L.T("{0} document", cat.Count) : L.T("{0} documents", cat.Count))
+                </div>
+            </div>
+            <span class="hf-doc-cat-chevron" aria-hidden="true">
+                <i class="fas fa-chevron-right"></i>
+            </span>
+        </a>
+    }
 }

@@ -284,6 +284,16 @@
     border: none !important;
 }
 
+.hf-edit-btn {
+    border-radius: 999px !important;
+    background: rgba(0, 102, 204, 0.08) !important;
+    border: 1.5px solid rgba(0, 102, 204, 0.35) !important;
+    color: #0066CC !important;
+    box-shadow: none !important;
+    min-height: 40px;
+    padding: 8px 14px !important;
+}
+
 .hf-chip.active {
     background: var(--indor-grad-primary) !important;
     border-color: transparent !important;

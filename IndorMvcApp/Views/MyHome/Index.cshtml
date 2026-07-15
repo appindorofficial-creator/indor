@@ -7,11 +7,14 @@
 }
 <div class="hf-title-row">
     <h1 class="hf-title">@L["My Property"]</h1>
+    <a asp-action="Edit" asp-route-id="@Model.PropiedadId" class="hf-btn hf-edit-btn">
+        <i class="fas fa-pen" aria-hidden="true"></i>
+        <span>@L["Edit"]</span>
+    </a>
 </div>
 <img src="@Url.Content("~" + Model.HeroImageUrl)" alt="@L["Property"]" class="hf-hero" />
 <div class="hf-address-row">
     <span><i class="fas fa-location-dot" style="color:#0066CC;margin-right:6px;"></i>@Model.Address</span>
-    <a asp-action="Edit" asp-route-id="@Model.PropiedadId" class="hf-btn" style="border:none;padding:0;">@L["Edit"]</a>
 </div>
 <div class="hf-grid-2" style="margin-bottom:16px;">
     <div class="hf-stat"><i class="fas fa-calendar"></i><div class="k">@L["Year built"]</div><div class="v">@(Model.YearBuilt?.ToString() ?? "—")</div></div>

@@ -415,8 +415,11 @@ public class MyHomeController : Controller
         var query = _db.PropiedadProveedores.Where(p => p.PropiedadId == propiedad.Id && p.Activo);
         if (!string.IsNullOrWhiteSpace(search))
         {
+            var term = search.Trim().ToLower();
             query = query.Where(p =>
-                p.Name.Contains(search) || p.ServiceCategory.Contains(search));
+                p.Name.ToLower().Contains(term)
+                || p.ServiceCategory.ToLower().Contains(term)
+                || (p.Phone != null && p.Phone.ToLower().Contains(term)));
         }
 
         var items = await query
@@ -434,7 +437,7 @@ public class MyHomeController : Controller
         {
             PropiedadId = propiedad.Id,
             Address = propiedad.Direccion ?? string.Empty,
-            Search = search,
+            Search = search?.Trim(),
             Items = items
         });
     }
@@ -818,11 +821,16 @@ public class MyHomeController : Controller
         ViewBag.MyHomeNav = "documents";
 
         var docs = await _db.PropiedadDocumentos.Where(d => d.PropiedadId == propiedad.Id).ToListAsync();
-        if (!string.IsNullOrWhiteSpace(search))
+        var term = search?.Trim();
+        if (!string.IsNullOrWhiteSpace(term))
         {
             docs = docs.Where(d =>
-                d.Title.Contains(search, StringComparison.OrdinalIgnoreCase)
-                || d.Category.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+                (!string.IsNullOrWhiteSpace(d.Title) && d.Title.Contains(term, StringComparison.OrdinalIgnoreCase))
+                || (!string.IsNullOrWhiteSpace(d.FileName) && d.FileName.Contains(term, StringComparison.OrdinalIgnoreCase))
+                || (!string.IsNullOrWhiteSpace(d.Category) && (
+                    d.Category.Contains(term, StringComparison.OrdinalIgnoreCase)
+                    || _localizer[d.Category].Contains(term, StringComparison.OrdinalIgnoreCase)))
+            ).ToList();
         }
 
         var categories = MyHomeDisplayService.DocumentCategories
@@ -831,13 +839,14 @@ public class MyHomeController : Controller
                 Category = cat,
                 Count = docs.Count(d => string.Equals(d.Category, cat, StringComparison.OrdinalIgnoreCase))
             })
+            .Where(cat => string.IsNullOrWhiteSpace(term) || cat.Count > 0)
             .ToList();
 
         return View(new MyHomeDocumentsViewModel
         {
             PropiedadId = propiedad.Id,
             Address = propiedad.Direccion ?? string.Empty,
-            Search = search,
+            Search = term,
             Categories = categories
         });
     }

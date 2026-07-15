@@ -4,30 +4,172 @@
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "summary";
+    var hasSearch = !string.IsNullOrWhiteSpace(Model.Search);
+}
+@section Styles {
+    <style>
+        .hf-filter { margin-bottom: 14px; }
+        .hf-filter-row {
+            display: flex;
+            align-items: stretch;
+            gap: 8px;
+        }
+        .hf-filter-field {
+            position: relative;
+            flex: 1;
+            min-width: 0;
+        }
+        .hf-filter-field .hf-input {
+            margin: 0;
+            padding-right: 40px;
+        }
+        .hf-filter-clear {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 28px;
+            height: 28px;
+            border: none;
+            border-radius: 50%;
+            background: #E2E8F0;
+            color: #475569;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 0.72rem;
+        }
+        .hf-filter-submit {
+            width: 48px;
+            flex-shrink: 0;
+            border: none;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0066CC, #004FA3);
+            color: #FFF;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+        .hf-prov-empty {
+            text-align: center;
+            color: #64748B;
+            padding: 28px 18px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            line-height: 1.45;
+        }
+        .hf-prov-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: inherit;
+            background: #FFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 16px;
+            transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+        }
+        .hf-prov-item:active { transform: scale(.99); }
+        .hf-prov-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 102, 204, 0.1);
+            color: #0066CC;
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+        .hf-prov-meta { flex: 1; min-width: 0; }
+        .hf-prov-name {
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: #0A2540;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .hf-prov-sub {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #64748B;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .hf-prov-phone {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #0066CC;
+            margin-top: 2px;
+        }
+        .hf-prov-chevron {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F1F5F9;
+            color: #64748B;
+            font-size: 0.72rem;
+        }
+    </style>
 }
 <div class="hf-title-row">
     <h1 class="hf-title">@L["Providers"]</h1>
     <a asp-action="ProviderCreate" asp-route-id="@Model.PropiedadId" class="hf-btn">@L["+ Add"]</a>
 </div>
-<form method="get" asp-action="Providers" asp-route-id="@Model.PropiedadId" style="margin-bottom:14px;">
-    <input type="search" name="search" value="@Model.Search" class="hf-input" placeholder="@L["Search providers"]" style="margin:0;" />
+<form method="get" asp-action="Providers" asp-route-id="@Model.PropiedadId" class="hf-filter" role="search">
+    <div class="hf-filter-row">
+        <div class="hf-filter-field">
+            <input type="search" name="search" value="@Model.Search" class="hf-input" placeholder="@L["Search providers"]" autocomplete="off" />
+            @if (hasSearch)
+            {
+                <a asp-action="Providers" asp-route-id="@Model.PropiedadId" class="hf-filter-clear" aria-label="@L["Clear search"]" title="@L["Clear search"]">
+                    <i class="fas fa-xmark"></i>
+                </a>
+            }
+        </div>
+        <button type="submit" class="hf-filter-submit" aria-label="@L["Search providers"]">
+            <i class="fas fa-magnifying-glass"></i>
+        </button>
+    </div>
 </form>
 @if (Model.Items.Count == 0)
 {
-    <div class="hf-card" style="text-align:center;color:#64748B;">@L["No providers yet. Add contractors and service pros you trust."]</div>
+    <div class="hf-card hf-prov-empty">
+        @(hasSearch
+            ? L["No providers match your search."]
+            : L["No providers yet. Add contractors and service pros you trust."])
+    </div>
 }
 else
 {
     @foreach (var item in Model.Items)
     {
-        <a asp-action="ProviderEdit" asp-route-id="@item.Id" class="hf-card hf-list-item" style="display:flex;margin-bottom:8px;">
-            <div style="width:44px;height:44px;border-radius:50%;background:#E5E7EB;display:flex;align-items:center;justify-content:center;font-weight:800;color:#0066CC;">@item.Name.Substring(0,1)</div>
-            <div class="meta">
-                <div class="value">@item.Name</div>
-                <div class="label">@UiDisplayLocalization.Localize(L, item.ServiceCategory)</div>
-                @if (!string.IsNullOrWhiteSpace(item.Phone)) { <div class="label">@item.Phone</div> }
+        var initial = string.IsNullOrWhiteSpace(item.Name) ? "?" : item.Name.Trim()[0].ToString();
+        <a asp-action="ProviderEdit" asp-route-id="@item.Id" class="hf-prov-item">
+            <span class="hf-prov-avatar" aria-hidden="true">@initial</span>
+            <div class="hf-prov-meta">
+                <div class="hf-prov-name">@item.Name</div>
+                <div class="hf-prov-sub">@UiDisplayLocalization.Localize(L, item.ServiceCategory)</div>
+                @if (!string.IsNullOrWhiteSpace(item.Phone))
+                {
+                    <div class="hf-prov-phone">@item.Phone</div>
+                }
             </div>
-            <i class="fas fa-chevron-right" style="color:#CBD5E1;"></i>
+            <span class="hf-prov-chevron" aria-hidden="true">
+                <i class="fas fa-chevron-right"></i>
+            </span>
         </a>
     }
 }

@@ -238,6 +238,8 @@ public static class UiTranslationsHome
 
             ["Related documents"] = "Documentos relacionados",
             ["Search providers"] = "Buscar proveedores",
+            ["No providers match your search."] = "Ningún proveedor coincide con tu búsqueda.",
+            ["Clear search"] = "Limpiar búsqueda",
 
             ["No providers yet. Add contractors and service pros you trust."] = "Aún no hay proveedores. Agrega contratistas y profesionales de servicios en los que confíes.",
 
@@ -328,6 +330,7 @@ public static class UiTranslationsHome
             ["+ Upload document"] = "+ Subir documento",
 
             ["Search documents"] = "Buscar documentos",
+            ["No documents match your search."] = "Ningún documento coincide con tu búsqueda.",
 
             ["{0} document"] = "{0} documento",
 
