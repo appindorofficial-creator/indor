@@ -61,9 +61,9 @@ public class ServicioEmergencia
 
     public DateTime FechaCreacion { get; set; } = DateTime.Now;
 
-    public string LocalizedTitulo(bool isSpanish) => CatalogText.Pick(TituloEmergencia, TituloEmergenciaEs, isSpanish);
-    public string LocalizedDescripcion(bool isSpanish) => CatalogText.Pick(Descripcion, DescripcionEs, isSpanish);
-    public string LocalizedCtaTexto(bool isSpanish) => CatalogText.Pick(CtaTexto, CtaTextoEs, isSpanish);
-    public string? LocalizedCaracteristicas(bool isSpanish) => CatalogText.PickPipeList(Caracteristicas, CaracteristicasEs, isSpanish);
-    public string? LocalizedBadgeTexto(bool isSpanish) => CatalogText.Pick(BadgeTexto, BadgeTextoEs, isSpanish);
+    public string LocalizedTitulo(bool isSpanish) => CatalogText.PickWithUiFallback(TituloEmergencia, TituloEmergenciaEs, isSpanish);
+    public string LocalizedDescripcion(bool isSpanish) => CatalogText.PickWithUiFallback(Descripcion, DescripcionEs, isSpanish);
+    public string LocalizedCtaTexto(bool isSpanish) => CatalogText.PickWithUiFallback(CtaTexto, CtaTextoEs, isSpanish);
+    public string? LocalizedCaracteristicas(bool isSpanish) => CatalogText.PickPipeListWithUiFallback(Caracteristicas, CaracteristicasEs, isSpanish);
+    public string? LocalizedBadgeTexto(bool isSpanish) => CatalogText.PickWithUiFallback(BadgeTexto, BadgeTextoEs, isSpanish);
 }

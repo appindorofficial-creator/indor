@@ -75,8 +75,8 @@ public class Microservicio
 
     public DateTime FechaCreacion { get; set; } = DateTime.Now;
 
-    public string LocalizedNombre(bool isSpanish) => CatalogText.Pick(Nombre, NombreEs, isSpanish);
-    public string? LocalizedSubtitulo(bool isSpanish) => CatalogText.Pick(Subtitulo, SubtituloEs, isSpanish);
-    public string LocalizedDescripcion(bool isSpanish) => CatalogText.Pick(Descripcion, DescripcionEs, isSpanish);
-    public string? LocalizedCtaTexto(bool isSpanish) => CatalogText.Pick(CtaTexto, CtaTextoEs, isSpanish);
+    public string LocalizedNombre(bool isSpanish) => CatalogText.PickWithUiFallback(Nombre, NombreEs, isSpanish);
+    public string? LocalizedSubtitulo(bool isSpanish) => CatalogText.PickWithUiFallback(Subtitulo, SubtituloEs, isSpanish);
+    public string LocalizedDescripcion(bool isSpanish) => CatalogText.PickWithUiFallback(Descripcion, DescripcionEs, isSpanish);
+    public string? LocalizedCtaTexto(bool isSpanish) => CatalogText.PickWithUiFallback(CtaTexto, CtaTextoEs, isSpanish);
 }
