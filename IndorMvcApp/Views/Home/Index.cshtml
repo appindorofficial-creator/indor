@@ -134,7 +134,9 @@
                 EnableSchedule = !HasDedicatedMicroserviceFlow(s),
                 EnableLink = true,
                 LinkController = GetMicroserviceLinkController(s),
-                LinkAction = GetMicroserviceLinkAction(s)
+                LinkAction = GetMicroserviceLinkAction(s),
+                FilterKey = HomeownerServiceFilter.Classify(s.Nombre),
+                SearchText = HomeownerServiceFilter.BuildSearchBlob(s.Nombre, s.LocalizedNombre(es), s.LocalizedSubtitulo(es))
             }).ToList()
         };
     }
@@ -176,7 +178,9 @@
                     SourceId = link.RouteId,
                     EnableLink = true,
                     LinkController = link.Controller,
-                    LinkAction = link.Action
+                    LinkAction = link.Action,
+                    FilterKey = HomeownerServiceFilter.Classify(sv.Nombre),
+                    SearchText = HomeownerServiceFilter.BuildSearchBlob(sv.Nombre, sv.LocalizedNombre(es), sv.LocalizedSubtitulo(es))
                 };
             }).ToList()
         };
@@ -216,7 +220,9 @@
                 SourceId = ins.Id,
                 EnableLink = HasInspectionFlow(ins.Nombre),
                 LinkController = "Inspecciones",
-                LinkAction = GetInspectionFlowAction(ins.Nombre)
+                LinkAction = GetInspectionFlowAction(ins.Nombre),
+                FilterKey = HomeownerServiceFilter.Classify(ins.Nombre),
+                SearchText = HomeownerServiceFilter.BuildSearchBlob(ins.Nombre, ins.LocalizedNombre(es), CatalogText.PickWithUiFallback(ins.Subtitulo, ins.SubtituloEs, es))
             }).ToList()
         };
     }
@@ -758,7 +764,7 @@
         }
         else
         {
-            <div class="services-catalog">
+            <div class="services-catalog" data-ho-services-catalog>
                 <div class="services-hero">
                     <div class="services-hero-text">
                         <strong>@L["Take care of your home effortlessly"]</strong>
@@ -766,6 +772,45 @@
                     </div>
                     <div class="services-hero-icon"><i class="fas fa-house-chimney-medical"></i></div>
                 </div>
+
+                @{
+                    var serviceFilters = new[]
+                    {
+                        ("all", L["All services"].ToString(), "fa-grid-2"),
+                        ("emergency", L["Emergency"].ToString(), "fa-truck-medical"),
+                        ("homecare", L["Homecare"].ToString(), "fa-house-chimney"),
+                        ("cleaning", L["Cleaning"].ToString(), "fa-broom"),
+                        ("outdoor", L["Outdoor"].ToString(), "fa-seedling"),
+                        ("moving", L["Moving"].ToString(), "fa-truck")
+                    };
+                    var svcSearchPlaceholder = L["Search services (e.g., plumbing, cleaning)"].ToString();
+                    var svcSearchAria = L["Search services"].ToString();
+                    var svcFilterBtnAria = L["Filter"].ToString();
+                    var svcFilterListAria = L["Filter services"].ToString();
+                }
+                <div class="ho-svc-search" data-ho-service-search>
+                    <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+                    <input type="search" id="ho-service-search"
+                           placeholder="@svcSearchPlaceholder"
+                           aria-label="@svcSearchAria"
+                           autocomplete="off" />
+                    <button type="button" class="ho-svc-search-btn" data-ho-service-search-focus aria-label="@svcFilterBtnAria">
+                        <i class="fas fa-sliders" aria-hidden="true"></i>
+                    </button>
+                </div>
+                <div class="ho-svc-filter-pills" role="tablist" aria-label="@svcFilterListAria">
+                    @foreach (var (key, label, icon) in serviceFilters)
+                    {
+                        <button type="button"
+                                class="ho-svc-filter-pill @(key == "all" ? "is-active" : null)"
+                                data-ho-svc-filter="@key"
+                                role="tab"
+                                aria-selected="@(key == "all" ? "true" : "false")">
+                            <i class="fas @icon" aria-hidden="true"></i> @label
+                        </button>
+                    }
+                </div>
+                <p class="ho-svc-search-empty" data-ho-service-search-empty hidden>@L["No services match your search."]</p>
 
                 @if (microservicios.Any())
                 {
@@ -1480,6 +1525,131 @@
                 });
             });
         });
+
+        // === Services tab: MPA-style search + category pills ===
+        (function () {
+            const catalog = document.querySelector('[data-ho-services-catalog]');
+            if (!catalog) return;
+
+            const searchRoot = catalog.querySelector('[data-ho-service-search]');
+            const input = searchRoot?.querySelector('input[type="search"]');
+            const empty = catalog.querySelector('[data-ho-service-search-empty]');
+            const hero = catalog.querySelector('.services-hero');
+            const pills = Array.from(catalog.querySelectorAll('[data-ho-svc-filter]'));
+            let activeFilter = 'all';
+
+            function foldText(value) {
+                return String(value || '')
+                    .toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '');
+            }
+
+            function applyServiceFilters() {
+                const query = foldText(input?.value || '');
+                let visibleCount = 0;
+
+                catalog.querySelectorAll('[data-ho-service-section]').forEach(function (section) {
+                    const sectionKey = section.getAttribute('data-ho-filter-section');
+                    const items = Array.from(section.querySelectorAll('[data-ho-service-item]'));
+                    let sectionVisible = 0;
+
+                    if (sectionKey) {
+                        const catMatch = activeFilter === 'all' || activeFilter === sectionKey;
+                        if (!catMatch) {
+                            section.hidden = true;
+                            items.forEach(function (item) { item.hidden = true; });
+                            return;
+                        }
+
+                        items.forEach(function (item) {
+                            const haystack = foldText(item.getAttribute('data-search') || item.textContent);
+                            const match = !query || haystack.indexOf(query) !== -1;
+                            item.hidden = !match;
+                            if (match) {
+                                sectionVisible += 1;
+                                visibleCount += 1;
+                            }
+                        });
+
+                        if (query && sectionVisible === 0 && items.length === 0) {
+                            const sectionMatch = foldText(section.textContent).indexOf(query) !== -1;
+                            section.hidden = !sectionMatch;
+                            if (sectionMatch) visibleCount += 1;
+                            return;
+                        }
+
+                        if (query && sectionVisible === 0) {
+                            const sectionMatch = foldText(section.textContent).indexOf(query) !== -1;
+                            section.hidden = !sectionMatch;
+                            if (sectionMatch) {
+                                items.forEach(function (item) { item.hidden = false; });
+                                visibleCount += items.length || 1;
+                            }
+                            return;
+                        }
+
+                        section.hidden = false;
+                        return;
+                    }
+
+                    items.forEach(function (item) {
+                        const key = item.getAttribute('data-filter') || 'homecare';
+                        const catMatch = activeFilter === 'all' || key === activeFilter;
+                        const haystack = foldText(item.getAttribute('data-search') || item.textContent);
+                        const textMatch = !query || haystack.indexOf(query) !== -1;
+                        const show = catMatch && textMatch;
+                        item.hidden = !show;
+                        if (show) {
+                            sectionVisible += 1;
+                            visibleCount += 1;
+                        }
+                    });
+
+                    section.hidden = sectionVisible === 0;
+                });
+
+                if (hero) {
+                    hero.hidden = activeFilter !== 'all' || query.length > 0;
+                }
+                if (empty) {
+                    empty.hidden = !(visibleCount === 0);
+                }
+            }
+
+            pills.forEach(function (pill) {
+                pill.addEventListener('click', function () {
+                    activeFilter = pill.getAttribute('data-ho-svc-filter') || 'all';
+                    pills.forEach(function (p) {
+                        const on = p === pill;
+                        p.classList.toggle('is-active', on);
+                        p.setAttribute('aria-selected', on ? 'true' : 'false');
+                    });
+                    applyServiceFilters();
+                });
+            });
+
+            if (input) {
+                input.addEventListener('input', applyServiceFilters);
+                input.addEventListener('search', applyServiceFilters);
+            }
+
+            const focusBtn = searchRoot?.querySelector('[data-ho-service-search-focus]');
+            if (focusBtn && input) {
+                focusBtn.addEventListener('click', function () {
+                    input.focus();
+                    input.select();
+                });
+            }
+
+            // Deep-link: #section-services with ?svcFilter=emergency (avoid clash with nearby ?filter=)
+            const params = new URLSearchParams(window.location.search);
+            const svcFilter = (params.get('svcFilter') || '').toLowerCase();
+            if (svcFilter && pills.some(function (p) { return p.getAttribute('data-ho-svc-filter') === svcFilter; })) {
+                const target = pills.find(function (p) { return p.getAttribute('data-ho-svc-filter') === svcFilter; });
+                target?.click();
+            }
+        })();
 
         // === Si llegamos con ?section=more, abrir directamente esa seccion ===
         (function () {

@@ -22,15 +22,17 @@
         <input type="hidden" asp-for="PresupuestoEstimado" id="PresupuestoEstimado" />
         <input type="hidden" asp-for="ContactoPreferido" id="ContactoPreferido" />
 
-        <div class="location-card">
-            <i class="fas fa-house main"></i>
-            <div class="meta">
-                <input asp-for="DireccionPropiedad" placeholder="@L["Project address"]" required style="border:none;background:transparent;width:100%;font-family:inherit;font-weight:600;font-size:0.88rem;" />
+        <div class="field-card">
+            <span class="field-label">@L["Project address"]</span>
+            <div class="location-card">
+                <i class="fas fa-house main"></i>
+                <div class="meta">
+                    <input asp-for="DireccionPropiedad" placeholder="@L["Project address"]" required style="border:none;background:transparent;width:100%;font-family:inherit;font-weight:600;font-size:0.88rem;" />
+                </div>
             </div>
         </div>
-        <span asp-validation-for="DireccionPropiedad" style="color:#B91C1C;font-size:0.82rem;display:block;margin:-8px 0 12px;"></span>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="AlcanceProyecto">
             <span class="field-label">@L["Project scope"]</span>
             <div class="help-grid" id="scopeGroup">
                 <button type="button" class="help-tile" data-value="FullRemodel"><i class="fas fa-hammer"></i>@L["Full remodel"]</button>
@@ -39,7 +41,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="VentanaTiempo">
             <span class="field-label">@L["When do you want to start?"]</span>
             <div class="chip-scroll" id="timingGroup">
                 <button type="button" class="chip-option" data-value="ASAP"><i class="fas fa-bolt"></i> @L["ASAP"]</button>
@@ -49,7 +51,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="PresupuestoEstimado">
             <span class="field-label">@L["Estimated budget"]</span>
             <div class="chip-scroll" id="budgetGroup">
                 <button type="button" class="chip-option" data-value="Under5k">@L["Under $5k"]</button>
@@ -62,11 +64,10 @@
 
         <div class="field-card">
             <span class="field-label">@L["Describe your project"]</span>
-            <textarea asp-for="Descripcion" rows="4" maxlength="500" placeholder="@L["Size, materials, goals, anything we should know..."]" style="width:100%;border:1.5px solid #E5E7EB;border-radius:12px;padding:12px;font-family:inherit;font-size:0.88rem;"></textarea>
-            <span asp-validation-for="Descripcion" style="color:#B91C1C;font-size:0.82rem;"></span>
+            <textarea asp-for="Descripcion" rows="4" maxlength="500" required placeholder="@L["Size, materials, goals, anything we should know..."]" style="width:100%;border:1.5px solid #E5E7EB;border-radius:12px;padding:12px;font-family:inherit;font-size:0.88rem;"></textarea>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="ContactoPreferido">
             <span class="field-label">@L["Preferred contact"]</span>
             <div class="chip-scroll" id="contactGroup">
                 <button type="button" class="chip-option" data-value="Text"><i class="fas fa-comment"></i> @L["Text"]</button>
@@ -75,7 +76,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <span class="field-label">@L["Photos (optional)"]</span>
             <input type="file" name="files" accept="image/jpeg,image/png" multiple />
             @if (Model.ArchivosExistentes.Count > 0)
@@ -115,28 +116,6 @@
         initSingle('timingGroup', 'VentanaTiempo', '@Model.VentanaTiempo');
         initSingle('budgetGroup', 'PresupuestoEstimado', '@Model.PresupuestoEstimado');
         initSingle('contactGroup', 'ContactoPreferido', '@Model.ContactoPreferido');
-
-        const form = document.getElementById('remodeling-details-form');
-        form?.addEventListener('submit', function (e) {
-            if (e.submitter && e.submitter.value === 'back') return;
-
-            const checks = [
-                { id: 'AlcanceProyecto', message: @Html.Raw(Json.Serialize(L["Select a project scope."].ToString())) },
-                { id: 'VentanaTiempo', message: @Html.Raw(Json.Serialize(L["Select when you want to start."].ToString())) },
-                { id: 'PresupuestoEstimado', message: @Html.Raw(Json.Serialize(L["Select an estimated budget."].ToString())) },
-                { id: 'ContactoPreferido', message: @Html.Raw(Json.Serialize(L["Select a preferred contact method."].ToString())) }
-            ];
-
-            for (const check of checks) {
-                const input = document.getElementById(check.id);
-                if (!input || !input.value || !input.value.trim()) {
-                    e.preventDefault();
-                    alert(check.message);
-                    return;
-                }
-            }
-        });
     })();
-
 </script>
 }

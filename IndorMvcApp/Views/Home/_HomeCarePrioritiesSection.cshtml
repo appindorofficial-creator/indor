@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.HomeCarePrioritiesSectionViewModel
 @if (Model.Items.Count > 0)
 {
-<div class="category-block category-block-priorities" id="home-care-priorities">
+<div class="category-block category-block-priorities" id="home-care-priorities" data-ho-service-section>
     <div class="category-header">
         <div class="category-icon category-icon-priorities"><i class="fas @Model.IconClass"></i></div>
         <div class="category-info">
@@ -31,7 +31,7 @@
 
             if (!string.IsNullOrWhiteSpace(item.Url))
             {
-                <a href="@item.Url" class="offering-card">
+                <a href="@item.Url" class="offering-card" data-ho-service-item data-filter="@IndorMvcApp.Services.HomeownerServiceFilter.Classify(item.Title)" data-search="@item.Title @item.Subtitle">
                     <div class="offering-card-media">
                         <span class="offering-card-order">@item.Orden</span>
                         @if (!string.IsNullOrWhiteSpace(imgSrc))
@@ -52,7 +52,7 @@
             }
             else
             {
-                <button type="button" class="offering-card nav-jump" data-target="section-myhome">
+                <button type="button" class="offering-card nav-jump" data-target="section-myhome" data-ho-service-item data-filter="@IndorMvcApp.Services.HomeownerServiceFilter.Classify(item.Title)" data-search="@item.Title @item.Subtitle">
                     <div class="offering-card-media">
                         <span class="offering-card-order">@item.Orden</span>
                         @if (!string.IsNullOrWhiteSpace(imgSrc))

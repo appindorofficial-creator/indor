@@ -70,7 +70,7 @@
             <input asp-for="FechaPreferida" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <div class="field-head"><i class="fas fa-note-sticky"></i><span>@L["Notes (optional)"]</span></div>
             <textarea asp-for="Notas" placeholder="@L["Add any details"]" maxlength="300"></textarea>
         </div>

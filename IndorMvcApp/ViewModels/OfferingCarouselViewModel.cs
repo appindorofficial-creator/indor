@@ -33,4 +33,7 @@ public class OfferingCardViewModel
     public string? LinkController { get; set; }
     public string? LinkAction { get; set; }
     public bool EnableLink { get; set; }
+    /// <summary>MPA-aligned filter key: emergency, homecare, cleaning, outdoor, moving.</summary>
+    public string FilterKey { get; set; } = "homecare";
+    public string SearchText { get; set; } = string.Empty;
 }

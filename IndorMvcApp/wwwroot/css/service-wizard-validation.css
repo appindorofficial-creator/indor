@@ -1,0 +1,31 @@
+/* Inline validation for homeowner service wizards */
+.iw-wizard-page .validation-summary {
+    display: none !important;
+}
+
+.iw-wizard-page .field-card.is-invalid {
+    border-color: #F87171;
+    box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.12);
+}
+
+.iw-wizard-page .field-card.is-invalid .choice-card,
+.iw-wizard-page .field-card.is-invalid .segment-btn,
+.iw-wizard-page .field-card.is-invalid .location-btn,
+.iw-wizard-page .field-card.is-invalid .yesno-btn,
+.iw-wizard-page .field-card.is-invalid .story-card,
+.iw-wizard-page .field-card.is-invalid .gutter-card,
+.iw-wizard-page .field-card.is-invalid .service-card,
+.iw-wizard-page .field-card.is-invalid .sign-card,
+.iw-wizard-page .field-card.is-invalid .area-chip,
+.iw-wizard-page .field-card.is-invalid .symptom-pill,
+.iw-wizard-page .field-card.is-invalid .option-btn,
+.iw-wizard-page .field-card.is-invalid .chip-btn {
+    border-color: #F87171;
+}
+
+.iw-wizard-page .field-inline-error {
+    color: #B91C1C;
+    font-size: 0.78rem;
+    font-weight: 600;
+    margin-top: 8px;
+}

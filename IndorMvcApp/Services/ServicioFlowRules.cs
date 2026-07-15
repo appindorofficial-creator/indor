@@ -71,6 +71,8 @@ public static class ServicioFlowRules
             [
                 "Pro Concrete Driveway",
                 "Entrada de Concreto Pro",
+                "Entrada de concreto Pro",
+                "Driveway de concreto Pro",
             ],
             RemodelingRoute
         ),

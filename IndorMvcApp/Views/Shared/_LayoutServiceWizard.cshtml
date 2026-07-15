@@ -28,6 +28,7 @@
     </div>
     @RenderSection("WizardFooter", required: false)
     <script src="~/js/wizard-footer.js" asp-append-version="true"></script>
+    @await Html.PartialAsync("_ServiceWizardValidation")
     @RenderSection("Scripts", required: false)
 </body>
 </html>

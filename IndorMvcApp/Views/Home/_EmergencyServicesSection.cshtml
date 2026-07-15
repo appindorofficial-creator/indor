@@ -13,7 +13,7 @@
     var allCardsLinked = Model.Items.All(item => EmergencyFlowRules.GetDetailsActionName(item.Nombre) != null);
     var requestHelpLabel = L["Request help"];
 
-    <div class="emergency-section" id="emergency-services" data-emergency-section data-emergency-direct-nav="@(allCardsLinked ? "true" : "false")">
+    <div class="emergency-section" id="emergency-services" data-ho-service-section data-ho-filter-section="emergency" data-emergency-section data-emergency-direct-nav="@(allCardsLinked ? "true" : "false")">
         <div class="emergency-header">
             <div class="emergency-header-left">
                 <div class="emergency-title-row">
@@ -53,6 +53,9 @@
                     <a href="@startUrl"
                        class="@cardClass"
                        aria-label="@L.T("{0} emergency service", item.Nombre)"
+                       data-ho-service-item
+                       data-filter="emergency"
+                       data-search="@item.Nombre @displayLabel @displayDesc"
                        data-id="@item.Id"
                        data-nombre="@item.Nombre"
                        data-start-url="@startUrl"
@@ -85,6 +88,9 @@
                             role="option"
                             aria-selected="@(isActive ? "true" : "false")"
                             aria-label="@L.T("{0} emergency service", item.Nombre)"
+                            data-ho-service-item
+                            data-filter="emergency"
+                            data-search="@item.Nombre @displayLabel @displayDesc"
                             data-id="@item.Id"
                             data-nombre="@item.Nombre"
                             data-start-url=""

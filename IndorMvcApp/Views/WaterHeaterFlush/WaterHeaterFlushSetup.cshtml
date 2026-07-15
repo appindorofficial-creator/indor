@@ -12,8 +12,6 @@
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Tell us about your water heater"]</h1>
     <p class="page-lead" style="margin-bottom:16px;">@L["A few details help us bring the right maintenance plan."]</p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
-
     <form id="whf-setup-form" asp-action="WaterHeaterFlushSetup" method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
@@ -21,7 +19,7 @@
         <input type="hidden" asp-for="FuenteEnergia" id="FuenteEnergia" />
         <input type="hidden" asp-for="Ubicacion" id="Ubicacion" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoCalentador">
             <div class="field-head"><i class="fas fa-water"></i><span>@L["Heater type"]</span></div>
             <div class="choice-grid-2">
                 <button type="button" class="choice-card" data-heater="Tank"><i class="fas fa-droplet main"></i><span class="label">@L["Tank"]</span></button>
@@ -29,7 +27,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="FuenteEnergia">
             <div class="field-head"><i class="fas fa-bolt"></i><span>@L["Power source"]</span></div>
             <div class="choice-grid-2">
                 <button type="button" class="choice-card" data-power="Electric"><i class="fas fa-bolt main"></i><span class="label">@L["Electric"]</span></button>
@@ -37,25 +35,7 @@
             </div>
         </div>
 
-        <div class="field-card">
-            <div class="field-head"><i class="fas fa-barcode"></i><span>@L["Serial number"]</span></div>
-            <input asp-for="NumeroSerie" placeholder="@L["Enter serial number"]" id="serialInput" maxlength="@EquipmentSerialNumberAttribute.MaxLength" autocomplete="off" autocapitalize="characters" spellcheck="false" />
-            <div class="field-hint" style="margin-top:6px;font-size:0.75rem;color:#64748B;">@L[EquipmentSerialNumberAttribute.HintText]</div>
-            <div class="toggle-row" style="margin-top:12px;">
-                <span>@L["I don't know"]</span>
-                <label class="toggle-switch">
-                    <input asp-for="SerialDesconocido" type="checkbox" id="serialToggle" />
-                    <span class="toggle-slider"></span>
-                </label>
-            </div>
-        </div>
-
-        <div class="field-card">
-            <div class="field-head"><i class="fas fa-tag"></i><span>@L["Brand / model (optional)"]</span></div>
-            <input asp-for="MarcaModelo" placeholder="@L["Enter brand or model"]" />
-        </div>
-
-        <div class="field-card">
+        <div class="field-card" data-svc-required="Ubicacion">
             <div class="field-head"><i class="fas fa-location-dot"></i><span>@L["Location"]</span></div>
             <div class="location-grid">
                 <button type="button" class="location-btn" data-location="Garage"><i class="fas fa-warehouse"></i>@L["Garage"]</button>
@@ -66,7 +46,26 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
+            <div class="field-head"><i class="fas fa-barcode"></i><span>@L["Serial number"]</span></div>
+            <input asp-for="NumeroSerie" placeholder="@L["Enter serial number"]" id="serialInput" maxlength="@EquipmentSerialNumberAttribute.MaxLength" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+            <div class="field-hint" style="margin-top:6px;font-size:0.75rem;color:#64748B;">@L[EquipmentSerialNumberAttribute.HintText]</div>
+            <div class="toggle-row" style="margin-top:12px;">
+                <span>@L["I don't know"]</span>
+                <label class="toggle-switch">
+                    <input asp-for="SerialDesconocido" type="checkbox" id="serialToggle" />
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <span asp-validation-for="NumeroSerie" class="field-inline-error"></span>
+        </div>
+
+        <div class="field-card" data-svc-optional>
+            <div class="field-head"><i class="fas fa-tag"></i><span>@L["Brand / model (optional)"]</span></div>
+            <input asp-for="MarcaModelo" placeholder="@L["Enter brand or model"]" />
+        </div>
+
+        <div class="field-card" data-svc-optional>
             <div class="field-head"><i class="fas fa-camera"></i><span>@L["Add a photo of the label"]</span></div>
             <div class="upload-drop-wrap">
                 <input type="file" name="files" id="photoInput" class="upload-input-hidden" multiple
@@ -146,7 +145,7 @@
             if (serial.length < serialMin) return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L.T("Serial number must be at least {0} characters.", EquipmentSerialNumberAttribute.MinLength)));
             if (serial.length > serialMax) return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L.T("Serial number cannot exceed {0} characters.", EquipmentSerialNumberAttribute.MaxLength)));
             if (!/^[A-Za-z0-9\-]+$/.test(serial)) return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Use only letters, numbers, and hyphens."]));
-            if (!/[A-Za-z]/.test(serial) || !/\d/.test(serial)) return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Serial number must include at least one letter and one number."]));
+            if (!/[A-Za-z]/.test(serial) || !/\d/.test(serial)) return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Use only letters, numbers, and hyphens."]));
             return '';
         }
 
@@ -169,6 +168,13 @@
         serialInput.addEventListener('blur', validateSerialField);
         syncSerial();
 
+        document.getElementById('whf-setup-form').addEventListener('submit', function (e) {
+            if (!validateSerialField()) {
+                e.preventDefault();
+                serialInput.reportValidity();
+            }
+        });
+
         var photoInput = document.getElementById('photoInput');
         var photoDropzone = document.getElementById('photoDropzone');
         var photoSelectedList = document.getElementById('photoSelectedList');
@@ -187,14 +193,10 @@
 
         function mergePhotoFiles(newFiles) {
             Array.from(newFiles || []).forEach(function (file) {
-                if (file && file.size > 0) {
-                    pendingPhotos.push(file);
-                }
+                if (file && file.size > 0) pendingPhotos.push(file);
             });
             var allowed = Math.max(0, maxPhotos - existingCount);
-            if (pendingPhotos.length > allowed) {
-                pendingPhotos = pendingPhotos.slice(0, allowed);
-            }
+            if (pendingPhotos.length > allowed) pendingPhotos = pendingPhotos.slice(0, allowed);
             syncPhotoInputFiles();
             renderPhotoSelection(pendingPhotos);
         }
@@ -255,6 +257,5 @@
             this.value = '';
         });
     })();
-
 </script>
 }

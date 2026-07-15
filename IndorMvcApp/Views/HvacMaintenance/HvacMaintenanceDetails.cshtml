@@ -21,7 +21,7 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <div class="field-head"><i class="fas fa-barcode"></i><span>@L["AC serial number"]</span></div>
             <input asp-for="NumeroSerieAc"
                    placeholder="@L["e.g. M123456789"]"
@@ -85,7 +85,7 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <div class="field-head"><i class="fas fa-filter"></i><span>@L["Filter size (optional)"]</span></div>
             <input asp-for="TamanioFiltro" placeholder="@L["16x20x1 or I don't know"]" />
         </div>

@@ -24,6 +24,12 @@ public static class CatalogText
 
         if (!string.IsNullOrWhiteSpace(spanish))
         {
+            // Fix imperfect *Es seeds (e.g. mixed EN/ES) via UI dictionary keys.
+            if (UiTranslations.Spanish.TryGetValue(spanish, out var fromSpanishKey))
+            {
+                return fromSpanishKey;
+            }
+
             return spanish;
         }
 

@@ -1,5 +1,5 @@
 @model IndorMvcApp.ViewModels.MovingSetupSectionViewModel
-<section class="moving-setup-section" id="moving-setup">
+<section class="moving-setup-section" id="moving-setup" data-ho-service-section data-ho-filter-section="moving">
     <div class="moving-setup-header category-header">
         <div class="category-icon category-icon-moving"><i class="fas @Model.IconoClase"></i></div>
         <div class="category-info">
@@ -17,7 +17,7 @@
         @foreach (var item in Model.Servicios)
         {
             var href = !string.IsNullOrWhiteSpace(item.Url) ? item.Url : "#";
-            <a href="@href" class="moving-setup-grid-item">
+            <a href="@href" class="moving-setup-grid-item" data-ho-service-item data-filter="moving" data-search="@item.Nombre">
                 <span class="moving-setup-grid-order">@item.Orden</span>
                 <span class="moving-setup-grid-icon"><i class="fas @item.IconoClase"></i></span>
                 <span class="moving-setup-grid-label">@item.Nombre</span>

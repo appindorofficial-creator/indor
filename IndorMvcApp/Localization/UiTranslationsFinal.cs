@@ -2129,6 +2129,8 @@ public static class UiTranslationsFinal
             ["Increase home security with reliable, certified systems."] = "Aumenta la seguridad del hogar con sistemas confiables y certificados.",
             ["Install security"] = "Instalar seguridad",
             ["Pro Concrete Driveway"] = "Entrada de concreto Pro",
+            ["Driveway de concreto Pro"] = "Entrada de concreto Pro",
+            ["Entrada de Concreto Pro"] = "Entrada de concreto Pro",
             ["Concrete driveway construction."] = "Construcción de entrada de concreto.",
             ["We design and install durable driveways that improve functionality and aesthetics."] = "Diseñamos e instalamos entradas de concreto duraderas que mejoran funcionalidad y estética.",
             ["Build driveway"] = "Construir entrada",

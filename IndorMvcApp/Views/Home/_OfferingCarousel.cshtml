@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.OfferingCarouselViewModel
 @if (Model.Items.Count > 0)
 {
-<div class="category-block @(Model.BlockClass)"@if (!string.IsNullOrWhiteSpace(Model.BlockId)) { <text> id="@Model.BlockId"</text> }>
+<div class="category-block @(Model.BlockClass)" data-ho-service-section id="@Model.BlockId">
     <div class="category-header">
         <div class="category-icon @(Model.IconClass)"><i class="fas @Model.Icon"></i></div>
         <div class="category-info">
@@ -20,12 +20,14 @@
             var imgSrc = !string.IsNullOrWhiteSpace(item.ImageUrl)
                 ? Url.Content("~" + (item.ImageUrl.StartsWith("/") ? item.ImageUrl : "/" + item.ImageUrl))
                 : item.ImageBase64;
+            var filterKey = string.IsNullOrWhiteSpace(item.FilterKey) ? "homecare" : item.FilterKey;
+            var searchText = string.IsNullOrWhiteSpace(item.SearchText) ? item.Name : item.SearchText;
 
             if (item.EnableLink && !string.IsNullOrWhiteSpace(item.LinkController) && !string.IsNullOrWhiteSpace(item.LinkAction))
             {
                 if (item.SourceId.HasValue)
                 {
-                    <a asp-controller="@item.LinkController" asp-action="@item.LinkAction" asp-route-id="@item.SourceId" class="offering-card">
+                    <a asp-controller="@item.LinkController" asp-action="@item.LinkAction" asp-route-id="@item.SourceId" class="offering-card" data-ho-service-item data-filter="@filterKey" data-search="@searchText">
                         <div class="offering-card-media">
                             @if (!string.IsNullOrWhiteSpace(imgSrc))
                             {
@@ -41,7 +43,7 @@
                 }
                 else
                 {
-                    <a asp-controller="@item.LinkController" asp-action="@item.LinkAction" class="offering-card">
+                    <a asp-controller="@item.LinkController" asp-action="@item.LinkAction" class="offering-card" data-ho-service-item data-filter="@filterKey" data-search="@searchText">
                         <div class="offering-card-media">
                             @if (!string.IsNullOrWhiteSpace(imgSrc))
                             {
@@ -58,7 +60,7 @@
             }
             else if (item.EnableSchedule && item.SourceId.HasValue)
             {
-                <a asp-controller="Microservicios" asp-action="Schedule" asp-route-id="@item.SourceId" class="offering-card">
+                <a asp-controller="Microservicios" asp-action="Schedule" asp-route-id="@item.SourceId" class="offering-card" data-ho-service-item data-filter="@filterKey" data-search="@searchText">
                     <div class="offering-card-media">
                         @if (!string.IsNullOrWhiteSpace(imgSrc))
                         {
@@ -74,7 +76,7 @@
             }
             else
             {
-                <button type="button" class="offering-card">
+                <button type="button" class="offering-card" data-ho-service-item data-filter="@filterKey" data-search="@searchText">
                     <div class="offering-card-media">
                         @if (!string.IsNullOrWhiteSpace(imgSrc))
                         {

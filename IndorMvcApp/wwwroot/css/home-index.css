@@ -1144,6 +1144,90 @@
         #section-services .services-catalog { display: flex; flex-direction: column; gap: 14px; }
         .home-content .category-block { margin-bottom: 0; }
 
+        /* Same filter UX as Multi-Property Owner /Administrador/Services */
+        #section-services .ho-svc-search {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            background: #fff;
+            border: 1.5px solid #E2E8F0;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+        #section-services .ho-svc-search i { color: #94A3B8; }
+        #section-services .ho-svc-search input {
+            flex: 1;
+            border: none !important;
+            outline: none;
+            box-shadow: none !important;
+            font: inherit;
+            font-size: 0.88rem;
+            background: transparent;
+            color: #0F172A;
+        }
+        #section-services .ho-svc-search:focus-within {
+            border-color: #93C5FD;
+            box-shadow: 0 0 0 3px rgba(46, 139, 255, 0.15);
+        }
+        #section-services .ho-svc-search-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 10px;
+            background: #F1F5F9;
+            color: #475569;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        #section-services .ho-svc-filter-pills {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+        #section-services .ho-svc-filter-pills::-webkit-scrollbar { display: none; }
+        #section-services .ho-svc-filter-pill {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1.5px solid #E2E8F0;
+            background: #fff;
+            color: #475569;
+            font-size: 0.76rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+        }
+        #section-services .ho-svc-filter-pill.is-active {
+            background: linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%);
+            border-color: transparent;
+            color: #fff;
+            box-shadow: 0 8px 16px rgba(0, 102, 204, 0.28);
+        }
+        #section-services .ho-svc-search-empty {
+            margin: 0;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: #F8FAFC;
+            border: 1.5px dashed #CBD5E1;
+            color: #64748B;
+            font-size: 0.86rem;
+            text-align: center;
+        }
+        #section-services [data-ho-service-item][hidden],
+        #section-services [data-ho-service-section][hidden],
+        #section-services .services-hero[hidden] {
+            display: none !important;
+        }
+
         /* === Emergency Services === */
         .emergency-section {
             background: #FFFFFF;

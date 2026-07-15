@@ -1,0 +1,11 @@
+@using System.Text.Json
+@using IndorMvcApp.Services
+@inject IIndorLocalizer L
+<link rel="stylesheet" href="~/css/service-wizard-validation.css" asp-append-version="true" />
+<script>
+    window.IndorSvcWizardMsgs = {
+        selectOne: @Html.Raw(JsonSerializer.Serialize(L["Please choose one of these options."].ToString())),
+        enterField: @Html.Raw(JsonSerializer.Serialize(L["Please fill out this field."].ToString()))
+    };
+</script>
+<script src="~/js/service-wizard-validation.js" asp-append-version="true"></script>

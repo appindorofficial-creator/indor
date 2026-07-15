@@ -41,6 +41,16 @@ public static class UiDisplayLocalization
             {
                 return direct;
             }
+
+            if (text.EndsWith(".", StringComparison.Ordinal) && text.Length > 1)
+            {
+                var withoutPeriod = text[..^1];
+                var trimmed = localizer[withoutPeriod];
+                if (!string.Equals(trimmed, withoutPeriod, StringComparison.Ordinal))
+                {
+                    return trimmed.EndsWith(".", StringComparison.Ordinal) ? trimmed : trimmed + ".";
+                }
+            }
         }
 
         if (text.StartsWith("Today, ", StringComparison.OrdinalIgnoreCase))
