@@ -4,22 +4,102 @@
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "documents";
+
+    string FolderIcon(string category) => category switch
+    {
+        "Warranties" => "fa-shield-halved",
+        "Permits" => "fa-file-signature",
+        "Invoices" => "fa-receipt",
+        "Contracts" => "fa-file-contract",
+        "Inspections" => "fa-magnifying-glass-chart",
+        "Manuals" => "fa-book",
+        _ => "fa-folder"
+    };
+}
+@section Styles {
+    <style>
+        .hf-docs-search { margin-bottom: 14px; }
+        .hf-docs-search .hf-input { margin: 0; }
+        .hf-doc-cat {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            text-decoration: none;
+            color: inherit;
+            background: #FFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 16px;
+            transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+        }
+        .hf-doc-cat:active { transform: scale(.99); }
+        .hf-doc-cat-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 102, 204, 0.1);
+            color: #0066CC;
+            font-size: 1.05rem;
+        }
+        .hf-doc-cat-meta { flex: 1; min-width: 0; }
+        .hf-doc-cat-title {
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: #0A2540;
+            margin-bottom: 2px;
+        }
+        .hf-doc-cat-count {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #64748B;
+        }
+        .hf-doc-cat-count.has-docs {
+            color: #0066CC;
+        }
+        .hf-doc-cat-chevron {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #F1F5F9;
+            color: #64748B;
+            font-size: 0.72rem;
+        }
+    </style>
 }
 <div class="hf-title-row">
     <h1 class="hf-title">@L["Documents"]</h1>
     <a asp-action="DocumentCreate" asp-route-id="@Model.PropiedadId" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-btn">@L["+ Upload document"]</a>
 </div>
-<form method="get" asp-action="Documents" asp-route-id="@Model.PropiedadId" asp-route-from="@ViewBag.MyHomeNavFrom" style="margin-bottom:14px;">
-    <input type="search" name="search" value="@Model.Search" class="hf-input" placeholder="@L["Search documents"]" style="margin:0;" />
+<form method="get" asp-action="Documents" asp-route-id="@Model.PropiedadId" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-docs-search">
+    <input type="search" name="search" value="@Model.Search" class="hf-input" placeholder="@L["Search documents"]" />
 </form>
 @foreach (var cat in Model.Categories)
 {
-    <a asp-action="DocumentList" asp-route-id="@Model.PropiedadId" asp-route-category="@cat.Category" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-card hf-list-item" style="display:flex;margin-bottom:8px;">
-        <i class="fas fa-folder icon"></i>
-        <div class="meta">
-            <div class="value">@L[cat.Category]</div>
-            <div class="label">@(cat.Count == 1 ? L.T("{0} document", cat.Count) : L.T("{0} documents", cat.Count))</div>
+    <a asp-action="DocumentList"
+       asp-route-id="@Model.PropiedadId"
+       asp-route-category="@cat.Category"
+       asp-route-from="@ViewBag.MyHomeNavFrom"
+       class="hf-doc-cat">
+        <span class="hf-doc-cat-icon" aria-hidden="true">
+            <i class="fas @FolderIcon(cat.Category)"></i>
+        </span>
+        <div class="hf-doc-cat-meta">
+            <div class="hf-doc-cat-title">@L[cat.Category]</div>
+            <div class="hf-doc-cat-count @(cat.Count > 0 ? "has-docs" : null)">
+                @(cat.Count == 1 ? L.T("{0} document", cat.Count) : L.T("{0} documents", cat.Count))
+            </div>
         </div>
-        <i class="fas fa-chevron-right" style="color:#CBD5E1;"></i>
+        <span class="hf-doc-cat-chevron" aria-hidden="true">
+            <i class="fas fa-chevron-right"></i>
+        </span>
     </a>
 }

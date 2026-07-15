@@ -272,8 +272,16 @@
 
 .hf-btn-primary {
     background: var(--indor-grad-primary) !important;
+    color: #fff !important;
+    border: none !important;
     border-radius: 999px !important;
     box-shadow: var(--indor-shadow-primary) !important;
+}
+
+.hf-btn.hf-btn-primary {
+    color: #fff !important;
+    background: var(--indor-grad-primary) !important;
+    border: none !important;
 }
 
 .hf-chip.active {

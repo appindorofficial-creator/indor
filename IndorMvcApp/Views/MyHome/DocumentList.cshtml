@@ -6,34 +6,122 @@
     ViewBag.MyHomeNav = "documents";
     ViewBag.MyHomeBackUrl = Url.Action("Documents", "MyHome", new { id = Model.PropiedadId, from = ViewBag.MyHomeNavFrom });
 }
+@section Styles {
+    <style>
+        .hf-doc-empty {
+            text-align: center;
+            color: #64748B;
+            padding: 28px 18px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            line-height: 1.45;
+        }
+        .hf-doc-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            background: #FFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 16px;
+        }
+        .hf-doc-item-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 102, 204, 0.1);
+            color: #0066CC;
+            font-size: 1.05rem;
+        }
+        .hf-doc-item-meta { flex: 1; min-width: 0; }
+        .hf-doc-item-title {
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: #0A2540;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .hf-doc-item-sub {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #64748B;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .hf-doc-item-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .hf-doc-action {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 0;
+            line-height: 1;
+            transition: transform .12s ease, background .12s ease;
+        }
+        .hf-doc-action:active { transform: scale(.96); }
+        .hf-doc-action--download {
+            background: #F1F5F9;
+            color: #0066CC;
+        }
+        .hf-doc-action--delete {
+            background: #FEF2F2;
+            color: #DC2626;
+        }
+    </style>
+}
 <div class="hf-title-row">
     <h1 class="hf-title">@L[Model.Category]</h1>
     <a asp-action="DocumentCreate" asp-route-id="@Model.PropiedadId" asp-route-category="@Model.Category" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-btn">@L["+ Add"]</a>
 </div>
 @if (Model.Items.Count == 0)
 {
-    <div class="hf-card" style="text-align:center;color:#64748B;">@L["No documents in this category yet."]</div>
+    <div class="hf-card hf-doc-empty">@L["No documents in this category yet."]</div>
 }
 else
 {
     @foreach (var doc in Model.Items)
     {
-        <div class="hf-card hf-doc-row" style="margin-bottom:8px;">
-            <i class="fas fa-file-lines" style="color:#0066CC;width:20px;"></i>
-            <div style="flex:1;">
-                <div style="font-weight:700;">@doc.Title</div>
-                <div style="font-size:0.78rem;color:#64748B;">@(doc.FileName ?? L["Document"]) · @IndorMvcApp.Services.MyHomeDisplayService.FormatFileSize(doc.SizeBytes)</div>
+        <div class="hf-doc-item">
+            <span class="hf-doc-item-icon" aria-hidden="true">
+                <i class="fas fa-file-lines"></i>
+            </span>
+            <div class="hf-doc-item-meta">
+                <div class="hf-doc-item-title">@doc.Title</div>
+                <div class="hf-doc-item-sub">@(doc.FileName ?? L["Document"]) · @IndorMvcApp.Services.MyHomeDisplayService.FormatFileSize(doc.SizeBytes)</div>
             </div>
-            <div class="hf-doc-actions" style="display:flex;align-items:center;gap:16px;">
+            <div class="hf-doc-item-actions">
                 @if (!string.IsNullOrWhiteSpace(doc.StoragePath))
                 {
-                    <a href="@doc.StoragePath" target="_blank" rel="noopener" style="color:#0066CC;" aria-label="@L["Download document"]"><i class="fas fa-download"></i></a>
+                    <a href="@doc.StoragePath" target="_blank" rel="noopener" class="hf-doc-action hf-doc-action--download" aria-label="@L["Download document"]">
+                        <i class="fas fa-download"></i>
+                    </a>
                 }
-                <form asp-action="DocumentDelete" method="post" onsubmit="return confirm('@L["Delete this document?"]');" style="margin:0;display:inline;">
+                <form asp-action="DocumentDelete" method="post" onsubmit="return confirm('@L["Delete this document?"]');" style="margin:0;">
                     <input type="hidden" name="id" value="@doc.Id" />
                     <input type="hidden" name="propiedadId" value="@Model.PropiedadId" />
                     <input type="hidden" name="category" value="@Model.Category" />
-                    <button type="submit" aria-label="@L["Delete document"]" style="border:none;background:transparent;color:#DC2626;cursor:pointer;padding:0;font-size:1rem;line-height:1;"><i class="fas fa-trash"></i></button>
+                    <button type="submit" class="hf-doc-action hf-doc-action--delete" aria-label="@L["Delete document"]">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 </form>
             </div>
         </div>

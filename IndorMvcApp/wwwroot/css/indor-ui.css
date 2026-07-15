@@ -86,6 +86,14 @@ a.btn-primary:not(.btn-outline) {
     background: #fff !important;
 }
 
+/* Primary must win when both .hf-btn and .hf-btn-primary are present —
+   otherwise outline blue text paints over the filled blue background. */
+.hf-btn.hf-btn-primary {
+    border: none !important;
+    color: #fff !important;
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%)) !important;
+}
+
 /* Sticky CTA (wizards) — footer bar uses .nr-wizard-footer; keep pill shape if legacy class remains */
 .nr-wizard-footer .nr-btn-primary,
 .nr-btn-primary--sticky {
