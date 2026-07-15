@@ -623,6 +623,36 @@ a.pa-notify-item:hover{background:#F8FAFC}
 
 .pa-emergency-form{margin-bottom:24px}
 .pa-flow-question{margin-bottom:18px}
+.pa-flow-question.pa-invalid .pa-chip,
+.pa-flow-question.pa-invalid .pa-toggle-btn,
+.pa-flow-question.pa-invalid .pa-lawn-addon-card,
+.pa-flow-question.pa-invalid .pa-lawn-option-card,
+.pa-flow-question.pa-invalid .pa-pool-option-card,
+.pa-flow-question.pa-invalid .pa-junk-item-card,
+.pa-flow-question.pa-invalid .pa-junk-load-card,
+.pa-flow-question.pa-invalid .pa-pet-focus-card,
+.pa-flow-question.pa-invalid .pa-moving-service-card,
+.pa-flow-question.pa-invalid .pa-moving-item-card,
+.pa-flow-question.pa-invalid .pa-trash-service-card,
+.pa-flow-question.pa-invalid .pa-trash-bin-card,
+.pa-flow-question.pa-invalid .pa-trash-location-card,
+.pa-flow-question.pa-invalid .pa-trash-timing-card,
+.pa-flow-question.pa-invalid .pa-pw-area-card,
+.pa-flow-question.pa-invalid .pa-pw-size-card,
+.pa-flow-question.pa-invalid .pa-pw-reason-card,
+.pa-flow-question.pa-invalid .pa-pw-timing-card,
+.pa-flow-question.pa-invalid .pa-sd-service-card,
+.pa-flow-question.pa-invalid .pa-to-service-card,
+.pa-prev-section.pa-invalid .pa-prev-service-card,
+.pa-prev-section.pa-invalid .pa-plan-tier-card,
+[data-pa-required-group].pa-invalid .pa-chip,
+[data-pa-required-group].pa-invalid .pa-toggle-btn,
+[data-pa-required-group].pa-invalid .pa-prev-service-card{border-color:#F87171}
+.pa-flow-question.pa-invalid .pa-field,
+.pa-prev-section.pa-invalid .pa-field{border-color:#F87171;box-shadow:0 0 0 3px rgba(248,113,113,.15)}
+.pa-flow-question .pa-inline-error,
+.pa-prev-section .pa-inline-error,
+[data-pa-required-group] .pa-inline-error{margin:8px 0 0 2px}
 .pa-flow-qnum{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#EFF6FF;color:#0066CC;font-size:.72rem;font-weight:700;margin-right:6px}
 .pa-flow-question>label{display:inline;font-size:.88rem;font-weight:700;color:#0F172A}
 .pa-flow-urgent{margin:8px 0 0;font-size:.82rem;font-weight:600;color:#DC2626}
@@ -662,9 +692,10 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-flow-edit{margin-bottom:8px}
 
 .pa-success-banner{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#ECFDF5;border:1.5px solid #A7F3D0;border-radius:14px;margin-bottom:16px}
-.pa-success-icon{width:36px;height:36px;border-radius:50%;background:#059669;color:#fff;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pa-success-icon{width:36px;height:36px;border-radius:50%;background:#059669;color:#fff;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.pa-success-icon i{color:#fff;font-size:1rem;line-height:1;font-weight:900}
 .pa-success-banner strong{display:block;font-size:.84rem;color:#065F46}
-.pa-success-banner span{display:block;font-size:.76rem;color:#047857;margin-top:2px}
+.pa-success-banner > div > span{display:block;font-size:.76rem;color:#047857;margin-top:2px}
 
 .pa-tech-card{background:#fff;border:1.5px solid #E2E8F0;border-radius:16px;padding:14px;margin-bottom:16px}
 .pa-tech-head{display:flex;align-items:flex-start;gap:10px;margin-bottom:14px}
@@ -1184,7 +1215,8 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-lawn-progress-track{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .pa-lawn-progress-step{text-align:center;font-size:.66rem}
 .pa-lawn-progress-dot{width:32px;height:32px;border-radius:50%;margin:0 auto 6px;display:flex;align-items:center;justify-content:center;border:2px solid #E2E8F0;color:#94A3B8;background:#fff;font-size:.72rem;font-weight:700}
-.pa-lawn-progress-step--done .pa-lawn-progress-dot{border-color:#059669;background:#ECFDF5;color:#059669}
+.pa-lawn-progress-step--done .pa-lawn-progress-dot{border-color:#059669;background:#059669;color:#fff}
+.pa-lawn-progress-step--done .pa-lawn-progress-dot i{font-size:.7rem;line-height:1}
 .pa-lawn-progress-step--active .pa-lawn-progress-dot{border-color:#0066CC;background:#0066CC;color:#fff}
 .pa-lawn-progress-step strong{display:block;color:#0F172A;margin-bottom:2px}
 .pa-lawn-progress-step small{color:#64748B}

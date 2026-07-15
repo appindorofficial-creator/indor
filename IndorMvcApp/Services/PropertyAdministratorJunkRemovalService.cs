@@ -85,9 +85,9 @@ public class PropertyAdministratorJunkRemovalService(
             GuestsInside = step1.GuestsInside,
             PickupType = step1.PickupType,
             QuickDetails = step1.QuickDetails ?? "",
-            PickupWhen = property.PropertyType == "ShortTermRental" ? "TodayAfterCheckout" : "Asap",
-            EntryCode = $"Front gate code: {1000 + property.Id}",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
+            PickupWhen = "",
+            EntryCode = "",
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }
 

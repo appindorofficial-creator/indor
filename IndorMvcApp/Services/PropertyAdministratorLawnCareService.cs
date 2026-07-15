@@ -85,7 +85,7 @@ public class PropertyAdministratorLawnCareService(
             IsOccupied = step1.IsOccupied,
             AccessDetails = step1.AccessDetails ?? "",
             QuickNotes = step1.QuickNotes ?? "",
-            UpdateRecipients = property.PropertyType == "ShortTermRental" ? "Me,Guest" : "Me"
+            UpdateRecipients = ""
         };
     }
 
@@ -100,7 +100,8 @@ public class PropertyAdministratorLawnCareService(
 
         var detailsJson = JsonSerializer.Serialize(input);
         var visitDate = DateTime.Today.AddDays(1).AddHours(8);
-        var etaLabel = $"Tomorrow, {LabelArrivalWindow(input.ArrivalWindow)}";
+        var arrivalWindow = LabelArrivalWindow(input.ArrivalWindow);
+        var etaLabel = $"Tomorrow, {arrivalWindow}";
 
         var request = new IndorPropertyAdminServiceRequest
         {
@@ -132,13 +133,27 @@ public class PropertyAdministratorLawnCareService(
             Title = "Lawn care visit",
             PropertyName = property.PropertyName,
             VisitDate = visitDate.Date,
-            TimeWindow = LabelArrivalWindow(input.ArrivalWindow),
+            TimeWindow = arrivalWindow,
             ImageUrl = property.ImageUrl
         });
 
         await db.SaveChangesAsync(cancellationToken);
         return request.Id;
     }
+
+    public static bool IsStep1Complete(PropertyAdministratorLawnCareStep1Input input) =>
+        !string.IsNullOrWhiteSpace(input.ServiceType)
+        && !string.IsNullOrWhiteSpace(input.YardArea)
+        && !string.IsNullOrWhiteSpace(input.YardSize)
+        && !string.IsNullOrWhiteSpace(input.Frequency)
+        && !string.IsNullOrWhiteSpace(input.IsOccupied);
+
+    public static bool IsStep2Complete(PropertyAdministratorLawnCareSubmitInput input) =>
+        IsStep1Complete(input)
+        && !string.IsNullOrWhiteSpace(input.ScheduleWhen)
+        && !string.IsNullOrWhiteSpace(input.ArrivalWindow)
+        && !string.IsNullOrWhiteSpace(input.BagClippings)
+        && input.UpdateRecipientsList.Count > 0;
 
     public async Task<PropertyAdministratorLawnCareConfirmedViewModel?> GetConfirmedAsync(
         IUrlHelper url, int requestId, CancellationToken cancellationToken = default)
@@ -175,10 +190,11 @@ public class PropertyAdministratorLawnCareService(
             TechnicianName = request.TechnicianName ?? "Miguel R.",
             TechnicianRating = request.TechnicianRating ?? 4.9m,
             TechnicianTitle = request.TechnicianTitle ?? "Verified lawn care pro",
-            EtaLabel = request.EtaLabel ?? "Tomorrow, 8:00–12:00",
+            EtaLabel = request.EtaLabel ?? "Tomorrow, 8:00–12:00 PM",
             VehicleLabel = request.VehicleLabel ?? "Service truck",
             Summary = BuildSummary(input),
-            Timeline = BuildTimeline(input)
+            Timeline = BuildTimeline(input),
+            Tip = "Lawn service is best completed before guest check-in. We'll send photo confirmation when finished."
         };
     }
 
@@ -214,8 +230,8 @@ public class PropertyAdministratorLawnCareService(
     private static IReadOnlyList<PropertyAdministratorLawnCareTimelineItemViewModel> BuildTimeline(
         PropertyAdministratorLawnCareSubmitInput input) =>
     [
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Request confirmed"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Done"), IconClass = "fa-circle-check", State = "done", StepNumber = 1 },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Pro assigned"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Done"), IconClass = "fa-circle-check", State = "done", StepNumber = 2 },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Request confirmed"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Done"), IconClass = "fa-check", State = "done", StepNumber = 1 },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Pro assigned"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Done"), IconClass = "fa-check", State = "done", StepNumber = 2 },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Scheduled arrival"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Tomorrow, 8:00 AM"), IconClass = "fa-calendar", State = "active", StepNumber = 3 },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Photos uploaded"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-camera", State = "pending", StepNumber = 4 }
     ];
@@ -237,10 +253,10 @@ public class PropertyAdministratorLawnCareService(
         {
             var label = addon switch
             {
-                "BlowDebris" => "blow debris",
-                "WeedTrim" => "weed trim",
-                "LeafPickup" => "leaf pickup",
-                "Edging" => "edging",
+                "BlowDebris" => PropertyAdministratorDisplayLocalization.L("blow debris"),
+                "WeedTrim" => PropertyAdministratorDisplayLocalization.L("weed trim"),
+                "LeafPickup" => PropertyAdministratorDisplayLocalization.L("leaf pickup"),
+                "Edging" => PropertyAdministratorDisplayLocalization.L("edging"),
                 _ => null
             };
 
@@ -276,9 +292,9 @@ public class PropertyAdministratorLawnCareService(
 
     private static string LabelArrivalWindow(string value) => value switch
     {
-        "Afternoon" => PropertyAdministratorDisplayLocalization.L("12:00–4:00 PM"),
-        "Evening" => PropertyAdministratorDisplayLocalization.L("4:00–7:00 PM"),
-        _ => PropertyAdministratorDisplayLocalization.L("8:00–12:00 PM")
+        "Afternoon" => "12:00–4:00 PM",
+        "Evening" => "4:00–7:00 PM",
+        _ => "8:00–12:00 PM"
     };
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
@@ -287,7 +303,7 @@ public class PropertyAdministratorLawnCareService(
         {
             "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
             "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
-            _ => "Me"
+            _ => PropertyAdministratorDisplayLocalization.L("Me")
         }).Distinct().ToList();
 
         return labels.Count switch

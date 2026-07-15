@@ -86,9 +86,9 @@ public class PropertyAdministratorFurnitureHaulAwayService(
             IsOccupied = step1.IsOccupied,
             GuestsInside = step1.GuestsInside,
             QuickDetails = step1.QuickDetails ?? "",
-            PickupWhen = property.PropertyType == "ShortTermRental" ? "TodayAfterCheckout" : "Asap",
-            EntryCode = $"{2000 + property.Id}#",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(305) 555-0198"
+            PickupWhen = "",
+            EntryCode = "",
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }
 

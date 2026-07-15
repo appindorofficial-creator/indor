@@ -191,6 +191,11 @@ public class AdministradorController(
             return redirect;
         }
 
+        if (!PropertyAdministratorEmergencyAcService.IsSubmitComplete(input))
+        {
+            return RedirectToAction(nameof(EmergencyAcDetails), new { propertyId = input.PropertyId > 0 ? input.PropertyId : (int?)null });
+        }
+
         var requestId = await emergencyAc.SubmitAsync(input);
         return RedirectToAction(nameof(EmergencyAcConfirmed), new { id = requestId });
     }
@@ -1252,6 +1257,11 @@ public class AdministradorController(
             return redirect;
         }
 
+        if (!PropertyAdministratorLawnCareService.IsStep1Complete(input))
+        {
+            return RedirectToAction(nameof(LawnCareDetails), new { propertyId = input.PropertyId > 0 ? input.PropertyId : (int?)null });
+        }
+
         TempData["LawnCareStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
         return RedirectToAction(nameof(LawnCareSchedule));
     }
@@ -1292,6 +1302,12 @@ public class AdministradorController(
         if (await EnsureRegisteredAsync() is { } redirect)
         {
             return redirect;
+        }
+
+        if (!PropertyAdministratorLawnCareService.IsStep2Complete(input))
+        {
+            TempData["LawnCareStep1"] = System.Text.Json.JsonSerializer.Serialize((PropertyAdministratorLawnCareStep1Input)input);
+            return RedirectToAction(nameof(LawnCareSchedule));
         }
 
         if (input.UpdateRecipientsList.Count == 0)
@@ -1890,6 +1906,11 @@ public class AdministradorController(
         if (await EnsureRegisteredAsync() is { } redirect)
         {
             return redirect;
+        }
+
+        if (input.SelectedServices.Count == 0 || string.IsNullOrWhiteSpace(input.PlanTier))
+        {
+            return RedirectToAction(nameof(PreventiveMaintenanceServices), new { propertyId = input.PropertyId > 0 ? input.PropertyId : (int?)null, planId = input.PlanId });
         }
 
         var planId = await preventiveMaintenance.SaveServicesStepAsync(input);

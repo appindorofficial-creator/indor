@@ -75,7 +75,7 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
             EntryAccess = "GarageSide",
             AccessNotes = "Garage side entry available",
             UpdateRecipientsList = ["Me", "Guest"],
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
 
         return new PropertyAdministratorEmergencyWaterHeaterReviewViewModel

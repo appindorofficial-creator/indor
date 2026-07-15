@@ -716,6 +716,11 @@ public static class UiDisplayLocalization
             return localizer.T("Yesterday, {0}", value["Yesterday, ".Length..].Trim());
         }
 
+        if (value.StartsWith("Tomorrow, ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Tomorrow, {0}", value["Tomorrow, ".Length..].Trim());
+        }
+
         return value;
     }
 }

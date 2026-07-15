@@ -31,8 +31,6 @@ public class PropertyAdministratorPreventiveMaintenanceService(
         ["Full"] = ("Full Preventive Plan", "Comprehensive protection for your entire home.", 79m, 229m)
     };
 
-    private static readonly string[] DefaultSelectedServices = ["HvacTuneUp", "WaterHeaterFlush", "SmokeDetectorCheck"];
-
     public PropertyAdministratorPreventiveFeaturedViewModel BuildFeaturedCta(IUrlHelper url, int? propertyId) =>
         new()
         {
@@ -105,7 +103,7 @@ public class PropertyAdministratorPreventiveMaintenanceService(
             ?? throw new InvalidOperationException("Property not found.");
 
         var tier = TierCatalog.TryGetValue(input.PlanTier, out var tierInfo) ? tierInfo : TierCatalog["Basic"];
-        var services = input.SelectedServices.Count > 0 ? input.SelectedServices : DefaultSelectedServices.ToList();
+        var services = input.SelectedServices;
         var json = JsonSerializer.Serialize(services);
 
         IndorPropertyAdminPreventivePlan plan;

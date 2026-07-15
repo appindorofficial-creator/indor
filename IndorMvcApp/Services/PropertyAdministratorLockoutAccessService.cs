@@ -81,7 +81,7 @@ public class PropertyAdministratorLockoutAccessService(
             WhoNeedsAccess = step1.WhoNeedsAccess,
             QuickDetails = step1.QuickDetails ?? "",
             EntryNotes = "Guest is waiting at front door. Parking available in driveway.",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }
 

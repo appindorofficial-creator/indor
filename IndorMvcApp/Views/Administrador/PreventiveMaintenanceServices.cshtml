@@ -39,7 +39,7 @@
             <input type="hidden" name="PlanId" value="@Model.PlanId" />
         }
 
-        <section class="pa-prev-section">
+        <section class="pa-prev-section" data-pa-required-group>
             <h2>@L["Recommended services"]</h2>
             <div class="pa-prev-service-grid">
                 @foreach (var svc in Model.Services)
@@ -55,7 +55,7 @@
             </div>
         </section>
 
-        <section class="pa-prev-section">
+        <section class="pa-prev-section" data-pa-validate-group>
             <h2>@L["Plan options"]</h2>
             <div class="pa-plan-tier-row">
                 @foreach (var tier in Model.PlanTiers)

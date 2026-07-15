@@ -86,15 +86,13 @@ public class PropertyAdministratorPestControlService(
             GuestsStaying = step1.GuestsStaying,
             LivePestsToday = step1.LivePestsToday,
             QuickDetails = step1.QuickDetails ?? "",
-            PreferredArrival = step1.Urgency is "Urgent" or "Emergency" ? "Asap" : "Tomorrow",
-            EntryAccess = isRental ? "SmartLock" : "HostOnSite",
-            HasPets = isRental ? "Yes" : "No",
-            TreatAreas = string.Join(",", InferTreatAreas(step1)),
-            UpdateRecipients = isRental ? "Me,Guest" : "Me",
-            AccessNotes = isRental
-                ? "Front door smart lock code will be shared after booking. Please avoid spraying near pet bowls."
-                : "",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(305) 555-0187",
+            PreferredArrival = "",
+            EntryAccess = "",
+            HasPets = "",
+            TreatAreas = "",
+            UpdateRecipients = "",
+            AccessNotes = "",
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
             ProEtaLabel = $"Earliest available pest control pro: {etaMinutes} min"
         };
     }
@@ -192,37 +190,6 @@ public class PropertyAdministratorPestControlService(
             Summary = BuildSummary(input, property),
             Timeline = BuildTimeline(request)
         };
-    }
-
-    private static List<string> InferTreatAreas(PropertyAdministratorPestControlStep1Input step1)
-    {
-        var areas = new List<string>();
-        if (step1.IssueLocation is "Kitchen" or "WholeProperty")
-        {
-            areas.Add("Kitchen");
-        }
-
-        if (step1.IssueLocation == "Kitchen" || step1.PestType is "Roaches" or "Ants")
-        {
-            areas.Add("Pantry");
-        }
-
-        if (step1.IssueLocation == "Bathroom")
-        {
-            areas.Add("Bathroom");
-        }
-
-        if (step1.IssueLocation == "Bedroom")
-        {
-            areas.Add("Bedrooms");
-        }
-
-        if (step1.IssueLocation is "PatioExterior" or "WholeProperty")
-        {
-            areas.Add("PatioExterior");
-        }
-
-        return areas.Count == 0 ? ["Kitchen"] : areas.Distinct().ToList();
     }
 
     private static PropertyAdministratorPestControlSubmitInput DeserializeInput(string? json)

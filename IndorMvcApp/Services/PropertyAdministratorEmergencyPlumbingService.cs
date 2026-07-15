@@ -80,10 +80,10 @@ public class PropertyAdministratorEmergencyPlumbingService(
             Urgency = step1.Urgency,
             ProblemLocation = step1.ProblemLocation,
             QuickDetails = step1.QuickDetails ?? "",
-            EntryCode = $"Front door code: {1000 + property.Id}",
-            WaterShutoffAccess = "Main shutoff is on the left exterior wall.",
-            AccessNotes = "Use driveway on left side. No gate code needed.",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
+            EntryCode = "",
+            WaterShutoffAccess = "",
+            AccessNotes = "",
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }
 

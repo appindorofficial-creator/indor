@@ -74,7 +74,7 @@ public class PropertyAdministratorEmergencySewerBackupService(
             EntryAccess = "SmartLock",
             EntryCode = $"Front door code: {1000 + property.Id}",
             UpdateRecipientsList = ["Me", "Guest"],
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
 
         return new PropertyAdministratorEmergencySewerBackupReviewViewModel

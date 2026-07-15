@@ -84,11 +84,9 @@ public class PropertyAdministratorPressureWashingService(
             IsOccupied = step1.IsOccupied,
             GuestNotification = step1.GuestNotification,
             QuickNotes = step1.QuickNotes ?? "",
-            ServiceTiming = isRental ? "AfterCheckOut" : "NextAvailable",
-            EntryMethod = "GateCode",
-            AccessNotes = isRental
-                ? "Side gate code 2841. Please avoid blocking guest parking."
-                : ""
+            ServiceTiming = "",
+            EntryMethod = "",
+            AccessNotes = ""
         };
     }
 

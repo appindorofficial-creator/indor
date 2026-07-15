@@ -46,7 +46,7 @@ public class PropertyAdministratorTurnoverCleaningService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0123"
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }
 

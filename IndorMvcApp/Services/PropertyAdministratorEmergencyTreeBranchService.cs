@@ -75,7 +75,7 @@ public class PropertyAdministratorEmergencyTreeBranchService(
             EntryAccess = "ExteriorOnly",
             GateParkingNotes = "Use front drive",
             UpdateRecipientsList = ["Me", "Guest"],
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187",
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
             InsuranceHelp = "NeedDocumentation"
         };
 

@@ -46,7 +46,7 @@ public class PropertyAdministratorEmergencyAcService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }
 
@@ -100,6 +100,14 @@ public class PropertyAdministratorEmergencyAcService(
         return request.Id;
     }
 
+    public static bool IsSubmitComplete(PropertyAdministratorEmergencyAcSubmitInput input) =>
+        !string.IsNullOrWhiteSpace(input.ProblemType)
+        && !string.IsNullOrWhiteSpace(input.IsOccupied)
+        && !string.IsNullOrWhiteSpace(input.GuestsInside)
+        && !string.IsNullOrWhiteSpace(input.EntryAccess)
+        && input.UpdateRecipientsList.Count > 0
+        && !string.IsNullOrWhiteSpace(input.ContactPhone);
+
     public async Task<PropertyAdministratorEmergencyAcConfirmedViewModel?> GetConfirmedAsync(
         IUrlHelper url, int requestId, CancellationToken cancellationToken = default)
     {
@@ -135,22 +143,26 @@ public class PropertyAdministratorEmergencyAcService(
             TechnicianTitle = request.TechnicianTitle ?? "Licensed HVAC Pro",
             EtaLabel = request.EtaLabel ?? "22 min",
             VehicleLabel = request.VehicleLabel ?? "White service van",
-            Timeline = BuildTimeline(request)
+            Timeline = BuildTimeline(request),
+            Tip = "Keep blinds closed and portable fans running while help is on the way."
         };
     }
 
     private static IReadOnlyList<PropertyAdministratorEmergencyAcTimelineItemViewModel> BuildTimeline(
         IndorPropertyAdminServiceRequest request)
     {
-        var submitted = request.FechaCreacion.ToLocalTime().ToString("Today, h:mm tt");
-        var assigned = request.FechaCreacion.AddMinutes(5).ToLocalTime().ToString("Today, h:mm tt");
-        var enRoute = request.FechaCreacion.AddMinutes(8).ToLocalTime().ToString("Today, h:mm tt");
+        string Stamp(DateTime utc) =>
+            $"Today, {utc.ToLocalTime().ToString("h:mm tt")}";
+
+        var submitted = Stamp(request.FechaCreacion);
+        var assigned = Stamp(request.FechaCreacion.AddMinutes(5));
+        var enRoute = Stamp(request.FechaCreacion.AddMinutes(8));
         var step = request.TimelineStep;
 
         return
         [
-            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
-            new() { Label = PropertyAdministratorDisplayLocalization.L("Technician assigned"), StatusLabel = assigned, IconClass = "fa-circle-check", State = step >= 1 ? "done" : "pending" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = submitted, IconClass = "fa-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Technician assigned"), StatusLabel = assigned, IconClass = "fa-check", State = step >= 1 ? "done" : "pending" },
             new() { Label = PropertyAdministratorDisplayLocalization.L("En route"), StatusLabel = enRoute, IconClass = "fa-truck", State = step >= 2 ? "active" : "pending" },
             new() { Label = PropertyAdministratorDisplayLocalization.L("Arrived"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-location-dot", State = step >= 3 ? "done" : "pending" },
             new() { Label = PropertyAdministratorDisplayLocalization.L("Diagnosis"), StatusLabel = PropertyAdministratorDisplayLocalization.L("Pending"), IconClass = "fa-clipboard-list", State = step >= 4 ? "done" : "pending" }

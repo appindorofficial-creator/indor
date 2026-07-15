@@ -84,10 +84,8 @@ public class PropertyAdministratorLandscapingService(
             Timeline = step1.Timeline,
             IsOccupied = step1.IsOccupied,
             QuickNotes = step1.QuickNotes ?? "",
-            HaulAwayType = step1.ServiceReason == "CarDroveOverPlants" ? "RemoveDamagedPlants" : "NoHaulAway",
-            ProjectNotes = !string.IsNullOrWhiteSpace(step1.QuickNotes)
-                ? step1.QuickNotes
-                : "Front flower bed near driveway was damaged. Need replacement plants, fresh mulch, and cleanup before Friday guest arrival."
+            HaulAwayType = "",
+            ProjectNotes = step1.QuickNotes ?? ""
         };
     }
 

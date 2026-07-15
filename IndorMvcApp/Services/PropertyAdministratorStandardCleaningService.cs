@@ -46,7 +46,7 @@ public class PropertyAdministratorStandardCleaningService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(786) 555-0134"
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }
 

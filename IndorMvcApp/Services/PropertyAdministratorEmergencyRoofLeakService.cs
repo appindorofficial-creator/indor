@@ -80,10 +80,10 @@ public class PropertyAdministratorEmergencyRoofLeakService(
             Urgency = step1.Urgency,
             LeakLocation = step1.LeakLocation,
             QuickDetails = step1.QuickDetails ?? "",
-            EntryCode = $"Front door code: {1000 + property.Id}",
-            InteriorDamage = "Ceiling,Floor",
-            AccessNotes = "Use driveway on left side. Call before arrival.",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(919) 555-0187"
+            EntryCode = "",
+            InteriorDamage = "",
+            AccessNotes = "",
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }
 

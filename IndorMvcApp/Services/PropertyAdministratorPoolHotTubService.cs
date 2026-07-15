@@ -86,13 +86,11 @@ public class PropertyAdministratorPoolHotTubService(
             Urgency = step1.Urgency,
             QuickDetails = step1.QuickDetails ?? "",
             Step1Summary = BuildStep1SummaryChips(step1),
-            EquipmentLocation = step1.ServiceHelpType is "HotTubRepair" or "SpaHotTubService"
-                ? "BackyardSpa"
-                : "PoolPad",
-            EntryAccess = "GateCode",
-            AccessCode = $"Gate code: {2840 + property.Id}",
-            UpdateRecipients = isRental ? "Me,Guest" : "Me",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(704) 555-0132",
+            EquipmentLocation = "",
+            EntryAccess = "",
+            AccessCode = "",
+            UpdateRecipients = "",
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
             ProEtaLabel = $"Nearest pool & spa pro available in {etaMinutes} minutes",
             DiagnosticEstimate = "$129 – $169",
             EmergencyFeeLabel = step1.Urgency is "Urgent" or "Emergency" ? "Included" : "Not applicable"

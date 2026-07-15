@@ -64,7 +64,7 @@
                 <li>
                     <i class="fas @item.IconClass"></i>
                     <span>@UiDisplayLocalization.Localize(L, item.Label)</span>
-                    <strong>@item.Value</strong>
+                    <strong>@UiDisplayLocalization.Localize(L, item.Value)</strong>
                 </li>
             }
         </ul>
@@ -81,9 +81,13 @@
                         {
                             <text>@step.StepNumber</text>
                         }
+                        else if (step.State == "done")
+                        {
+                            <i class="fas fa-check" aria-hidden="true"></i>
+                        }
                         else
                         {
-                            <i class="fas @step.IconClass"></i>
+                            <i class="fas @step.IconClass" aria-hidden="true"></i>
                         }
                     </span>
                     <strong>@UiDisplayLocalization.Localize(L, step.Label)</strong>

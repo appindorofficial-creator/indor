@@ -55,8 +55,8 @@ public class PropertyAdministratorLawnCareStep2ViewModel : PropertyAdministrator
     public string AddOns { get; set; } = "";
     public string BagClippings { get; set; } = "";
     public string UpdateRecipients { get; set; } = "";
-    public string AccessNotes { get; set; } = "Park in driveway. Enter through left gate.";
-    public string AvoidNotes { get; set; } = "Please avoid flower bed near the front porch.";
+    public string AccessNotes { get; set; } = "";
+    public string AvoidNotes { get; set; } = "";
 }
 
 public class PropertyAdministratorLawnCareSubmitInput : PropertyAdministratorLawnCareStep1Input
