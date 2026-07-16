@@ -2004,7 +2004,7 @@ public static class UiTranslationsFinal
             ["Set roof check"] = "Configurar revisión de techo",
             ["Visual roof check: spring & fall"] = "Revisión visual del techo: primavera y otoño",
             ["After major storms: inspect again"] = "Después de tormentas fuertes: inspecciona de nuevo",
-            ["Flashing & sealant"] = "Flashing y sellador",
+            ["Flashing & sealant"] = "Tapajuntas y sellador",
             ["Vents / skylights"] = "Ventilaciones / tragaluces",
             ["Gutters & valleys"] = "Canaletas y valles",
             ["Attic moisture signs"] = "Señales de humedad en el ático",

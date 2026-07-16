@@ -310,7 +310,9 @@ public class PowerWashController : Controller
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = landing?.LandingTitulo ?? "Power Wash Exterior",
-            InfoCondicionTexto = landing?.InfoCondicionTexto,
+            InfoCondicionTexto = string.IsNullOrWhiteSpace(landing?.InfoCondicionTexto)
+                ? "We use this to choose the safest wash pressure for your home."
+                : landing.InfoCondicionTexto,
             ProblemasSeleccionados = solicitud.ProblemasSeleccionados ?? string.Empty,
             AreasDelicadas = solicitud.AreasDelicadas ?? string.Empty,
             AccesoGrifo = solicitud.AccesoGrifo ?? "",

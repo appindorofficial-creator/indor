@@ -286,11 +286,22 @@ public class RoofInspectionController : Controller
             LandingTitulo = landing.LandingTitulo,
             LandingSubtitulo = landing.LandingSubtitulo,
             ImagenUrl = ResolveImageUrl(landing.ImagenUrl ?? priority.ImagenUrl),
-            RecommendationItems = SplitRecommendationItems(landing.RecomendacionItems, landing.RecomendacionIconos),
-            CheckItems = SplitPipePairs(landing.IncluyeItems, landing.IncluyeIconos),
+            RecommendationItems = SplitRecommendationItems(
+                DefaultRecommendationItemsEn,
+                landing.RecomendacionIconos),
+            CheckItems = SplitPipePairs(
+                DefaultCheckItemsEn,
+                landing.IncluyeIconos),
             TrustTexto = landing.InfoBoxTexto,
             CtaTexto = landing.CtaTexto
         };
+
+    // Always use English keys so L.Catalog / UI dictionary can localize (DB seeds are often mixed EN/ES).
+    private const string DefaultRecommendationItemsEn =
+        "Visual roof check: spring & fall|Professional inspection: every 1–2 years|After major storms: inspect again|Older roof or active issues: inspect sooner";
+
+    private const string DefaultCheckItemsEn =
+        "Shingles|Flashing & sealant|Vents / skylights|Gutters & valleys|Attic moisture signs|Debris / branches";
 
     private async Task<RoofInspectionScheduleViewModel> BuildScheduleViewModelAsync(SolicitudRoofInspection solicitud)
     {
@@ -310,7 +321,7 @@ public class RoofInspectionController : Controller
             TimingPreferido = scheduleComplete ? solicitud.TimingPreferido ?? string.Empty : string.Empty,
             FechaPreferida = scheduleComplete ? solicitud.FechaPreferida : null,
             Notas = scheduleComplete ? solicitud.Notas : null,
-            CoverageItems = SplitPipePairs(landing?.IncluyeItems, landing?.IncluyeIconos),
+            CoverageItems = SplitPipePairs(DefaultCheckItemsEn, landing?.IncluyeIconos),
             TrustTexto = landing?.InfoBoxTexto
         };
     }
