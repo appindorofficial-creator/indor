@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorNetworkListingDetailViewModel
 @{
-    ViewData["Title"] = Model.PriceLabel;
+    ViewData["Title"] = UiDisplayLocalization.Localize(L, Model.PriceLabel);
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "network";
     var heroPhoto = Model.PhotoUrls.FirstOrDefault() ?? "/inspeccion2.jpeg";
@@ -32,7 +32,7 @@
         <div class="rl-listing-detail-summary-top">
             <div>
                 <span class="rl-listing-detail-type">@UiDisplayLocalization.Localize(L, Model.ListingTypeLabel)</span>
-                <strong class="rl-listing-detail-price">@Model.PriceLabel</strong>
+                <strong class="rl-listing-detail-price">@UiDisplayLocalization.Localize(L, Model.PriceLabel)</strong>
                 <h2 class="rl-listing-detail-address">@Model.Address</h2>
                 @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
                 {

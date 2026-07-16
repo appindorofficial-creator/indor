@@ -290,8 +290,10 @@ public class RealtorNearbyNetworkService(
             ListingBadgeCss = item.BadgeCss,
             StatusBadge = string.IsNullOrWhiteSpace(item.StatusBadge) ? "" : localizer.T(item.StatusBadge),
             StatusCss = item.StatusCss,
-            PriceLabel = item.Price is > 0 ? FormatCurrency(item.Price.Value) : item.Title,
-            Title = item.Title,
+            // Open-house demos often have no price; the title (e.g. "Open House This Saturday")
+            // must go through the localizer so Spanish UI doesn't keep the English seed text.
+            PriceLabel = item.Price is > 0 ? FormatCurrency(item.Price.Value) : localizer.T(item.Title),
+            Title = localizer.T(item.Title),
             Address = item.Subtitle ?? "",
             SpecsLabel = RealtorDisplayLocalization.PropertySpecsSummary(localizer, item.Bedrooms, item.Bathrooms, item.SquareFeet, extras.YearBuilt),
             DistanceLabel = item.DistanceMiles is > 0
@@ -825,7 +827,7 @@ public class RealtorNearbyNetworkService(
             IconClass = NearbyNetworkImageResolver.ResolveIconClass(item, imageUrl),
             Title = item.CardType == NearbyNetworkCardTypes.Listing && item.Price is > 0 && item.Title.StartsWith('$')
                 ? item.Title
-                : item.Title,
+                : localizer.T(item.Title),
             PriceLabel = item.Price is > 0 && !item.Title.StartsWith('$')
                 ? FormatCurrency(item.Price.Value)
                 : null,
