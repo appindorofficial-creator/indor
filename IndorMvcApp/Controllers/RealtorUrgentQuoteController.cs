@@ -1,3 +1,4 @@
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -11,7 +12,8 @@ namespace IndorMvcApp.Controllers;
 public class RealtorUrgentQuoteController(
     IRealtorUrgentQuoteWizardService wizard,
     IRealtorRegistrationService registration,
-    UserManager<ApplicationUser> userManager) : Controller
+    UserManager<ApplicationUser> userManager,
+    IIndorLocalizer localizer) : Controller
 {
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
@@ -56,16 +58,31 @@ public class RealtorUrgentQuoteController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Property(int propertyFileId, string requestCategory, string serviceType, string urgencyLevel, string? newPropertyAddress)
+    public async Task<IActionResult> Property(
+        int propertyFileId,
+        string? requestCategory,
+        string? serviceType,
+        string? urgencyLevel,
+        string? newPropertyAddress)
     {
+        // Clear binder "The X field is required" messages for optional radio posts.
+        ModelState.Remove(nameof(requestCategory));
+        ModelState.Remove(nameof(serviceType));
+        ModelState.Remove(nameof(urgencyLevel));
+
         try
         {
-            await wizard.SavePropertyAsync(propertyFileId, requestCategory, serviceType, urgencyLevel, newPropertyAddress);
+            await wizard.SavePropertyAsync(
+                propertyFileId,
+                requestCategory ?? string.Empty,
+                serviceType ?? string.Empty,
+                urgencyLevel ?? string.Empty,
+                newPropertyAddress);
             return RedirectToAction(nameof(Issue));
         }
         catch
         {
-            ModelState.AddModelError(string.Empty, "Select a property and what you need to continue.");
+            ModelState.AddModelError(string.Empty, localizer["Select a property and what you need to continue."]);
             var vm = await wizard.BuildPropertyAsync(newPropertyAddress);
             vm.SelectedPropertyFileId = propertyFileId;
             vm.RequestCategory = requestCategory ?? "";
@@ -85,7 +102,7 @@ public class RealtorUrgentQuoteController(
             string.IsNullOrWhiteSpace(quickAddState) ||
             string.IsNullOrWhiteSpace(quickAddZip))
         {
-            ModelState.AddModelError(string.Empty, "Enter street, city, state and ZIP to add a property quickly.");
+            ModelState.AddModelError(string.Empty, localizer["Enter street, city, state and ZIP to add a property quickly."]);
             var vm = await wizard.BuildPropertyAsync(null);
             vm.QuickAddOpen = true;
             vm.QuickAddAddress = quickAddAddress ?? "";
@@ -119,9 +136,13 @@ public class RealtorUrgentQuoteController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Issue(string serviceType, string urgencyLevel, string quickDescription, string requestTypeTag)
+    public async Task<IActionResult> Issue(string? serviceType, string? urgencyLevel, string? quickDescription, string? requestTypeTag)
     {
-        await wizard.SaveIssueAsync(serviceType, urgencyLevel, quickDescription, requestTypeTag);
+        await wizard.SaveIssueAsync(
+            serviceType ?? string.Empty,
+            urgencyLevel ?? string.Empty,
+            quickDescription ?? string.Empty,
+            requestTypeTag ?? string.Empty);
         return RedirectToAction(nameof(Photos));
     }
 
@@ -172,16 +193,19 @@ public class RealtorUrgentQuoteController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> SendRequest(string providerSelectionMode, string sendPayload, bool notifyClient)
+    public async Task<IActionResult> SendRequest(string? providerSelectionMode, string? sendPayload, bool notifyClient)
     {
         try
         {
-            var result = await wizard.SendAsync(providerSelectionMode, sendPayload, notifyClient);
+            var result = await wizard.SendAsync(
+                providerSelectionMode ?? string.Empty,
+                sendPayload ?? string.Empty,
+                notifyClient);
             return View("Success", result);
         }
         catch
         {
-            ModelState.AddModelError(string.Empty, "Unable to send urgent quote request.");
+            ModelState.AddModelError(string.Empty, localizer["Unable to send urgent quote request."]);
             return View("Send", await wizard.BuildSendAsync());
         }
     }

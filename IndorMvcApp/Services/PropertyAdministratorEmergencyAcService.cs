@@ -77,7 +77,7 @@ public class PropertyAdministratorEmergencyAcService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Emergency AC", property.PropertyName),
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", PropertyAdministratorDisplayLocalization.L("Emergency AC"), property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.InProgress,

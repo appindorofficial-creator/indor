@@ -3,17 +3,13 @@
     ViewData["Title"] = L["Schedule roof check - INDOR"];
     ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("RoofInspectionDetails", "RoofInspection", new { id = Model.SolicitudId });
-    ViewData["WizardStep"] = 2;
+    ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 3;
 
 }
 
-<div style="width:44px;text-align:right;color:#0066CC;"><i class="fas fa-shield-halved"></i></div>
-    </div>
-
-    
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Schedule roof check"]</h1>
-    <p class="page-lead" style="margin-bottom:16px;">@Model.ScheduleIntro</p>
+    <p class="page-lead" style="margin-bottom:16px;">@L.Catalog(Model.ScheduleIntro)</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -59,7 +55,7 @@
                 <div class="coverage-grid">
                     @foreach (var item in Model.CoverageItems)
                     {
-                        <div class="coverage-item"><i class="fas @item.Icon"></i><span>@item.Text</span></div>
+                        <div class="coverage-item"><i class="fas @item.Icon"></i><span>@L.Catalog(item.Text)</span></div>
                     }
                 </div>
             </div>
@@ -81,7 +77,7 @@
 
         @if (!string.IsNullOrWhiteSpace(Model.TrustTexto))
         {
-            <div class="trust-footer"><i class="fas fa-shield-halved"></i><span>@Model.TrustTexto</span></div>
+            <div class="trust-footer"><i class="fas fa-shield-halved"></i><span>@L.Catalog(Model.TrustTexto)</span></div>
         }
     </form>
 </div>
@@ -105,9 +101,9 @@
 
         var form = document.getElementById('roof-schedule-form');
         var requiredFields = [
-            { id: 'TipoServicio', message: 'Please choose a service.' },
-            { id: 'Frecuencia', message: 'Please select how often you\'d like a roof check.' },
-            { id: 'TimingPreferido', message: 'Please select your preferred timing.' }
+            { id: 'TipoServicio', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please choose a service."].ToString())) },
+            { id: 'Frecuencia', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please select how often you'd like a roof check."].ToString())) },
+            { id: 'TimingPreferido', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please select your preferred timing."].ToString())) }
         ];
 
         form?.addEventListener('submit', function (e) {

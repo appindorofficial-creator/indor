@@ -290,6 +290,7 @@ public class RealtorNearbyNetworkService(
             ListingBadgeCss = item.BadgeCss,
             StatusBadge = string.IsNullOrWhiteSpace(item.StatusBadge) ? "" : localizer.T(item.StatusBadge),
             StatusCss = item.StatusCss,
+            // Keep listing title/name as stored (QA: "que quede con el nombre").
             PriceLabel = item.Price is > 0 ? FormatCurrency(item.Price.Value) : item.Title,
             Title = item.Title,
             Address = item.Subtitle ?? "",
@@ -823,9 +824,8 @@ public class RealtorNearbyNetworkService(
             BadgeCss = item.BadgeCss,
             ImageUrl = imageUrl,
             IconClass = NearbyNetworkImageResolver.ResolveIconClass(item, imageUrl),
-            Title = item.CardType == NearbyNetworkCardTypes.Listing && item.Price is > 0 && item.Title.StartsWith('$')
-                ? item.Title
-                : item.Title,
+            // Keep listing title/name as stored (QA: "que quede con el nombre").
+            Title = item.Title,
             PriceLabel = item.Price is > 0 && !item.Title.StartsWith('$')
                 ? FormatCurrency(item.Price.Value)
                 : null,

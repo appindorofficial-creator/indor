@@ -69,7 +69,7 @@ public class PropertyAdministratorStandardCleaningService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Standard Cleaning", property.PropertyName),
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", PropertyAdministratorDisplayLocalization.L("Standard Cleaning"), property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,

@@ -313,9 +313,9 @@ public class PowerWashController : Controller
             InfoCondicionTexto = landing?.InfoCondicionTexto,
             ProblemasSeleccionados = solicitud.ProblemasSeleccionados ?? string.Empty,
             AreasDelicadas = solicitud.AreasDelicadas ?? string.Empty,
-            AccesoGrifo = solicitud.AccesoGrifo ?? "Yes",
-            TimingPreferido = solicitud.TimingPreferido ?? "NextWeek",
-            VentanaHorario = solicitud.VentanaHorario ?? "Morning",
+            AccesoGrifo = solicitud.AccesoGrifo ?? "",
+            TimingPreferido = solicitud.TimingPreferido ?? "",
+            VentanaHorario = solicitud.VentanaHorario ?? "",
             Notas = solicitud.Notas,
             ArchivosExistentes = MapExistingFiles(solicitud)
         };
@@ -468,9 +468,9 @@ public class PowerWashController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                AccesoGrifo = "Yes",
-                TimingPreferido = "NextWeek",
-                VentanaHorario = "Morning",
+                AccesoGrifo = "",
+                TimingPreferido = "",
+                VentanaHorario = "",
                 RecordatorioAnual = true
             };
             _db.SolicitudesPowerWash.Add(solicitud);

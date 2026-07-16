@@ -13,11 +13,11 @@
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
     <div class="field-card">
-        <div class="review-list-row"><span class="left"><i class="fas fa-trash-can"></i> @L["Selected bins"]</span><span class="value">@Model.BinsLabel</span></div>
-        <div class="review-list-row"><span class="left"><i class="fas fa-arrows-rotate"></i> @L["Service type"]</span><span class="value">@Model.ServiceTypeLabel</span></div>
-        <div class="review-list-row"><span class="left"><i class="fas fa-calendar"></i> @L["Frequency"]</span><span class="value">@Model.FrequencyLabel</span></div>
-        <div class="review-list-row"><span class="left"><i class="fas fa-calendar-day"></i> @L["Pickup day"]</span><span class="value">@Model.PickupDayLabel</span></div>
-        <div class="review-list-row"><span class="left"><i class="fas fa-bell"></i> @L["Reminder"]</span><span class="value">@Model.ReminderLabel</span></div>
+        <div class="review-list-row"><span class="left"><i class="fas fa-trash-can"></i> @L["Selected bins"]</span><span class="value">@UiDisplayLocalization.Localize(L, Model.BinsLabel)</span></div>
+        <div class="review-list-row"><span class="left"><i class="fas fa-arrows-rotate"></i> @L["Service type"]</span><span class="value">@UiDisplayLocalization.Localize(L, Model.ServiceTypeLabel)</span></div>
+        <div class="review-list-row"><span class="left"><i class="fas fa-calendar"></i> @L["Frequency"]</span><span class="value">@UiDisplayLocalization.Localize(L, Model.FrequencyLabel)</span></div>
+        <div class="review-list-row"><span class="left"><i class="fas fa-calendar-day"></i> @L["Pickup day"]</span><span class="value">@UiDisplayLocalization.Localize(L, Model.PickupDayLabel)</span></div>
+        <div class="review-list-row"><span class="left"><i class="fas fa-bell"></i> @L["Reminder"]</span><span class="value">@UiDisplayLocalization.Localize(L, Model.ReminderLabel)</span></div>
         @if (!string.IsNullOrWhiteSpace(Model.NotasEspeciales))
         {
             <div class="review-list-row"><span class="left"><i class="fas fa-note-sticky"></i> @L["Notes"]</span><span class="value">@Model.NotasEspeciales</span></div>
@@ -30,12 +30,12 @@
 
     @if (!string.IsNullOrWhiteSpace(Model.InfoBoxTexto))
     {
-        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@Model.InfoBoxTexto</span></div>
+        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L.Catalog(Model.InfoBoxTexto)</span></div>
     }
 
     <form asp-action="TrashReview" asp-route-id="@Model.SolicitudId" method="post">
         <button type="submit" name="action" value="continue" class="btn-primary">
-            <i class="fas fa-check"></i> Activate service
+            <i class="fas fa-check"></i> @L["Activate service"]
         </button>
         <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
     </form>

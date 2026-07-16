@@ -11,10 +11,10 @@
     </div>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-rotate"></i><div><div class="summary-value">@Model.FrequencyLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-trash-can"></i><div><div class="summary-value">@Model.BinsLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-arrows-rotate"></i><div><div class="summary-value">@Model.ServiceTypeLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Pickup day"]</div><div class="summary-value">@Model.PickupDayLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-rotate"></i><div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.FrequencyLabel)</div></div></div>
+        <div class="summary-row"><i class="fas fa-trash-can"></i><div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.BinsLabel)</div></div></div>
+        <div class="summary-row"><i class="fas fa-arrows-rotate"></i><div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.ServiceTypeLabel)</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Pickup day"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.PickupDayLabel)</div></div></div>
         <div class="summary-row"><i class="fas fa-tag"></i><div><div class="summary-label">@L["Monthly total"]</div><div class="summary-value" style="color:#0066CC;">$@Model.PrecioMensual.ToString("0") @Model.Moneda</div></div></div>
     </div>
 
@@ -25,6 +25,6 @@
     </div>
 
     <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="btn-primary">
-        <i class="fas fa-house"></i> Go to My Home
+        <i class="fas fa-house"></i> @L["Go to My Home"]
     </a>
     <a asp-action="TrashSetup" asp-route-id="@Model.SolicitudId" class="btn-outline"><i class="fas fa-pen"></i> @L["Edit service"]</a>

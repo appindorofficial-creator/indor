@@ -58,7 +58,7 @@
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
-            Continue <i class="fas fa-chevron-right"></i>
+            @L["Continue"] <i class="fas fa-chevron-right"></i>
         </button>
     </form>
 </div>
@@ -138,9 +138,9 @@
 
         var form = document.getElementById('pw-details-form');
         var requiredFields = [
-            { id: 'AreasSeleccionadas', message: 'Select at least one area to wash.' },
-            { id: 'MaterialExterior', message: 'Select the main exterior material.' },
-            { id: 'NumeroPisos', message: 'Select your home size.' }
+            { id: 'AreasSeleccionadas', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select at least one area to wash."].ToString())) },
+            { id: 'MaterialExterior', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select the main exterior material."].ToString())) },
+            { id: 'NumeroPisos', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select your home size."].ToString())) }
         ];
 
         form?.addEventListener('submit', function (e) {

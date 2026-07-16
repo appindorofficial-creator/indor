@@ -4,11 +4,11 @@
     var slots = ViewBag.DocumentSlots as IReadOnlyList<IndorMvcApp.ViewModels.RealtorDocumentSlotViewModel>
         ?? new List<IndorMvcApp.ViewModels.RealtorDocumentSlotViewModel>();
     var licenseNumber = ViewBag.LicenseNumber as string ?? Model.State.LicenseNumber;
-    var uploadFields = new (string DocumentType, string InputName, string Label)[]
+    var uploadFields = new (string DocumentType, string InputName, string Label, string Description)[]
     {
-        (RealtorDocumentTypes.LicensePhoto, "licensePhotoFile", "License photo"),
-        (RealtorDocumentTypes.GovernmentId, "governmentIdFile", "Government ID"),
-        (RealtorDocumentTypes.BusinessCard, "businessCardFile", "Business card (optional)")
+        (RealtorDocumentTypes.LicensePhoto, "licensePhotoFile", "License photo", "Professional license image"),
+        (RealtorDocumentTypes.GovernmentId, "governmentIdFile", "Government ID", "Government-issued identification image"),
+        (RealtorDocumentTypes.BusinessCard, "businessCardFile", "Business card (optional)", "Business card image")
     };
 }
 <div class="ob-head-block">
@@ -65,7 +65,10 @@
                 || slot.FileUrl.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
                 || slot.FileUrl.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
 
-        <div class="rl-doc-upload" data-doc-type="@field.DocumentType" data-required="@(slot?.Required == true ? "true" : "false")">
+        <div class="rl-doc-upload"
+             data-doc-type="@field.DocumentType"
+             data-required="@(slot?.Required == true ? "true" : "false")"
+             data-file-description="@UiDisplayLocalization.Localize(L, field.Description)">
             <span class="rl-doc-upload-label">@UiDisplayLocalization.Localize(L, field.Label)</span>
 
             <div class="rl-file-attached @(uploaded ? null : "is-hidden")" data-role="attached">
@@ -77,7 +80,7 @@
                 {
                     <span class="rl-file-preview-icon rl-file-attached-icon"><i class="fas fa-file-pdf"></i></span>
                 }
-                <span class="rl-file-attached-name">@uploadedName</span>
+                <span class="rl-file-attached-name" title="@uploadedName">@UiDisplayLocalization.Localize(L, field.Description)</span>
                 <button type="submit"
                         name="action"
                         value="remove"
@@ -237,7 +240,8 @@
 
             var nameEl = pending.querySelector('.rl-file-pending-name');
             if (nameEl) {
-                nameEl.textContent = file.name;
+                nameEl.textContent = uploadBlock.getAttribute('data-file-description') || file.name;
+                nameEl.title = file.name;
             }
 
             var thumb = pending.querySelector('.rl-file-pending-thumb');

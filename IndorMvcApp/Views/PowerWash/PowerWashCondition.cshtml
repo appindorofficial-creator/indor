@@ -103,12 +103,12 @@
         {
             <div class="info-box-blue">
                 <i class="fas fa-shield-halved"></i>
-                <span>@Model.InfoCondicionTexto</span>
+                <span>@L.Catalog(Model.InfoCondicionTexto)</span>
             </div>
         }
 
         <button type="submit" name="action" value="continue" class="btn-primary">
-            Review request <i class="fas fa-chevron-right"></i>
+            @L["Review request"] <i class="fas fa-chevron-right"></i>
         </button>
     </form>
 </div>

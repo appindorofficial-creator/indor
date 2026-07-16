@@ -33,7 +33,7 @@
         </div>
     }
 
-    <form asp-action="MovingHelpDetails" method="post" class="pa-emergency-form">
+    <form asp-action="MovingHelpDetails" method="post" class="pa-emergency-form" autocomplete="off">
         @Html.AntiForgeryToken()
         <input type="hidden" name="PropertyId" value="@propertyId" />
 
@@ -149,8 +149,10 @@
             <p>@L["Great for Airbnb turnovers and rental property move support. Trusted teams. On-time. Background checked."]</p>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back to start"]</a>
+        <div class="pa-flow-actions">
+            <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
+            <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back to start"]</a>
+        </div>
     </form>
 </div>
 

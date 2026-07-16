@@ -114,7 +114,7 @@ public class PropertyAdministratorPoolHotTubService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Pool & Hot Tub", property.PropertyName),
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", PropertyAdministratorDisplayLocalization.L("Pool & Hot Tub"), property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = input.Urgency is "Urgent" or "Emergency"

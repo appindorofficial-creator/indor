@@ -37,7 +37,7 @@ public class PackingServiceViewModel
     public string CtaContinueTexto { get; set; } = "Continue";
     public string CtaUploadTexto { get; set; } = "Upload photos or list";
 
-    public string BestForSelection { get; set; } = "MoveOut";
+    public string BestForSelection { get; set; } = string.Empty;
 }
 
 public class PackingAboutViewModel

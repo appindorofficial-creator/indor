@@ -103,10 +103,17 @@
 }
 
 .moving-setup-grid-label {
-    font-size: 0.62rem;
+    font-size: 0.72rem;
     font-weight: 700;
     text-align: center;
     line-height: 1.2;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-width: 100%;
 }
 
 .moving-setup-featured {

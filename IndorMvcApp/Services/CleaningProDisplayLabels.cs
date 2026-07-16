@@ -31,15 +31,30 @@ public static class CleaningProDisplayLabels
 
     public static string FormatAreasList(string? pipeValue)
     {
-        var areas = CleaningProPricingService.ParseAreas(pipeValue).Select(a => a.Label).ToList();
+        var areas = CleaningProPricingService.ParseAreas(pipeValue)
+            .Select(a => DisplayLabelsLocalization.L(a.Label))
+            .ToList();
         return areas.Count == 0 ? "—" : string.Join(", ", areas);
     }
 
-    public static string FormatHours(decimal? hours) =>
-        hours.HasValue ? $"{hours.Value:0.#} hour{(hours.Value == 1 ? "" : "s")}" : "—";
+    public static string FormatHours(decimal? hours)
+    {
+        if (!hours.HasValue) return "—";
+        var key = hours.Value == 1 ? "{0} hour" : "{0} hours";
+        return string.Format(
+            System.Globalization.CultureInfo.CurrentCulture,
+            DisplayLabelsLocalization.L(key),
+            hours.Value.ToString("0.#", System.Globalization.CultureInfo.CurrentCulture));
+    }
 
-    public static string FormatHoursShort(decimal? hours) =>
-        hours.HasValue ? $"{hours.Value:0.#} hr" : "—";
+    public static string FormatHoursShort(decimal? hours)
+    {
+        if (!hours.HasValue) return "—";
+        return string.Format(
+            System.Globalization.CultureInfo.CurrentCulture,
+            DisplayLabelsLocalization.L("{0} hr"),
+            hours.Value.ToString("0.#", System.Globalization.CultureInfo.CurrentCulture));
+    }
 
     public static string FormatDateTime(DateTime? fecha, string? ventana)
     {
@@ -75,14 +90,23 @@ public static class CleaningProDisplayLabels
 
     public static string FormatSummaryLine(string? frequency, string? crew, decimal? hours, decimal fromTotal)
     {
+        var estHours = string.Format(
+            System.Globalization.CultureInfo.CurrentCulture,
+            DisplayLabelsLocalization.L("Est. {0} hr"),
+            hours?.ToString("0.#", System.Globalization.CultureInfo.CurrentCulture) ?? "—");
+        var fromPrice = string.Format(
+            System.Globalization.CultureInfo.CurrentCulture,
+            DisplayLabelsLocalization.L("From ${0}"),
+            fromTotal.ToString("0", System.Globalization.CultureInfo.CurrentCulture));
+
         var parts = new List<string>
         {
             FormatFrequency(frequency),
             FormatCrew(crew),
-            $"Est. {FormatHoursShort(hours)}",
-            $"From ${fromTotal:0}"
+            estHours,
+            fromPrice
         };
 
-        return string.Join(" â€¢ ", parts.Where(p => p != "—"));
+        return string.Join(" • ", parts.Where(p => p != "—"));
     }
 }

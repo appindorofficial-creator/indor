@@ -60,7 +60,7 @@ public static class LawnDisplayLabels
             return DisplayLabelsLocalization.L("To be confirmed");
         }
 
-        var day = fecha.Value.ToString("dddd");
+        var day = fecha.Value.ToString("dddd", System.Globalization.CultureInfo.CurrentUICulture);
         var window = FormatTimeWindow(ventana, ventanaLabel);
         return string.IsNullOrWhiteSpace(window) || window == "—"
             ? day

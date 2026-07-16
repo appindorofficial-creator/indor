@@ -24,8 +24,8 @@
                 <img src="@Url.Content("~" + Model.ImagenUrl)" alt="Lawn service" loading="lazy" />
             }
             <div class="review-list">
-                <div class="review-item"><i class="fas fa-rotate"></i><span>@Model.FrequencyLabel</span></div>
-                <div class="review-item"><i class="fas fa-house"></i><span>@Model.AreaLabel</span></div>
+                <div class="review-item"><i class="fas fa-rotate"></i><span>@UiDisplayLocalization.Localize(L, Model.FrequencyLabel)</span></div>
+                <div class="review-item"><i class="fas fa-house"></i><span>@UiDisplayLocalization.Localize(L, Model.AreaLabel)</span></div>
                 <div class="review-item"><i class="fas fa-tag"></i><span>@L["Estimated total"] <strong>$@Model.PrecioTotal.ToString("0")</strong></span></div>
             </div>
         </div>

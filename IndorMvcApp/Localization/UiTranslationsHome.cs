@@ -1459,7 +1459,7 @@ public static class UiTranslationsHome
             ["TV Wall Mounting"] = "Montaje de TV",
             ["Utilities Setup"] = "Configuración de servicios",
             ["General Help"] = "Ayuda general",
-            ["Address checklist"] = "Lista de dirección",
+            ["Address checklist"] = "Lista de direcciones",
             ["Supplies"] = "Suministros",
             ["Donation pickup"] = "Recolección de donaciones",
             ["Move tips"] = "Consejos de mudanza",

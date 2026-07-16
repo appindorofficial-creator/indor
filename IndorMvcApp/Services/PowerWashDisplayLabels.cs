@@ -58,20 +58,26 @@ public static class PowerWashDisplayLabels
     };
 
     public static string FormatYesNo(string? code) =>
-        string.Equals(code, "Yes", StringComparison.OrdinalIgnoreCase) ? "Yes" : "No";
+        string.Equals(code, "Yes", StringComparison.OrdinalIgnoreCase)
+            ? DisplayLabelsLocalization.L("Yes")
+            : string.Equals(code, "No", StringComparison.OrdinalIgnoreCase)
+                ? DisplayLabelsLocalization.L("No")
+                : "—";
 
     public static string FormatTiming(string? code) => code switch
     {
+        "NextWeek" => DisplayLabelsLocalization.L("Next week"),
         "ThisMonth" => DisplayLabelsLocalization.L("This month"),
         "Flexible" => DisplayLabelsLocalization.L("Flexible"),
-        _ => "Next week"
+        _ => string.IsNullOrWhiteSpace(code) ? "—" : DisplayLabelsLocalization.L(code)
     };
 
     public static string FormatTimeWindow(string? code) => code switch
     {
+        "Morning" => DisplayLabelsLocalization.L("Morning"),
         "Midday" => DisplayLabelsLocalization.L("Midday"),
         "Afternoon" => DisplayLabelsLocalization.L("Afternoon"),
-        _ => "Morning"
+        _ => string.IsNullOrWhiteSpace(code) ? "—" : DisplayLabelsLocalization.L(code)
     };
 
     public static string FormatPreferredTime(string? timing, string? window) =>
@@ -79,7 +85,7 @@ public static class PowerWashDisplayLabels
 
     public static string FormatPipeList(string? pipe, Func<string, string> formatter) =>
         string.IsNullOrWhiteSpace(pipe)
-            ? "General wash"
+            ? DisplayLabelsLocalization.L("General wash")
             : string.Join(" + ", pipe.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .Select(formatter));
 

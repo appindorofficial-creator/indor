@@ -75,7 +75,75 @@ public class Microservicio
 
     public DateTime FechaCreacion { get; set; } = DateTime.Now;
 
-    public string LocalizedNombre(bool isSpanish) => CatalogText.PickWithUiFallback(Nombre, NombreEs, isSpanish);
+    /// <summary>
+    /// Spanish display names for Home Care Essentials brands
+    /// (QA: show Spanish names like "Aire Seguro 365").
+    /// </summary>
+    private static readonly Dictionary<int, string> BrandNamesEsById = new()
+    {
+        [1] = "Aire Seguro 365",
+        [2] = "Césped Siempre Perfecto",
+        [3] = "Basura Sin Estrés",
+        [4] = "Limpieza Pro",
+    };
+
+    private static readonly Dictionary<string, string> BrandNamesEsByKey = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["Safe Air 365"] = "Aire Seguro 365",
+        ["Aire Seguro 365"] = "Aire Seguro 365",
+        ["Always Perfect Lawn"] = "Césped Siempre Perfecto",
+        ["Césped Siempre Perfecto"] = "Césped Siempre Perfecto",
+        ["Jardín Siempre Perfecto"] = "Césped Siempre Perfecto",
+        ["Jardin Siempre Perfecto"] = "Césped Siempre Perfecto",
+        ["Stress-Free Trash"] = "Basura Sin Estrés",
+        ["Basura Sin Estrés"] = "Basura Sin Estrés",
+        ["Basura Sin Estres"] = "Basura Sin Estrés",
+        ["Cleaning Pro"] = "Limpieza Pro",
+        ["Limpieza Pro"] = "Limpieza Pro",
+    };
+
+    /// <summary>Resolve display name for a Home Care Essentials brand.</summary>
+    public static string ResolveBrandNombre(int id, string? nombre, string? nombreEs = null, bool isSpanish = false)
+    {
+        if (!isSpanish)
+        {
+            // Prefer canonical English keys when known.
+            if (BrandNamesEsById.ContainsKey(id))
+            {
+                return id switch
+                {
+                    1 => "Safe Air 365",
+                    2 => "Always Perfect Lawn",
+                    3 => "Stress-Free Trash",
+                    4 => "Cleaning Pro",
+                    _ => nombre?.Trim() ?? string.Empty
+                };
+            }
+
+            return nombre?.Trim() ?? string.Empty;
+        }
+
+        if (BrandNamesEsById.TryGetValue(id, out var byId))
+        {
+            return byId;
+        }
+
+        if (!string.IsNullOrWhiteSpace(nombreEs) && BrandNamesEsByKey.TryGetValue(nombreEs.Trim(), out var fromEs))
+        {
+            return fromEs;
+        }
+
+        if (!string.IsNullOrWhiteSpace(nombre) && BrandNamesEsByKey.TryGetValue(nombre.Trim(), out var fromEn))
+        {
+            return fromEn;
+        }
+
+        return CatalogText.PickWithUiFallback(nombre, nombreEs, true);
+    }
+
+    public string LocalizedNombre(bool isSpanish) =>
+        ResolveBrandNombre(Id, Nombre, NombreEs, isSpanish);
+
     public string? LocalizedSubtitulo(bool isSpanish) => CatalogText.PickWithUiFallback(Subtitulo, SubtituloEs, isSpanish);
     public string LocalizedDescripcion(bool isSpanish) => CatalogText.PickWithUiFallback(Descripcion, DescripcionEs, isSpanish);
     public string? LocalizedCtaTexto(bool isSpanish) => CatalogText.PickWithUiFallback(CtaTexto, CtaTextoEs, isSpanish);

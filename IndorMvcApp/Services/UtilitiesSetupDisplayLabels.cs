@@ -40,30 +40,31 @@ public static class UtilitiesSetupDisplayLabels
         "Electricity" => DisplayLabelsLocalization.L("Electricity"),
         "Water" => DisplayLabelsLocalization.L("Water"),
         "Gas" => DisplayLabelsLocalization.L("Gas"),
-        _ => value ?? "Utility"
+        _ => value ?? DisplayLabelsLocalization.L("Utility")
     };
 
     public static string FormatDate(DateTime? date) =>
-        date?.ToString("MMM d, yyyy") ?? "To be scheduled";
+        date?.ToString("MMM d, yyyy", System.Globalization.CultureInfo.CurrentUICulture)
+            ?? DisplayLabelsLocalization.L("To be scheduled");
 
     public static string FormatInternetSummary(string? providerName, string? speed, decimal price) =>
         string.IsNullOrWhiteSpace(providerName)
-            ? "Skipped"
-            : $"{providerName} — {speed ?? "Plans available"} — from ${price:0}/mo";
+            ? DisplayLabelsLocalization.L("Skipped")
+            : $"{providerName} — {speed ?? DisplayLabelsLocalization.L("Plans available")} — {DisplayLabelsLocalization.L("From $")}{price:0}{DisplayLabelsLocalization.L("/mo")}";
 
     public static string UtilityIcon(string? tipo) => tipo switch
     {
-        "Electricity" => DisplayLabelsLocalization.L("fa-bolt"),
-        "Water" => DisplayLabelsLocalization.L("fa-droplet"),
-        "Gas" => DisplayLabelsLocalization.L("fa-fire-flame-simple"),
-        _ => DisplayLabelsLocalization.L("fa-plug")
+        "Electricity" => "fa-bolt",
+        "Water" => "fa-droplet",
+        "Gas" => "fa-fire-flame-simple",
+        _ => "fa-plug"
     };
 
     public static string ProviderBadgeClass(string? etiqueta) => etiqueta switch
     {
-        "Fastest" => DisplayLabelsLocalization.L("badge-green"),
-        "Reliable" => DisplayLabelsLocalization.L("badge-purple"),
-        "Great value" => DisplayLabelsLocalization.L("badge-blue"),
-        _ => DisplayLabelsLocalization.L("badge-blue")
+        "Fastest" => "badge-green",
+        "Reliable" => "badge-purple",
+        "Great value" => "badge-blue",
+        _ => "badge-blue"
     };
 }

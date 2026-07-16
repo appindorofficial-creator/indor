@@ -45,14 +45,17 @@ public class UtilitiesSetupController : Controller
             await _db.SaveChangesAsync();
         }
 
+        // Only echo prior choices after the user has submitted this step (Bug 12/20).
+        var addressEntered = !string.Equals(solicitud.Estado, "InProgress", StringComparison.OrdinalIgnoreCase);
+
         return View(new UtilitiesSetupAddressViewModel
         {
             SolicitudId = solicitud.Id,
             MovingSetupServicioId = id,
             DireccionPropiedad = solicitud.DireccionPropiedad ?? string.Empty,
-            ServiciosConectar = solicitud.ServiciosConectar ?? "Internet|Electricity|Water|Gas",
-            FechaServicio = solicitud.FechaServicio ?? DateTime.Today.AddDays(30),
-            PreferenciaContacto = solicitud.PreferenciaContacto ?? "ContactMyself"
+            ServiciosConectar = addressEntered ? (solicitud.ServiciosConectar ?? string.Empty) : string.Empty,
+            FechaServicio = addressEntered ? solicitud.FechaServicio : null,
+            PreferenciaContacto = addressEntered ? (solicitud.PreferenciaContacto ?? string.Empty) : string.Empty
         });
     }
 
@@ -119,9 +122,11 @@ public class UtilitiesSetupController : Controller
             .OrderBy(p => p.Orden)
             .ToListAsync();
 
-        var defaultId = solicitud.ProveedorInternetId
-                        ?? proveedores.FirstOrDefault(p => p.Codigo == "Spectrum")?.Id
-                        ?? proveedores.FirstOrDefault()?.Id;
+        // Don't pre-select an ISP or cable option on first visit (Bug 20 / Bug 12 pattern).
+        var defaultId = solicitud.ProveedorInternetId;
+        var cableOption = !string.IsNullOrWhiteSpace(solicitud.OpcionCable)
+            ? solicitud.OpcionCable
+            : string.Empty;
 
         return View(new UtilitiesSetupInternetViewModel
         {
@@ -129,7 +134,7 @@ public class UtilitiesSetupController : Controller
             MovingSetupServicioId = solicitud.MovingSetupServicioId,
             DireccionPropiedad = solicitud.DireccionPropiedad ?? string.Empty,
             ProveedorInternetId = defaultId,
-            OpcionCable = solicitud.OpcionCable ?? "InternetOnly",
+            OpcionCable = cableOption,
             Proveedores = proveedores.Select(p => new UtilitiesSetupInternetProviderViewModel
             {
                 Id = p.Id,
@@ -139,7 +144,7 @@ public class UtilitiesSetupController : Controller
                 Velocidad = p.Velocidad,
                 DetalleExtra = p.DetalleExtra,
                 PrecioDesde = p.PrecioDesde,
-                Selected = p.Id == defaultId
+                Selected = defaultId.HasValue && p.Id == defaultId.Value
             }).ToList()
         });
     }
@@ -350,9 +355,9 @@ public class UtilitiesSetupController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                ServiciosConectar = "Internet|Electricity|Water|Gas",
-                PreferenciaContacto = "ContactMyself",
-                OpcionCable = "InternetOnly"
+                ServiciosConectar = string.Empty,
+                PreferenciaContacto = string.Empty,
+                OpcionCable = string.Empty
             };
             _db.SolicitudesUtilitiesSetup.Add(solicitud);
             await _db.SaveChangesAsync();
@@ -608,7 +613,7 @@ public class UtilitiesSetupController : Controller
         }
         else if (NeedsInternetStep(solicitud.ServiciosConectar))
         {
-            internetResumen = "Skipped";
+            internetResumen = DisplayLabelsLocalization.L("Skipped");
         }
 
         return new UtilitiesSetupReviewViewModel
@@ -663,9 +668,9 @@ public class UtilitiesSetupController : Controller
 
             cards.Add(new UtilitiesSetupServiceCardViewModel
             {
-                Label = "Internet & Cable",
+                Label = DisplayLabelsLocalization.L("Internet & Cable"),
                 ProviderName = solicitud.ProveedorInternet.Nombre,
-                ExtraNote = "Other options available",
+                ExtraNote = DisplayLabelsLocalization.L("Other options available"),
                 Icon = "fa-wifi"
             });
         }

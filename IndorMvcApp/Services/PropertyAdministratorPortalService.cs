@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace IndorMvcApp.Services;
 
@@ -732,6 +733,8 @@ public class PropertyAdministratorPortalService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             BackUrl = url.Action("Profile", "Administrador") ?? "#",
+            PaymentMethodLabel = PaT("Visa ending in {0}", "4242"),
+            PaymentMethodExpiry = PaT("Expires {0}", "08/28"),
             OutstandingLabel = FormatCurrency(outstanding),
             PaidThisMonthLabel = FormatCurrency(paidThisMonth),
             Invoices = invoices
@@ -1146,13 +1149,40 @@ public class PropertyAdministratorPortalService(
 
         return new PropertyAdministratorBillingInvoiceViewModel
         {
-            Title = request.Title,
+            Title = LocalizeBillingTitle(request.Title),
             PropertyName = request.PropertyName,
             DateLabel = request.ScheduledUtc?.ToLocalTime().ToString("MMM d, yyyy", CultureInfo.CurrentCulture) ?? request.FechaCreacion.ToLocalTime().ToString("MMM d, yyyy", CultureInfo.CurrentCulture),
             AmountLabel = FormatCurrency(amount),
             StatusLabel = statusLabel,
             StatusCss = statusCss
         };
+    }
+
+    private static string LocalizeBillingTitle(string title)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            return string.Empty;
+        }
+
+        if (title.Contains(" • ", StringComparison.Ordinal))
+        {
+            return string.Join(" • ",
+                title.Split(" • ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                    .Select(PaL));
+        }
+
+        // Stored titles may be EN ("Lawn Care at X"), ES ("… en X"), or Spanglish ("Lawn Care en X").
+        var propertyTitleMatch = Regex.Match(title, @"^(.+?)\s+(?:at|in|en)\s+(.+)$", RegexOptions.IgnoreCase);
+        if (propertyTitleMatch.Success)
+        {
+            return PaT(
+                "{0} at {1}",
+                PaL(propertyTitleMatch.Groups[1].Value.Trim()),
+                propertyTitleMatch.Groups[2].Value.Trim());
+        }
+
+        return PaL(title);
     }
 
     private static List<PropertyAdministratorBillingInvoiceViewModel> BuildSampleBillingInvoices() =>
@@ -1188,11 +1218,11 @@ public class PropertyAdministratorPortalService(
         return new PropertyAdministratorSavedProviderViewModel
         {
             Name = name,
-            TradeLabel = request.TechnicianTitle ?? request.Category,
+            TradeLabel = PaL(request.TechnicianTitle ?? request.Category ?? string.Empty),
             RatingLabel = request.TechnicianRating is > 0
                 ? request.TechnicianRating.Value.ToString("0.0")
                 : null,
-            LastServiceLabel = request.Title,
+            LastServiceLabel = LocalizeBillingTitle(request.Title),
             RequestUrl = url.Action("Services", "Administrador") ?? "#"
         };
     }

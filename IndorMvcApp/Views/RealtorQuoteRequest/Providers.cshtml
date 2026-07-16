@@ -17,7 +17,6 @@
     @Html.AntiForgeryToken()
     <input type="hidden" name="q" value="@Model.SearchQuery" />
     <input type="hidden" name="filter" value="@Model.ActiveFilter" />
-    <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
 
     @if (formErrors.Count > 0)
     {

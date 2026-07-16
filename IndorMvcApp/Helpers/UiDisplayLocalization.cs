@@ -25,6 +25,9 @@ public static class UiDisplayLocalization
         (new Regex(@"^([\d.]+)\s+miles away$", RegexOptions.IgnoreCase), "{0} miles away"),
         (new Regex(@"^([\d.]+) miles around you$", RegexOptions.IgnoreCase), "{0} miles around you"),
         (new Regex(@"^([\d.]+) miles around (.+)$", RegexOptions.IgnoreCase), "{0} miles around {1}"),
+        (new Regex(@"^(\d+)\s+urgent items?$", RegexOptions.IgnoreCase), "{0} urgent items"),
+        (new Regex(@"^(\d+)\s+high-priority items?$", RegexOptions.IgnoreCase), "{0} high-priority items"),
+        (new Regex(@"^(\d+)\s+moderate items?$", RegexOptions.IgnoreCase), "{0} moderate items"),
     ];
 
     public static string Localize(IIndorLocalizer localizer, string? text)
@@ -66,6 +69,18 @@ public static class UiDisplayLocalization
         if (text.StartsWith("Tomorrow, ", StringComparison.OrdinalIgnoreCase))
         {
             return localizer.T("Tomorrow, {0}", text["Tomorrow, ".Length..].Trim());
+        }
+
+        var tradeNeeded = Regex.Match(text, @"^(.+?)\s+needed$", RegexOptions.IgnoreCase);
+        if (tradeNeeded.Success)
+        {
+            return localizer.T("{0} needed", localizer[tradeNeeded.Groups[1].Value.Trim()]);
+        }
+
+        var tradeRequest = Regex.Match(text, @"^(.+?)\s+request$", RegexOptions.IgnoreCase);
+        if (tradeRequest.Success)
+        {
+            return localizer.T("{0} request", localizer[tradeRequest.Groups[1].Value.Trim()]);
         }
 
         var monthPrice = Regex.Match(text, @"^\$(\d+(?:\.\d+)?)\s*/mo$", RegexOptions.IgnoreCase);
@@ -623,8 +638,10 @@ public static class UiDisplayLocalization
             return localizer.T("Next: {0}", text["Next: ".Length..].Trim());
         }
 
+        // Match "Name at Address" style labels, not phrases like "at least".
         var atPropertyMatch = Regex.Match(text, @"^(.+) at (.+)$");
-        if (atPropertyMatch.Success)
+        if (atPropertyMatch.Success
+            && !atPropertyMatch.Groups[2].Value.StartsWith("least", StringComparison.OrdinalIgnoreCase))
         {
             return localizer.T(
                 "{0} at {1}",

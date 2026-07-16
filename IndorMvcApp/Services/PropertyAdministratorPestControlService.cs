@@ -114,7 +114,7 @@ public class PropertyAdministratorPestControlService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Pest Control", property.PropertyName),
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", PropertyAdministratorDisplayLocalization.L("Pest Control"), property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = input.Urgency is "Urgent" or "Emergency"

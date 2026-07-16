@@ -88,7 +88,7 @@ GO
 IF OBJECT_ID(N'dbo.MovingSetupEnlacesRapidos', N'U') IS NOT NULL
    AND COL_LENGTH(N'MovingSetupEnlacesRapidos', N'NombreEs') IS NOT NULL
 BEGIN
-    UPDATE dbo.MovingSetupEnlacesRapidos SET NombreEs = N'Lista de dirección'       WHERE Nombre = N'Address checklist';
+    UPDATE dbo.MovingSetupEnlacesRapidos SET NombreEs = N'Lista de direcciones'       WHERE Nombre = N'Address checklist';
     UPDATE dbo.MovingSetupEnlacesRapidos SET NombreEs = N'Suministros'              WHERE Nombre = N'Supplies';
     UPDATE dbo.MovingSetupEnlacesRapidos SET NombreEs = N'Recolección de donaciones' WHERE Nombre = N'Donation pickup';
     UPDATE dbo.MovingSetupEnlacesRapidos SET NombreEs = N'Consejos de mudanza'      WHERE Nombre = N'Move tips';

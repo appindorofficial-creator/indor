@@ -3,7 +3,7 @@
     ViewData["Title"] = L["Roof details - INDOR"];
     ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("RoofInspectionService", "RoofInspection", new { id = Model.HomeCarePriorityId });
-    ViewData["WizardStep"] = 1;
+    ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 3;
 
 }
@@ -121,10 +121,10 @@
 
         var form = document.getElementById('roof-details-form');
         var requiredFields = [
-            { id: 'MotivoRevision', message: 'Please select why you need a roof check.' },
-            { id: 'TipoTecho', message: 'Please select your roof type.' },
-            { id: 'EdadTecho', message: 'Please indicate the approximate age of your roof.' },
-            { id: 'UltimaInspeccion', message: 'Please indicate when your roof was last inspected.' }
+            { id: 'MotivoRevision', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please select why you need a roof check."].ToString())) },
+            { id: 'TipoTecho', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please select your roof type."].ToString())) },
+            { id: 'EdadTecho', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please indicate the approximate age of your roof."].ToString())) },
+            { id: 'UltimaInspeccion', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please indicate when your roof was last inspected."].ToString())) }
         ];
 
         form?.addEventListener('submit', function (e) {

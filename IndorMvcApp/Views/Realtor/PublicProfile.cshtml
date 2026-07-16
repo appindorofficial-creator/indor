@@ -182,7 +182,7 @@
                             }
                         </div>
                         <div class="rl-network-card-body">
-                            <strong class="rl-network-card-price">@listing.PriceLabel</strong>
+                            <strong class="rl-network-card-price">@UiDisplayLocalization.Localize(L, listing.PriceLabel)</strong>
                             @if (!string.IsNullOrWhiteSpace(listing.Address))
                             {
                                 <span class="rl-network-card-sub">@listing.Address</span>
@@ -219,7 +219,7 @@
                             <span class="rl-public-openhouse-placeholder"><i class="fas fa-door-open"></i></span>
                         }
                         <div>
-                            <strong>@openHouse.Title</strong>
+                            <strong>@UiDisplayLocalization.Localize(L, openHouse.Title)</strong>
                             @if (!string.IsNullOrWhiteSpace(openHouse.MetaLabel))
                             {
                                 <span>@openHouse.MetaLabel</span>

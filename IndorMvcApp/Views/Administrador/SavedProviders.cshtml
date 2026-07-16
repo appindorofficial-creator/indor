@@ -31,7 +31,7 @@
                     <div class="pa-provider-copy">
                         <strong>@provider.Name</strong>
                         <small>@UiDisplayLocalization.Localize(L, provider.TradeLabel)</small>
-                        <span class="pa-provider-last">@L.T("Last service: {0}", provider.LastServiceLabel)</span>
+                        <span class="pa-provider-last">@L.T("Last service: {0}", UiDisplayLocalization.Localize(L, provider.LastServiceLabel))</span>
                     </div>
                     <div class="pa-provider-meta">
                         @if (!string.IsNullOrWhiteSpace(provider.RatingLabel))

@@ -65,7 +65,7 @@ public class PropertyAdministratorTurnoverCleaningService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Turnover Cleaning", property.PropertyName),
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", PropertyAdministratorDisplayLocalization.L("Turnover Cleaning"), property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,

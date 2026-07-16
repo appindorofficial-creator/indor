@@ -110,7 +110,7 @@ public class PropertyAdministratorFurnitureHaulAwayService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Furniture Haul Away", property.PropertyName),
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", PropertyAdministratorDisplayLocalization.L("Furniture Haul Away"), property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.InProgress,

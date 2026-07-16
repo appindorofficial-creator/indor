@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -270,10 +271,13 @@ public class CleaningProController : Controller
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
             NombreServicio = solicitud.Microservicio?.Nombre ?? "Cleaning Pro",
-            CrewSummary = $"{CleaningProDisplayLabels.FormatCrew(solicitud.CantidadLimpiadores)} • ${breakdown.HourlyRate:0}/hr",
+            CrewSummary = $"{CleaningProDisplayLabels.FormatCrew(solicitud.CantidadLimpiadores)} • ${breakdown.HourlyRate:0}{DisplayLabelsLocalization.L("/hr")}",
             HoursLabel = CleaningProDisplayLabels.FormatHours(solicitud.HorasEstimadas),
             ServiceEstimate = breakdown.ServiceSubtotal,
-            FrequencyLabel = $"{CleaningProDisplayLabels.FormatFrequency(solicitud.Frecuencia)} cleaning",
+            FrequencyLabel = string.Format(
+                CultureInfo.CurrentUICulture,
+                DisplayLabelsLocalization.L("{0} cleaning"),
+                CleaningProDisplayLabels.FormatFrequency(solicitud.Frecuencia)),
             ScheduledLabel = CleaningProDisplayLabels.FormatScheduledRange(solicitud.FechaServicio, solicitud.VentanaHorario),
             DireccionPropiedad = solicitud.DireccionPropiedad ?? "—",
             PrecioTotal = solicitud.PrecioTotal ?? breakdown.Total,
@@ -322,7 +326,7 @@ public class CleaningProController : Controller
             {
                 MicroservicioId = microservicioId,
                 PageTitle = "Cleaning Pro",
-                LandingTitulo = microservicio.Nombre,
+                LandingTitulo = "Cleaning Pro",
                 LandingTagline = "Customized cleaning, your way.",
                 LandingSubtitulo = microservicio.DescripcionCompleta ?? microservicio.Descripcion,
                 ImagenUrl = microservicio.ImagenUrl,
