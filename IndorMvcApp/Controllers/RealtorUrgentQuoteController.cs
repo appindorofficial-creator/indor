@@ -56,23 +56,49 @@ public class RealtorUrgentQuoteController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Property(int propertyFileId, string requestCategory, string serviceType, string urgencyLevel, string? newPropertyAddress)
+    public async Task<IActionResult> Property(
+        int propertyFileId,
+        string? requestCategory,
+        string? serviceType,
+        string? urgencyLevel,
+        string? newPropertyAddress)
     {
+        // Nullable params avoid ASP.NET's auto "The X field is required." binding noise;
+        // we validate explicitly with realtor-friendly messages below.
+        ModelState.Clear();
+
         try
         {
-            await wizard.SavePropertyAsync(propertyFileId, requestCategory, serviceType, urgencyLevel, newPropertyAddress);
+            await wizard.SavePropertyAsync(
+                propertyFileId,
+                requestCategory ?? "",
+                serviceType ?? "",
+                urgencyLevel ?? "",
+                newPropertyAddress);
             return RedirectToAction(nameof(Issue));
+        }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
         }
         catch
         {
             ModelState.AddModelError(string.Empty, "Select a property and what you need to continue.");
-            var vm = await wizard.BuildPropertyAsync(newPropertyAddress);
-            vm.SelectedPropertyFileId = propertyFileId;
-            vm.RequestCategory = requestCategory ?? "";
-            vm.ServiceType = serviceType ?? "";
-            vm.UrgencyLevel = urgencyLevel ?? "";
-            return View(vm);
         }
+
+        var vm = await wizard.BuildPropertyAsync(newPropertyAddress);
+        vm.SelectedPropertyFileId = propertyFileId > 0 ? propertyFileId : null;
+        vm.RequestCategory = requestCategory ?? "";
+        vm.ServiceType = serviceType ?? "";
+        vm.UrgencyLevel = urgencyLevel ?? "";
+        return View(vm);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> BackToProperty()
+    {
+        await wizard.RewindToPropertyAsync();
+        return RedirectToAction(nameof(Property));
     }
 
     [HttpPost]

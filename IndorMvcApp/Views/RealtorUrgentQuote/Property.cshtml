@@ -1,4 +1,13 @@
 @model IndorMvcApp.ViewModels.RealtorUrgentQuotePropertyViewModel
+@{
+    var formErrors = ViewData.ModelState
+        .Where(x => x.Value?.Errors.Count > 0)
+        .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
+        .Where(m => !string.IsNullOrWhiteSpace(m))
+        .Distinct()
+        .Select(m => UiDisplayLocalization.Localize(L, m!))
+        .ToList();
+}
 
 
 
@@ -73,7 +82,19 @@
 
     @Html.AntiForgeryToken()
 
-    <div asp-validation-summary="All" class="ob-summary"></div>
+    <div id="uqClientError" class="ob-summary" role="alert" hidden></div>
+    @if (formErrors.Count > 0)
+    {
+        <div class="ob-summary" role="alert">
+            <strong>@L["Please fix the following to continue:"]</strong>
+            <ul>
+                @foreach (var msg in formErrors)
+                {
+                    <li>@msg</li>
+                }
+            </ul>
+        </div>
+    }
 
     @* Lets the realtor continue using the address typed in the search box when no saved property matches. *@
     <input type="hidden" name="newPropertyAddress" id="uqNewPropertyAddress" value="" />
@@ -241,14 +262,55 @@
         const form = document.getElementById('urgentPropertyForm');
         const searchInput = document.querySelector('.rl-search-form input[name="q"]');
         const newAddressInput = document.getElementById('uqNewPropertyAddress');
+        const clientError = document.getElementById('uqClientError');
         if (!form || !newAddressInput) return;
 
-        form.addEventListener('submit', function () {
+        const msgs = {
+            property: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select a property or enter the property address to continue."].ToString())),
+            category: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select what you need."].ToString())),
+            service: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select a service type."].ToString())),
+            urgency: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select an urgency level."].ToString())),
+            heading: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please fix the following to continue:"].ToString()))
+        };
+
+        function showErrors(errors) {
+            if (!clientError) return;
+            if (!errors.length) {
+                clientError.hidden = true;
+                clientError.innerHTML = '';
+                return;
+            }
+            clientError.hidden = false;
+            clientError.innerHTML = '<strong>' + msgs.heading + '</strong><ul>' +
+                errors.map(e => '<li>' + e + '</li>').join('') + '</ul>';
+            clientError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        form.addEventListener('submit', function (ev) {
             const hasProperty = !!form.querySelector('input[name="propertyFileId"]:checked');
             // If the realtor typed an address in the search box but didn't pick a
             // saved property, use that text to create/match a property and continue.
             if (!hasProperty && (searchInput?.value?.trim().length ?? 0) > 0) {
                 newAddressInput.value = searchInput.value.trim();
+            }
+
+            const errors = [];
+            if (!hasProperty && !(newAddressInput.value || '').trim()) {
+                errors.push(msgs.property);
+            }
+            if (!form.querySelector('input[name="requestCategory"]:checked')) {
+                errors.push(msgs.category);
+            }
+            if (!form.querySelector('input[name="serviceType"]:checked')) {
+                errors.push(msgs.service);
+            }
+            if (!form.querySelector('input[name="urgencyLevel"]:checked')) {
+                errors.push(msgs.urgency);
+            }
+
+            if (errors.length) {
+                ev.preventDefault();
+                showErrors(errors);
             }
         });
     })();
@@ -274,4 +336,3 @@
 </script>
 
 }
-

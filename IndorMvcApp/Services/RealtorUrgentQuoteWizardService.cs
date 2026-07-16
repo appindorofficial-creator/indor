@@ -86,6 +86,19 @@ public class RealtorUrgentQuoteWizardService(
         httpContextAccessor.HttpContext?.Session.Remove(DraftIdSessionKey);
     }
 
+    public async Task RewindToPropertyAsync(CancellationToken cancellationToken = default)
+    {
+        var draft = await GetDraftAsync(cancellationToken);
+        if (draft == null)
+        {
+            return;
+        }
+
+        draft.CurrentStep = 1;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
     public string ResolveResumeAction(int currentStep) => currentStep switch
     {
         <= 1 => "Property",
@@ -125,11 +138,11 @@ public class RealtorUrgentQuoteWizardService(
             Subtitle = "For urgent closing needs, fill only the essentials: property, issue, urgency, and photos.",
             SearchQuery = search,
             SelectedPropertyFileId = draft.PropertyFileId,
-            // Don't pre-select issue/service/urgency on a fresh request; only echo
-            // the realtor's own choices once they've confirmed step 1 (step advances past 1).
-            RequestCategory = draft.CurrentStep > 1 ? draft.RequestCategory : "",
-            ServiceType = draft.CurrentStep > 1 ? draft.ServiceType : "",
-            UrgencyLevel = draft.CurrentStep > 1 ? draft.UrgencyLevel : "",
+            // Only echo issue/service/urgency after the realtor has committed a property
+            // (fresh drafts carry entity defaults that must not look pre-selected).
+            RequestCategory = draft.PropertyFileId.HasValue ? draft.RequestCategory : "",
+            ServiceType = draft.PropertyFileId.HasValue ? draft.ServiceType : "",
+            UrgencyLevel = draft.PropertyFileId.HasValue ? draft.UrgencyLevel : "",
             Properties = properties.Select(p => new RealtorUrgentQuotePropertyOptionViewModel
             {
                 Id = p.Id,
@@ -219,15 +232,18 @@ public class RealtorUrgentQuoteWizardService(
         // Require the realtor to actively choose issue, service type and urgency
         // (nothing is pre-selected, so don't silently fall back to defaults here).
         // Validate before touching properties so a failed submit can't leave orphans.
-        if (!RealtorUrgentQuoteCategories.Options.Any(o => o.Value == requestCategory))
+        if (string.IsNullOrWhiteSpace(requestCategory) ||
+            !RealtorUrgentQuoteCategories.Options.Any(o => o.Value == requestCategory))
         {
             throw new InvalidOperationException("Select what you need.");
         }
-        if (!RealtorUrgentQuoteServiceTypes.All.Contains(serviceType))
+        if (string.IsNullOrWhiteSpace(serviceType) ||
+            !RealtorUrgentQuoteServiceTypes.All.Contains(serviceType))
         {
             throw new InvalidOperationException("Select a service type.");
         }
-        if (!RealtorUrgentQuoteUrgencyLevels.Options.Any(o => o.Value == urgencyLevel))
+        if (string.IsNullOrWhiteSpace(urgencyLevel) ||
+            !RealtorUrgentQuoteUrgencyLevels.Options.Any(o => o.Value == urgencyLevel))
         {
             throw new InvalidOperationException("Select an urgency level.");
         }

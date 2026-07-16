@@ -9,6 +9,7 @@ public interface IRealtorUrgentQuoteWizardService
     Task<IndorRealtorUrgentQuoteDraft> EnsureDraftAsync(CancellationToken cancellationToken = default);
     Task<IndorRealtorUrgentQuoteDraft?> GetDraftAsync(CancellationToken cancellationToken = default);
     Task CancelDraftAsync(CancellationToken cancellationToken = default);
+    Task RewindToPropertyAsync(CancellationToken cancellationToken = default);
     string ResolveResumeAction(int currentStep);
 
     Task<RealtorUrgentQuotePropertyViewModel> BuildPropertyAsync(string? search, CancellationToken cancellationToken = default);
