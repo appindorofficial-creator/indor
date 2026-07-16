@@ -58,7 +58,6 @@
     {
         var slot = slots.FirstOrDefault(s => s.DocumentType.Equals(field.DocumentType, StringComparison.OrdinalIgnoreCase));
         var uploaded = slot?.Uploaded == true && !string.IsNullOrWhiteSpace(slot.FileUrl);
-        var uploadedName = uploaded ? System.IO.Path.GetFileName(slot!.FileUrl!) : null;
         var isImage = uploaded
             && (slot!.FileUrl!.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
                 || slot.FileUrl.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
@@ -80,7 +79,7 @@
                 {
                     <span class="rl-file-preview-icon rl-file-attached-icon"><i class="fas fa-file-pdf"></i></span>
                 }
-                <span class="rl-file-attached-name" title="@uploadedName">@UiDisplayLocalization.Localize(L, field.Description)</span>
+                <span class="rl-file-attached-name">@UiDisplayLocalization.Localize(L, field.Description)</span>
                 <button type="submit"
                         name="action"
                         value="remove"
@@ -240,8 +239,7 @@
 
             var nameEl = pending.querySelector('.rl-file-pending-name');
             if (nameEl) {
-                nameEl.textContent = uploadBlock.getAttribute('data-file-description') || file.name;
-                nameEl.title = file.name;
+                nameEl.textContent = uploadBlock.getAttribute('data-file-description') || '';
             }
 
             var thumb = pending.querySelector('.rl-file-pending-thumb');
@@ -282,7 +280,7 @@
                 }
 
                 if (nameEl) {
-                    nameEl.textContent = file.name;
+                    nameEl.textContent = uploadBlock.getAttribute('data-file-description') || '';
                 }
                 picker?.classList.add('has-file');
                 showPendingSelection(uploadBlock, file);
