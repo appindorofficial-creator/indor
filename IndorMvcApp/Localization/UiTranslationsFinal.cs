@@ -2674,6 +2674,7 @@ public static class UiTranslationsFinal
             ["HVAC Technician"] = "Técnico de HVAC",
             ["Roofer"] = "Techador",
             ["Painter"] = "Pintor",
+            ["Handyman"] = "Manitas",
             ["Moderate"] = "Moderado",
             ["Not specified"] = "No especificado",
             ["Residential Home Inspection"] = "Inspección residencial",
@@ -2681,8 +2682,24 @@ public static class UiTranslationsFinal
             ["{0} issues found — tap to select"] = "{0} problemas encontrados — toca para seleccionar",
             ["{0} of {1} selected"] = "{0} de {1} seleccionados",
             ["Select at least one issue"] = "Selecciona al menos un problema",
+            ["Send to providers"] = "Enviar a proveedores",
             ["Send to providers ({0})"] = "Enviar a proveedores ({0})",
             ["Preparing providers..."] = "Preparando proveedores...",
+            ["Open report page {0}"] = "Abrir página {0} del informe",
+            ["Source confirmed from report PDF"] = "Fuente confirmada desde el PDF del informe",
+            ["SMOKE / FIRE DETECTORS AND CARBON MONOXIDE DETECTORS"] =
+                "Detectores de humo / fuego y monóxido de carbono",
+            ["Smoke / Fire Detectors and Carbon Monoxide Detectors"] =
+                "Detectores de humo / fuego y monóxido de carbono",
+            ["The smoke detector located at the second floor hall ceiling isn't responding to testing."] =
+                "El detector de humo ubicado en el techo del pasillo del segundo piso no responde a las pruebas.",
+            ["ELECTRICAL"] = "Eléctrico",
+            ["Electrical"] = "Eléctrico",
+            ["PLUMBING"] = "Plomería",
+            ["HVAC"] = "HVAC",
+            ["ROOF"] = "Techo",
+            ["Roof"] = "Techo",
+            ["GFCI & AFCI"] = "GFCI y AFCI",
             // Realtor inspection Analyze error leftovers
             ["AI analysis is not configured. Enable OpenAI in application settings."] = "El análisis con IA no está configurado. Activa OpenAI en la configuración de la aplicación.",
             ["Upload Inspection Report"] = "Subir informe de inspección",

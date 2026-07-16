@@ -122,11 +122,11 @@ else
                             <i class="fas fa-circle-exclamation"></i>
                         </span>
                         <div class="rl-insp-finding-head-copy">
-                            <strong>@finding.Title</strong>
+                            <strong>@UiDisplayLocalization.Localize(L, finding.Title)</strong>
                             <div class="rl-insp-finding-badges">
                                 @if (!string.IsNullOrWhiteSpace(finding.SourceSectionNumber))
                                 {
-                                    <span class="rl-insp-section-index" title="Report index">@finding.SourceSectionNumber</span>
+                                    <span class="rl-insp-section-index" title="@L["Report index"]">@finding.SourceSectionNumber</span>
                                 }
                                 <span class="rl-priority-tag rl-priority-tag--@finding.PriorityCss">@L[finding.Priority]</span>
                                 <span class="rl-insp-ai-score"><i class="fas fa-check"></i> @finding.AiScore</span>
@@ -137,7 +137,7 @@ else
 
                     @if (!string.IsNullOrWhiteSpace(finding.Description))
                     {
-                        <p class="rl-insp-finding-desc">@finding.Description</p>
+                        <p class="rl-insp-finding-desc">@UiDisplayLocalization.Localize(L, finding.Description)</p>
                     }
 
                     @if (!string.IsNullOrWhiteSpace(finding.SourceExcerpt)
@@ -171,21 +171,21 @@ else
                                 {
                                     <div class="rl-insp-report-field">
                                         <i class="fas fa-layer-group"></i>
-                                        <span><small>@L["Section"]</small><strong>@finding.TradeLabel</strong></span>
+                                        <span><small>@L["Section"]</small><strong>@UiDisplayLocalization.Localize(L, finding.TradeLabel)</strong></span>
                                     </div>
                                 }
                                 @if (!string.IsNullOrWhiteSpace(finding.SourceSection))
                                 {
                                     <div class="rl-insp-report-field">
                                         <i class="fas fa-bookmark"></i>
-                                        <span><small>@L["Subsection"]</small><strong>@finding.SourceSection</strong></span>
+                                        <span><small>@L["Subsection"]</small><strong>@UiDisplayLocalization.Localize(L, finding.SourceSection)</strong></span>
                                     </div>
                                 }
                                 @if (!string.IsNullOrWhiteSpace(finding.SourceLineItem))
                                 {
                                     <div class="rl-insp-report-field rl-insp-report-field--wide">
                                         <i class="fas fa-list-ul"></i>
-                                        <span><small>@L["Line / Item"]</small><strong>@finding.SourceLineItem</strong></span>
+                                        <span><small>@L["Line / Item"]</small><strong>@UiDisplayLocalization.Localize(L, finding.SourceLineItem)</strong></span>
                                     </div>
                                 }
                             </div>
@@ -194,7 +194,7 @@ else
                             {
                                 <div class="rl-insp-inspector-wording">
                                     <span class="rl-insp-inspector-wording-label"><i class="fas fa-quote-left"></i> @L["Inspector wording"]</span>
-                                    <blockquote class="rl-insp-finding-quote">@finding.SourceExcerpt</blockquote>
+                                    <blockquote class="rl-insp-finding-quote">@UiDisplayLocalization.Localize(L, finding.SourceExcerpt)</blockquote>
                                 </div>
                             }
 
@@ -206,7 +206,7 @@ else
                                    asp-route-sort="@Model.SortBy"
                                    class="rl-insp-open-page-btn">
                                     <i class="fas fa-file-pdf"></i>
-                                    Open report page @finding.SourcePage
+                                    @L.T("Open report page {0}", finding.SourcePage)
                                     <i class="fas fa-chevron-right"></i>
                                 </a>
                             }
@@ -217,7 +217,7 @@ else
 
                     <div class="rl-insp-finding-meta">
                         <span class="rl-trade-chip rl-trade-chip--@finding.TradeCss">
-                            <i class="fas @finding.TradeIcon"></i> @finding.TradeLabel
+                            <i class="fas @finding.TradeIcon"></i> @UiDisplayLocalization.Localize(L, finding.TradeLabel)
                         </span>
                     </div>
                 </label>
@@ -232,7 +232,7 @@ else
         <div class="rl-insp-sticky-actions">
             <a asp-action="Analyze" class="rl-invite-cancel"><i class="fas fa-chevron-left"></i> @L["Back"]</a>
             <button type="submit" id="inspSendProvidersBtn" class="ob-btn ob-btn-primary rl-insp-send-btn">
-                <i class="fas fa-paper-plane"></i> Send to providers
+                <i class="fas fa-paper-plane"></i> @L["Send to providers"]
             </button>
         </div>
         <div class="rl-insp-change-doc-wrap">

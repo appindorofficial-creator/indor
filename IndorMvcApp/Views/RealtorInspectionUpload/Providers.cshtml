@@ -20,7 +20,7 @@
 
         <a asp-action="Providers" asp-route-trade="@(chip == "All" ? null : chip)"
 
-           class="rl-filter-chip @(Model.ActiveTradeFilter == chip ? "is-active" : null)">@(chip == "All" ? L["All trades"] : chip)</a>
+           class="rl-filter-chip @(Model.ActiveTradeFilter == chip ? "is-active" : null)">@(chip == "All" ? L["All trades"] : UiDisplayLocalization.Localize(L, chip))</a>
 
     }
 
@@ -44,7 +44,7 @@
 
             <div class="rl-trade-provider-head">
 
-                <h2 class="rl-invite-section-title">@group.TradeLabel</h2>
+                <h2 class="rl-invite-section-title">@UiDisplayLocalization.Localize(L, group.TradeLabel)</h2>
 
                 <span class="rl-trade-provider-note">@group.PriorityNote</span>
 

@@ -5,6 +5,17 @@ namespace IndorMvcApp.Helpers;
 
 public static class UiDisplayLocalization
 {
+    private static readonly Lazy<IReadOnlyDictionary<string, string>> SpanishIgnoreCase = new(() =>
+    {
+        var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var pair in Localization.UiTranslations.Spanish)
+        {
+            map[pair.Key] = pair.Value;
+        }
+
+        return map;
+    });
+
     private static readonly (Regex Regex, string Key)[] CountPatterns =
     [
         (new Regex(@"^(\d+)\s+nearby$", RegexOptions.IgnoreCase), "{0} nearby"),
@@ -50,6 +61,13 @@ public static class UiDisplayLocalization
                 {
                     return trimmed.EndsWith(".", StringComparison.Ordinal) ? trimmed : trimmed + ".";
                 }
+            }
+
+            // Inspection report headings are often ALL CAPS; match catalog keys case-insensitively.
+            if (SpanishIgnoreCase.Value.TryGetValue(text, out var ignoreCaseHit)
+                && !string.Equals(ignoreCaseHit, text, StringComparison.Ordinal))
+            {
+                return ignoreCaseHit;
             }
         }
 
