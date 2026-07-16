@@ -14,7 +14,7 @@
             <h1 class="page-heading" style="margin-bottom:4px;font-size:1.05rem;">@Model.PageTitle</h1>
             @if (!string.IsNullOrWhiteSpace(Model.LandingSubtitulo))
             {
-                <div class="tagline">@Model.LandingSubtitulo</div>
+                <div class="tagline">@L.Catalog(Model.LandingSubtitulo)</div>
             }
         </div>
         @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
@@ -161,10 +161,10 @@
             if (e.submitter && e.submitter.value === 'back') return;
 
             var missing = [];
-            if (!getValues(issuesInput).length) missing.push('Select at least one issue you\'ve noticed.');
-            if (!getValues(areasInput).length) missing.push('Select at least one area that needs attention.');
-            if (!colorInput.value || !colorInput.value.trim()) missing.push('Select whether you want a color update.');
-            if (!washInput.value || !washInput.value.trim()) missing.push('Select whether the exterior was power washed recently.');
+            if (!getValues(issuesInput).length) missing.push(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select at least one issue you've noticed."].ToString())));
+            if (!getValues(areasInput).length) missing.push(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select at least one area that needs attention."].ToString())));
+            if (!colorInput.value || !colorInput.value.trim()) missing.push(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select whether you want a color update."].ToString())));
+            if (!washInput.value || !washInput.value.trim()) missing.push(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select whether the exterior was power washed recently."].ToString())));
 
             if (missing.length) {
                 e.preventDefault();

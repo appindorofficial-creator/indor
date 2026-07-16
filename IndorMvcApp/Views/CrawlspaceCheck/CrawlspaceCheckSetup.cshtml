@@ -101,11 +101,11 @@
 
         var form = document.getElementById('csc-setup-form');
         var requiredFields = [
-            { id: 'Encapsulacion', message: 'Please indicate whether you have encapsulation.' },
-            { id: 'Aislamiento', message: 'Please indicate whether there is insulation.' },
-            { id: 'BarreraVapor', message: 'Please indicate whether you have a ground vapor barrier.' },
-            { id: 'TipoAcceso', message: 'Please select an access type.' },
-            { id: 'UltimaRevision', message: 'Please indicate when your crawlspace was last checked.' }
+            { id: 'Encapsulacion', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please indicate whether you have encapsulation."].ToString())) },
+            { id: 'Aislamiento', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please indicate whether there is insulation."].ToString())) },
+            { id: 'BarreraVapor', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please indicate whether you have a ground vapor barrier."].ToString())) },
+            { id: 'TipoAcceso', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please select an access type."].ToString())) },
+            { id: 'UltimaRevision', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please indicate when your crawlspace was last checked."].ToString())) }
         ];
 
         form?.addEventListener('submit', function (e) {

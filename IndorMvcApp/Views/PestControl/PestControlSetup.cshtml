@@ -69,7 +69,7 @@
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
-            Continue <i class="fas fa-chevron-right"></i>
+            @L["Continue"] <i class="fas fa-chevron-right"></i>
         </button>
     </form>
 
@@ -126,12 +126,12 @@
             var pets = document.getElementById('MascotasONinos');
             if (!last.value || !last.value.trim()) {
                 e.preventDefault();
-                alert('Select when your last pest service was.');
+                alert(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select when your last pest service was."].ToString())));
                 return;
             }
             if (!pets.value || !pets.value.trim()) {
                 e.preventDefault();
-                alert('Select whether you have pets or children at home.');
+                alert(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select whether you have pets or children at home."].ToString())));
             }
         });
     })();

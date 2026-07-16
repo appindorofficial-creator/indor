@@ -27,7 +27,7 @@
             <div class="why-list">
                 @foreach (var item in Model.WhyItMattersItems)
                 {
-                    <div class="item"><i class="fas @item.Icon"></i><span>@item.Text</span></div>
+                    <div class="item"><i class="fas @item.Icon"></i><span>@L.Catalog(item.Text)</span></div>
                 }
             </div>
         </div>
@@ -40,7 +40,7 @@
             <div class="why-list">
                 @foreach (var item in Model.NextStepsItems)
                 {
-                    <div class="item"><i class="fas @item.Icon"></i><span>@item.Text</span></div>
+                    <div class="item"><i class="fas @item.Icon"></i><span>@L.Catalog(item.Text)</span></div>
                 }
             </div>
         </div>

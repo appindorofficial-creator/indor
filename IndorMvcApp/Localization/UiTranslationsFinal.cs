@@ -2671,6 +2671,30 @@ public static class UiTranslationsFinal
             ["Flood Details - INDOR"] = "Detalles de inundación - INDOR",
             ["Smoke & CO Details"] = "Detalles de humo y CO",
             ["Smoke & CO Details - INDOR"] = "Detalles de humo y CO - INDOR",
+            // Inspection audit: override incomplete/Spanglish entries from earlier dictionaries.
+            ["0–10 yrs"] = "0–10 años",
+            ["11–20 yrs"] = "11–20 años",
+            ["1–2 years"] = "1–2 años",
+            ["1–2 years ago"] = "Hace 1–2 años",
+            ["3–5 years"] = "3–5 años",
+            ["5–7 years"] = "5–7 años",
+            ["6–12 months"] = "6–12 meses",
+            ["Filter issue"] = "Problema con el filtro",
+            ["Gutter issue"] = "Problema con las canaletas",
+            ["Home concerns"] = "Problemas del hogar",
+            ["No issues — just maintenance"] = "Sin problemas; solo mantenimiento",
+            ["Realtor access"] = "Acceso del agente inmobiliario",
+            ["Roof details"] = "Detalles del techo",
+            ["Request immediate help"] = "Solicitar ayuda inmediata",
+            ["Request paint review"] = "Solicitar revisión de pintura",
+            ["Smoke detector not working"] = "Detector de humo fuera de servicio",
+            ["Submit emergency request"] = "Enviar solicitud de emergencia",
+            ["Please review your information before scheduling."] = "Revisa tu información antes de programar.",
+            ["Optional, but helpful if there is a leak, error code, or damage."] = "Opcional, pero útil si hay una fuga, un código de error o daños.",
+            ["Helpful photos include smoke detectors, CO alarms, stair railings, child safety concerns, doors, exits, and any visible hazards."] =
+                "Las fotos útiles incluyen detectores de humo, alarmas de CO, barandales de escaleras, riesgos para niños, puertas, salidas y cualquier peligro visible.",
+            ["This step helps the provider plan the visit and focus on the systems that matter to your investment."] =
+                "Este paso ayuda al proveedor a planificar la visita y enfocarse en los sistemas importantes para tu inversión.",
             // HomeReviewDetails reason chips
             ["Buying a home"] = "Comprar una vivienda",
             ["Annual review"] = "Revisión anual",
@@ -2732,5 +2756,37 @@ public static class UiTranslationsFinal
             ["Upload Inspection Report - INDOR"] = "Subir informe de inspección - INDOR",
             ["This PDF has no readable text (it may be scanned images only). Upload a text-based PDF or OCR version."] = "Este PDF no tiene texto legible (puede ser solo imágenes escaneadas). Sube un PDF con texto o una versión OCR.",
             ["Could not extract text from the inspection report."] = "No se pudo extraer texto del informe de inspección.",
+            // Inspection emergency tips & validation (views)
+            ["Photos of the panel, outlet, or affected area can help us prepare."] =
+                "Las fotos del panel, enchufe o área afectada nos ayudan a prepararnos.",
+            ["Include where the water started, how long it has been happening, and any damage already visible."] =
+                "Indica dónde empezó el agua, cuánto tiempo lleva ocurriendo y cualquier daño visible.",
+            ["Heater front label, leak area, pipes, error code, and surrounding water damage."] =
+                "etiqueta frontal del calentador, área de fuga, tuberías, código de error y daños por agua alrededor.",
+            ["Edit reminder or request"] = "Editar recordatorio o solicitud",
+            ["Edit plan"] = "Editar plan",
+            ["Estimated service:"] = "Servicio estimado:",
+            ["Select your gutter type."] = "Selecciona el tipo de canaletas.",
+            ["Select whether you have gutter guards."] = "Indica si tienes protectores en las canaletas.",
+            ["Select when gutters were last cleaned."] = "Selecciona cuándo se limpiaron las canaletas por última vez.",
+            ["Select when your last pest service was."] = "Selecciona cuándo fue tu último servicio de plagas.",
+            ["Select whether you have pets or children at home."] = "Indica si tienes mascotas o niños en casa.",
+            ["Select at least one issue you've noticed."] = "Selecciona al menos un problema que hayas notado.",
+            ["Select at least one area that needs attention."] = "Selecciona al menos un área que necesite atención.",
+            ["Select whether you want a color update."] = "Indica si quieres actualizar el color.",
+            ["Select whether the exterior was power washed recently."] = "Indica si el exterior se lavó a presión recientemente.",
+            ["Please indicate whether you have encapsulation."] = "Indica si tienes encapsulación.",
+            ["Please indicate whether there is insulation."] = "Indica si hay aislamiento.",
+            ["Please indicate whether you have a ground vapor barrier."] = "Indica si tienes barrera de vapor en el suelo.",
+            ["Please select an access type."] = "Selecciona un tipo de acceso.",
+            ["Please indicate when your crawlspace was last checked."] = "Indica cuándo se revisó el espacio bajo el piso por última vez.",
+            ["Select a date on or before today."] = "Selecciona una fecha igual o anterior a hoy.",
+            ["Select when the exterior was last painted."] = "Selecciona cuándo se pintó el exterior por última vez.",
+            ["Select your exterior surface type."] = "Selecciona el tipo de superficie exterior.",
+            ["Select whether you want to keep the same color."] = "Indica si quieres mantener el mismo color.",
+            ["Helpful photos include stains, visible mold, damp drywall, vent areas, crawl space moisture, attic spots, and any areas with previous leaks."] =
+                "Las fotos útiles incluyen manchas, moho visible, drywall húmedo, áreas de ventilación, humedad en espacio bajo el piso, puntos en el ático y áreas con fugas previas.",
+            ["Helpful photos include window seals, condensation, attic insulation, crawl space insulation, wall stains, and utility bills."] =
+                "Las fotos útiles incluyen sellos de ventana, condensación, aislamiento del ático, aislamiento bajo el piso, manchas en paredes y facturas de servicios.",
         };
 }

@@ -165,7 +165,7 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
             // Browsers show the native range message localized to the device locale
             // (e.g. Spanish). Override it with our own English message instead.
             if (!maintenanceInput.disabled && maintenanceInput.validity.rangeOverflow) {
-                maintenanceInput.setCustomValidity('Select a date on or before today.');
+                maintenanceInput.setCustomValidity(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select a date on or before today."].ToString())));
             } else {
                 maintenanceInput.setCustomValidity('');
             }

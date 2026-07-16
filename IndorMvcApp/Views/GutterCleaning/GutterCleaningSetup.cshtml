@@ -71,7 +71,7 @@
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
-            Continue <i class="fas fa-chevron-right"></i>
+            @L["Continue"] <i class="fas fa-chevron-right"></i>
         </button>
     </form>
 
@@ -103,10 +103,10 @@
             var guard = document.getElementById('ProtectorCanaletas');
             var last = document.getElementById('UltimaLimpieza');
             var checks = [
-                { input: stories, message: 'Select your home size.' },
-                { input: gutter, message: 'Select your gutter type.' },
-                { input: guard, message: 'Select whether you have gutter guards.' },
-                { input: last, message: 'Select when gutters were last cleaned.' }
+                { input: stories, message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select your home size."].ToString())) },
+                { input: gutter, message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select your gutter type."].ToString())) },
+                { input: guard, message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select whether you have gutter guards."].ToString())) },
+                { input: last, message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select when gutters were last cleaned."].ToString())) }
             ];
 
             for (var i = 0; i < checks.length; i++) {

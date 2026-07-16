@@ -612,10 +612,13 @@ public static class UiTranslationsFlows
             ["Help us understand the system better"] = "Help us understand the system better",
             ["Help us understand your roof so we can schedule the right inspection. Select an answer for each question below."] = "Ayúdanos a entender tu techo para programar la inspección adecuada. Selecciona una respuesta para cada pregunta a continuación.",
             ["Helpful files include property photos, inspection reports, contractor estimates, and any notes about your investment strategy."] = "Los archivos útiles incluyen fotos de la propiedad, informes de inspección, estimados de contratistas y notas sobre tu estrategia de inversión.",
-            ["Helpful photos include smoke detectors, CO alarms, stair railings, child safety concerns, doors, exits, and any visible hazards."] = "Helpful photos include detector de humos, CO alarms, stair railings, child safety concerns, doors, exits, and any visible hazards.",
-            ["Helpful photos include stains, visible mold, damp drywall, vent areas, crawl space moisture, attic spots, and any areas with previous leaks."] = "Helpful photos include stains, visible mold, damp drywall, vent areas, crawl space moisture, attic spots, and any areas with previous leaks.",
-            ["Helpful photos include window seals, condensation, attic insulation, crawl space insulation, wall stains, and utility bills."] = "Helpful photos include window seals, condensation, attic insulation, crawl space insulation, wall stains, and utility bills.",
-            ["Helpful photos include:"] = "Helpful photos include:",
+            ["Helpful photos include smoke detectors, CO alarms, stair railings, child safety concerns, doors, exits, and any visible hazards."] =
+                "Las fotos útiles incluyen detectores de humo, alarmas de CO, barandales de escaleras, riesgos para niños, puertas, salidas y cualquier peligro visible.",
+            ["Helpful photos include stains, visible mold, damp drywall, vent areas, crawl space moisture, attic spots, and any areas with previous leaks."] =
+                "Las fotos útiles incluyen manchas, moho visible, drywall húmedo, áreas de ventilación, humedad en espacio bajo el piso, puntos en el ático y áreas con fugas previas.",
+            ["Helpful photos include window seals, condensation, attic insulation, crawl space insulation, wall stains, and utility bills."] =
+                "Las fotos útiles incluyen sellos de ventana, condensación, aislamiento del ático, aislamiento bajo el piso, manchas en paredes y facturas de servicios.",
+            ["Helpful photos include:"] = "Las fotos útiles incluyen:",
             ["Helpful photos include: shingles, chimney, attic stains, gutters, or any storm damage."] = "Las fotos útiles incluyen: tejas, chimenea, manchas en el ático, canaletas o cualquier daño por tormenta.",
             ["Helps remove sediment"] = "Helps remove sediment",
             ["Hide cables in cover"] = "Hide cables in cover",
@@ -1058,7 +1061,7 @@ public static class UiTranslationsFlows
             ["Question 8"] = "Question 8",
             ["Quick answers help us send the right support faster."] = "Quick answers help us send the right support faster.",
             ["Re-mount existing TV"] = "Re-mount existing TV",
-            ["Realtor access"] = "Agente inmobiliario access",
+            ["Realtor access"] = "Acceso del agente inmobiliario",
             ["Reason for inspection"] = "Reason for inspección",
             ["Recent changes"] = "Recent changes",
             ["Recommended timing"] = "Recommended timing",
@@ -1355,7 +1358,8 @@ public static class UiTranslationsFlows
             ["This month"] = "Este mes",
             ["This review helps us prioritize the home systems that matter most so you get clear insights and next steps."] = "Esta revisión nos ayuda a priorizar los sistemas del hogar que más importan para que obtengas información clara y próximos pasos.",
             ["This service helps identify visible property risks and investment concerns. Final repair pricing, engineering reports, and specialty inspections are not included unless stated."] = "Este servicio ayuda a identificar riesgos visibles de la propiedad y preocupaciones de inversión. Precios finales de reparación, informes de ingeniería e inspecciones especializadas no están incluidos salvo que se indique.",
-            ["This step helps the provider plan the visit and focus on the systems that matter to your investment."] = "This step helps the provider plan the visit and focus on the systems that matter to your investment.",
+            ["This step helps the provider plan the visit and focus on the systems that matter to your investment."] =
+                "Este paso ayuda al proveedor a planificar la visita y enfocarse en los sistemas importantes para tu inversión.",
             ["This week"] = "Esta semana",
             ["Tight hallway"] = "Tight hallway",
             ["Tile"] = "Tile",

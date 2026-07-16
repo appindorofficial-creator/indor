@@ -109,9 +109,9 @@
 
         var form = document.getElementById('ep-review-form');
         var requiredFields = [
-            { id: 'UltimaPintura', message: 'Select when the exterior was last painted.' },
-            { id: 'TipoSuperficie', message: 'Select your exterior surface type.' },
-            { id: 'MantenerMismoColor', message: 'Select whether you want to keep the same color.' }
+            { id: 'UltimaPintura', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select when the exterior was last painted."].ToString())) },
+            { id: 'TipoSuperficie', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select your exterior surface type."].ToString())) },
+            { id: 'MantenerMismoColor', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select whether you want to keep the same color."].ToString())) }
         ];
 
         form?.addEventListener('submit', function (e) {

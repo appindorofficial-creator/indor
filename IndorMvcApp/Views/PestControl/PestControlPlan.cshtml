@@ -63,12 +63,12 @@
         {
             <div class="info-box-blue">
                 <i class="fas fa-circle-info"></i>
-                <span>@Model.InfoPlanTexto</span>
+                <span>@L.Catalog(Model.InfoPlanTexto)</span>
             </div>
         }
 
         <button type="submit" name="action" value="continue" class="btn-primary">
-            Continue <i class="fas fa-chevron-right"></i>
+            @L["Continue"] <i class="fas fa-chevron-right"></i>
         </button>
     </form>
 
