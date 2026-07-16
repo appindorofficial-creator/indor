@@ -3810,6 +3810,22 @@ public partial class ProviderProDataService(
         ProviderProInsuranceQuoteDraft draft,
         CancellationToken cancellationToken = default)
     {
+        var quote = await SavePendingInsuranceQuoteAsync(proveedorId, draft, cancellationToken);
+        var now = DateTime.UtcNow;
+        quote.PaymentStatus = "Paid";
+        quote.PaymentAuthorized = true;
+        quote.PaidUtc = now;
+        quote.Status = "Pending Carrier Approval";
+        quote.SubmittedUtc = now;
+        await db.SaveChangesAsync(cancellationToken);
+        return quote.Id;
+    }
+
+    public async Task<IndorProviderInsuranceQuote> SavePendingInsuranceQuoteAsync(
+        int proveedorId,
+        ProviderProInsuranceQuoteDraft draft,
+        CancellationToken cancellationToken = default)
+    {
         DateTime? dob = null;
         if (DateTime.TryParse(draft.OwnerDateOfBirth, out var parsedDob))
         {
@@ -3848,13 +3864,12 @@ public partial class ProviderProDataService(
             CardLast4 = NullIfEmpty(draft.CardLast4),
             AutoPayMonthly = draft.AutoPayMonthly,
             FirstBillingDate = DateTime.Today.AddDays(30),
-            // Payment gateway is not integrated yet — always approve for now.
-            PaymentStatus = "Paid",
-            PaymentAuthorized = true,
-            PaidUtc = now,
+            PaymentStatus = "PendingPayment",
+            PaymentAuthorized = false,
+            PaidUtc = null,
             ConfirmedAccurate = true,
-            Status = "Pending Carrier Approval",
-            SubmittedUtc = now,
+            Status = "Awaiting Payment",
+            SubmittedUtc = null,
             FechaCreacion = now
         };
 
@@ -3864,7 +3879,16 @@ public partial class ProviderProDataService(
         quote.QuoteCode = $"INS-{10000 + quote.Id}";
         quote.ReceiptNumber = $"IND-GL-{now:yyyy}-{quote.Id:00000}";
         await db.SaveChangesAsync(cancellationToken);
-        return quote.Id;
+        return quote;
+    }
+
+    public Task<IndorProviderInsuranceQuote?> GetInsuranceQuoteByIdAsync(
+        int quoteId,
+        int proveedorId,
+        CancellationToken cancellationToken = default)
+    {
+        return db.IndorProviderInsuranceQuotes
+            .FirstOrDefaultAsync(q => q.Id == quoteId && q.ProveedorId == proveedorId, cancellationToken);
     }
 
     public async Task<int> SaveInsuranceIssuanceRequestAsync(

@@ -14,7 +14,6 @@ using IndorMvcApp.Validation;
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Options;
 
 
 
@@ -46,9 +45,7 @@ public partial class ProveedorController(
 
     IWebHostEnvironment env,
 
-    IInsuranceCarrierEmailSender insuranceCarrierEmail,
-
-    IOptions<InsuranceSettings> insuranceOptions,
+    IInsuranceStripeCheckoutService insuranceStripeCheckout,
 
     IIndorLocalizer localizer) : Controller
 
@@ -610,7 +607,7 @@ public partial class ProveedorController(
         });
     }
 
-    // Step 4 → process payment (always approved — no gateway yet) → Step 5
+    // Step 4 → Stripe Checkout for pay-today amount → Step 5 after payment
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> InsurancePay(string? paymentMethod, bool authorize, CancellationToken cancellationToken)
@@ -633,54 +630,90 @@ public partial class ProveedorController(
             return RedirectToAction(nameof(InsuranceReview));
         }
 
+        if (!insuranceStripeCheckout.IsConfigured)
+        {
+            TempData["InsuranceConfirmError"] = localizer["Payment is temporarily unavailable. Please try again later."];
+            return RedirectToAction(nameof(InsuranceReview));
+        }
+
         draft.PaymentMethod = string.IsNullOrWhiteSpace(paymentMethod) ? "Card" : paymentMethod;
         SaveInsuranceDraft(draft);
+        await HttpContext.Session.CommitAsync(cancellationToken);
 
-        var quoteId = await proData.SaveInsuranceQuoteAsync(proveedor.Entity!.Id, draft, cancellationToken);
-        var receiptNumber = $"IND-GL-{DateTime.UtcNow:yyyy}-{quoteId:00000}";
+        var quote = await proData.SavePendingInsuranceQuoteAsync(proveedor.Entity!.Id, draft, cancellationToken);
 
-        // Persist the manual issuance request and email the partner carrier the completed
-        // "Business Quote Sheet" so a policy can be issued manually (pre-API integration).
-        var carrierEmail = insuranceOptions.Value.CarrierEmail;
-        var issuanceId = await proData.SaveInsuranceIssuanceRequestAsync(
-            proveedor.Entity!.Id, draft, receiptNumber, carrierEmail, cancellationToken);
+        var successUrl = Url.Action(
+            nameof(InsurancePaymentSuccess),
+            "Proveedor",
+            new { session_id = "{CHECKOUT_SESSION_ID}" },
+            Request.Scheme)!;
+        // Stripe replaces the literal {CHECKOUT_SESSION_ID} token in the success URL.
+        successUrl = successUrl.Replace("%7BCHECKOUT_SESSION_ID%7D", "{CHECKOUT_SESSION_ID}", StringComparison.Ordinal);
 
-        var ci = System.Globalization.CultureInfo.InvariantCulture;
-        var emailModel = new InsuranceIssuanceEmailModel(
-            RequestCode: receiptNumber,
-            Plan: draft.Plan,
-            BusinessName: draft.BusinessName,
-            BusinessAddress: draft.FullAddress,
-            WorkersComp: draft.Coverages.Any(c => c.Contains("Workers", StringComparison.OrdinalIgnoreCase)),
-            GeneralLiability: draft.Coverages.Any(c => c.Contains("General Liability", StringComparison.OrdinalIgnoreCase)),
-            OwnerName: draft.OwnerName,
-            OwnerDateOfBirth: draft.OwnerDateOfBirth,
-            OwnerPhone: draft.OwnerPhone,
-            OwnerEmail: draft.OwnerEmail,
-            TypeOfBusiness: draft.Trade,
-            NumberOfEmployees: draft.NumberOfEmployees,
-            EmployeePayroll: draft.EmployeePayroll?.ToString("0.##", ci),
-            CompanyGross: draft.CompanyGrossRevenue?.ToString("0.##", ci),
-            Notes: null,
-            ProviderContactEmail: draft.OwnerEmail);
+        var cancelUrl = Url.Action(nameof(InsurancePaymentCancel), "Proveedor", null, Request.Scheme)!;
 
-        var emailResult = await insuranceCarrierEmail.SendIssuanceRequestAsync(emailModel, cancellationToken);
-        await proData.MarkInsuranceIssuanceEmailAsync(
-            issuanceId,
-            emailResult.ToString(),
-            emailResult == InsuranceEmailResult.Sent ? DateTime.UtcNow : null,
-            cancellationToken);
+        try
+        {
+            var checkout = await insuranceStripeCheckout.CreateCheckoutSessionAsync(
+                quote,
+                successUrl,
+                cancelUrl,
+                draft.PaymentMethod,
+                cancellationToken);
+            return Redirect(checkout.Url);
+        }
+        catch (Exception)
+        {
+            TempData["InsuranceConfirmError"] = localizer["We could not start Stripe Checkout. Please try again."];
+            return RedirectToAction(nameof(InsuranceReview));
+        }
+    }
 
-        var (payToday, monthly) = InsuranceCatalog.Pricing(draft.Plan);
+    [HttpGet]
+    public async Task<IActionResult> InsurancePaymentSuccess(string? session_id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        if (string.IsNullOrWhiteSpace(session_id))
+        {
+            TempData["InsuranceConfirmError"] = localizer["Payment could not be verified. Please try again."];
+            return RedirectToAction(nameof(InsuranceReview));
+        }
+
+        var completion = await insuranceStripeCheckout.CompleteCheckoutSessionAsync(session_id, cancellationToken);
+        if (completion is null)
+        {
+            TempData["InsuranceConfirmError"] = localizer["Payment could not be verified. Please try again."];
+            return RedirectToAction(nameof(InsuranceReview));
+        }
+
         ClearInsuranceDraft();
         await HttpContext.Session.CommitAsync(cancellationToken);
 
-        TempData["InsuranceQuotePlan"] = draft.Plan;
-        TempData["InsurancePaidToday"] = payToday.ToString(ci);
-        TempData["InsuranceMonthly"] = monthly.ToString(ci);
-        TempData["InsuranceReceipt"] = receiptNumber;
-        TempData["InsuranceCarrierEmailStatus"] = emailResult.ToString();
+        var ci = System.Globalization.CultureInfo.InvariantCulture;
+        TempData["InsuranceQuotePlan"] = completion.Plan;
+        TempData["InsurancePaidToday"] = completion.PaidToday.ToString(ci);
+        TempData["InsuranceMonthly"] = completion.Monthly.ToString(ci);
+        TempData["InsuranceReceipt"] = completion.ReceiptNumber;
+        TempData["InsuranceCarrierEmailStatus"] = completion.CarrierEmailStatus;
         return RedirectToAction(nameof(InsuranceQuoteSubmitted));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> InsurancePaymentCancel(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        TempData["InsuranceConfirmError"] = localizer["Payment was cancelled. You can try again when ready."];
+        return RedirectToAction(nameof(InsuranceReview));
     }
 
     // Step 5 — Success

@@ -220,6 +220,18 @@ public static class ProviderDatabaseSchemaInitializer
         """
     ];
 
+    private static readonly string[] InsuranceStripeColumnStatements =
+    [
+        """
+        IF COL_LENGTH(N'dbo.IndorProviderInsuranceQuotes', N'StripeCheckoutSessionId') IS NULL
+            ALTER TABLE dbo.IndorProviderInsuranceQuotes ADD StripeCheckoutSessionId NVARCHAR(120) NULL;
+        """,
+        """
+        IF COL_LENGTH(N'dbo.IndorProviderInsuranceQuotes', N'StripePaymentIntentId') IS NULL
+            ALTER TABLE dbo.IndorProviderInsuranceQuotes ADD StripePaymentIntentId NVARCHAR(120) NULL;
+        """
+    ];
+
     public static async Task EnsureEditProfileColumnsAsync(
         AppDbContext db,
         ILogger logger,
@@ -251,6 +263,18 @@ public static class ProviderDatabaseSchemaInitializer
             catch (Exception ex)
             {
                 logger.LogWarning(ex, "Contractor network schema ensure step failed.");
+            }
+        }
+
+        foreach (var sql in InsuranceStripeColumnStatements)
+        {
+            try
+            {
+                await db.Database.ExecuteSqlRawAsync(sql, cancellationToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Insurance Stripe schema ensure step failed.");
             }
         }
     }

@@ -97,6 +97,12 @@ public class IndorProviderInsuranceQuote
     [MaxLength(60)]
     public string? ReceiptNumber { get; set; }
 
+    [MaxLength(120)]
+    public string? StripeCheckoutSessionId { get; set; }
+
+    [MaxLength(120)]
+    public string? StripePaymentIntentId { get; set; }
+
     // Review / submit
     public bool ConfirmedAccurate { get; set; }
 

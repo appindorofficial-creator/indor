@@ -93,3 +93,9 @@ GO
 IF COL_LENGTH('dbo.IndorProviderInsuranceQuotes', 'ReceiptNumber') IS NULL
     ALTER TABLE dbo.IndorProviderInsuranceQuotes ADD ReceiptNumber NVARCHAR(60) NULL;
 GO
+IF COL_LENGTH('dbo.IndorProviderInsuranceQuotes', 'StripeCheckoutSessionId') IS NULL
+    ALTER TABLE dbo.IndorProviderInsuranceQuotes ADD StripeCheckoutSessionId NVARCHAR(120) NULL;
+GO
+IF COL_LENGTH('dbo.IndorProviderInsuranceQuotes', 'StripePaymentIntentId') IS NULL
+    ALTER TABLE dbo.IndorProviderInsuranceQuotes ADD StripePaymentIntentId NVARCHAR(120) NULL;
+GO

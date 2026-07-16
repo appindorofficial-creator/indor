@@ -183,9 +183,11 @@ builder.Services.AddScoped<NeighborRequestWizardService>();
 builder.Services.AddScoped<RealtorSharedQuoteService>();
 builder.Services.Configure<IndorMvcApp.Models.SmtpSettings>(builder.Configuration.GetSection("Smtp"));
 builder.Services.Configure<IndorMvcApp.Models.InsuranceSettings>(builder.Configuration.GetSection("Insurance"));
+builder.Services.Configure<IndorMvcApp.Models.StripeSettings>(builder.Configuration.GetSection(IndorMvcApp.Models.StripeSettings.SectionName));
 builder.Services.AddScoped<IInvitationEmailSender, SmtpInvitationEmailSender>();
 builder.Services.AddScoped<IPasswordResetEmailSender, SmtpPasswordResetEmailSender>();
 builder.Services.AddScoped<IInsuranceCarrierEmailSender, SmtpInsuranceCarrierEmailSender>();
+builder.Services.AddScoped<IInsuranceStripeCheckoutService, InsuranceStripeCheckoutService>();
 builder.Services.AddHostedService<StartupWarmupService>();
 builder.Services.AddScoped<IRealtorInviteClientService, RealtorInviteClientService>();
 builder.Services.AddScoped<IRealtorPropertyFileWizardService, RealtorPropertyFileWizardService>();
@@ -284,6 +286,7 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapControllers();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Welcome}/{id?}");

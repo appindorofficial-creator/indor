@@ -70,27 +70,11 @@
             <h3 class="ins-rv-title">@L["Choose your payment method"]</h3>
             <div class="ins-pm-grid">
                 <label class="ins-pm">
-                    <input type="radio" name="paymentMethod" value="Card" checked="@(Model.PaymentMethod == "Card")" />
+                    <input type="radio" name="paymentMethod" value="Card" checked="checked" />
                     <span class="ins-pm-card">
                         <span class="ins-pm-radio"></span>
                         <i class="fas fa-credit-card"></i>
                         <span class="ins-pm-txt"><strong>@L["Card"]</strong><small>@L["Pay with credit or debit card"]</small></span>
-                    </span>
-                </label>
-                <label class="ins-pm">
-                    <input type="radio" name="paymentMethod" value="ApplePay" checked="@(Model.PaymentMethod == "ApplePay")" />
-                    <span class="ins-pm-card">
-                        <span class="ins-pm-radio"></span>
-                        <i class="fab fa-apple"></i>
-                        <span class="ins-pm-txt"><strong>@L["Apple Pay"]</strong><small>@L["Pay quickly and securely"]</small></span>
-                    </span>
-                </label>
-                <label class="ins-pm">
-                    <input type="radio" name="paymentMethod" value="BankAccount" checked="@(Model.PaymentMethod == "BankAccount")" />
-                    <span class="ins-pm-card">
-                        <span class="ins-pm-radio"></span>
-                        <i class="fas fa-building-columns"></i>
-                        <span class="ins-pm-txt"><strong>@L["Bank Account"]</strong><small>@L["Pay directly from your bank"]</small></span>
                     </span>
                 </label>
             </div>
@@ -102,15 +86,15 @@
 
             <label class="ins-authorize">
                 <input type="checkbox" name="authorize" value="true" />
-                <span>@L["I confirm the information above is correct and authorize INDOR to send it to the insurance carrier to issue my policy manually."]</span>
+                <span>@L["I confirm the information above is correct and authorize INDOR to charge the pay-today amount and send my details to the insurance carrier."]</span>
             </label>
 
-            <button type="submit" class="ins-cta ins-cta--block"><i class="fas fa-shield-halved"></i> @L["Issue insurance"]</button>
+            <button type="submit" class="ins-cta ins-cta--block"><i class="fas fa-lock"></i> @L["Pay with Stripe"] — $@Model.PayToday.ToString("0")</button>
         </div>
 
         <div class="ins-note ins-note--info">
             <i class="fas fa-circle-info"></i>
-            <span>@L["We'll email your details to the insurance carrier so they can issue your policy manually."] @L["Your policy is subject to final carrier approval. Rates may vary based on underwriting review. You'll receive confirmation once your policy is active."]</span>
+            <span>@L["You'll complete payment securely on Stripe. After payment, we'll email your details to the insurance carrier so they can issue your policy."] @L["Your policy is subject to final carrier approval. Rates may vary based on underwriting review. You'll receive confirmation once your policy is active."]</span>
         </div>
     </form>
 </div>

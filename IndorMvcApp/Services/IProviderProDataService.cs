@@ -97,6 +97,19 @@ public interface IProviderProDataService
     Task<int> SaveInsuranceQuoteAsync(int proveedorId, ProviderProInsuranceQuoteDraft draft, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Saves the insurance quote in a pending-payment state (Stripe Checkout not completed yet).
+    /// </summary>
+    Task<IndorProviderInsuranceQuote> SavePendingInsuranceQuoteAsync(
+        int proveedorId,
+        ProviderProInsuranceQuoteDraft draft,
+        CancellationToken cancellationToken = default);
+
+    Task<IndorProviderInsuranceQuote?> GetInsuranceQuoteByIdAsync(
+        int quoteId,
+        int proveedorId,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Persists a manual insurance issuance request (the carrier "Business Quote Sheet")
     /// so INDOR can email the partner carrier to issue a policy manually.
     /// </summary>

@@ -120,13 +120,9 @@ public record InsuranceFeature(string Icon, string Title, string Desc);
 
 public static class InsuranceCatalog
 {
+    /// <summary>Test pricing: $1 for all plans (pay-today + monthly display).</summary>
     public static (decimal PayToday, decimal Monthly) Pricing(string? plan) =>
-        (plan?.Trim().ToLowerInvariant()) switch
-        {
-            "standard" => (0m, 0m),
-            "premium" => (0m, 0m),
-            _ => (0m, 0m)
-        };
+        (1m, 1m);
 
     public static readonly (string Value, string Icon)[] Trades =
     {
