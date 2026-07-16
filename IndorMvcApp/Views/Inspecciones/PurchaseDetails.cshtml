@@ -9,7 +9,6 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
 
 }
 
-</div>
 
         <h1 class="page-heading">@L["Tell us about this home purchase"]</h1>
         <p class="page-lead">@L["We&apos;ll use this information to prepare the right inspection flow."]</p>
@@ -109,8 +108,8 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
             </button>
             <button type="submit" class="btn-secondary" name="action" value="skip">@L["Skip for now"]</button>
         </form>
-    </div>
 
+@section Scripts {
     <script>
         function setSegment(group, value) {
             const targetId = group.dataset.target;

@@ -277,7 +277,7 @@ public static class UiTranslationsFlows
             ["BRRRR"] = "BRRRR",
             ["Bubble wrap"] = "Bubble wrap",
             ["Burner won't stay on"] = "Burner won't stay on",
-            ["Burning smell"] = "Burning smell",
+            ["Burning smell"] = "Olor a quemado",
             ["Burning smell / smoke"] = "Burning smell / smoke",
             ["Burst pipe"] = "Burst pipe",
             ["Buy and hold"] = "Buy and hold",

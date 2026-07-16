@@ -6,7 +6,6 @@
 
 }
 
-</div>
 
         <h1 class="page-heading">@L["Tell us about your electrical concern"]</h1>
         <p class="page-lead">@L["This helps INDOR prepare the right checklist and send the right provider."]</p>
@@ -40,10 +39,10 @@
                         <span class="check"><i class="fas fa-check"></i></span>@L["Buying a home"]
                     </button>
                     <button type="button" class="chip-btn" data-value="SafetyCheck">
-                        <span class="check"><i class="fas fa-check"></i></span>Safety check
+                        <span class="check"><i class="fas fa-check"></i></span>@L["Safety check"]
                     </button>
                     <button type="button" class="chip-btn" data-value="IssueAtHome">
-                        <span class="check"><i class="fas fa-check"></i></span>Issue at home
+                        <span class="check"><i class="fas fa-check"></i></span>@L["Issue at home"]
                     </button>
                     <button type="button" class="chip-btn" data-value="InspectionFollowUp">
                         <span class="check"><i class="fas fa-check"></i></span>@L["Inspection follow-up"]
@@ -55,22 +54,22 @@
                 <span class="field-label">@L["What is the main concern?"]</span>
                 <div class="concern-grid" data-target="PreocupacionPrincipal">
                     <button type="button" class="concern-btn" data-value="BreakerTrips">
-                        <span class="check"><i class="fas fa-check"></i></span>Breaker trips
+                        <span class="check"><i class="fas fa-check"></i></span>@L["Breaker trips"]
                     </button>
                     <button type="button" class="concern-btn" data-value="LightsFlicker">
-                        <span class="check"><i class="fas fa-check"></i></span>Lights flicker
+                        <span class="check"><i class="fas fa-check"></i></span>@L["Lights flicker"]
                     </button>
                     <button type="button" class="concern-btn" data-value="OutletsNotWorking">
-                        <span class="check"><i class="fas fa-check"></i></span>Outlets not working
+                        <span class="check"><i class="fas fa-check"></i></span>@L["Outlets not working"]
                     </button>
                     <button type="button" class="concern-btn" data-value="OldPanel">
-                        <span class="check"><i class="fas fa-check"></i></span>Old panel
+                        <span class="check"><i class="fas fa-check"></i></span>@L["Old panel"]
                     </button>
                     <button type="button" class="concern-btn" data-value="BurningSmell">
-                        <span class="check"><i class="fas fa-check"></i></span>Burning smell
+                        <span class="check"><i class="fas fa-check"></i></span>@L["Burning smell"]
                     </button>
                     <button type="button" class="concern-btn" data-value="GeneralReview">
-                        <span class="check"><i class="fas fa-check"></i></span>General review
+                        <span class="check"><i class="fas fa-check"></i></span>@L["General review"]
                     </button>
                 </div>
             </div>
@@ -102,8 +101,8 @@
             </button>
             <button type="submit" class="btn-secondary" name="action" value="skip">@L["Skip for now"]</button>
         </form>
-    </div>
 
+@section Scripts {
     <script>
         function setSingle(group, selector, value) {
             const targetId = group.dataset.target;

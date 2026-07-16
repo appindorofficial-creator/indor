@@ -6,7 +6,6 @@
 
 }
 
-</div>
 
         <h1 class="page-heading">@L["Help us understand the system better"]</h1>
         <p class="page-lead">@L["Add more details so we can prepare the provider and recommend the right next step."]</p>
@@ -130,8 +129,8 @@
             <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-arrow-right"></i></button>
             <button type="submit" class="btn-secondary" name="action" value="skip">@L["Skip for now"]</button>
         </form>
-    </div>
 
+@section Scripts {
     <script>
         function parsePipe(value) { return (value || '').split('|').map(v => v.trim()).filter(Boolean); }
         function joinPipe(values) { return values.join('|'); }
