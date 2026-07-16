@@ -193,7 +193,7 @@ public static class UiTranslationsPropertyAdministratorFlows
             ["Me"] = "Yo",
             ["Me + Guest"] = "Yo + huésped",
             ["Medium (500 – 2,000 sq ft)"] = "Mediano (500 – 2,000 pies²)",
-            ["Miguel R. • Lawn Care"] = "Miguel R. • Lawn Care",
+            ["Miguel R. • Lawn Care"] = "Miguel R. • Cuidado del césped",
             ["Miguel R. • Roof repair"] = "Miguel R. • Roof repair",
             ["Miguel R. • Tree service"] = "Miguel R. • Tree service",
             ["Mitigation / diagnosis"] = "Mitigación / diagnóstico",

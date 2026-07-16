@@ -208,7 +208,7 @@ public class PropertyAdministratorPortalService(
         return new PropertyAdministratorRecentRequestViewModel
         {
             Id = request.Id,
-            Title = PaL(request.Title),
+            Title = LocalizeBillingTitle(request.Title),
             PropertyName = request.PropertyName,
             StatusLabel = label,
             StatusCss = css,
@@ -226,7 +226,8 @@ public class PropertyAdministratorPortalService(
             var recent = MapRecentRequest(url, request);
             items.Add((request.FechaCreacion, new PropertyAdministratorNotificationItemViewModel
             {
-                Description = PropertyAdministratorDisplayLocalization.EventAtProperty(PaL(request.Title), PaL(request.PropertyName)),
+                // Titles already include the property ("Lawn Care at …" / Spanglish "… en …").
+                Description = LocalizeBillingTitle(request.Title),
                 OccurredLabel = FormatRelativeTime(request.FechaCreacion),
                 CategoryTag = recent.StatusLabel,
                 TagCssClass = $"pa-notify-tag--{recent.StatusCss}",
@@ -242,7 +243,10 @@ public class PropertyAdministratorPortalService(
         {
             items.Add((visit.VisitDate.ToUniversalTime(), new PropertyAdministratorNotificationItemViewModel
             {
-                Description = PropertyAdministratorDisplayLocalization.EventAtProperty(PaL(visit.Title), PaL(visit.PropertyName)),
+                Description = LocalizeBillingTitle(
+                    string.IsNullOrWhiteSpace(visit.PropertyName)
+                        ? visit.Title
+                        : $"{visit.Title} at {visit.PropertyName}"),
                 OccurredLabel = visit.VisitDate.ToString("MMM d, yyyy", CultureInfo.CurrentCulture),
                 CategoryTag = PaL("Visit"),
                 TagCssClass = "pa-notify-tag--visit",
@@ -997,18 +1001,35 @@ public class PropertyAdministratorPortalService(
         return new PropertyAdministratorServiceRequestItemViewModel
         {
             Id = request.Id,
-            Title = PaL(request.Title),
+            Title = LocalizeBillingTitle(request.Title),
             PropertyName = PaL(request.PropertyName),
             Location = PaL(request.Location),
             Status = request.Status,
             StatusLabel = label,
             StatusCss = css,
             DateLabel = request.ScheduledUtc?.ToLocalTime().ToString("MMM d, yyyy • h:mm tt", CultureInfo.CurrentCulture) ?? PaL("Pending schedule"),
-            TeamLabel = request.TeamLabel,
-            EtaLabel = request.EtaLabel,
+            TeamLabel = LocalizeTeamLabel(request.TeamLabel),
+            EtaLabel = request.EtaLabel is null ? null : PaL(request.EtaLabel),
             ImageUrl = request.ImageUrl,
             IsEmergency = request.IsEmergency
         };
+    }
+
+    private static string LocalizeTeamLabel(string? teamLabel)
+    {
+        if (string.IsNullOrWhiteSpace(teamLabel))
+        {
+            return string.Empty;
+        }
+
+        if (teamLabel.Contains('•', StringComparison.Ordinal))
+        {
+            return string.Join(" • ",
+                teamLabel.Split('•', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                    .Select(PaL));
+        }
+
+        return PaL(teamLabel);
     }
 
     private static string BuildCatalogUrl(IUrlHelper url, IndorPropertyAdminServiceCatalogItem item)

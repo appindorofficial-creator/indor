@@ -656,8 +656,12 @@ public static class UiDisplayLocalization
             return localizer.T("Next: {0}", text["Next: ".Length..].Trim());
         }
 
-        // Match "Name at Address" style labels, not phrases like "at least".
-        var atPropertyMatch = Regex.Match(text, @"^(.+) at (.+)$");
+        // Match "Name at Address" style labels (also Spanglish "Lawn Care en …" / "… in …").
+        // Avoid phrases like "at least".
+        var atPropertyMatch = Regex.Match(
+            text,
+            @"^(.+?)\s+(?:at|in|en)\s+(.+)$",
+            RegexOptions.IgnoreCase);
         if (atPropertyMatch.Success
             && !atPropertyMatch.Groups[2].Value.StartsWith("least", StringComparison.OrdinalIgnoreCase))
         {

@@ -569,6 +569,7 @@ public static class UiTranslationsPropertyAdministratorUi
         ["INDOR home"] = "Hogar INDOR",
         ["Insured"] = "Asegurado",
         ["Lawn Care"] = "Cuidado del césped",
+        ["Lawn Care Emergency"] = "Emergencia de cuidado del césped",
         ["Lawn Care / Grass Cutting"] = "Cuidado del césped / corte de césped",
         ["Lawn Care request sent"] = "Solicitud de cuidado del césped enviada",
         ["Leaking tank"] = "Tanque con fuga",
