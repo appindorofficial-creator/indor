@@ -16,14 +16,14 @@
             <i class="fas fa-truck-ramp-box" style="color:#0066CC;"></i>
             @Model.NombreServicio
         </div>
-        <span class="status-badge">@Model.EstadoLabel</span>
+        <span class="status-badge">@L[Model.EstadoLabel]</span>
     </div>
     <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Move type"]</div><div class="summary-value">@Model.TipoMovimientoLabel</div></div></div>
     <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Date"]</div><div class="summary-value">@Model.FechaMovimientoLabel</div></div></div>
     <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">@L["Time window"]</div><div class="summary-value">@Model.VentanaHorarioLabel</div></div></div>
     <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">@L["From"]</div><div class="summary-value">@Model.DireccionOrigen</div></div></div>
     <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">@L["To"]</div><div class="summary-value">@Model.DireccionDestino</div></div></div>
-    <div class="summary-row"><i class="fas fa-shield-check"></i><div><div class="summary-label">@L["Status"]</div><div class="summary-value" style="color:#16A34A;">@Model.EstadoLabel</div></div></div>
+    <div class="summary-row"><i class="fas fa-shield-check"></i><div><div class="summary-label">@L["Status"]</div><div class="summary-value" style="color:#16A34A;">@L[Model.EstadoLabel]</div></div></div>
 </div>
 
 <div class="info-banner">
