@@ -11,6 +11,7 @@ namespace IndorMvcApp.Services;
 
 public class HomeownerNearbyNetworkService(
     AppDbContext db,
+    IDbContextFactory<AppDbContext> dbFactory,
     IAddressLookupService addressLookup,
     IOptions<GoogleMapsOptions> googleMapsOptions)
 {
@@ -60,7 +61,14 @@ public class HomeownerNearbyNetworkService(
         var radiusMiles = (double)DefaultRadiusMiles;
         var radiusLabel = $"{DefaultRadiusMiles.ToString("0.#", CultureInfo.InvariantCulture)} miles around your home";
 
-        var networkCards = await LoadNetworkCardsAsync(
+        // Use separate DbContexts for parallel reads — shared AppDbContext is not thread-safe.
+        await using var networkDb = await dbFactory.CreateDbContextAsync(ct);
+        await using var neighborDb = await dbFactory.CreateDbContextAsync(ct);
+        await using var providerDb = await dbFactory.CreateDbContextAsync(ct);
+        await using var myPostsDb = await dbFactory.CreateDbContextAsync(ct);
+
+        var networkTask = LoadNetworkCardsAsync(
+            networkDb,
             propiedad.Id,
             centerLat,
             centerLng,
@@ -69,8 +77,8 @@ public class HomeownerNearbyNetworkService(
             search,
             url,
             ct);
-
-        var neighborCards = await LoadNeighborRequestCardsAsync(
+        var neighborTask = LoadNeighborRequestCardsAsync(
+            neighborDb,
             userId,
             propiedad,
             propertyInfo,
@@ -80,19 +88,25 @@ public class HomeownerNearbyNetworkService(
             search,
             url,
             ct);
-
-        var providerCards = await LoadProviderCardsAsync(
+        var providersTask = LoadNearbyProvidersAsync(
+            providerDb,
             centerLat,
             centerLng,
             radiusMiles,
             activeFilter,
-            search,
-            url,
             ct);
+        var myPostsTask = !string.IsNullOrWhiteSpace(userId)
+            ? LoadMyPostCardsAsync(myPostsDb, userId, propiedad.Id, activeFilter, search, url, ct)
+            : Task.FromResult(new List<FeedCardSortable>());
 
-        var myPostCards = !string.IsNullOrWhiteSpace(userId)
-            ? await LoadMyPostCardsAsync(userId, propiedad.Id, activeFilter, search, url, ct)
-            : [];
+        await Task.WhenAll(networkTask, neighborTask, providersTask, myPostsTask);
+
+        var networkCards = await networkTask;
+        var neighborCards = await neighborTask;
+        var nearbyProviders = await providersTask;
+        var myPostCards = await myPostsTask;
+
+        var providerCards = BuildProviderCardsFromNearby(nearbyProviders, activeFilter, search, url);
 
         var feedCards = myPostCards
             .Concat(networkCards)
@@ -103,18 +117,28 @@ public class HomeownerNearbyNetworkService(
             .Select(c => c.Card)
             .ToList();
 
-        var mapProviders = await LoadNearbyProvidersAsync(centerLat, centerLng, radiusMiles, activeFilter, ct);
-        var mapItems = await LoadMapItemsAsync(centerLat, centerLng, radiusMiles, activeFilter, ct);
-        var mapPins = BuildMapPins(centerLat, centerLng, radiusMiles, mapItems, neighborCards);
-        var carouselItems = BuildMapCarouselItems(
-            centerLat,
-            centerLng,
-            mapProviders,
-            mapItems,
-            propiedad.Id,
-            url,
-            url.Action("Index", "Home") + "#section-services",
-            url.Action("Index", "Home") + "#section-more");
+        // Map pins/carousel only render on the Map tab — skip on Feed so House Facts → Cercanos
+        // does not pay for unused map datasets on every Home/Index load.
+        List<RealtorNetworkMapProviderViewModel> mapProviders = [];
+        List<IndorNearbyNetworkItem> mapItems = [];
+        List<RealtorNetworkMapPinViewModel> mapPins = [];
+        List<HomeownerMapCarouselItemViewModel> carouselItems = [];
+        if (activeView == "map")
+        {
+            mapProviders = nearbyProviders;
+            mapItems = await LoadMapItemsAsync(db, centerLat, centerLng, radiusMiles, activeFilter, ct);
+            mapPins = BuildMapPins(centerLat, centerLng, radiusMiles, mapItems, neighborCards);
+            carouselItems = BuildMapCarouselItems(
+                centerLat,
+                centerLng,
+                mapProviders,
+                mapItems,
+                propiedad.Id,
+                url,
+                url.Action("Index", "Home") + "#section-services",
+                url.Action("Index", "Home") + "#section-more");
+        }
+
         var propertyAddress = !string.IsNullOrWhiteSpace(propertyInfo?.FormattedAddress)
             ? propertyInfo!.FormattedAddress
             : propiedad.Direccion;
@@ -179,8 +203,8 @@ public class HomeownerNearbyNetworkService(
         }
 
         var radiusMiles = (double)DefaultRadiusMiles;
-        var mapProviders = await LoadNearbyProvidersAsync(centerLat, centerLng, radiusMiles, activeFilter, ct);
-        var mapItems = await LoadMapItemsAsync(centerLat, centerLng, radiusMiles, activeFilter, ct);
+        var mapProviders = await LoadNearbyProvidersAsync(db, centerLat, centerLng, radiusMiles, activeFilter, ct);
+        var mapItems = await LoadMapItemsAsync(db, centerLat, centerLng, radiusMiles, activeFilter, ct);
         var carouselItems = BuildMapCarouselItems(
             centerLat,
             centerLng,
@@ -242,7 +266,7 @@ public class HomeownerNearbyNetworkService(
             lng = centerLng;
         }
 
-        var providers = await LoadNearbyProvidersAsync(lat.Value, lng.Value, radiusMiles, activeFilter, ct);
+        var providers = await LoadNearbyProvidersAsync(db, lat.Value, lng.Value, radiusMiles, activeFilter, ct);
         var listings = await LoadMapListingsNearAsync(lat.Value, lng.Value, radiusMiles, activeFilter, ct);
 
         return new RealtorNetworkMapDataViewModel
@@ -287,6 +311,7 @@ public class HomeownerNearbyNetworkService(
     }
 
     private async Task<List<FeedCardSortable>> LoadNetworkCardsAsync(
+        AppDbContext context,
         int currentPropiedadId,
         double centerLat,
         double centerLng,
@@ -301,7 +326,7 @@ public class HomeownerNearbyNetworkService(
             return [];
         }
 
-        var query = db.IndorNearbyNetworkItems
+        var query = context.IndorNearbyNetworkItems
             .AsNoTracking()
             .Where(i => i.IsActive)
             .Where(i => i.FilterCategory != NearbyNetworkFilterCategories.Leads);
@@ -353,6 +378,7 @@ public class HomeownerNearbyNetworkService(
     }
 
     private async Task<List<FeedCardSortable>> LoadMyPostCardsAsync(
+        AppDbContext context,
         string userId,
         int propiedadId,
         string activeFilter,
@@ -368,7 +394,7 @@ public class HomeownerNearbyNetworkService(
         List<IndorNeighborRequest> requests;
         try
         {
-            requests = await db.IndorNeighborRequests
+            requests = await context.IndorNeighborRequests
                 .AsNoTracking()
                 .Include(r => r.Category)
                 .Include(r => r.Photos)
@@ -407,6 +433,7 @@ public class HomeownerNearbyNetworkService(
     }
 
     private async Task<List<FeedCardSortable>> LoadNeighborRequestCardsAsync(
+        AppDbContext context,
         string? currentUserId,
         Propiedad viewerPropiedad,
         PropertyInfoViewModel? viewerPropertyInfo,
@@ -428,7 +455,7 @@ public class HomeownerNearbyNetworkService(
         List<IndorNeighborRequest> requests;
         try
         {
-            var query = db.IndorNeighborRequests
+            var query = context.IndorNeighborRequests
                 .AsNoTracking()
                 .Include(r => r.Category)
                 .Include(r => r.Propiedad)
@@ -465,7 +492,7 @@ public class HomeownerNearbyNetworkService(
         var cards = new List<FeedCardSortable>();
         foreach (var request in requests)
         {
-            var (requestLat, requestLng) = await ResolveRequestCoordinatesAsync(request, ct);
+            var (requestLat, requestLng) = ResolveRequestCoordinates(request);
             var distance = requestLat is not null && requestLng is not null
                 ? CalculateDistanceMiles(centerLat, centerLng, requestLat.Value, requestLng.Value)
                 : null;
@@ -490,9 +517,8 @@ public class HomeownerNearbyNetworkService(
         return cards;
     }
 
-    private async Task<(double? Lat, double? Lng)> ResolveRequestCoordinatesAsync(
-        IndorNeighborRequest request,
-        CancellationToken ct)
+    private static (double? Lat, double? Lng) ResolveRequestCoordinates(
+        IndorNeighborRequest request)
     {
         if (request.Latitude is not null && request.Longitude is not null)
         {
@@ -508,22 +534,9 @@ public class HomeownerNearbyNetworkService(
             }
         }
 
-        var address = !string.IsNullOrWhiteSpace(request.LocationAddress)
-            ? request.LocationAddress
-            : request.Propiedad?.Direccion;
-
-        if (string.IsNullOrWhiteSpace(address))
-        {
-            return (null, null);
-        }
-
-        var coords = await addressLookup.GeocodeAddressAsync(address.Trim(), ct);
-        if (coords is not { } resolved)
-        {
-            return (null, null);
-        }
-
-        return ((double)resolved.Latitude, (double)resolved.Longitude);
+        // Do not geocode during Home/Index — external HTTP on up to 60 requests made Cercanos
+        // feel stuck. City/state matching still applies when distance is unknown.
+        return (null, null);
     }
 
     private static bool IsNeighborRequestVisible(
@@ -643,46 +656,27 @@ public class HomeownerNearbyNetworkService(
         return null;
     }
 
-    private async Task<List<FeedCardSortable>> LoadProviderCardsAsync(
-        double centerLat,
-        double centerLng,
-        double radiusMiles,
+    private static List<FeedCardSortable> BuildProviderCardsFromNearby(
+        List<RealtorNetworkMapProviderViewModel> providers,
         string activeFilter,
         string? search,
-        IUrlHelper url,
-        CancellationToken ct)
+        IUrlHelper url)
     {
-        if (activeFilter is not (NearbyNetworkHomeownerFilters.All or NearbyNetworkHomeownerFilters.Providers))
+        if (activeFilter is not (NearbyNetworkHomeownerFilters.All or NearbyNetworkHomeownerFilters.Providers)
+            || providers.Count == 0)
         {
             return [];
         }
-
-        var providers = await LoadNearbyProvidersAsync(centerLat, centerLng, radiusMiles, activeFilter, ct);
-        if (providers.Count == 0)
-        {
-            return [];
-        }
-
-        var existingProviderNames = await db.IndorNearbyNetworkItems
-            .AsNoTracking()
-            .Where(i => i.IsActive && i.FilterCategory == NearbyNetworkFilterCategories.Providers)
-            .Select(i => i.ProviderName ?? i.Title)
-            .ToListAsync(ct);
 
         var cards = new List<FeedCardSortable>();
         var sort = 2000;
+        var term = search?.Trim();
 
         foreach (var provider in providers)
         {
-            if (existingProviderNames.Any(n =>
-                    string.Equals(n, provider.Name, StringComparison.OrdinalIgnoreCase)))
-            {
-                continue;
-            }
-
-            if (!string.IsNullOrWhiteSpace(search) &&
-                !provider.Name.Contains(search.Trim(), StringComparison.OrdinalIgnoreCase) &&
-                !(provider.Category?.Contains(search.Trim(), StringComparison.OrdinalIgnoreCase) ?? false))
+            if (!string.IsNullOrWhiteSpace(term) &&
+                !provider.Name.Contains(term, StringComparison.OrdinalIgnoreCase) &&
+                !(provider.Category?.Contains(term, StringComparison.OrdinalIgnoreCase) ?? false))
             {
                 continue;
             }
@@ -719,6 +713,7 @@ public class HomeownerNearbyNetworkService(
     }
 
     private async Task<List<IndorNearbyNetworkItem>> LoadMapItemsAsync(
+        AppDbContext context,
         double centerLat,
         double centerLng,
         double radiusMiles,
@@ -730,7 +725,7 @@ public class HomeownerNearbyNetworkService(
             return [];
         }
 
-        var query = db.IndorNearbyNetworkItems
+        var query = context.IndorNearbyNetworkItems
             .AsNoTracking()
             .Where(i => i.IsActive)
             .Where(i => i.FilterCategory != NearbyNetworkFilterCategories.Leads);
@@ -772,7 +767,7 @@ public class HomeownerNearbyNetworkService(
         string activeFilter,
         CancellationToken ct)
     {
-        var items = await LoadMapItemsAsync(centerLat, centerLng, radiusMiles, activeFilter, ct);
+        var items = await LoadMapItemsAsync(db, centerLat, centerLng, radiusMiles, activeFilter, ct);
         return items.Select(i =>
         {
             var pinType = i.CardType.ToLowerInvariant() switch
@@ -983,6 +978,7 @@ public class HomeownerNearbyNetworkService(
         };
 
     private async Task<List<RealtorNetworkMapProviderViewModel>> LoadNearbyProvidersAsync(
+        AppDbContext context,
         double centerLat,
         double centerLng,
         double radiusMiles,
@@ -1002,7 +998,7 @@ public class HomeownerNearbyNetworkService(
             ProviderRegistrationStatuses.PendingReview
         };
 
-        var providers = await db.IndorProveedores
+        var providers = await context.IndorProveedores
             .AsNoTracking()
             .Include(p => p.Categorias)
             .Where(p => activeStatuses.Contains(p.RegistrationStatus))
@@ -1016,7 +1012,7 @@ public class HomeownerNearbyNetworkService(
             return [];
         }
 
-        var categoryLabels = await db.IndorProveedorCategoriasCatalogo
+        var categoryLabels = await context.IndorProveedorCategoriasCatalogo
             .AsNoTracking()
             .ToDictionaryAsync(c => c.Id, c => c.LabelEn, ct);
 
