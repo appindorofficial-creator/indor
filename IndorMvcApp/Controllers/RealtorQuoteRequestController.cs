@@ -204,9 +204,14 @@ public class RealtorQuoteRequestController(
                 providerCountTarget, verifiedOnly, priority, coverageMiles);
             return RedirectToAction(nameof(Review));
         }
+        catch (InvalidOperationException ex)
+        {
+            ModelState.AddModelError(string.Empty, ex.Message);
+            return View(await quoteRequest.BuildProvidersAsync(q, filter));
+        }
         catch
         {
-            ModelState.AddModelError(string.Empty, "Please select at least one provider.");
+            ModelState.AddModelError(string.Empty, "Unable to save provider selection. Please try again.");
             return View(await quoteRequest.BuildProvidersAsync(q, filter));
         }
     }

@@ -2682,6 +2682,10 @@ public static class UiTranslationsFinal
             ["{0} issues found — tap to select"] = "{0} problemas encontrados — toca para seleccionar",
             ["{0} of {1} selected"] = "{0} de {1} seleccionados",
             ["Select at least one issue"] = "Selecciona al menos un problema",
+            ["Select at least one provider."] = "Selecciona al menos un proveedor.",
+            ["Please select at least one provider."] = "Selecciona al menos un proveedor.",
+            ["Unable to save provider selection. Please try again."] =
+                "No se pudo guardar la selección de proveedores. Inténtalo de nuevo.",
             ["Send to providers"] = "Enviar a proveedores",
             ["Send to providers ({0})"] = "Enviar a proveedores ({0})",
             ["Preparing providers..."] = "Preparando proveedores...",
