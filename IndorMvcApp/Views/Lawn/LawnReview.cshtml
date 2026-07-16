@@ -12,23 +12,23 @@
     <div class="review-summary-list">
         <article class="review-summary-card">
             <span class="review-summary-icon"><i class="fas fa-seedling"></i></span>
-            <div><span class="k">@L["Service"]</span><strong>@Model.ServiceName</strong></div>
+            <div><span class="k">@L["Service"]</span><strong>@L.Catalog(Model.ServiceName)</strong></div>
         </article>
         <article class="review-summary-card">
             <span class="review-summary-icon"><i class="fas fa-rotate"></i></span>
-            <div><span class="k">@L["Frequency"]</span><strong>@Model.FrequencyLabel</strong></div>
+            <div><span class="k">@L["Frequency"]</span><strong>@UiDisplayLocalization.Localize(L, Model.FrequencyLabel)</strong></div>
         </article>
         <article class="review-summary-card">
             <span class="review-summary-icon"><i class="fas fa-house"></i></span>
-            <div><span class="k">@L["Area"]</span><strong>@Model.AreaLabel</strong></div>
+            <div><span class="k">@L["Area"]</span><strong>@UiDisplayLocalization.Localize(L, Model.AreaLabel)</strong></div>
         </article>
         <article class="review-summary-card">
             <span class="review-summary-icon"><i class="fas fa-calendar"></i></span>
-            <div><span class="k">@L["First visit"]</span><strong>@Model.ScheduledLabel</strong></div>
+            <div><span class="k">@L["First visit"]</span><strong>@UiDisplayLocalization.Localize(L, Model.ScheduledLabel)</strong></div>
         </article>
         <article class="review-summary-card">
             <span class="review-summary-icon"><i class="fas fa-bell"></i></span>
-            <div><span class="k">@L["Reminder"]</span><strong>@Model.ReminderLabel</strong></div>
+            <div><span class="k">@L["Reminder"]</span><strong>@UiDisplayLocalization.Localize(L, Model.ReminderLabel)</strong></div>
         </article>
         <article class="review-summary-card">
             <span class="review-summary-icon"><i class="fas fa-location-dot"></i></span>
@@ -47,7 +47,7 @@
             @foreach (var line in Model.AddonLines)
             {
                 <div class="breakdown-line">
-                    <span class="left"><i class="fas @line.Icon"></i> @line.Label</span>
+                    <span class="left"><i class="fas @line.Icon"></i> @L.Catalog(line.Label)</span>
                     <span>$@line.Amount.ToString("0.00")</span>
                 </div>
             }

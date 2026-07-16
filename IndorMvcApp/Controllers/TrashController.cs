@@ -265,8 +265,8 @@ public class TrashController : Controller
             landing = new TrashServicioLanding
             {
                 MicroservicioId = microservicioId,
-                PageTitle = "Trash Day Assistant",
-                LandingTitulo = microservicio.Nombre,
+                PageTitle = "Stress-Free Trash",
+                LandingTitulo = "Stress-Free Trash",
                 LandingTagline = microservicio.Subtitulo,
                 LandingSubtitulo = microservicio.DescripcionCompleta ?? microservicio.Descripcion,
                 ImagenUrl = microservicio.ImagenUrl,

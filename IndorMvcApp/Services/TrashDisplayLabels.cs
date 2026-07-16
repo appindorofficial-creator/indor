@@ -6,7 +6,9 @@ public static class TrashDisplayLabels
 {
     public static string FormatBinsList(string? pipeValue)
     {
-        var bins = TrashPricingService.ParseBins(pipeValue).Select(b => b.Label).ToList();
+        var bins = TrashPricingService.ParseBins(pipeValue)
+            .Select(b => DisplayLabelsLocalization.L(b.Label))
+            .ToList();
         return bins.Count == 0 ? "—" : string.Join(" + ", bins);
     }
 

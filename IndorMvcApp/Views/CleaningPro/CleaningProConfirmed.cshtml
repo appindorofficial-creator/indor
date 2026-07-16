@@ -39,6 +39,6 @@ var scheduledParts = (Model.ScheduledLabel ?? string.Empty).Split('\n', 2);
     <div class="info-row"><i class="fas fa-mobile-screen"></i> @L["You can manage or reschedule your booking anytime in the app."]</div>
 
     <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-primary">
-        View booking <i class="fas fa-chevron-right"></i>
+        @L["View booking"] <i class="fas fa-chevron-right"></i>
     </a>
     <a asp-action="CleaningProSetup" asp-route-id="@Model.SolicitudId" class="btn-outline"><i class="fas fa-pen"></i> @L["Edit booking"]</a>

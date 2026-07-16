@@ -34,7 +34,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
                 {
                     <button type="button" class="area-chip @(selectedAreas.Contains(area.Code) ? "active" : "")" data-code="@area.Code">
                         <i class="fas @area.Icon"></i>
-                        <span>@area.Label</span>
+                        <span>@L[area.Label]</span>
                         <span class="check"><i class="fas fa-check"></i></span>
                     </button>
                 }
@@ -82,7 +82,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
             <div class="hours-row" id="hoursGroup">
                 @foreach (var hr in new[] { 2m, 3m, 4m, 5m })
                 {
-                    <button type="button" class="hour-btn" data-value="@hr.ToString(System.Globalization.CultureInfo.InvariantCulture)">@hr.ToString("0") hr</button>
+                    <button type="button" class="hour-btn" data-value="@hr.ToString(System.Globalization.CultureInfo.InvariantCulture)">@L.T("{0} hr", hr.ToString("0"))</button>
                 }
             </div>
         </div>
@@ -95,7 +95,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
                 {
                     <button type="button" class="addon-row @(selectedAddons.Contains(addon.Code) ? "active" : "")" data-code="@addon.Code" data-price="@addon.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)">
                         <i class="fas @addon.Icon main"></i>
-                        <span class="copy">@addon.Label</span>
+                        <span class="copy">@L[addon.Label]</span>
                         <span class="price">$@addon.Price.ToString("0")</span>
                         <span class="check"><i class="fas fa-check"></i></span>
                     </button>
@@ -106,7 +106,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
         <div class="sticky-footer">
             <div class="summary-bar" id="summaryBar">@Model.SummaryLine</div>
             <button type="submit" name="action" value="continue" class="btn-primary">
-                Next: Review <i class="fas fa-chevron-right"></i>
+                @L["Next: Review"] <i class="fas fa-chevron-right"></i>
             </button>
             <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
         </div>
@@ -223,13 +223,33 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
             }
         }
 
+        const i18n = {
+            freq: {
+                OneTime: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["One-time"].ToString())),
+                Weekly: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Weekly"].ToString())),
+                Biweekly: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Biweekly"].ToString())),
+                Monthly: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Monthly"].ToString()))
+            },
+            crew: {
+                One: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["1 cleaner"].ToString())),
+                Two: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["2 cleaners"].ToString())),
+                Three: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["3 cleaners"].ToString()))
+            },
+            estHours: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Est. {0} hr"].ToString())),
+            fromPrice: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["From ${0}"].ToString()))
+        };
+
         function formatFreq(v) {
-            return ({ OneTime: 'One-time', Weekly: 'Weekly', Biweekly: 'Biweekly', Monthly: 'Monthly' }[v] || v);
+            return i18n.freq[v] || v;
         }
 
         function formatCrew(v) {
             const code = normalizeCrewCode(v);
-            return ({ One: '1 cleaner', Two: '2 cleaners', Three: '3 cleaners' }[code] || v);
+            return i18n.crew[code] || v;
+        }
+
+        function formatTemplate(template, value) {
+            return String(template || '').replace('{0}', value);
         }
 
         function updateSummary() {
@@ -246,7 +266,9 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
             const summary = document.getElementById('summaryBar');
             if (summary) {
                 summary.textContent =
-                    formatFreq(freq) + ' • ' + formatCrew(crew) + ' • Est. ' + hours + ' hr • From $' + Math.round(subtotal);
+                    formatFreq(freq) + ' • ' + formatCrew(crew) + ' • ' +
+                    formatTemplate(i18n.estHours, hours) + ' • ' +
+                    formatTemplate(i18n.fromPrice, Math.round(subtotal));
             }
         }
 

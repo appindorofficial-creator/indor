@@ -182,7 +182,7 @@
                             }
                         </div>
                         <div class="rl-network-card-body">
-                            <strong class="rl-network-card-price">@listing.PriceLabel</strong>
+                            <strong class="rl-network-card-price">@UiDisplayLocalization.Localize(L, listing.PriceLabel)</strong>
                             @if (!string.IsNullOrWhiteSpace(listing.Address))
                             {
                                 <span class="rl-network-card-sub">@listing.Address</span>

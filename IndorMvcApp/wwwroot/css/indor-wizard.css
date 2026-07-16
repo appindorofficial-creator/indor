@@ -481,46 +481,76 @@ body:has(.prv-pro-bottom-nav) {
     padding-bottom: calc(var(--indor-page-footer-scroll) + var(--indor-action-h) + var(--indor-action-gap));
 }
 
-/* Property administrator service flows */
+/* Property administrator service flows — pin actions in .pa-flow-actions
+   (same pattern as .prv-wiz-footer). Individual fixed buttons + iOS Safari
+   mis-position and float over form content; a single solid footer avoids that. */
 .pa-portal-page .pa-portal-shell--flow,
 .pa-portal-page .pa-portal-shell--flow form {
     padding-bottom: var(--indor-page-footer-scroll);
 }
 
-.pa-portal-page .pa-flow-submit,
-.pa-portal-page a.pa-flow-submit.ob-btn {
-    position: fixed;
-    left: 16px;
-    right: 16px;
-    width: auto;
-    max-width: 448px;
-    margin-left: auto;
-    margin-right: auto;
+.pa-portal-page .pa-portal-shell--flow:has(.pa-flow-back-link),
+.pa-portal-page .pa-portal-shell--flow form:has(.pa-flow-back-link) {
+    padding-bottom: calc(var(--indor-page-footer-scroll) + 36px);
+}
+
+.pa-portal-page .pa-flow-actions {
+    position: fixed !important;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto !important;
     z-index: 41;
-    margin-bottom: 0 !important;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: var(--indor-footer-pad-y) 16px var(--indor-page-footer-bottom);
+    /* Solid fill — backdrop-filter on fixed elements mis-positions on iOS Safari */
+    background: #F0F7FF;
+    border-top: 1px solid rgba(15, 23, 42, .06);
+    box-shadow: 0 -6px 18px rgba(10, 37, 64, .06);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--indor-action-gap);
     box-sizing: border-box;
 }
 
-.pa-portal-page .pa-flow-submit:only-of-type,
-.pa-portal-page a.pa-flow-submit.ob-btn:only-of-type,
-.pa-portal-page .pa-portal-shell--flow > .pa-flow-submit,
-.pa-portal-page .pa-portal-shell--flow > a.pa-flow-submit {
-    bottom: var(--indor-page-footer-bottom);
+.pa-portal-page .pa-flow-actions > .pa-flow-submit,
+.pa-portal-page .pa-flow-actions > a.pa-flow-submit.ob-btn,
+.pa-portal-page .pa-flow-actions > .pa-flow-back-link {
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    top: auto !important;
+    width: 100%;
+    max-width: 448px;
+    margin: 0;
+    transform: none !important;
 }
 
-.pa-portal-page .pa-flow-submit:not(:only-of-type),
-.pa-portal-page form:has(.pa-flow-back-link) .pa-flow-submit {
-    bottom: calc(var(--indor-page-footer-bottom) + 28px);
-}
-
-.pa-portal-page .pa-flow-back-link {
-    position: fixed;
-    left: 16px;
-    right: 16px;
-    z-index: 41;
-    bottom: var(--indor-page-footer-bottom);
+.pa-portal-page .pa-flow-actions > .pa-flow-back-link {
     text-align: center;
-    margin-top: 0 !important;
+}
+
+/* Legacy unwrapped CTAs (before JS wrap) — keep usable without floating mid-form */
+.pa-portal-page form:not(:has(.pa-flow-actions)) > .pa-flow-submit,
+.pa-portal-page form:not(:has(.pa-flow-actions)) > a.pa-flow-submit.ob-btn,
+.pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > .pa-flow-submit,
+.pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > a.pa-flow-submit {
+    position: static;
+    width: 100%;
+    max-width: 448px;
+    margin: 16px auto 0;
+    box-sizing: border-box;
+}
+
+.pa-portal-page form:not(:has(.pa-flow-actions)) > .pa-flow-back-link,
+.pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > .pa-flow-back-link {
+    position: static;
+    display: block;
+    text-align: center;
+    margin: 12px auto 0;
 }
 
 /* Onboarding steps (consumer). Provider registration (.prv-page) is excluded

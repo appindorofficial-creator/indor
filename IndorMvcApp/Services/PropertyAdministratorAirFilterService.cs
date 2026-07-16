@@ -52,7 +52,15 @@ public class PropertyAdministratorAirFilterService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
+            // Start blank — do not pre-check Update Recipients (Bug 12/25 pattern).
+            UpdateRecipients = string.Empty,
+            ServiceType = string.Empty,
+            IsOccupied = string.Empty,
+            GuestsInside = string.Empty,
+            FilterSize = string.Empty,
+            Frequency = string.Empty,
+            EntryAccess = string.Empty
         };
     }
 
@@ -71,7 +79,7 @@ public class PropertyAdministratorAirFilterService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Air Filter Change", property.PropertyName),
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", PropertyAdministratorDisplayLocalization.L("Air Filter Change"), property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,

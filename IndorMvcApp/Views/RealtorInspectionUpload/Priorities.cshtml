@@ -171,7 +171,7 @@ else
                                 {
                                     <div class="rl-insp-report-field">
                                         <i class="fas fa-layer-group"></i>
-                                        <span><small>@L["Section"]</small><strong>@UiDisplayLocalization.Localize(L, finding.TradeLabel)</strong></span>
+                                        <span><small>@L["Section"]</small><strong>@L.Catalog(finding.TradeLabel)</strong></span>
                                     </div>
                                 }
                                 @if (!string.IsNullOrWhiteSpace(finding.SourceSection))
@@ -217,7 +217,7 @@ else
 
                     <div class="rl-insp-finding-meta">
                         <span class="rl-trade-chip rl-trade-chip--@finding.TradeCss">
-                            <i class="fas @finding.TradeIcon"></i> @UiDisplayLocalization.Localize(L, finding.TradeLabel)
+                            <i class="fas @finding.TradeIcon"></i> @L.Catalog(finding.TradeLabel)
                         </span>
                     </div>
                 </label>

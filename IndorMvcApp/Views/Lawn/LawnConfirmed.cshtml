@@ -28,16 +28,16 @@
 
     <div class="summary-card">
         <div class="summary-row"><i class="fas fa-seedling"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.NombreServicio)</div></div></div>
-        <div class="summary-row"><i class="fas fa-rotate"></i><div><div class="summary-label">@L["Frequency"]</div><div class="summary-value">@Model.FrequencyLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-rotate"></i><div><div class="summary-label">@L["Frequency"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.FrequencyLabel)</div></div></div>
         @if (!Model.IsReminderOnly)
         {
-            <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Area"]</div><div class="summary-value">@Model.AreaLabel</div></div></div>
-            <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">@L["Next visit"]</div><div class="summary-value">@Model.ScheduledLabel</div></div></div>
+            <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Area"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.AreaLabel)</div></div></div>
+            <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">@L["Next visit"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.ScheduledLabel)</div></div></div>
         }
         @if (Model.RecordatorioActivo)
         {
-            <div class="summary-row"><i class="fas fa-bell"></i><div><div class="summary-label">@L["Next reminder"]</div><div class="summary-value">@Model.NextReminderLabel</div></div></div>
-            <div class="summary-row"><i class="fas fa-mobile-screen"></i><div><div class="summary-label">@L["Notification method"]</div><div class="summary-value">@Model.NotificationMethodLabel</div></div></div>
+            <div class="summary-row"><i class="fas fa-bell"></i><div><div class="summary-label">@L["Next reminder"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.NextReminderLabel)</div></div></div>
+            <div class="summary-row"><i class="fas fa-mobile-screen"></i><div><div class="summary-label">@L["Notification method"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.NotificationMethodLabel)</div></div></div>
         }
         @if (!Model.IsReminderOnly)
         {
@@ -58,6 +58,6 @@
     </div>
 
     <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-primary">
-        <i class="fas fa-calendar"></i> View schedule
+        <i class="fas fa-calendar"></i> @L["View schedule"]
     </a>
     <a asp-action="LawnSchedule" asp-route-id="@Model.SolicitudId" class="btn-outline"><i class="fas fa-gear"></i> @L["Manage reminder"]</a>

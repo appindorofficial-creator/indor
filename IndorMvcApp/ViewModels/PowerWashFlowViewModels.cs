@@ -55,13 +55,13 @@ public class PowerWashConditionViewModel
     public string AreasDelicadas { get; set; } = string.Empty;
 
     [Required]
-    public string AccesoGrifo { get; set; } = "Yes";
+    public string AccesoGrifo { get; set; } = "";
 
     [Required]
-    public string TimingPreferido { get; set; } = "NextWeek";
+    public string TimingPreferido { get; set; } = "";
 
     [Required]
-    public string VentanaHorario { get; set; } = "Morning";
+    public string VentanaHorario { get; set; } = "";
 
     [MaxLength(300)]
     public string? Notas { get; set; }

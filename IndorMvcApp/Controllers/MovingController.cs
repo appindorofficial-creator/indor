@@ -53,7 +53,8 @@ public class MovingController : Controller
 
         if (string.IsNullOrWhiteSpace(model.TipoMovimiento))
         {
-            model.TipoMovimiento = "MoveIn";
+            ModelState.AddModelError(nameof(model.TipoMovimiento), "Select a move type.");
+            return View(BuildServiceViewModel(bundle.Value.Servicio, bundle.Value.Landing, null, model));
         }
 
         try
@@ -104,19 +105,26 @@ public class MovingController : Controller
 
         var defaultAddress = propiedad?.Direccion ?? string.Empty;
 
+        // Only pre-select options once the user has actually filled in this step (Bug 20 / Bug 12).
+        var detailsEntered = string.Equals(solicitud.Estado, "DetailsCompleted", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "ItemsCompleted", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "Confirmed", StringComparison.OrdinalIgnoreCase);
+
         return View(new MovingDetailsViewModel
         {
             SolicitudId = solicitud.Id,
             MovingSetupServicioId = solicitud.MovingSetupServicioId,
             NombreServicio = solicitud.MovingSetupServicio!.Nombre,
-            TipoMovimiento = MapLandingToDetailsMoveType(solicitud.TipoMovimiento),
-            TipoPropiedad = solicitud.TipoPropiedad ?? "Apartment",
-            TamanoHogar = solicitud.TamanoHogar ?? "OneTwoBedrooms",
+            TipoMovimiento = string.IsNullOrWhiteSpace(solicitud.TipoMovimiento)
+                ? string.Empty
+                : MapLandingToDetailsMoveType(solicitud.TipoMovimiento),
+            TipoPropiedad = detailsEntered ? (solicitud.TipoPropiedad ?? "") : "",
+            TamanoHogar = detailsEntered ? (solicitud.TamanoHogar ?? "") : "",
             DireccionOrigen = solicitud.DireccionOrigen ?? defaultAddress,
-            DireccionDestino = solicitud.DireccionDestino ?? string.Empty,
-            FechaMovimiento = solicitud.FechaMovimiento ?? DateTime.Today.AddDays(4),
-            VentanaHorario = solicitud.VentanaHorario ?? "Morning",
-            TipoServicio = solicitud.TipoServicio ?? "MoversOnly"
+            DireccionDestino = detailsEntered ? (solicitud.DireccionDestino ?? string.Empty) : string.Empty,
+            FechaMovimiento = detailsEntered ? solicitud.FechaMovimiento : null,
+            VentanaHorario = detailsEntered ? (solicitud.VentanaHorario ?? "") : "",
+            TipoServicio = detailsEntered ? (solicitud.TipoServicio ?? "") : ""
         });
     }
 
@@ -429,7 +437,12 @@ public class MovingController : Controller
             MoveTypes = moveTypes,
             CtaContinueTexto = landing.CtaContinueTexto,
             CtaEstimateTexto = landing.CtaEstimateTexto,
-            TipoMovimiento = posted?.TipoMovimiento ?? existing?.TipoMovimiento ?? moveTypes.FirstOrDefault()?.Value ?? "MoveIn"
+            TipoMovimiento = posted?.TipoMovimiento
+                ?? (existing != null
+                    && !string.Equals(existing.Estado, "InProgress", StringComparison.OrdinalIgnoreCase)
+                        ? existing.TipoMovimiento
+                        : string.Empty)
+                ?? string.Empty
         };
     }
 

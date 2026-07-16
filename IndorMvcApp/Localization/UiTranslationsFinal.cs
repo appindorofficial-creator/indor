@@ -1370,7 +1370,7 @@ public static class UiTranslationsFinal
             ["INDOR Verified"] = "Verificado por INDOR",
             ["Open Houses"] = "Casas abiertas",
             ["OPEN HOUSE"] = "CASA ABIERTA",
-            ["Open House This Saturday"] = "Casa abierta este sábado",
+            // Listing titles/names stay as stored (QA: "que quede con el nombre") — do not translate.
             ["Looking for a 3–4 bed home in Charlotte"] =
                 "Busca una casa de 3–4 habitaciones en Charlotte",
             ["Licensed plumbers responding in your ZIP"] =
@@ -1886,10 +1886,13 @@ public static class UiTranslationsFinal
             ["Service Detail"] = "Detalle del servicio",
             ["Continue"] = "Continuar",
 
-            // Home Care Essentials landings (Catalog titles/copy still English in DB)
+            // Home Care Essentials — Spanish brand names (like Aire Seguro 365)
             ["Safe Air 365"] = "Aire Seguro 365",
-            ["Filter 365"] = "Filtro 365",
+            ["Aire Seguro 365"] = "Aire Seguro 365",
+            ["Filter 365"] = "Filter 365",
             ["Always Perfect Lawn"] = "Césped Siempre Perfecto",
+            ["Césped Siempre Perfecto"] = "Césped Siempre Perfecto",
+            ["Jardín Siempre Perfecto"] = "Césped Siempre Perfecto",
             ["Your yard, always under control."] = "Tu jardín, siempre bajo control.",
             ["Flexible lawn mowing and yard upkeep for one-time or recurring service."] =
                 "Corte de césped y mantenimiento flexible, para una vez o de forma recurrente.",
@@ -1900,14 +1903,24 @@ public static class UiTranslationsFinal
             ["Front yard"] = "Patio delantero",
             ["Pricing updates based on selected areas."] = "El precio se actualiza según las áreas seleccionadas.",
             ["Stress-Free Trash"] = "Basura Sin Estrés",
+            ["Basura Sin Estrés"] = "Basura Sin Estrés",
+            ["Basura Sin Estres"] = "Basura Sin Estrés",
             ["From $20 /mo"] = "Desde $20 /mes",
             ["Cleaning Pro"] = "Limpieza Pro",
+            ["Limpieza Pro"] = "Limpieza Pro",
             ["Customized cleaning, your way."] = "Limpieza personalizada, a tu manera.",
             ["Flexible booking. Professional cleaners. Spotless results."] =
                 "Reservas flexibles. Limpiadores profesionales. Resultados impecables.",
             ["Professional supplies"] = "Suministros profesionales",
             ["From $35/hr per cleaner"] = "Desde $35/h por limpiador",
-            ["Customize cleaning"] = "Personalizar limpieza",
+            ["Nearest homecare pro available tomorrow 10–12 AM"] =
+                "Profesional de cuidado del hogar cercano disponible mañana de 10 a. m. a 12 p. m.",
+            ["Nearest homecare pro available tomorrow 1–3 PM"] =
+                "Profesional de cuidado del hogar cercano disponible mañana de 1 p. m. a 3 p. m.",
+            ["Nearest homecare pro available tomorrow 10-12 AM"] =
+                "Profesional de cuidado del hogar cercano disponible mañana de 10 a. m. a 12 p. m.",
+            ["Nearest homecare pro available tomorrow 1-3 PM"] =
+                "Profesional de cuidado del hogar cercano disponible mañana de 1 p. m. a 3 p. m.",
 
             // Home nearby network cards
             ["Local feed, neighbors, and help around you."] =
@@ -1989,6 +2002,13 @@ public static class UiTranslationsFinal
             ["Vetted professionals. Clear reports. Peace of mind."] =
                 "Profesionales verificados. Informes claros. Tranquilidad.",
             ["Set roof check"] = "Configurar revisión de techo",
+            ["Visual roof check: spring & fall"] = "Revisión visual del techo: primavera y otoño",
+            ["After major storms: inspect again"] = "Después de tormentas fuertes: inspecciona de nuevo",
+            ["Flashing & sealant"] = "Flashing y sellador",
+            ["Vents / skylights"] = "Ventilaciones / tragaluces",
+            ["Gutters & valleys"] = "Canaletas y valles",
+            ["Attic moisture signs"] = "Señales de humedad en el ático",
+            ["Debris / branches"] = "Escombros / ramas",
             ["This service helps remove dirt, algae, mildew, pollen, and surface buildup from the exterior of your home."] =
                 "Este servicio ayuda a quitar suciedad, algas, moho, polen y acumulación de la superficie exterior de tu hogar.",
             ["We'll use your answers to understand your surface type, condition, and access so we can recommend the right approach."] =
@@ -2688,9 +2708,11 @@ public static class UiTranslationsFinal
                 "No se pudo guardar la selección de proveedores. Inténtalo de nuevo.",
             ["Send to providers"] = "Enviar a proveedores",
             ["Send to providers ({0})"] = "Enviar a proveedores ({0})",
+            ["Send to providers"] = "Enviar a proveedores",
             ["Preparing providers..."] = "Preparando proveedores...",
             ["Open report page {0}"] = "Abrir página {0} del informe",
             ["Source confirmed from report PDF"] = "Fuente confirmada desde el PDF del informe",
+            ["Source confirmado from informe PDF"] = "Fuente confirmada desde el PDF del informe",
             ["SMOKE / FIRE DETECTORS AND CARBON MONOXIDE DETECTORS"] =
                 "Detectores de humo / fuego y monóxido de carbono",
             ["Smoke / Fire Detectors and Carbon Monoxide Detectors"] =

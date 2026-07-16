@@ -46,7 +46,13 @@ public class PropertyAdministratorSmokeDetectorService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
+            UpdateRecipients = string.Empty,
+            ServiceType = string.Empty,
+            DetectorCount = string.Empty,
+            UrgentSafetyIssue = string.Empty,
+            DetectorType = string.Empty,
+            EntryAccess = string.Empty
         };
     }
 
@@ -65,7 +71,7 @@ public class PropertyAdministratorSmokeDetectorService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", "Smoke Detector Check", property.PropertyName),
+            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", PropertyAdministratorDisplayLocalization.L("Smoke Detector Check"), property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,

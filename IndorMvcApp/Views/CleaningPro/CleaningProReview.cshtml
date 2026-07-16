@@ -1,10 +1,12 @@
 @model IndorMvcApp.ViewModels.CleaningProReviewViewModel
 @using IndorMvcApp.Services
+@using System.Globalization
 @{
     ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
-var dateOptions = Enumerable.Range(0, 14)
+    var uiCulture = CultureInfo.CurrentUICulture;
+    var dateOptions = Enumerable.Range(0, 14)
         .Select(offset => DateTime.Today.AddDays(offset + 1))
-        .Select(d => new { Date = d, DayLabel = d.ToString("ddd"), DateLabel = d.ToString("MMM d"), Selected = d.Date == Model.FechaServicio.Date })
+        .Select(d => new { Date = d, DayLabel = d.ToString("ddd", uiCulture), DateLabel = d.ToString("MMM d", uiCulture), Selected = d.Date == Model.FechaServicio.Date })
         .ToList();
     ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("CleaningProCustomize", "CleaningPro", new { id = Model.SolicitudId });
@@ -34,25 +36,25 @@ var dateOptions = Enumerable.Range(0, 14)
                 <i class="fas fa-sparkles"></i>
                 <div>
                     <div class="label">@L["Service"]</div>
-                    <div class="value">@Model.NombreServicio</div>
+                    <div class="value">@L.Catalog(Model.NombreServicio)</div>
                     <div style="font-size:0.72rem;color:#64748B;">@L["General cleaning"]</div>
                 </div>
             </div>
             <div class="review-detail-row">
                 <i class="fas fa-rotate"></i>
-                <div><div class="label">@L["Frequency"]</div><div class="value">@Model.FrequencyLabel</div></div>
+                <div><div class="label">@L["Frequency"]</div><div class="value">@UiDisplayLocalization.Localize(L, Model.FrequencyLabel)</div></div>
             </div>
             <div class="review-detail-row">
                 <i class="fas fa-border-all"></i>
-                <div><div class="label">@L["Cleaned areas"]</div><div class="value">@Model.AreasLabel</div></div>
+                <div><div class="label">@L["Cleaned areas"]</div><div class="value">@UiDisplayLocalization.Localize(L, Model.AreasLabel)</div></div>
             </div>
             <div class="review-detail-row">
                 <i class="fas fa-users"></i>
-                <div><div class="label">@L["Crew size"]</div><div class="value">@Model.CrewLabel</div></div>
+                <div><div class="label">@L["Crew size"]</div><div class="value">@UiDisplayLocalization.Localize(L, Model.CrewLabel)</div></div>
             </div>
             <div class="review-detail-row">
                 <i class="fas fa-clock"></i>
-                <div><div class="label">@L["Estimated duration"]</div><div class="value">@Model.HoursLabel</div></div>
+                <div><div class="label">@L["Estimated duration"]</div><div class="value">@UiDisplayLocalization.Localize(L, Model.HoursLabel)</div></div>
             </div>
             <div class="review-detail-row">
                 <i class="fas fa-location-dot"></i>
@@ -100,7 +102,7 @@ var dateOptions = Enumerable.Range(0, 14)
                 @foreach (var addon in Model.AddonLines)
                 {
                     <div class="breakdown-line">
-                        <span class="left"><i class="fas fa-check" style="color:#0066CC;margin-right:6px;"></i>@addon.Label</span>
+                        <span class="left"><i class="fas fa-check" style="color:#0066CC;margin-right:6px;"></i>@L[addon.Label]</span>
                         <span class="right">$@addon.Amount.ToString("0.00")</span>
                     </div>
                 }
@@ -110,12 +112,12 @@ var dateOptions = Enumerable.Range(0, 14)
         <div class="field-card">
             <span class="field-label">@L["Pricing breakdown"]</span>
             <div class="breakdown-line">
-                <span class="left">@L["Hourly rate"]<small>@Model.CrewLabel x $@Model.TarifaHoraria.ToString("0")/hr</small></span>
-                <span class="right">$@Model.TarifaHoraria.ToString("0.00")/hr</span>
+                <span class="left">@L["Hourly rate"]<small>@Model.CrewLabel x $@Model.TarifaHoraria.ToString("0")@L["/hr"]</small></span>
+                <span class="right">$@Model.TarifaHoraria.ToString("0.00")@L["/hr"]</span>
             </div>
             <div class="breakdown-line">
                 <span class="left">@L["Estimated duration"]<small>@Model.HoursLabel</small></span>
-                <span class="right">x @Model.HorasEstimadas.ToString("0") hrs</span>
+                <span class="right">x @L.T("{0} hrs", Model.HorasEstimadas.ToString("0"))</span>
             </div>
             <div class="breakdown-line">
                 <span class="left">@L["Service subtotal"]</span>
@@ -138,8 +140,8 @@ var dateOptions = Enumerable.Range(0, 14)
             </div>
             <div class="total-highlight">
                 <div>
-                    <div class="formula"><i class="fas fa-calculator"></i> $@Model.TarifaHoraria.ToString("0")/hr x @Model.HorasEstimadas.ToString("0") hrs =</div>
-                    <div class="amount">$@Model.PrecioTotal.ToString("0.00") Total (before tip)</div>
+                    <div class="formula"><i class="fas fa-calculator"></i> $@Model.TarifaHoraria.ToString("0")@L["/hr"] x @L.T("{0} hrs", Model.HorasEstimadas.ToString("0")) =</div>
+                    <div class="amount">$@Model.PrecioTotal.ToString("0.00") @L["Total (before tip)"]</div>
                 </div>
             </div>
         </div>
@@ -153,7 +155,7 @@ var dateOptions = Enumerable.Range(0, 14)
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
-            Confirm cleaning request <i class="fas fa-chevron-right"></i>
+            @L["Confirm cleaning request"] <i class="fas fa-chevron-right"></i>
         </button>
         <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
     </form>

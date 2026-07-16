@@ -68,11 +68,11 @@
 
         <div class="rl-review-request-row">
 
-            <span><i class="fas fa-file-invoice"></i> @req.TradeLabel</span>
+            <span><i class="fas fa-file-invoice"></i> @UiDisplayLocalization.Localize(L, req.TradeLabel)</span>
 
-            <span class="rl-priority-tag rl-priority-tag--@req.PriorityCss">@req.PriorityTag</span>
+            <span class="rl-priority-tag rl-priority-tag--@req.PriorityCss">@UiDisplayLocalization.Localize(L, req.PriorityTag)</span>
 
-            <span>@req.ProviderCount provider@(req.ProviderCount == 1 ? "" : "s")</span>
+            <span>@L.T(req.ProviderCount == 1 ? "{0} provider" : "{0} providers", req.ProviderCount)</span>
 
             <i class="fas fa-chevron-right"></i>
 

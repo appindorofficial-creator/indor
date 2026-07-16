@@ -46,7 +46,7 @@
 
                 <h2 class="rl-invite-section-title">@UiDisplayLocalization.Localize(L, group.TradeLabel)</h2>
 
-                <span class="rl-trade-provider-note">@group.PriorityNote</span>
+                <span class="rl-trade-provider-note">@UiDisplayLocalization.Localize(L, group.PriorityNote)</span>
 
             </div>
 
@@ -83,7 +83,7 @@
                             <span>@provider.Categories</span>
                         }
 
-                        <span>@provider.DistanceMiles.ToString("0.0") km away</span>
+                        <span>@L.T("{0} km away", provider.DistanceMiles.ToString("0.0"))</span>
 
                     </span>
 
@@ -117,9 +117,9 @@
 
 <div class="rl-provider-selected-count">
 
-    <span><i class="fas fa-users"></i> @Model.TradesReadyCount trades ready</span>
+    <span><i class="fas fa-users"></i> @L.T("{0} trades ready", Model.TradesReadyCount)</span>
 
-    <span id="providerCountLabel"><i class="fas fa-circle-check"></i> @Model.ProvidersSelectedCount providers selected</span>
+    <span id="providerCountLabel"><i class="fas fa-circle-check"></i> @L.T("{0} providers selected", Model.ProvidersSelectedCount)</span>
 
 </div>
 
@@ -139,27 +139,26 @@
 
 <script>
 
-    function updateCount() {
+    (function () {
+        const providersSelectedTpl = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["{0} providers selected"].ToString()));
 
-        const count = document.querySelectorAll('.rl-provider-card input:checked').length;
+        function formatTpl(template, ...args) {
+            return String(template).replace(/\{(\d+)\}/g, function (_, i) { return args[i] ?? ''; });
+        }
 
-        document.getElementById('providerCountLabel').innerHTML =
+        function updateCount() {
+            const count = document.querySelectorAll('.rl-provider-card input:checked').length;
+            document.getElementById('providerCountLabel').innerHTML =
+                '<i class="fas fa-circle-check"></i> ' + formatTpl(providersSelectedTpl, count);
+        }
 
-            '<i class="fas fa-circle-check"></i> ' + count + ' providers selected';
-
-    }
-
-    document.querySelectorAll('.rl-provider-card input').forEach(cb => {
-
-        cb.addEventListener('change', () => {
-
-            cb.closest('.rl-provider-card')?.classList.toggle('is-selected', cb.checked);
-
-            updateCount();
-
+        document.querySelectorAll('.rl-provider-card input').forEach(cb => {
+            cb.addEventListener('change', () => {
+                cb.closest('.rl-provider-card')?.classList.toggle('is-selected', cb.checked);
+                updateCount();
+            });
         });
-
-    });
+    })();
 
 </script>
 

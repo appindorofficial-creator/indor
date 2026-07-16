@@ -397,7 +397,7 @@
         .emergency-grid,
         .moving-setup-grid {
             --scroll-gap: 10px;
-            --scroll-visible: 4;
+            --scroll-visible: 3.15;
             display: flex;
             gap: var(--scroll-gap);
             overflow-x: auto;
@@ -1006,7 +1006,7 @@
             border-radius: 14px;
             border: 1px solid #E5E7EB;
             background: #FFF;
-            min-height: 88px;
+            min-height: 108px;
             justify-content: center;
         }
         .moving-setup-grid-order {
@@ -1037,10 +1037,17 @@
             font-size: 1rem;
         }
         .moving-setup-grid-label {
-            font-size: 0.68rem;
+            font-size: 0.72rem;
             font-weight: 700;
             text-align: center;
             line-height: 1.2;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            max-width: 100%;
         }
         .moving-setup-featured {
             display: flex;

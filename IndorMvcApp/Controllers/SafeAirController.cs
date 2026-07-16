@@ -359,8 +359,8 @@ public class SafeAirController : Controller
             landing = new SafeAirServicioLanding
             {
                 MicroservicioId = microservicioId,
-                PageTitle = microservicio.Nombre,
-                LandingTitulo = microservicio.Nombre,
+                PageTitle = "Safe Air 365",
+                LandingTitulo = "Safe Air 365",
                 LandingTagline = microservicio.Subtitulo,
                 LandingSubtitulo = microservicio.DescripcionCompleta ?? microservicio.Descripcion,
                 ImagenUrl = microservicio.ImagenUrl,

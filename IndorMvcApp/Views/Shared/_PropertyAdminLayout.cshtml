@@ -23,7 +23,7 @@
 
 </head>
 
-<body class="pa-portal-page">
+<body class="pa-portal-page@(ViewBag.HideBottomNav == true ? " pa-portal-page--no-nav" : null)">
 
     @RenderBody()
 

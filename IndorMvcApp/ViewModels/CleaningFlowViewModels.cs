@@ -36,7 +36,7 @@ public class CleaningServiceViewModel
     public string CtaUploadTexto { get; set; } = "Upload photos";
 
     [Required]
-    public string BestForSelection { get; set; } = "MoveIn";
+    public string BestForSelection { get; set; } = string.Empty;
 }
 
 public class CleaningDetailsViewModel

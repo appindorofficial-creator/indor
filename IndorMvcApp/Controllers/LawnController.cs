@@ -271,8 +271,8 @@ public class LawnController(
         landing ??= new LawnServicioLanding
         {
             MicroservicioId = microservicioId,
-            PageTitle = microservicio.Nombre,
-            LandingTitulo = microservicio.Nombre,
+            PageTitle = "Always Perfect Lawn",
+            LandingTitulo = "Always Perfect Lawn",
             LandingTagline = microservicio.Subtitulo,
             LandingSubtitulo = microservicio.DescripcionCompleta ?? microservicio.Descripcion ?? string.Empty,
             ImagenUrl = microservicio.ImagenUrl,
@@ -444,7 +444,9 @@ public class LawnController(
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
             IsReminderOnly = solicitud.ModoServicio == LawnServiceModes.ReminderOnly,
-            ServiceName = landing?.LandingTitulo ?? solicitud.Microservicio?.Nombre ?? "Always Perfect Lawn",
+            ServiceName = landing?.LandingTitulo
+                ?? solicitud.Microservicio?.LocalizedNombre(false)
+                ?? "Always Perfect Lawn",
             FrequencyLabel = LawnDisplayLabels.FormatFrequencyLabel(solicitud.Frecuencia, solicitud.TipoServicio),
             AreaLabel = areaLabel,
             AddonsLabel = LawnDisplayLabels.FormatAddonsList(addonLabels),

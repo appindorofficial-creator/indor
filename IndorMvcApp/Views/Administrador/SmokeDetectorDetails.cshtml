@@ -9,7 +9,11 @@
     ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
     ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     var propertyId = Model.ViewingProperty?.Id ?? 0;
-    var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+    var recipients = string.IsNullOrWhiteSpace(Model.UpdateRecipients)
+        ? new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        : Model.UpdateRecipients
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 }
 
 <div class="pa-portal-shell pa-portal-shell--flow">
@@ -19,7 +23,7 @@
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
 
-    <form asp-action="SmokeDetectorDetails" method="post" class="pa-emergency-form">
+    <form asp-action="SmokeDetectorDetails" method="post" class="pa-emergency-form" autocomplete="off">
         @Html.AntiForgeryToken()
         <input type="hidden" name="PropertyId" value="@propertyId" />
 
@@ -106,8 +110,9 @@
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
                 {
-                    <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
-                        <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />
+                    var isChecked = recipients.Contains(r.Item1);
+                    <label class="pa-chip @(isChecked ? "is-selected" : null)">
+                        <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" autocomplete="off" @(isChecked ? "checked" : null) />
                         <span>@r.Item2</span>
                     </label>
                 }
@@ -139,7 +144,7 @@
             <div class="pa-flow-pro-head">
                 <span class="pa-flow-pro-icon pa-flow-pro-icon--green"><i class="fas fa-bell"></i></span>
                 <div>
-                    <strong>@Model.ProEtaLabel</strong>
+                    <strong>@L[Model.ProEtaLabel]</strong>
                     <div class="pa-flow-pro-mini">
                         <img src="/inspeccion2.jpeg" alt="" class="pa-flow-pro-avatar" />
                         <div class="pa-trust-badges">

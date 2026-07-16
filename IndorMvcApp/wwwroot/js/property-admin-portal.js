@@ -317,4 +317,45 @@
     }
 
     document.querySelectorAll('[data-pa-service-search]').forEach(bindServiceSearch);
+
+    /**
+     * Pin Continue / Back into a single solid footer bar so actions do not
+     * float mid-form (iOS Safari bug with individually position:fixed CTAs).
+     */
+    function promotePaFlowActions(root) {
+        var scope = root && root.querySelectorAll ? root : document;
+        scope.querySelectorAll('form.pa-emergency-form, form.pa-flow-form, form.pa-preventive-form, .pa-portal-shell--flow > form').forEach(function (container) {
+            if (container.dataset.paFlowActionsBound === 'true') {
+                return;
+            }
+            if (container.querySelector(':scope > .pa-flow-actions')) {
+                container.dataset.paFlowActionsBound = 'true';
+                return;
+            }
+
+            var submit = container.querySelector(':scope > .pa-flow-submit, :scope > a.pa-flow-submit');
+            if (!submit) {
+                container.dataset.paFlowActionsBound = 'true';
+                return;
+            }
+
+            var back = null;
+            var next = submit.nextElementSibling;
+            if (next && next.classList.contains('pa-flow-back-link')) {
+                back = next;
+            }
+
+            var footer = document.createElement('div');
+            footer.className = 'pa-flow-actions';
+            submit.parentNode.insertBefore(footer, submit);
+            footer.appendChild(submit);
+            if (back) {
+                footer.appendChild(back);
+            }
+
+            container.dataset.paFlowActionsBound = 'true';
+        });
+    }
+
+    promotePaFlowActions(document);
 })();

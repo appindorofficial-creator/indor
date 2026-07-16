@@ -188,18 +188,21 @@ public class FurnitureAssemblyController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id);
         if (solicitud == null) return NotFound();
 
+        var prefsEntered = string.Equals(solicitud.Estado, "PreferencesCompleted", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "Confirmed", StringComparison.OrdinalIgnoreCase);
+
         return View(new FurnitureAssemblyPreferencesViewModel
         {
             SolicitudId = solicitud.Id,
             MovingSetupServicioId = solicitud.MovingSetupServicioId,
             NombreServicio = solicitud.MovingSetupServicio!.Nombre,
             DireccionPropiedad = solicitud.DireccionPropiedad ?? string.Empty,
-            Habitacion = solicitud.Habitacion ?? "Bedroom",
-            DetallesAcceso = solicitud.DetallesAcceso ?? "Stairs",
-            AyudaMover = solicitud.AyudaMover ?? "No",
-            FechaServicio = NormalizeServiceDate(solicitud.FechaServicio),
-            VentanaHorario = solicitud.VentanaHorario ?? "Afternoon",
-            NotaCorta = solicitud.NotaCorta,
+            Habitacion = prefsEntered ? (solicitud.Habitacion ?? "") : "",
+            DetallesAcceso = prefsEntered ? (solicitud.DetallesAcceso ?? "") : "",
+            AyudaMover = prefsEntered ? (solicitud.AyudaMover ?? "") : "",
+            FechaServicio = prefsEntered ? NormalizeServiceDate(solicitud.FechaServicio) : DateTime.Today.AddDays(30),
+            VentanaHorario = prefsEntered ? (solicitud.VentanaHorario ?? "") : "",
+            NotaCorta = prefsEntered ? solicitud.NotaCorta : null,
             MinServiceDateIso = DateTime.Today.ToString("yyyy-MM-dd")
         });
     }
