@@ -80,6 +80,7 @@ public class PropertyAdministratorEmergencyPlumbingService(
             Urgency = step1.Urgency,
             ProblemLocation = step1.ProblemLocation,
             QuickDetails = step1.QuickDetails ?? "",
+            MediaAttachmentsJson = step1.MediaAttachmentsJson ?? "[]",
             EntryCode = "",
             WaterShutoffAccess = "",
             AccessNotes = "",

@@ -2104,6 +2104,67 @@ public class AdministradorController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequestSizeLimit(25_000_000)]
+    public async Task<IActionResult> UploadFlowMedia(IFormFile? file, string? kind)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest(new { error = "empty" });
+        }
+
+        if (file.Length > 20_000_000)
+        {
+            return BadRequest(new { error = "too_large" });
+        }
+
+        var contentType = (file.ContentType ?? string.Empty).ToLowerInvariant();
+        var isVoice = string.Equals(kind, "voice", StringComparison.OrdinalIgnoreCase)
+            || contentType.StartsWith("audio/", StringComparison.Ordinal);
+        var isImage = contentType.StartsWith("image/", StringComparison.Ordinal);
+        var isVideo = contentType.StartsWith("video/", StringComparison.Ordinal);
+        var isPdf = contentType.Contains("pdf", StringComparison.Ordinal)
+            || file.FileName.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
+
+        if (!isVoice && !isImage && !isVideo && !isPdf)
+        {
+            return BadRequest(new { error = "unsupported" });
+        }
+
+        var ext = Path.GetExtension(file.FileName);
+        if (string.IsNullOrWhiteSpace(ext))
+        {
+            ext = isVoice ? ".webm" : isPdf ? ".pdf" : isVideo ? ".mp4" : ".jpg";
+        }
+
+        var folder = Path.Combine(environment.WebRootPath, "uploads", "pa-flow-media");
+        Directory.CreateDirectory(folder);
+        var safeName = $"{DateTime.UtcNow:yyyyMMddHHmmss}-{Guid.NewGuid():N}{ext.ToLowerInvariant()}";
+        var physical = Path.Combine(folder, safeName);
+        await using (var stream = System.IO.File.Create(physical))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var relative = $"/uploads/pa-flow-media/{safeName}";
+        var displayName = string.IsNullOrWhiteSpace(file.FileName)
+            ? (isVoice ? "Voice note" : Path.GetFileName(safeName))
+            : Path.GetFileName(file.FileName);
+
+        return Json(new
+        {
+            path = relative,
+            name = displayName,
+            kind = isVoice ? "voice" : isPdf ? "document" : isVideo ? "video" : "photo"
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     [RequestSizeLimit(10_000_000)]
     public async Task<IActionResult> UploadPersonalPhoto(IFormFile? photo)
     {

@@ -142,11 +142,8 @@
             <textarea class="pa-textarea" name="Details" rows="3" maxlength="250" id="toDetails">@Model.Details</textarea>
             <small class="pa-char-count"><span id="toDetailsCount">@Model.Details.Length</span> @L["/ 250 characters"]</small>
         </div>
+        @await Html.PartialAsync("_PropertyAdminMediaCapture")
 
-        <div class="pa-media-actions">
-            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> @L["Add photos"]</button>
-            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> @L["Voice note"]</button>
-        </div>
 
         <div class="pa-flow-pro-card pa-flow-pro-card--turnover">
             <div class="pa-flow-pro-head">

@@ -148,11 +148,8 @@
             <label>@L["Add details"]</label>
             <textarea class="pa-textarea" name="Details" rows="3" placeholder="@L["Describe what guests or tenants are experiencing..."]">@Model.Details</textarea>
         </div>
+        @await Html.PartialAsync("_PropertyAdminMediaCapture")
 
-        <div class="pa-media-actions">
-            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> @L["Add photos"]</button>
-            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> @L["Voice note"]</button>
-        </div>
 
         <div class="pa-flow-summary-grid">
             <div class="pa-flow-summary-card">

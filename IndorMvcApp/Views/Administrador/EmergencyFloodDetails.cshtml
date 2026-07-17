@@ -132,10 +132,12 @@
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">9</span>
             <label><i class="fas fa-camera pa-q-icon"></i> @L["Photos & voice"]</label>
-            <div class="pa-media-actions pa-media-actions--stack">
-                <button type="button" class="pa-media-btn pa-media-btn--large"><i class="fas fa-camera"></i> @L["Add photos — Help us assess faster"]</button>
-                <button type="button" class="pa-media-btn pa-media-btn--large"><i class="fas fa-microphone"></i> @L["Voice note — Tap to record"]</button>
-            </div>
+            @{
+                ViewData["PaMediaLarge"] = true;
+                ViewData["PaMediaPhotoLabel"] = L["Add photos — Help us assess faster"].ToString();
+                ViewData["PaMediaVoiceLabel"] = L["Voice note — Tap to record"].ToString();
+            }
+            @await Html.PartialAsync("_PropertyAdminMediaCapture")
         </div>
 
         <article class="pa-insurance-card">

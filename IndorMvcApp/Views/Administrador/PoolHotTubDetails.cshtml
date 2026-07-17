@@ -98,10 +98,7 @@
             <small class="pa-char-count"><span id="poolDetailsCount">@Model.QuickDetails.Length</span> / 250</small>
         </div>
 
-        <div class="pa-media-actions">
-            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> @L["Add photos"]</button>
-            <button type="button" class="pa-media-btn"><i class="fas fa-video"></i> @L["Add video"]</button>
-        </div>
+        @await Html.PartialAsync("_PropertyAdminMediaCapture")
 
         <div class="pa-lawn-photo-banner">
             <i class="fas fa-circle-info"></i>

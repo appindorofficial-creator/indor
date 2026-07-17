@@ -143,10 +143,8 @@
             <span class="pa-flow-qnum">7</span>
             <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--purple"></i> @L["Add notes"]</label>
             <textarea class="pa-textarea" name="Details" rows="3" maxlength="250" id="petDetails">@Model.Details</textarea>
-            <div class="pa-media-actions">
-                <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> @L["Add photos"]</button>
-                <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> @L["Voice note"]</button>
-            </div>
+        @await Html.PartialAsync("_PropertyAdminMediaCapture")
+
         </div>
 
         <article class="pa-pet-info-box">

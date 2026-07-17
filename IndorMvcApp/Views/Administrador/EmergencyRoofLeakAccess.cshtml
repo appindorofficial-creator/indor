@@ -98,7 +98,11 @@
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">6</span>
             <label>@L["Photos or documents"]</label>
-            <button type="button" class="pa-media-btn pa-media-btn--wide"><i class="fas fa-camera"></i> @L["Add photo or document"]</button>
+            @{
+                ViewData["PaMediaShowVoice"] = false;
+                ViewData["PaMediaPhotoLabel"] = L["Add photo or document"].ToString();
+            }
+            @await Html.PartialAsync("_PropertyAdminMediaCapture")
         </div>
 
         <div class="pa-flow-question">

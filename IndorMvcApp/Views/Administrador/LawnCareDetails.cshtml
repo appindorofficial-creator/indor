@@ -121,11 +121,8 @@
             <textarea class="pa-textarea" name="QuickNotes" rows="3" maxlength="250" id="lcNotes">@Model.QuickNotes</textarea>
             <small class="pa-char-count"><span id="lcNotesCount">@Model.QuickNotes.Length</span> / 250</small>
         </div>
+        @await Html.PartialAsync("_PropertyAdminMediaCapture")
 
-        <div class="pa-media-actions">
-            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> @L["Add photos"]</button>
-            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> @L["Voice note"]</button>
-        </div>
 
         <div class="pa-lawn-availability-banner">
             <div>

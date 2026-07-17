@@ -22,6 +22,7 @@ public class PropertyAdministratorEmergencyPlumbingStep1Input
     public string Urgency { get; set; } = "";
     public string ProblemLocation { get; set; } = "";
     public string? QuickDetails { get; set; }
+    public string? MediaAttachmentsJson { get; set; }
 }
 
 public class PropertyAdministratorEmergencyPlumbingStep2ViewModel : PropertyAdministratorPortalShellViewModel
@@ -46,6 +47,7 @@ public class PropertyAdministratorEmergencyPlumbingStep2ViewModel : PropertyAdmi
     public string PermissionToEnter { get; set; } = "";
     public string EstimatedPrice { get; set; } = "$129–$169";
     public string ProEtaLabel { get; set; } = "Nearest plumbing pro available in 22 minutes";
+    public string? MediaAttachmentsJson { get; set; }
 }
 
 public class PropertyAdministratorEmergencyPlumbingSubmitInput
@@ -64,6 +66,7 @@ public class PropertyAdministratorEmergencyPlumbingSubmitInput
     public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
     public string PermissionToEnter { get; set; } = "";
+    public string? MediaAttachmentsJson { get; set; }
 }
 
 public class PropertyAdministratorEmergencyPlumbingConfirmedViewModel : PropertyAdministratorPortalShellViewModel

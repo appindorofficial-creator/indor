@@ -111,11 +111,8 @@
             <label>@L["Add quick details"]</label>
             <textarea class="pa-textarea" name="QuickDetails" rows="3" placeholder="@L["Describe what's happening..."]">@Model.QuickDetails</textarea>
         </div>
+        @await Html.PartialAsync("_PropertyAdminMediaCapture")
 
-        <div class="pa-media-actions">
-            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> @L["Add photos"]</button>
-            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> @L["Voice note"]</button>
-        </div>
 
         <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
         <a href="@ViewBag.FlowBackUrl" class="pa-back-link">@L["Back to services"]</a>

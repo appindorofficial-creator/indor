@@ -2942,5 +2942,17 @@ public static class UiTranslationsFinal
             ["Lot"] = "Lote",
             ["Notes"] = "Notas",
             ["Details"] = "Detalles",
+            // PA media capture
+            ["Recording… tap to stop"] = "Grabando… toca para detener",
+            ["Microphone permission is required to record a voice note."] =
+                "Se necesita permiso del micrófono para grabar una nota de voz.",
+            ["Could not upload media. Try again."] = "No se pudo subir el archivo. Inténtalo de nuevo.",
+            ["Add photo or document"] = "Agregar foto o documento",
+            ["Add photos — Help us assess faster"] = "Agregar fotos — Ayúdanos a evaluar más rápido",
+            ["Add photos — Help us prep the right filter"] = "Agregar fotos — Ayúdanos a preparar el filtro correcto",
+            ["Voice note — Tap to record"] = "Nota de voz — Toca para grabar",
+            ["Photos & voice"] = "Fotos y voz",
+            ["Voice note"] = "Nota de voz",
+            ["Add photos"] = "Agregar fotos",
         };
 }
