@@ -20,8 +20,8 @@
         @foreach (var row in Model.SummaryRows)
         {
             <div class="pa-moving-review-row">
-                <span class="pa-moving-review-label"><i class="fas @row.IconClass"></i> @row.Label</span>
-                <strong class="pa-moving-review-value">@Html.Raw(row.Value.Replace("\n", L["<br />"]))</strong>
+                <span class="pa-moving-review-label"><i class="fas @row.IconClass"></i> @UiDisplayLocalization.Localize(L, row.Label)</span>
+                <strong class="pa-moving-review-value">@Html.Raw(UiDisplayLocalization.Localize(L, row.Value).Replace("\n", L["<br />"]))</strong>
             </div>
         }
     </article>
@@ -29,7 +29,7 @@
     <article class="pa-moving-availability-card">
         <span class="pa-moving-availability-art"><i class="fas fa-truck-ramp-box"></i></span>
         <div>
-            <strong>@Model.TeamEtaLabel</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.TeamEtaLabel)</strong>
             <small>@L["Background checked • On-time • Host-ready"]</small>
         </div>
     </article>

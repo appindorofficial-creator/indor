@@ -273,9 +273,9 @@ public class PropertyAdministratorJunkRemovalService(
 
         var pickup = input.PickupType switch
         {
-            "Curbside" => "curbside only",
-            "Either" => "inside or curbside",
-            _ => "inside pickup"
+            "Curbside" => PropertyAdministratorDisplayLocalization.L("curbside only"),
+            "Either" => PropertyAdministratorDisplayLocalization.L("inside or curbside"),
+            _ => PropertyAdministratorDisplayLocalization.L("inside pickup")
         };
 
         return $"{entry} / {pickup}";

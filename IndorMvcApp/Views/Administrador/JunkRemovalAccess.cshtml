@@ -64,7 +64,11 @@
             <span class="pa-flow-qnum">2</span>
             <label><i class="fas fa-clock pa-q-icon pa-q-icon--blue"></i> @L["What time window works best?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var tw in new (string Value, string Label, string Sub)[] { ("Morning", "Morning", "8 AM – 12 PM"), ("Afternoon", "Afternoon", "12 PM – 5 PM"), ("Evening", "Evening", "5 PM – 9 PM") })
+                @foreach (var tw in new (string Value, string Label, string Sub)[] {
+                    ("Morning", L["Morning"].ToString()!, L["8 AM – 12 PM"].ToString()!),
+                    ("Afternoon", L["Afternoon"].ToString()!, L["12 PM – 5 PM"].ToString()!),
+                    ("Evening", L["Evening"].ToString()!, L["5 PM – 9 PM"].ToString()!)
+                })
                 {
                     <label class="pa-toggle-btn pa-toggle-btn--stack @(Model.TimeWindow == tw.Value ? "is-selected" : null)">
                         <input type="radio" name="TimeWindow" value="@tw.Value" @(Model.TimeWindow == tw.Value ? "checked" : null) />
@@ -147,7 +151,7 @@
 
         <div class="pa-junk-crew-banner">
             <i class="fas fa-clock"></i>
-            <strong>@Model.CrewEtaLabel</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.CrewEtaLabel)</strong>
         </div>
 
         <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Review request"]</button>

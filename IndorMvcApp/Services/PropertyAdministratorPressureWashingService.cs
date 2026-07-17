@@ -210,7 +210,7 @@ public class PropertyAdministratorPressureWashingService(
         IndorPropertyAdminPortfolioProperty? property) =>
     [
         new() { Label = PropertyAdministratorDisplayLocalization.L("Property"), Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = "Pressure washing", IconClass = "fa-spray-can" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = PropertyAdministratorDisplayLocalization.L("Pressure washing"), IconClass = "fa-spray-can" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Areas"), Value = LabelAreas(input.WashAreasList), IconClass = "fa-border-all" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Size"), Value = LabelAreaSize(input.AreaSize), IconClass = "fa-ruler-combined" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Reason"), Value = LabelReason(input.ServiceReason), IconClass = "fa-broom" },

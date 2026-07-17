@@ -69,7 +69,8 @@ public class PropertyAdministratorMovingHelpService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             Input = input,
             ViewingProperty = MapProperty(property),
-            SummaryRows = BuildSummaryRows(property, input)
+            SummaryRows = BuildSummaryRows(property, input),
+            TeamEtaLabel = PropertyAdministratorDisplayLocalization.L("Nearest moving team available in 23 minutes")
         };
     }
 
@@ -294,12 +295,12 @@ public class PropertyAdministratorMovingHelpService(
         {
             "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
             "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
-            _ => "Me"
+            _ => PropertyAdministratorDisplayLocalization.L("Me")
         }).Distinct().ToList();
 
         return labels.Count switch
         {
-            0 => "Me",
+            0 => PropertyAdministratorDisplayLocalization.L("Me"),
             1 => labels[0],
             _ => string.Join(" + ", labels)
         };

@@ -27,13 +27,13 @@ public class NeighborRequestCategoryStepViewModel : NeighborRequestWizardShellVi
     [Required]
     public int CategoryId { get; set; }
 
-    [Required, MaxLength(60)]
+    [Required(ErrorMessage = "Please enter a job title."), MaxLength(60)]
     public string Title { get; set; } = string.Empty;
 
     [MaxLength(300)]
     public string? Description { get; set; }
 
-    [Required, MaxLength(500)]
+    [Required(ErrorMessage = "Please enter a location."), MaxLength(500)]
     public string LocationAddress { get; set; } = string.Empty;
 
     public bool UseHomeAddress { get; set; } = true;

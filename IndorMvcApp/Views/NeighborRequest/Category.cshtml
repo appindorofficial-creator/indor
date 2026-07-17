@@ -40,10 +40,10 @@
                             }
                         </span>
                         <span class="nr-cat-tile-body">
-                            <span class="nr-cat-tile-label">@category.Label</span>
+                            <span class="nr-cat-tile-label">@UiDisplayLocalization.Localize(L, category.Label)</span>
                             @if (!string.IsNullOrWhiteSpace(category.Description))
                             {
-                                <span class="nr-cat-tile-desc">@category.Description</span>
+                                <span class="nr-cat-tile-desc">@UiDisplayLocalization.Localize(L, category.Description)</span>
                             }
                         </span>
                         @if (isSelected)
@@ -69,7 +69,12 @@
         </header>
         <div class="nr-field nr-field--count">
             <div class="nr-counted-control">
-                <input asp-for="Title" class="nr-input" placeholder="@L["Need help moving a sofa"]" maxlength="60" autocomplete="off" />
+                <input asp-for="Title"
+                       class="nr-input"
+                       placeholder="@L["Need help moving a sofa"]"
+                       maxlength="60"
+                       autocomplete="off"
+                       data-val-required="@L["Please enter a job title."]" />
             </div>
             <span class="nr-char-count"><span id="nrTitleCount">0</span>/60</span>
             <span asp-validation-for="Title" class="field-validation-error"></span>

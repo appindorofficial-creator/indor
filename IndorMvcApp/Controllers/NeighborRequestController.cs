@@ -108,6 +108,7 @@ public class NeighborRequestController(
 
         if (!ModelState.IsValid)
         {
+            LocalizeNeighborRequestModelState();
             var invalidVm = await wizardService.BuildCategoryStepAsync(model.PropiedadId, null, Url, cancellationToken);
             invalidVm.CategoryId = model.CategoryId;
             invalidVm.SelectedCategoryId = model.CategoryId;
@@ -597,6 +598,27 @@ public class NeighborRequestController(
         target.SelectedAudiences = source.SelectedAudiences;
         target.BudgetAmount = source.BudgetAmount;
         target.NeededByDate = source.NeededByDate;
+    }
+
+    private void LocalizeNeighborRequestModelState()
+    {
+        foreach (var key in ModelState.Keys.ToList())
+        {
+            var entry = ModelState[key];
+            if (entry == null || entry.Errors.Count == 0)
+            {
+                continue;
+            }
+
+            var errors = entry.Errors.Select(e => e.ErrorMessage).ToList();
+            entry.Errors.Clear();
+            foreach (var error in errors)
+            {
+                entry.Errors.Add(string.IsNullOrWhiteSpace(error)
+                    ? new Microsoft.AspNetCore.Mvc.ModelBinding.ModelError(localizer["Please enter a job title."])
+                    : new Microsoft.AspNetCore.Mvc.ModelBinding.ModelError(localizer[error]));
+            }
+        }
     }
 
     private async Task<NeighborRequestDraftState?> RequireDraftAsync(

@@ -286,7 +286,7 @@ public class PropertyAdministratorFurnitureHaulAwayService(
             _ => PropertyAdministratorDisplayLocalization.L("Smart lock")
         };
 
-        return $"{entry} / inside pickup";
+        return $"{entry} / {PropertyAdministratorDisplayLocalization.L("inside pickup")}";
     }
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
@@ -295,14 +295,13 @@ public class PropertyAdministratorFurnitureHaulAwayService(
         {
             "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
             "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
-            _ => "Me"
+            _ => PropertyAdministratorDisplayLocalization.L("Me")
         }).Distinct().ToList();
 
         return labels.Count switch
         {
-            0 => "Me",
+            0 => PropertyAdministratorDisplayLocalization.L("Me"),
             1 => labels[0],
-            2 => $"{labels[0]} + {labels[1]}",
             _ => string.Join(" + ", labels)
         };
     }

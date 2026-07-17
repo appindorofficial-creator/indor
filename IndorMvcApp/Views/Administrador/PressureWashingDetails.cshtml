@@ -54,9 +54,9 @@
             <label>@L["How large is the area?"]</label>
             <div class="pa-pw-size-row">
                 @foreach (var s in new (string Value, string Label, string Sub)[] {
-                    ("Small", "Small", "Up to 500 sq ft"),
-                    ("Medium", "Medium", "500 – 2,000 sq ft"),
-                    ("Large", "Large", "Over 2,000 sq ft") })
+                    ("Small", L["Small"].ToString()!, L["Up to 500 sq ft"].ToString()!),
+                    ("Medium", L["Medium"].ToString()!, L["500 – 2,000 sq ft"].ToString()!),
+                    ("Large", L["Large"].ToString()!, L["Over 2,000 sq ft"].ToString()!) })
                 {
                     <label class="pa-pw-size-card @(Model.AreaSize == s.Value ? "is-selected" : null)">
                         <input type="radio" name="AreaSize" value="@s.Value" @(Model.AreaSize == s.Value ? "checked" : null) />
