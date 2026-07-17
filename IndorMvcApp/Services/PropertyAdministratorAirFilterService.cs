@@ -189,9 +189,9 @@ public class PropertyAdministratorAirFilterService(
     private static IReadOnlyList<PropertyAdministratorAirFilterTimelineItemViewModel> BuildTimeline(
         IndorPropertyAdminServiceRequest request)
     {
-        var submitted = request.FechaCreacion.ToLocalTime().ToString("Today • h:mm tt");
-        var assigned = request.FechaCreacion.AddMinutes(1).ToLocalTime().ToString("Today • h:mm tt");
-        var scheduled = request.FechaCreacion.AddMinutes(2).ToLocalTime().ToString("Today • h:mm tt");
+        var submitted = PropertyAdministratorFlowServiceSupport.FormatTodayBulletTime(request.FechaCreacion);
+        var assigned = PropertyAdministratorFlowServiceSupport.FormatTodayBulletTime(request.FechaCreacion.AddMinutes(1));
+        var scheduled = PropertyAdministratorFlowServiceSupport.FormatTodayBulletTime(request.FechaCreacion.AddMinutes(2));
 
         return
         [

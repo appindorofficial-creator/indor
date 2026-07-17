@@ -7,6 +7,7 @@
     ViewBag.InviteFlowSubtitle = L["Fast plumbing help for occupied homes and Airbnb stays."].ToString();
     ViewBag.InviteFlowStep = Model.FlowStep <= 0 ? 1 : Model.FlowStep;
     ViewBag.InviteFlowSteps = new[] { L["Details"].ToString(), L["Access"].ToString(), L["Done"].ToString() };
+    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
 }
 
 <div class="pa-portal-shell pa-portal-shell--flow">

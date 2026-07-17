@@ -180,8 +180,8 @@ public class PropertyAdministratorSmokeDetectorService(
     private static IReadOnlyList<PropertyAdministratorSmokeDetectorTimelineItemViewModel> BuildTimeline(
         IndorPropertyAdminServiceRequest request)
     {
-        var submitted = request.FechaCreacion.ToLocalTime().ToString("Today • h:mm tt");
-        var assigned = request.FechaCreacion.AddMinutes(1).ToLocalTime().ToString("Today • h:mm tt");
+        var submitted = PropertyAdministratorFlowServiceSupport.FormatTodayBulletTime(request.FechaCreacion);
+        var assigned = PropertyAdministratorFlowServiceSupport.FormatTodayBulletTime(request.FechaCreacion.AddMinutes(1));
         var scheduled = "Tomorrow • 1:00 PM – 3:00 PM";
 
         return

@@ -202,9 +202,9 @@ public class PropertyAdministratorEmergencySewerBackupService(
     private static IReadOnlyList<PropertyAdministratorEmergencyAcTimelineItemViewModel> BuildTimeline(
         IndorPropertyAdminServiceRequest request)
     {
-        var submitted = request.FechaCreacion.ToLocalTime().ToString("Today, h:mm tt");
-        var assigned = request.FechaCreacion.AddMinutes(4).ToLocalTime().ToString("Today, h:mm tt");
-        var enRoute = request.FechaCreacion.AddMinutes(8).ToLocalTime().ToString("Today, h:mm tt");
+        var submitted = PropertyAdministratorFlowServiceSupport.FormatTodayTime(request.FechaCreacion);
+        var assigned = PropertyAdministratorFlowServiceSupport.FormatTodayTime(request.FechaCreacion.AddMinutes(4));
+        var enRoute = PropertyAdministratorFlowServiceSupport.FormatTodayTime(request.FechaCreacion.AddMinutes(8));
         var step = request.TimelineStep;
 
         return

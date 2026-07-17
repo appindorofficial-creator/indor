@@ -7,6 +7,7 @@
     ViewBag.InviteFlowSubtitle = L["Tell us how the technician can get in and review the details."].ToString();
     ViewBag.InviteFlowStep = Model.FlowStep;
     ViewBag.InviteFlowSteps = new[] { L["Details"].ToString(), L["Access"].ToString(), L["Done"].ToString() };
+    ViewBag.FlowBackUrl = Url.Action("EmergencyPlumbingDetails", "Administrador", new { propertyId = Model.PropertyId });
     var recipients = Model.UpdateRecipientsList.ToHashSet(StringComparer.OrdinalIgnoreCase);
     var issueLabel = Model.IssueType switch
     {

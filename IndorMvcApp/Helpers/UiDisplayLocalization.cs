@@ -79,6 +79,11 @@ public static class UiDisplayLocalization
             return localizer.T("Today, {0}", text["Today, ".Length..].Trim());
         }
 
+        if (text.StartsWith("Today • ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Today • {0}", text["Today • ".Length..].Trim());
+        }
+
         if (text.StartsWith("Yesterday, ", StringComparison.OrdinalIgnoreCase))
         {
             return localizer.T("Yesterday, {0}", text["Yesterday, ".Length..].Trim());
@@ -769,6 +774,11 @@ public static class UiDisplayLocalization
         if (value.StartsWith("Today, ", StringComparison.OrdinalIgnoreCase))
         {
             return localizer.T("Today, {0}", value["Today, ".Length..].Trim());
+        }
+
+        if (value.StartsWith("Today • ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Today • {0}", value["Today • ".Length..].Trim());
         }
 
         if (value.StartsWith("Yesterday, ", StringComparison.OrdinalIgnoreCase))

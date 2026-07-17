@@ -227,7 +227,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await emergencyPlumbing.GetStep1Async(Url, propertyId));
+        var model = await emergencyPlumbing.GetStep1Async(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorEmergencyPlumbingStep1Input>(model, "PlumbingStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -251,7 +253,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (TempData["PlumbingStep1"] is not string json)
+        if (TempData.Peek("PlumbingStep1") is not string json)
         {
             return RedirectToAction(nameof(EmergencyPlumbingDetails));
         }
@@ -283,6 +285,7 @@ public class AdministradorController(
         }
 
         var requestId = await emergencyPlumbing.SubmitAsync(input);
+        TempData.Remove("PlumbingStep1");
         return RedirectToAction(nameof(EmergencyPlumbingConfirmed), new { id = requestId });
     }
 
@@ -313,7 +316,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await emergencyRoofLeak.GetStep1Async(Url, propertyId));
+        var model = await emergencyRoofLeak.GetStep1Async(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorEmergencyRoofLeakStep1Input>(model, "RoofLeakStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -337,7 +342,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (TempData["RoofLeakStep1"] is not string json)
+        if (TempData.Peek("RoofLeakStep1") is not string json)
         {
             return RedirectToAction(nameof(EmergencyRoofLeakDetails));
         }
@@ -369,6 +374,7 @@ public class AdministradorController(
         }
 
         var requestId = await emergencyRoofLeak.SubmitAsync(input);
+        TempData.Remove("RoofLeakStep1");
         return RedirectToAction(nameof(EmergencyRoofLeakConfirmed), new { id = requestId });
     }
 
@@ -399,7 +405,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await emergencyTreeBranch.GetStep1Async(Url, propertyId));
+        var model = await emergencyTreeBranch.GetStep1Async(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorEmergencyTreeBranchStep1Input>(model, "TreeBranchStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -423,7 +431,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (TempData["TreeBranchStep1"] is not string json)
+        if (TempData.Peek("TreeBranchStep1") is not string json)
         {
             return RedirectToAction(nameof(EmergencyTreeBranchDetails));
         }
@@ -455,6 +463,7 @@ public class AdministradorController(
         }
 
         var requestId = await emergencyTreeBranch.SubmitAsync(input);
+        TempData.Remove("TreeBranchStep1");
         return RedirectToAction(nameof(EmergencyTreeBranchConfirmed), new { id = requestId });
     }
 
@@ -485,7 +494,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await lockoutAccess.GetStep1Async(Url, propertyId));
+        var model = await lockoutAccess.GetStep1Async(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorLockoutAccessStep1Input>(model, "LockoutAccessStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -509,7 +520,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (TempData["LockoutAccessStep1"] is not string json)
+        if (TempData.Peek("LockoutAccessStep1") is not string json)
         {
             return RedirectToAction(nameof(LockoutAccessDetails));
         }
@@ -541,6 +552,7 @@ public class AdministradorController(
         }
 
         var requestId = await lockoutAccess.SubmitAsync(input);
+        TempData.Remove("LockoutAccessStep1");
         return RedirectToAction(nameof(LockoutAccessConfirmed), new { id = requestId });
     }
 
@@ -571,7 +583,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await brokenWindowBoardUp.GetStep1Async(Url, propertyId));
+        var model = await brokenWindowBoardUp.GetStep1Async(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorBrokenWindowBoardUpStep1Input>(model, "BrokenWindowStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -595,7 +609,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (TempData["BrokenWindowStep1"] is not string json)
+        if (TempData.Peek("BrokenWindowStep1") is not string json)
         {
             return RedirectToAction(nameof(BrokenWindowDetails));
         }
@@ -627,6 +641,7 @@ public class AdministradorController(
         }
 
         var requestId = await brokenWindowBoardUp.SubmitAsync(input);
+        TempData.Remove("BrokenWindowStep1");
         return RedirectToAction(nameof(BrokenWindowConfirmed), new { id = requestId });
     }
 
@@ -657,7 +672,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await emergencySewerBackup.GetStep1Async(Url, propertyId));
+        var model = await emergencySewerBackup.GetStep1Async(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorEmergencySewerBackupStep1Input>(model, "SewerBackupStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -681,7 +698,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (TempData["SewerBackupStep1"] is not string json)
+        if (TempData.Peek("SewerBackupStep1") is not string json)
         {
             return RedirectToAction(nameof(SewerBackupDetails));
         }
@@ -712,6 +729,7 @@ public class AdministradorController(
         }
 
         var requestId = await emergencySewerBackup.SubmitAsync(input);
+        TempData.Remove("SewerBackupStep1");
         return RedirectToAction(nameof(SewerBackupConfirmed), new { id = requestId });
     }
 
@@ -742,7 +760,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await emergencyWaterHeater.GetStep1Async(Url, propertyId));
+        var model = await emergencyWaterHeater.GetStep1Async(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorEmergencyWaterHeaterStep1Input>(model, "WaterHeaterStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -766,7 +786,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (TempData["WaterHeaterStep1"] is not string json)
+        if (TempData.Peek("WaterHeaterStep1") is not string json)
         {
             return RedirectToAction(nameof(WaterHeaterDetails));
         }
@@ -797,6 +817,7 @@ public class AdministradorController(
         }
 
         var requestId = await emergencyWaterHeater.SubmitAsync(input);
+        TempData.Remove("WaterHeaterStep1");
         return RedirectToAction(nameof(WaterHeaterConfirmed), new { id = requestId });
     }
 
@@ -870,7 +891,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await poolHotTub.GetStep1Async(Url, propertyId));
+        var model = await poolHotTub.GetStep1Async(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorPoolHotTubStep1Input>(model, "PoolHotTubStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -894,7 +917,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (TempData["PoolHotTubStep1"] is not string json)
+        if (TempData.Peek("PoolHotTubStep1") is not string json)
         {
             return RedirectToAction(nameof(PoolHotTubDetails));
         }
@@ -930,6 +953,7 @@ public class AdministradorController(
         }
 
         var requestId = await poolHotTub.SubmitAsync(input);
+        TempData.Remove("PoolHotTubStep1");
         return RedirectToAction(nameof(PoolHotTubConfirmed), new { id = requestId });
     }
 
@@ -960,7 +984,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await pestControl.GetStep1Async(Url, propertyId));
+        var model = await pestControl.GetStep1Async(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorPestControlStep1Input>(model, "PestControlStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -984,7 +1010,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (TempData["PestControlStep1"] is not string json)
+        if (TempData.Peek("PestControlStep1") is not string json)
         {
             return RedirectToAction(nameof(PestControlDetails));
         }
@@ -1025,6 +1051,7 @@ public class AdministradorController(
         }
 
         var requestId = await pestControl.SubmitAsync(input);
+        TempData.Remove("PestControlStep1");
         return RedirectToAction(nameof(PestControlConfirmed), new { id = requestId });
     }
 
@@ -1055,7 +1082,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await pressureWashing.GetStep1Async(Url, propertyId));
+        var model = await pressureWashing.GetStep1Async(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorPressureWashingStep1Input>(model, "PressureWashingStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -1084,7 +1113,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (TempData["PressureWashingStep1"] is not string json)
+        if (TempData.Peek("PressureWashingStep1") is not string json)
         {
             return RedirectToAction(nameof(PressureWashingDetails));
         }
@@ -1125,6 +1154,7 @@ public class AdministradorController(
         }
 
         var requestId = await pressureWashing.SubmitAsync(input);
+        TempData.Remove("PressureWashingStep1");
         return RedirectToAction(nameof(PressureWashingConfirmed), new { id = requestId });
     }
 
@@ -1155,7 +1185,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await landscaping.GetStep1Async(Url, propertyId));
+        var model = await landscaping.GetStep1Async(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorLandscapingStep1Input>(model, "LandscapingStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -1179,7 +1211,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (TempData["LandscapingStep1"] is not string json)
+        if (TempData.Peek("LandscapingStep1") is not string json)
         {
             return RedirectToAction(nameof(LandscapingDetails));
         }
@@ -1215,6 +1247,7 @@ public class AdministradorController(
         }
 
         var requestId = await landscaping.SubmitAsync(input);
+        TempData.Remove("LandscapingStep1");
         return RedirectToAction(nameof(LandscapingConfirmed), new { id = requestId });
     }
 
@@ -1245,7 +1278,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await lawnCare.GetStep1Async(Url, propertyId));
+        var model = await lawnCare.GetStep1Async(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorLawnCareStep1Input>(model, "LawnCareStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -1274,7 +1309,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (TempData["LawnCareStep1"] is not string json)
+        if (TempData.Peek("LawnCareStep1") is not string json)
         {
             return RedirectToAction(nameof(LawnCareDetails));
         }
@@ -1316,6 +1351,7 @@ public class AdministradorController(
         }
 
         var requestId = await lawnCare.SubmitAsync(input);
+        TempData.Remove("LawnCareStep1");
         return RedirectToAction(nameof(LawnCareConfirmed), new { id = requestId });
     }
 
@@ -1346,7 +1382,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await trashOut.GetStep1Async(Url, propertyId));
+        var model = await trashOut.GetStep1Async(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorTrashOutStep1Input>(model, "TrashOutStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -1370,7 +1408,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (TempData["TrashOutStep1"] is not string json)
+        if (TempData.Peek("TrashOutStep1") is not string json)
         {
             return RedirectToAction(nameof(TrashOutDetails));
         }
@@ -1406,6 +1444,7 @@ public class AdministradorController(
         }
 
         var requestId = await trashOut.SubmitAsync(input);
+        TempData.Remove("TrashOutStep1");
         return RedirectToAction(nameof(TrashOutConfirmed), new { id = requestId });
     }
 
@@ -1436,7 +1475,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await furnitureHaulAway.GetStep1Async(Url, propertyId));
+        var model = await furnitureHaulAway.GetStep1Async(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorFurnitureHaulAwayStep1Input>(model, "FurnitureHaulAwayStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -1460,7 +1501,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (TempData["FurnitureHaulAwayStep1"] is not string json)
+        if (TempData.Peek("FurnitureHaulAwayStep1") is not string json)
         {
             return RedirectToAction(nameof(FurnitureHaulAwayDetails));
         }
@@ -1496,6 +1537,7 @@ public class AdministradorController(
         }
 
         var requestId = await furnitureHaulAway.SubmitAsync(input);
+        TempData.Remove("FurnitureHaulAwayStep1");
         return RedirectToAction(nameof(FurnitureHaulAwayConfirmed), new { id = requestId });
     }
 
@@ -1526,7 +1568,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await junkRemoval.GetStep1Async(Url, propertyId));
+        var model = await junkRemoval.GetStep1Async(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorJunkRemovalStep1Input>(model, "JunkRemovalStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -1550,7 +1594,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (TempData["JunkRemovalStep1"] is not string json)
+        if (TempData.Peek("JunkRemovalStep1") is not string json)
         {
             return RedirectToAction(nameof(JunkRemovalDetails));
         }
@@ -1586,6 +1630,7 @@ public class AdministradorController(
         }
 
         var requestId = await junkRemoval.SubmitAsync(input);
+        TempData.Remove("JunkRemovalStep1");
         return RedirectToAction(nameof(JunkRemovalConfirmed), new { id = requestId });
     }
 
@@ -1616,7 +1661,23 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await movingHelp.GetFormAsync(Url, propertyId));
+        var model = await movingHelp.GetFormAsync(Url, propertyId);
+        if (TempData.Peek("MovingHelpDraft") is string json)
+        {
+            var draft = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorMovingHelpSubmitInput>(json);
+            if (draft != null)
+            {
+                model.ServiceType = draft.ServiceType;
+                model.ItemsToMove = string.Join(",", draft.ItemsToMoveList);
+                model.HelperCount = draft.HelperCount;
+                model.ScheduleWhen = draft.ScheduleWhen;
+                model.ScheduleTimeWindow = draft.ScheduleTimeWindow;
+                model.EntryAccess = draft.EntryAccess;
+                model.Details = draft.Details ?? "";
+            }
+        }
+
+        return View(model);
     }
 
     [HttpPost]
@@ -1633,6 +1694,7 @@ public class AdministradorController(
             input.UpdateRecipientsList = ["Me", "CoHost"];
         }
 
+        TempData["MovingHelpDraft"] = System.Text.Json.JsonSerializer.Serialize(input);
         ViewBag.HideBottomNav = true;
         return View("MovingHelpReview", await movingHelp.GetReviewAsync(Url, input));
     }
@@ -1647,6 +1709,7 @@ public class AdministradorController(
         }
 
         var requestId = await movingHelp.SubmitAsync(input);
+        TempData.Remove("MovingHelpDraft");
         return RedirectToAction(nameof(MovingHelpConfirmed), new { id = requestId });
     }
 
@@ -2192,6 +2255,47 @@ public class AdministradorController(
 
         await userManager.UpdateAsync(user);
         return PhotoUploadResult(null, user.FotoUrl);
+    }
+
+
+    private void ApplyStep1DraftFromTempData<TDraft>(object model, string tempDataKey)
+    {
+        if (TempData.Peek(tempDataKey) is not string json || string.IsNullOrWhiteSpace(json))
+        {
+            return;
+        }
+
+        TDraft? draft;
+        try
+        {
+            draft = System.Text.Json.JsonSerializer.Deserialize<TDraft>(json);
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            return;
+        }
+
+        if (draft is null)
+        {
+            return;
+        }
+
+        foreach (var src in typeof(TDraft).GetProperties())
+        {
+            var dest = model.GetType().GetProperty(src.Name);
+            if (dest is null || !dest.CanWrite || !dest.PropertyType.IsAssignableFrom(src.PropertyType))
+            {
+                continue;
+            }
+
+            var value = src.GetValue(draft);
+            if (value is null)
+            {
+                continue;
+            }
+
+            dest.SetValue(model, value);
+        }
     }
 
     private IActionResult PhotoUploadResult(string? error, string? photoUrl = null)

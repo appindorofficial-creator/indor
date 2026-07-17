@@ -175,9 +175,9 @@ public class PropertyAdministratorTurnoverCleaningService(
     private static IReadOnlyList<PropertyAdministratorTurnoverCleaningTimelineItemViewModel> BuildTimeline(
         IndorPropertyAdminServiceRequest request)
     {
-        var submitted = request.FechaCreacion.ToLocalTime().ToString("Today, h:mm tt");
-        var assigned = request.FechaCreacion.AddMinutes(3).ToLocalTime().ToString("Today, h:mm tt");
-        var scheduled = request.FechaCreacion.AddMinutes(5).ToLocalTime().ToString("Today, h:mm tt");
+        var submitted = PropertyAdministratorFlowServiceSupport.FormatTodayTime(request.FechaCreacion);
+        var assigned = PropertyAdministratorFlowServiceSupport.FormatTodayTime(request.FechaCreacion.AddMinutes(3));
+        var scheduled = PropertyAdministratorFlowServiceSupport.FormatTodayTime(request.FechaCreacion.AddMinutes(5));
 
         return
         [

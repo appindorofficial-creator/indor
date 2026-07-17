@@ -1568,6 +1568,44 @@ public static class UiTranslationsFinal
                 "El servicio de césped conviene terminarlo antes del check-in del huésped. Enviaremos confirmación con fotos al finalizar.",
             ["Keep blinds closed and portable fans running while help is on the way."] =
                 "Mantén las persianas cerradas y los ventiladores portátiles encendidos mientras llega la ayuda.",
+            ["Ask guests to avoid using the affected bathroom or fixture until the plumber arrives."] =
+                "Pide a los huéspedes que no usen el baño o el artefacto afectado hasta que llegue el plomero.",
+            ["Ask guests to avoid touching affected outlets or switches until help arrives."] =
+                "Pide a los huéspedes que no toquen los enchufes o interruptores afectados hasta que llegue la ayuda.",
+            ["Ask guests to avoid using the hot tub until the technician finishes the repair."] =
+                "Pide a los huéspedes que no usen el jacuzzi hasta que el técnico termine la reparación.",
+            ["Ask guests to keep food sealed and pets away from the treatment area until the technician arrives."] =
+                "Pide a los huéspedes que mantengan la comida sellada y a las mascotas lejos del área de tratamiento hasta que llegue el técnico.",
+            ["If the unit is leaking, keep the area clear and locate the water shutoff if safe to do so."] =
+                "Si la unidad tiene una fuga, mantén el área despejada y localiza la llave de paso del agua si es seguro hacerlo.",
+            ["Keep guests away from affected drains and avoid using water until the technician arrives."] =
+                "Mantén a los huéspedes alejados de los desagües afectados y evita usar agua hasta que llegue el técnico.",
+            ["Keep guests away from the affected area until the crew arrives."] =
+                "Mantén a los huéspedes alejados del área afectada hasta que llegue el equipo.",
+            ["Keep guests away from the broken glass area until help arrives."] =
+                "Mantén a los huéspedes alejados del área con vidrio roto hasta que llegue la ayuda.",
+            ["Keep the guest near the entry and have ID ready if needed."] =
+                "Mantén al huésped cerca de la entrada y ten una identificación lista si es necesario.",
+            ["Leave gate access clear so the bins can be rolled out quickly."] =
+                "Deja el acceso a la puerta libre para poder sacar los contenedores con rapidez.",
+            ["Move small outdoor items and keep the area clear before the crew arrives."] =
+                "Retira objetos pequeños del exterior y mantén el área despejada antes de que llegue el equipo.",
+            ["Move small valuables aside before the crew arrives."] =
+                "Aparta objetos de valor pequeños antes de que llegue el equipo.",
+            ["Move valuables away from standing water and, if safe, shut off the water source."] =
+                "Aleja objetos de valor del agua estancada y, si es seguro, cierra la fuente de agua.",
+            ["Move valuables away from the leak and place a bucket under active drips while help is on the way."] =
+                "Aleja objetos de valor de la fuga y coloca un cubo bajo las gotas activas mientras llega la ayuda.",
+            ["Replacing filters every 2–3 months helps protect airflow and air quality."] =
+                "Cambiar los filtros cada 2–3 meses ayuda a proteger el flujo de aire y la calidad del aire.",
+            ["Send photos of the damaged area to help the pro prepare an accurate estimate."] =
+                "Envía fotos del área dañada para que el profesional prepare un presupuesto preciso.",
+            ["Standard cleaning helps keep your rental guest-ready between stays and makes future turnovers easier."] =
+                "La limpieza estándar ayuda a mantener tu alquiler listo para huéspedes entre estadías y facilita los próximos cambios de huésped.",
+            ["Testing smoke detectors every few months helps keep guests safer and reduces false alarms."] =
+                "Probar los detectores de humo cada pocos meses ayuda a mantener a los huéspedes más seguros y reduce las alarmas falsas.",
+            ["Turnover service can include linens, restocking, and guest-ready setup before check-in."] =
+                "El servicio de cambio de huésped puede incluir ropa de cama, reposición de suministros y preparación para el check-in.",
             ["Licensed HVAC Pro"] = "Profesional HVAC con licencia",
             ["White service van"] = "Furgoneta blanca de servicio",
             ["22 min"] = "22 min",

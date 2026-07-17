@@ -8,6 +8,7 @@
     ViewBag.FlowSubtitle = L["Answer a few quick questions so we can dispatch help fast."].ToString();
     ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
     ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    ViewBag.InviteFlowAnchorId = "pa-emergency-form-top";
     var propertyId = Model.ViewingProperty?.Id ?? 0;
 }
 
@@ -152,6 +153,7 @@
         </div>
 
         <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
+        <a href="#pa-emergency-form-top" class="ob-btn ob-btn-outline pa-flow-edit">@L["Edit details"]</a>
         <a href="@ViewBag.FlowBackUrl" class="pa-back-link">@L["Back to start"]</a>
     </form>
 </div>

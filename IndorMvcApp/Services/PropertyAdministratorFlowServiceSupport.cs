@@ -75,6 +75,11 @@ public static class PropertyAdministratorFlowServiceSupport
             "Today, {0}",
             utc.ToLocalTime().ToString("h:mm tt", CultureInfo.CurrentCulture));
 
+    public static string FormatTodayBulletTime(DateTime utc) =>
+        PropertyAdministratorDisplayLocalization.T(
+            "Today • {0}",
+            utc.ToLocalTime().ToString("h:mm tt", CultureInfo.CurrentCulture));
+
     public static IReadOnlyList<PropertyAdministratorEmergencyAcTimelineItemViewModel> BuildEmergencyRouteTimeline(
         IndorPropertyAdminServiceRequest request,
         string finalStepLabel,

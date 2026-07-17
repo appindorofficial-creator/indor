@@ -178,9 +178,9 @@ public class PropertyAdministratorStandardCleaningService(
     private static IReadOnlyList<PropertyAdministratorStandardCleaningTimelineItemViewModel> BuildTimeline(
         IndorPropertyAdminServiceRequest request, PropertyAdministratorStandardCleaningSubmitInput input)
     {
-        var submitted = request.FechaCreacion.ToLocalTime().ToString("Today, h:mm tt");
-        var assigned = request.FechaCreacion.AddMinutes(1).ToLocalTime().ToString("Today, h:mm tt");
-        var scheduled = request.FechaCreacion.AddMinutes(3).ToLocalTime().ToString("Today, h:mm tt");
+        var submitted = PropertyAdministratorFlowServiceSupport.FormatTodayTime(request.FechaCreacion);
+        var assigned = PropertyAdministratorFlowServiceSupport.FormatTodayTime(request.FechaCreacion.AddMinutes(1));
+        var scheduled = PropertyAdministratorFlowServiceSupport.FormatTodayTime(request.FechaCreacion.AddMinutes(3));
         var visitLabel = $"{LabelScheduleWhen(input.ScheduleWhen)} {input.ScheduleTimeWindow}";
 
         return
