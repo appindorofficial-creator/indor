@@ -511,6 +511,32 @@ public static class UiTranslationsFinal
             ["You can do this now or update it later from your profile."] =
                 "Puedes hacerlo ahora o actualizarlo después desde tu perfil.",
             ["Optional Verification"] = "Verificación opcional",
+            ["Realtor Verification"] = "Verificación de agente inmobiliario",
+            ["Enter your license information so we can verify your realtor profile."] =
+                "Ingresa la información de tu licencia para que podamos verificar tu perfil de agente inmobiliario.",
+            ["Brokerage / Company Name"] = "Nombre de la correduría / empresa",
+            ["Real Estate License Number"] = "Número de licencia inmobiliaria",
+            ["License State"] = "Estado de la licencia",
+            ["City / Market Area"] = "Ciudad / área de mercado",
+            ["As you type, we'll suggest US addresses and auto-fill city, state, and ZIP when available."] =
+                "Al escribir, sugeriremos direcciones de EE. UU. y completaremos ciudad, estado y código postal cuando estén disponibles.",
+            ["Complete city, state, and ZIP for your office address."] =
+                "Completa ciudad, estado y código postal de la dirección de tu oficina.",
+            ["Your profile is ready"] = "Tu perfil está listo",
+            ["You can now enter as a Realtor."] = "Ya puedes entrar como agente inmobiliario.",
+            ["Complete verification"] = "Completar verificación",
+            ["I'll do it later"] = "Lo haré después",
+            ["No required documents attached. Please upload your license photo and government ID, or choose Skip for now."] =
+                "No hay documentos obligatorios adjuntos. Sube la foto de tu licencia y tu identificación oficial, o elige Omitir por ahora.",
+            ["Please attach your {0} before continuing, or choose Skip for now."] =
+                "Adjunta {0} antes de continuar, o elige Omitir por ahora.",
+            ["Please fix this before continuing:"] = "Corrige esto antes de continuar:",
+            ["Please complete the required fields above."] = "Completa los campos obligatorios de arriba.",
+            ["ZIP"] = "Código postal",
+            ["I authorize Home Indor to verify my real estate license using the information provided."] =
+                "Autorizo a INDOR a verificar mi licencia inmobiliaria con la información proporcionada.",
+            ["Select one or more: English and Spanish only."] =
+                "Selecciona uno o más: solo inglés y español.",
             ["Realtor registration progress"] = "Progreso de registro de agente inmobiliario",
             ["Responded"] = "Respondidos",
             ["Verified Homeowner"] = "Propietario verificado",

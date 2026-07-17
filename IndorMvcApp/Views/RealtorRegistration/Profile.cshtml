@@ -1,4 +1,6 @@
+@using IndorMvcApp.Helpers
 @using IndorMvcApp.Validation
+@using System.Text.Json
 
 @model IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel
 
@@ -6,7 +8,11 @@
 
     var s = Model.State;
 
-    string FieldError(string key) => ViewData.ModelState[key]?.Errors.FirstOrDefault()?.ErrorMessage ?? "";
+    string FieldError(string key)
+    {
+        var raw = ViewData.ModelState[key]?.Errors.FirstOrDefault()?.ErrorMessage ?? "";
+        return string.IsNullOrWhiteSpace(raw) ? "" : UiDisplayLocalization.Localize(L, raw);
+    }
 
     var brokerageError = FieldError("brokerageName");
 
@@ -32,15 +38,16 @@
         .Select(e => e.ErrorMessage)
         .Where(m => !string.IsNullOrWhiteSpace(m))
         .Distinct()
+        .Select(m => UiDisplayLocalization.Localize(L, m))
         .ToList();
 
 }
 
 <div class="ob-head-block">
 
-    <h1>@Model.Title</h1>
+    <h1>@UiDisplayLocalization.Localize(L, Model.Title)</h1>
 
-    <p>@Model.Subtitle</p>
+    <p>@UiDisplayLocalization.Localize(L, Model.Subtitle)</p>
 
 </div>
 
@@ -293,7 +300,7 @@
 
                     <i class="fas fa-globe"></i>
 
-                    <span>@lang</span>
+                    <span>@L[lang]</span>
 
                 </label>
 
@@ -363,6 +370,34 @@
 
 
 @section Scripts {
+<script>
+window.IndorRealtorLicenseI18n = @Html.Raw(JsonSerializer.Serialize(new Dictionary<string, string>
+{
+    ["License number is required."] = L["License number is required."],
+    ["License number must be at least 4 characters."] = L["License number must be at least 4 characters."],
+    ["License number cannot exceed 20 characters."] = L["License number cannot exceed 20 characters."],
+    ["License number can only contain letters and numbers (no spaces or symbols)."] = L["License number can only contain letters and numbers (no spaces or symbols)."],
+    ["License number must include at least one letter (cannot be only numbers)."] = L["License number must include at least one letter (cannot be only numbers)."]
+}));
+window.IndorRealtorProfileI18n = @Html.Raw(JsonSerializer.Serialize(new Dictionary<string, string>
+{
+    ["Please fix this before continuing:"] = L["Please fix this before continuing:"],
+    ["Please fix the following before continuing:"] = L["Please fix the following before continuing:"],
+    ["Brokerage / Company Name is required."] = L["Brokerage / Company Name is required."],
+    ["License number is required."] = L["License number is required."],
+    ["Please select your license state."] = L["Please select your license state."],
+    ["City / market area is required."] = L["City / market area is required."],
+    ["Office address is required."] = L["Office address is required."],
+    ["Enter a complete street address with street name and type (e.g. 123 Main St)."] = L["Enter a complete street address with street name and type (e.g. 123 Main St)."],
+    ["City is required."] = L["City is required."],
+    ["State is required."] = L["State is required."],
+    ["ZIP code is required."] = L["ZIP code is required."],
+    ["Enter a valid 5-digit ZIP code (e.g. 77002)."] = L["Enter a valid 5-digit ZIP code (e.g. 77002)."],
+    ["Select at least one language."] = L["Select at least one language."],
+    ["Only English and Spanish are supported."] = L["Only English and Spanish are supported."],
+    ["Please check the authorization box to verify your license before continuing."] = L["Please check the authorization box to verify your license before continuing."]
+}));
+</script>
 <script src="~/js/realtor-license-number.js" asp-append-version="true"></script>
 <script src="~/js/zip-input.js" asp-append-version="true"></script>
 @await Html.PartialAsync("_AddressAutocompleteScripts")
@@ -371,6 +406,11 @@
     var form = document.getElementById('rlRegProfileForm');
     if (!form) {
         return;
+    }
+
+    function t(key) {
+        var i18n = window.IndorRealtorProfileI18n || {};
+        return i18n[key] || key;
     }
 
     function scrollToFirstError() {
@@ -412,8 +452,8 @@
 
         if (title) {
             title.textContent = messages.length === 1
-                ? 'Please fix this before continuing:'
-                : 'Please fix the following before continuing:';
+                ? t('Please fix this before continuing:')
+                : t('Please fix the following before continuing:');
         }
 
         alert.classList.remove('is-hidden');
@@ -452,8 +492,8 @@
 
         if (summary) {
             summary.textContent = messages.length === 1
-                ? 'Please fix this before continuing:'
-                : 'Please fix the following before continuing:';
+                ? t('Please fix this before continuing:')
+                : t('Please fix the following before continuing:');
         }
 
         banner.classList.remove('is-hidden');
@@ -599,7 +639,7 @@
 
         var brokerage = form.querySelector('input[name="brokerageName"]');
         if (!brokerage || !brokerage.value.trim()) {
-            var message = 'Brokerage / Company Name is required.';
+            var message = t('Brokerage / Company Name is required.');
             hasError = setFieldError('brokerageNameError', 'input[name="brokerageName"]', message) || hasError;
             messages.push(message);
         }
@@ -612,21 +652,21 @@
                 messages.push(licenseMessage);
             }
         } else if (licenseInput && !licenseInput.value.trim()) {
-            var licenseRequired = 'License number is required.';
+            var licenseRequired = t('License number is required.');
             hasError = setLicenseError(licenseRequired) || hasError;
             messages.push(licenseRequired);
         }
 
         var licenseState = form.querySelector('select[name="licenseState"]');
         if (!licenseState || !licenseState.value.trim()) {
-            var stateMessage = 'Please select your license state.';
+            var stateMessage = t('Please select your license state.');
             hasError = setFieldError('licenseStateError', 'select[name="licenseState"]', stateMessage) || hasError;
             messages.push(stateMessage);
         }
 
         var serviceAreas = form.querySelector('input[name="serviceAreas"]');
         if (!serviceAreas || !serviceAreas.value.trim()) {
-            var areaMessage = 'City / market area is required.';
+            var areaMessage = t('City / market area is required.');
             hasError = setFieldError('serviceAreasError', 'input[name="serviceAreas"]', areaMessage) || hasError;
             messages.push(areaMessage);
         }
@@ -635,10 +675,10 @@
         var officeCity = form.querySelector('input[name="officeCity"]');
         var officeState = form.querySelector('select[name="officeState"]');
         var officeZip = form.querySelector('input[name="officeZip"]');
-        var officeAddressMessage = 'Enter a complete street address with street name and type (e.g. 123 Main St).';
+        var officeAddressMessage = t('Enter a complete street address with street name and type (e.g. 123 Main St).');
 
         if (!officeAddress || !officeAddress.value.trim()) {
-            var addressRequiredMessage = 'Office address is required.';
+            var addressRequiredMessage = t('Office address is required.');
             hasError = setFieldError('officeAddressError', 'input[name="officeAddress"]', addressRequiredMessage) || hasError;
             messages.push(addressRequiredMessage);
         } else if (!isValidStreetAddress(officeAddress.value)) {
@@ -647,20 +687,20 @@
         }
 
         if (!officeCity || !officeCity.value.trim()) {
-            var cityMessage = 'City is required.';
+            var cityMessage = t('City is required.');
             hasError = setFieldError('officeCityError', 'input[name="officeCity"]', cityMessage) || hasError;
             messages.push(cityMessage);
         }
 
         if (!officeState || !officeState.value.trim()) {
-            var stateMessage = 'State is required.';
+            var stateMessage = t('State is required.');
             hasError = setFieldError('officeStateError', 'select[name="officeState"]', stateMessage) || hasError;
             messages.push(stateMessage);
         }
 
-        var zipMessage = 'Enter a valid 5-digit ZIP code (e.g. 77002).';
+        var zipMessage = t('Enter a valid 5-digit ZIP code (e.g. 77002).');
         if (!officeZip || !officeZip.value.trim()) {
-            var zipRequiredMessage = 'ZIP code is required.';
+            var zipRequiredMessage = t('ZIP code is required.');
             hasError = setFieldError('officeZipError', 'input[name="officeZip"]', zipRequiredMessage) || hasError;
             messages.push(zipRequiredMessage);
         } else if (window.IndorZipInput && !window.IndorZipInput.isValidRequired(officeZip.value)) {
@@ -673,13 +713,13 @@
 
         var checkedLanguages = form.querySelectorAll('input[name="languages"]:checked');
         if (!checkedLanguages.length) {
-            var languagesMessage = 'Select at least one language.';
+            var languagesMessage = t('Select at least one language.');
             hasError = setLanguagesError(languagesMessage) || hasError;
             messages.push(languagesMessage);
         } else {
             checkedLanguages.forEach(function (input) {
                 if (supported.indexOf(input.value) === -1) {
-                    var unsupportedMessage = 'Only English and Spanish are supported.';
+                    var unsupportedMessage = t('Only English and Spanish are supported.');
                     hasError = setLanguagesError(unsupportedMessage) || hasError;
                     messages.push(unsupportedMessage);
                 }
@@ -688,7 +728,7 @@
 
         var terms = document.getElementById('professionalTermsAccepted');
         if (!terms || !terms.checked) {
-            var termsMessage = 'Please check the authorization box to verify your license before continuing.';
+            var termsMessage = t('Please check the authorization box to verify your license before continuing.');
             hasError = setTermsError(termsMessage) || hasError;
             messages.push(termsMessage);
         }
@@ -737,21 +777,21 @@
                 return;
             }
             var blurMessages = {
-                brokerageName: 'Brokerage / Company Name is required.',
-                serviceAreas: 'City / market area is required.',
-                officeAddress: 'Office address is required.',
-                officeCity: 'City is required.',
-                officeZip: 'ZIP code is required.'
+                brokerageName: t('Brokerage / Company Name is required.'),
+                serviceAreas: t('City / market area is required.'),
+                officeAddress: t('Office address is required.'),
+                officeCity: t('City is required.'),
+                officeZip: t('ZIP code is required.')
             };
             var blurMessage = blurMessages[input.name];
             if (blurMessage) {
                 setFieldError(errorId, selector, blurMessage);
             }
             if (input.name === 'licenseState' && !input.value.trim()) {
-                setFieldError('licenseStateError', 'select[name="licenseState"]', 'Please select your license state.');
+                setFieldError('licenseStateError', 'select[name="licenseState"]', t('Please select your license state.'));
             }
             if (input.name === 'officeState' && !input.value.trim()) {
-                setFieldError('officeStateError', 'select[name="officeState"]', 'State is required.');
+                setFieldError('officeStateError', 'select[name="officeState"]', t('State is required.'));
             }
         });
     });
