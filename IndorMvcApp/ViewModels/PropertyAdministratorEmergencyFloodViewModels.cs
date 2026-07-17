@@ -17,6 +17,8 @@ public class PropertyAdministratorEmergencyFloodFormViewModel : PropertyAdminist
     public string InsuranceCarrier { get; set; } = "";
     public string ClaimOpened { get; set; } = "";
     public string? ClaimNumber { get; set; }
+    public string? MediaAttachmentsJson { get; set; }
+    public string? PolicyDocsJson { get; set; }
     public string EstimatedPrice { get; set; } = "$149–$199";
     public string ProEtaLabel { get; set; } = "Nearest water mitigation pro available in 19 minutes";
 }
@@ -36,6 +38,8 @@ public class PropertyAdministratorEmergencyFloodSubmitInput
     public string? InsuranceCarrier { get; set; }
     public string ClaimOpened { get; set; } = "";
     public string? ClaimNumber { get; set; }
+    public string? MediaAttachmentsJson { get; set; }
+    public string? PolicyDocsJson { get; set; }
 }
 
 public class PropertyAdministratorEmergencyFloodConfirmedViewModel : PropertyAdministratorPortalShellViewModel

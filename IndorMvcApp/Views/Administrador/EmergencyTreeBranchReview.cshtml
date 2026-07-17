@@ -25,14 +25,14 @@
             @foreach (var row in Model.RequestSummaryRows)
             {
                 <div class="pa-moving-review-row">
-                    <span class="pa-moving-review-label"><i class="fas @row.IconClass"></i> @row.Label</span>
+                    <span class="pa-moving-review-label"><i class="fas @row.IconClass"></i> @UiDisplayLocalization.Localize(L, row.Label)</span>
                     @if (row.IsDangerBadge)
                     {
-                        <strong class="pa-danger-pill">@row.Value</strong>
+                        <strong class="pa-danger-pill">@UiDisplayLocalization.Localize(L, row.Value)</strong>
                     }
                     else
                     {
-                        <strong class="pa-moving-review-value">@row.Value</strong>
+                        <strong class="pa-moving-review-value">@UiDisplayLocalization.Localize(L, row.Value)</strong>
                     }
                 </div>
             }
@@ -45,8 +45,8 @@
             @foreach (var row in Model.AccessContactRows)
             {
                 <div class="pa-moving-review-row">
-                    <span class="pa-moving-review-label"><i class="fas @row.IconClass"></i> @row.Label</span>
-                    <strong class="pa-moving-review-value">@row.Value</strong>
+                    <span class="pa-moving-review-label"><i class="fas @row.IconClass"></i> @UiDisplayLocalization.Localize(L, row.Label)</span>
+                    <strong class="pa-moving-review-value">@UiDisplayLocalization.Localize(L, row.Value)</strong>
                 </div>
             }
         </div>

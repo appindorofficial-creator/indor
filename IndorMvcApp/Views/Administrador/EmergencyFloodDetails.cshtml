@@ -135,8 +135,16 @@
             <label><i class="fas fa-camera pa-q-icon"></i> @L["Photos & voice"]</label>
             @{
                 ViewData["PaMediaLarge"] = true;
+                ViewData["PaMediaShowVoice"] = true;
+                ViewData["PaMediaUseCapture"] = true;
+                ViewData["PaMediaFieldName"] = "MediaAttachmentsJson";
+                ViewData["PaMediaKind"] = "photo";
+                ViewData["PaMediaAccept"] = "image/*,video/*,.pdf,application/pdf";
+                ViewData["PaMediaPhotoIcon"] = "fa-camera";
+                ViewData["PaMediaButtonClass"] = null;
                 ViewData["PaMediaPhotoLabel"] = L["Add photos — Help us assess faster"].ToString();
                 ViewData["PaMediaVoiceLabel"] = L["Voice note — Tap to record"].ToString();
+                ViewData["PaMediaAttachmentsJson"] = Model.MediaAttachmentsJson ?? "[]";
             }
             @await Html.PartialAsync("_PropertyAdminMediaCapture")
         </div>
@@ -169,7 +177,19 @@
                     <input type="text" name="ClaimNumber" value="@Model.ClaimNumber" placeholder="@L["Enter claim number"]" />
                 </div>
             </div>
-            <button type="button" class="pa-upload-policy-btn"><i class="fas fa-cloud-arrow-up"></i> @L["Upload policy / claim docs"]</button>
+            @{
+                ViewData["PaMediaShowVoice"] = false;
+                ViewData["PaMediaLarge"] = false;
+                ViewData["PaMediaUseCapture"] = false;
+                ViewData["PaMediaFieldName"] = "PolicyDocsJson";
+                ViewData["PaMediaKind"] = "document";
+                ViewData["PaMediaAccept"] = "image/*,.pdf,application/pdf";
+                ViewData["PaMediaPhotoIcon"] = "fa-cloud-arrow-up";
+                ViewData["PaMediaButtonClass"] = "pa-upload-policy-btn";
+                ViewData["PaMediaPhotoLabel"] = L["Upload policy / claim docs"].ToString();
+                ViewData["PaMediaAttachmentsJson"] = Model.PolicyDocsJson ?? "[]";
+            }
+            @await Html.PartialAsync("_PropertyAdminMediaCapture")
         </article>
 
         <div class="pa-flow-summary-grid">

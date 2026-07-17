@@ -88,7 +88,9 @@ public class PropertyAdministratorEmergencyTreeBranchService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            GuestsOnSiteLabel = step1.GuestsInside == "Yes" ? "Guests on-site: Yes" : null,
+            GuestsOnSiteLabel = step1.GuestsInside == "Yes"
+                ? PropertyAdministratorDisplayLocalization.L("Guests on-site: Yes")
+                : null,
             Input = input,
             RequestSummaryRows = BuildRequestSummaryRows(input, mapped),
             AccessContactRows = BuildAccessContactRows(input)
@@ -176,22 +178,63 @@ public class PropertyAdministratorEmergencyTreeBranchService(
         PropertyAdministratorEmergencyTreeBranchSubmitInput input,
         PropertyAdministratorFlowPropertyViewModel property) =>
     [
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Property"), Value = $"Viewing: {property.PropertyName}", IconClass = "fa-house" },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Property"),
+            Value = PropertyAdministratorDisplayLocalization.T("Viewing: {0}", property.PropertyName),
+            IconClass = "fa-house"
+        },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Issue"), Value = LabelIssue(input.IssueType), IconClass = "fa-tree" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Guests inside"), Value = input.GuestsInside, IconClass = "fa-users" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Danger level"), Value = input.Urgency, IconClass = "fa-circle-exclamation", IsDangerBadge = input.Urgency == "Emergency" },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Guests inside"),
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.GuestsInside),
+            IconClass = "fa-users"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Danger level"),
+            Value = LabelUrgency(input.Urgency),
+            IconClass = "fa-circle-exclamation",
+            IsDangerBadge = input.Urgency == "Emergency"
+        },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Damage area"), Value = LabelDamageAreas(input.DamageAreasList), IconClass = "fa-location-dot" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Tarp needed"), Value = input.TarpNeeded, IconClass = "fa-umbrella" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Power line involvement"), Value = input.IssueType == "NearPowerLine" ? "Yes" : "No", IconClass = "fa-bolt" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Notes"), Value = input.QuickDetails ?? "—", IconClass = "fa-note-sticky" }
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Tarp needed"),
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.TarpNeeded),
+            IconClass = "fa-umbrella"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Power line involvement"),
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.IssueType == "NearPowerLine" ? "Yes" : "No"),
+            IconClass = "fa-bolt"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Notes"),
+            Value = string.IsNullOrWhiteSpace(input.QuickDetails) ? "—" : input.QuickDetails,
+            IconClass = "fa-note-sticky"
+        }
     ];
 
     private static IReadOnlyList<PropertyAdministratorEmergencyTreeBranchReviewRowViewModel> BuildAccessContactRows(
         PropertyAdministratorEmergencyTreeBranchSubmitInput input) =>
     [
         new() { Label = PropertyAdministratorDisplayLocalization.L("Entry access"), Value = LabelEntryAccess(input.EntryAccess), IconClass = "fa-door-open" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Gate / parking notes"), Value = input.GateParkingNotes, IconClass = "fa-road" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Who gets updates"), Value = FormatRecipients(input.UpdateRecipientsList), IconClass = "fa-bell" },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Gate / parking notes"),
+            Value = LabelGateParkingNotes(input.GateParkingNotes),
+            IconClass = "fa-road"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Who gets updates"),
+            Value = FormatRecipients(input.UpdateRecipientsList),
+            IconClass = "fa-bell"
+        },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Best contact"), Value = input.ContactPhone, IconClass = "fa-phone" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Insurance help"), Value = LabelInsuranceHelp(input.InsuranceHelp), IconClass = "fa-shield-halved" }
     ];
@@ -238,8 +281,22 @@ public class PropertyAdministratorEmergencyTreeBranchService(
     private static string LabelDamageAreas(IEnumerable<string> areas)
     {
         var labels = areas.Select(LabelDamageArea).Where(l => !string.IsNullOrWhiteSpace(l)).ToList();
-        return labels.Count == 0 ? "Not specified" : string.Join(" + ", labels);
+        return labels.Count == 0
+            ? PropertyAdministratorDisplayLocalization.L("Not specified")
+            : string.Join(" + ", labels);
     }
+
+    private static string LabelUrgency(string value) => value switch
+    {
+        "Emergency" => PropertyAdministratorDisplayLocalization.L("Emergency"),
+        "Normal" => PropertyAdministratorDisplayLocalization.L("Normal"),
+        _ => PropertyAdministratorDisplayLocalization.L("Urgent")
+    };
+
+    private static string LabelGateParkingNotes(string? value) =>
+        string.IsNullOrWhiteSpace(value)
+            ? "—"
+            : PropertyAdministratorDisplayLocalization.L(value);
 
     private static string LabelEntryAccess(string value) => value switch
     {
@@ -252,7 +309,7 @@ public class PropertyAdministratorEmergencyTreeBranchService(
     private static string LabelInsuranceHelp(string value) => value switch
     {
         "Yes" => PropertyAdministratorDisplayLocalization.L("Yes, help with claim"),
-        "No" => "No",
+        "No" => PropertyAdministratorDisplayLocalization.L("No"),
         "UploadLater" => PropertyAdministratorDisplayLocalization.L("I'll upload later"),
         _ => PropertyAdministratorDisplayLocalization.L("Need documentation for claim")
     };
@@ -261,11 +318,14 @@ public class PropertyAdministratorEmergencyTreeBranchService(
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
-            _ => "Me"
-        });
-        return string.Join(" + ", labels);
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
+            _ => PropertyAdministratorDisplayLocalization.L("Me")
+        }).ToList();
+
+        return labels.Count == 0
+            ? PropertyAdministratorDisplayLocalization.L("Me")
+            : string.Join(" + ", labels);
     }
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(

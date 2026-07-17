@@ -818,6 +818,10 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-insurance-fields .pa-field span{font-size:.72rem;font-weight:600;color:#64748B}
 .pa-insurance-fields .pa-field input{border:none;outline:none;font:inherit;font-size:.84rem;background:transparent;width:100%}
 .pa-upload-policy-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border:1.5px solid #BFDBFE;border-radius:12px;background:#fff;color:#0066CC;font:inherit;font-size:.78rem;font-weight:600;cursor:pointer}
+.pa-insurance-card .pa-media-capture{margin-top:4px}
+.pa-insurance-card .pa-media-preview{margin-top:10px;margin-bottom:0}
+.pa-insurance-card .pa-media-preview-item{background:#fff;border-color:#BFDBFE}
+
 .pa-flow-pro-card--flood{background:#FEF2F2;border-color:#FECACA}
 .pa-flow-pro-card--flood strong{display:block;font-size:.76rem;color:#991B1B;line-height:1.35}
 .pa-flow-pro-card--flood small{display:block;font-size:.68rem;color:#B91C1C;margin:4px 0 8px}

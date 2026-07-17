@@ -27,6 +27,7 @@
         }
 
         var uploadUrl = root.getAttribute('data-upload-url') || '';
+        var defaultKind = root.getAttribute('data-upload-kind') || 'photo';
         var photoInput = root.querySelector('.pa-media-photo-input');
         var photoBtn = root.querySelector('.pa-media-photo-btn');
         var voiceBtn = root.querySelector('.pa-media-voice-btn');
@@ -57,8 +58,11 @@
             attachments.forEach(function (item, index) {
                 var li = document.createElement('li');
                 li.className = 'pa-media-preview-item';
-                var icon = item.kind === 'voice' ? 'fa-microphone' : 'fa-image';
-                var name = item.name || (item.kind === 'voice' ? 'Voice note' : 'Photo');
+                var icon = item.kind === 'voice'
+                    ? 'fa-microphone'
+                    : (item.kind === 'document' || item.kind === 'video' ? 'fa-file' : 'fa-image');
+                var name = item.name
+                    || (item.kind === 'voice' ? 'Voice note' : (item.kind === 'document' ? 'Document' : 'Photo'));
                 li.innerHTML =
                     '<i class="fas ' + icon + '"></i>' +
                     '<span class="pa-media-preview-name"></span>' +
@@ -118,10 +122,10 @@
                 setBusy(true);
                 try {
                     for (var i = 0; i < files.length; i++) {
-                        var result = await uploadFile(files[i], 'photo');
+                        var result = await uploadFile(files[i], defaultKind);
                         if (result && result.path) {
                             attachments.push({
-                                kind: 'photo',
+                                kind: result.kind || defaultKind,
                                 path: result.path,
                                 name: result.name || files[i].name
                             });

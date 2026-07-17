@@ -1,30 +1,56 @@
-@* Reusable PA photo + voice capture. Place inside a form. *@
+@* Reusable PA photo + voice + document capture. Place inside a form. *@
 @{
     var photoLabel = ViewData["PaMediaPhotoLabel"] as string ?? L["Add photos"].ToString();
     var voiceLabel = ViewData["PaMediaVoiceLabel"] as string ?? L["Voice note"].ToString();
     var large = ViewData["PaMediaLarge"] as bool? == true;
     var showVoice = ViewData["PaMediaShowVoice"] as bool? != false;
-    var btnClass = large ? "pa-media-btn pa-media-btn--large" : "pa-media-btn";
+    var fieldName = ViewData["PaMediaFieldName"] as string ?? "MediaAttachmentsJson";
+    var accept = ViewData["PaMediaAccept"] as string ?? "image/*,video/*,.pdf,application/pdf";
+    var uploadKind = ViewData["PaMediaKind"] as string ?? "photo";
+    var photoIcon = ViewData["PaMediaPhotoIcon"] as string ?? "fa-camera";
+    var useCapture = ViewData["PaMediaUseCapture"] as bool? == true;
     var existingJson = ViewData["PaMediaAttachmentsJson"] as string ?? "[]";
     var captureClass = showVoice ? "pa-media-capture" : "pa-media-capture pa-media-capture--photos-only";
+    string photoBtnClass;
+    if (ViewData["PaMediaButtonClass"] is string customBtn && !string.IsNullOrWhiteSpace(customBtn))
+    {
+        photoBtnClass = customBtn;
+    }
+    else if (large)
+    {
+        photoBtnClass = showVoice ? "pa-media-btn pa-media-btn--large" : "pa-media-btn pa-media-btn--large pa-media-btn--wide";
+    }
+    else
+    {
+        photoBtnClass = showVoice ? "pa-media-btn" : "pa-media-btn pa-media-btn--wide";
+    }
+    var voiceBtnClass = large ? "pa-media-btn pa-media-btn--large" : "pa-media-btn";
 }
 <div class="@captureClass" data-pa-media-capture
      data-upload-url="@Url.Action("UploadFlowMedia", "Administrador")"
+     data-upload-kind="@uploadKind"
      data-msg-recording="@L["Recording… tap to stop"]"
      data-msg-record="@voiceLabel"
      data-msg-mic-denied="@L["Microphone permission is required to record a voice note."]"
      data-msg-upload-fail="@L["Could not upload media. Try again."]"
      data-msg-remove="@L["Remove"]">
-    <input type="hidden" name="MediaAttachmentsJson" class="pa-media-attachments-json" value="@existingJson" />
-    <input type="file" class="pa-media-photo-input" accept="image/*,video/*,.pdf,application/pdf" multiple capture="environment" hidden />
+    <input type="hidden" name="@fieldName" class="pa-media-attachments-json" value="@existingJson" />
+    @if (useCapture)
+    {
+        <input type="file" class="pa-media-photo-input" accept="@accept" multiple capture="environment" hidden />
+    }
+    else
+    {
+        <input type="file" class="pa-media-photo-input" accept="@accept" multiple hidden />
+    }
 
     <div class="pa-media-actions@(showVoice ? "" : " pa-media-actions--single")">
-        <button type="button" class="@(showVoice ? btnClass : btnClass + " pa-media-btn--wide") pa-media-photo-btn">
-            <i class="fas fa-camera"></i> @photoLabel
+        <button type="button" class="@photoBtnClass pa-media-photo-btn">
+            <i class="fas @photoIcon"></i> @photoLabel
         </button>
         @if (showVoice)
         {
-            <button type="button" class="@btnClass pa-media-voice-btn" data-recording="false">
+            <button type="button" class="@voiceBtnClass pa-media-voice-btn" data-recording="false">
                 <i class="fas fa-microphone"></i> <span class="pa-media-voice-label">@voiceLabel</span>
             </button>
         }
