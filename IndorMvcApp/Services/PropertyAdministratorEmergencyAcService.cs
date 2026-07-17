@@ -34,7 +34,6 @@ public class PropertyAdministratorEmergencyAcService(
             ?? throw new InvalidOperationException("Property administrator not found.");
         var shell = await BuildShellAsync(admin, cancellationToken);
         var property = ResolveProperty(admin, propertyId);
-        var user = await GetUserAsync();
         var mapped = MapProperty(property);
 
         return new PropertyAdministratorEmergencyAcFormViewModel
@@ -46,7 +45,8 @@ public class PropertyAdministratorEmergencyAcService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
+            // Leave blank so the urgent-contact field is not pre-filled with profile/demo data.
+            ContactPhone = ""
         };
     }
 

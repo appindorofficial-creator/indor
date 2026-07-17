@@ -2954,5 +2954,6 @@ public static class UiTranslationsFinal
             ["Photos & voice"] = "Fotos y voz",
             ["Voice note"] = "Nota de voz",
             ["Add photos"] = "Agregar fotos",
+            ["Enter phone number"] = "Ingresa el número de teléfono",
         };
 }
