@@ -73,14 +73,17 @@ public class PropertyAdministratorLockoutAccessService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             PropertyId = property.Id,
             ViewingProperty = mapped,
-            GuestsWaitingLabel = step1.SomeoneOutside == "Yes" ? "Guest waiting outside" : null,
+            GuestsWaitingLabel = step1.SomeoneOutside == "Yes"
+                ? PropertyAdministratorDisplayLocalization.L("Guest waiting outside")
+                : null,
             IssueType = step1.IssueType,
             SomeoneOutside = step1.SomeoneOutside,
             HomeOccupied = step1.HomeOccupied,
             Urgency = step1.Urgency,
             WhoNeedsAccess = step1.WhoNeedsAccess,
             QuickDetails = step1.QuickDetails ?? "",
-            EntryNotes = "Guest is waiting at front door. Parking available in driveway.",
+            EntryNotes = PropertyAdministratorDisplayLocalization.L(
+                "Guest is waiting at front door. Parking available in driveway."),
             ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }

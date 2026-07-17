@@ -80,7 +80,9 @@ public class PropertyAdministratorBrokenWindowBoardUpService(
             GuestsInside = step1.GuestsInside,
             ExposedToRisk = step1.ExposedToRisk,
             QuickDetails = step1.QuickDetails ?? "",
-            EntryInstructions = $"Front door code: {1000 + property.Id}",
+            EntryInstructions = PropertyAdministratorDisplayLocalization.T(
+                "Front door code: {0}",
+                1000 + property.Id),
             ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }

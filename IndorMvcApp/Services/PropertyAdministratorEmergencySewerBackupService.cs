@@ -172,19 +172,29 @@ public class PropertyAdministratorEmergencySewerBackupService(
         PropertyAdministratorEmergencySewerBackupSubmitInput input,
         PropertyAdministratorFlowPropertyViewModel property) =>
     [
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Property"), Value = $"Viewing: {property.PropertyName}", IconClass = "fa-house" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Issue"), Value = $"{LabelIssue(input.IssueType)} / sewer backup", IconClass = "fa-droplet" },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Property"),
+            Value = PropertyAdministratorDisplayLocalization.T("Viewing: {0}", property.PropertyName),
+            IconClass = "fa-house"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Issue"),
+            Value = PropertyAdministratorDisplayLocalization.T("{0} / sewer backup", LabelIssue(input.IssueType)),
+            IconClass = "fa-droplet"
+        },
         new()
         {
             Label = PropertyAdministratorDisplayLocalization.L("Occupied"),
-            Value = input.GuestsInside == "Yes" ? "Yes" : "No",
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.GuestsInside),
             IconClass = "fa-user",
             Highlight = input.GuestsInside == "Yes"
         },
         new()
         {
             Label = PropertyAdministratorDisplayLocalization.L("Guests inside"),
-            Value = input.GuestsInside,
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.GuestsInside),
             IconClass = "fa-users",
             Highlight = input.GuestsInside == "Yes"
         },
@@ -192,7 +202,9 @@ public class PropertyAdministratorEmergencySewerBackupService(
         new()
         {
             Label = PropertyAdministratorDisplayLocalization.L("Water status"),
-            Value = input.SewageBackingUp == "Yes" ? "Dirty water backing up" : "Not actively backing up",
+            Value = input.SewageBackingUp == "Yes"
+                ? PropertyAdministratorDisplayLocalization.L("Dirty water backing up")
+                : PropertyAdministratorDisplayLocalization.L("Not actively backing up"),
             IconClass = "fa-water"
         },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
@@ -240,7 +252,9 @@ public class PropertyAdministratorEmergencySewerBackupService(
     private static string LabelLocations(IEnumerable<string> locations)
     {
         var labels = locations.Select(LabelLocation).Where(l => !string.IsNullOrWhiteSpace(l)).ToList();
-        return labels.Count == 0 ? "Not specified" : string.Join(" + ", labels);
+        return labels.Count == 0
+            ? PropertyAdministratorDisplayLocalization.L("Not specified")
+            : string.Join(" + ", labels);
     }
 
     private static string LabelAccess(string value) => value switch
@@ -254,9 +268,9 @@ public class PropertyAdministratorEmergencySewerBackupService(
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
-            _ => "Me"
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
+            _ => PropertyAdministratorDisplayLocalization.L("Me")
         });
         return string.Join(" + ", labels);
     }

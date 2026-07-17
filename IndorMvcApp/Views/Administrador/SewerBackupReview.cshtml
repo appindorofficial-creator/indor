@@ -22,8 +22,8 @@
         @foreach (var row in Model.SummaryRows)
         {
             <div class="pa-moving-review-row">
-                <span class="pa-moving-review-label"><i class="fas @row.IconClass"></i> @row.Label</span>
-                <strong class="pa-moving-review-value @(row.Highlight ? "is-alert" : null)">@row.Value</strong>
+                <span class="pa-moving-review-label"><i class="fas @row.IconClass"></i> @UiDisplayLocalization.Localize(L, row.Label)</span>
+                <strong class="pa-moving-review-value @(row.Highlight ? "is-alert" : null)">@UiDisplayLocalization.Localize(L, row.Value)</strong>
             </div>
         }
     </article>

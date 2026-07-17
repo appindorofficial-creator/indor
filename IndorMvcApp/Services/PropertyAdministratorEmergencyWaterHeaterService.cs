@@ -173,19 +173,24 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
         PropertyAdministratorEmergencyWaterHeaterSubmitInput input,
         PropertyAdministratorFlowPropertyViewModel property) =>
     [
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Property"), Value = $"Viewing: {property.PropertyName}", IconClass = "fa-house" },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Property"),
+            Value = PropertyAdministratorDisplayLocalization.T("Viewing: {0}", property.PropertyName),
+            IconClass = "fa-house"
+        },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Issue"), Value = FormatIssueSummary(input), IconClass = "fa-fire-flame-simple" },
         new()
         {
             Label = PropertyAdministratorDisplayLocalization.L("Occupied"),
-            Value = input.HomeOccupied,
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.HomeOccupied),
             IconClass = "fa-user",
             Highlight = input.HomeOccupied == "Yes"
         },
         new()
         {
             Label = PropertyAdministratorDisplayLocalization.L("Guests inside"),
-            Value = input.GuestsInside,
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.GuestsInside),
             IconClass = "fa-users",
             Highlight = input.GuestsInside == "Yes"
         },
@@ -193,7 +198,9 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
         new()
         {
             Label = PropertyAdministratorDisplayLocalization.L("Water status"),
-            Value = input.ActivelyLeaking == "Yes" ? "Actively leaking" : "Not actively leaking",
+            Value = input.ActivelyLeaking == "Yes"
+                ? PropertyAdministratorDisplayLocalization.L("Actively leaking")
+                : PropertyAdministratorDisplayLocalization.L("Not actively leaking"),
             IconClass = "fa-droplet"
         },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelAccess(input.EntryAccess, input.AccessNotes), IconClass = "fa-key" },
@@ -204,7 +211,9 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
     {
         if (input.ActivelyLeaking == "Yes" || input.ProblemType == "LeakingTank")
         {
-            return $"{LabelProblem(input.ProblemType)} / leaking tank";
+            return PropertyAdministratorDisplayLocalization.T(
+                "{0} / leaking tank",
+                LabelProblem(input.ProblemType));
         }
 
         return LabelProblem(input.ProblemType);
@@ -251,16 +260,18 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
         "SmartLock" => PropertyAdministratorDisplayLocalization.L("Smart lock code provided"),
         "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
         "GuestApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
-        _ => string.IsNullOrWhiteSpace(notes) ? "Garage side entry available" : notes
+        _ => string.IsNullOrWhiteSpace(notes)
+            ? PropertyAdministratorDisplayLocalization.L("Garage side entry available")
+            : PropertyAdministratorDisplayLocalization.L(notes)
     };
 
     private static string FormatRecipients(IEnumerable<string> recipients)
     {
         var labels = recipients.Select(r => r switch
         {
-            "Guest" => "Guest",
-            "CoHost" => "Co-host",
-            _ => "Me"
+            "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+            "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
+            _ => PropertyAdministratorDisplayLocalization.L("Me")
         });
         return string.Join(" + ", labels);
     }
