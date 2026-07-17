@@ -246,8 +246,10 @@ public partial class InspeccionesController
             PropiedadResumen = InspeccionDisplayLabels.FormatMoldMoisturePropertySummary(solicitud.TipoPropiedad),
             AccesoResumen = InspeccionDisplayLabels.AccesoPreferidoStructural(solicitud.AccesoPreferido),
             ArchivosResumen = archivos.Count == 0
-                ? "No files uploaded"
-                : $"{archivos.Count} photo{(archivos.Count == 1 ? "" : "s")} uploaded",
+                ? DisplayLabelsLocalization.L("No files uploaded")
+                : archivos.Count == 1
+                    ? DisplayLabelsLocalization.L("1 photo uploaded")
+                    : string.Format(DisplayLabelsLocalization.L("{0} photos uploaded"), archivos.Count),
             Archivos = archivos
                 .Select(a => new ExistingMoldMoistureFileViewModel
                 {

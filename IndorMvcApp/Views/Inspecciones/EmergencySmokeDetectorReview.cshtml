@@ -28,9 +28,9 @@ var unsafeInside = Model.SeguridadResumen.Contains("Not sure", StringComparison.
         <input type="hidden" asp-for="AccesoResumen" />
 
         <div class="summary-card">
-            <div class="summary-row"><i class="fas fa-fire-flame-curved"></i><div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TituloServicio</div></div></div>
+            <div class="summary-row"><i class="fas fa-fire-flame-curved"></i><div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.TituloServicio)</div></div></div>
             <div class="summary-row"><i class="fas fa-house"></i><div style="flex:1;"><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
-            <div class="summary-row"><i class="fas fa-circle-radiation"></i><div style="flex:1;"><div class="summary-label">@L["Issue"]</div><div class="summary-value">@Model.ProblemaResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-circle-radiation"></i><div style="flex:1;"><div class="summary-label">@L["Issue"]</div><div class="summary-value">@L.Catalog(Model.ProblemaResumen)</div></div></div>
             <div class="summary-row"><i class="fas fa-location-dot"></i><div style="flex:1;"><div class="summary-label">@L["Locations"]</div><div class="summary-value">@Model.UbicacionesResumen</div></div></div>
             <div class="summary-row"><i class="fas fa-triangle-exclamation warn"></i><div style="flex:1;"><div class="summary-label">@L["Safety status"]</div><div class="summary-value @(unsafeInside ? "warn" : "")">@Model.SeguridadResumen</div></div></div>
             <div class="summary-row"><i class="fas fa-wind"></i><div style="flex:1;"><div class="summary-label">@L["Gas smell"]</div><div class="summary-value">@Model.OlorGasResumen</div></div></div>

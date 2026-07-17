@@ -20,7 +20,7 @@
 
         <div class="summary-row">
             <i class="fas fa-water"></i>
-            <div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TituloServicio</div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.TituloServicio)</div></div>
         </div>
         <div class="summary-row">
             <i class="fas fa-house"></i>
@@ -32,7 +32,7 @@
         </div>
         <div class="summary-row">
             <i class="fas fa-droplet"></i>
-            <div style="flex:1;"><div class="summary-label">@L["Water source"]</div><div class="summary-value">@Model.CausaAguaResumen</div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Water source"]</div><div class="summary-value">@L.Catalog(Model.CausaAguaResumen)</div></div>
         </div>
         <div class="summary-row">
             <i class="fas fa-faucet-drip"></i>
@@ -40,7 +40,7 @@
         </div>
         <div class="summary-row">
             <i class="fas fa-magnifying-glass"></i>
-            <div style="flex:1;"><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-pill">@Model.EstadoResumen</span></div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-pill">@L.Catalog(Model.EstadoResumen)</span></div></div>
         </div>
     </div>
 

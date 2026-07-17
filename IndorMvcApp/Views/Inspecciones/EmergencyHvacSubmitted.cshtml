@@ -16,7 +16,7 @@
             <i class="fas fa-snowflake"></i>
             <div style="flex:1;">
                 <div class="summary-label">@L["Service"]</div>
-                <div class="summary-value">@Model.TituloServicio</div>
+                <div class="summary-value">@L.Catalog(Model.TituloServicio)</div>
             </div>
         </div>
         <div class="summary-row">
@@ -30,7 +30,7 @@
             <i class="fas fa-temperature-half"></i>
             <div style="flex:1;">
                 <div class="summary-label">@L["Issue"]</div>
-                <div class="summary-value">@Model.ProblemaResumen</div>
+                <div class="summary-value">@L.Catalog(Model.ProblemaResumen)</div>
             </div>
         </div>
         <div class="summary-row">
@@ -44,7 +44,7 @@
             <i class="fas fa-shield-halved"></i>
             <div style="flex:1;">
                 <div class="summary-label">@L["Status"]</div>
-                <div class="summary-value"><span class="status-pill"><span class="status-dot"></span>@Model.EstadoResumen</span></div>
+                <div class="summary-value"><span class="status-pill"><span class="status-dot"></span>@L.Catalog(Model.EstadoResumen)</span></div>
             </div>
         </div>
         <div class="summary-row">

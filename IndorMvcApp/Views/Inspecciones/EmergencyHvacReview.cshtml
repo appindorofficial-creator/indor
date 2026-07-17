@@ -23,7 +23,7 @@ var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringCompar
                 <i class="fas fa-snowflake"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Service"]</div>
-                    <div class="summary-value">@Model.TituloServicio</div>
+                    <div class="summary-value">@L.Catalog(Model.TituloServicio)</div>
                 </div>
             </div>
             <div class="summary-row">
@@ -37,14 +37,14 @@ var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringCompar
                 <i class="fas fa-temperature-half"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Issue"]</div>
-                    <div class="summary-value">@Model.ProblemaResumen</div>
+                    <div class="summary-value">@L.Catalog(Model.ProblemaResumen)</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-clock"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Status"]</div>
-                    <div class="summary-value">@Model.EstadoResumen</div>
+                    <div class="summary-value">@L.Catalog(Model.EstadoResumen)</div>
                 </div>
             </div>
             <div class="summary-row">
@@ -65,7 +65,7 @@ var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringCompar
                 <i class="fas fa-images"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Photos"]</div>
-                    <div class="summary-value">@Model.ArchivosResumen</div>
+                    <div class="summary-value">@L.Catalog(Model.ArchivosResumen)</div>
                 </div>
             </div>
         </div>

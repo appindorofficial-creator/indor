@@ -22,7 +22,7 @@
                 <i class="fas fa-droplet"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Service"]</div>
-                    <div class="summary-value">@Model.TituloServicio</div>
+                    <div class="summary-value">@L.Catalog(Model.TituloServicio)</div>
                 </div>
             </div>
             <div class="summary-row">
@@ -36,7 +36,7 @@
                 <i class="fas fa-faucet-drip"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Problem"]</div>
-                    <div class="summary-value">@Model.ProblemaResumen</div>
+                    <div class="summary-value">@L.Catalog(Model.ProblemaResumen)</div>
                 </div>
             </div>
             <div class="summary-row">
@@ -71,7 +71,7 @@
                 <i class="fas fa-images"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Files"]</div>
-                    <div class="summary-value">@Model.ArchivosResumen</div>
+                    <div class="summary-value">@L.Catalog(Model.ArchivosResumen)</div>
                 </div>
             </div>
         </div>

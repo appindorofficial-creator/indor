@@ -13,7 +13,7 @@
     <div class="summary-card">
         <div class="summary-row">
             <i class="fas fa-plug"></i>
-            <div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TituloServicio</div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.TituloServicio)</div></div>
         </div>
         <div class="summary-row">
             <i class="fas fa-location-dot"></i>
@@ -21,7 +21,7 @@
         </div>
         <div class="summary-row">
             <i class="fas fa-triangle-exclamation danger"></i>
-            <div style="flex:1;"><div class="summary-label">@L["Concern"]</div><div class="summary-value">@Model.ProblemaResumen</div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Concern"]</div><div class="summary-value">@L.Catalog(Model.ProblemaResumen)</div></div>
         </div>
         <div class="summary-row">
             <i class="fas fa-house"></i>
@@ -37,7 +37,7 @@
         </div>
         <div class="summary-row">
             <i class="fas fa-headset"></i>
-            <div style="flex:1;"><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-pill">@Model.EstadoResumen</span></div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-pill">@L.Catalog(Model.EstadoResumen)</span></div></div>
         </div>
     </div>
 

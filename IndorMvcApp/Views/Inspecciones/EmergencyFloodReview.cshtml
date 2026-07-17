@@ -26,7 +26,7 @@ var hasPhotos = !Model.ArchivosResumen.StartsWith("None", StringComparison.Ordin
         <div class="summary-card">
             <div class="summary-row">
                 <i class="fas fa-water"></i>
-                <div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TituloServicio</div></div>
+                <div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.TituloServicio)</div></div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-house"></i>
@@ -34,7 +34,7 @@ var hasPhotos = !Model.ArchivosResumen.StartsWith("None", StringComparison.Ordin
             </div>
             <div class="summary-row">
                 <i class="fas fa-droplet"></i>
-                <div style="flex:1;"><div class="summary-label">@L["Water source"]</div><div class="summary-value">@Model.CausaAguaResumen</div></div>
+                <div style="flex:1;"><div class="summary-label">@L["Water source"]</div><div class="summary-value">@L.Catalog(Model.CausaAguaResumen)</div></div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-location-dot"></i>
@@ -58,7 +58,7 @@ var hasPhotos = !Model.ArchivosResumen.StartsWith("None", StringComparison.Ordin
             </div>
             <div class="summary-row">
                 <i class="fas fa-images"></i>
-                <div style="flex:1;"><div class="summary-label">@L["Photos"]</div><div class="summary-value @(hasPhotos ? "photos" : "")">@Model.ArchivosResumen</div></div>
+                <div style="flex:1;"><div class="summary-label">@L["Photos"]</div><div class="summary-value @(hasPhotos ? "photos" : "")">@L.Catalog(Model.ArchivosResumen)</div></div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-note-sticky"></i>

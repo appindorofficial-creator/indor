@@ -66,9 +66,9 @@ public static class EmergencyDisplayLabels
     {
         return count switch
         {
-            0 => "No files uploaded",
-            1 => "1 photo",
-            _ => $"{count} photos"
+            0 => DisplayLabelsLocalization.L("No files uploaded"),
+            1 => DisplayLabelsLocalization.L("1 photo"),
+            _ => string.Format(DisplayLabelsLocalization.L("{0} photos"), count)
         };
     }
 
@@ -76,9 +76,9 @@ public static class EmergencyDisplayLabels
     {
         return count switch
         {
-            0 => "No photos attached",
-            1 => "1 attached",
-            _ => $"{count} attached"
+            0 => DisplayLabelsLocalization.L("No photos attached"),
+            1 => DisplayLabelsLocalization.L("1 attached"),
+            _ => string.Format(DisplayLabelsLocalization.L("{0} attached"), count)
         };
     }
 
@@ -212,9 +212,9 @@ public static class EmergencyDisplayLabels
     {
         return count switch
         {
-            0 => "None uploaded",
-            1 => "1 uploaded",
-            _ => $"{count} uploaded"
+            0 => DisplayLabelsLocalization.L("None uploaded"),
+            1 => DisplayLabelsLocalization.L("1 uploaded"),
+            _ => string.Format(DisplayLabelsLocalization.L("{0} uploaded"), count)
         };
     }
 

@@ -872,8 +872,13 @@ public static class InspeccionDisplayLabels
         }
 
         var moisture = DanoHumedadVisibleWindowsInsulation(danoHumedadVisible);
-        var baseText = issues.Count == 0 ? "Efficiency concern" : string.Join(", ", issues);
-        return $"{baseText}, Visible moisture: {moisture}";
+        var baseText = issues.Count == 0
+            ? DisplayLabelsLocalization.L("Efficiency concern")
+            : string.Join(", ", issues);
+        return string.Format(
+            DisplayLabelsLocalization.L("{0}, Visible moisture: {1}"),
+            baseText,
+            moisture);
     }
 
     public static string FormatWindowsInsulationConcern(string? tiposPipe, string? fallbackTipo)
@@ -921,21 +926,48 @@ public static class InspeccionDisplayLabels
 
     public static string FormatWindowsInsulationFocusAreas(string? areasEnfoque, string? areasAtencion)
     {
-        var labels = ParsePipeValues(areasEnfoque)
-            .Select(AreaEnfoqueWindowsInsulation)
-            .Where(v => !string.IsNullOrWhiteSpace(v))
-            .ToList();
-
-        if (labels.Count == 0)
+        var codes = ParsePipeValues(areasEnfoque);
+        if (codes.Count == 0)
         {
-            labels = ParsePipeValues(areasAtencion)
-                .Select(AreaAtencionWindowsInsulation)
-                .Where(v => !string.IsNullOrWhiteSpace(v)
-                            && !string.Equals(v, "Not sure", StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            codes = ParsePipeValues(areasAtencion);
         }
 
-        return labels.Count == 0 ? "Windows, attic insulation" : string.Join(", ", labels);
+        var labels = codes
+            .Select(ResolveWindowsInsulationFocusLabel)
+            .Where(v => !string.IsNullOrWhiteSpace(v)
+                        && !string.Equals(v, DisplayLabelsLocalization.L("Not sure"), StringComparison.OrdinalIgnoreCase)
+                        && !string.Equals(v, "Not sure", StringComparison.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        return labels.Count == 0
+            ? DisplayLabelsLocalization.L("Windows, attic insulation")
+            : string.Join(", ", labels);
+    }
+
+    private static string ResolveWindowsInsulationFocusLabel(string? code)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            return string.Empty;
+        }
+
+        foreach (Func<string?, string> mapper in new Func<string?, string>[]
+                 {
+                     AreaEnfoqueWindowsInsulation,
+                     AreaAtencionWindowsInsulation,
+                     TipoProblemaWindowsInsulation
+                 })
+        {
+            var label = mapper(code);
+            if (!string.IsNullOrWhiteSpace(label)
+                && !string.Equals(label, code, StringComparison.OrdinalIgnoreCase))
+            {
+                return label;
+            }
+        }
+
+        return DisplayLabelsLocalization.L(code);
     }
 
     public static string FormatWindowsInsulationFilesSummary(IEnumerable<(string? CategoriaArchivo, string? NombreArchivo)> archivos)
@@ -1060,8 +1092,13 @@ public static class InspeccionDisplayLabels
         }
 
         var risk = RiesgoActivoHomeSafety(riesgoActivo);
-        var baseText = issues.Count == 0 ? "Safety concern" : string.Join(", ", issues);
-        return $"{baseText}, Active risk: {risk}";
+        var baseText = issues.Count == 0
+            ? DisplayLabelsLocalization.L("Safety concern")
+            : string.Join(", ", issues);
+        return string.Format(
+            DisplayLabelsLocalization.L("{0}, Active risk: {1}"),
+            baseText,
+            risk);
     }
 
     public static string FormatHomeSafetyConcern(string? tiposPipe, string? fallbackTipo)
@@ -1100,21 +1137,48 @@ public static class InspeccionDisplayLabels
 
     public static string FormatHomeSafetyFocusAreas(string? areasEnfoque, string? areasAtencion)
     {
-        var labels = ParsePipeValues(areasEnfoque)
-            .Select(AreaEnfoqueHomeSafety)
-            .Where(v => !string.IsNullOrWhiteSpace(v))
-            .ToList();
-
-        if (labels.Count == 0)
+        var codes = ParsePipeValues(areasEnfoque);
+        if (codes.Count == 0)
         {
-            labels = ParsePipeValues(areasAtencion)
-                .Select(AreaAtencionHomeSafety)
-                .Where(v => !string.IsNullOrWhiteSpace(v)
-                            && !string.Equals(v, "Not sure", StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            codes = ParsePipeValues(areasAtencion);
         }
 
-        return labels.Count == 0 ? "Hallway, whole house" : string.Join(", ", labels);
+        var labels = codes
+            .Select(ResolveHomeSafetyFocusLabel)
+            .Where(v => !string.IsNullOrWhiteSpace(v)
+                        && !string.Equals(v, DisplayLabelsLocalization.L("Not sure"), StringComparison.OrdinalIgnoreCase)
+                        && !string.Equals(v, "Not sure", StringComparison.OrdinalIgnoreCase))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        return labels.Count == 0
+            ? DisplayLabelsLocalization.L("Hallway, whole house")
+            : string.Join(", ", labels);
+    }
+
+    private static string ResolveHomeSafetyFocusLabel(string? code)
+    {
+        if (string.IsNullOrWhiteSpace(code))
+        {
+            return string.Empty;
+        }
+
+        foreach (Func<string?, string> mapper in new Func<string?, string>[]
+                 {
+                     AreaEnfoqueHomeSafety,
+                     AreaAtencionHomeSafety,
+                     TipoProblemaHomeSafety
+                 })
+        {
+            var label = mapper(code);
+            if (!string.IsNullOrWhiteSpace(label)
+                && !string.Equals(label, code, StringComparison.OrdinalIgnoreCase))
+            {
+                return label;
+            }
+        }
+
+        return DisplayLabelsLocalization.L(code);
     }
 
     public static string FormatHomeSafetyFilesSummary(IEnumerable<(string? CategoriaArchivo, string? NombreArchivo)> archivos)

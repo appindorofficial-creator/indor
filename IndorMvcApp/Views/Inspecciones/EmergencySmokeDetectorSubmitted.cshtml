@@ -12,12 +12,12 @@ var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringCompar
     <p class="page-lead">@L["We're reviewing your request and coordinating the right provider now."]</p>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-wrench"></i><div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TituloServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-wrench"></i><div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.TituloServicio)</div></div></div>
         <div class="summary-row"><i class="fas fa-house"></i><div style="flex:1;"><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
         <div class="summary-row"><i class="fas fa-circle-radiation"></i><div style="flex:1;"><div class="summary-label">@L["Concern"]</div><div class="summary-value">@Model.PreocupacionResumen</div></div></div>
         <div class="summary-row"><i class="fas fa-location-dot"></i><div style="flex:1;"><div class="summary-label">@L["Locations"]</div><div class="summary-value">@Model.UbicacionesResumen</div></div></div>
         <div class="summary-row"><i class="fas fa-triangle-exclamation danger"></i><div style="flex:1;"><div class="summary-label">@L["Priority"]</div><div class="summary-value @(isEmergency ? "emergency" : "")">@Model.UrgenciaResumen</div></div></div>
-        <div class="summary-row"><i class="fas fa-clock"></i><div style="flex:1;"><div class="summary-label">@L["Status"]</div><div class="summary-value status">@Model.EstadoResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-clock"></i><div style="flex:1;"><div class="summary-label">@L["Status"]</div><div class="summary-value status">@L.Catalog(Model.EstadoResumen)</div></div></div>
     </div>
 
     <div class="info-box">

@@ -28,7 +28,7 @@ var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringCompar
         <div class="summary-card">
             <div class="summary-row">
                 <i class="fas fa-wrench"></i>
-                <div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TituloServicio</div></div>
+                <div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.TituloServicio)</div></div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-house"></i>
@@ -36,7 +36,7 @@ var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringCompar
             </div>
             <div class="summary-row">
                 <i class="fas fa-droplet"></i>
-                <div style="flex:1;"><div class="summary-label">@L["Issue"]</div><div class="summary-value">@Model.ProblemaResumen</div></div>
+                <div style="flex:1;"><div class="summary-label">@L["Issue"]</div><div class="summary-value">@L.Catalog(Model.ProblemaResumen)</div></div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-fire"></i>
@@ -56,7 +56,7 @@ var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringCompar
             </div>
             <div class="summary-row">
                 <i class="fas fa-images"></i>
-                <div style="flex:1;"><div class="summary-label">@L["Photos"]</div><div class="summary-value @(hasPhotos ? "photos" : "")">@Model.ArchivosResumen</div></div>
+                <div style="flex:1;"><div class="summary-label">@L["Photos"]</div><div class="summary-value @(hasPhotos ? "photos" : "")">@L.Catalog(Model.ArchivosResumen)</div></div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-key"></i>

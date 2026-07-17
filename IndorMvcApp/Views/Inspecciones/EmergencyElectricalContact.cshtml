@@ -20,7 +20,7 @@
     }
 
     <div class="summary-row"><i class="fas fa-house"></i> @Model.DireccionPropiedad</div>
-    <div class="summary-row issue"><i class="fas fa-bolt"></i> @Model.ProblemaResumen</div>
+    <div class="summary-row issue"><i class="fas fa-bolt"></i> @L.Catalog(Model.ProblemaResumen)</div>
 
     <form asp-controller="Inspecciones" asp-action="EmergencyElectricalContact" method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="SolicitudId" />

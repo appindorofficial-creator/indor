@@ -36,7 +36,7 @@ var priceLabel = string.Equals(Model.PrecioPrefijo, "From", StringComparison.Ord
                 <i class="fas fa-shield-halved"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Main concern"]</div>
-                    <div class="summary-value">@Model.PreocupacionPrincipal</div>
+                    <div class="summary-value">@L.Catalog(Model.PreocupacionPrincipal)</div>
                 </div>
             </div>
             <div class="summary-row">
@@ -51,7 +51,7 @@ var priceLabel = string.Equals(Model.PrecioPrefijo, "From", StringComparison.Ord
                 <i class="fas fa-bullseye"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Focus areas"]</div>
-                    <div class="summary-value">@Model.AreasEnfoqueResumen</div>
+                    <div class="summary-value">@L.Catalog(Model.AreasEnfoqueResumen)</div>
                 </div>
             </div>
             <div class="summary-row">
@@ -65,7 +65,7 @@ var priceLabel = string.Equals(Model.PrecioPrefijo, "From", StringComparison.Ord
                 <i class="fas fa-images"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Files uploaded"]</div>
-                    <div class="summary-value">@Model.ArchivosResumen</div>
+                    <div class="summary-value">@L.Catalog(Model.ArchivosResumen)</div>
                 </div>
             </div>
             <div class="summary-row">

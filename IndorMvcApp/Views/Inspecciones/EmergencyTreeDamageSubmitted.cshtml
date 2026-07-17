@@ -12,12 +12,12 @@
     <p class="page-lead">@L["We've shared your request with the dispatch team and nearby providers."]</p>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-tree"></i><div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TituloServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-tree"></i><div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.TituloServicio)</div></div></div>
         <div class="summary-row"><i class="fas fa-house"></i><div style="flex:1;"><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
-        <div class="summary-row"><i class="fas fa-code-branch"></i><div style="flex:1;"><div class="summary-label">@L["Reported issue"]</div><div class="summary-value">@Model.ProblemaResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-code-branch"></i><div style="flex:1;"><div class="summary-label">@L["Reported issue"]</div><div class="summary-value">@L.Catalog(Model.ProblemaResumen)</div></div></div>
         <div class="summary-row"><i class="fas fa-clock"></i><div style="flex:1;"><div class="summary-label">@L["ETA"]</div><div class="summary-value eta">@Model.TiempoLlegadaRango</div></div></div>
         <div class="summary-row"><i class="fas fa-phone"></i><div style="flex:1;"><div class="summary-label">@L["Contact"]</div><div class="summary-value">@Model.TelefonoContacto</div></div></div>
-        <div class="summary-row"><i class="fas fa-heart-pulse"></i><div style="flex:1;"><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-pill"><span class="status-dot"></span>@Model.EstadoResumen</span></div></div></div>
+        <div class="summary-row"><i class="fas fa-heart-pulse"></i><div style="flex:1;"><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-pill"><span class="status-dot"></span>@L.Catalog(Model.EstadoResumen)</span></div></div></div>
     </div>
 
     <div class="info-box">
