@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.HoaCommunityViewModel
 @{
-    ViewData["Title"] = Model.PageTitle;
+    ViewData["Title"] = L.Catalog(Model.PageTitle);
     var hfPreview = ViewBag.HouseFactPreview as bool? == true;
     var addressParts = Model.Address.Split(',', 2);
     var line1 = addressParts[0].Trim();
@@ -10,11 +10,11 @@
     <link rel="stylesheet" href="~/css/hoa-community.css" asp-append-version="true" />
 }
 
-<div class="hoa-step">Step @Model.CurrentStep of @Model.TotalSteps</div>
+<div class="hoa-step">@L.T("Step {0} of {1}", Model.CurrentStep, Model.TotalSteps)</div>
 
 <div class="hoa-head">
-    <h1 class="hoa-title">@Model.PageTitle</h1>
-    <p class="hoa-sub">@Model.PageSubtitle</p>
+    <h1 class="hoa-title">@L.Catalog(Model.PageTitle)</h1>
+    <p class="hoa-sub">@L.Catalog(Model.PageSubtitle)</p>
 </div>
 
 <div class="hoa-property-card">
@@ -31,20 +31,20 @@
     </div>
     <div class="hoa-metrics">
         <div class="hoa-metric">
-            <div class="k">HOA Status</div>
-            <div class="v"><span class="hoa-pill @Model.HoaStatusTone">@Model.HoaStatus</span></div>
+            <div class="k">@L["HOA Status"]</div>
+            <div class="v"><span class="hoa-pill @Model.HoaStatusTone">@L.Catalog(Model.HoaStatus)</span></div>
         </div>
         <div class="hoa-metric">
-            <div class="k">HOA Name</div>
+            <div class="k">@L["HOA Name"]</div>
             <div class="v">@Model.HoaName</div>
         </div>
         <div class="hoa-metric">
-            <div class="k">Estimated Fee</div>
+            <div class="k">@L["Estimated Fee"]</div>
             <div class="v">@Model.EstimatedFee</div>
         </div>
         <div class="hoa-metric">
-            <div class="k">Confidence</div>
-            <div class="v"><span class="hoa-pill @Model.ConfidenceTone">@Model.Confidence</span></div>
+            <div class="k">@L["Confidence"]</div>
+            <div class="v"><span class="hoa-pill @Model.ConfidenceTone">@L.Catalog(Model.Confidence)</span></div>
         </div>
     </div>
 </div>
@@ -56,14 +56,14 @@
         {
             <a class="hoa-tab @(Model.ActiveTab == tab.Key ? "active" : "")"
                asp-controller="HouseFactPreview" asp-action="HoaCommunity"
-               asp-route-tab="@tab.Key">@tab.Label</a>
+               asp-route-tab="@tab.Key">@L.Catalog(tab.Label)</a>
         }
         else
         {
             <a class="hoa-tab @(Model.ActiveTab == tab.Key ? "active" : "")"
                asp-action="Index"
                asp-route-id="@Model.PropiedadId"
-               asp-route-tab="@tab.Key">@tab.Label</a>
+               asp-route-tab="@tab.Key">@L.Catalog(tab.Label)</a>
         }
     }
 </div>
@@ -72,14 +72,14 @@
 {
     <div class="hoa-empty-note">
         <i class="fas fa-people-roof" style="font-size:2rem;color:#94A3B8;margin-bottom:10px;"></i>
-        <div>No HOA or community data found in your saved House Fact profile.</div>
+        <div>@L["No HOA or community data found in your saved House Fact profile."]</div>
         @if (hfPreview)
         {
-            <a asp-controller="Propietario" asp-action="PropertyDetails" class="hoa-btn-primary" style="margin-top:16px;">Refresh property data</a>
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="hoa-btn-primary" style="margin-top:16px;">@L["Refresh property data"]</a>
         }
         else
         {
-            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="hoa-btn-primary" style="margin-top:16px;">Refresh property data</a>
+            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="hoa-btn-primary" style="margin-top:16px;">@L["Refresh property data"]</a>
         }
     </div>
 }
@@ -90,8 +90,8 @@ else if (Model.ActiveTab == "amenities")
         {
             <div class="hoa-amenity">
                 <div class="icon"><i class="fas @amenity.Icon"></i></div>
-                <div class="t">@amenity.Title</div>
-                <div class="s">@amenity.Description</div>
+                <div class="t">@L.Catalog(amenity.Title)</div>
+                <div class="s">@L.Catalog(amenity.Description)</div>
             </div>
         }
     </div>
@@ -102,9 +102,9 @@ else if (Model.ActiveTab == "contacts" && Model.Management != null)
         <div class="hoa-mgmt-head">
             <div class="icon"><i class="fas fa-building"></i></div>
             <div>
-                <div class="k">Management Company</div>
+                <div class="k">@L["Management Company"]</div>
                 <div class="v">@Model.Management.Name</div>
-                <span class="hoa-pill @Model.Management.BadgeTone" style="margin-top:6px;">@Model.Management.Badge</span>
+                <span class="hoa-pill @Model.Management.BadgeTone" style="margin-top:6px;">@L.Catalog(Model.Management.Badge)</span>
             </div>
         </div>
         @foreach (var contact in Model.Management.Contacts)
@@ -112,7 +112,7 @@ else if (Model.ActiveTab == "contacts" && Model.Management != null)
             <div class="hoa-contact">
                 <div class="icon"><i class="fas @contact.Icon"></i></div>
                 <div style="flex:1;">
-                    <div class="k">@contact.Label</div>
+                    <div class="k">@L.Catalog(contact.Label)</div>
                     <div class="v">
                         @if (contact.IsExternalLink)
                         {
@@ -125,20 +125,20 @@ else if (Model.ActiveTab == "contacts" && Model.Management != null)
                     </div>
                     @if (!string.IsNullOrWhiteSpace(contact.Badge))
                     {
-                        <span class="hoa-pill @contact.BadgeTone" style="margin-top:6px;">@contact.Badge</span>
+                        <span class="hoa-pill @contact.BadgeTone" style="margin-top:6px;">@L.Catalog(contact.Badge)</span>
                     }
                 </div>
             </div>
         }
     </div>
 
-    <div class="hoa-section-title">HOA Documents</div>
+    <div class="hoa-section-title">@L["HOA Documents"]</div>
     <div class="hoa-doc-grid">
         @foreach (var doc in Model.Documents)
         {
             <div class="hoa-doc">
                 <i class="fas @doc.Icon"></i>
-                <span class="t">@doc.Title</span>
+                <span class="t">@L.Catalog(doc.Title)</span>
                 <i class="fas fa-chevron-right hoa-chev"></i>
             </div>
         }
@@ -152,11 +152,11 @@ else
             <div class="hoa-row">
                 <div class="icon"><i class="fas @row.Icon"></i></div>
                 <div class="body">
-                    <div class="t">@row.Title</div>
-                    <div class="s">@row.Subtitle</div>
+                    <div class="t">@L.Catalog(row.Title)</div>
+                    <div class="s">@L.Catalog(row.Subtitle)</div>
                     @if (!string.IsNullOrWhiteSpace(row.Badge))
                     {
-                        <span class="badge @row.BadgeTone">@row.Badge</span>
+                        <span class="badge @row.BadgeTone">@L.Catalog(row.Badge)</span>
                     }
                 </div>
                 @if (row.ShowChevron)
@@ -170,26 +170,26 @@ else
 
 <div class="hoa-banner">
     <i class="fas fa-circle-info"></i>
-    <div>@Model.InfoBanner</div>
+    <div>@L.Catalog(Model.InfoBanner)</div>
 </div>
 
 <div class="hoa-btn-row">
     @if (hfPreview)
     {
         <a asp-controller="Propietario" asp-action="PropertyDetails" class="hoa-btn-secondary">
-            <i class="fas @Model.SecondaryActionIcon"></i> @Model.SecondaryActionLabel
+            <i class="fas @Model.SecondaryActionIcon"></i> @L.Catalog(Model.SecondaryActionLabel)
         </a>
         <a asp-controller="Propietario" asp-action="PropertyDetails" class="hoa-btn-primary">
-            <i class="fas @Model.PrimaryActionIcon"></i> @Model.PrimaryActionLabel
+            <i class="fas @Model.PrimaryActionIcon"></i> @L.Catalog(Model.PrimaryActionLabel)
         </a>
     }
     else
     {
         <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="hoa-btn-secondary">
-            <i class="fas @Model.SecondaryActionIcon"></i> @Model.SecondaryActionLabel
+            <i class="fas @Model.SecondaryActionIcon"></i> @L.Catalog(Model.SecondaryActionLabel)
         </a>
         <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="hoa-btn-primary">
-            <i class="fas @Model.PrimaryActionIcon"></i> @Model.PrimaryActionLabel
+            <i class="fas @Model.PrimaryActionIcon"></i> @L.Catalog(Model.PrimaryActionLabel)
         </a>
     }
 </div>

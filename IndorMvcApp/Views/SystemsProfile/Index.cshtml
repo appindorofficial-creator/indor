@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.SystemsProfileIndexViewModel
 @{
-    ViewData["Title"] = "Systems Profile";
+    ViewData["Title"] = L["Systems Profile"];
     var hfPreview = ViewBag.HouseFactPreview as bool? == true;
 }
 @section Head {
@@ -8,8 +8,8 @@
 }
 
 <div class="sp-head">
-    <h1 class="sp-title">Systems Profile</h1>
-    <p class="sp-sub">HVAC, plumbing, electrical, appliances &amp; key home systems.</p>
+    <h1 class="sp-title">@L["Systems Profile"]</h1>
+    <p class="sp-sub">@L["HVAC, plumbing, electrical, appliances & key home systems."]</p>
 </div>
 
 <div class="sp-filters">
@@ -19,13 +19,13 @@
         {
             <a class="sp-filter @(Model.ActiveFilter == chip.Key ? "active" : "")"
                asp-controller="HouseFactPreview" asp-action="SystemsProfile"
-               asp-route-filter="@(chip.Key == "all" ? null : chip.Key)">@chip.Label</a>
+               asp-route-filter="@(chip.Key == "all" ? null : chip.Key)">@L.Catalog(chip.Label)</a>
         }
         else
         {
             <a class="sp-filter @(Model.ActiveFilter == chip.Key ? "active" : "")"
                asp-action="Index" asp-route-id="@Model.PropiedadId"
-               asp-route-filter="@(chip.Key == "all" ? null : chip.Key)">@chip.Label</a>
+               asp-route-filter="@(chip.Key == "all" ? null : chip.Key)">@L.Catalog(chip.Label)</a>
         }
     }
 </div>
@@ -35,14 +35,14 @@
     <div>
         <div class="sp-address">@Model.Address</div>
         <div class="sp-summary-badges">
-            <span class="sp-pill sp-pill-blue"><i class="fas fa-screwdriver-wrench"></i> @Model.SystemCount systems</span>
+            <span class="sp-pill sp-pill-blue"><i class="fas fa-screwdriver-wrench"></i> @Model.SystemCount @L["systems"]</span>
             @if (Model.NeedsVerificationCount > 0)
             {
-                <span class="sp-pill sp-pill-orange"><i class="fas fa-shield-check"></i> @Model.NeedsVerificationCount need verification</span>
+                <span class="sp-pill sp-pill-orange"><i class="fas fa-shield-check"></i> @L.T("{0} need verification", Model.NeedsVerificationCount)</span>
             }
             @if (Model.AlertCount > 0)
             {
-                <span class="sp-pill sp-pill-red"><i class="fas fa-triangle-exclamation"></i> @Model.AlertCount alert</span>
+                <span class="sp-pill sp-pill-red"><i class="fas fa-triangle-exclamation"></i> @L.T("{0} alert", Model.AlertCount)</span>
             }
         </div>
     </div>
@@ -50,21 +50,21 @@
 
 <div class="sp-banner">
     <i class="fas fa-circle-info"></i>
-    <div>System data may include public records, uploaded documents, and owner-provided info. Add documents to improve accuracy.</div>
+    <div>@L["System data may include public records, uploaded documents, and owner-provided info. Add documents to improve accuracy."]</div>
 </div>
 
 @if (!Model.HasData)
 {
     <div class="sp-empty-note">
         <i class="fas fa-screwdriver-wrench" style="font-size:2rem;color:#94A3B8;margin-bottom:10px;"></i>
-        <div>No system data found in your saved House Fact profile.</div>
+        <div>@L["No system data found in your saved House Fact profile."]</div>
         @if (hfPreview)
         {
-            <a asp-controller="Propietario" asp-action="PropertyDetails" class="sp-btn-primary" style="margin-top:16px;">Back to House Facts</a>
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="sp-btn-primary" style="margin-top:16px;">@L["Back to House Facts"]</a>
         }
         else
         {
-            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="sp-btn-primary" style="margin-top:16px;">Refresh property data</a>
+            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="sp-btn-primary" style="margin-top:16px;">@L["Refresh property data"]</a>
         }
     </div>
 }
@@ -77,10 +77,10 @@ else
             <a class="sp-system-card" asp-controller="HouseFactPreview" asp-action="SystemsDetail" asp-route-systemId="@system.Id">
                 <div class="sp-system-icon"><i class="fas @system.Icon"></i></div>
                 <div class="sp-system-body">
-                    <div class="sp-system-name">@system.Name</div>
-                    <div class="sp-system-sub">@system.Subtitle</div>
+                    <div class="sp-system-name">@L.Catalog(system.Name)</div>
+                    <div class="sp-system-sub">@L.Catalog(system.Subtitle)</div>
                 </div>
-                <span class="sp-status @system.StatusTone">@system.Status</span>
+                <span class="sp-status @system.StatusTone">@L.Catalog(system.Status)</span>
                 <i class="fas fa-chevron-right sp-chev"></i>
             </a>
         }
@@ -89,10 +89,10 @@ else
             <a class="sp-system-card" asp-action="Detail" asp-route-id="@Model.PropiedadId" asp-route-systemId="@system.Id">
                 <div class="sp-system-icon"><i class="fas @system.Icon"></i></div>
                 <div class="sp-system-body">
-                    <div class="sp-system-name">@system.Name</div>
-                    <div class="sp-system-sub">@system.Subtitle</div>
+                    <div class="sp-system-name">@L.Catalog(system.Name)</div>
+                    <div class="sp-system-sub">@L.Catalog(system.Subtitle)</div>
                 </div>
-                <span class="sp-status @system.StatusTone">@system.Status</span>
+                <span class="sp-status @system.StatusTone">@L.Catalog(system.Status)</span>
                 <i class="fas fa-chevron-right sp-chev"></i>
             </a>
         }
@@ -101,15 +101,15 @@ else
 
 @if (hfPreview)
 {
-    <a asp-controller="HouseFactPreview" asp-action="SystemsVerification" class="sp-btn-primary">View full systems</a>
+    <a asp-controller="HouseFactPreview" asp-action="SystemsVerification" class="sp-btn-primary">@L["View full systems"]</a>
     <a asp-controller="Propietario" asp-action="PropertyDetails" class="sp-btn-secondary">
-        <i class="fas fa-file-circle-plus"></i> Add documents
+        <i class="fas fa-file-circle-plus"></i> @L["Add documents"]
     </a>
 }
 else
 {
-    <a asp-action="Verification" asp-route-id="@Model.PropiedadId" class="sp-btn-primary">View full systems</a>
+    <a asp-action="Verification" asp-route-id="@Model.PropiedadId" class="sp-btn-primary">@L["View full systems"]</a>
     <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="sp-btn-secondary">
-        <i class="fas fa-file-circle-plus"></i> Add documents
+        <i class="fas fa-file-circle-plus"></i> @L["Add documents"]
     </a>
 }

@@ -99,7 +99,7 @@
 
         <div class="pa-flow-question">
             <label>@L["Add notes (optional)"]</label>
-            <textarea class="pa-textarea" name="Notes" rows="3" maxlength="250" id="prevNotes">@Model.Notes</textarea>
+            <textarea class="pa-textarea" name="Notes" rows="3" maxlength="250" id="prevNotes">@UiDisplayLocalization.Localize(L, Model.Notes)</textarea>
             <small class="pa-char-count"><span id="notesCount">@Model.Notes.Length</span> @L["/ 250 characters"]</small>
         </div>
 
@@ -133,10 +133,10 @@
 @section Scripts {
     <script>
         var hints = {
-            Monthly: "We'll schedule visits every month.",
-            Every3Months: "We'll filter change every 3 months. Full service visits twice a year.",
-            TwiceAYear: "We'll filter change every 3 months. Full service visits twice a year.",
-            Yearly: "We'll schedule annual preventive visits."
+            Monthly: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["We'll schedule visits every month."].ToString())),
+            Every3Months: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["We'll filter change every 3 months. Full service visits twice a year."].ToString())),
+            TwiceAYear: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["We'll filter change every 3 months. Full service visits twice a year."].ToString())),
+            Yearly: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["We'll schedule annual preventive visits."].ToString()))
         };
         document.querySelectorAll('input[name="Frequency"]').forEach(function (input) {
             input.addEventListener('change', function () {

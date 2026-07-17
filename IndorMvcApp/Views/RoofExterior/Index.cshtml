@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RoofExteriorIndexViewModel
 @{
-    ViewData["Title"] = "Roof, Exterior & Structure";
+    ViewData["Title"] = L["Roof, Exterior & Structure"];
     var hfPreview = ViewBag.HouseFactPreview as bool? == true;
 }
 @section Head {
@@ -8,8 +8,8 @@
 }
 
 <div class="re-head">
-    <h1 class="re-title">Roof, Exterior &amp; Structure</h1>
-    <p class="re-sub">See key exterior and structural information in one place.</p>
+    <h1 class="re-title">@L["Roof, Exterior & Structure"]</h1>
+    <p class="re-sub">@L["See key exterior and structural information in one place."]</p>
 </div>
 
 <div class="re-tabs">
@@ -20,7 +20,7 @@
             <a class="re-tab @(Model.ActiveTab == tab.Key ? "active" : "")"
                asp-controller="HouseFactPreview" asp-action="RoofExterior"
                asp-route-tab="@tab.Key">
-                <i class="fas @tab.Icon"></i> @tab.Label
+                <i class="fas @tab.Icon"></i> @L.Catalog(tab.Label)
             </a>
         }
         else
@@ -29,7 +29,7 @@
                asp-action="Index"
                asp-route-id="@Model.PropiedadId"
                asp-route-tab="@tab.Key">
-                <i class="fas @tab.Icon"></i> @tab.Label
+                <i class="fas @tab.Icon"></i> @L.Catalog(tab.Label)
             </a>
         }
     }
@@ -39,14 +39,14 @@
 {
     <div class="re-empty-note">
         <i class="fas fa-house-chimney" style="font-size:2rem;color:#94A3B8;margin-bottom:10px;"></i>
-        <div>No roof or exterior data found in your saved House Fact profile.</div>
+        <div>@L["No roof or exterior data found in your saved House Fact profile."]</div>
         @if (hfPreview)
         {
-            <a asp-controller="Propietario" asp-action="PropertyDetails" class="re-btn-primary" style="margin-top:16px;">Refresh property data</a>
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="re-btn-primary" style="margin-top:16px;">@L["Refresh property data"]</a>
         }
         else
         {
-            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="re-btn-primary" style="margin-top:16px;">Refresh property data</a>
+            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="re-btn-primary" style="margin-top:16px;">@L["Refresh property data"]</a>
         }
     </div>
 }
@@ -56,16 +56,16 @@ else
         @foreach (var card in Model.SummaryCards)
         {
             <div class="re-summary-card">
-                <div class="k"><i class="fas @card.Icon"></i> @card.Label</div>
-                <div class="v">@card.Value</div>
-                <span class="badge @card.StatusTone">@card.Status</span>
+                <div class="k"><i class="fas @card.Icon"></i> @L.Catalog(card.Label)</div>
+                <div class="v">@L.Catalog(card.Value)</div>
+                <span class="badge @card.StatusTone">@L.Catalog(card.Status)</span>
             </div>
         }
     </div>
 
     <div class="re-banner">
         <i class="fas fa-circle-info"></i>
-        <div>@Model.InfoBanner</div>
+        <div>@L.Catalog(Model.InfoBanner)</div>
     </div>
 
     @foreach (var item in Model.Items)
@@ -79,10 +79,10 @@ else
                asp-route-tab="@Model.ActiveTab">
                 <div class="re-list-icon"><i class="fas @item.Icon"></i></div>
                 <div class="re-list-body">
-                    <div class="re-list-title">@item.Title</div>
-                    <div class="re-list-sub">@item.Subtitle</div>
+                    <div class="re-list-title">@L.Catalog(item.Title)</div>
+                    <div class="re-list-sub">@L.Catalog(item.Subtitle)</div>
                 </div>
-                <span class="re-status @item.StatusTone">@item.Status</span>
+                <span class="re-status @item.StatusTone">@L.Catalog(item.Status)</span>
                 <i class="fas fa-chevron-right re-chev"></i>
             </a>
         }
@@ -95,10 +95,10 @@ else
                asp-route-tab="@Model.ActiveTab">
                 <div class="re-list-icon"><i class="fas @item.Icon"></i></div>
                 <div class="re-list-body">
-                    <div class="re-list-title">@item.Title</div>
-                    <div class="re-list-sub">@item.Subtitle</div>
+                    <div class="re-list-title">@L.Catalog(item.Title)</div>
+                    <div class="re-list-sub">@L.Catalog(item.Subtitle)</div>
                 </div>
-                <span class="re-status @item.StatusTone">@item.Status</span>
+                <span class="re-status @item.StatusTone">@L.Catalog(item.Status)</span>
                 <i class="fas fa-chevron-right re-chev"></i>
             </a>
         }
@@ -108,18 +108,18 @@ else
 @if (hfPreview)
 {
     <a asp-controller="HouseFactPreview" asp-action="RoofExteriorCarePlan" class="re-btn-primary">
-        <i class="fas fa-file-lines"></i> View full section
+        <i class="fas fa-file-lines"></i> @L["View full section"]
     </a>
     <a asp-controller="Propietario" asp-action="PropertyDetails" class="re-btn-secondary">
-        <i class="fas fa-camera"></i> Add documents
+        <i class="fas fa-camera"></i> @L["Add documents"]
     </a>
 }
 else
 {
     <a asp-action="CarePlan" asp-route-id="@Model.PropiedadId" class="re-btn-primary">
-        <i class="fas fa-file-lines"></i> View full section
+        <i class="fas fa-file-lines"></i> @L["View full section"]
     </a>
     <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="re-btn-secondary">
-        <i class="fas fa-camera"></i> Add documents
+        <i class="fas fa-camera"></i> @L["Add documents"]
     </a>
 }

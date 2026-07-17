@@ -1,20 +1,20 @@
 @model IndorMvcApp.ViewModels.PropertySnapshotViewModel
 @{
-    ViewData["Title"] = "Property Snapshot";
+    ViewData["Title"] = L["Property Snapshot"];
     var hfPreview = ViewBag.HouseFactPreview as bool? == true;
-    var tabs = new[] { ("overview", "Overview"), ("details", "Details"), ("lot", "Lot"), ("notes", "Notes") };
+    var tabs = new[] { ("overview", L["Overview"].ToString()), ("details", L["Details"].ToString()), ("lot", L["Lot"].ToString()), ("notes", L["Notes"].ToString()) };
 }
 @section Head {
     <link rel="stylesheet" href="~/css/property-snapshot.css" asp-append-version="true" />
 }
 
 <div class="ps-page-head">
-    <h1 class="ps-title">Property Snapshot</h1>
-    <p class="ps-sub">@Model.PageSubtitle</p>
+    <h1 class="ps-title">@L["Property Snapshot"]</h1>
+    <p class="ps-sub">@L.Catalog(Model.PageSubtitle)</p>
     <div class="ps-address">@Model.Address</div>
     <div class="ps-badges">
-        <span class="ps-badge ps-badge-estimated"><i class="fas fa-circle-notch"></i> @Model.ConfidenceBadge</span>
-        <span class="ps-badge ps-badge-fields"><i class="fas fa-table-cells"></i> @Model.FieldCount fields</span>
+        <span class="ps-badge ps-badge-estimated"><i class="fas fa-circle-notch"></i> @L.Catalog(Model.ConfidenceBadge)</span>
+        <span class="ps-badge ps-badge-fields"><i class="fas fa-table-cells"></i> @Model.FieldCount @L["fields"]</span>
     </div>
 </div>
 
@@ -41,14 +41,14 @@
 {
     <div class="ps-empty">
         <i class="fas fa-table-cells" style="font-size:2rem;color:#94A3B8;margin-bottom:10px;"></i>
-        <div>No snapshot data found in your saved House Fact profile.</div>
+        <div>@L["No snapshot data found in your saved House Fact profile."]</div>
         @if (hfPreview)
         {
-            <a asp-controller="Propietario" asp-action="PropertyDetails" class="ps-btn-primary">Refresh property data</a>
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="ps-btn-primary">@L["Refresh property data"]</a>
         }
         else
         {
-            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="ps-btn-primary">Refresh property data</a>
+            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="ps-btn-primary">@L["Refresh property data"]</a>
         }
     </div>
 }
@@ -59,9 +59,9 @@ else if (Model.ActiveTab == "details")
         {
             <div class="ps-field @(field.FullWidth ? "full" : "")">
                 <i class="fas @field.Icon"></i>
-                <div class="k">@field.Label</div>
+                <div class="k">@L.Catalog(field.Label)</div>
                 <div class="v">
-                    @field.Value
+                    @L.Catalog(field.Value)
                     @if (field.IsEstimated) { <span class="ps-estimated-dot"></span> }
                 </div>
             </div>
@@ -73,8 +73,8 @@ else if (Model.ActiveTab == "lot")
     <div class="ps-map-card">
         <div class="ps-map-thumb"><i class="fas fa-map-location-dot"></i></div>
         <div>
-            <div class="ps-section-title" style="margin:0;">Lot & location</div>
-            <div class="ps-sub" style="margin-top:4px;">View parcel outline and location from saved property coordinates.</div>
+            <div class="ps-section-title" style="margin:0;">@L["Lot & location"]</div>
+            <div class="ps-sub" style="margin-top:4px;">@L["View parcel outline and location from saved property coordinates."]</div>
             @if (Model.Latitude.HasValue && Model.Longitude.HasValue && Model.Latitude != 0 && Model.Longitude != 0)
             {
                 <div class="ps-sub" style="margin-top:6px;">@Model.Latitude.Value.ToString("0.#####"), @Model.Longitude.Value.ToString("0.#####")</div>
@@ -88,9 +88,9 @@ else if (Model.ActiveTab == "lot")
         {
             <div class="ps-field">
                 <i class="fas @field.Icon"></i>
-                <div class="k">@field.Label</div>
+                <div class="k">@L.Catalog(field.Label)</div>
                 <div class="v">
-                    @field.Value
+                    @L.Catalog(field.Value)
                     @if (field.IsEstimated) { <span class="ps-estimated-dot"></span> }
                 </div>
             </div>
@@ -102,33 +102,33 @@ else if (Model.ActiveTab == "notes")
     <div class="ps-confidence-card">
         <div class="ps-confidence-ring"><i class="fas fa-shield-check"></i></div>
         <div>
-            <div class="ps-section-title" style="margin:0;">Snapshot confidence</div>
+            <div class="ps-section-title" style="margin:0;">@L["Snapshot confidence"]</div>
             <div class="ps-legend">
-                <span class="c">Confirmed</span>
-                <span class="e">Estimated</span>
-                <span class="v">Needs verification</span>
+                <span class="c">@L["Confirmed"]</span>
+                <span class="e">@L["Estimated"]</span>
+                <span class="v">@L["Needs verification"]</span>
             </div>
-            <p class="ps-sub" style="margin-top:8px;">@Model.Notes.ConfidenceSummary</p>
+            <p class="ps-sub" style="margin-top:8px;">@L.Catalog(Model.Notes.ConfidenceSummary)</p>
         </div>
     </div>
 
-    <div class="ps-section-title">Main sources</div>
+    <div class="ps-section-title">@L["Main sources"]</div>
     <div class="ps-sources">
         @foreach (var source in Model.Notes.Sources)
         {
-            <div class="ps-source"><i class="fas @source.Icon"></i>@source.Name</div>
+            <div class="ps-source"><i class="fas @source.Icon"></i>@L.Catalog(source.Name)</div>
         }
     </div>
 
-    <div class="ps-section-title">Missing info to confirm</div>
+    <div class="ps-section-title">@L["Missing info to confirm"]</div>
     <div class="ps-missing-grid">
         @foreach (var item in Model.Notes.MissingItems)
         {
             <div class="ps-missing">
                 <i class="fas @item.Icon"></i>
                 <div>
-                    <div class="t">@item.Title</div>
-                    <div class="s">@item.Status</div>
+                    <div class="t">@L.Catalog(item.Title)</div>
+                    <div class="s">@L.Catalog(item.Status)</div>
                 </div>
                 <i class="fas fa-chevron-right chev"></i>
             </div>
@@ -137,13 +137,13 @@ else if (Model.ActiveTab == "notes")
 
     @if (hfPreview)
     {
-        <a asp-controller="Propietario" asp-action="PropertyDetails" class="ps-btn-primary">Done</a>
-        <a asp-controller="HouseFactPreview" asp-action="SystemsProfile" class="ps-btn-secondary">Go to Systems</a>
+        <a asp-controller="Propietario" asp-action="PropertyDetails" class="ps-btn-primary">@L["Done"]</a>
+        <a asp-controller="HouseFactPreview" asp-action="SystemsProfile" class="ps-btn-secondary">@L["Go to Systems"]</a>
     }
     else
     {
-        <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="ps-btn-primary">Done</a>
-        <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="ps-btn-secondary">Go to Systems</a>
+        <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="ps-btn-primary">@L["Done"]</a>
+        <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="ps-btn-secondary">@L["Go to Systems"]</a>
     }
 }
 else

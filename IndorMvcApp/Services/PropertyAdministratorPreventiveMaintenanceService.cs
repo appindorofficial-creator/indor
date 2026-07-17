@@ -170,7 +170,7 @@ public class PropertyAdministratorPreventiveMaintenanceService(
             PreferredDay = plan.PreferredDay,
             EntryAccess = plan.EntryAccess,
             UpdateRecipients = plan.UpdateRecipients,
-            Notes = plan.Notes ?? "Please service the HVAC and flush the water heater between guest stays if possible.",
+            Notes = plan.Notes ?? PropertyAdministratorDisplayLocalization.L("Please service the HVAC and flush the water heater between guest stays if possible."),
             AutoReminders = plan.AutoReminders,
             FrequencyHint = BuildFrequencyHint(plan.Frequency),
             EstimatedPrice = $"${plan.BundlePrice:0}–${plan.BundlePrice + 80:0}"
@@ -332,18 +332,20 @@ public class PropertyAdministratorPreventiveMaintenanceService(
     private static string MapServiceFrequency(IndorPropertyAdminPreventiveServiceCatalogItem svc, string planFrequency) =>
         planFrequency switch
         {
-            "Monthly" => "Monthly",
-            "TwiceAYear" => svc.ServiceKey == "HvacFilterChange" ? "Every 3 months" : "Twice a year",
-            "Yearly" => "Annual",
-            _ => svc.DefaultFrequency
+            "Monthly" => PropertyAdministratorDisplayLocalization.L("Monthly"),
+            "TwiceAYear" => svc.ServiceKey == "HvacFilterChange"
+                ? PropertyAdministratorDisplayLocalization.L("Every 3 months")
+                : PropertyAdministratorDisplayLocalization.L("Twice a year"),
+            "Yearly" => PropertyAdministratorDisplayLocalization.L("Annual"),
+            _ => PropertyAdministratorDisplayLocalization.L(svc.DefaultFrequency)
         };
 
     private static string BuildFrequencyHint(string frequency) => frequency switch
     {
-        "Monthly" => "We'll schedule visits every month.",
-        "TwiceAYear" => "We'll filter change every 3 months. Full service visits twice a year.",
-        "Yearly" => "We'll schedule annual preventive visits.",
-        _ => "We'll filter change every 3 months. Full service visits twice a year."
+        "Monthly" => PropertyAdministratorDisplayLocalization.L("We'll schedule visits every month."),
+        "TwiceAYear" => PropertyAdministratorDisplayLocalization.L("We'll filter change every 3 months. Full service visits twice a year."),
+        "Yearly" => PropertyAdministratorDisplayLocalization.L("We'll schedule annual preventive visits."),
+        _ => PropertyAdministratorDisplayLocalization.L("We'll filter change every 3 months. Full service visits twice a year.")
     };
 
     private static string LabelTiming(string value) => value switch
@@ -365,7 +367,7 @@ public class PropertyAdministratorPreventiveMaintenanceService(
         "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
         "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
         "MeGuest" => PropertyAdministratorDisplayLocalization.L("Me + Guest"),
-        _ => "Me"
+        _ => PropertyAdministratorDisplayLocalization.L("Me")
     };
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(
