@@ -54,6 +54,14 @@ public class PropertyAdministratorRegistrationController(
             return RedirectToAction("Dashboard", "Administrador");
         }
 
+        // Draft users who already accepted terms can enter the app;
+        // portfolio/properties are completed later inside the portal.
+        if (admin is { TermsAccepted: true })
+        {
+            await registration.CompleteRegistrationAsync(platformTermsAccepted: true);
+            return RedirectToAction("Dashboard", "Administrador");
+        }
+
         return RedirectToAction(nameof(Profile));
     }
 
@@ -61,11 +69,23 @@ public class PropertyAdministratorRegistrationController(
     public async Task<IActionResult> Profile()
     {
         await registration.LinkCurrentUserAsync();
+        var admin = await registration.GetAdministratorForCurrentUserAsync();
+        if (admin != null && registration.IsRegistrationComplete(admin))
+        {
+            return RedirectToAction("Dashboard", "Administrador");
+        }
+
+        if (admin is { TermsAccepted: true })
+        {
+            await registration.CompleteRegistrationAsync(platformTermsAccepted: true);
+            return RedirectToAction("Dashboard", "Administrador");
+        }
+
         var state = await registration.GetAsync();
         var userId = userManager.GetUserId(User);
         return View(StepVm(1, "Create your Multi-Property Owner profile",
-            "For owners of multiple homes, rentals, and short-term rental properties.",
-            state, Url.Action("SelectRole", "Account", new { userId })!));
+            "Accept the terms to enter INDOR. You can add portfolio and properties later inside the app.",
+            state, Url.Action("SelectRole", "Account", new { userId })!, totalSteps: 1));
     }
 
     [HttpPost]
@@ -92,8 +112,8 @@ public class PropertyAdministratorRegistrationController(
             state.MarketingOptIn = marketingOptIn;
             var userId = userManager.GetUserId(User);
             return View(StepVm(1, "Create your Multi-Property Owner profile",
-                "For owners of multiple homes, rentals, and short-term rental properties.",
-                state, Url.Action("SelectRole", "Account", new { userId })!));
+                "Accept the terms to enter INDOR. You can add portfolio and properties later inside the app.",
+                state, Url.Action("SelectRole", "Account", new { userId })!, totalSteps: 1));
         }
 
         await registration.SaveProfileAsync(new PropertyAdministratorProfileInput
@@ -103,7 +123,8 @@ public class PropertyAdministratorRegistrationController(
             MarketingOptIn = marketingOptIn
         });
 
-        return RedirectToAction(nameof(Portfolio));
+        await registration.CompleteRegistrationAsync(platformTermsAccepted: true);
+        return RedirectToAction("Dashboard", "Administrador");
     }
 
     [HttpGet]
@@ -816,12 +837,13 @@ public class PropertyAdministratorRegistrationController(
         string title,
         string subtitle,
         PropertyAdministratorRegistrationState state,
-        string backUrl) =>
+        string backUrl,
+        int totalSteps = 5) =>
         new()
         {
             Step = displayStep - 1,
             DisplayStep = displayStep,
-            TotalSteps = 5,
+            TotalSteps = totalSteps,
             Title = title,
             Subtitle = subtitle,
             BackUrl = backUrl,

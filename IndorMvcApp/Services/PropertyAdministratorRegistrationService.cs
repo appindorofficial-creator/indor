@@ -391,14 +391,11 @@ public class PropertyAdministratorRegistrationService(
             .FirstOrDefaultAsync(a => a.UserId == userId, cancellationToken);
     }
 
-    public string ResolveWizardResumeAction(int currentStep) => currentStep switch
-    {
-        <= 1 => "Profile",
-        2 => "Portfolio",
-        3 => "Properties",
-        4 => "Tools",
-        _ => "Review"
-    };
+    /// <summary>
+    /// Simplified registration: only Profile is required to enter the app.
+    /// Portfolio / properties / tools are completed later in the portal.
+    /// </summary>
+    public string ResolveWizardResumeAction(int currentStep) => "Profile";
 
     public bool IsRegistrationComplete(IndorPropertyAdministrator administrator) =>
         administrator.RegistrationStatus == PropertyAdministratorRegistrationStatuses.Completed

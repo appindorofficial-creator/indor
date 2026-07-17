@@ -695,8 +695,16 @@ public class AccountController : Controller
 
         if (admin.RegistrationStatus == PropertyAdministratorRegistrationStatuses.Draft)
         {
-            var action = _propertyAdministratorRegistration.ResolveWizardResumeAction(Math.Max(1, admin.CurrentStep));
-            return RedirectToAction(action, "PropertyAdministratorRegistration");
+            // Finish quickly if terms were already accepted; otherwise resume Profile only.
+            if (admin.TermsAccepted)
+            {
+                await _propertyAdministratorRegistration.CompleteRegistrationAsync(platformTermsAccepted: true);
+                return RedirectToAction("Index", "Administrador");
+            }
+
+            return RedirectToAction(
+                _propertyAdministratorRegistration.ResolveWizardResumeAction(Math.Max(1, admin.CurrentStep)),
+                "PropertyAdministratorRegistration");
         }
 
         return RedirectToAction("Index", "Administrador");

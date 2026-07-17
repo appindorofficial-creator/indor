@@ -923,6 +923,9 @@ public static class UiTranslationsPropertyAdministratorUi
         ["Arrival window: {0}"] = "Franja de llegada: {0}",
         ["Choose your operations tools"] = "Elige tus herramientas de operaciones",
         ["Create your Multi-Property Owner profile"] = "Crea tu perfil de propietario de múltiples propiedades",
+        ["Accept the terms to enter INDOR. You can add portfolio and properties later inside the app."] =
+            "Acepta los términos para entrar a INDOR. Puedes agregar el portafolio y las propiedades después dentro de la app.",
+        ["Enter INDOR"] = "Entrar a INDOR",
         ["Email & SMS"] = "Correo y SMS",
         ["Flat rate: {0} for take-out and return service."] = "Tarifa fija: {0} por el servicio de sacar y devolver.",
         ["For owners of multiple homes, rentals, and short-term rental properties."] = "Para dueños de varias viviendas, alquileres y propiedades de alquiler a corto plazo.",
