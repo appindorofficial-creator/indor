@@ -136,7 +136,7 @@
             <div class="pa-flow-pro-card">
                 <div class="pa-flow-pro-head">
                     <span class="pa-flow-pro-icon"><i class="fas fa-user-gear"></i></span>
-                    <div><strong>@Model.ProEtaLabel</strong><br /><small>@L["Licensed • Insured • Background checked"]</small></div>
+                    <div><strong>@UiDisplayLocalization.Localize(L, Model.ProEtaLabel)</strong><br /><small>@L["Licensed • Insured • Background checked"]</small></div>
                 </div>
                 <p>@L["Estimated diagnostic visit:"] <strong>@Model.EstimatedPrice</strong></p>
                 <p>@L["Emergency priority fee:"] <span class="pa-included">@L["Included"]</span></p>

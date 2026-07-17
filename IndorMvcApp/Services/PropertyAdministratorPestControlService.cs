@@ -93,7 +93,7 @@ public class PropertyAdministratorPestControlService(
             UpdateRecipients = "",
             AccessNotes = "",
             ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
-            ProEtaLabel = $"Earliest available pest control pro: {etaMinutes} min"
+            ProEtaLabel = PropertyAdministratorDisplayLocalization.T("Earliest available pest control pro: {0} min", etaMinutes)
         };
     }
 

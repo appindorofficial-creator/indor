@@ -91,7 +91,7 @@ public class PropertyAdministratorPoolHotTubService(
             AccessCode = "",
             UpdateRecipients = "",
             ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
-            ProEtaLabel = $"Nearest pool & spa pro available in {etaMinutes} minutes",
+            ProEtaLabel = PropertyAdministratorDisplayLocalization.T("Nearest pool & spa pro available in {0} minutes", etaMinutes),
             DiagnosticEstimate = "$129 – $169",
             EmergencyFeeLabel = step1.Urgency is "Urgent" or "Emergency" ? "Included" : "Not applicable"
         };
