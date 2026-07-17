@@ -27,6 +27,7 @@ public class AdministradorController(
     IPropertyAdministratorSmokeDetectorService smokeDetector,
     IPropertyAdministratorTurnoverCleaningService turnoverCleaning,
     IPropertyAdministratorStandardCleaningService standardCleaning,
+    IPropertyAdministratorLinenRestockService linenRestock,
     IPropertyAdministratorPetDeepCleanService petDeepClean,
     IPropertyAdministratorMovingHelpService movingHelp,
     IPropertyAdministratorJunkRemovalService junkRemoval,
@@ -1765,6 +1766,49 @@ public class AdministradorController(
         }
 
         var model = await petDeepClean.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> LinenRestockDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await linenRestock.GetFormAsync(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> LinenRestockDetails(PropertyAdministratorLinenRestockSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var requestId = await linenRestock.SubmitAsync(input);
+        return RedirectToAction(nameof(LinenRestockConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> LinenRestockConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await linenRestock.GetConfirmedAsync(Url, id);
         if (model == null)
         {
             return RedirectToAction(nameof(Index));

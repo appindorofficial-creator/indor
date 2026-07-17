@@ -1,0 +1,172 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorLinenRestockFormViewModel
+@{
+    ViewData["Title"] = L["Linen / Supply Restock"];
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Linen / Supply Restock"].ToString();
+    ViewBag.FlowSubtitle = L["Tell us which linens and supplies to restock for the next guest."].ToString();
+    ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
+    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    var propertyId = Model.ViewingProperty?.Id ?? 0;
+    var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+    var items = Model.IncludedItems.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <form asp-action="LinenRestockDetails" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@propertyId" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label><i class="fas fa-clipboard-list pa-q-icon pa-q-icon--purple"></i> @L["What do you need?"]</label>
+            <div class="pa-chip-grid pa-chip-grid--scroll">
+                @foreach (var s in new (string Value, string Label)[]
+                {
+                    ("FullRestock", L["Full linen & supply restock"]),
+                    ("LinensOnly", L["Linens only"]),
+                    ("SuppliesOnly", L["Supplies only"]),
+                    ("BeforeGuestArrival", L["Before guest arrival"])
+                })
+                {
+                    <label class="pa-chip @(Model.ServiceType == s.Value ? "is-selected" : null)">
+                        <input type="radio" name="ServiceType" value="@s.Value" @(Model.ServiceType == s.Value ? "checked" : null) />
+                        <span>@s.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-calendar pa-q-icon pa-q-icon--purple"></i> @L["When do you need it?"]</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var w in new[] { "Today", "Tomorrow", "Later" })
+                {
+                    <label class="pa-toggle-btn @(Model.ScheduleWhen == w ? "is-selected" : null)">
+                        <input type="radio" name="ScheduleWhen" value="@w" @(Model.ScheduleWhen == w ? "checked" : null) /> @L[w]
+                    </label>
+                }
+            </div>
+            <div class="pa-field pa-field--time">
+                <i class="fas fa-clock"></i>
+                <input type="text" name="ScheduleTimeWindow" value="@Model.ScheduleTimeWindow" placeholder="@L["10:00 AM – 1:00 PM"]" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label><i class="fas fa-box pa-q-icon pa-q-icon--purple"></i> @L["What should we restock?"]</label>
+            <div class="pa-chip-grid pa-chip-grid--wrap">
+                @foreach (var t in new (string Value, string Label)[]
+                {
+                    ("BedLinens", L["Bed linens"]),
+                    ("Towels", L["Towels"]),
+                    ("ToiletPaper", L["Toilet paper"]),
+                    ("Toiletries", L["Toiletries"]),
+                    ("KitchenPaper", L["Kitchen paper"]),
+                    ("TrashBags", L["Trash bags"])
+                })
+                {
+                    <label class="pa-chip @(items.Contains(t.Value) ? "is-selected" : null)">
+                        <input type="checkbox" name="IncludedItemsList" value="@t.Value" @(items.Contains(t.Value) ? "checked" : null) />
+                        <span>@t.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label><i class="fas fa-lock pa-q-icon pa-q-icon--purple"></i> @L["Can the team enter now?"]</label>
+            <div class="pa-chip-grid pa-chip-grid--stack">
+                @foreach (var e in new (string Value, string Label)[] { ("SmartLock", L["Yes, with smart lock"]), ("HostMeet", L["Host will meet"]), ("NeedApproval", L["Need guest approval"]) })
+                {
+                    <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Value ? "is-selected" : null)">
+                        <input type="radio" name="EntryAccess" value="@e.Value" @(Model.EntryAccess == e.Value ? "checked" : null) />
+                        <span>@e.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label><i class="fas fa-users pa-q-icon pa-q-icon--purple"></i> @L["Who should receive updates?"]</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var r in new[] { ("Me", L["Me"]), ("CoHost", L["Co-host"]), ("Guest", L["Guest"]) })
+                {
+                    <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
+                        <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />
+                        <span>@r.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label><i class="fas fa-phone pa-q-icon pa-q-icon--purple"></i> @L["Best phone number for service contact"]</label>
+            <div class="pa-field">
+                <i class="fas fa-phone"></i>
+                <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--purple"></i> @L["Add notes"]</label>
+            <textarea class="pa-textarea" name="Details" rows="3" maxlength="250" id="lrDetails">@Model.Details</textarea>
+            <small class="pa-char-count"><span id="lrDetailsCount">@Model.Details.Length</span> @L["/ 250 characters"]</small>
+        </div>
+        @await Html.PartialAsync("_PropertyAdminMediaCapture")
+
+        <div class="pa-flow-pro-card pa-flow-pro-card--turnover">
+            <div class="pa-flow-pro-head">
+                <span class="pa-flow-pro-icon pa-flow-pro-icon--purple"><i class="fas fa-box"></i></span>
+                <div>
+                    <strong>@UiDisplayLocalization.Localize(L, Model.ProEtaLabel)</strong>
+                    <div class="pa-trust-badges">
+                        <span>@L["Licensed"]</span>
+                        <span>@L["Insured"]</span>
+                        <span>@L["Fast response"]</span>
+                    </div>
+                </div>
+            </div>
+            <p>@L["Estimated visit:"] <strong>@Model.EstimatedPrice</strong> <i class="fas fa-circle-info pa-price-info"></i> <small>@L["Final price confirmed before booking"]</small></p>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Schedule restock"] <i class="fas fa-arrow-right"></i></button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back to start"]</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-chip input[type="radio"], .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.type === 'checkbox') return;
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                var parent = this.closest('.pa-chip, .pa-toggle-btn');
+                if (parent) parent.classList.add('is-selected');
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="checkbox"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.closest('.pa-chip')?.classList.toggle('is-selected', this.checked);
+            });
+        });
+        var details = document.getElementById('lrDetails');
+        var counter = document.getElementById('lrDetailsCount');
+        if (details && counter) {
+            details.addEventListener('input', function () { counter.textContent = this.value.length; });
+        }
+    </script>
+}

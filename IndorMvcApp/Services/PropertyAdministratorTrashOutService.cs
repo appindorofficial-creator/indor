@@ -90,9 +90,12 @@ public class PropertyAdministratorTrashOutService(
             QuickNotes = step1.QuickNotes ?? "",
             UpdateRecipients = "",
             ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
+            AccessNotes = PropertyAdministratorDisplayLocalization.L("Use the left side gate. No dog in yard."),
             ServiceTotalLabel = flatRate,
             ServiceTotalDescription = LabelServiceNeed(step1.ServiceNeed),
-            AvailabilityLabel = step1.PickupDay == "Tomorrow" ? "Available tomorrow evening" : "Available for scheduling"
+            AvailabilityLabel = step1.PickupDay == "Tomorrow"
+                ? PropertyAdministratorDisplayLocalization.L("Available tomorrow evening")
+                : PropertyAdministratorDisplayLocalization.L("Available for scheduling")
         };
     }
 
@@ -211,7 +214,9 @@ public class PropertyAdministratorTrashOutService(
         new()
         {
             Label = PropertyAdministratorDisplayLocalization.L("Property"),
-            Value = property != null ? $"Viewing: {property.PropertyName}" : "—",
+            Value = property != null
+                ? PropertyAdministratorDisplayLocalization.T("Viewing: {0}", property.PropertyName)
+                : "—",
             IconClass = "fa-house"
         },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = LabelServiceNeed(input.ServiceNeed), IconClass = "fa-trash-arrow-up" },
@@ -220,7 +225,12 @@ public class PropertyAdministratorTrashOutService(
         new() { Label = PropertyAdministratorDisplayLocalization.L("Pickup day"), Value = LabelPickupDay(input.PickupDay), IconClass = "fa-calendar" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Timing"), Value = $"{LabelTakeOutTiming(input.TakeOutTiming)} / {LabelBringInTiming(input.BringInTiming)}", IconClass = "fa-clock" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Price"), Value = $"{ResolveFlatRate(input.ServiceNeed)} flat rate", IconClass = "fa-tag" }
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Price"),
+            Value = PropertyAdministratorDisplayLocalization.T("{0} flat rate", ResolveFlatRate(input.ServiceNeed)),
+            IconClass = "fa-tag"
+        }
     ];
 
     private static IReadOnlyList<PropertyAdministratorTrashOutTimelineItemViewModel> BuildTimeline(

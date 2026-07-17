@@ -26,7 +26,7 @@ USING (VALUES
     (N'cleaning', N'Cleaning & Turnover', 3, N'Turnover Cleaning', N'turnover-cleaning', N'fa-broom', N'tone-purple', N'Administrador', N'TurnoverCleaningDetails', NULL, 1),
     (N'cleaning', N'Cleaning & Turnover', 3, N'Standard Cleaning', N'standard-cleaning', N'fa-spray-can-sparkles', N'tone-purple', N'Administrador', N'StandardCleaningDetails', NULL, 2),
     (N'cleaning', N'Cleaning & Turnover', 3, N'Pet Deep Clean', N'pet-deep-clean', N'fa-paw', N'tone-purple', N'Administrador', N'PetDeepCleanDetails', NULL, 3),
-    (N'cleaning', N'Cleaning & Turnover', 3, N'Linen / Supply Restock', N'linen-restock', N'fa-box', N'tone-purple', NULL, NULL, NULL, 4),
+    (N'cleaning', N'Cleaning & Turnover', 3, N'Linen / Supply Restock', N'linen-restock', N'fa-box', N'tone-purple', N'Administrador', N'LinenRestockDetails', NULL, 4),
     (N'cleaning', N'Cleaning & Turnover', 3, N'Trashout', N'trashout', N'fa-dumpster', N'tone-purple', N'Administrador', N'TrashOutDetails', NULL, 5),
 
     -- Outdoor & Exterior

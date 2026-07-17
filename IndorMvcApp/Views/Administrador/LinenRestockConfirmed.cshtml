@@ -1,12 +1,12 @@
-@model IndorMvcApp.ViewModels.PropertyAdministratorLandscapingConfirmedViewModel
+@model IndorMvcApp.ViewModels.PropertyAdministratorLinenRestockConfirmedViewModel
 @{
-    ViewData["Title"] = L["Landscaping request sent"];
+    ViewData["Title"] = L["Linen / Supply Restock scheduled"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
-    ViewBag.FlowTitle = L["Landscaping request sent"].ToString();
-    ViewBag.FlowSubtitle = L["A landscaping pro will review your yard and prepare a scope of work."].ToString();
-    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Scope"].ToString(), L["Done"].ToString() };
+    ViewBag.FlowTitle = L["Linen / Supply Restock scheduled"].ToString();
+    ViewBag.FlowSubtitle = L["Your restock service is booked and ready."].ToString();
+    ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
     ViewBag.FlowShowBack = false;
     var propertyLabel = Model.ViewingProperty != null
         ? $"{Model.ViewingProperty.PropertyTypeLabel} • {Model.ViewingProperty.Location}"
@@ -16,52 +16,39 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
-    
-
-    <div class="pa-success-banner pa-success-banner--green">
+    <div class="pa-success-banner pa-success-banner--turnover">
         <span class="pa-success-icon"><i class="fas fa-check"></i></span>
         <div>
             <strong>@L["Request received"]</strong>
-            <span>@L["A landscaping pro will review your yard and prepare a scope of work."]</span>
+            <span>@L["Your linen and supply restock is scheduled."]</span>
         </div>
     </div>
 
-    @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
-    {
-        <div class="pa-viewing-strip">
-            <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
-            <div class="pa-viewing-strip-main">
-                <strong>@Model.ViewingProperty.PropertyName</strong>
-                <small>@propertyLabel</small>
-            </div>
-            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="@L["Switch property"]"><i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i></a>
-        </div>
-    }
-
-    <article class="pa-tech-card">
+    <article class="pa-tech-card pa-tech-card--turnover">
         <div class="pa-tech-head">
             <img src="/inspeccion2.jpeg" alt="" class="pa-tech-avatar" />
             <div class="pa-tech-meta">
                 <strong>@Model.TechnicianName</strong>
-                <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0") (@L.T("{0} reviews", Model.TechnicianReviewCount))</span>
+                <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0")</span>
                 <small>@UiDisplayLocalization.Localize(L, Model.TechnicianTitle)</small>
             </div>
             <span class="pa-verified-badge"><i class="fas fa-check"></i> @L["Verified"]</span>
+            <span class="pa-tech-deco pa-tech-deco--purple" aria-hidden="true"><i class="fas fa-box"></i></span>
         </div>
         <div class="pa-tech-stats">
             <div>
-                <i class="fas fa-calendar-day"></i>
-                <strong>@UiDisplayLocalization.Localize(L, Model.ConsultationLabel)</strong>
-                <small>@L["Consultation"]</small>
+                <i class="fas fa-calendar"></i>
+                <strong>@UiDisplayLocalization.Localize(L, Model.ScheduleLabel)</strong>
+                <small>@L["Scheduled"]</small>
             </div>
             <div>
-                <i class="fas fa-truck"></i>
+                <i class="fas fa-car"></i>
                 <strong>@UiDisplayLocalization.Localize(L, Model.VehicleLabel)</strong>
                 <small>@L["Vehicle"]</small>
             </div>
             <div>
                 <i class="fas fa-house"></i>
-                <strong>@(Model.ViewingProperty?.PropertyName)</strong>
+                <strong>@L.T("Viewing: {0}", Model.ViewingProperty?.PropertyName)</strong>
                 <small>@propertyLabel</small>
             </div>
         </div>
@@ -69,8 +56,8 @@
 
     <div class="pa-confirm-split">
         <article class="pa-summary-card-block">
-            <h2>@L["Request summary"]</h2>
-            <ul class="pa-summary-detail-list pa-summary-detail-list--green">
+            <h2><i class="fas fa-clipboard-list"></i> @L["Request summary"]</h2>
+            <ul class="pa-summary-detail-list">
                 @foreach (var item in Model.Summary)
                 {
                     <li>
@@ -83,7 +70,7 @@
         </article>
 
         <article class="pa-timeline-card pa-timeline-card--inline">
-            <h2>@L["Request timeline"]</h2>
+            <h2><i class="fas fa-clock"></i> @L["Service timeline"]</h2>
             <ul class="pa-timeline">
                 @foreach (var step in Model.Timeline)
                 {
@@ -100,23 +87,19 @@
     </div>
 
     <div class="pa-action-grid">
-        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>@L["Message pro"]</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-phone"></i><span>@L["Call pro"]</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-share"></i><span>@L["Share details"]</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>@L["Message co-host"]</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-calendar"></i><span>@L["Reschedule"]</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-rotate"></i><span>@L["Add recurring"]</span></button>
         <a asp-controller="Administrador" asp-action="Tasks" class="pa-action-tile">
-            <i class="fas fa-file-lines"></i><span>@L["View request"]</span>
+            <i class="fas fa-file-lines"></i><span>@L["View details"]</span>
         </a>
     </div>
 
-    <div class="pa-lawn-tip-banner">
-        <i class="fas fa-lightbulb"></i>
+    <div class="pa-tip-banner pa-tip-banner--purple">
+        <span class="pa-tip-icon"><i class="fas fa-lightbulb"></i></span>
         <p><strong>@L["Tip:"]</strong> @UiDisplayLocalization.Localize(L, Model.Tip)</p>
     </div>
+    @{ ViewBag.ConfirmedPropertyId = Model.ViewingProperty?.Id; }
+    @await Html.PartialAsync("_PropertyAdminConfirmedFooter")
 
-    <a asp-controller="Administrador" asp-action="Tasks" class="ob-btn ob-btn-primary pa-flow-submit">
-        @L["Track request"] <i class="fas fa-chevron-right"></i>
-    </a>
-    <a asp-controller="Administrador" asp-action="Index" asp-route-propertyId="@Model.ViewingProperty?.Id" class="ob-btn ob-btn-outline pa-flow-edit">
-        @L["Back to start"]
-    </a>
 </div>

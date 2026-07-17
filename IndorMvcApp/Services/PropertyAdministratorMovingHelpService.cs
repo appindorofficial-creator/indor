@@ -82,11 +82,20 @@ public class PropertyAdministratorMovingHelpService(
             ?? admin.PortfolioProperties.OrderByDescending(p => p.FechaCreacion).FirstOrDefault()
             ?? throw new InvalidOperationException("No portfolio property found.");
 
+        var scheduleWhen = string.IsNullOrWhiteSpace(input.ScheduleWhen)
+            ? "Tomorrow"
+            : input.ScheduleWhen.Trim();
+        var scheduleTimeWindow = string.IsNullOrWhiteSpace(input.ScheduleTimeWindow)
+            ? "10:00 AM – 1:00 PM"
+            : input.ScheduleTimeWindow.Trim();
+        input.ScheduleWhen = scheduleWhen;
+        input.ScheduleTimeWindow = scheduleTimeWindow;
+
         var detailsJson = JsonSerializer.Serialize(input);
-        var visitDate = input.ScheduleWhen == "Today"
+        var visitDate = scheduleWhen == "Today"
             ? DateTime.Today.AddHours(10)
             : DateTime.Today.AddDays(1).AddHours(10);
-        var etaLabel = $"{LabelScheduleWhen(input.ScheduleWhen)} • {input.ScheduleTimeWindow}";
+        var etaLabel = $"{LabelScheduleWhen(scheduleWhen)} • {scheduleTimeWindow}";
 
         var request = new IndorPropertyAdminServiceRequest
         {
@@ -118,7 +127,7 @@ public class PropertyAdministratorMovingHelpService(
             Title = "Moving help visit",
             PropertyName = property.PropertyName,
             VisitDate = visitDate.Date,
-            TimeWindow = input.ScheduleTimeWindow,
+            TimeWindow = scheduleTimeWindow,
             ImageUrl = property.ImageUrl
         });
 

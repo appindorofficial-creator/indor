@@ -21,7 +21,7 @@ USING (VALUES
     (N'outdoor', N'Outdoor & Exterior', 4, N'Pressure Washing', N'pressure-washing', N'fa-spray-can', N'tone-green', N'PowerWash', N'PowerWashService', @PowerWashPriorityId, 3),
     (N'outdoor', N'Outdoor & Exterior', 4, N'Pest Control', N'pest-control', N'fa-bug', N'tone-green', N'PestControl', N'PestControlService', @PestPriorityId, 4),
     (N'outdoor', N'Outdoor & Exterior', 4, N'Pool / Hot Tub Service', N'pool-hot-tub', N'fa-water-ladder', N'tone-green', NULL, NULL, NULL, 5),
-    (N'cleaning', N'Cleaning & Turnover', 3, N'Linen / Supply Restock', N'linen-restock', N'fa-box', N'tone-purple', NULL, NULL, NULL, 4)
+    (N'cleaning', N'Cleaning & Turnover', 3, N'Linen / Supply Restock', N'linen-restock', N'fa-box', N'tone-purple', N'Administrador', N'LinenRestockDetails', NULL, 4)
 ) AS s (CategoryKey, CategoryTitle, CategoryOrder, ServiceName, ServiceSlug, IconClass, ToneClass, LinkController, LinkAction, LinkRouteId, Orden)
 ON t.ServiceSlug = s.ServiceSlug
 WHEN NOT MATCHED THEN

@@ -60,7 +60,7 @@
                         <i class="fas @item.IconClass"></i>
                         <div>
                             <span>@UiDisplayLocalization.Localize(L, item.Label)</span>
-                            <strong>@item.Value</strong>
+                            <strong>@UiDisplayLocalization.Localize(L, item.Value)</strong>
                         </div>
                         <i class="fas fa-chevron-right pa-booking-chevron"></i>
                     </li>
@@ -96,7 +96,7 @@
 
     <div class="pa-info-banner pa-info-banner--pet">
         <i class="fas fa-circle-info"></i>
-        <span>@Model.InfoBanner</span>
+        <span>@UiDisplayLocalization.Localize(L, Model.InfoBanner)</span>
     </div>
     @{ ViewBag.ConfirmedPropertyId = Model.ViewingProperty?.Id; }
     @await Html.PartialAsync("_PropertyAdminConfirmedFooter")

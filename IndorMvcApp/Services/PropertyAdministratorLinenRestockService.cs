@@ -8,35 +8,28 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IndorMvcApp.Services;
 
-public interface IPropertyAdministratorPetDeepCleanService
+public interface IPropertyAdministratorLinenRestockService
 {
-    PropertyAdministratorPetDeepCleanFeaturedViewModel BuildFeaturedCta(IUrlHelper url, int? propertyId);
-    Task<PropertyAdministratorPetDeepCleanFormViewModel> GetFormAsync(IUrlHelper url, int? propertyId, CancellationToken cancellationToken = default);
-    Task<int> SubmitAsync(PropertyAdministratorPetDeepCleanSubmitInput input, CancellationToken cancellationToken = default);
-    Task<PropertyAdministratorPetDeepCleanConfirmedViewModel?> GetConfirmedAsync(IUrlHelper url, int requestId, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorLinenRestockFormViewModel> GetFormAsync(IUrlHelper url, int? propertyId, CancellationToken cancellationToken = default);
+    Task<int> SubmitAsync(PropertyAdministratorLinenRestockSubmitInput input, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorLinenRestockConfirmedViewModel?> GetConfirmedAsync(IUrlHelper url, int requestId, CancellationToken cancellationToken = default);
 }
 
-public class PropertyAdministratorPetDeepCleanService(
+public class PropertyAdministratorLinenRestockService(
     AppDbContext db,
     UserManager<ApplicationUser> userManager,
-    IHttpContextAccessor httpContextAccessor) : IPropertyAdministratorPetDeepCleanService
+    IHttpContextAccessor httpContextAccessor) : IPropertyAdministratorLinenRestockService
 {
-    public PropertyAdministratorPetDeepCleanFeaturedViewModel BuildFeaturedCta(IUrlHelper url, int? propertyId) =>
-        new()
-        {
-            StartUrl = url.Action("PetDeepCleanDetails", "Administrador", new { propertyId }) ?? "#"
-        };
-
-    public async Task<PropertyAdministratorPetDeepCleanFormViewModel> GetFormAsync(
+    public async Task<PropertyAdministratorLinenRestockFormViewModel> GetFormAsync(
         IUrlHelper url, int? propertyId, CancellationToken cancellationToken = default)
     {
         var admin = await LoadAdminAsync(cancellationToken: cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
         var shell = await BuildShellAsync(admin, cancellationToken);
         var property = ResolveProperty(admin, propertyId);
-        var mapped = MapProperty(property);
+        var user = await GetUserAsync();
 
-        return new PropertyAdministratorPetDeepCleanFormViewModel
+        return new PropertyAdministratorLinenRestockFormViewModel
         {
             DisplayName = shell.DisplayName,
             PortfolioName = shell.PortfolioName,
@@ -44,13 +37,13 @@ public class PropertyAdministratorPetDeepCleanService(
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
-            ViewingProperty = mapped,
-            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest checkout today" : null
+            ViewingProperty = MapProperty(property),
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
         };
     }
 
     public async Task<int> SubmitAsync(
-        PropertyAdministratorPetDeepCleanSubmitInput input, CancellationToken cancellationToken = default)
+        PropertyAdministratorLinenRestockSubmitInput input, CancellationToken cancellationToken = default)
     {
         var admin = await LoadAdminAsync(trackChanges: true, cancellationToken: cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
@@ -77,7 +70,10 @@ public class PropertyAdministratorPetDeepCleanService(
         {
             AdministratorId = admin.Id,
             PortfolioPropertyId = property.Id,
-            Title = PropertyAdministratorDisplayLocalization.T("{0} at {1}", PropertyAdministratorDisplayLocalization.L("Pet Deep Clean"), property.PropertyName),
+            Title = PropertyAdministratorDisplayLocalization.T(
+                "{0} at {1}",
+                PropertyAdministratorDisplayLocalization.L("Linen / Supply Restock"),
+                property.PropertyName),
             PropertyName = property.PropertyName,
             Location = property.Location,
             Status = PropertyAdministratorRequestStatuses.Open,
@@ -85,10 +81,10 @@ public class PropertyAdministratorPetDeepCleanService(
             ScheduledUtc = visitDate,
             IsEmergency = false,
             EtaLabel = etaLabel,
-            TeamLabel = PropertyAdministratorDisplayLocalization.L("Maria Gutierrez • Pet cleaning"),
+            TeamLabel = PropertyAdministratorDisplayLocalization.L("Maria R. • Restock"),
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
-            TechnicianName = "Maria Gutierrez",
+            TechnicianName = "Maria R.",
             TechnicianRating = 4.9m,
             TechnicianTitle = "Licensed Homecare Pro",
             VehicleLabel = PropertyAdministratorDisplayLocalization.L("White service van"),
@@ -100,7 +96,7 @@ public class PropertyAdministratorPetDeepCleanService(
         db.IndorPropertyAdminScheduledVisits.Add(new IndorPropertyAdminScheduledVisit
         {
             AdministratorId = admin.Id,
-            Title = "Pet deep clean",
+            Title = "Linen / supply restock",
             PropertyName = property.PropertyName,
             VisitDate = visitDate.Date,
             TimeWindow = scheduleTimeWindow,
@@ -111,7 +107,7 @@ public class PropertyAdministratorPetDeepCleanService(
         return request.Id;
     }
 
-    public async Task<PropertyAdministratorPetDeepCleanConfirmedViewModel?> GetConfirmedAsync(
+    public async Task<PropertyAdministratorLinenRestockConfirmedViewModel?> GetConfirmedAsync(
         IUrlHelper url, int requestId, CancellationToken cancellationToken = default)
     {
         var admin = await LoadAdminAsync(cancellationToken: cancellationToken);
@@ -132,9 +128,8 @@ public class PropertyAdministratorPetDeepCleanService(
             : admin.PortfolioProperties.FirstOrDefault();
 
         var input = DeserializeInput(request.DetailsJson);
-        var visitDate = request.ScheduledUtc?.Date ?? DateTime.Today.AddDays(1);
 
-        return new PropertyAdministratorPetDeepCleanConfirmedViewModel
+        return new PropertyAdministratorLinenRestockConfirmedViewModel
         {
             DisplayName = shell.DisplayName,
             PortfolioName = shell.PortfolioName,
@@ -144,94 +139,70 @@ public class PropertyAdministratorPetDeepCleanService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             RequestId = request.Id,
             ViewingProperty = property == null ? null : MapProperty(property),
-            TechnicianName = request.TechnicianName ?? "Maria Gutierrez",
+            TechnicianName = request.TechnicianName ?? "Maria R.",
             TechnicianRating = request.TechnicianRating ?? 4.9m,
-            TechnicianReviewCount = 135,
             TechnicianTitle = request.TechnicianTitle ?? "Licensed Homecare Pro",
-            TechnicianExperience = "8+ years of homecare experience",
-            BookingDetails = BuildBookingDetails(property, input, visitDate),
-            Timeline = BuildTimeline(request, visitDate, input)
+            ScheduleLabel = request.EtaLabel ?? "Tomorrow • 10:00 AM – 1:00 PM",
+            VehicleLabel = request.VehicleLabel ?? "White service van",
+            Summary = BuildSummary(property, input),
+            Timeline = BuildTimeline(request, input)
         };
     }
 
-    private static PropertyAdministratorPetDeepCleanSubmitInput DeserializeInput(string? json)
+    private static PropertyAdministratorLinenRestockSubmitInput DeserializeInput(string? json)
     {
         if (string.IsNullOrWhiteSpace(json))
         {
-            return new PropertyAdministratorPetDeepCleanSubmitInput();
+            return new PropertyAdministratorLinenRestockSubmitInput();
         }
 
         try
         {
-            return JsonSerializer.Deserialize<PropertyAdministratorPetDeepCleanSubmitInput>(json)
-                ?? new PropertyAdministratorPetDeepCleanSubmitInput();
+            return JsonSerializer.Deserialize<PropertyAdministratorLinenRestockSubmitInput>(json)
+                ?? new PropertyAdministratorLinenRestockSubmitInput();
         }
         catch
         {
-            return new PropertyAdministratorPetDeepCleanSubmitInput();
+            return new PropertyAdministratorLinenRestockSubmitInput();
         }
     }
 
-    private static IReadOnlyList<PropertyAdministratorPetDeepCleanBookingItemViewModel> BuildBookingDetails(
-        IndorPropertyAdminPortfolioProperty? property,
-        PropertyAdministratorPetDeepCleanSubmitInput input,
-        DateTime visitDate) =>
+    private static IReadOnlyList<PropertyAdministratorEmergencyElectricalSummaryItemViewModel> BuildSummary(
+        IndorPropertyAdminPortfolioProperty? property, PropertyAdministratorLinenRestockSubmitInput input) =>
     [
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = PropertyAdministratorDisplayLocalization.L("Pet Deep Cleaning"), IconClass = "fa-paw" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Date & time"), Value = $"{visitDate:MMM d, yyyy} • {input.ScheduleTimeWindow}", IconClass = "fa-calendar" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Pets"), Value = LabelPets(input.PetCount, input.PetType), IconClass = "fa-dog" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Focus areas"), Value = LabelFocusAreas(input.FocusAreasList), IconClass = "fa-wand-magic-sparkles" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Access method"), Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" }
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Property"), Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = PropertyAdministratorDisplayLocalization.L("Linen / Supply Restock"), IconClass = "fa-box" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Time"), Value = $"{LabelScheduleWhen(input.ScheduleWhen)} {input.ScheduleTimeWindow}", IconClass = "fa-clock" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Scope"), Value = LabelServiceType(input.ServiceType), IconClass = "fa-clipboard-list" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Includes"), Value = LabelIncludes(input.IncludedItemsList), IconClass = "fa-list-check" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-bell" }
     ];
 
-    private static IReadOnlyList<PropertyAdministratorPetDeepCleanTimelineItemViewModel> BuildTimeline(
-        IndorPropertyAdminServiceRequest request, DateTime visitDate, PropertyAdministratorPetDeepCleanSubmitInput input)
+    private static IReadOnlyList<PropertyAdministratorLinenRestockTimelineItemViewModel> BuildTimeline(
+        IndorPropertyAdminServiceRequest request, PropertyAdministratorLinenRestockSubmitInput input)
     {
-        var submitted = request.FechaCreacion.ToLocalTime();
-        var assigned = submitted.AddMinutes(2);
-        var visitLabel = $"{visitDate:MMM d, yyyy}, {input.ScheduleTimeWindow}";
+        var submitted = PropertyAdministratorFlowServiceSupport.FormatTodayTime(request.FechaCreacion);
+        var assigned = PropertyAdministratorFlowServiceSupport.FormatTodayTime(request.FechaCreacion.AddMinutes(1));
+        var scheduled = PropertyAdministratorFlowServiceSupport.FormatTodayTime(request.FechaCreacion.AddMinutes(3));
+        var visitLabel = $"{LabelScheduleWhen(input.ScheduleWhen)} {input.ScheduleTimeWindow}";
 
         return
         [
-            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = $"{submitted:MMM d, yyyy} • {submitted:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
-            new() { Label = PropertyAdministratorDisplayLocalization.L("Crew assigned"), StatusLabel = $"{assigned:MMM d, yyyy} • {assigned:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
-            new() { Label = PropertyAdministratorDisplayLocalization.L("Scheduled visit"), StatusLabel = visitLabel, IconClass = "fa-calendar-check", State = "active" }
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Request submitted"), StatusLabel = submitted, IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Crew assigned"), StatusLabel = assigned, IconClass = "fa-circle-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Scheduled visit"), StatusLabel = scheduled, IconClass = "fa-calendar-check", State = "done" },
+            new() { Label = PropertyAdministratorDisplayLocalization.L("Restock visit"), StatusLabel = visitLabel, IconClass = "fa-box", State = "active" }
         ];
     }
 
-    private static string LabelPets(string count, string type)
+    private static string LabelServiceType(string value) => value switch
     {
-        var countLabel = count switch
-        {
-            "1" => PropertyAdministratorDisplayLocalization.L("1"),
-            "3" => PropertyAdministratorDisplayLocalization.L("3"),
-            "FourPlus" => PropertyAdministratorDisplayLocalization.L("4+"),
-            _ => PropertyAdministratorDisplayLocalization.L("2")
-        };
-        var typeLabel = type switch
-        {
-            "Cat" => countLabel == "1" ? PropertyAdministratorDisplayLocalization.L("cat") : PropertyAdministratorDisplayLocalization.L("cats"),
-            "Other" => PropertyAdministratorDisplayLocalization.L("pets"),
-            _ => countLabel == "1" ? PropertyAdministratorDisplayLocalization.L("dog") : PropertyAdministratorDisplayLocalization.L("dogs")
-        };
-        return $"{countLabel} {typeLabel}";
-    }
-
-    private static string LabelFocusAreas(IReadOnlyList<string> areas)
-    {
-        var labels = areas.Select(a => a switch
-        {
-            "OdorRemoval" => PropertyAdministratorDisplayLocalization.L("odors"),
-            "AccidentsStains" => PropertyAdministratorDisplayLocalization.L("stains"),
-            "BedsUpholstery" => PropertyAdministratorDisplayLocalization.L("beds & upholstery"),
-            "CratePetArea" => PropertyAdministratorDisplayLocalization.L("crate / pet area"),
-            "Floors" => PropertyAdministratorDisplayLocalization.L("floors"),
-            _ => PropertyAdministratorDisplayLocalization.L("pet hair")
-        }).Distinct().ToList();
-
-        return labels.Count == 0 ? "—" : string.Join(", ", labels);
-    }
+        "LinensOnly" => PropertyAdministratorDisplayLocalization.L("Linens only"),
+        "SuppliesOnly" => PropertyAdministratorDisplayLocalization.L("Supplies only"),
+        "BeforeGuestArrival" => PropertyAdministratorDisplayLocalization.L("Before guest arrival"),
+        _ => PropertyAdministratorDisplayLocalization.L("Full linen & supply restock")
+    };
 
     private static string LabelScheduleWhen(string value) => value switch
     {
@@ -240,10 +211,26 @@ public class PropertyAdministratorPetDeepCleanService(
         _ => PropertyAdministratorDisplayLocalization.L("Tomorrow")
     };
 
+    private static string LabelIncludes(IReadOnlyList<string> items)
+    {
+        var labels = items.Select(t => t switch
+        {
+            "BedLinens" => PropertyAdministratorDisplayLocalization.L("bed linens"),
+            "Towels" => PropertyAdministratorDisplayLocalization.L("towels"),
+            "ToiletPaper" => PropertyAdministratorDisplayLocalization.L("toilet paper"),
+            "Toiletries" => PropertyAdministratorDisplayLocalization.L("toiletries"),
+            "KitchenPaper" => PropertyAdministratorDisplayLocalization.L("kitchen paper"),
+            "TrashBags" => PropertyAdministratorDisplayLocalization.L("trash bags"),
+            _ => t
+        }).ToList();
+
+        return labels.Count == 0 ? "—" : string.Join(", ", labels);
+    }
+
     private static string LabelAccess(string value) => value switch
     {
         "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
-        "GuestStillInside" => PropertyAdministratorDisplayLocalization.L("Guest still inside"),
+        "NeedApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
         _ => PropertyAdministratorDisplayLocalization.L("Smart lock code provided")
     };
 
@@ -253,12 +240,12 @@ public class PropertyAdministratorPetDeepCleanService(
         {
             "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
             "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
-            _ => "Me"
+            _ => PropertyAdministratorDisplayLocalization.L("Me")
         }).Distinct().ToList();
 
         return labels.Count switch
         {
-            0 => "Me",
+            0 => PropertyAdministratorDisplayLocalization.L("Me"),
             1 => labels[0],
             _ => string.Join(" + ", labels)
         };
@@ -296,6 +283,12 @@ public class PropertyAdministratorPetDeepCleanService(
         }
 
         return shell;
+    }
+
+    private async Task<ApplicationUser?> GetUserAsync()
+    {
+        var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
+        return string.IsNullOrEmpty(userId) ? null : await userManager.FindByIdAsync(userId);
     }
 
     private static IndorPropertyAdminPortfolioProperty? ResolveProperty(

@@ -1034,11 +1034,23 @@ public class PropertyAdministratorPortalService(
 
     private static string BuildCatalogUrl(IUrlHelper url, IndorPropertyAdminServiceCatalogItem item)
     {
-        if (!string.IsNullOrWhiteSpace(item.LinkController) && !string.IsNullOrWhiteSpace(item.LinkAction))
+        var linkController = item.LinkController;
+        var linkAction = item.LinkAction;
+
+        if (string.IsNullOrWhiteSpace(linkController) || string.IsNullOrWhiteSpace(linkAction))
+        {
+            if (string.Equals(item.ServiceSlug, "linen-restock", StringComparison.OrdinalIgnoreCase))
+            {
+                linkController = "Administrador";
+                linkAction = "LinenRestockDetails";
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(linkController) && !string.IsNullOrWhiteSpace(linkAction))
         {
             return item.LinkRouteId.HasValue
-                ? url.Action(item.LinkAction, item.LinkController, new { id = item.LinkRouteId }) ?? "#"
-                : url.Action(item.LinkAction, item.LinkController) ?? "#";
+                ? url.Action(linkAction, linkController, new { id = item.LinkRouteId }) ?? "#"
+                : url.Action(linkAction, linkController) ?? "#";
         }
 
         return url.Action("Services", "Administrador") ?? "#";

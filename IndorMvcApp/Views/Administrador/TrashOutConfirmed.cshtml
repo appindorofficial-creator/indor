@@ -32,7 +32,7 @@
                 <li>
                     <i class="fas @item.IconClass"></i>
                     <span>@UiDisplayLocalization.Localize(L, item.Label)</span>
-                    <strong>@item.Value</strong>
+                    <strong>@UiDisplayLocalization.Localize(L, item.Value)</strong>
                 </li>
             }
         </ul>
@@ -57,7 +57,7 @@
     <article class="pa-trash-runner-card">
         <img src="/inspeccion2.jpeg" alt="" class="pa-trash-runner-avatar" />
         <div>
-            <strong>@Model.RunnerLabel</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.RunnerLabel)</strong>
             <small>@L.T("Arrival window: {0}", Model.ArrivalWindow)</small>
         </div>
         <button type="button" class="pa-pro-action-btn"><i class="fas fa-user-plus"></i></button>

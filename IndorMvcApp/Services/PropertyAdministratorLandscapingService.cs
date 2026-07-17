@@ -209,7 +209,14 @@ public class PropertyAdministratorLandscapingService(
         new() { Label = PropertyAdministratorDisplayLocalization.L("Area"), Value = LabelArea(input.WorkArea), IconClass = "fa-tree" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Reason"), Value = LabelReason(input.ServiceReason), IconClass = "fa-car" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Timing"), Value = LabelTimingRequirement(input), IconClass = "fa-clock" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Materials"), Value = input.ProvideMaterials == "Yes" ? "Plants/materials provided by pro" : "Owner provides materials", IconClass = "fa-seedling" },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Materials"),
+            Value = input.ProvideMaterials == "Yes"
+                ? PropertyAdministratorDisplayLocalization.L("Plants/materials provided by pro")
+                : PropertyAdministratorDisplayLocalization.L("Owner provides materials"),
+            IconClass = "fa-seedling"
+        },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Haul away"), Value = LabelHaulAway(input.HaulAwayType), IconClass = "fa-truck" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" }
     ];

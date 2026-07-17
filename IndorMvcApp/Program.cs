@@ -162,6 +162,7 @@ builder.Services.AddScoped<IPropertyAdministratorAirFilterService, PropertyAdmin
 builder.Services.AddScoped<IPropertyAdministratorSmokeDetectorService, PropertyAdministratorSmokeDetectorService>();
 builder.Services.AddScoped<IPropertyAdministratorTurnoverCleaningService, PropertyAdministratorTurnoverCleaningService>();
 builder.Services.AddScoped<IPropertyAdministratorStandardCleaningService, PropertyAdministratorStandardCleaningService>();
+builder.Services.AddScoped<IPropertyAdministratorLinenRestockService, PropertyAdministratorLinenRestockService>();
 builder.Services.AddScoped<IPropertyAdministratorPetDeepCleanService, PropertyAdministratorPetDeepCleanService>();
 builder.Services.AddScoped<IPropertyAdministratorMovingHelpService, PropertyAdministratorMovingHelpService>();
 builder.Services.AddScoped<IPropertyAdministratorJunkRemovalService, PropertyAdministratorJunkRemovalService>();
