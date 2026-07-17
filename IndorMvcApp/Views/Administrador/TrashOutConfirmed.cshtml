@@ -80,7 +80,7 @@
     <a asp-controller="Administrador" asp-action="Tasks" class="ob-btn ob-btn-primary pa-flow-submit">
         @L["Track service"] <i class="fas fa-chevron-right"></i>
     </a>
-    <a asp-controller="Administrador" asp-action="Services" class="ob-btn ob-btn-outline pa-flow-edit">
-        @L["Back to services"]
+    <a asp-controller="Administrador" asp-action="Index" asp-route-propertyId="@Model.ViewingProperty?.Id" class="ob-btn ob-btn-outline pa-flow-edit">
+        @L["Back to start"]
     </a>
 </div>

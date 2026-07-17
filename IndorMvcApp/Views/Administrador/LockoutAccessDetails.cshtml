@@ -7,7 +7,7 @@
     ViewBag.FlowTitle = L["Lockout / Access"].ToString();
     ViewBag.FlowSubtitle = L["Tell us what happened so we can dispatch help fast."].ToString();
     ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Access"].ToString(), L["Done"].ToString() };
-    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     ViewBag.BadgeLabel = "Guest locked out";
     var propertyId = Model.ViewingProperty?.Id ?? 0;
 }
@@ -115,7 +115,7 @@
 
 
         <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-back-link">@L["Back to services"]</a>
+        <a href="@ViewBag.FlowBackUrl" class="pa-back-link">@L["Back to start"]</a>
     </form>
 </div>
 
