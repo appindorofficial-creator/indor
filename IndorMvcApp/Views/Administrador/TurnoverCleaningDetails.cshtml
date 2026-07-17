@@ -158,8 +158,8 @@
                 </div>
             </div>
             <div class="pa-to-stats">
-                <span><i class="fas fa-clock"></i> @Model.DurationLabel</span>
-                <span><i class="fas fa-users"></i> @Model.CrewLabel</span>
+                <span><i class="fas fa-clock"></i> @UiDisplayLocalization.Localize(L, Model.DurationLabel)</span>
+                <span><i class="fas fa-users"></i> @UiDisplayLocalization.Localize(L, Model.CrewLabel)</span>
             </div>
             <p>@L["Estimated visit:"] <strong>@Model.EstimatedPrice</strong> <small>@L["Final price confirmed before service"]</small></p>
         </div>

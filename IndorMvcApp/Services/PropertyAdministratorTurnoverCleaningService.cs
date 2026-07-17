@@ -163,10 +163,10 @@ public class PropertyAdministratorTurnoverCleaningService(
         IndorPropertyAdminPortfolioProperty? property, PropertyAdministratorTurnoverCleaningSubmitInput input) =>
     [
         new() { Label = PropertyAdministratorDisplayLocalization.L("Property"), Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = "Turnover Cleaning", IconClass = "fa-broom" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = PropertyAdministratorDisplayLocalization.L("Turnover Cleaning"), IconClass = "fa-broom" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Next guest arrival"), Value = LabelGuestArrival(input.GuestArrival, input.GuestArrivalTime), IconClass = "fa-calendar" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Scope"), Value = LabelServiceType(input.ServiceType), IconClass = "fa-clipboard-list" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Linens"), Value = input.IncludedTasksList.Contains("FreshLinens") ? "Included" : "Not included", IconClass = "fa-bed" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Linens"), Value = input.IncludedTasksList.Contains("FreshLinens") ? PropertyAdministratorDisplayLocalization.L("Included") : PropertyAdministratorDisplayLocalization.L("Not included"), IconClass = "fa-bed" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Restock"), Value = LabelRestock(input.IncludedTasksList), IconClass = "fa-box" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelAccess(input.EntryAccess), IconClass = "fa-key" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-bell" }
@@ -196,12 +196,22 @@ public class PropertyAdministratorTurnoverCleaningService(
         _ => PropertyAdministratorDisplayLocalization.L("Full turnover")
     };
 
-    private static string LabelGuestArrival(string arrival, string time) => arrival switch
+    private static string LabelGuestArrival(string arrival, string time)
     {
-        "Tomorrow" => $"Tomorrow {time}",
-        "Later" => $"Later • {time}",
-        _ => $"Today {time}"
-    };
+        var localizedTime = string.IsNullOrWhiteSpace(time) ? "" : time.Trim();
+        return arrival switch
+        {
+            "Tomorrow" => string.IsNullOrWhiteSpace(localizedTime)
+                ? PropertyAdministratorDisplayLocalization.L("Tomorrow")
+                : PropertyAdministratorDisplayLocalization.T("Tomorrow {0}", localizedTime),
+            "Later" => string.IsNullOrWhiteSpace(localizedTime)
+                ? PropertyAdministratorDisplayLocalization.L("Later")
+                : PropertyAdministratorDisplayLocalization.T("Later • {0}", localizedTime),
+            _ => string.IsNullOrWhiteSpace(localizedTime)
+                ? PropertyAdministratorDisplayLocalization.L("Today")
+                : PropertyAdministratorDisplayLocalization.T("Today {0}", localizedTime)
+        };
+    }
 
     private static string LabelRestock(IReadOnlyList<string> tasks)
     {
@@ -229,12 +239,12 @@ public class PropertyAdministratorTurnoverCleaningService(
         {
             "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
             "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
-            _ => "Me"
+            _ => PropertyAdministratorDisplayLocalization.L("Me")
         }).Distinct().ToList();
 
         return labels.Count switch
         {
-            0 => "Me",
+            0 => PropertyAdministratorDisplayLocalization.L("Me"),
             1 => labels[0],
             _ => string.Join(" + ", labels)
         };

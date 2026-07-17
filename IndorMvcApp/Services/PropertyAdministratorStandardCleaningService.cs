@@ -59,11 +59,20 @@ public class PropertyAdministratorStandardCleaningService(
             ?? admin.PortfolioProperties.OrderByDescending(p => p.FechaCreacion).FirstOrDefault()
             ?? throw new InvalidOperationException("No portfolio property found.");
 
+        var scheduleWhen = string.IsNullOrWhiteSpace(input.ScheduleWhen)
+            ? "Tomorrow"
+            : input.ScheduleWhen.Trim();
+        var scheduleTimeWindow = string.IsNullOrWhiteSpace(input.ScheduleTimeWindow)
+            ? "11:00 AM – 2:00 PM"
+            : input.ScheduleTimeWindow.Trim();
+        input.ScheduleWhen = scheduleWhen;
+        input.ScheduleTimeWindow = scheduleTimeWindow;
+
         var detailsJson = JsonSerializer.Serialize(input);
-        var visitDate = input.ScheduleWhen == "Today"
+        var visitDate = scheduleWhen == "Today"
             ? DateTime.Today.AddHours(11)
             : DateTime.Today.AddDays(1).AddHours(11);
-        var etaLabel = $"{LabelScheduleWhen(input.ScheduleWhen)} • {input.ScheduleTimeWindow}";
+        var etaLabel = $"{LabelScheduleWhen(scheduleWhen)} • {scheduleTimeWindow}";
 
         var request = new IndorPropertyAdminServiceRequest
         {
@@ -95,7 +104,7 @@ public class PropertyAdministratorStandardCleaningService(
             Title = "Standard cleaning",
             PropertyName = property.PropertyName,
             VisitDate = visitDate.Date,
-            TimeWindow = input.ScheduleTimeWindow,
+            TimeWindow = scheduleTimeWindow,
             ImageUrl = property.ImageUrl
         });
 
@@ -167,7 +176,7 @@ public class PropertyAdministratorStandardCleaningService(
         IndorPropertyAdminPortfolioProperty? property, PropertyAdministratorStandardCleaningSubmitInput input) =>
     [
         new() { Label = PropertyAdministratorDisplayLocalization.L("Property"), Value = property?.PropertyName ?? "—", IconClass = "fa-house" },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = "Standard Cleaning", IconClass = "fa-spray-can-sparkles" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Service"), Value = PropertyAdministratorDisplayLocalization.L("Standard Cleaning"), IconClass = "fa-spray-can-sparkles" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Time"), Value = $"{LabelScheduleWhen(input.ScheduleWhen)} {input.ScheduleTimeWindow}", IconClass = "fa-clock" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Scope"), Value = LabelServiceType(input.ServiceType), IconClass = "fa-clipboard-list" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Includes"), Value = LabelIncludes(input.IncludedTasksList), IconClass = "fa-list-check" },
@@ -232,12 +241,12 @@ public class PropertyAdministratorStandardCleaningService(
         {
             "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
             "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
-            _ => "Me"
+            _ => PropertyAdministratorDisplayLocalization.L("Me")
         }).Distinct().ToList();
 
         return labels.Count switch
         {
-            0 => "Me",
+            0 => PropertyAdministratorDisplayLocalization.L("Me"),
             1 => labels[0],
             _ => string.Join(" + ", labels)
         };
