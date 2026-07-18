@@ -306,6 +306,15 @@ public static class UiTranslationsFinal
             ["Invite clients and create files to keep everything organized in one place."] =
                 "Invita clientes y crea expedientes para mantener todo organizado en un solo lugar.",
             ["Tips & Insights"] = "Consejos e información",
+            ["Show less"] = "Ver menos",
+            ["Invite buyers, sellers, and homeowners so they can accept and connect inside INDOR."] =
+                "Invita compradores, vendedores y propietarios para que acepten y se conecten dentro de INDOR.",
+            ["Create a property file for each client to keep photos, inspections, and quotes together."] =
+                "Crea un expediente por cliente para guardar fotos, inspecciones y cotizaciones juntas.",
+            ["Use Follow-up to track invited clients who still need a response."] =
+                "Usa Seguimiento para revisar clientes invitados que aún no responden.",
+            ["Start a new quote from Quick Actions when a client needs contractor pricing."] =
+                "Inicia una nueva cotización desde Acciones rápidas cuando un cliente necesite precios de contratistas.",
             ["No buyers yet. Invited buyers will show up here."] =
                 "Aún no hay compradores. Los compradores invitados aparecerán aquí.",
             ["No sellers yet. Invited sellers will show up here."] =
