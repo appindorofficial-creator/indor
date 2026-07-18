@@ -211,6 +211,72 @@ public static class UiTranslationsFinal
             ["For Sale"] = "En venta",
             ["For Rent"] = "En renta",
             ["Address not set"] = "Dirección no configurada",
+            ["Post Listing with INDOR"] = "Publica tu anuncio con INDOR",
+            ["List smarter."] = "Publica con inteligencia.",
+            ["Reach closer."] = "Llega más cerca.",
+            ["Connect your property with nearby buyers, renters, and realtors who are ready to act."] =
+                "Conecta tu propiedad con compradores, inquilinos y agentes cercanos listos para actuar.",
+            ["Local exposure"] = "Exposición local",
+            ["Your listing is seen by people actively searching in your area."] =
+                "Tu anuncio lo ven personas que buscan activamente en tu zona.",
+            ["Qualified leads"] = "Clientes potenciales calificados",
+            ["Connect with serious buyers and renters ready to act."] =
+                "Conéctate con compradores e inquilinos serios listos para actuar.",
+            ["Nearby network visibility"] = "Visibilidad en la red cercana",
+            ["Realtors and local professionals see and share your listing."] =
+                "Agentes y profesionales locales ven y comparten tu anuncio.",
+            ["Get Started"] = "Comenzar",
+            ["Learn More"] = "Más información",
+            ["Property Photos"] = "Fotos de la propiedad",
+            ["Add up to 20 photos. First photo will be the cover."] =
+                "Agrega hasta 20 fotos. La primera será la portada.",
+            ["More photo options (gallery link or PDF)"] = "Más opciones de fotos (enlace a galería o PDF)",
+            ["Photo gallery link"] = "Enlace a galería de fotos",
+            ["Paste a link to your photos (Google Drive, Dropbox, MLS, etc.)"] =
+                "Pega un enlace a tus fotos (Google Drive, Dropbox, MLS, etc.)",
+            ["Upload photos as PDF"] = "Subir fotos en PDF",
+            ["Upload a PDF brochure with property photos (max 15 MB)"] =
+                "Sube un folleto PDF con fotos de la propiedad (máx. 15 MB)",
+            ["Choose PDF or drag here"] = "Elige un PDF o arrástralo aquí",
+            ["Enter street address, city, state, ZIP"] =
+                "Ingresa dirección, ciudad, estado y código postal",
+            ["Use my location"] = "Usar mi ubicación",
+            ["Use My Location"] = "Usar mi ubicación",
+            ["Please enter the property address."] = "Ingresa la dirección de la propiedad.",
+            ["GPS coordinates captured. Your listing will appear on the Nearby map around this location."] =
+                "Coordenadas GPS capturadas. Tu anuncio aparecerá en el mapa de Cercanos alrededor de esta ubicación.",
+            ["Enter price"] = "Ingresa el precio",
+            ["Please enter a price."] = "Ingresa un precio.",
+            ["Your information is secure and never shared."] =
+                "Tu información es segura y nunca se comparte.",
+            ["Property Subtype"] = "Subtipo de propiedad",
+            ["Select subtype"] = "Selecciona el subtipo",
+            ["Please select a property subtype."] = "Selecciona un subtipo de propiedad.",
+            ["Property Stats"] = "Datos de la propiedad",
+            ["Short Description"] = "Descripción breve",
+            ["Describe your property in a few sentences..."] =
+                "Describe tu propiedad en unas pocas oraciones...",
+            ["Key Highlights"] = "Aspectos destacados",
+            ["Select all that apply"] = "Selecciona todos los que apliquen",
+            ["Listing Summary"] = "Resumen del anuncio",
+            ["INDOR Boost"] = "Impulso INDOR",
+            ["Shown nearby"] = "Visible cerca",
+            ["Your listing is shown to nearby active buyers and renters."] =
+                "Tu anuncio se muestra a compradores e inquilinos activos cercanos.",
+            ["Buyer inquiries"] = "Consultas de compradores",
+            ["Receive serious inquiries from motivated buyers."] =
+                "Recibe consultas serias de compradores motivados.",
+            ["Realtor visibility"] = "Visibilidad para agentes",
+            ["Seen by INDOR realtors and shared across the network."] =
+                "Lo ven agentes de INDOR y se comparte en la red.",
+            ["Promote Your Listing"] = "Promociona tu anuncio",
+            ["Promote your listing"] = "Promociona tu anuncio",
+            ["Increase visibility with open houses and neighborhood features."] =
+                "Aumenta la visibilidad con casas abiertas y funciones del vecindario.",
+            ["Why post your listing on INDOR?"] = "¿Por qué publicar tu anuncio en INDOR?",
+            ["INDOR connects your property with nearby buyers, renters, and realtors who are ready to act."] =
+                "INDOR conecta tu propiedad con compradores, inquilinos y agentes cercanos listos para actuar.",
+            ["Start posting"] = "Empezar a publicar",
 
             // Remaining view keys (final pass)
             ["What the customer needs"] = "Lo que necesita el cliente",

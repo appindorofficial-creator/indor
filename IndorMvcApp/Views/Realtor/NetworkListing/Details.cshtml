@@ -363,7 +363,6 @@
     <partial name="_ValidationScriptsPartial" />
     <script src="@Url.Content("~/js/realtor-network-listing-wizard.js")" asp-append-version="true"></script>
     <script>
-    <script>
         window.rlListingWizardSteps = {
             1: { title: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Post Listing with INDOR"])), sub: '' },
             2: { title: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Create Your Listing"])), sub: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Add key details to showcase your property."])) },
