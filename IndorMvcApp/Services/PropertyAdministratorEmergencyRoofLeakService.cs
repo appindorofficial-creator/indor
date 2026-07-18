@@ -60,7 +60,6 @@ public class PropertyAdministratorEmergencyRoofLeakService(
             return null;
         }
 
-        var user = await GetUserAsync();
         var mapped = MapProperty(property);
 
         return new PropertyAdministratorEmergencyRoofLeakStep2ViewModel
@@ -83,7 +82,8 @@ public class PropertyAdministratorEmergencyRoofLeakService(
             EntryCode = "",
             InteriorDamage = "",
             AccessNotes = "",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
+            // Leave blank so the required urgent-contact field is not pre-filled.
+            ContactPhone = ""
         };
     }
 
@@ -219,8 +219,20 @@ public class PropertyAdministratorEmergencyRoofLeakService(
             Label = PropertyAdministratorDisplayLocalization.L("Updates"),
             Value = string.Join(" + ", input.UpdateRecipientsList),
             IconClass = "fa-bell"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Best phone number for urgent contact"),
+            Value = input.ContactPhone,
+            IconClass = "fa-phone"
         }
     ];
+
+    public static bool IsSubmitComplete(PropertyAdministratorEmergencyRoofLeakSubmitInput input) =>
+        !string.IsNullOrWhiteSpace(input.EntryAccess)
+        && input.InteriorDamageList.Count > 0
+        && input.UpdateRecipientsList.Count > 0
+        && PropertyAdministratorContactPhone.IsProvided(input.ContactPhone);
 
     private static IReadOnlyList<PropertyAdministratorEmergencyAcTimelineItemViewModel> BuildTimeline(
         IndorPropertyAdminServiceRequest request)

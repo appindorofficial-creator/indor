@@ -1,0 +1,39 @@
+@* Reusable required contact phone field for PA service flows.
+   Unified label: "Best phone number for urgent contact" / "Mejor número para contacto urgente".
+   ViewData:
+     PaContactQnum       – question number shown in the badge
+     PaContactValue      – current phone value
+     PaContactLabelIcon  – optional Font Awesome classes for an icon inside the label
+     PaContactFieldName  – input name (default: ContactPhone)
+*@
+@{
+    var qnum = ViewData["PaContactQnum"]?.ToString() ?? "";
+    var value = ViewData["PaContactValue"] as string ?? "";
+    var labelIcon = ViewData["PaContactLabelIcon"] as string;
+    var fieldName = ViewData["PaContactFieldName"] as string ?? "ContactPhone";
+    // Always clear one-off overrides so callers cannot diverge the shared label.
+    ViewData["PaContactLabel"] = null;
+    ViewData["PaContactLabelIcon"] = null;
+}
+<div class="pa-flow-question">
+    @if (!string.IsNullOrWhiteSpace(qnum))
+    {
+        <span class="pa-flow-qnum">@qnum</span>
+    }
+    <label>
+        @if (!string.IsNullOrWhiteSpace(labelIcon))
+        {
+            <i class="fas @labelIcon"></i>
+        }
+        @L["Best phone number for urgent contact"]
+    </label>
+    <div class="pa-field">
+        <i class="fas fa-phone"></i>
+        <input type="tel"
+               name="@fieldName"
+               value="@value"
+               placeholder="@L["Enter phone number"]"
+               autocomplete="tel"
+               required />
+    </div>
+</div>

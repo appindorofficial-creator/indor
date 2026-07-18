@@ -106,7 +106,7 @@ public class PropertyAdministratorEmergencyAcService(
         && !string.IsNullOrWhiteSpace(input.GuestsInside)
         && !string.IsNullOrWhiteSpace(input.EntryAccess)
         && input.UpdateRecipientsList.Count > 0
-        && !string.IsNullOrWhiteSpace(input.ContactPhone);
+        && PropertyAdministratorContactPhone.IsProvided(input.ContactPhone);
 
     public async Task<PropertyAdministratorEmergencyAcConfirmedViewModel?> GetConfirmedAsync(
         IUrlHelper url, int requestId, CancellationToken cancellationToken = default)

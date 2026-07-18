@@ -127,14 +127,12 @@
             </div>
         </div>
 
-        <div class="pa-flow-question">
-            <span class="pa-flow-qnum">7</span>
-            <label><i class="fas fa-phone pa-q-icon pa-q-icon--purple"></i> @L["Best phone number for urgent contact"]</label>
-            <div class="pa-field">
-                <i class="fas fa-phone"></i>
-                <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
-            </div>
-        </div>
+        @{
+            ViewData["PaContactQnum"] = "7";
+            ViewData["PaContactValue"] = Model.ContactPhone;
+            ViewData["PaContactLabelIcon"] = "fa-phone pa-q-icon pa-q-icon--purple";
+        }
+        @await Html.PartialAsync("_PropertyAdminUrgentContactPhone")
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">8</span>

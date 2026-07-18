@@ -135,14 +135,11 @@
             </div>
         </div>
 
-        <div class="pa-flow-question">
-            <span class="pa-flow-qnum">9</span>
-            <label>@L["Best phone number for urgent contact"]</label>
-            <div class="pa-field">
-                <i class="fas fa-phone"></i>
-                <input type="tel" name="ContactPhone" value="@Model.ContactPhone" placeholder="@L["Enter phone number"]" autocomplete="tel" required />
-            </div>
-        </div>
+        @{
+            ViewData["PaContactQnum"] = "9";
+            ViewData["PaContactValue"] = Model.ContactPhone;
+        }
+        @await Html.PartialAsync("_PropertyAdminUrgentContactPhone")
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">10</span>

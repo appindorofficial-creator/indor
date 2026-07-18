@@ -374,6 +374,11 @@ public class AdministradorController(
             return redirect;
         }
 
+        if (!PropertyAdministratorEmergencyRoofLeakService.IsSubmitComplete(input))
+        {
+            return RedirectToAction(nameof(EmergencyRoofLeakAccess));
+        }
+
         var requestId = await emergencyRoofLeak.SubmitAsync(input);
         TempData.Remove("RoofLeakStep1");
         return RedirectToAction(nameof(EmergencyRoofLeakConfirmed), new { id = requestId });
