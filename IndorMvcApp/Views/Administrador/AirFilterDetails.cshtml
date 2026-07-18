@@ -7,7 +7,7 @@
     ViewBag.FlowTitle = L["Air Filter Change"].ToString();
     ViewBag.FlowSubtitle = L["Tell us what you need and how the technician can access the property."].ToString();
     ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
-    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     var propertyId = Model.ViewingProperty?.Id ?? 0;
     // Never inherit browser/form defaults — only show checks the user already chose.
     var recipients = string.IsNullOrWhiteSpace(Model.UpdateRecipients)

@@ -7,7 +7,7 @@
     ViewBag.FlowTitle = L["Emergency Electrical"].ToString();
     ViewBag.FlowSubtitle = L["Answer a few quick questions so we can dispatch help fast."].ToString();
     ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
-    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     ViewBag.InviteFlowAnchorId = "pa-emergency-form-top";
     var propertyId = Model.ViewingProperty?.Id ?? 0;
 }

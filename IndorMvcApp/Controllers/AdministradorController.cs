@@ -2001,7 +2001,7 @@ public class AdministradorController(
         ViewBag.HideBottomNav = true;
         ViewBag.FlowStep = 2;
         ViewBag.FlowTotalSteps = 4;
-        ViewBag.FlowBackUrl = Url.Action(nameof(Index), new { propertyId });
+        ViewBag.FlowBackUrl = Url.Action(nameof(Services), new { propertyId });
         var model = await preventiveMaintenance.GetServicesStepAsync(Url, propertyId, planId);
         return View(model);
     }

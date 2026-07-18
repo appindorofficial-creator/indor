@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = L["Emergency AC"];
     Layout = "_PropertyAdminLayout";
-    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     var propertyId = Model.ViewingProperty?.Id ?? 0;
     ViewBag.InviteFlowTitle = L["Emergency AC"].ToString();
     ViewBag.InviteFlowSubtitle = L["Tell us what's happening and how the technician can get in."].ToString();

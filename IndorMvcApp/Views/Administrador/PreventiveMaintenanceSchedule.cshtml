@@ -127,7 +127,7 @@
             <a href="@(ViewBag.FlowBackUrl ?? Url.Action("PreventiveMaintenanceServices", new { planId = Model.PlanId }))" class="ob-btn ob-btn-outline">@L["Back"]</a>
             <button type="submit" class="ob-btn ob-btn-primary">@L["Review plan"]</button>
         </div>
-        <a href="@Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id })" class="pa-back-link">@L["Back to start"]</a>
+        <a href="@Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id })" class="pa-back-link">@L["Back to start"]</a>
     </form>
 </div>
 
