@@ -661,6 +661,93 @@ public static class UiDisplayLocalization
             return localizer.T("Next: {0}", text["Next: ".Length..].Trim());
         }
 
+        // Realtor activity notifications (must run before the generic "at/in/en" matcher).
+        if (text.StartsWith("You expressed interest in ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T(
+                "You expressed interest in {0}",
+                text["You expressed interest in ".Length..].Trim());
+        }
+
+        var interestedListingMatch = Regex.Match(
+            text,
+            @"^(.+) is interested in your listing at (.+)$",
+            RegexOptions.IgnoreCase);
+        if (interestedListingMatch.Success)
+        {
+            return localizer.T(
+                "{0} is interested in your listing at {1}",
+                Localize(localizer, interestedListingMatch.Groups[1].Value.Trim()),
+                interestedListingMatch.Groups[2].Value.Trim());
+        }
+
+        var urgentQuoteSentMatch = Regex.Match(
+            text,
+            @"^Urgent (.+) quote (.+) sent for (.+)$",
+            RegexOptions.IgnoreCase);
+        if (urgentQuoteSentMatch.Success)
+        {
+            return localizer.T(
+                "Urgent {0} quote {1} sent for {2}",
+                Localize(localizer, urgentQuoteSentMatch.Groups[1].Value.Trim()),
+                urgentQuoteSentMatch.Groups[2].Value.Trim(),
+                urgentQuoteSentMatch.Groups[3].Value.Trim());
+        }
+
+        var fileCreatedMatch = Regex.Match(text, @"^(.+) created for (.+)$");
+        if (fileCreatedMatch.Success)
+        {
+            return localizer.T(
+                "{0} created for {1}",
+                Localize(localizer, fileCreatedMatch.Groups[1].Value.Trim()),
+                fileCreatedMatch.Groups[2].Value.Trim());
+        }
+
+        if (text.StartsWith("Created property ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Created property {0}", text["Created property ".Length..].Trim());
+        }
+
+        var quoteRequestSentMatch = Regex.Match(
+            text,
+            @"^Quote request (.+) sent to (\d+) providers? for (.+)$",
+            RegexOptions.IgnoreCase);
+        if (quoteRequestSentMatch.Success
+            && int.TryParse(quoteRequestSentMatch.Groups[2].Value, out var quoteProviderCount))
+        {
+            var quoteRequestKey = quoteProviderCount == 1
+                ? "Quote request {0} sent to {1} provider for {2}"
+                : "Quote request {0} sent to {1} providers for {2}";
+            return localizer.T(
+                quoteRequestKey,
+                quoteRequestSentMatch.Groups[1].Value.Trim(),
+                quoteProviderCount,
+                quoteRequestSentMatch.Groups[3].Value.Trim());
+        }
+
+        var quoteSharedMatch = Regex.Match(text, @"^Quote shared with (.+) for (.+)$", RegexOptions.IgnoreCase);
+        if (quoteSharedMatch.Success)
+        {
+            return localizer.T(
+                "Quote shared with {0} for {1}",
+                quoteSharedMatch.Groups[1].Value.Trim(),
+                quoteSharedMatch.Groups[2].Value.Trim());
+        }
+
+        var submittedQuoteMatch = Regex.Match(
+            text,
+            @"^(.+) submitted a quote for (.+) \((.+)\) — (.+)$",
+            RegexOptions.IgnoreCase);
+        if (submittedQuoteMatch.Success)
+        {
+            return localizer.T(
+                "{0} submitted a quote for {1} ({2}) — {3}",
+                submittedQuoteMatch.Groups[1].Value.Trim(),
+                submittedQuoteMatch.Groups[2].Value.Trim(),
+                submittedQuoteMatch.Groups[3].Value.Trim(),
+                submittedQuoteMatch.Groups[4].Value.Trim());
+        }
+
         // Match "Name at Address" style labels (also Spanglish "Lawn Care en …" / "… in …").
         // Avoid phrases like "at least".
         var atPropertyMatch = Regex.Match(

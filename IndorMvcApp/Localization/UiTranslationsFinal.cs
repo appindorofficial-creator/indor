@@ -1436,6 +1436,19 @@ public static class UiTranslationsFinal
                 "Actualiza tu contraseña y preferencias de seguridad.",
             ["Permanently remove your INDOR account and data."] =
                 "Elimina de forma permanente tu cuenta de INDOR y tus datos.",
+            ["You expressed interest in {0}"] = "Expresaste interés en {0}",
+            ["{0} is interested in your listing at {1}"] = "{0} está interesado en tu anuncio en {1}",
+            ["Urgent {0} quote {1} sent for {2}"] = "Cotización urgente de {0} {1} enviada para {2}",
+            ["{0} created for {1}"] = "{0} creado para {1}",
+            ["Created property {0}"] = "Propiedad creada: {0}",
+            ["Quote request {0} sent to {1} provider for {2}"] =
+                "Solicitud de cotización {0} enviada a {1} proveedor para {2}",
+            ["Quote request {0} sent to {1} providers for {2}"] =
+                "Solicitud de cotización {0} enviada a {1} proveedores para {2}",
+            ["Quote shared with {0} for {1}"] = "Cotización compartida con {0} para {1}",
+            ["{0} submitted a quote for {1} ({2}) — {3}"] =
+                "{0} envió una cotización para {1} ({2}) — {3}",
+            ["A realtor"] = "Un agente inmobiliario",
             ["Contact INDOR support at"] = "Contacta al soporte de INDOR en",
             ["Review INDOR platform terms for real estate professionals."] =
                 "Revisa los términos de la plataforma INDOR para profesionales inmobiliarios.",

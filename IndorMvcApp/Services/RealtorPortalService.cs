@@ -2724,6 +2724,7 @@ public class RealtorPortalService(
             "files" or "properties" => "/Realtor/Files",
             "clients" => "/Realtor/Clients",
             "providers" => "/Realtor/ProviderNetwork",
+            "nearby" => "/Realtor/Network",
             _ => "/Realtor/Dashboard"
         };
 
