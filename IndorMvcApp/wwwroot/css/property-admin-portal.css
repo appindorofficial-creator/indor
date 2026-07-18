@@ -140,6 +140,7 @@
     background:rgba(255,255,255,.97);backdrop-filter:blur(8px);
     border-top:1px solid #EEF3FA;box-shadow:0 -10px 26px rgba(20,66,124,.08)
 }
+.pa-page .pa-reg-actions:has(> :only-child){justify-content:center}
 .pa-reg-action-back{
     display:flex;align-items:center;justify-content:center;box-sizing:border-box;
     flex:1;max-width:220px;padding:15px 20px;border:1.5px solid #0066CC;border-radius:14px;

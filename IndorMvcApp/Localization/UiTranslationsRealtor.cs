@@ -370,7 +370,8 @@ public static class UiTranslationsRealtor
             ["Helpful tip:"] = "Helpful tip:",
             ["Highlights"] = "Highlights",
             ["home pro"] = "hogar pro",
-            ["HouseNumber, StreetName, City, State, ZipCode, PropertyType"] = "HouseNumber, StreetName, City, State, ZipCode, PropertyType",
+            ["HouseNumber, StreetName, City, State, ZipCode, PropertyType"] =
+                "Número, Calle, Ciudad, Estado, ZIP, Tipo",
             ["How big is the pickup?"] = "How big is the pickup?",
             ["How can we access the bins?"] = "How can we access the bins?",
             ["How do you want to request quotes?"] = "How do you want to request quotes?",
