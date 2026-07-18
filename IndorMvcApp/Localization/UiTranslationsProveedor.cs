@@ -811,7 +811,7 @@ public static class UiTranslationsProveedor
             ["Save &amp; Exit"] = "Guardar &amp; Exit",
             ["Save &amp; exit"] = "Guardar &amp; Exit",
             ["Save and finish later"] = "Guardar y finish later",
-            ["Save Changes"] = "Guardar Changes",
+            ["Save Changes"] = "Guardar cambios",
             ["Save Customer"] = "Guardar cliente",
             ["Save Draft"] = "Guardar draft",
             ["Save draft"] = "Guardar borrador",

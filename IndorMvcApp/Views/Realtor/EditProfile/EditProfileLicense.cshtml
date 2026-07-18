@@ -41,7 +41,7 @@
                 <option value="">@L["Select experience"]</option>
                 @foreach (var level in Model.ExperienceOptions)
                 {
-                    <option value="@level">@level</option>
+                    <option value="@level">@L[level]</option>
                 }
             </select>
         </label>
@@ -63,7 +63,7 @@
                         {
                             <i class="fas fa-check"></i>
                         }
-                        @specialty
+                        @L[specialty]
                     </label>
                 }
             </div>
@@ -90,7 +90,7 @@
                     <span class="rl-ep-verification-icon">
                         <i class="fas @(item.IsVerified ? "fa-circle-check" : "fa-circle")"></i>
                     </span>
-                    <span>@item.Label</span>
+                    <span>@UiDisplayLocalization.Localize(L, item.Label)</span>
                     @if (item.IsVerified)
                     {
                         <span class="rl-ep-verification-badge">@L["Verified"]</span>
@@ -129,6 +129,16 @@
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script>
+        window.IndorRealtorLicenseI18n = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new Dictionary<string, string>
+        {
+            ["License number is required."] = L["License number is required."],
+            ["License number must be at least 4 characters."] = L["License number must be at least 4 characters."],
+            ["License number cannot exceed 20 characters."] = L["License number cannot exceed 20 characters."],
+            ["License number can only contain letters and numbers (no spaces or symbols)."] = L["License number can only contain letters and numbers (no spaces or symbols)."],
+            ["License number must include at least one letter (cannot be only numbers)."] = L["License number must include at least one letter (cannot be only numbers)."]
+        }));
+    </script>
     <script src="~/js/realtor-license-number.js" asp-append-version="true"></script>
     <script src="~/js/realtor-edit-profile.js" asp-append-version="true"></script>
     <script>
@@ -234,15 +244,15 @@
                 }
 
                 if (stateInput && !stateInput.value.trim()) {
-                    hasError = setInlineError(stateErrorEl, stateInput, 'License state is required.') || hasError;
+                    hasError = setInlineError(stateErrorEl, stateInput, @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["License state is required."]))) || hasError;
                 }
 
                 if (experienceInput && !experienceInput.value.trim()) {
-                    hasError = setInlineError(experienceErrorEl, experienceInput, 'Years of experience is required.') || hasError;
+                    hasError = setInlineError(experienceErrorEl, experienceInput, @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Years of experience is required."]))) || hasError;
                 }
 
                 if (!document.querySelectorAll('.rl-ep-specialty-input:checked').length) {
-                    hasError = setSpecialtiesError('Select at least one specialty.') || hasError;
+                    hasError = setSpecialtiesError(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select at least one specialty."]))) || hasError;
                 }
 
                 var fileInput = document.getElementById('licensePhotoFile');
