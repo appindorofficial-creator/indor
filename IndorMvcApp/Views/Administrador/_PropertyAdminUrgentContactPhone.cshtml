@@ -1,4 +1,4 @@
-@* Reusable required contact phone field for PA service flows.
+@* Reusable required 10-digit contact phone for PA service flows.
    Unified label: "Best phone number for urgent contact" / "Mejor número para contacto urgente".
    ViewData:
      PaContactQnum       – question number shown in the badge
@@ -8,10 +8,10 @@
 *@
 @{
     var qnum = ViewData["PaContactQnum"]?.ToString() ?? "";
-    var value = ViewData["PaContactValue"] as string ?? "";
+    var rawValue = ViewData["PaContactValue"] as string ?? "";
+    var value = PropertyAdministratorContactPhone.Normalize(rawValue);
     var labelIcon = ViewData["PaContactLabelIcon"] as string;
     var fieldName = ViewData["PaContactFieldName"] as string ?? "ContactPhone";
-    // Always clear one-off overrides so callers cannot diverge the shared label.
     ViewData["PaContactLabel"] = null;
     ViewData["PaContactLabelIcon"] = null;
 }
@@ -32,8 +32,14 @@
         <input type="tel"
                name="@fieldName"
                value="@value"
-               placeholder="@L["Enter phone number"]"
+               placeholder="@L["Enter 10-digit phone number"]"
                autocomplete="tel"
+               inputmode="numeric"
+               maxlength="10"
+               pattern="[0-9]{10}"
+               data-phone-input
+               data-phone-required="true"
+               data-pa-contact-phone
                required />
     </div>
 </div>

@@ -3211,5 +3211,6 @@ public static class UiTranslationsFinal
             ["Voice note"] = "Nota de voz",
             ["Add photos"] = "Agregar fotos",
             ["Enter phone number"] = "Ingresa el número de teléfono",
+            ["Enter 10-digit phone number"] = "Ingresa un teléfono de 10 dígitos",
         };
 }

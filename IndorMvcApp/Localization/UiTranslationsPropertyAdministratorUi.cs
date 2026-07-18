@@ -115,6 +115,7 @@ public static class UiTranslationsPropertyAdministratorUi
         ["Do you want us to provide plants/materials?"] = "¿Quieres que proporcionemos las plantas o materiales?",
         ["Documents & warranties"] = "Documentos y garantías",
         ["Enter claim number"] = "Ingresa el número de reclamo",
+        ["Enter 10-digit phone number"] = "Ingresa un teléfono de 10 dígitos",
         ["Entry / access notes"] = "Notas de entrada / acceso",
         ["Entry / gate / parking notes"] = "Notas de entrada / portón / estacionamiento",
         ["Entry instructions"] = "Instrucciones de entrada",

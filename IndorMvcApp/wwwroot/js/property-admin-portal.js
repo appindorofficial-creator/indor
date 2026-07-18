@@ -11,6 +11,7 @@
      *     • name is UpdateRecipientsList / UpdateRecipients / SelectedServices, or
      *     • question contains only checkboxes (and is not data-pa-optional)
      * - Text/select/textarea with required: must be non-empty
+     * - Contact phone ([data-pa-contact-phone] / [data-phone-input][required]): exactly 10 digits
      * - Errors render only under each .pa-flow-question / [data-pa-required-group] / .pa-prev-section
      */
     function isSpanishUi() {
@@ -39,6 +40,31 @@
 
     function enterMessage() {
         return isSpanishUi() ? 'Completa este campo.' : 'Please fill out this field.';
+    }
+
+    function phoneMessage() {
+        return isSpanishUi()
+            ? 'Ingresa un teléfono de EE. UU. de 10 dígitos.'
+            : 'Enter a valid 10-digit US phone number.';
+    }
+
+    function normalizePhoneDigits(value) {
+        if (window.IndorPhoneInput && typeof window.IndorPhoneInput.normalize === 'function') {
+            return window.IndorPhoneInput.normalize(value);
+        }
+        var digits = String(value || '').replace(/\D/g, '');
+        if (digits.length === 11 && digits.charAt(0) === '1') {
+            digits = digits.slice(1);
+        }
+        return digits.slice(0, 10);
+    }
+
+    function isContactPhoneField(field) {
+        return !!(field && field.matches && field.matches('[data-pa-contact-phone], input[data-phone-input][required]'));
+    }
+
+    function isValidRequiredPhone(value) {
+        return normalizePhoneDigits(value).length === 10;
     }
 
     function clearFlowErrors(form) {
@@ -172,6 +198,17 @@
             if (field.type === 'radio' || field.type === 'checkbox' || field.type === 'hidden') {
                 return;
             }
+            if (isContactPhoneField(field)) {
+                if (isValidRequiredPhone(field.value)) {
+                    return;
+                }
+                issues.push({
+                    field: field,
+                    question: questionFor(field),
+                    message: normalizePhoneDigits(field.value) ? phoneMessage() : enterMessage()
+                });
+                return;
+            }
             if ((field.value || '').trim()) {
                 return;
             }
@@ -219,6 +256,9 @@
             && field.type !== 'radio'
             && field.type !== 'checkbox'
             && !(field.value || '').trim()) {
+            return;
+        }
+        if (isContactPhoneField(field) && !isValidRequiredPhone(field.value)) {
             return;
         }
 
