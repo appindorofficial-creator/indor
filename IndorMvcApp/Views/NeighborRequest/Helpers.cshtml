@@ -1,6 +1,18 @@
 @model IndorMvcApp.ViewModels.NeighborRequestHelpersStepViewModel
 @{
     ViewData["Title"] = L["Helpers Nearby"];
+    var mapMarkers = Model.Helpers
+        .Where(h => h.Latitude is not null && h.Longitude is not null)
+        .Select(h => new
+        {
+            name = h.Name,
+            lat = h.Latitude,
+            lng = h.Longitude,
+            distance = UiDisplayLocalization.Localize(L, h.DistanceLabel),
+            price = UiDisplayLocalization.Localize(L, h.PriceLabel),
+            verified = h.IsVerified
+        })
+        .ToList();
 }
 
 <div class="nr-helpers-top-badge"><i class="fas fa-check"></i> @L["Job posted"]</div>
@@ -10,10 +22,10 @@
         <span class="nr-job-summary-icon"><i class="fas fa-clipboard-check"></i></span>
         <h2>@Model.JobTitle</h2>
         <div class="nr-job-chips">
-            <span><i class="fas fa-calendar-day"></i> @Model.WhenLabel</span>
-            <span><i class="fas fa-clock"></i> @Model.TimeLabel</span>
-            <span><i class="fas fa-user-group"></i> @Model.HelpersLabel</span>
-            <span><i class="fas fa-dollar-sign"></i> @Model.PayLabel</span>
+            <span><i class="fas fa-calendar-day"></i> @UiDisplayLocalization.Localize(L, Model.WhenLabel)</span>
+            <span><i class="fas fa-clock"></i> @UiDisplayLocalization.Localize(L, Model.TimeLabel)</span>
+            <span><i class="fas fa-user-group"></i> @UiDisplayLocalization.Localize(L, Model.HelpersLabel)</span>
+            <span><i class="fas fa-dollar-sign"></i> @UiDisplayLocalization.Localize(L, Model.PayLabel)</span>
         </div>
         <p class="nr-job-location"><i class="fas fa-location-dot"></i> @Model.LocationAddress</p>
     </div>
@@ -21,9 +33,13 @@
 </section>
 
 <div class="nr-helpers-toolbar">
-    <div class="nr-helpers-view-toggle">
-        <button type="button" class="is-active"><i class="fas fa-list"></i> @L["List"]</button>
-        <button type="button" disabled><i class="fas fa-map"></i> @L["Map"]</button>
+    <div class="nr-helpers-view-toggle" role="tablist" aria-label="@L["List"] / @L["Map"]">
+        <button type="button" class="is-active" data-nr-helpers-view="list" role="tab" aria-selected="true">
+            <i class="fas fa-list"></i> @L["List"]
+        </button>
+        <button type="button" data-nr-helpers-view="map" role="tab" aria-selected="false" @(Model.HasMapLocation ? null : "disabled")>
+            <i class="fas fa-map"></i> @L["Map"]
+        </button>
     </div>
 </div>
 
@@ -32,9 +48,19 @@
     <p>@L["Based on your location and job details."]</p>
 </header>
 
+@if (Model.HasMapLocation)
+{
+    <div class="nr-helpers-map" id="nrHelpersMapPanel" hidden>
+        <div id="nrHelpersMap" class="nr-helpers-map-canvas" role="application" aria-label="@L["Map"]"></div>
+        <p class="nr-helpers-map-note" id="nrHelpersMapNote">
+            <i class="fas fa-location-dot"></i> @L["Helpers near this job location."]
+        </p>
+    </div>
+}
+
 <form id="nrInviteHelpersForm" method="post" action="@Model.InviteUrl" autocomplete="off">
     @Html.AntiForgeryToken()
-    <div class="nr-helper-list">
+    <div class="nr-helper-list" id="nrHelpersListPanel">
         @foreach (var card in Model.Helpers)
         {
             <article class="nr-helper-card">
@@ -73,18 +99,18 @@
                         {
                             <span><i class="fas fa-star"></i> @card.RatingLabel@(card.ReviewCount > 0 ? $" ({card.ReviewCount})" : "")</span>
                         }
-                        <span><i class="fas fa-location-dot"></i> @card.DistanceLabel</span>
+                        <span><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, card.DistanceLabel)</span>
                     </div>
                     <div class="nr-helper-tags">
                         @foreach (var tag in card.SkillTags)
                         {
-                            <span>@tag</span>
+                            <span>@UiDisplayLocalization.Localize(L, tag)</span>
                         }
                     </div>
                 </div>
                 <div class="nr-helper-side">
-                    <strong>@card.PriceLabel</strong>
-                    <small>@card.MinHoursLabel</small>
+                    <strong>@UiDisplayLocalization.Localize(L, card.PriceLabel)</strong>
+                    <small>@UiDisplayLocalization.Localize(L, card.MinHoursLabel)</small>
                     <div class="nr-helper-actions">
                         <a href="@card.MessageUrl" class="nr-btn-outline nr-btn-outline--sm">@L["Message"]</a>
                         <button type="button" class="nr-btn-primary nr-btn-primary--sm" data-nr-helper-invite="true">@L["Invite"]</button>
@@ -115,16 +141,31 @@
 }
 
 @section Scripts {
+    @if (Model.HasMapLocation)
+    {
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+              integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+        <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+                integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+        <script type="application/json" id="nrHelpersMapData">@Html.Raw(System.Text.Json.JsonSerializer.Serialize(new
+        {
+            center = new { lat = Model.MapCenterLatitude, lng = Model.MapCenterLongitude },
+            jobLabel = L["Job location"].ToString(),
+            markers = mapMarkers
+        }))</script>
+    }
     <script>
         (function () {
             var form = document.getElementById('nrInviteHelpersForm');
             var label = document.getElementById('nrInviteHelpersLabel');
-            if (!form || !label) {
-                return;
-            }
+            var listPanel = document.getElementById('nrHelpersListPanel');
+            var mapPanel = document.getElementById('nrHelpersMapPanel');
+            var mapEl = document.getElementById('nrHelpersMap');
+            var mapInstance = null;
+            var mapReady = false;
 
             function selectedCount() {
-                return form.querySelectorAll('[data-nr-helper-checkbox]:checked').length;
+                return form ? form.querySelectorAll('[data-nr-helper-checkbox]:checked').length : 0;
             }
 
             var inviteManyTemplate = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Invite selected helpers ({0})"]));
@@ -140,27 +181,120 @@
             }
 
             function updateInviteLabel() {
-                label.textContent = inviteLabel(selectedCount());
+                if (label) {
+                    label.textContent = inviteLabel(selectedCount());
+                }
             }
 
-            form.addEventListener('change', function (e) {
-                if (e.target && e.target.matches('[data-nr-helper-checkbox]')) {
-                    updateInviteLabel();
-                }
-            });
+            if (form && label) {
+                form.addEventListener('change', function (e) {
+                    if (e.target && e.target.matches('[data-nr-helper-checkbox]')) {
+                        updateInviteLabel();
+                    }
+                });
 
-            form.querySelectorAll('[data-nr-helper-invite]').forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var checkbox = button.closest('.nr-helper-card')?.querySelector('[data-nr-helper-checkbox]');
-                    if (!checkbox) {
+                form.querySelectorAll('[data-nr-helper-invite]').forEach(function (button) {
+                    button.addEventListener('click', function () {
+                        var checkbox = button.closest('.nr-helper-card')?.querySelector('[data-nr-helper-checkbox]');
+                        if (!checkbox) {
+                            return;
+                        }
+                        checkbox.checked = !checkbox.checked;
+                        checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                    });
+                });
+
+                updateInviteLabel();
+            }
+
+            function initMap() {
+                if (mapReady || !mapEl || typeof L === 'undefined') {
+                    return;
+                }
+                var dataEl = document.getElementById('nrHelpersMapData');
+                if (!dataEl) {
+                    return;
+                }
+                var config;
+                try {
+                    config = JSON.parse(dataEl.textContent || '{}');
+                } catch (e) {
+                    return;
+                }
+                var center = config.center || {};
+                var lat = Number(center.lat);
+                var lng = Number(center.lng);
+                if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+                    return;
+                }
+
+                mapInstance = L.map(mapEl, { zoomControl: true }).setView([lat, lng], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; OpenStreetMap'
+                }).addTo(mapInstance);
+
+                L.circle([lat, lng], {
+                    radius: 1600,
+                    color: '#0066CC',
+                    fillColor: '#0066CC',
+                    fillOpacity: 0.08,
+                    weight: 1
+                }).addTo(mapInstance);
+
+                L.marker([lat, lng]).addTo(mapInstance).bindPopup(config.jobLabel || '');
+
+                (config.markers || []).forEach(function (marker) {
+                    var mLat = Number(marker.lat);
+                    var mLng = Number(marker.lng);
+                    if (!Number.isFinite(mLat) || !Number.isFinite(mLng)) {
                         return;
                     }
-                    checkbox.checked = !checkbox.checked;
-                    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
+                    var popup = '<strong>' + (marker.name || '') + '</strong>';
+                    if (marker.distance) {
+                        popup += '<br>' + marker.distance;
+                    }
+                    if (marker.price) {
+                        popup += '<br>' + marker.price;
+                    }
+                    L.marker([mLat, mLng]).addTo(mapInstance).bindPopup(popup);
+                });
+
+                mapReady = true;
+                setTimeout(function () {
+                    mapInstance.invalidateSize();
+                }, 80);
+            }
+
+            function setView(view) {
+                var isMap = view === 'map';
+                document.querySelectorAll('[data-nr-helpers-view]').forEach(function (btn) {
+                    var active = btn.getAttribute('data-nr-helpers-view') === view;
+                    btn.classList.toggle('is-active', active);
+                    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+                });
+                if (listPanel) {
+                    listPanel.hidden = isMap;
+                }
+                if (mapPanel) {
+                    mapPanel.hidden = !isMap;
+                }
+                if (isMap) {
+                    initMap();
+                    if (mapInstance) {
+                        setTimeout(function () { mapInstance.invalidateSize(); }, 100);
+                    }
+                }
+            }
+
+            document.querySelectorAll('[data-nr-helpers-view]').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    if (btn.disabled) {
+                        return;
+                    }
+                    setView(btn.getAttribute('data-nr-helpers-view') || 'list');
                 });
             });
-
-            updateInviteLabel();
         })();
     </script>
 }

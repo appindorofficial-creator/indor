@@ -1152,6 +1152,7 @@ public class NeighborRequestWizardService(
 
         var invitedProviderIds = await LoadInvitedProviderIdsAsync(requestId, ct);
         var helpers = await BuildHelperCardsForRequestAsync(request, invitedProviderIds, url, ct);
+        var mapCenter = await ResolveMapCenterAsync(request.LocationAddress, ct);
 
         return new NeighborRequestHelpersStepViewModel
         {
@@ -1169,6 +1170,8 @@ public class NeighborRequestWizardService(
             LocationAddress = request.LocationAddress ?? string.Empty,
             CategoryIllustrationClass = ResolveCategoryIllustration(request.Category?.Code ?? string.Empty),
             Helpers = helpers,
+            MapCenterLatitude = mapCenter?.Latitude,
+            MapCenterLongitude = mapCenter?.Longitude,
             DetailUrl = url.Action("Detail", "NeighborRequest", new { id = requestId }) ?? "#",
             InviteUrl = url.Action("InviteHelpers", "NeighborRequest", new { id = requestId }) ?? "#",
             BackUrl = url.Action("Detail", "NeighborRequest", new { id = requestId }),
@@ -1278,22 +1281,30 @@ public class NeighborRequestWizardService(
         CancellationToken ct)
     {
         var suggested = await LoadSuggestedProviderOffersAsync(request, url, ct);
-        var helpers = suggested.Select((offer, index) => new NeighborRequestHelperCardViewModel
+        var mapCenter = await ResolveMapCenterAsync(request.LocationAddress, ct);
+        var helpers = suggested.Select((offer, index) =>
         {
-            ProviderId = offer.ProviderId is > 0 ? offer.ProviderId.Value : index + 1,
-            Name = offer.OffererName,
-            PhotoUrl = offer.OffererPhotoUrl,
-            AvatarIconClass = offer.AvatarIconClass,
-            RatingLabel = offer.RatingLabel,
-            ReviewCount = 0,
-            DistanceLabel = $"{0.4m + (index * 0.3m):0.#} mi away",
-            PriceLabel = offer.PriceLabel?.Contains("/hr", StringComparison.OrdinalIgnoreCase) == true
-                ? offer.PriceLabel
-                : $"{offer.PriceLabel}/hr",
-            MinHoursLabel = "Min. 2 hrs",
-            SkillTags = ["Moving", "Furniture", "Heavy Lifting"],
-            IsVerified = offer.IsVerified,
-            MessageUrl = offer.MessageUrl
+            var distanceMiles = 0.4m + (index * 0.3m);
+            var (lat, lng) = OffsetMapPoint(mapCenter, distanceMiles, index, suggested.Count);
+            return new NeighborRequestHelperCardViewModel
+            {
+                ProviderId = offer.ProviderId is > 0 ? offer.ProviderId.Value : index + 1,
+                Name = offer.OffererName,
+                PhotoUrl = offer.OffererPhotoUrl,
+                AvatarIconClass = offer.AvatarIconClass,
+                RatingLabel = offer.RatingLabel,
+                ReviewCount = 0,
+                DistanceLabel = $"{distanceMiles:0.#} mi away",
+                PriceLabel = offer.PriceLabel?.Contains("/hr", StringComparison.OrdinalIgnoreCase) == true
+                    ? offer.PriceLabel
+                    : $"{offer.PriceLabel}/hr",
+                MinHoursLabel = "Min. 2 hrs",
+                SkillTags = ["Moving", "Furniture", "Heavy Lifting"],
+                IsVerified = offer.IsVerified,
+                MessageUrl = offer.MessageUrl,
+                Latitude = lat,
+                Longitude = lng
+            };
         }).ToList();
 
         for (var i = 0; i < helpers.Count; i++)
@@ -1304,6 +1315,41 @@ public class NeighborRequestWizardService(
         }
 
         return helpers;
+    }
+
+    private async Task<(double Latitude, double Longitude)?> ResolveMapCenterAsync(
+        string? locationAddress,
+        CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(locationAddress))
+        {
+            return null;
+        }
+
+        var coords = await addressLookup.GeocodeAddressAsync(locationAddress.Trim(), ct);
+        return coords is { } resolved
+            ? ((double)resolved.Latitude, (double)resolved.Longitude)
+            : null;
+    }
+
+    private static (double? Latitude, double? Longitude) OffsetMapPoint(
+        (double Latitude, double Longitude)? center,
+        decimal distanceMiles,
+        int index,
+        int total)
+    {
+        if (center is null)
+        {
+            return (null, null);
+        }
+
+        var angle = 2 * Math.PI * (index + 1) / Math.Max(total + 1, 2);
+        var miles = (double)distanceMiles;
+        const double milesPerDegreeLat = 69.0;
+        var milesPerDegreeLng = Math.Max(Math.Cos(center.Value.Latitude * Math.PI / 180.0) * 69.0, 0.01);
+        var lat = center.Value.Latitude + (miles * Math.Cos(angle) / milesPerDegreeLat);
+        var lng = center.Value.Longitude + (miles * Math.Sin(angle) / milesPerDegreeLng);
+        return (lat, lng);
     }
 
     private static string FormatHelperSelectionKey(int index, int providerId) => $"{index}:{providerId}";
@@ -1471,7 +1517,7 @@ public class NeighborRequestWizardService(
                 return "Tomorrow";
             }
 
-            return date.ToString("MMM d", CultureInfo.GetCultureInfo("en-US"));
+            return date.ToString("MMM d", CultureInfo.CurrentUICulture);
         }
 
         return FormatTimelineLabel(request.TimelineCode);
@@ -2415,7 +2461,9 @@ public class NeighborRequestWizardService(
                 MinHoursLabel = "Min. 2 hrs",
                 SkillTags = BuildProviderSkillTags(categoryLabel),
                 IsVerified = isVerified,
-                MessageUrl = messageUrl
+                MessageUrl = messageUrl,
+                Latitude = lat,
+                Longitude = lng
             }, (double)distance));
         }
 
