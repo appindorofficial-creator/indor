@@ -1660,7 +1660,7 @@ public class NeighborRequestWizardService(
                 ProviderId = provider.Id,
                 OffererName = name,
                 AvatarIconClass = icons[i % icons.Length],
-                PriceLabel = string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:C0}", price),
+                PriceLabel = string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:C0}/hr", price),
                 ScheduleLabel = BuildSuggestedScheduleLabel(request, i),
                 RatingLabel = FormatRatingLabel(null),
                 RoleLabel = "INDOR Provider",

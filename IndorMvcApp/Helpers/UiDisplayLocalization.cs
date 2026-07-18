@@ -39,6 +39,7 @@ public static class UiDisplayLocalization
         (new Regex(@"^(\d+)\s+helpers?$", RegexOptions.IgnoreCase), "{0} helpers"),
         (new Regex(@"^Min\.\s*(\d+)\s*hrs?$", RegexOptions.IgnoreCase), "Min. {0} hrs"),
         (new Regex(@"^\$(\d+(?:\.\d+)?)\s*/hr$", RegexOptions.IgnoreCase), "${0}/hr"),
+        (new Regex(@"^(\d+)\s+offers received$", RegexOptions.IgnoreCase), "{0} offers received"),
         (new Regex(@"^(\d+)\s+urgent items?$", RegexOptions.IgnoreCase), "{0} urgent items"),
         (new Regex(@"^(\d+)\s+high-priority items?$", RegexOptions.IgnoreCase), "{0} high-priority items"),
         (new Regex(@"^(\d+)\s+moderate items?$", RegexOptions.IgnoreCase), "{0} moderate items"),
@@ -99,22 +100,22 @@ public static class UiDisplayLocalization
 
         if (text.StartsWith("Today, ", StringComparison.OrdinalIgnoreCase))
         {
-            return localizer.T("Today, {0}", text["Today, ".Length..].Trim());
+            return localizer.T("Today, {0}", Localize(localizer, text["Today, ".Length..].Trim()));
         }
 
         if (text.StartsWith("Today • ", StringComparison.OrdinalIgnoreCase))
         {
-            return localizer.T("Today • {0}", text["Today • ".Length..].Trim());
+            return localizer.T("Today • {0}", Localize(localizer, text["Today • ".Length..].Trim()));
         }
 
         if (text.StartsWith("Yesterday, ", StringComparison.OrdinalIgnoreCase))
         {
-            return localizer.T("Yesterday, {0}", text["Yesterday, ".Length..].Trim());
+            return localizer.T("Yesterday, {0}", Localize(localizer, text["Yesterday, ".Length..].Trim()));
         }
 
         if (text.StartsWith("Tomorrow, ", StringComparison.OrdinalIgnoreCase))
         {
-            return localizer.T("Tomorrow, {0}", text["Tomorrow, ".Length..].Trim());
+            return localizer.T("Tomorrow, {0}", Localize(localizer, text["Tomorrow, ".Length..].Trim()));
         }
 
         var tradeNeeded = Regex.Match(text, @"^(.+?)\s+needed$", RegexOptions.IgnoreCase);
@@ -523,6 +524,38 @@ public static class UiDisplayLocalization
         if (minAgoMatch.Success && int.TryParse(minAgoMatch.Groups[1].Value, out var minsAgo))
         {
             return localizer.T("{0} min ago", minsAgo);
+        }
+
+        if (string.Equals(text, "Posted just now", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Posted just now");
+        }
+
+        var postedMinsMatch = Regex.Match(text, @"^Posted (\d+) mins? ago$", RegexOptions.IgnoreCase);
+        if (postedMinsMatch.Success && int.TryParse(postedMinsMatch.Groups[1].Value, out var postedMins))
+        {
+            return localizer.T(postedMins == 1 ? "Posted {0} min ago" : "Posted {0} mins ago", postedMins);
+        }
+
+        var postedHoursMatch = Regex.Match(text, @"^Posted (\d+) hours? ago$", RegexOptions.IgnoreCase);
+        if (postedHoursMatch.Success && int.TryParse(postedHoursMatch.Groups[1].Value, out var postedHours))
+        {
+            return localizer.T(postedHours == 1 ? "Posted {0} hour ago" : "Posted {0} hours ago", postedHours);
+        }
+
+        var postedDaysMatch = Regex.Match(text, @"^Posted (\d+) days? ago$", RegexOptions.IgnoreCase);
+        if (postedDaysMatch.Success && int.TryParse(postedDaysMatch.Groups[1].Value, out var postedDays))
+        {
+            return localizer.T(postedDays == 1 ? "Posted {0} day ago" : "Posted {0} days ago", postedDays);
+        }
+
+        var clockMatch = Regex.Match(text, @"^(\d{1,2}:\d{2})\s*(AM|PM)$", RegexOptions.IgnoreCase);
+        if (clockMatch.Success)
+        {
+            var period = clockMatch.Groups[2].Value.Equals("AM", StringComparison.OrdinalIgnoreCase)
+                ? localizer.T("a. m.")
+                : localizer.T("p. m.");
+            return $"{clockMatch.Groups[1].Value} {period}";
         }
 
         var hrAgoMatch = Regex.Match(text, @"^(\d+) hr ago$", RegexOptions.IgnoreCase);
@@ -992,24 +1025,24 @@ public static class UiDisplayLocalization
     {
         if (value.StartsWith("Today, ", StringComparison.OrdinalIgnoreCase))
         {
-            return localizer.T("Today, {0}", value["Today, ".Length..].Trim());
+            return localizer.T("Today, {0}", Localize(localizer, value["Today, ".Length..].Trim()));
         }
 
         if (value.StartsWith("Today • ", StringComparison.OrdinalIgnoreCase))
         {
-            return localizer.T("Today • {0}", value["Today • ".Length..].Trim());
+            return localizer.T("Today • {0}", Localize(localizer, value["Today • ".Length..].Trim()));
         }
 
         if (value.StartsWith("Yesterday, ", StringComparison.OrdinalIgnoreCase))
         {
-            return localizer.T("Yesterday, {0}", value["Yesterday, ".Length..].Trim());
+            return localizer.T("Yesterday, {0}", Localize(localizer, value["Yesterday, ".Length..].Trim()));
         }
 
         if (value.StartsWith("Tomorrow, ", StringComparison.OrdinalIgnoreCase))
         {
-            return localizer.T("Tomorrow, {0}", value["Tomorrow, ".Length..].Trim());
+            return localizer.T("Tomorrow, {0}", Localize(localizer, value["Tomorrow, ".Length..].Trim()));
         }
 
-        return value;
+        return Localize(localizer, value);
     }
 }
