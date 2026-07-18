@@ -41,6 +41,26 @@ public static class UiDisplayLocalization
         (new Regex(@"^(\d+)\s+moderate items?$", RegexOptions.IgnoreCase), "{0} moderate items"),
     ];
 
+    /// <summary>
+    /// Shared entry point for portal topbar notification bodies (Realtor, Provider, PA, Homeowner).
+    /// Keep English templates at creation time; localize here at display time.
+    /// </summary>
+    public static string LocalizeNotification(IIndorLocalizer localizer, string? text) =>
+        Localize(localizer, text);
+
+    public static string LocalizeNotificationTime(IIndorLocalizer localizer, string? text) =>
+        Localize(localizer, text);
+
+    public static string LocalizeNotificationTag(IIndorLocalizer localizer, string? tag)
+    {
+        if (string.IsNullOrWhiteSpace(tag))
+        {
+            return string.Empty;
+        }
+
+        return localizer.T(tag.Trim());
+    }
+
     public static string Localize(IIndorLocalizer localizer, string? text)
     {
         if (string.IsNullOrWhiteSpace(text))
@@ -746,6 +766,115 @@ public static class UiDisplayLocalization
                 submittedQuoteMatch.Groups[2].Value.Trim(),
                 submittedQuoteMatch.Groups[3].Value.Trim(),
                 submittedQuoteMatch.Groups[4].Value.Trim());
+        }
+
+        // Provider PRO notification templates
+        var newLeadMatch = Regex.Match(text, @"^New lead: (.+) — (.+)$", RegexOptions.IgnoreCase);
+        if (newLeadMatch.Success)
+        {
+            return localizer.T(
+                "New lead: {0} — {1}",
+                Localize(localizer, newLeadMatch.Groups[1].Value.Trim()),
+                Localize(localizer, newLeadMatch.Groups[2].Value.Trim()));
+        }
+
+        if (text.StartsWith("Estimate approved for ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T(
+                "Estimate approved for {0}",
+                text["Estimate approved for ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Homeowner viewed your estimate for ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T(
+                "Homeowner viewed your estimate for {0}",
+                text["Homeowner viewed your estimate for ".Length..].Trim());
+        }
+
+        var overdueInvoiceMatch = Regex.Match(text, @"^Overdue invoice (.+) — (.+)$", RegexOptions.IgnoreCase);
+        if (overdueInvoiceMatch.Success)
+        {
+            return localizer.T(
+                "Overdue invoice {0} — {1}",
+                overdueInvoiceMatch.Groups[1].Value.Trim(),
+                overdueInvoiceMatch.Groups[2].Value.Trim());
+        }
+
+        var paymentReceivedMatch = Regex.Match(text, @"^Payment received for (.+) — (.+)$", RegexOptions.IgnoreCase);
+        if (paymentReceivedMatch.Success)
+        {
+            return localizer.T(
+                "Payment received for {0} — {1}",
+                paymentReceivedMatch.Groups[1].Value.Trim(),
+                paymentReceivedMatch.Groups[2].Value.Trim());
+        }
+
+        if (string.Equals(text, "New message waiting", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("New message waiting");
+        }
+
+        if (string.Equals(text, "your service area", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("your service area");
+        }
+
+        if (string.Equals(text, "Now", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Now");
+        }
+
+        var hoursAgoShortMatch = Regex.Match(text, @"^(\d+)h ago$", RegexOptions.IgnoreCase);
+        if (hoursAgoShortMatch.Success && int.TryParse(hoursAgoShortMatch.Groups[1].Value, out var hoursAgoShort))
+        {
+            return localizer.T("{0}h ago", hoursAgoShort);
+        }
+
+        // Remaining realtor activity templates
+        if (text.StartsWith("Contact initiated for lead: ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T(
+                "Contact initiated for lead: {0}",
+                text["Contact initiated for lead: ".Length..].Trim());
+        }
+
+        var inspectionAnalyzedMatch = Regex.Match(
+            text,
+            @"^Inspection analyzed — (\d+) quote requests? for (.+)$",
+            RegexOptions.IgnoreCase);
+        if (inspectionAnalyzedMatch.Success
+            && int.TryParse(inspectionAnalyzedMatch.Groups[1].Value, out var analyzedQuoteCount))
+        {
+            var analyzedKey = analyzedQuoteCount == 1
+                ? "Inspection analyzed — {0} quote request for {1}"
+                : "Inspection analyzed — {0} quote requests for {1}";
+            return localizer.T(
+                analyzedKey,
+                analyzedQuoteCount,
+                inspectionAnalyzedMatch.Groups[2].Value.Trim());
+        }
+
+        if (string.Equals(text, "Inspection analyzed", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Inspection analyzed");
+        }
+
+        var findingsSentMatch = Regex.Match(text, @"^(\d+) findings? sent for (.+)$", RegexOptions.IgnoreCase);
+        if (findingsSentMatch.Success && int.TryParse(findingsSentMatch.Groups[1].Value, out var findingsSentCount))
+        {
+            var findingsKey = findingsSentCount == 1
+                ? "{0} finding sent for {1}"
+                : "{0} findings sent for {1}";
+            return localizer.T(
+                findingsKey,
+                findingsSentCount,
+                findingsSentMatch.Groups[2].Value.Trim());
+        }
+
+        if (string.Equals(text, "Findings sent to providers", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Findings sent to providers");
         }
 
         // Match "Name at Address" style labels (also Spanglish "Lawn Care en …" / "… in …").

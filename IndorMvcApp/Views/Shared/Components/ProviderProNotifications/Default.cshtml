@@ -42,10 +42,10 @@
                             <a href="@item.TargetUrl" class="prv-pro-notify-item">
                                 <span class="prv-pro-notify-item-icon"><i class="fas @item.IconClass"></i></span>
                                 <span class="prv-pro-notify-item-body">
-                                    <span class="prv-pro-notify-item-text">@item.Description</span>
-                                    <span class="prv-pro-notify-item-time">@item.OccurredLabel</span>
+                                    <span class="prv-pro-notify-item-text">@UiDisplayLocalization.LocalizeNotification(L, item.Description)</span>
+                                    <span class="prv-pro-notify-item-time">@UiDisplayLocalization.LocalizeNotificationTime(L, item.OccurredLabel)</span>
                                 </span>
-                                <span class="prv-pro-notify-tag @item.TagCssClass">@item.CategoryTag</span>
+                                <span class="prv-pro-notify-tag @item.TagCssClass">@UiDisplayLocalization.LocalizeNotificationTag(L, item.CategoryTag)</span>
                             </a>
                         }
                         else
@@ -53,10 +53,10 @@
                             <div class="prv-pro-notify-item">
                                 <span class="prv-pro-notify-item-icon"><i class="fas @item.IconClass"></i></span>
                                 <span class="prv-pro-notify-item-body">
-                                    <span class="prv-pro-notify-item-text">@item.Description</span>
-                                    <span class="prv-pro-notify-item-time">@item.OccurredLabel</span>
+                                    <span class="prv-pro-notify-item-text">@UiDisplayLocalization.LocalizeNotification(L, item.Description)</span>
+                                    <span class="prv-pro-notify-item-time">@UiDisplayLocalization.LocalizeNotificationTime(L, item.OccurredLabel)</span>
                                 </span>
-                                <span class="prv-pro-notify-tag @item.TagCssClass">@item.CategoryTag</span>
+                                <span class="prv-pro-notify-tag @item.TagCssClass">@UiDisplayLocalization.LocalizeNotificationTag(L, item.CategoryTag)</span>
                             </div>
                         }
                     </li>

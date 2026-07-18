@@ -1449,6 +1449,25 @@ public static class UiTranslationsFinal
             ["{0} submitted a quote for {1} ({2}) — {3}"] =
                 "{0} envió una cotización para {1} ({2}) — {3}",
             ["A realtor"] = "Un agente inmobiliario",
+            ["New lead: {0} — {1}"] = "Nuevo prospecto: {0} — {1}",
+            ["Estimate approved for {0}"] = "Estimación aprobada para {0}",
+            ["Homeowner viewed your estimate for {0}"] = "El propietario vio tu estimación para {0}",
+            ["Overdue invoice {0} — {1}"] = "Factura vencida {0} — {1}",
+            ["Payment received for {0} — {1}"] = "Pago recibido por {0} — {1}",
+            ["New message waiting"] = "Nuevo mensaje pendiente",
+            ["your service area"] = "tu zona de servicio",
+            ["Now"] = "Ahora",
+            ["{0}h ago"] = "hace {0} h",
+            ["Contact initiated for lead: {0}"] = "Contacto iniciado para el prospecto: {0}",
+            ["Inspection analyzed — {0} quote request for {1}"] =
+                "Inspección analizada — {0} solicitud de cotización para {1}",
+            ["Inspection analyzed — {0} quote requests for {1}"] =
+                "Inspección analizada — {0} solicitudes de cotización para {1}",
+            ["Inspection analyzed"] = "Inspección analizada",
+            ["{0} finding sent for {1}"] = "{0} hallazgo enviado para {1}",
+            ["{0} findings sent for {1}"] = "{0} hallazgos enviados para {1}",
+            ["Findings sent to providers"] = "Hallazgos enviados a proveedores",
+            ["Payments"] = "Pagos",
             ["Contact INDOR support at"] = "Contacta al soporte de INDOR en",
             ["Review INDOR platform terms for real estate professionals."] =
                 "Revisa los términos de la plataforma INDOR para profesionales inmobiliarios.",
