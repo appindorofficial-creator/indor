@@ -14,35 +14,11 @@
         </a>
         <div>
             <h1 class="rl-page-title">@L["Support &amp; Account"]</h1>
-            <p class="rl-page-subtitle">@L["Help, account preferences, and INDOR resources for realtors."]</p>
+            <p class="rl-page-subtitle">@L["Get help and review INDOR policies for realtors."]</p>
         </div>
     </header>
 
     <nav class="rl-profile-nav">
-        <a asp-controller="Realtor" asp-action="BusinessInformation" class="rl-profile-nav-item">
-            <span class="rl-profile-nav-icon"><i class="fas fa-building"></i></span>
-            <div>
-                <strong>@L["Account settings"]</strong>
-                <span class="rl-profile-nav-desc">@L["Update business details, license, and profile preferences."]</span>
-            </div>
-            <i class="fas fa-chevron-right"></i>
-        </a>
-        <a asp-controller="Realtor" asp-action="Profile" asp-fragment="rl-notify-form" class="rl-profile-nav-item">
-            <span class="rl-profile-nav-icon"><i class="fas fa-bell"></i></span>
-            <div>
-                <strong>@L["Notifications"]</strong>
-                <span class="rl-profile-nav-desc">@L["Manage alerts for clients, files, and quote updates."]</span>
-            </div>
-            <i class="fas fa-chevron-right"></i>
-        </a>
-        <a asp-controller="RealtorRegistration" asp-action="Verification" class="rl-profile-nav-item">
-            <span class="rl-profile-nav-icon"><i class="fas fa-shield-halved"></i></span>
-            <div>
-                <strong>@L["Verification"]</strong>
-                <span class="rl-profile-nav-desc">@L["Upload license and ID to unlock the Verified Realtor badge."]</span>
-            </div>
-            <i class="fas fa-chevron-right"></i>
-        </a>
         <a asp-controller="Account" asp-action="Terms" asp-route-from="realtor-support" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-scale-balanced"></i></span>
             <div>

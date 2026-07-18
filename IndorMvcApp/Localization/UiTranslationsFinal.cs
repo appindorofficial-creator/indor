@@ -1430,6 +1430,12 @@ public static class UiTranslationsFinal
             ["Need help?"] = "¿Necesitas ayuda?",
             ["Help, account preferences, and INDOR resources for realtors."] =
                 "Ayuda, preferencias de cuenta y recursos de INDOR para agentes inmobiliarios.",
+            ["Get help and review INDOR policies for realtors."] =
+                "Obtén ayuda y revisa las políticas de INDOR para agentes inmobiliarios.",
+            ["Update your password and security preferences."] =
+                "Actualiza tu contraseña y preferencias de seguridad.",
+            ["Permanently remove your INDOR account and data."] =
+                "Elimina de forma permanente tu cuenta de INDOR y tus datos.",
             ["Contact INDOR support at"] = "Contacta al soporte de INDOR en",
             ["Review INDOR platform terms for real estate professionals."] =
                 "Revisa los términos de la plataforma INDOR para profesionales inmobiliarios.",
