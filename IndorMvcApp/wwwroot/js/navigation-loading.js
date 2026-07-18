@@ -59,7 +59,8 @@
         if (link.closest("[data-no-nav-loading]")) return true;
 
         var href = link.getAttribute("href") || "";
-        if (!isNavigableHref(href)) return false;
+        // Hash-only / mailto / javascript links never leave the page — skip the overlay.
+        if (!isNavigableHref(href)) return true;
 
         try {
             var url = new URL(href, location.href);
