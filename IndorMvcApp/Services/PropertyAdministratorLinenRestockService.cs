@@ -27,7 +27,6 @@ public class PropertyAdministratorLinenRestockService(
             ?? throw new InvalidOperationException("Property administrator not found.");
         var shell = await BuildShellAsync(admin, cancellationToken);
         var property = ResolveProperty(admin, propertyId);
-        var user = await GetUserAsync();
 
         return new PropertyAdministratorLinenRestockFormViewModel
         {
@@ -38,7 +37,7 @@ public class PropertyAdministratorLinenRestockService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = MapProperty(property),
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
+            ContactPhone = ""
         };
     }
 

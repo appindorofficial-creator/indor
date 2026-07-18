@@ -47,7 +47,6 @@ public class PropertyAdministratorEmergencyFloodService(
             ?? throw new InvalidOperationException("Property administrator not found.");
         var shell = await BuildShellAsync(admin, cancellationToken);
         var property = ResolveProperty(admin, propertyId);
-        var user = await GetUserAsync();
         var mapped = MapProperty(property);
 
         return new PropertyAdministratorEmergencyFloodFormViewModel
@@ -59,7 +58,7 @@ public class PropertyAdministratorEmergencyFloodService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
+            ContactPhone = ""
         };
     }
 

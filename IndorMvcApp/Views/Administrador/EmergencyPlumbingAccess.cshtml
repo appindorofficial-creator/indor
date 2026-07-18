@@ -89,7 +89,7 @@
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
             <label>@L["Who should receive updates?"]</label>
-            <div class="pa-chip-grid pa-chip-grid--3">
+            <div class="pa-chip-grid pa-chip-grid--3" data-pa-required-group>
                 @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
                 {
                     <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
@@ -102,7 +102,8 @@
 
         @{
             ViewData["PaContactQnum"] = "6";
-            ViewData["PaContactValue"] = Model.ContactPhone;
+            ViewData["PaContactValue"] = Model.ContactPhone ?? "";
+            ViewData["PaContactFieldName"] = "ContactPhone";
         }
         @await Html.PartialAsync("_PropertyAdminUrgentContactPhone")
 

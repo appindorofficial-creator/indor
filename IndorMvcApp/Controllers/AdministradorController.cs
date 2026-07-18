@@ -285,6 +285,11 @@ public class AdministradorController(
             return redirect;
         }
 
+        if (!PropertyAdministratorEmergencyPlumbingService.IsSubmitComplete(input))
+        {
+            return RedirectToAction(nameof(EmergencyPlumbingAccess));
+        }
+
         var requestId = await emergencyPlumbing.SubmitAsync(input);
         TempData.Remove("PlumbingStep1");
         return RedirectToAction(nameof(EmergencyPlumbingConfirmed), new { id = requestId });
@@ -423,6 +428,11 @@ public class AdministradorController(
         if (await EnsureRegisteredAsync() is { } redirect)
         {
             return redirect;
+        }
+
+        if (!PropertyAdministratorEmergencyTreeBranchService.IsStep1Complete(input))
+        {
+            return RedirectToAction(nameof(EmergencyTreeBranchDetails), new { propertyId = input.PropertyId > 0 ? input.PropertyId : (int?)null });
         }
 
         TempData["TreeBranchStep1"] = System.Text.Json.JsonSerializer.Serialize(input);

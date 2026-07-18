@@ -12,6 +12,7 @@ public class PropertyAdministratorEmergencyTreeBranchStep1ViewModel : PropertyAd
     public List<string> DamageAreasList { get; set; } = [];
     public string TarpNeeded { get; set; } = "";
     public string QuickDetails { get; set; } = "";
+    public string ContactPhone { get; set; } = "";
 }
 
 public class PropertyAdministratorEmergencyTreeBranchStep1Input
@@ -24,6 +25,7 @@ public class PropertyAdministratorEmergencyTreeBranchStep1Input
     public List<string> DamageAreasList { get; set; } = [];
     public string TarpNeeded { get; set; } = "";
     public string? QuickDetails { get; set; }
+    public string ContactPhone { get; set; } = "";
 }
 
 public class PropertyAdministratorEmergencyTreeBranchSubmitInput

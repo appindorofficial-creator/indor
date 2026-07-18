@@ -34,7 +34,6 @@ public class PropertyAdministratorSmokeDetectorService(
             ?? throw new InvalidOperationException("Property administrator not found.");
         var shell = await BuildShellAsync(admin, cancellationToken);
         var property = ResolveProperty(admin, propertyId);
-        var user = await GetUserAsync();
         var mapped = MapProperty(property);
 
         return new PropertyAdministratorSmokeDetectorFormViewModel
@@ -46,7 +45,7 @@ public class PropertyAdministratorSmokeDetectorService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
+            ContactPhone = "",
             UpdateRecipients = string.Empty,
             ServiceType = string.Empty,
             DetectorCount = string.Empty,

@@ -66,7 +66,6 @@ public class PropertyAdministratorJunkRemovalService(
             return null;
         }
 
-        var user = await GetUserAsync();
 
         return new PropertyAdministratorJunkRemovalStep2ViewModel
         {
@@ -87,7 +86,7 @@ public class PropertyAdministratorJunkRemovalService(
             QuickDetails = step1.QuickDetails ?? "",
             PickupWhen = "",
             EntryCode = "",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
+            ContactPhone = ""
         };
     }
 

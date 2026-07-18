@@ -59,8 +59,6 @@ public class PropertyAdministratorEmergencySewerBackupService(
         {
             return null;
         }
-
-        var user = await GetUserAsync();
         var mapped = MapProperty(property);
         var input = new PropertyAdministratorEmergencySewerBackupSubmitInput
         {
@@ -74,7 +72,7 @@ public class PropertyAdministratorEmergencySewerBackupService(
             EntryAccess = "SmartLock",
             EntryCode = $"Front door code: {1000 + property.Id}",
             UpdateRecipientsList = ["Me", "Guest"],
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
+            ContactPhone = ""
         };
 
         return new PropertyAdministratorEmergencySewerBackupReviewViewModel

@@ -65,7 +65,6 @@ public class PropertyAdministratorPestControlService(
             return null;
         }
 
-        var user = await GetUserAsync();
         var isRental = property.PropertyType == "ShortTermRental";
         var etaMinutes = step1.Urgency == "Emergency" ? 25 : step1.Urgency == "Urgent" ? 38 : 90;
 
@@ -92,7 +91,7 @@ public class PropertyAdministratorPestControlService(
             TreatAreas = "",
             UpdateRecipients = "",
             AccessNotes = "",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
+            ContactPhone = "",
             ProEtaLabel = PropertyAdministratorDisplayLocalization.T("Earliest available pest control pro: {0} min", etaMinutes)
         };
     }

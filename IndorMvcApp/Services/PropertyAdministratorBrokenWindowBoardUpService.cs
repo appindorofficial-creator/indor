@@ -59,8 +59,6 @@ public class PropertyAdministratorBrokenWindowBoardUpService(
         {
             return null;
         }
-
-        var user = await GetUserAsync();
         var mapped = MapProperty(property);
 
         return new PropertyAdministratorBrokenWindowBoardUpStep2ViewModel
@@ -83,7 +81,7 @@ public class PropertyAdministratorBrokenWindowBoardUpService(
             EntryInstructions = PropertyAdministratorDisplayLocalization.T(
                 "Front door code: {0}",
                 1000 + property.Id),
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
+            ContactPhone = ""
         };
     }
 

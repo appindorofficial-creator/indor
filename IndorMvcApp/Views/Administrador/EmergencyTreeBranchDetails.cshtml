@@ -132,6 +132,12 @@
         </div>
         @await Html.PartialAsync("_PropertyAdminMediaCapture")
 
+        @{
+            ViewData["PaContactQnum"] = "8";
+            ViewData["PaContactValue"] = Model.ContactPhone ?? "";
+            ViewData["PaContactFieldName"] = "ContactPhone";
+        }
+        @await Html.PartialAsync("_PropertyAdminUrgentContactPhone")
 
         <div class="pa-notify-banner">
             <i class="fas fa-bolt"></i>
