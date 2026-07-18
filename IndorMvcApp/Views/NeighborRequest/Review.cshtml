@@ -16,7 +16,7 @@
         <span class="nr-review-icon"><i class="fas @Model.CategoryIconClass"></i></span>
         <div class="nr-review-copy">
             <span class="nr-review-label">@L["Category"]</span>
-            <span class="nr-review-value">@Model.CategoryLabel</span>
+            <span class="nr-review-value">@UiDisplayLocalization.Localize(L, Model.CategoryLabel)</span>
         </div>
     </article>
 
@@ -34,7 +34,7 @@
             <span class="nr-review-icon"><i class="fas fa-list"></i></span>
             <div class="nr-review-copy">
                 <span class="nr-review-label">@L["Details"]</span>
-                <span class="nr-review-value nr-review-value--text">@Model.DetailsSummary</span>
+                <span class="nr-review-value nr-review-value--text">@UiDisplayLocalization.Localize(L, Model.DetailsSummary)</span>
             </div>
         </article>
     }
@@ -78,7 +78,7 @@
         <span class="nr-review-icon"><i class="fas fa-calendar"></i></span>
         <div class="nr-review-copy">
             <span class="nr-review-label">@L["Timeline"]</span>
-            <span class="nr-review-value">@Model.TimelineLabel</span>
+            <span class="nr-review-value">@UiDisplayLocalization.Localize(L, Model.TimelineLabel)</span>
         </div>
     </article>
 
@@ -86,7 +86,7 @@
         <span class="nr-review-icon"><i class="fas fa-users"></i></span>
         <div class="nr-review-copy">
             <span class="nr-review-label">@L["Who can help?"]</span>
-            <span class="nr-review-value">@Model.AudienceLabel</span>
+            <span class="nr-review-value">@UiDisplayLocalization.Localize(L, Model.AudienceLabel)</span>
         </div>
     </article>
 
@@ -107,7 +107,7 @@
             <span class="nr-review-icon"><i class="fas fa-clock"></i></span>
             <div class="nr-review-copy">
                 <span class="nr-review-label">@L["Time window"]</span>
-                <span class="nr-review-value">@Model.TimeWindowLabel</span>
+                <span class="nr-review-value">@UiDisplayLocalization.Localize(L, Model.TimeWindowLabel)</span>
             </div>
         </article>
     }
@@ -118,14 +118,23 @@
             <span class="nr-review-icon"><i class="fas fa-dollar-sign"></i></span>
             <div class="nr-review-copy">
                 <span class="nr-review-label">@L["Budget"]</span>
-                <span class="nr-review-value">@Model.BudgetLabel</span>
+                <span class="nr-review-value">@UiDisplayLocalization.Localize(L, Model.BudgetLabel)</span>
             </div>
         </article>
     }
 </div>
 
-<form asp-action="Publish" method="post">
+<form asp-action="Publish" method="post" id="nrReviewPublishForm">
     @Html.AntiForgeryToken()
     <input type="hidden" name="propiedadId" value="@Model.PropiedadId" />
-    <button type="submit" class="nr-btn-primary">@Model.PublishButtonLabel</button>
 </form>
+
+@section WizardFooter {
+    @{
+        ViewData["NrWizardFormId"] = "nrReviewPublishForm";
+        ViewData["NrWizardContinueLabel"] = L[Model.PublishButtonLabel];
+        ViewData["NrWizardContinueIconAfter"] = "";
+        ViewData["NrWizardContinueIconBefore"] = "";
+    }
+    @await Html.PartialAsync("_NrWizardFooter")
+}

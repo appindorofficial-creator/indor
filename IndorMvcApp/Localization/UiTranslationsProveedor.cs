@@ -145,7 +145,7 @@ public static class UiTranslationsProveedor
             ["Cancel"] = "Cancelar",
             ["Card"] = "Tarjeta",
             ["Card on File"] = "Card on File",
-            ["Category"] = "Category",
+            ["Category"] = "Categoría",
             ["Certificate of insurance"] = "Certificate of insurance",
             ["Certifications (if applicable)"] = "Certifications (if applicable)",
             ["Certifications (optional)"] = "Certifications (optional)",

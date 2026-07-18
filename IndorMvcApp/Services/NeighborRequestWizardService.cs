@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -361,7 +362,7 @@ public class NeighborRequestWizardService(
             StepLabels = isEdit
                 ? ["Details", "Preferences", "Review"]
                 : ["Category", "Describe", "Preferences", "Review", "Done"],
-            CategoryLabel = category.LabelEn,
+            CategoryLabel = ResolveQuickJobCategoryLabel(category.Code, category.LabelEn),
             CategoryIconClass = category.IconClass,
             Title = draft.Title,
             DetailsSummary = string.IsNullOrWhiteSpace(draft.DetailsSummary) ? null : draft.DetailsSummary.Trim(),
@@ -370,7 +371,7 @@ public class NeighborRequestWizardService(
             LocationAddress = draft.LocationAddress,
             TimelineLabel = FormatTimelineLabel(draft.TimelineCode),
             AudienceLabel = FormatAudienceLabel(draft.AudienceCode),
-            NeededByLabel = draft.NeededByDate?.ToString("dddd, MMMM d", CultureInfo.GetCultureInfo("en-US")),
+            NeededByLabel = draft.NeededByDate?.ToString("dddd, MMMM d", CultureInfo.CurrentUICulture),
             TimeWindowLabel = FormatTimeWindowLabel(draft.TimeWindowStart, draft.TimeWindowEnd),
             BudgetLabel = draft.BudgetAmount is > 0
                 ? string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:C0}", draft.BudgetAmount.Value)
@@ -430,8 +431,8 @@ public class NeighborRequestWizardService(
         var categoryOptions = categories.Select(c => new NeighborRequestCategoryOptionViewModel
         {
             Id = c.Id,
-            Label = ResolveCategoryLabel(c.Code, c.LabelEn),
-            Description = ResolveCategoryDescription(c.Code, c.DescriptionEn),
+            Label = ResolveQuickJobCategoryLabel(c.Code, c.LabelEn),
+            Description = ResolveQuickJobCategoryDescription(c.Code),
             IconClass = ResolveCategoryIcon(c.Code, c.IconClass)
         }).ToList();
 
@@ -440,8 +441,8 @@ public class NeighborRequestWizardService(
             categoryOptions.Insert(0, new NeighborRequestCategoryOptionViewModel
             {
                 Id = category.Id,
-                Label = ResolveCategoryLabel(category.Code, category.LabelEn),
-                Description = ResolveCategoryDescription(category.Code, category.DescriptionEn),
+                Label = ResolveQuickJobCategoryLabel(category.Code, category.LabelEn),
+                Description = ResolveQuickJobCategoryDescription(category.Code),
                 IconClass = ResolveCategoryIcon(category.Code, category.IconClass)
             });
         }
@@ -458,7 +459,7 @@ public class NeighborRequestWizardService(
             BackUrl = url.Action("Detail", "NeighborRequest", new { id = request.Id }),
             CloseUrl = url.Action("Detail", "NeighborRequest", new { id = request.Id })!,
             CategoryId = request.CategoryId,
-            CategoryLabel = ResolveCategoryLabel(category?.Code ?? string.Empty, category?.LabelEn),
+            CategoryLabel = ResolveQuickJobCategoryLabel(category?.Code ?? string.Empty, category?.LabelEn),
             CategoryIconClass = ResolveCategoryIcon(category?.Code ?? string.Empty, category?.IconClass),
             DetailsSummary = detailsSummary,
             Description = description,
@@ -903,7 +904,7 @@ public class NeighborRequestWizardService(
                 {
                     Id = r.Id,
                     Title = r.Title,
-                    CategoryLabel = r.Category?.LabelEn ?? "Request",
+                    CategoryLabel = ResolveCategoryDisplayLabel(r.Category),
                     PostedLabel = FormatRelativeTime(r.PublishedUtc ?? r.CreatedUtc),
                     Status = r.Status,
                     IconClass = r.Category?.IconClass ?? "fa-comment-dots",
@@ -1000,7 +1001,7 @@ public class NeighborRequestWizardService(
             Id = request.Id,
             PropiedadId = request.PropiedadId,
             Title = request.Title,
-            CategoryLabel = request.Category?.LabelEn ?? "Request",
+            CategoryLabel = ResolveCategoryDisplayLabel(request.Category),
             IconClass = ResolveCategoryIcon(request.Category?.Code ?? string.Empty, request.Category?.IconClass),
             StatusLabel = FormatStatusLabel(request.Status),
             StatusCss = request.Status.ToLowerInvariant(),
@@ -1476,7 +1477,7 @@ public class NeighborRequestWizardService(
             return 1;
         }
 
-        var match = Regex.Match(detailsSummary, @"Helpers:\s*(\d+)", RegexOptions.IgnoreCase);
+        var match = Regex.Match(detailsSummary, @"(?:Helpers|Ayudantes):\s*(\d+)", RegexOptions.IgnoreCase);
         return match.Success && int.TryParse(match.Groups[1].Value, out var count) ? count : 1;
     }
 
@@ -1839,6 +1840,22 @@ public class NeighborRequestWizardService(
             NeighborRequestTimelineCodes.PickDate => "Pick a date",
             _ => "This week"
         };
+
+    private static string ResolveCategoryDisplayLabel(IndorNeighborRequestCategory? category)
+    {
+        if (category == null)
+        {
+            return "Request";
+        }
+
+        if (UiCulture.IsSpanish(CultureInfo.CurrentUICulture.Name)
+            && !string.IsNullOrWhiteSpace(category.LabelEs))
+        {
+            return category.LabelEs.Trim();
+        }
+
+        return ResolveQuickJobCategoryLabel(category.Code ?? string.Empty, category.LabelEn);
+    }
 
     private static string ResolveQuickJobCategoryLabel(string code, string? labelEn) =>
         code.Trim().ToLowerInvariant() switch

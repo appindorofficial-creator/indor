@@ -4,7 +4,7 @@
     Layout = null;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -44,10 +44,10 @@
                         <span class="nr-request-icon"><i class="fas @item.IconClass"></i></span>
                         <span class="nr-request-body">
                             <strong>@item.Title</strong>
-                            <span>@item.CategoryLabel</span>
+                            <span>@UiDisplayLocalization.Localize(L, item.CategoryLabel)</span>
                             <span>@UiDisplayLocalization.Localize(L, item.PostedLabel)</span>
                         </span>
-                        <span class="nr-offer-badge">@item.OfferCountLabel</span>
+                        <span class="nr-offer-badge">@UiDisplayLocalization.Localize(L, item.OfferCountLabel)</span>
                     </a>
                 }
             </div>

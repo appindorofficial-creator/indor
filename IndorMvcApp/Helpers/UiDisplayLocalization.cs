@@ -40,6 +40,7 @@ public static class UiDisplayLocalization
         (new Regex(@"^Min\.\s*(\d+)\s*hrs?$", RegexOptions.IgnoreCase), "Min. {0} hrs"),
         (new Regex(@"^\$(\d+(?:\.\d+)?)\s*/hr$", RegexOptions.IgnoreCase), "${0}/hr"),
         (new Regex(@"^(\d+)\s+offers received$", RegexOptions.IgnoreCase), "{0} offers received"),
+        (new Regex(@"^(\d+)\s+offers$", RegexOptions.IgnoreCase), "{0} offers"),
         (new Regex(@"^(\d+)\s+urgent items?$", RegexOptions.IgnoreCase), "{0} urgent items"),
         (new Regex(@"^(\d+)\s+high-priority items?$", RegexOptions.IgnoreCase), "{0} high-priority items"),
         (new Regex(@"^(\d+)\s+moderate items?$", RegexOptions.IgnoreCase), "{0} moderate items"),
@@ -175,11 +176,45 @@ public static class UiDisplayLocalization
                     .Select(part => Localize(localizer, part)));
         }
 
+        if (text.Contains(" | ", StringComparison.Ordinal))
+        {
+            return string.Join(" | ",
+                text.Split(" | ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                    .Select(part => Localize(localizer, part)));
+        }
+
         if (text.Contains(" • ", StringComparison.Ordinal))
         {
             return string.Join(" • ",
                 text.Split(" • ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                     .Select(part => Localize(localizer, part)));
+        }
+
+        var summaryLabelMatch = Regex.Match(
+            text,
+            @"^(Bring|Pets|Stairs|Parking|Gate code|Helpers|Duration|Pay):\s*(.+)$",
+            RegexOptions.IgnoreCase);
+        if (summaryLabelMatch.Success)
+        {
+            var prefixKey = summaryLabelMatch.Groups[1].Value.Trim() switch
+            {
+                var p when p.Equals("Bring", StringComparison.OrdinalIgnoreCase) => "Bring:",
+                var p when p.Equals("Pets", StringComparison.OrdinalIgnoreCase) => "Pets:",
+                var p when p.Equals("Stairs", StringComparison.OrdinalIgnoreCase) => "Stairs:",
+                var p when p.Equals("Parking", StringComparison.OrdinalIgnoreCase) => "Parking:",
+                var p when p.Equals("Gate code", StringComparison.OrdinalIgnoreCase) => "Gate code:",
+                var p when p.Equals("Helpers", StringComparison.OrdinalIgnoreCase) => "Helpers:",
+                var p when p.Equals("Duration", StringComparison.OrdinalIgnoreCase) => "Duration:",
+                var p when p.Equals("Pay", StringComparison.OrdinalIgnoreCase) => "Pay:",
+                _ => summaryLabelMatch.Groups[1].Value.Trim() + ":"
+            };
+            var rawValue = summaryLabelMatch.Groups[2].Value.Trim();
+            var localizedValue = rawValue.Contains(',', StringComparison.Ordinal)
+                ? string.Join(", ",
+                    rawValue.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                        .Select(v => Localize(localizer, v)))
+                : Localize(localizer, rawValue);
+            return $"{localizer.T(prefixKey)} {localizedValue}";
         }
 
         if (text.StartsWith("Uploaded ", StringComparison.OrdinalIgnoreCase))
