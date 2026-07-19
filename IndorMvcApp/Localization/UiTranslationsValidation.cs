@@ -34,6 +34,8 @@ public static class UiTranslationsValidation
             ["The Title field is required."] = "El título del trabajo es obligatorio.",
             ["The LocationAddress field is required."] = "La ubicación es obligatoria.",
             ["License number is required."] = "El número de licencia es obligatorio.",
+            ["License number must be at least 4 characters."] = "El número de licencia debe tener al menos 4 caracteres.",
+            ["License number cannot exceed 20 characters."] = "El número de licencia no puede superar 20 caracteres.",
             ["License number can only contain letters and numbers (no spaces or symbols)."] = "El número de licencia solo puede contener letras y números (sin espacios ni símbolos).",
             ["License number must include at least one letter (cannot be only numbers)."] = "El número de licencia debe incluir al menos una letra (no puede ser solo números).",
             ["Select at least one language."] = "Selecciona al menos un idioma.",
@@ -41,5 +43,17 @@ public static class UiTranslationsValidation
             ["Use only letters, numbers, and hyphens."] = "Usa solo letras, números y guiones.",
             ["Serial number must include at least one letter and one number."] = "El número de serie debe incluir al menos una letra y un número.",
             ["Brokerage Name is required."] = "El nombre de la correduría es obligatorio.",
+            ["Brokerage / Company Name is required."] = "El nombre de la correduría / empresa es obligatorio.",
+            ["Brokerage / Company Name must be at least 2 characters."] = "El nombre de la correduría / empresa debe tener al menos 2 caracteres.",
+            ["Brokerage / Company Name cannot exceed 200 characters."] = "El nombre de la correduría / empresa no puede superar 200 caracteres.",
+            ["Brokerage / Company Name must include letters (e.g. Keller Williams, RE/MAX)."] =
+                "El nombre de la correduría / empresa debe incluir letras (ej. Keller Williams, RE/MAX).",
+            ["Brokerage / Company Name cannot contain only numbers."] =
+                "El nombre de la correduría / empresa no puede contener solo números.",
+            ["City / market area is required."] = "La ciudad / área de mercado es obligatoria.",
+            ["Please select your license state."] = "Selecciona el estado de tu licencia.",
+            ["Office address is required."] = "La dirección de oficina es obligatoria.",
+            ["Please check the authorization box to verify your license before continuing."] =
+                "Marca la casilla de autorización para verificar tu licencia antes de continuar.",
         };
 }

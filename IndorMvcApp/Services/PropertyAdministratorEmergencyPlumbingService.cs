@@ -60,7 +60,6 @@ public class PropertyAdministratorEmergencyPlumbingService(
             return null;
         }
 
-        var user = await GetUserAsync();
         var mapped = MapProperty(property);
 
         return new PropertyAdministratorEmergencyPlumbingStep2ViewModel
@@ -84,7 +83,7 @@ public class PropertyAdministratorEmergencyPlumbingService(
             EntryCode = "",
             WaterShutoffAccess = "",
             AccessNotes = "",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
+            ContactPhone = ""
         };
     }
 
@@ -220,8 +219,20 @@ public class PropertyAdministratorEmergencyPlumbingService(
             Label = PropertyAdministratorDisplayLocalization.L("Updates"),
             Value = string.Join(" + ", input.UpdateRecipientsList),
             IconClass = "fa-bell"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Best phone number for urgent contact"),
+            Value = input.ContactPhone,
+            IconClass = "fa-phone"
         }
     ];
+
+    public static bool IsSubmitComplete(PropertyAdministratorEmergencyPlumbingSubmitInput input) =>
+        !string.IsNullOrWhiteSpace(input.EntryAccess)
+        && input.UpdateRecipientsList.Count > 0
+        && !string.IsNullOrWhiteSpace(input.PermissionToEnter)
+        && PropertyAdministratorContactPhone.IsProvided(input.ContactPhone);
 
     private static IReadOnlyList<PropertyAdministratorEmergencyAcTimelineItemViewModel> BuildTimeline(
         IndorPropertyAdminServiceRequest request)

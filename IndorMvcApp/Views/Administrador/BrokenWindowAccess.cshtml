@@ -87,14 +87,11 @@
             </div>
         </div>
 
-        <div class="pa-flow-question">
-            <span class="pa-flow-qnum">5</span>
-            <label>@L["Best phone number for urgent contact"]</label>
-            <div class="pa-field">
-                <i class="fas fa-phone"></i>
-                <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
-            </div>
-        </div>
+        @{
+            ViewData["PaContactQnum"] = "5";
+            ViewData["PaContactValue"] = Model.ContactPhone;
+        }
+        @await Html.PartialAsync("_PropertyAdminUrgentContactPhone")
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">6</span>
@@ -116,7 +113,7 @@
 
         <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Review request"]</button>
         <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit">@L["Edit details"]</a>
-        <a href="@Url.Action("Index", "Administrador", new { propertyId = Model.PropertyId })" class="pa-back-link">@L["Back to start"]</a>
+        <a href="@Url.Action("Services", "Administrador", new { propertyId = Model.PropertyId })" class="pa-back-link">@L["Back to start"]</a>
     </form>
 </div>
 

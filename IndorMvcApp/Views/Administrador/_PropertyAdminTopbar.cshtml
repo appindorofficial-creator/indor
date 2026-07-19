@@ -56,10 +56,10 @@
                                     <a href="@item.TargetUrl" class="pa-notify-item">
                                         <span class="pa-notify-item-icon"><i class="fas @item.IconClass"></i></span>
                                         <span class="pa-notify-item-body">
-                                            <span class="pa-notify-item-text">@UiDisplayLocalization.Localize(L, item.Description)</span>
-                                            <span class="pa-notify-item-time">@UiDisplayLocalization.Localize(L, item.OccurredLabel)</span>
+                                            <span class="pa-notify-item-text">@UiDisplayLocalization.LocalizeNotification(L, item.Description)</span>
+                                            <span class="pa-notify-item-time">@UiDisplayLocalization.LocalizeNotificationTime(L, item.OccurredLabel)</span>
                                         </span>
-                                        <span class="pa-notify-tag @item.TagCssClass">@UiDisplayLocalization.Localize(L, item.CategoryTag)</span>
+                                        <span class="pa-notify-tag @item.TagCssClass">@UiDisplayLocalization.LocalizeNotificationTag(L, item.CategoryTag)</span>
                                     </a>
                                 }
                                 else
@@ -67,10 +67,10 @@
                                     <div class="pa-notify-item">
                                         <span class="pa-notify-item-icon"><i class="fas @item.IconClass"></i></span>
                                         <span class="pa-notify-item-body">
-                                            <span class="pa-notify-item-text">@UiDisplayLocalization.Localize(L, item.Description)</span>
-                                            <span class="pa-notify-item-time">@UiDisplayLocalization.Localize(L, item.OccurredLabel)</span>
+                                            <span class="pa-notify-item-text">@UiDisplayLocalization.LocalizeNotification(L, item.Description)</span>
+                                            <span class="pa-notify-item-time">@UiDisplayLocalization.LocalizeNotificationTime(L, item.OccurredLabel)</span>
                                         </span>
-                                        <span class="pa-notify-tag @item.TagCssClass">@UiDisplayLocalization.Localize(L, item.CategoryTag)</span>
+                                        <span class="pa-notify-tag @item.TagCssClass">@UiDisplayLocalization.LocalizeNotificationTag(L, item.CategoryTag)</span>
                                     </div>
                                 }
                             </li>

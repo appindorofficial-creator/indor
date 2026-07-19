@@ -42,7 +42,7 @@
                 <label class="nr-chip @(isSelected ? "is-selected" : null)">
                     <input type="checkbox" name="SelectedTools" value="@tool.Value" @(isSelected ? "checked" : null) />
                     <i class="fas @tool.IconClass"></i>
-                    <span>@tool.Label</span>
+                    <span>@L[tool.Label]</span>
                 </label>
             }
         </div>

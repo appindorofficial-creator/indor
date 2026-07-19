@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 using IndorMvcApp.Models;
 using IndorMvcApp.Validation;
@@ -12,21 +13,28 @@ public static class PropertyAdministratorPortfolioCsvImporter
         ["housenumber"] = nameof(PropertyAdministratorPropertyInput.HouseNumber),
         ["house_number"] = nameof(PropertyAdministratorPropertyInput.HouseNumber),
         ["number"] = nameof(PropertyAdministratorPropertyInput.HouseNumber),
+        ["numero"] = nameof(PropertyAdministratorPropertyInput.HouseNumber),
         ["streetname"] = nameof(PropertyAdministratorPropertyInput.StreetName),
         ["street_name"] = nameof(PropertyAdministratorPropertyInput.StreetName),
         ["street"] = nameof(PropertyAdministratorPropertyInput.StreetName),
+        ["calle"] = nameof(PropertyAdministratorPropertyInput.StreetName),
         ["city"] = nameof(PropertyAdministratorPropertyInput.City),
+        ["ciudad"] = nameof(PropertyAdministratorPropertyInput.City),
         ["state"] = nameof(PropertyAdministratorPropertyInput.State),
+        ["estado"] = nameof(PropertyAdministratorPropertyInput.State),
         ["zipcode"] = nameof(PropertyAdministratorPropertyInput.ZipCode),
         ["zip_code"] = nameof(PropertyAdministratorPropertyInput.ZipCode),
         ["zip"] = nameof(PropertyAdministratorPropertyInput.ZipCode),
+        ["codigopostal"] = nameof(PropertyAdministratorPropertyInput.ZipCode),
         ["propertytype"] = nameof(PropertyAdministratorPropertyInput.PropertyType),
         ["property_type"] = nameof(PropertyAdministratorPropertyInput.PropertyType),
         ["type"] = nameof(PropertyAdministratorPropertyInput.PropertyType),
+        ["tipo"] = nameof(PropertyAdministratorPropertyInput.PropertyType),
         ["propertynickname"] = nameof(PropertyAdministratorPropertyInput.PropertyName),
         ["property_nickname"] = nameof(PropertyAdministratorPropertyInput.PropertyName),
         ["nickname"] = nameof(PropertyAdministratorPropertyInput.PropertyName),
-        ["name"] = nameof(PropertyAdministratorPropertyInput.PropertyName)
+        ["name"] = nameof(PropertyAdministratorPropertyInput.PropertyName),
+        ["apodo"] = nameof(PropertyAdministratorPropertyInput.PropertyName)
     };
 
     public static PropertyAdministratorPortfolioImportResult ParseAndValidate(Stream csvStream)
@@ -101,7 +109,7 @@ public static class PropertyAdministratorPortfolioCsvImporter
                 continue;
             }
 
-            var normalized = raw.Replace(" ", "", StringComparison.Ordinal).Replace("_", "", StringComparison.Ordinal);
+            var normalized = NormalizeHeader(raw);
             if (HeaderAliases.TryGetValue(normalized, out var field))
             {
                 map[field] = i;
@@ -109,6 +117,24 @@ public static class PropertyAdministratorPortfolioCsvImporter
         }
 
         return map;
+    }
+
+    private static string NormalizeHeader(string value)
+    {
+        var normalized = value.Normalize(NormalizationForm.FormD);
+        var buffer = new StringBuilder(normalized.Length);
+        foreach (var ch in normalized)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(ch) != UnicodeCategory.NonSpacingMark)
+            {
+                buffer.Append(ch);
+            }
+        }
+
+        return buffer.ToString()
+            .Normalize(NormalizationForm.FormC)
+            .Replace(" ", "", StringComparison.Ordinal)
+            .Replace("_", "", StringComparison.Ordinal);
     }
 
     private static PropertyAdministratorPropertyInput MapRow(

@@ -252,6 +252,7 @@ public class NeighborRequestController(
 
         if (!ModelState.IsValid)
         {
+            LocalizeNeighborRequestModelState();
             var invalidVm = wizardService.BuildPreferencesStep(draft);
             MergePreferencesPostedValues(invalidVm, model);
             return View(invalidVm);

@@ -7,7 +7,7 @@
     ViewBag.FlowTitle = L["Tree / Branch Emergency"].ToString();
     ViewBag.FlowSubtitle = L["Tell us what happened so we can dispatch help fast."].ToString();
     ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Review"].ToString(), L["Done"].ToString() };
-    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     var propertyId = Model.ViewingProperty?.Id ?? 0;
     var damageAreas = Model.DamageAreasList.ToHashSet(StringComparer.OrdinalIgnoreCase);
 }
@@ -132,6 +132,12 @@
         </div>
         @await Html.PartialAsync("_PropertyAdminMediaCapture")
 
+        @{
+            ViewData["PaContactQnum"] = "8";
+            ViewData["PaContactValue"] = Model.ContactPhone ?? "";
+            ViewData["PaContactFieldName"] = "ContactPhone";
+        }
+        @await Html.PartialAsync("_PropertyAdminUrgentContactPhone")
 
         <div class="pa-notify-banner">
             <i class="fas fa-bolt"></i>

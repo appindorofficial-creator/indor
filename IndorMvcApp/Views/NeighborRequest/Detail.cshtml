@@ -7,7 +7,7 @@
     var previewOffer = Model.NeighborOffers.FirstOrDefault();
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -33,7 +33,7 @@
                 <div class="nr-detail-title-wrap">
                     <h1 class="nr-detail-title">@Model.Title</h1>
                 </div>
-                <span class="nr-detail-status @Model.StatusCss">@Model.StatusLabel</span>
+                <span class="nr-detail-status @Model.StatusCss">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
             </div>
 
             @if (!Model.HasNeighborOffers)
@@ -41,7 +41,7 @@
                 <div class="nr-detail-meta">
                     <div class="nr-detail-meta-row">
                         <i class="far fa-clock" aria-hidden="true"></i>
-                        <span>@Model.PostedLabel</span>
+                        <span>@UiDisplayLocalization.Localize(L, Model.PostedLabel)</span>
                     </div>
                     @if (!string.IsNullOrWhiteSpace(Model.LocationAddress))
                     {
@@ -74,7 +74,7 @@
                         }
                         <div class="nr-detail-stat">
                             <i class="fas @stat.IconClass" aria-hidden="true"></i>
-                            <span>@stat.Label</span>
+                            <span>@UiDisplayLocalization.Localize(L, stat.Label)</span>
                         </div>
                     }
                 </div>
@@ -120,7 +120,7 @@
         {
             <section class="nr-detail-received">
                 <div class="nr-detail-received-head">
-                    <h2>@Model.OfferCountLabel</h2>
+                    <h2>@UiDisplayLocalization.Localize(L, Model.OfferCountLabel)</h2>
                     @if (Model.TotalNeighborOfferCount > 1)
                     {
                         <a href="@Model.SeeAllOffersUrl">@L["See all"]</a>
@@ -135,7 +135,7 @@
         else
         {
             <section class="nr-detail-offers-card">
-                <h2 class="nr-detail-offers-title">@Model.OfferCountLabel</h2>
+                <h2 class="nr-detail-offers-title">@UiDisplayLocalization.Localize(L, Model.OfferCountLabel)</h2>
                 <svg class="nr-detail-empty-art" viewBox="0 0 220 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <ellipse cx="110" cy="108" rx="72" ry="8" fill="#E8F1FB" />
                     <path d="M92 92V58L110 48L128 58V92" stroke="#0066CC" stroke-width="3" stroke-linejoin="round" />
@@ -181,12 +181,12 @@
                                 <span class="nr-detail-provider-icon" aria-hidden="true"><i class="fas @offer.AvatarIconClass"></i></span>
                                 <span class="nr-detail-provider-body">
                                     <strong>@offer.OffererName</strong>
-                                    <span>@offer.ScheduleLabel</span>
+                                    <span>@UiDisplayLocalization.Localize(L, offer.ScheduleLabel)</span>
                                 </span>
                                 <span class="nr-detail-provider-side">
                                     @if (!string.IsNullOrWhiteSpace(offer.PriceLabel))
                                     {
-                                        <strong>@offer.PriceLabel</strong>
+                                        <strong>@UiDisplayLocalization.Localize(L, offer.PriceLabel)</strong>
                                     }
                                     @if (!string.IsNullOrWhiteSpace(offer.RatingLabel))
                                     {

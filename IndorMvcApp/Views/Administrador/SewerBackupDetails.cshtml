@@ -7,7 +7,7 @@
     ViewBag.FlowTitle = L["Sewer Backup Emergency"].ToString();
     ViewBag.FlowSubtitle = L["Tell us what's happening so we can dispatch help fast."].ToString();
     ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Review"].ToString(), L["Done"].ToString() };
-    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     var propertyId = Model.ViewingProperty?.Id ?? 0;
     var locations = Model.LocationsList.ToHashSet(StringComparer.OrdinalIgnoreCase);
 }

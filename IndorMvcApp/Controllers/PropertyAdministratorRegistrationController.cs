@@ -1,3 +1,4 @@
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.Validation;
@@ -15,7 +16,8 @@ public class PropertyAdministratorRegistrationController(
     IPropertyAdministratorRegistrationService registration,
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
-    IWebHostEnvironment environment) : Controller
+    IWebHostEnvironment environment,
+    IIndorLocalizer L) : Controller
 {
     private const int MaxPortfolioImportBytes = 5_000_000;
     private const int MaxPropertyDocumentBytes = 10_000_000;
@@ -366,11 +368,17 @@ public class PropertyAdministratorRegistrationController(
     [HttpGet]
     public IActionResult DownloadPortfolioTemplate()
     {
-        const string csv = """
-            HouseNumber,StreetName,City,State,ZipCode,PropertyType,Nickname
-            1615,Redcliff,Los Angeles,CA,90001,SingleFamily,Beach house
-            """;
-        return File(Encoding.UTF8.GetBytes(csv), "text/csv", "indor-portfolio-template.csv");
+        var csv = L.IsSpanish
+            ? """
+              Número,Calle,Ciudad,Estado,ZIP,Tipo,Apodo
+              1615,Redcliff,Los Angeles,CA,90001,Casa unifamiliar,Casa de playa
+              """
+            : """
+              HouseNumber,StreetName,City,State,ZipCode,PropertyType,Nickname
+              1615,Redcliff,Los Angeles,CA,90001,SingleFamily,Beach house
+              """;
+        var fileName = L.IsSpanish ? "indor-plantilla-portafolio.csv" : "indor-portfolio-template.csv";
+        return File(Encoding.UTF8.GetBytes(csv), "text/csv", fileName);
     }
 
     [HttpGet]

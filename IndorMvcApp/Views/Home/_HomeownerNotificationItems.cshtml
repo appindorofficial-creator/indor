@@ -4,8 +4,8 @@
     <div class="ho-notify-item">
         <div class="ho-notify-item-icon @n.Severity"><i class="fas @n.Icon"></i></div>
         <div class="ho-notify-item-body">
-            <div class="ho-notify-item-title">@n.Title</div>
-            <div class="ho-notify-item-sub">@n.Subtitle</div>
+            <div class="ho-notify-item-title">@UiDisplayLocalization.LocalizeNotification(L, n.Title)</div>
+            <div class="ho-notify-item-sub">@UiDisplayLocalization.LocalizeNotification(L, n.Subtitle)</div>
             <div class="ho-notify-item-time"><i class="far fa-calendar"></i> @n.Date.ToString("dd/MM/yyyy")</div>
         </div>
     </div>

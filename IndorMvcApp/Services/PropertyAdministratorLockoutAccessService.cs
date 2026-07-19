@@ -59,8 +59,6 @@ public class PropertyAdministratorLockoutAccessService(
         {
             return null;
         }
-
-        var user = await GetUserAsync();
         var mapped = MapProperty(property);
 
         return new PropertyAdministratorLockoutAccessStep2ViewModel
@@ -84,7 +82,7 @@ public class PropertyAdministratorLockoutAccessService(
             QuickDetails = step1.QuickDetails ?? "",
             EntryNotes = PropertyAdministratorDisplayLocalization.L(
                 "Guest is waiting at front door. Parking available in driveway."),
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
+            ContactPhone = ""
         };
     }
 

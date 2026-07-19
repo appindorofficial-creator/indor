@@ -6,22 +6,27 @@
     var ALPHANUMERIC = /^[A-Za-z0-9]+$/;
     var HAS_LETTER = /[A-Za-z]/;
 
+    function t(key) {
+        var i18n = window.IndorRealtorLicenseI18n || {};
+        return i18n[key] || key;
+    }
+
     function validate(value) {
         var license = (value || '').trim();
         if (!license) {
-            return 'License number is required.';
+            return t('License number is required.');
         }
         if (license.length < MIN_LENGTH) {
-            return 'License number must be at least ' + MIN_LENGTH + ' characters.';
+            return t('License number must be at least 4 characters.');
         }
         if (license.length > MAX_LENGTH) {
-            return 'License number cannot exceed ' + MAX_LENGTH + ' characters.';
+            return t('License number cannot exceed 20 characters.');
         }
         if (!ALPHANUMERIC.test(license)) {
-            return 'License number can only contain letters and numbers (no spaces or symbols).';
+            return t('License number can only contain letters and numbers (no spaces or symbols).');
         }
         if (!HAS_LETTER.test(license)) {
-            return 'License number must include at least one letter (cannot be only numbers).';
+            return t('License number must include at least one letter (cannot be only numbers).');
         }
         return '';
     }

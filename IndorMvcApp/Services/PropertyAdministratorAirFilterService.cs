@@ -40,7 +40,6 @@ public class PropertyAdministratorAirFilterService(
             ?? throw new InvalidOperationException("Property administrator not found.");
         var shell = await BuildShellAsync(admin, cancellationToken);
         var property = ResolveProperty(admin, propertyId);
-        var user = await GetUserAsync();
         var mapped = MapProperty(property);
 
         return new PropertyAdministratorAirFilterFormViewModel
@@ -52,8 +51,7 @@ public class PropertyAdministratorAirFilterService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
-            // Start blank — do not pre-check Update Recipients (Bug 12/25 pattern).
+            ContactPhone = "",
             UpdateRecipients = string.Empty,
             ServiceType = string.Empty,
             IsOccupied = string.Empty,

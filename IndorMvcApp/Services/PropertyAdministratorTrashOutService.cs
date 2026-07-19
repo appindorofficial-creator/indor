@@ -68,7 +68,6 @@ public class PropertyAdministratorTrashOutService(
             return null;
         }
 
-        var user = await GetUserAsync();
         var flatRate = ResolveFlatRate(step1.ServiceNeed);
 
         return new PropertyAdministratorTrashOutStep2ViewModel
@@ -89,7 +88,7 @@ public class PropertyAdministratorTrashOutService(
             PickupDay = step1.PickupDay,
             QuickNotes = step1.QuickNotes ?? "",
             UpdateRecipients = "",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
+            ContactPhone = "",
             AccessNotes = PropertyAdministratorDisplayLocalization.L("Use the left side gate. No dog in yard."),
             ServiceTotalLabel = flatRate,
             ServiceTotalDescription = LabelServiceNeed(step1.ServiceNeed),

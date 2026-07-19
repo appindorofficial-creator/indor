@@ -1,4 +1,5 @@
-@* Reusable PA photo + voice + document capture. Place inside a form. *@
+@* Reusable PA photo + voice + document capture. Place inside a form.
+   On mobile, "Add photos" opens a chooser: Take photo (camera) or Choose from library. *@
 @{
     var photoLabel = ViewData["PaMediaPhotoLabel"] as string ?? L["Add photos"].ToString();
     var voiceLabel = ViewData["PaMediaVoiceLabel"] as string ?? L["Voice note"].ToString();
@@ -8,7 +9,6 @@
     var accept = ViewData["PaMediaAccept"] as string ?? "image/*,video/*,.pdf,application/pdf";
     var uploadKind = ViewData["PaMediaKind"] as string ?? "photo";
     var photoIcon = ViewData["PaMediaPhotoIcon"] as string ?? "fa-camera";
-    var useCapture = ViewData["PaMediaUseCapture"] as bool? == true;
     var existingJson = ViewData["PaMediaAttachmentsJson"] as string ?? "[]";
     var captureClass = showVoice ? "pa-media-capture" : "pa-media-capture pa-media-capture--photos-only";
     string photoBtnClass;
@@ -35,19 +35,26 @@
      data-msg-upload-fail="@L["Could not upload media. Try again."]"
      data-msg-remove="@L["Remove"]">
     <input type="hidden" name="@fieldName" class="pa-media-attachments-json" value="@existingJson" />
-    @if (useCapture)
-    {
-        <input type="file" class="pa-media-photo-input" accept="@accept" multiple capture="environment" hidden />
-    }
-    else
-    {
-        <input type="file" class="pa-media-photo-input" accept="@accept" multiple hidden />
-    }
+    <input type="file" class="pa-media-photo-input pa-media-photo-input--camera" accept="@accept" multiple capture="environment" hidden />
+    <input type="file" class="pa-media-photo-input pa-media-photo-input--library" accept="@accept" multiple hidden />
 
     <div class="pa-media-actions@(showVoice ? "" : " pa-media-actions--single")">
-        <button type="button" class="@photoBtnClass pa-media-photo-btn">
-            <i class="fas @photoIcon"></i> @photoLabel
-        </button>
+        <div class="pa-media-photo-wrap">
+            <button type="button"
+                    class="@photoBtnClass pa-media-photo-btn"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+                <i class="fas @photoIcon"></i> @photoLabel
+            </button>
+            <div class="pa-media-photo-menu" role="menu" hidden>
+                <button type="button" class="pa-media-photo-menu-item" data-pa-media-source="camera" role="menuitem">
+                    <i class="fas fa-camera"></i> @L["Take photo"]
+                </button>
+                <button type="button" class="pa-media-photo-menu-item" data-pa-media-source="library" role="menuitem">
+                    <i class="fas fa-image"></i> @L["Choose from library"]
+                </button>
+            </div>
+        </div>
         @if (showVoice)
         {
             <button type="button" class="@voiceBtnClass pa-media-voice-btn" data-recording="false">

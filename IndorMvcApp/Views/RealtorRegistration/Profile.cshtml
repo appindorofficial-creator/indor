@@ -1,14 +1,22 @@
+@using IndorMvcApp.Helpers
 @using IndorMvcApp.Validation
 @model IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel
 @{
     var s = Model.State;
-    string FieldError(string key) => ViewData.ModelState[key]?.Errors.FirstOrDefault()?.ErrorMessage ?? "";
+
+    string FieldError(string key)
+    {
+        var raw = ViewData.ModelState[key]?.Errors.FirstOrDefault()?.ErrorMessage ?? "";
+        return string.IsNullOrWhiteSpace(raw) ? "" : UiDisplayLocalization.Localize(L, raw);
+    }
+
     var brokerageError = FieldError("brokerageName");
     var formErrors = ViewData.ModelState.Values
         .SelectMany(v => v.Errors)
         .Select(e => e.ErrorMessage)
         .Where(m => !string.IsNullOrWhiteSpace(m))
         .Distinct()
+        .Select(m => UiDisplayLocalization.Localize(L, m))
         .ToList();
 }
 

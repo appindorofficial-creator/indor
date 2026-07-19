@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -361,7 +362,7 @@ public class NeighborRequestWizardService(
             StepLabels = isEdit
                 ? ["Details", "Preferences", "Review"]
                 : ["Category", "Describe", "Preferences", "Review", "Done"],
-            CategoryLabel = category.LabelEn,
+            CategoryLabel = ResolveQuickJobCategoryLabel(category.Code, category.LabelEn),
             CategoryIconClass = category.IconClass,
             Title = draft.Title,
             DetailsSummary = string.IsNullOrWhiteSpace(draft.DetailsSummary) ? null : draft.DetailsSummary.Trim(),
@@ -370,7 +371,7 @@ public class NeighborRequestWizardService(
             LocationAddress = draft.LocationAddress,
             TimelineLabel = FormatTimelineLabel(draft.TimelineCode),
             AudienceLabel = FormatAudienceLabel(draft.AudienceCode),
-            NeededByLabel = draft.NeededByDate?.ToString("dddd, MMMM d", CultureInfo.GetCultureInfo("en-US")),
+            NeededByLabel = draft.NeededByDate?.ToString("dddd, MMMM d", CultureInfo.CurrentUICulture),
             TimeWindowLabel = FormatTimeWindowLabel(draft.TimeWindowStart, draft.TimeWindowEnd),
             BudgetLabel = draft.BudgetAmount is > 0
                 ? string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:C0}", draft.BudgetAmount.Value)
@@ -430,8 +431,8 @@ public class NeighborRequestWizardService(
         var categoryOptions = categories.Select(c => new NeighborRequestCategoryOptionViewModel
         {
             Id = c.Id,
-            Label = ResolveCategoryLabel(c.Code, c.LabelEn),
-            Description = ResolveCategoryDescription(c.Code, c.DescriptionEn),
+            Label = ResolveQuickJobCategoryLabel(c.Code, c.LabelEn),
+            Description = ResolveQuickJobCategoryDescription(c.Code),
             IconClass = ResolveCategoryIcon(c.Code, c.IconClass)
         }).ToList();
 
@@ -440,8 +441,8 @@ public class NeighborRequestWizardService(
             categoryOptions.Insert(0, new NeighborRequestCategoryOptionViewModel
             {
                 Id = category.Id,
-                Label = ResolveCategoryLabel(category.Code, category.LabelEn),
-                Description = ResolveCategoryDescription(category.Code, category.DescriptionEn),
+                Label = ResolveQuickJobCategoryLabel(category.Code, category.LabelEn),
+                Description = ResolveQuickJobCategoryDescription(category.Code),
                 IconClass = ResolveCategoryIcon(category.Code, category.IconClass)
             });
         }
@@ -458,7 +459,7 @@ public class NeighborRequestWizardService(
             BackUrl = url.Action("Detail", "NeighborRequest", new { id = request.Id }),
             CloseUrl = url.Action("Detail", "NeighborRequest", new { id = request.Id })!,
             CategoryId = request.CategoryId,
-            CategoryLabel = ResolveCategoryLabel(category?.Code ?? string.Empty, category?.LabelEn),
+            CategoryLabel = ResolveQuickJobCategoryLabel(category?.Code ?? string.Empty, category?.LabelEn),
             CategoryIconClass = ResolveCategoryIcon(category?.Code ?? string.Empty, category?.IconClass),
             DetailsSummary = detailsSummary,
             Description = description,
@@ -903,7 +904,7 @@ public class NeighborRequestWizardService(
                 {
                     Id = r.Id,
                     Title = r.Title,
-                    CategoryLabel = r.Category?.LabelEn ?? "Request",
+                    CategoryLabel = ResolveCategoryDisplayLabel(r.Category),
                     PostedLabel = FormatRelativeTime(r.PublishedUtc ?? r.CreatedUtc),
                     Status = r.Status,
                     IconClass = r.Category?.IconClass ?? "fa-comment-dots",
@@ -1000,7 +1001,7 @@ public class NeighborRequestWizardService(
             Id = request.Id,
             PropiedadId = request.PropiedadId,
             Title = request.Title,
-            CategoryLabel = request.Category?.LabelEn ?? "Request",
+            CategoryLabel = ResolveCategoryDisplayLabel(request.Category),
             IconClass = ResolveCategoryIcon(request.Category?.Code ?? string.Empty, request.Category?.IconClass),
             StatusLabel = FormatStatusLabel(request.Status),
             StatusCss = request.Status.ToLowerInvariant(),
@@ -1152,6 +1153,7 @@ public class NeighborRequestWizardService(
 
         var invitedProviderIds = await LoadInvitedProviderIdsAsync(requestId, ct);
         var helpers = await BuildHelperCardsForRequestAsync(request, invitedProviderIds, url, ct);
+        var mapCenter = await ResolveMapCenterAsync(request.LocationAddress, ct);
 
         return new NeighborRequestHelpersStepViewModel
         {
@@ -1169,6 +1171,8 @@ public class NeighborRequestWizardService(
             LocationAddress = request.LocationAddress ?? string.Empty,
             CategoryIllustrationClass = ResolveCategoryIllustration(request.Category?.Code ?? string.Empty),
             Helpers = helpers,
+            MapCenterLatitude = mapCenter?.Latitude,
+            MapCenterLongitude = mapCenter?.Longitude,
             DetailUrl = url.Action("Detail", "NeighborRequest", new { id = requestId }) ?? "#",
             InviteUrl = url.Action("InviteHelpers", "NeighborRequest", new { id = requestId }) ?? "#",
             BackUrl = url.Action("Detail", "NeighborRequest", new { id = requestId }),
@@ -1278,22 +1282,30 @@ public class NeighborRequestWizardService(
         CancellationToken ct)
     {
         var suggested = await LoadSuggestedProviderOffersAsync(request, url, ct);
-        var helpers = suggested.Select((offer, index) => new NeighborRequestHelperCardViewModel
+        var mapCenter = await ResolveMapCenterAsync(request.LocationAddress, ct);
+        var helpers = suggested.Select((offer, index) =>
         {
-            ProviderId = offer.ProviderId is > 0 ? offer.ProviderId.Value : index + 1,
-            Name = offer.OffererName,
-            PhotoUrl = offer.OffererPhotoUrl,
-            AvatarIconClass = offer.AvatarIconClass,
-            RatingLabel = offer.RatingLabel,
-            ReviewCount = 0,
-            DistanceLabel = $"{0.4m + (index * 0.3m):0.#} mi away",
-            PriceLabel = offer.PriceLabel?.Contains("/hr", StringComparison.OrdinalIgnoreCase) == true
-                ? offer.PriceLabel
-                : $"{offer.PriceLabel}/hr",
-            MinHoursLabel = "Min. 2 hrs",
-            SkillTags = ["Moving", "Furniture", "Heavy Lifting"],
-            IsVerified = offer.IsVerified,
-            MessageUrl = offer.MessageUrl
+            var distanceMiles = 0.4m + (index * 0.3m);
+            var (lat, lng) = OffsetMapPoint(mapCenter, distanceMiles, index, suggested.Count);
+            return new NeighborRequestHelperCardViewModel
+            {
+                ProviderId = offer.ProviderId is > 0 ? offer.ProviderId.Value : index + 1,
+                Name = offer.OffererName,
+                PhotoUrl = offer.OffererPhotoUrl,
+                AvatarIconClass = offer.AvatarIconClass,
+                RatingLabel = offer.RatingLabel,
+                ReviewCount = 0,
+                DistanceLabel = $"{distanceMiles:0.#} mi away",
+                PriceLabel = offer.PriceLabel?.Contains("/hr", StringComparison.OrdinalIgnoreCase) == true
+                    ? offer.PriceLabel
+                    : $"{offer.PriceLabel}/hr",
+                MinHoursLabel = "Min. 2 hrs",
+                SkillTags = ["Moving", "Furniture", "Heavy Lifting"],
+                IsVerified = offer.IsVerified,
+                MessageUrl = offer.MessageUrl,
+                Latitude = lat,
+                Longitude = lng
+            };
         }).ToList();
 
         for (var i = 0; i < helpers.Count; i++)
@@ -1304,6 +1316,41 @@ public class NeighborRequestWizardService(
         }
 
         return helpers;
+    }
+
+    private async Task<(double Latitude, double Longitude)?> ResolveMapCenterAsync(
+        string? locationAddress,
+        CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(locationAddress))
+        {
+            return null;
+        }
+
+        var coords = await addressLookup.GeocodeAddressAsync(locationAddress.Trim(), ct);
+        return coords is { } resolved
+            ? ((double)resolved.Latitude, (double)resolved.Longitude)
+            : null;
+    }
+
+    private static (double? Latitude, double? Longitude) OffsetMapPoint(
+        (double Latitude, double Longitude)? center,
+        decimal distanceMiles,
+        int index,
+        int total)
+    {
+        if (center is null)
+        {
+            return (null, null);
+        }
+
+        var angle = 2 * Math.PI * (index + 1) / Math.Max(total + 1, 2);
+        var miles = (double)distanceMiles;
+        const double milesPerDegreeLat = 69.0;
+        var milesPerDegreeLng = Math.Max(Math.Cos(center.Value.Latitude * Math.PI / 180.0) * 69.0, 0.01);
+        var lat = center.Value.Latitude + (miles * Math.Cos(angle) / milesPerDegreeLat);
+        var lng = center.Value.Longitude + (miles * Math.Sin(angle) / milesPerDegreeLng);
+        return (lat, lng);
     }
 
     private static string FormatHelperSelectionKey(int index, int providerId) => $"{index}:{providerId}";
@@ -1430,7 +1477,7 @@ public class NeighborRequestWizardService(
             return 1;
         }
 
-        var match = Regex.Match(detailsSummary, @"Helpers:\s*(\d+)", RegexOptions.IgnoreCase);
+        var match = Regex.Match(detailsSummary, @"(?:Helpers|Ayudantes):\s*(\d+)", RegexOptions.IgnoreCase);
         return match.Success && int.TryParse(match.Groups[1].Value, out var count) ? count : 1;
     }
 
@@ -1471,7 +1518,7 @@ public class NeighborRequestWizardService(
                 return "Tomorrow";
             }
 
-            return date.ToString("MMM d", CultureInfo.GetCultureInfo("en-US"));
+            return date.ToString("MMM d", CultureInfo.CurrentUICulture);
         }
 
         return FormatTimelineLabel(request.TimelineCode);
@@ -1614,7 +1661,7 @@ public class NeighborRequestWizardService(
                 ProviderId = provider.Id,
                 OffererName = name,
                 AvatarIconClass = icons[i % icons.Length],
-                PriceLabel = string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:C0}", price),
+                PriceLabel = string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:C0}/hr", price),
                 ScheduleLabel = BuildSuggestedScheduleLabel(request, i),
                 RatingLabel = FormatRatingLabel(null),
                 RoleLabel = "INDOR Provider",
@@ -1793,6 +1840,22 @@ public class NeighborRequestWizardService(
             NeighborRequestTimelineCodes.PickDate => "Pick a date",
             _ => "This week"
         };
+
+    private static string ResolveCategoryDisplayLabel(IndorNeighborRequestCategory? category)
+    {
+        if (category == null)
+        {
+            return "Request";
+        }
+
+        if (UiCulture.IsSpanish(CultureInfo.CurrentUICulture.Name)
+            && !string.IsNullOrWhiteSpace(category.LabelEs))
+        {
+            return category.LabelEs.Trim();
+        }
+
+        return ResolveQuickJobCategoryLabel(category.Code ?? string.Empty, category.LabelEn);
+    }
 
     private static string ResolveQuickJobCategoryLabel(string code, string? labelEn) =>
         code.Trim().ToLowerInvariant() switch
@@ -2415,7 +2478,9 @@ public class NeighborRequestWizardService(
                 MinHoursLabel = "Min. 2 hrs",
                 SkillTags = BuildProviderSkillTags(categoryLabel),
                 IsVerified = isVerified,
-                MessageUrl = messageUrl
+                MessageUrl = messageUrl,
+                Latitude = lat,
+                Longitude = lng
             }, (double)distance));
         }
 

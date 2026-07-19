@@ -2689,9 +2689,9 @@ public class RealtorPortalService(
         {
             Id = activity.Id,
             ActivityType = activity.ActivityType,
-            Description = UiDisplayLocalization.Localize(localizer, activity.Description),
+            Description = UiDisplayLocalization.LocalizeNotification(localizer, activity.Description),
             OccurredLabel = FormatRelativeTime(activity.OccurredUtc),
-            CategoryTag = localizer.T(activity.CategoryTag),
+            CategoryTag = UiDisplayLocalization.LocalizeNotificationTag(localizer, activity.CategoryTag),
             TargetUrl = MapActivityTargetUrl(activity.CategoryTag),
             IconClass = MapActivityIcon(activity.ActivityType),
             TagCssClass = MapActivityTagCss(activity.CategoryTag)
@@ -2724,6 +2724,7 @@ public class RealtorPortalService(
             "files" or "properties" => "/Realtor/Files",
             "clients" => "/Realtor/Clients",
             "providers" => "/Realtor/ProviderNetwork",
+            "nearby" => "/Realtor/Network",
             _ => "/Realtor/Dashboard"
         };
 

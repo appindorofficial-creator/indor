@@ -10,8 +10,6 @@
     <input type="hidden" asp-for="IsEditMode" />
     <input type="hidden" asp-for="RequestId" />
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
-
   @if (!Model.IsEditMode)
   {
     <section class="nr-card">
@@ -25,8 +23,8 @@
                 <label class="nr-option-tile">
                     <input type="radio" name="WhenCode" value="@option.Value" @(Model.WhenCode == option.Value ? "checked" : null) />
                     <span class="nr-option-tile-body">
-                        <i class="fas @option.IconClass"></i>
-                        <span>@option.Label</span>
+                        <i class="fas @option.IconClass" aria-hidden="true"></i>
+                        <span>@L[option.Label]</span>
                     </span>
                 </label>
             }
@@ -37,10 +35,12 @@
                    id="NeededByDate"
                    type="date"
                    class="nr-input"
+                   min="@Model.MinNeededByDateIso"
                    data-min-date="@Model.MinNeededByDateIso"
                    value="@(Model.NeededByDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "")" />
             <span asp-validation-for="NeededByDate" class="field-validation-error"></span>
         </div>
+        <span asp-validation-for="WhenCode" class="field-validation-error"></span>
     </section>
 
     <section class="nr-card">
@@ -54,12 +54,13 @@
                 <label class="nr-option-tile">
                     <input type="radio" name="PreferredTimeCode" value="@option.Value" @(Model.PreferredTimeCode == option.Value ? "checked" : null) />
                     <span class="nr-option-tile-body">
-                        <i class="fas @option.IconClass"></i>
-                        <span>@option.Label</span>
+                        <i class="fas @option.IconClass" aria-hidden="true"></i>
+                        <span>@L[option.Label]</span>
                     </span>
                 </label>
             }
         </div>
+        <span asp-validation-for="PreferredTimeCode" class="field-validation-error"></span>
     </section>
 
     <section class="nr-card">
@@ -73,12 +74,13 @@
                 <label class="nr-option-tile">
                     <input type="radio" name="HelperCount" value="@option.Value" @(Model.HelperCount == option.Value ? "checked" : null) />
                     <span class="nr-option-tile-body">
-                        <i class="fas @option.IconClass"></i>
-                        <span>@option.Label</span>
+                        <i class="fas @option.IconClass" aria-hidden="true"></i>
+                        <span>@L[option.Label]</span>
                     </span>
                 </label>
             }
         </div>
+        <span asp-validation-for="HelperCount" class="field-validation-error"></span>
     </section>
 
     <section class="nr-card">
@@ -92,12 +94,13 @@
                 <label class="nr-option-tile">
                     <input type="radio" name="DurationCode" value="@option.Value" @(Model.DurationCode == option.Value ? "checked" : null) />
                     <span class="nr-option-tile-body">
-                        <i class="fas @option.IconClass"></i>
-                        <span>@option.Label</span>
+                        <i class="fas @option.IconClass" aria-hidden="true"></i>
+                        <span>@L[option.Label]</span>
                     </span>
                 </label>
             }
         </div>
+        <span asp-validation-for="DurationCode" class="field-validation-error"></span>
     </section>
 
     <section class="nr-card">
@@ -119,11 +122,13 @@
             <label asp-for="BudgetAmount">@L["Your budget"]</label>
             <div class="nr-budget-display">
                 <input asp-for="BudgetAmount" type="number" min="0" step="1" class="nr-budget-input" placeholder="25" />
-                <span class="nr-budget-suffix" id="nrBudgetSuffix">/hr</span>
+                <span class="nr-budget-suffix" id="nrBudgetSuffix">@L["/hr"]</span>
                 <span class="nr-budget-icon"><i class="fas fa-dollar-sign"></i></span>
             </div>
             <p class="nr-budget-hint">@L["This is the amount helpers will see in your job post."]</p>
         </div>
+        <span asp-validation-for="PayTypeCode" class="field-validation-error"></span>
+        <span asp-validation-for="BudgetAmount" class="field-validation-error"></span>
     </section>
   }
   else
@@ -131,7 +136,7 @@
     <div class="nr-pref-card">
         <div class="nr-section-title">
             <span class="nr-section-icon"><i class="fas fa-clock"></i></span>
-            <span>Estimated time<br /><small class="nr-section-sub">@L["When do you need help?"]</small></span>
+            <span>@L["Estimated time"]<br /><small class="nr-section-sub">@L["When do you need help?"]</small></span>
         </div>
         <div class="nr-pref-options">
             @foreach (var option in Model.TimelineOptions)
@@ -140,11 +145,12 @@
                     <input type="radio" name="TimelineCode" value="@option.Value" @(Model.TimelineCode == option.Value ? "checked" : null) />
                     <span class="nr-pref-option-body">
                         <span class="nr-option-radio"></span>
-                        <span>@option.Label</span>
+                        <span>@L[option.Label]</span>
                     </span>
                 </label>
             }
         </div>
+        <span asp-validation-for="TimelineCode" class="field-validation-error"></span>
     </div>
   }
 
@@ -160,6 +166,23 @@
     <script>
         (function () {
             var pickDateWrap = document.getElementById('nrPickDateWrap');
+            var neededByDate = document.getElementById('NeededByDate');
+            var minDate = neededByDate?.getAttribute('data-min-date') || neededByDate?.getAttribute('min') || '';
+
+            function clampNeededByDate() {
+                if (!neededByDate || !minDate) return;
+                neededByDate.setAttribute('min', minDate);
+                if (neededByDate.value && neededByDate.value < minDate) {
+                    neededByDate.value = minDate;
+                }
+            }
+
+            clampNeededByDate();
+            if (neededByDate) {
+                neededByDate.addEventListener('change', clampNeededByDate);
+                neededByDate.addEventListener('input', clampNeededByDate);
+            }
+
             document.querySelectorAll('[name="WhenCode"]').forEach(function (input) {
                 input.addEventListener('change', function () {
                     if (pickDateWrap) {
@@ -171,9 +194,13 @@
                             tile.classList.toggle('is-selected', radio.checked);
                         }
                     });
+                    if (input.value === 'PickDate' && input.checked) {
+                        clampNeededByDate();
+                    }
                 });
                 if (input.checked && input.value === 'PickDate' && pickDateWrap) {
                     pickDateWrap.hidden = false;
+                    clampNeededByDate();
                 }
             });
 
@@ -192,7 +219,7 @@
                         });
                         var suffix = document.getElementById('nrBudgetSuffix');
                         if (suffix) {
-                            suffix.textContent = input.value === 'Fixed' ? '' : '/hr';
+                            suffix.textContent = input.value === 'Fixed' ? '' : @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["/hr"]));
                         }
                     }
                 });

@@ -211,6 +211,72 @@ public static class UiTranslationsFinal
             ["For Sale"] = "En venta",
             ["For Rent"] = "En renta",
             ["Address not set"] = "Dirección no configurada",
+            ["Post Listing with INDOR"] = "Publica tu anuncio con INDOR",
+            ["List smarter."] = "Publica con inteligencia.",
+            ["Reach closer."] = "Llega más cerca.",
+            ["Connect your property with nearby buyers, renters, and realtors who are ready to act."] =
+                "Conecta tu propiedad con compradores, inquilinos y agentes cercanos listos para actuar.",
+            ["Local exposure"] = "Exposición local",
+            ["Your listing is seen by people actively searching in your area."] =
+                "Tu anuncio lo ven personas que buscan activamente en tu zona.",
+            ["Qualified leads"] = "Clientes potenciales calificados",
+            ["Connect with serious buyers and renters ready to act."] =
+                "Conéctate con compradores e inquilinos serios listos para actuar.",
+            ["Nearby network visibility"] = "Visibilidad en la red cercana",
+            ["Realtors and local professionals see and share your listing."] =
+                "Agentes y profesionales locales ven y comparten tu anuncio.",
+            ["Get Started"] = "Comenzar",
+            ["Learn More"] = "Más información",
+            ["Property Photos"] = "Fotos de la propiedad",
+            ["Add up to 20 photos. First photo will be the cover."] =
+                "Agrega hasta 20 fotos. La primera será la portada.",
+            ["More photo options (gallery link or PDF)"] = "Más opciones de fotos (enlace a galería o PDF)",
+            ["Photo gallery link"] = "Enlace a galería de fotos",
+            ["Paste a link to your photos (Google Drive, Dropbox, MLS, etc.)"] =
+                "Pega un enlace a tus fotos (Google Drive, Dropbox, MLS, etc.)",
+            ["Upload photos as PDF"] = "Subir fotos en PDF",
+            ["Upload a PDF brochure with property photos (max 15 MB)"] =
+                "Sube un folleto PDF con fotos de la propiedad (máx. 15 MB)",
+            ["Choose PDF or drag here"] = "Elige un PDF o arrástralo aquí",
+            ["Enter street address, city, state, ZIP"] =
+                "Ingresa dirección, ciudad, estado y código postal",
+            ["Use my location"] = "Usar mi ubicación",
+            ["Use My Location"] = "Usar mi ubicación",
+            ["Please enter the property address."] = "Ingresa la dirección de la propiedad.",
+            ["GPS coordinates captured. Your listing will appear on the Nearby map around this location."] =
+                "Coordenadas GPS capturadas. Tu anuncio aparecerá en el mapa de Cercanos alrededor de esta ubicación.",
+            ["Enter price"] = "Ingresa el precio",
+            ["Please enter a price."] = "Ingresa un precio.",
+            ["Your information is secure and never shared."] =
+                "Tu información es segura y nunca se comparte.",
+            ["Property Subtype"] = "Subtipo de propiedad",
+            ["Select subtype"] = "Selecciona el subtipo",
+            ["Please select a property subtype."] = "Selecciona un subtipo de propiedad.",
+            ["Property Stats"] = "Datos de la propiedad",
+            ["Short Description"] = "Descripción breve",
+            ["Describe your property in a few sentences..."] =
+                "Describe tu propiedad en unas pocas oraciones...",
+            ["Key Highlights"] = "Aspectos destacados",
+            ["Select all that apply"] = "Selecciona todos los que apliquen",
+            ["Listing Summary"] = "Resumen del anuncio",
+            ["INDOR Boost"] = "Impulso INDOR",
+            ["Shown nearby"] = "Visible cerca",
+            ["Your listing is shown to nearby active buyers and renters."] =
+                "Tu anuncio se muestra a compradores e inquilinos activos cercanos.",
+            ["Buyer inquiries"] = "Consultas de compradores",
+            ["Receive serious inquiries from motivated buyers."] =
+                "Recibe consultas serias de compradores motivados.",
+            ["Realtor visibility"] = "Visibilidad para agentes",
+            ["Seen by INDOR realtors and shared across the network."] =
+                "Lo ven agentes de INDOR y se comparte en la red.",
+            ["Promote Your Listing"] = "Promociona tu anuncio",
+            ["Promote your listing"] = "Promociona tu anuncio",
+            ["Increase visibility with open houses and neighborhood features."] =
+                "Aumenta la visibilidad con casas abiertas y funciones del vecindario.",
+            ["Why post your listing on INDOR?"] = "¿Por qué publicar tu anuncio en INDOR?",
+            ["INDOR connects your property with nearby buyers, renters, and realtors who are ready to act."] =
+                "INDOR conecta tu propiedad con compradores, inquilinos y agentes cercanos listos para actuar.",
+            ["Start posting"] = "Empezar a publicar",
 
             // Remaining view keys (final pass)
             ["What the customer needs"] = "Lo que necesita el cliente",
@@ -240,6 +306,15 @@ public static class UiTranslationsFinal
             ["Invite clients and create files to keep everything organized in one place."] =
                 "Invita clientes y crea expedientes para mantener todo organizado en un solo lugar.",
             ["Tips & Insights"] = "Consejos e información",
+            ["Show less"] = "Ver menos",
+            ["Invite buyers, sellers, and homeowners so they can accept and connect inside INDOR."] =
+                "Invita compradores, vendedores y propietarios para que acepten y se conecten dentro de INDOR.",
+            ["Create a property file for each client to keep photos, inspections, and quotes together."] =
+                "Crea un expediente por cliente para guardar fotos, inspecciones y cotizaciones juntas.",
+            ["Use Follow-up to track invited clients who still need a response."] =
+                "Usa Seguimiento para revisar clientes invitados que aún no responden.",
+            ["Start a new quote from Quick Actions when a client needs contractor pricing."] =
+                "Inicia una nueva cotización desde Acciones rápidas cuando un cliente necesite precios de contratistas.",
             ["No buyers yet. Invited buyers will show up here."] =
                 "Aún no hay compradores. Los compradores invitados aparecerán aquí.",
             ["No sellers yet. Invited sellers will show up here."] =
@@ -511,6 +586,32 @@ public static class UiTranslationsFinal
             ["You can do this now or update it later from your profile."] =
                 "Puedes hacerlo ahora o actualizarlo después desde tu perfil.",
             ["Optional Verification"] = "Verificación opcional",
+            ["Realtor Verification"] = "Verificación de agente inmobiliario",
+            ["Enter your license information so we can verify your realtor profile."] =
+                "Ingresa la información de tu licencia para que podamos verificar tu perfil de agente inmobiliario.",
+            ["Brokerage / Company Name"] = "Nombre de la correduría / empresa",
+            ["Real Estate License Number"] = "Número de licencia inmobiliaria",
+            ["License State"] = "Estado de la licencia",
+            ["City / Market Area"] = "Ciudad / área de mercado",
+            ["As you type, we'll suggest US addresses and auto-fill city, state, and ZIP when available."] =
+                "Al escribir, sugeriremos direcciones de EE. UU. y completaremos ciudad, estado y código postal cuando estén disponibles.",
+            ["Complete city, state, and ZIP for your office address."] =
+                "Completa ciudad, estado y código postal de la dirección de tu oficina.",
+            ["Your profile is ready"] = "Tu perfil está listo",
+            ["You can now enter as a Realtor."] = "Ya puedes entrar como agente inmobiliario.",
+            ["Complete verification"] = "Completar verificación",
+            ["I'll do it later"] = "Lo haré después",
+            ["No required documents attached. Please upload your license photo and government ID, or choose Skip for now."] =
+                "No hay documentos obligatorios adjuntos. Sube la foto de tu licencia y tu identificación oficial, o elige Omitir por ahora.",
+            ["Please attach your {0} before continuing, or choose Skip for now."] =
+                "Adjunta {0} antes de continuar, o elige Omitir por ahora.",
+            ["Please fix this before continuing:"] = "Corrige esto antes de continuar:",
+            ["Please complete the required fields above."] = "Completa los campos obligatorios de arriba.",
+            ["ZIP"] = "Código postal",
+            ["I authorize Home Indor to verify my real estate license using the information provided."] =
+                "Autorizo a INDOR a verificar mi licencia inmobiliaria con la información proporcionada.",
+            ["Select one or more: English and Spanish only."] =
+                "Selecciona uno o más: solo inglés y español.",
             ["Realtor registration progress"] = "Progreso de registro de agente inmobiliario",
             ["Responded"] = "Respondidos",
             ["Verified Homeowner"] = "Propietario verificado",
@@ -1329,6 +1430,44 @@ public static class UiTranslationsFinal
             ["Need help?"] = "¿Necesitas ayuda?",
             ["Help, account preferences, and INDOR resources for realtors."] =
                 "Ayuda, preferencias de cuenta y recursos de INDOR para agentes inmobiliarios.",
+            ["Get help and review INDOR policies for realtors."] =
+                "Obtén ayuda y revisa las políticas de INDOR para agentes inmobiliarios.",
+            ["Update your password and security preferences."] =
+                "Actualiza tu contraseña y preferencias de seguridad.",
+            ["Permanently remove your INDOR account and data."] =
+                "Elimina de forma permanente tu cuenta de INDOR y tus datos.",
+            ["You expressed interest in {0}"] = "Expresaste interés en {0}",
+            ["{0} is interested in your listing at {1}"] = "{0} está interesado en tu anuncio en {1}",
+            ["Urgent {0} quote {1} sent for {2}"] = "Cotización urgente de {0} {1} enviada para {2}",
+            ["{0} created for {1}"] = "{0} creado para {1}",
+            ["Created property {0}"] = "Propiedad creada: {0}",
+            ["Quote request {0} sent to {1} provider for {2}"] =
+                "Solicitud de cotización {0} enviada a {1} proveedor para {2}",
+            ["Quote request {0} sent to {1} providers for {2}"] =
+                "Solicitud de cotización {0} enviada a {1} proveedores para {2}",
+            ["Quote shared with {0} for {1}"] = "Cotización compartida con {0} para {1}",
+            ["{0} submitted a quote for {1} ({2}) — {3}"] =
+                "{0} envió una cotización para {1} ({2}) — {3}",
+            ["A realtor"] = "Un agente inmobiliario",
+            ["New lead: {0} — {1}"] = "Nuevo prospecto: {0} — {1}",
+            ["Estimate approved for {0}"] = "Estimación aprobada para {0}",
+            ["Homeowner viewed your estimate for {0}"] = "El propietario vio tu estimación para {0}",
+            ["Overdue invoice {0} — {1}"] = "Factura vencida {0} — {1}",
+            ["Payment received for {0} — {1}"] = "Pago recibido por {0} — {1}",
+            ["New message waiting"] = "Nuevo mensaje pendiente",
+            ["your service area"] = "tu zona de servicio",
+            ["Now"] = "Ahora",
+            ["{0}h ago"] = "hace {0} h",
+            ["Contact initiated for lead: {0}"] = "Contacto iniciado para el prospecto: {0}",
+            ["Inspection analyzed — {0} quote request for {1}"] =
+                "Inspección analizada — {0} solicitud de cotización para {1}",
+            ["Inspection analyzed — {0} quote requests for {1}"] =
+                "Inspección analizada — {0} solicitudes de cotización para {1}",
+            ["Inspection analyzed"] = "Inspección analizada",
+            ["{0} finding sent for {1}"] = "{0} hallazgo enviado para {1}",
+            ["{0} findings sent for {1}"] = "{0} hallazgos enviados para {1}",
+            ["Findings sent to providers"] = "Hallazgos enviados a proveedores",
+            ["Payments"] = "Pagos",
             ["Contact INDOR support at"] = "Contacta al soporte de INDOR en",
             ["Review INDOR platform terms for real estate professionals."] =
                 "Revisa los términos de la plataforma INDOR para profesionales inmobiliarios.",
@@ -1356,6 +1495,8 @@ public static class UiTranslationsFinal
             ["Languages"] = "Idiomas",
             ["INDOR Messaging"] = "Mensajería de INDOR",
             ["Company & Contact Details"] = "Datos de empresa y contacto",
+            ["Display Name (Public)"] = "Nombre para mostrar (público)",
+            ["Realtor Title"] = "Título de realtor",
             ["Add the contact and public business information clients will see."] =
                 "Agrega la información de contacto y del negocio que verán los clientes.",
             ["Define the cities and neighborhoods where you work with clients."] =
@@ -1372,6 +1513,27 @@ public static class UiTranslationsFinal
             ["Public display name"] = "Nombre público",
             ["Select experience"] = "Selecciona la experiencia",
             ["(select up to 3)"] = "(selecciona hasta 3)",
+            ["License Number"] = "Número de licencia",
+            ["Years of Experience"] = "Años de experiencia",
+            ["Specialties"] = "Especialidades",
+            ["Team name"] = "Nombre del equipo",
+            ["Team Name (Optional)"] = "Nombre del equipo (opcional)",
+            ["Broker-in-charge"] = "Corredor responsable",
+            ["Broker-in-Charge (Optional)"] = "Corredor responsable (opcional)",
+            ["Residential"] = "Residencial",
+            ["Investment"] = "Inversión",
+            ["Luxury"] = "Lujo",
+            ["Relocation"] = "Reubicación",
+            ["10+ years"] = "Más de 10 años",
+            ["15+ years"] = "Más de 15 años",
+            ["License state is required."] = "El estado de la licencia es obligatorio.",
+            ["Years of experience is required."] = "Los años de experiencia son obligatorios.",
+            ["Select at least one specialty."] = "Selecciona al menos una especialidad.",
+            ["Upload License Documents"] = "Subir documentos de licencia",
+            ["Upload a clear photo or PDF of your real estate license."] =
+                "Sube una foto clara o un PDF de tu licencia inmobiliaria.",
+            ["JPG, PNG or PDF · Max size 10MB"] = "JPG, PNG o PDF · Tamaño máx. 10 MB",
+            ["License document on file"] = "Documento de licencia en archivo",
             ["Service Area (Preview)"] = "Área de servicio (vista previa)",
             ["Preview Public Profile"] = "Vista previa del perfil público",
             ["Public Profile Preview"] = "Vista previa del perfil público",
@@ -3072,5 +3234,6 @@ public static class UiTranslationsFinal
             ["Voice note"] = "Nota de voz",
             ["Add photos"] = "Agregar fotos",
             ["Enter phone number"] = "Ingresa el número de teléfono",
+            ["Enter 10-digit phone number"] = "Ingresa un teléfono de 10 dígitos",
         };
 }

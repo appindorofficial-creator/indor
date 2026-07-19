@@ -67,7 +67,6 @@ public class PropertyAdministratorFurnitureHaulAwayService(
             return null;
         }
 
-        var user = await GetUserAsync();
 
         return new PropertyAdministratorFurnitureHaulAwayStep2ViewModel
         {
@@ -88,7 +87,7 @@ public class PropertyAdministratorFurnitureHaulAwayService(
             QuickDetails = step1.QuickDetails ?? "",
             PickupWhen = "",
             EntryCode = "",
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
+            ContactPhone = ""
         };
     }
 

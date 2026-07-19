@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace IndorMvcApp.Models;
@@ -390,7 +392,33 @@ public static class PropertyAdministratorCatalog
             }
         }
 
-        return null;
+        // Accept Spanish UI labels from Import Portfolio help text / localized CSV template.
+        var normalized = RemoveDiacritics(trimmed).Replace(" ", "", StringComparison.Ordinal).ToLowerInvariant();
+        return normalized switch
+        {
+            "condominio" or "condo" => "Condo",
+            "duplex" => "Duplex",
+            "alquileracortoplazo" or "shorttermrental" => "ShortTermRental",
+            "casaunifamiliar" or "unifamiliar" or "singlefamily" or "singlefamilyhome" => "SingleFamily",
+            "multifamiliar" or "multifamily" => "MultiFamily",
+            "casaadosada" or "townhouse" => "Townhouse",
+            _ => null
+        };
+    }
+
+    private static string RemoveDiacritics(string value)
+    {
+        var normalized = value.Normalize(NormalizationForm.FormD);
+        var buffer = new StringBuilder(normalized.Length);
+        foreach (var ch in normalized)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(ch) != UnicodeCategory.NonSpacingMark)
+            {
+                buffer.Append(ch);
+            }
+        }
+
+        return buffer.ToString().Normalize(NormalizationForm.FormC);
     }
 
     public static readonly string[] UsStateCodes =

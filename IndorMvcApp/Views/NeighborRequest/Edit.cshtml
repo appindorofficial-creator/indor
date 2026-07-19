@@ -7,11 +7,17 @@
     var categories = Model.Categories;
     var timeWindowOptions = Model.TimeWindowOptions ?? IndorMvcApp.Services.NeighborRequestWizardService.GetTimeWindowOptions();
     var selectedCategory = categories.FirstOrDefault(c => c.Id == Model.CategoryId) ?? categories.FirstOrDefault();
+    var selectedCategoryLabel = selectedCategory == null
+        ? UiDisplayLocalization.Localize(L, Model.CategoryLabel)
+        : UiDisplayLocalization.Localize(L, selectedCategory.Label);
     var matchedTimeWindow = timeWindowOptions.FirstOrDefault(o => o.Value == Model.TimeWindowPreset);
     var timeWindowLabel = !string.IsNullOrWhiteSpace(matchedTimeWindow.Label)
-        ? matchedTimeWindow.Label
-        : timeWindowOptions.FirstOrDefault().Label ?? "Select a time";
+        ? UiDisplayLocalization.Localize(L, matchedTimeWindow.Label)
+        : UiDisplayLocalization.Localize(L, timeWindowOptions.FirstOrDefault().Label ?? "Select a time");
     var selectedTimeWindow = Model.TimeWindowPreset ?? timeWindowOptions.FirstOrDefault().Value ?? string.Empty;
+    var detailsSummaryDisplay = UiDisplayLocalization.Localize(L, Model.DetailsSummary);
+    var preferredDateLabel = Model.NeededByDate?.ToString("dddd, MMMM d", CultureInfo.CurrentUICulture) ?? L["Select a date"];
+    var dateLocale = L.CurrentCulture;
 }
 
 <form asp-action="Edit" method="post" class="nr-edit-form">
@@ -34,24 +40,25 @@
                 <select name="CategoryId" id="CategoryId" class="nr-edit-picker-native" aria-label="@L["Category"]" required>
                     @foreach (var category in categories)
                     {
+                        var localizedLabel = UiDisplayLocalization.Localize(L, category.Label);
                         if (category.Id == Model.CategoryId)
                         {
                             <option value="@category.Id"
                                     data-icon="@category.IconClass"
-                                    data-label="@category.Label"
-                                    selected="selected">@category.Label</option>
+                                    data-label="@localizedLabel"
+                                    selected="selected">@localizedLabel</option>
                         }
                         else
                         {
                             <option value="@category.Id"
                                     data-icon="@category.IconClass"
-                                    data-label="@category.Label">@category.Label</option>
+                                    data-label="@localizedLabel">@localizedLabel</option>
                         }
                     }
                 </select>
                 <div class="nr-edit-picker-face">
                     <span class="nr-edit-picker-icon" id="nrCategoryIcon"><i class="fas @(selectedCategory?.IconClass ?? Model.CategoryIconClass)"></i></span>
-                    <span class="nr-edit-picker-label" id="nrCategoryLabel">@(selectedCategory?.Label ?? Model.CategoryLabel)</span>
+                    <span class="nr-edit-picker-label" id="nrCategoryLabel">@selectedCategoryLabel</span>
                     <i class="fas fa-chevron-right nr-edit-picker-chevron" aria-hidden="true"></i>
                 </div>
                 }
@@ -62,7 +69,12 @@
             <h2 class="nr-edit-section-title">@L["Details"]</h2>
             <div class="nr-edit-field nr-field--count">
                 <div class="nr-counted-control">
-                    <input asp-for="DetailsSummary" class="nr-edit-input" placeholder="@L["2 bedrooms, 2 bathrooms, 1 cat"]" maxlength="200" aria-describedby="nrEditSummaryCount" />
+                    <input name="DetailsSummary"
+                           value="@detailsSummaryDisplay"
+                           class="nr-edit-input"
+                           placeholder="@L["2 bedrooms, 2 bathrooms, 1 cat"]"
+                           maxlength="200"
+                           aria-describedby="nrEditSummaryCount" />
                 </div>
                 <span class="nr-char-count" id="nrEditSummaryCount"><span id="nrEditSummaryCountValue">0</span>/200</span>
             </div>
@@ -82,11 +94,10 @@
                        id="NeededByDate"
                        type="date"
                        class="nr-edit-picker-native nr-edit-picker-native--date"
+                       min="@Model.MinNeededByDateIso"
                        data-min-date="@Model.MinNeededByDateIso"
                        value="@(Model.NeededByDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "")" />
-                <span class="nr-edit-picker-label" id="nrPreferredDateLabel">
-                    @(Model.NeededByDate?.ToString("dddd, MMMM d") ?? L["Select a date"])
-                </span>
+                <span class="nr-edit-picker-label" id="nrPreferredDateLabel">@preferredDateLabel</span>
                 <i class="fas fa-chevron-right nr-edit-picker-chevron" aria-hidden="true"></i>
             </label>
             <span asp-validation-for="NeededByDate" class="field-validation-error"></span>
@@ -98,13 +109,14 @@
                 <select name="TimeWindowPreset" id="TimeWindowPreset" class="nr-edit-picker-native" aria-label="@L["Time window"]">
                     @foreach (var option in timeWindowOptions)
                     {
+                        var localizedTime = UiDisplayLocalization.Localize(L, option.Label);
                         if (option.Value == selectedTimeWindow)
                         {
-                            <option value="@option.Value" selected="selected">@option.Label</option>
+                            <option value="@option.Value" selected="selected">@localizedTime</option>
                         }
                         else
                         {
-                            <option value="@option.Value">@option.Label</option>
+                            <option value="@option.Value">@localizedTime</option>
                         }
                     }
                 </select>
@@ -163,14 +175,25 @@
             var dateLabel = document.getElementById('nrPreferredDateLabel');
             if (dateInput && dateLabel) {
                 var selectDateLabel = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select a date"]));
+                var dateLocale = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(dateLocale));
+                var minDate = dateInput.getAttribute('data-min-date') || dateInput.getAttribute('min') || '';
                 var formatDate = function (value) {
                     if (!value) return selectDateLabel;
                     var date = new Date(value + 'T12:00:00');
-                    return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+                    return date.toLocaleDateString(dateLocale, { weekday: 'long', month: 'long', day: 'numeric' });
+                };
+                var clampDate = function () {
+                    if (!minDate) return;
+                    dateInput.setAttribute('min', minDate);
+                    if (dateInput.value && dateInput.value < minDate) {
+                        dateInput.value = minDate;
+                    }
                 };
                 dateInput.addEventListener('change', function () {
+                    clampDate();
                     dateLabel.textContent = formatDate(dateInput.value);
                 });
+                clampDate();
                 if (dateInput.value) dateLabel.textContent = formatDate(dateInput.value);
             }
 

@@ -28,8 +28,13 @@
 
         var uploadUrl = root.getAttribute('data-upload-url') || '';
         var defaultKind = root.getAttribute('data-upload-kind') || 'photo';
-        var photoInput = root.querySelector('.pa-media-photo-input');
+        var cameraInput = root.querySelector('.pa-media-photo-input--camera');
+        var libraryInput = root.querySelector('.pa-media-photo-input--library');
+        // Legacy single-input markup still works.
+        var photoInputs = [cameraInput, libraryInput, root.querySelector('.pa-media-photo-input')]
+            .filter(function (el, i, arr) { return el && arr.indexOf(el) === i; });
         var photoBtn = root.querySelector('.pa-media-photo-btn');
+        var photoMenu = root.querySelector('.pa-media-photo-menu');
         var voiceBtn = root.querySelector('.pa-media-voice-btn');
         var voiceLabel = root.querySelector('.pa-media-voice-label');
         var preview = root.querySelector('.pa-media-preview');
@@ -37,6 +42,18 @@
         var attachments = parseAttachments(hidden && hidden.value);
         var mediaRecorder = null;
         var recordedChunks = [];
+
+        function setMenuOpen(open) {
+            if (!photoMenu || !photoBtn) {
+                return;
+            }
+            photoMenu.hidden = !open;
+            photoBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+
+        function closeMenu() {
+            setMenuOpen(false);
+        }
 
         function syncHidden() {
             if (hidden) {
@@ -109,35 +126,77 @@
             return res.json();
         }
 
-        if (photoBtn && photoInput) {
-            photoBtn.addEventListener('click', function () {
-                photoInput.click();
-            });
-            photoInput.addEventListener('change', async function () {
-                var files = Array.prototype.slice.call(photoInput.files || []);
-                photoInput.value = '';
-                if (!files.length) {
-                    return;
-                }
-                setBusy(true);
-                try {
-                    for (var i = 0; i < files.length; i++) {
-                        var result = await uploadFile(files[i], defaultKind);
-                        if (result && result.path) {
-                            attachments.push({
-                                kind: result.kind || defaultKind,
-                                path: result.path,
-                                name: result.name || files[i].name
-                            });
-                        }
+        async function handlePhotoFiles(input) {
+            var files = Array.prototype.slice.call((input && input.files) || []);
+            if (input) {
+                input.value = '';
+            }
+            if (!files.length) {
+                return;
+            }
+            setBusy(true);
+            try {
+                for (var i = 0; i < files.length; i++) {
+                    var result = await uploadFile(files[i], defaultKind);
+                    if (result && result.path) {
+                        attachments.push({
+                            kind: result.kind || defaultKind,
+                            path: result.path,
+                            name: result.name || files[i].name
+                        });
                     }
-                    syncHidden();
-                } catch (_) {
-                    alert(root.getAttribute('data-msg-upload-fail') || 'Upload failed');
-                } finally {
-                    setBusy(false);
                 }
+                syncHidden();
+            } catch (_) {
+                alert(root.getAttribute('data-msg-upload-fail') || 'Upload failed');
+            } finally {
+                setBusy(false);
+            }
+        }
+
+        photoInputs.forEach(function (input) {
+            input.addEventListener('change', function () {
+                handlePhotoFiles(input);
             });
+        });
+
+        if (photoBtn) {
+            if (photoMenu && (cameraInput || libraryInput)) {
+                photoBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setMenuOpen(photoMenu.hidden);
+                });
+
+                root.querySelectorAll('[data-pa-media-source]').forEach(function (item) {
+                    item.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        var source = item.getAttribute('data-pa-media-source');
+                        closeMenu();
+                        var target = source === 'camera' ? (cameraInput || libraryInput) : (libraryInput || cameraInput);
+                        if (target) {
+                            target.click();
+                        }
+                    });
+                });
+
+                document.addEventListener('click', function (e) {
+                    if (!root.contains(e.target)) {
+                        closeMenu();
+                    }
+                });
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') {
+                        closeMenu();
+                    }
+                });
+            } else if (photoInputs.length) {
+                // Fallback: open first available file input.
+                photoBtn.addEventListener('click', function () {
+                    photoInputs[0].click();
+                });
+            }
         }
 
         function stopRecording() {

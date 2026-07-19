@@ -19,11 +19,11 @@
                     <span class="nr-detail-rating"><i class="fas fa-star" aria-hidden="true"></i>@Model.RatingLabel</span>
                 }
             </div>
-            <span class="nr-detail-neighbor-offer-role">@Model.RoleLabel</span>
+            <span class="nr-detail-neighbor-offer-role">@UiDisplayLocalization.Localize(L, Model.RoleLabel)</span>
         </div>
         @if (!string.IsNullOrWhiteSpace(Model.PriceLabel))
         {
-            <div class="nr-detail-neighbor-offer-price">@Model.PriceLabel</div>
+            <div class="nr-detail-neighbor-offer-price">@UiDisplayLocalization.Localize(L, Model.PriceLabel)</div>
         }
     </div>
     <div class="nr-detail-neighbor-offer-actions">

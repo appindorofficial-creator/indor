@@ -204,13 +204,40 @@
     </section>
 
     <section class="rl-dash-section">
-        <div class="rl-tips-card">
-            <span class="rl-tips-icon"><i class="fas fa-lightbulb"></i></span>
-            <div class="rl-tips-body">
-                <strong>@L["Tips & Insights"]</strong>
-                <p>@L["Invite clients and create files to keep everything organized in one place."]</p>
+        <div class="rl-tips-panel" id="rlClientsTips">
+            <div class="rl-tips-card">
+                <span class="rl-tips-icon"><i class="fas fa-lightbulb"></i></span>
+                <div class="rl-tips-body">
+                    <strong>@L["Tips & Insights"]</strong>
+                    <p>@L["Invite clients and create files to keep everything organized in one place."]</p>
+                </div>
+                <button type="button"
+                        class="rl-tips-link"
+                        id="rlClientsTipsToggle"
+                        aria-expanded="false"
+                        aria-controls="rlClientsTipsList">
+                    <span class="rl-tips-link-label">@L["Learn more"]</span>
+                    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                </button>
             </div>
-            <a asp-controller="Realtor" asp-action="Files" class="rl-tips-link">@L["Learn more"] <i class="fas fa-chevron-right"></i></a>
+            <ul class="rl-tips-list" id="rlClientsTipsList" hidden>
+                <li>
+                    <i class="fas fa-user-plus" aria-hidden="true"></i>
+                    <span>@L["Invite buyers, sellers, and homeowners so they can accept and connect inside INDOR."]</span>
+                </li>
+                <li>
+                    <i class="fas fa-folder-plus" aria-hidden="true"></i>
+                    <span>@L["Create a property file for each client to keep photos, inspections, and quotes together."]</span>
+                </li>
+                <li>
+                    <i class="fas fa-bell" aria-hidden="true"></i>
+                    <span>@L["Use Follow-up to track invited clients who still need a response."]</span>
+                </li>
+                <li>
+                    <i class="fas fa-file-invoice-dollar" aria-hidden="true"></i>
+                    <span>@L["Start a new quote from Quick Actions when a client needs contractor pricing."]</span>
+                </li>
+            </ul>
         </div>
     </section>
 
@@ -238,28 +265,41 @@
     (function () {
         var filterBtn = document.getElementById('rlClientsFilterBtn');
         var filterMenu = document.getElementById('rlClientsFilterMenu');
-        if (!filterBtn || !filterMenu) {
-            return;
-        }
-
-        function closeMenu() {
-            filterMenu.hidden = true;
-            filterBtn.setAttribute('aria-expanded', 'false');
-        }
-
-        filterBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var willOpen = filterMenu.hidden;
-            filterMenu.hidden = !willOpen;
-            filterBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-        });
-
-        document.addEventListener('click', closeMenu);
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') {
-                closeMenu();
+        if (filterBtn && filterMenu) {
+            function closeMenu() {
+                filterMenu.hidden = true;
+                filterBtn.setAttribute('aria-expanded', 'false');
             }
-        });
+
+            filterBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                var willOpen = filterMenu.hidden;
+                filterMenu.hidden = !willOpen;
+                filterBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            });
+
+            document.addEventListener('click', closeMenu);
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    closeMenu();
+                }
+            });
+        }
+
+        var tipsToggle = document.getElementById('rlClientsTipsToggle');
+        var tipsList = document.getElementById('rlClientsTipsList');
+        var tipsLabel = tipsToggle ? tipsToggle.querySelector('.rl-tips-link-label') : null;
+        if (tipsToggle && tipsList && tipsLabel) {
+            var labelMore = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Learn more"]));
+            var labelLess = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Show less"]));
+            tipsToggle.addEventListener('click', function () {
+                var willOpen = tipsList.hidden;
+                tipsList.hidden = !willOpen;
+                tipsToggle.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+                tipsToggle.classList.toggle('is-open', willOpen);
+                tipsLabel.textContent = willOpen ? labelLess : labelMore;
+            });
+        }
     })();
 </script>
 }

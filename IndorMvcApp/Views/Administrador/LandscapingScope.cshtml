@@ -183,7 +183,7 @@
 
         <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Review request"]</button>
         <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit">@L["Edit details"]</a>
-        <a href="@Url.Action("Index", "Administrador", new { propertyId = Model.PropertyId })" class="pa-back-link">@L["Back to start"]</a>
+        <a href="@Url.Action("Services", "Administrador", new { propertyId = Model.PropertyId })" class="pa-back-link">@L["Back to start"]</a>
     </form>
 </div>
 

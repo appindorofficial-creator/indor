@@ -285,6 +285,11 @@ public class AdministradorController(
             return redirect;
         }
 
+        if (!PropertyAdministratorEmergencyPlumbingService.IsSubmitComplete(input))
+        {
+            return RedirectToAction(nameof(EmergencyPlumbingAccess));
+        }
+
         var requestId = await emergencyPlumbing.SubmitAsync(input);
         TempData.Remove("PlumbingStep1");
         return RedirectToAction(nameof(EmergencyPlumbingConfirmed), new { id = requestId });
@@ -374,6 +379,11 @@ public class AdministradorController(
             return redirect;
         }
 
+        if (!PropertyAdministratorEmergencyRoofLeakService.IsSubmitComplete(input))
+        {
+            return RedirectToAction(nameof(EmergencyRoofLeakAccess));
+        }
+
         var requestId = await emergencyRoofLeak.SubmitAsync(input);
         TempData.Remove("RoofLeakStep1");
         return RedirectToAction(nameof(EmergencyRoofLeakConfirmed), new { id = requestId });
@@ -418,6 +428,11 @@ public class AdministradorController(
         if (await EnsureRegisteredAsync() is { } redirect)
         {
             return redirect;
+        }
+
+        if (!PropertyAdministratorEmergencyTreeBranchService.IsStep1Complete(input))
+        {
+            return RedirectToAction(nameof(EmergencyTreeBranchDetails), new { propertyId = input.PropertyId > 0 ? input.PropertyId : (int?)null });
         }
 
         TempData["TreeBranchStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
@@ -2001,7 +2016,7 @@ public class AdministradorController(
         ViewBag.HideBottomNav = true;
         ViewBag.FlowStep = 2;
         ViewBag.FlowTotalSteps = 4;
-        ViewBag.FlowBackUrl = Url.Action(nameof(Index), new { propertyId });
+        ViewBag.FlowBackUrl = Url.Action(nameof(Services), new { propertyId });
         var model = await preventiveMaintenance.GetServicesStepAsync(Url, propertyId, planId);
         return View(model);
     }

@@ -59,8 +59,6 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
         {
             return null;
         }
-
-        var user = await GetUserAsync();
         var mapped = MapProperty(property);
         var input = new PropertyAdministratorEmergencyWaterHeaterSubmitInput
         {
@@ -75,7 +73,7 @@ public class PropertyAdministratorEmergencyWaterHeaterService(
             EntryAccess = "GarageSide",
             AccessNotes = "Garage side entry available",
             UpdateRecipientsList = ["Me", "Guest"],
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? ""
+            ContactPhone = ""
         };
 
         return new PropertyAdministratorEmergencyWaterHeaterReviewViewModel

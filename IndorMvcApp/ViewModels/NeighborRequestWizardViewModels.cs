@@ -217,6 +217,9 @@ public class NeighborRequestHelpersStepViewModel : NeighborRequestWizardShellVie
     public List<NeighborRequestHelperCardViewModel> Helpers { get; set; } = [];
     public string DetailUrl { get; set; } = "#";
     public string InviteUrl { get; set; } = "#";
+    public double? MapCenterLatitude { get; set; }
+    public double? MapCenterLongitude { get; set; }
+    public bool HasMapLocation => MapCenterLatitude is not null && MapCenterLongitude is not null;
 }
 
 public class NeighborRequestBrowseHelpersViewModel
@@ -246,6 +249,8 @@ public class NeighborRequestHelperCardViewModel
     public bool IsVerified { get; set; }
     public bool IsOnline { get; set; } = true;
     public string MessageUrl { get; set; } = "#";
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
 }
 
 public class NeighborRequestListViewModel

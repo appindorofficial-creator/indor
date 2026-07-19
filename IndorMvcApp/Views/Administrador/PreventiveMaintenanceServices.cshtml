@@ -7,7 +7,7 @@
     ViewBag.FlowTitle = L["Preventive Maintenance"].ToString();
     ViewBag.FlowSubtitle = L["Choose the upkeep services your property needs."].ToString();
     ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Plan"].ToString(), L["Schedule"].ToString(), L["Review"].ToString() };
-    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     var propertyId = Model.ViewingProperty?.Id ?? 0;
 }
 

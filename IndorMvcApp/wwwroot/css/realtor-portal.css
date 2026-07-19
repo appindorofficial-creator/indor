@@ -7957,6 +7957,44 @@ a.rl-profile-nav-item {
     align-items: center;
     gap: 5px;
     flex-shrink: 0;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+}
+.rl-tips-link i { transition: transform .18s ease; }
+.rl-tips-link.is-open i { transform: rotate(180deg); }
+.rl-tips-panel { display: flex; flex-direction: column; gap: 10px; }
+.rl-tips-list {
+    list-style: none;
+    margin: 0;
+    padding: 4px 4px 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.rl-tips-list[hidden] {
+    display: none !important;
+}
+.rl-tips-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    font-size: .78rem;
+    line-height: 1.45;
+    color: #334155;
+}
+.rl-tips-list li > i {
+    margin-top: 2px;
+    color: #0066CC;
+    width: 16px;
+    text-align: center;
+    flex-shrink: 0;
 }
 
 /* ===== Network listing detail (View Home) ===== */

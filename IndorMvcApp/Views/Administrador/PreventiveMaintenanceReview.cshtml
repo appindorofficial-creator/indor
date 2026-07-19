@@ -78,5 +78,5 @@
         <input type="hidden" name="planId" value="@Model.PlanId" />
         <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Activate plan"]</button>
     </form>
-    <a asp-action="Index" asp-route-propertyId="@Model.ViewingProperty?.Id" class="ob-btn ob-btn-outline pa-flow-edit">@L["Back to start"]</a>
+    <a asp-action="Services" asp-route-propertyId="@Model.ViewingProperty?.Id" class="ob-btn ob-btn-outline pa-flow-edit">@L["Back to start"]</a>
 </div>

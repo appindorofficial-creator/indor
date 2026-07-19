@@ -59,8 +59,6 @@ public class PropertyAdministratorEmergencyTreeBranchService(
         {
             return null;
         }
-
-        var user = await GetUserAsync();
         var mapped = MapProperty(property);
         var input = new PropertyAdministratorEmergencyTreeBranchSubmitInput
         {
@@ -75,7 +73,7 @@ public class PropertyAdministratorEmergencyTreeBranchService(
             EntryAccess = "ExteriorOnly",
             GateParkingNotes = "Use front drive",
             UpdateRecipientsList = ["Me", "Guest"],
-            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "",
+            ContactPhone = step1.ContactPhone?.Trim() ?? "",
             InsuranceHelp = "NeedDocumentation"
         };
 
@@ -235,9 +233,18 @@ public class PropertyAdministratorEmergencyTreeBranchService(
             Value = FormatRecipients(input.UpdateRecipientsList),
             IconClass = "fa-bell"
         },
-        new() { Label = PropertyAdministratorDisplayLocalization.L("Best contact"), Value = input.ContactPhone, IconClass = "fa-phone" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Best phone number for urgent contact"), Value = input.ContactPhone, IconClass = "fa-phone" },
         new() { Label = PropertyAdministratorDisplayLocalization.L("Insurance help"), Value = LabelInsuranceHelp(input.InsuranceHelp), IconClass = "fa-shield-halved" }
     ];
+
+    public static bool IsStep1Complete(PropertyAdministratorEmergencyTreeBranchStep1Input input) =>
+        !string.IsNullOrWhiteSpace(input.IssueType)
+        && !string.IsNullOrWhiteSpace(input.ImmediateDanger)
+        && !string.IsNullOrWhiteSpace(input.GuestsInside)
+        && !string.IsNullOrWhiteSpace(input.Urgency)
+        && input.DamageAreasList.Count > 0
+        && !string.IsNullOrWhiteSpace(input.TarpNeeded)
+        && PropertyAdministratorContactPhone.IsProvided(input.ContactPhone);
 
     private static IReadOnlyList<PropertyAdministratorEmergencyAcTimelineItemViewModel> BuildTimeline(
         IndorPropertyAdminServiceRequest request)
