@@ -15,9 +15,7 @@ public partial class ProviderRegistrationController
         var user = await userManager.GetUserAsync(User);
         state.Email ??= user?.Email ?? "";
 
-        return View(StepVm(1, "Service Provider",
-            "Choose how you want to get started with INDOR.",
-            state, Url.Action("SelectRole", "Account")));
+        return View(EntryStepVm(state));
     }
 
     [HttpPost]
@@ -26,31 +24,40 @@ public partial class ProviderRegistrationController
     {
         var state = await registration.GetAsync();
         var termsAccepted = IsCheckboxChecked("termsAccepted");
-
-        if (string.Equals(action, "later", StringComparison.OrdinalIgnoreCase))
-        {
-            state.IndorProActive = true;
-            state.OnboardingPath = "ProOnly";
-            state.UsesNewWizard = true;
-            await registration.ActivateIndorProAsync(state);
-            return RedirectToAction("Dashboard", "Proveedor");
-        }
+        var organizationKind = ResolveOrganizationKind(path);
 
         if (!termsAccepted)
         {
             ModelState.AddModelError(string.Empty, localizer["Please agree to INDOR's Terms & Conditions."]);
-            return View(StepVm(1, "Service Provider",
-                "Choose how you want to get started with INDOR.",
-                state, Url.Action("SelectRole", "Account")));
+            state.OrganizationKind = organizationKind;
+            return View(EntryStepVm(state));
         }
 
+        // One decision only (company vs independent) for analytics counts, then enter the ecosystem.
         state.TermsAccepted = true;
-        state.OnboardingPath = string.Equals(path, "apply", StringComparison.OrdinalIgnoreCase) ? "Apply" : "ProOnly";
+        state.OrganizationKind = organizationKind;
+        state.OnboardingPath = organizationKind;
         state.UsesNewWizard = true;
         state.IndorProActive = true;
-        await registration.SaveAsync(state, 1);
-        return RedirectToAction(nameof(CompanyInfo));
+        await registration.ActivateIndorProAsync(state);
+        return RedirectToAction("Dashboard", "Proveedor");
     }
+
+    private ProviderRegistrationStepViewModel EntryStepVm(ProviderRegistrationState state) =>
+        new()
+        {
+            Step = 1,
+            TotalSteps = 1,
+            Title = localizer["Welcome to INDOR for providers"],
+            Subtitle = localizer["How do you want to enter?"],
+            State = state,
+            BackUrl = Url.Action("SelectRole", "Account"),
+        };
+
+    private static string ResolveOrganizationKind(string? path) =>
+        string.Equals(path, "independent", StringComparison.OrdinalIgnoreCase)
+            ? "Independent"
+            : "Company";
 
     [HttpGet]
     public async Task<IActionResult> CompanyInfo()

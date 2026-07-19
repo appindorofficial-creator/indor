@@ -89,18 +89,35 @@ public class RealtorQuoteRequestController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Property(int propertyFileId)
+    public async Task<IActionResult> Property(
+        int propertyFileId,
+        string? newPropertyAddress,
+        string? newPropertyCity,
+        string? newPropertyState,
+        string? newPropertyZip)
     {
         try
         {
-            await quoteRequest.SavePropertyAsync(propertyFileId);
+            if (propertyFileId > 0)
+            {
+                await quoteRequest.SavePropertyAsync(propertyFileId);
+            }
+            else
+            {
+                await quoteRequest.SavePropertyFromAddressAsync(
+                    newPropertyAddress ?? "",
+                    newPropertyCity,
+                    newPropertyState,
+                    newPropertyZip);
+            }
+
             return RedirectToAction(nameof(RequestDetails));
         }
-        catch
+        catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, "Please select a property.");
+            ModelState.AddModelError(string.Empty, ex.Message);
             var vm = await quoteRequest.BuildPropertyAsync(null);
-            vm.SelectedPropertyFileId = propertyFileId;
+            vm.SelectedPropertyFileId = propertyFileId > 0 ? propertyFileId : null;
             return View(vm);
         }
     }

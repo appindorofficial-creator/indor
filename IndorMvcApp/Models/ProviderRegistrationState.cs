@@ -60,6 +60,9 @@ public class ProviderRegistrationState
 
     public string OnboardingPath { get; set; } = "";
 
+    /// <summary>Company or Independent — entry choice for provider counts.</summary>
+    public string OrganizationKind { get; set; } = "";
+
     public bool AssessmentSkipped { get; set; }
 
     public bool AssessmentStarted { get; set; }

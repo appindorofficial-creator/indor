@@ -50,17 +50,18 @@ public class RealtorRegistrationService(
         var entity = await db.IndorRealtors.FirstAsync(r => r.Id == realtorId, cancellationToken);
 
         entity.BrokerageName = state.BrokerageName.Trim();
-        entity.LicenseNumber = state.LicenseNumber.Trim();
-        entity.LicenseState = state.LicenseState.Trim();
-        entity.ServiceAreas = state.ServiceAreas.Trim();
-        entity.OfficeAddress = state.OfficeAddress.Trim();
-        entity.OfficeCity = state.OfficeCity.Trim();
-        entity.OfficeState = state.OfficeState.Trim();
-        entity.OfficeZip = state.OfficeZip.Trim();
+        entity.LicenseNumber = string.IsNullOrWhiteSpace(state.LicenseNumber) ? null : state.LicenseNumber.Trim();
+        entity.LicenseState = string.IsNullOrWhiteSpace(state.LicenseState) ? null : state.LicenseState.Trim();
+        entity.ServiceAreas = string.IsNullOrWhiteSpace(state.ServiceAreas) ? null : state.ServiceAreas.Trim();
+        entity.OfficeAddress = string.IsNullOrWhiteSpace(state.OfficeAddress) ? null : state.OfficeAddress.Trim();
+        entity.OfficeCity = string.IsNullOrWhiteSpace(state.OfficeCity) ? null : state.OfficeCity.Trim();
+        entity.OfficeState = string.IsNullOrWhiteSpace(state.OfficeState) ? null : state.OfficeState.Trim();
+        entity.OfficeZip = string.IsNullOrWhiteSpace(state.OfficeZip) ? null : state.OfficeZip.Trim();
 
-        if (!RealtorSupportedLanguages.TryNormalize(state.Languages, out var normalizedLanguages, out var languagesError))
+        var languagesInput = string.IsNullOrWhiteSpace(state.Languages) ? "English" : state.Languages;
+        if (!RealtorSupportedLanguages.TryNormalize(languagesInput, out var normalizedLanguages, out _))
         {
-            throw new InvalidOperationException(languagesError ?? "Select at least one language.");
+            normalizedLanguages = "English";
         }
 
         entity.LanguagesJson = RealtorSupportedLanguages.SerializeJson(normalizedLanguages);
@@ -244,9 +245,11 @@ public class RealtorRegistrationService(
 
         return new RealtorReadyViewModel
         {
+            Step = 2,
+            TotalSteps = 2,
             BadgeLabel = entity.RegistrationStatus == RealtorRegistrationStatuses.Verified
                 ? "Verified Realtor"
-                : "Realtor Basic",
+                : "Basic real estate agent",
             LicenseNumberSaved = !string.IsNullOrWhiteSpace(entity.LicenseNumber),
             ProfileCreated = entity.ProfileCompletedUtc.HasValue,
             LicensePhotoUploaded = licensePhoto,
@@ -269,13 +272,10 @@ public class RealtorRegistrationService(
             .FirstOrDefaultAsync(r => r.UserId == userId, cancellationToken);
     }
 
-    public string ResolveWizardResumeAction(int currentStep) => currentStep switch
-    {
-        <= 1 => "Profile",
-        2 => "Verification",
-        3 => "Ready",
-        _ => "Dashboard"
-    };
+    /// <summary>
+    /// Quick entry: only Profile (brokerage) is required. License/docs are completed later.
+    /// </summary>
+    public string ResolveWizardResumeAction(int currentStep) => "Profile";
 
     public bool IsRegistrationComplete(IndorRealtor realtor) =>
         realtor.RegistrationStatus is RealtorRegistrationStatuses.Basic or RealtorRegistrationStatuses.Verified

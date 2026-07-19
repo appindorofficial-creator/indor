@@ -425,5 +425,33 @@ public static class UiTranslationsMovingSetup
             ["storm damage and shingles"] = "daños por tormenta y tejas",
             ["leak signs and flashing"] = "señales de fuga y flashing",
             ["shingles and sealant"] = "tejas y sellador",
+
+            // Realtor quick entry (mockup)
+            ["Welcome to INDOR for Realtors"] = "Bienvenido a INDOR para Realtors",
+            ["This is your professional space for clients, files, and quotes. No license or documents required to start."] =
+                "Este es tu espacio profesional para clientes, expedientes y cotizaciones. No se requiere licencia ni documentos para empezar.",
+            ["Brokerage / Company"] = "Brokerage / compañía",
+            ["Complete the rest from your profile later"] = "Completa el resto desde tu perfil más adelante",
+            ["Welcome, realtor!"] = "¡Bienvenido, realtor!",
+            ["You can now enter the INDOR ecosystem. Complete license, market, and documents later from your profile."] =
+                "Ya puedes entrar al ecosistema INDOR. Completa licencia, mercado y documentos después desde tu perfil.",
+            ["Enter the INDOR ecosystem"] = "Entrar al ecosistema INDOR",
+            ["Complete profile later"] = "Completar perfil después",
+            ["Basic real estate agent"] = "Agente inmobiliario básico",
+            ["Brokerage / Company Name"] = "Brokerage / compañía",
+            ["Brokerage / Company Name is required."] = "Brokerage / compañía es obligatorio.",
+            ["Search address with Google…"] = "Buscar dirección con Google…",
+            ["Search address with Google"] = "Buscar dirección con Google",
+            ["Add a property by address to request a work quote"] = "Agrega una propiedad por dirección para pedir cotización de trabajo",
+            ["Start typing an address…"] = "Empieza a escribir una dirección…",
+            ["INDOR will create a property file and send your quote request to providers."] =
+                "INDOR creará un expediente y enviará tu solicitud de cotización a los proveedores.",
+            ["Or select a saved property"] = "O selecciona una propiedad guardada",
+            ["No saved properties yet. Use Google address search above."] =
+                "Aún no hay propiedades guardadas. Usa la búsqueda de Google arriba.",
+            ["Choose an existing property file so photos, reports, and quotes stay connected — or add a new address with Google."] =
+                "Elige un expediente existente para que fotos, informes y cotizaciones queden conectados, o agrega una dirección nueva con Google.",
+            ["Please select a property."] = "Selecciona una propiedad.",
+            ["Please select a property or enter an address."] = "Selecciona una propiedad o ingresa una dirección.",
         };
 }

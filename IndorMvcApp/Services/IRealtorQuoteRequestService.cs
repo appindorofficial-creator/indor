@@ -15,6 +15,8 @@ public interface IRealtorQuoteRequestService
 
     Task<RealtorQuoteRequestPropertyViewModel> BuildPropertyAsync(string? search, CancellationToken cancellationToken = default);
     Task SavePropertyAsync(int propertyFileId, CancellationToken cancellationToken = default);
+    /// <summary>Creates (or reuses) a property file from a Google/typed address when no saved file is selected.</summary>
+    Task SavePropertyFromAddressAsync(string address, string? city = null, string? state = null, string? zip = null, CancellationToken cancellationToken = default);
 
     Task<RealtorQuoteRequestDetailsViewModel> BuildRequestDetailsAsync(CancellationToken cancellationToken = default);
     Task SaveRequestDetailsAsync(

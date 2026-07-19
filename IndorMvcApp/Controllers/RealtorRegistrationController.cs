@@ -45,7 +45,24 @@ public class RealtorRegistrationController(
     }
 
     [HttpGet]
-    public IActionResult Index() => RedirectToAction(nameof(Profile));
+    public async Task<IActionResult> Index()
+    {
+        await registration.LinkCurrentUserAsync();
+        var realtor = await registration.GetRealtorForCurrentUserAsync();
+        if (realtor != null && registration.IsRegistrationComplete(realtor))
+        {
+            return RedirectToAction("Dashboard", "Realtor");
+        }
+
+        // Quick entry: brokerage already saved → finish as Basic and show Ready.
+        if (realtor != null && !string.IsNullOrWhiteSpace(realtor.BrokerageName))
+        {
+            await registration.CompleteVerificationAsync(skipped: true);
+            return RedirectToAction(nameof(Ready));
+        }
+
+        return RedirectToAction(nameof(Profile));
+    }
 
     [HttpGet]
     public async Task<IActionResult> Profile()
@@ -57,161 +74,78 @@ public class RealtorRegistrationController(
             return RedirectToAction("Dashboard", "Realtor");
         }
 
+        if (realtor != null && !string.IsNullOrWhiteSpace(realtor.BrokerageName))
+        {
+            await registration.CompleteVerificationAsync(skipped: true);
+            return RedirectToAction(nameof(Ready));
+        }
+
         var state = await registration.GetAsync();
         var user = await userManager.GetUserAsync(User);
         state.Email ??= user?.Email ?? "";
         state.DisplayName ??= $"{user?.Nombre} {user?.Apellidos}".Trim();
 
-        return View(StepVm(2, "Realtor Verification",
-            "Enter your license information so we can verify your realtor profile.",
-            state, "",
+        return View(StepVm(1, "Welcome to INDOR for Realtors",
+            "This is your professional space for clients, files, and quotes. No license or documents required to start.",
+            state, Url.Action("SelectRole", "Account")!,
             registration.GetLicenseStates()));
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Profile(
-        string? brokerageName,
-        string? licenseNumber,
-        string? licenseState,
-        string? serviceAreas,
-        string? officeAddress,
-        string? officeCity,
-        string? officeState,
-        string? officeZip,
-        string[]? languages)
+    public async Task<IActionResult> Profile(string? brokerageName)
     {
         var state = await registration.GetAsync();
-        var professionalTermsAccepted = IsCheckboxChecked("professionalTermsAccepted");
 
         if (!BrokerageNameAttribute.IsValidBrokerageName(brokerageName, out var brokerageError, "Brokerage / Company Name"))
         {
             ModelState.AddModelError(nameof(brokerageName), brokerageError!);
         }
 
-        if (!RealtorLicenseNumberAttribute.IsValidLicenseNumber(licenseNumber, out var licenseError))
-        {
-            ModelState.AddModelError(nameof(licenseNumber), licenseError!);
-        }
-
-        if (string.IsNullOrWhiteSpace(licenseState))
-        {
-            ModelState.AddModelError(nameof(licenseState), "Please select your license state.");
-        }
-
-        var languagesCsv = languages == null || languages.Length == 0
-            ? string.Empty
-            : string.Join(", ", languages
-                .Where(l => !string.IsNullOrWhiteSpace(l))
-                .Select(l => l!.Trim())
-                .Distinct(StringComparer.OrdinalIgnoreCase));
-
-        if (!RealtorSupportedLanguages.TryNormalize(languagesCsv, out var normalizedLanguages, out var languagesError))
-        {
-            ModelState.AddModelError(nameof(languages), languagesError!);
-        }
-
-        if (string.IsNullOrWhiteSpace(serviceAreas))
-        {
-            ModelState.AddModelError(nameof(serviceAreas), "City / market area is required.");
-        }
-
-        if (string.IsNullOrWhiteSpace(officeAddress))
-        {
-            ModelState.AddModelError(nameof(officeAddress), "Office address is required.");
-        }
-        else if (!ValidStreetAddressAttribute.IsValidStreetAddress(
-                     officeAddress, out var officeAddressError, requireStreetNumber: true))
-        {
-            ModelState.AddModelError(nameof(officeAddress), officeAddressError!);
-        }
-
-        if (string.IsNullOrWhiteSpace(officeCity))
-        {
-            ModelState.AddModelError(nameof(officeCity), "City is required.");
-        }
-
-        var allowedStates = registration.GetLicenseStates();
-        if (string.IsNullOrWhiteSpace(officeState))
-        {
-            ModelState.AddModelError(nameof(officeState), "State is required.");
-        }
-        else if (!allowedStates.Contains(officeState.Trim(), StringComparer.OrdinalIgnoreCase))
-        {
-            ModelState.AddModelError(nameof(officeState), "Select a valid US state.");
-        }
-
-        if (!UsZipCodeAttribute.IsValidRequired(officeZip, out var officeZipError))
-        {
-            ModelState.AddModelError(nameof(officeZip), officeZipError!);
-        }
-
-        if (string.IsNullOrWhiteSpace(languagesCsv))
-        {
-            ModelState.AddModelError(nameof(languages), "Select at least one language.");
-        }
-
-        if (!professionalTermsAccepted)
-        {
-            ModelState.AddModelError(nameof(professionalTermsAccepted),
-                "Please check the authorization box to verify your license before continuing.");
-        }
-
         if (!ModelState.IsValid)
         {
             state.BrokerageName = brokerageName?.Trim() ?? "";
-            state.LicenseNumber = licenseNumber?.Trim() ?? "";
-            state.LicenseState = licenseState?.Trim() ?? "";
-            state.ServiceAreas = serviceAreas?.Trim() ?? "";
-            state.OfficeAddress = officeAddress?.Trim() ?? "";
-            state.OfficeCity = officeCity?.Trim() ?? "";
-            state.OfficeState = officeState?.Trim() ?? "";
-            state.OfficeZip = officeZip?.Trim() ?? "";
-            state.Languages = languagesCsv;
-            state.ProfessionalTermsAccepted = professionalTermsAccepted;
-
-            return View(StepVm(2, "Realtor Verification",
-                "Enter your license information so we can verify your realtor profile.",
-                state, "",
+            return View(StepVm(1, "Welcome to INDOR for Realtors",
+                "This is your professional space for clients, files, and quotes. No license or documents required to start.",
+                state, Url.Action("SelectRole", "Account")!,
                 registration.GetLicenseStates()));
         }
 
-        state.BrokerageName = brokerageName?.Trim() ?? "";
-        state.LicenseNumber = licenseNumber.Trim();
-        state.LicenseState = licenseState.Trim();
-        state.ServiceAreas = serviceAreas?.Trim() ?? "";
-        state.OfficeAddress = officeAddress?.Trim() ?? "";
-        state.OfficeCity = officeCity?.Trim() ?? "";
-        state.OfficeState = officeState?.Trim().ToUpperInvariant() ?? "";
-        state.OfficeZip = UsZipCodeAttribute.NormalizeToStorage(officeZip) ?? "";
-        state.Languages = normalizedLanguages;
-        state.ProfessionalTermsAccepted = professionalTermsAccepted;
+        state.BrokerageName = brokerageName!.Trim();
+        // License, office, languages, and documents are completed later in Profile.
+        state.LicenseNumber = state.LicenseNumber ?? "";
+        state.LicenseState = state.LicenseState ?? "";
+        state.ServiceAreas = state.ServiceAreas ?? "";
+        state.OfficeAddress = state.OfficeAddress ?? "";
+        state.OfficeCity = state.OfficeCity ?? "";
+        state.OfficeState = state.OfficeState ?? "";
+        state.OfficeZip = state.OfficeZip ?? "";
+        state.Languages = string.IsNullOrWhiteSpace(state.Languages) ? "English" : state.Languages;
+        state.ProfessionalTermsAccepted = true;
 
         await registration.SaveProfileAsync(state);
-        return RedirectToAction(nameof(Verification));
+        await registration.CompleteVerificationAsync(skipped: true);
+        return RedirectToAction(nameof(Ready));
     }
 
     [HttpGet]
     public async Task<IActionResult> Verification()
     {
-        var state = await registration.GetAsync();
-        if (string.IsNullOrWhiteSpace(state.LicenseNumber))
+        var realtor = await registration.GetRealtorForCurrentUserAsync();
+        if (realtor == null || !registration.IsRegistrationComplete(realtor))
         {
+            // Quick-entry users finish registration first; verification is optional later.
             return RedirectToAction(nameof(Profile));
         }
 
+        var state = await registration.GetAsync();
         await registration.EnsureDocumentSlotsAsync();
         ViewBag.DocumentSlots = await registration.GetDocumentSlotsAsync();
         ViewBag.LicenseNumber = state.LicenseNumber;
 
-        var realtor = await registration.GetRealtorForCurrentUserAsync();
-        var backUrl = realtor != null && registration.IsRegistrationComplete(realtor)
-            ? Url.Action("Profile", "Realtor")
-            : Url.Action(nameof(Profile));
-
-        return View(StepVm(3, "Optional Verification",
+        return View(StepVm(2, "Optional Verification",
             "You can do this now or update it later from your profile.",
-            state, backUrl,
+            state, Url.Action("Profile", "Realtor")!,
             registration.GetLicenseStates()));
     }
 
@@ -300,7 +234,7 @@ public class RealtorRegistrationController(
         {
             Step = displayStep - 1,
             DisplayStep = displayStep,
-            TotalSteps = 4,
+            TotalSteps = 2,
             Title = title,
             Subtitle = subtitle,
             BackUrl = backUrl,

@@ -5,25 +5,24 @@
         .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
         .Where(m => !string.IsNullOrWhiteSpace(m))
         .Distinct()
-        .Select(m => UiDisplayLocalization.Localize(L, m))
+        .Select(m => UiDisplayLocalization.Localize(L, m!))
         .ToList();
+    var usStates = new[]
+    {
+        "AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD",
+        "MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC",
+        "SD","TN","TX","UT","VT","VA","WA","WV","WI","WY","DC"
+    };
 }
+
 <form asp-action="Property" method="get" class="rl-search-form">
-
     <div class="rl-search-bar">
-
         <i class="fas fa-magnifying-glass"></i>
-
         <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search properties by address or client name"]" />
-
     </div>
-
 </form>
 
-
-
 <form id="quotePropertyForm" asp-action="Property" method="post" class="rl-invite-form">
-
     @Html.AntiForgeryToken()
 
     <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
@@ -43,99 +42,114 @@
             </div>
         </div>
     }
-    @if (Model.Properties.Count == 0)
 
-    {
-
-        <div class="rl-dash-empty">@L["No properties found. Create a property file first."]</div>
-
-    }
-
-    else
-
-    {
-
-        @foreach (var prop in Model.Properties)
-
-        {
-
-            var selected = Model.SelectedPropertyFileId == prop.Id;
-
-            <label class="rl-property-pick rl-property-pick--card @(selected ? "is-selected" : "")">
-
-                <input type="radio" name="propertyFileId" value="@prop.Id" @(selected ? "checked" : null) />
-
-                <img src="@(prop.PhotoUrl ?? "/welcome-house.png")" alt="" class="rl-property-pick-thumb" />
-
-                <span class="rl-property-pick-body">
-
-                    <strong>@prop.Address</strong>
-
-                    @if (!string.IsNullOrWhiteSpace(prop.ClientName))
-
-                    {
-
-                        <span><i class="fas fa-user"></i> @prop.ClientName</span>
-
-                    }
-
-                </span>
-
-                <span class="rl-phase-badge rl-phase-badge--@prop.FilePhaseCss">@L[prop.FilePhase]</span>
-
-            </label>
-
-        }
-
-    }
-
-
-
-    <div class="rl-info-box">
-
-        <i class="fas fa-circle-info"></i>
-
-        <p>@L["Choose an existing property file so photos, reports, and quotes stay connected."]</p>
-
+    <div class="rl-uq-quickadd is-open" id="qrQuickAdd">
+        <div class="rl-uq-quickadd-head">
+            <span class="rl-uq-quickadd-icon"><i class="fas fa-location-dot"></i></span>
+            <span class="rl-uq-quickadd-title">
+                <strong>@L["Search address with Google"]</strong>
+                <small>@L["Add a property by address to request a work quote"]</small>
+            </span>
+        </div>
+        <div class="rl-uq-quickadd-body">
+            <div class="rl-uq-field">
+                <label>@L["Street address"]</label>
+                <input type="text"
+                       id="qrGoogleAddress"
+                       name="newPropertyAddress"
+                       placeholder="@L["Start typing an address…"]"
+                       data-address-autocomplete
+                       data-ac-city="qrCity"
+                       data-ac-state="qrState"
+                       data-ac-zip="qrZip"
+                       autocomplete="off" />
+            </div>
+            <div class="rl-uq-grid3">
+                <div class="rl-uq-field">
+                    <label>@L["City"]</label>
+                    <input type="text" id="qrCity" name="newPropertyCity" placeholder="@L["City"]" autocomplete="address-level2" />
+                </div>
+                <div class="rl-uq-field">
+                    <label>@L["State"]</label>
+                    <select id="qrState" name="newPropertyState">
+                        <option value="">--</option>
+                        @foreach (var st in usStates)
+                        {
+                            <option value="@st">@st</option>
+                        }
+                    </select>
+                </div>
+                <div class="rl-uq-field">
+                    <label>@L["ZIP code"]</label>
+                    <input type="text" id="qrZip" name="newPropertyZip" placeholder="@L["ZIP"]" inputmode="numeric" autocomplete="postal-code" />
+                </div>
+            </div>
+            <p class="rl-field-hint">@L["INDOR will create a property file and send your quote request to providers."]</p>
+        </div>
     </div>
 
+    <h2 class="rl-invite-section-title">@L["Or select a saved property"]</h2>
+
+    @if (Model.Properties.Count == 0)
+    {
+        <div class="rl-dash-empty">@L["No saved properties yet. Use Google address search above."]</div>
+    }
+    else
+    {
+        @foreach (var prop in Model.Properties)
+        {
+            var selected = Model.SelectedPropertyFileId == prop.Id;
+            <label class="rl-property-pick rl-property-pick--card @(selected ? "is-selected" : "")">
+                <input type="radio" name="propertyFileId" value="@prop.Id" @(selected ? "checked" : null) />
+                <img src="@(prop.PhotoUrl ?? "/welcome-house.png")" alt="" class="rl-property-pick-thumb" />
+                <span class="rl-property-pick-body">
+                    <strong>@prop.Address</strong>
+                    @if (!string.IsNullOrWhiteSpace(prop.ClientName))
+                    {
+                        <span><i class="fas fa-user"></i> @prop.ClientName</span>
+                    }
+                </span>
+                <span class="rl-phase-badge rl-phase-badge--@prop.FilePhaseCss">@L[prop.FilePhase]</span>
+            </label>
+        }
+    }
+
+    <div class="rl-info-box">
+        <i class="fas fa-circle-info"></i>
+        <p>@L["Choose an existing property file so photos, reports, and quotes stay connected — or add a new address with Google."]</p>
+    </div>
 </form>
 
-
-
 <div class="rl-invite-actions">
-
     <form asp-action="Cancel" method="post">
-
         @Html.AntiForgeryToken()
-
         <button type="submit" class="rl-invite-cancel">@L["Cancel"]</button>
-
     </form>
-
     <button type="submit" form="quotePropertyForm" class="ob-btn ob-btn-primary">@L["Next"]</button>
-
 </div>
 
-
-
 @section Scripts {
-
+@await Html.PartialAsync("_AddressAutocompleteScripts")
 <script>
+(function () {
+    var form = document.getElementById('quotePropertyForm');
+    var addressInput = document.getElementById('qrGoogleAddress');
 
-    document.querySelectorAll('.rl-property-pick input').forEach(r => {
-
-        r.addEventListener('change', () => {
-
-            document.querySelectorAll('.rl-property-pick').forEach(p => p.classList.remove('is-selected'));
-
+    document.querySelectorAll('.rl-property-pick input[type="radio"]').forEach(function (r) {
+        r.addEventListener('change', function () {
+            document.querySelectorAll('.rl-property-pick').forEach(function (p) { p.classList.remove('is-selected'); });
             r.closest('.rl-property-pick')?.classList.add('is-selected');
-
+            if (addressInput) addressInput.value = '';
         });
-
     });
 
+    if (addressInput) {
+        addressInput.addEventListener('input', function () {
+            if (!addressInput.value.trim()) return;
+            document.querySelectorAll('.rl-property-pick input[type="radio"]').forEach(function (r) { r.checked = false; });
+            document.querySelectorAll('.rl-property-pick').forEach(function (p) { p.classList.remove('is-selected'); });
+        });
+    }
+})();
 </script>
-
 }
-

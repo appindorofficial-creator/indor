@@ -1,809 +1,85 @@
 @using IndorMvcApp.Validation
-
 @model IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel
-
 @{
-
     var s = Model.State;
-
     string FieldError(string key) => ViewData.ModelState[key]?.Errors.FirstOrDefault()?.ErrorMessage ?? "";
-
     var brokerageError = FieldError("brokerageName");
-
-    var licenseError = FieldError("licenseNumber");
-
-    var licenseStateError = FieldError("licenseState");
-
-    var languagesError = FieldError("languages");
-
-    var termsError = FieldError("professionalTermsAccepted");
-    var serviceAreasError = FieldError("serviceAreas");
-    var officeAddressError = FieldError("officeAddress");
-    var officeCityError = FieldError("officeCity");
-    var officeStateError = FieldError("officeState");
-    var officeZipError = FieldError("officeZip");
-
-    var selectedLanguages = (s.Languages ?? "")
-        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-        .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
     var formErrors = ViewData.ModelState.Values
         .SelectMany(v => v.Errors)
         .Select(e => e.ErrorMessage)
         .Where(m => !string.IsNullOrWhiteSpace(m))
         .Distinct()
         .ToList();
-
 }
 
 <div class="ob-head-block">
-
-    <h1>@Model.Title</h1>
-
-    <p>@Model.Subtitle</p>
-
+    <h1>@UiDisplayLocalization.Localize(L, Model.Title)</h1>
+    <p>@UiDisplayLocalization.Localize(L, Model.Subtitle)</p>
 </div>
 
-<div class="rl-error-banner @(formErrors.Count == 0 ? "is-hidden" : null)" id="profileFormErrorBanner" role="alert">
-    <i class="fas fa-triangle-exclamation"></i>
-    <div>
-        <span id="profileFormErrorSummary">@(formErrors.Count > 0 ? L["Please fix the following before continuing:"] : "")</span>
-        <ul class="rl-error-list" id="profileFormErrorList">
-            @foreach (var msg in formErrors)
-            {
-                <li>@msg</li>
-            }
-        </ul>
+@if (formErrors.Count > 0)
+{
+    <div class="rl-error-banner" role="alert">
+        <i class="fas fa-triangle-exclamation"></i>
+        <div>
+            <span>@L["Please fix the following before continuing:"]</span>
+            <ul class="rl-error-list">
+                @foreach (var msg in formErrors)
+                {
+                    <li>@UiDisplayLocalization.Localize(L, msg)</li>
+                }
+            </ul>
+        </div>
     </div>
-</div>
+}
 
 <form asp-action="Profile" method="post" class="rl-reg-form" id="rlRegProfileForm" novalidate>
-
     @Html.AntiForgeryToken()
 
     <div class="rl-field-block">
-
-        <span class="rl-field-label">@L["Brokerage / Company Name"] <span class="rl-required" aria-hidden="true">*</span></span>
-
+        <span class="rl-field-label">@L["Brokerage / Company"] <span class="rl-required" aria-hidden="true">*</span></span>
         <label class="rl-field @(brokerageError.Length > 0 ? "is-error" : "")">
-
             <i class="fas fa-building"></i>
-
             <input type="text"
-
                    name="brokerageName"
-
                    value="@s.BrokerageName"
-
                    placeholder="@L["Keller Williams Realty"]"
-
                    autocomplete="organization"
-
                    aria-required="true"
-
                    aria-invalid="@(brokerageError.Length > 0)"
-
                    @(brokerageError.Length > 0 ? Html.Raw("aria-describedby=\"brokerageNameError\"") : null) />
-
         </label>
-
-        <span class="rl-field-error" id="brokerageNameError">@brokerageError</span>
+        <span class="rl-field-error" id="brokerageNameError">@UiDisplayLocalization.Localize(L, brokerageError)</span>
     </div>
 
-
-
-    <div class="rl-field-block">
-
-        <span class="rl-field-label">@L["Real Estate License Number"] <span class="rl-required" aria-hidden="true">*</span></span>
-
-        <label class="rl-field @(licenseError.Length > 0 ? "is-error" : "")">
-
-            <i class="fas fa-id-card"></i>
-
-            <input type="text"
-
-                   name="licenseNumber"
-
-                   value="@s.LicenseNumber"
-
-                   placeholder="@L["BRE123456"]"
-
-                   inputmode="text"
-
-                   autocomplete="off"
-
-                   aria-required="true"
-
-                   aria-invalid="@(licenseError.Length > 0)"
-
-                   @(licenseError.Length > 0 ? Html.Raw("aria-describedby=\"licenseNumberError\"") : null) />
-
-        </label>
-
-        <span class="rl-field-error" id="licenseNumberError">@licenseError</span>
-    </div>
-
-
-
-    <div class="rl-field-block">
-
-        <span class="rl-field-label">@L["License State"] <span class="rl-required" aria-hidden="true">*</span></span>
-
-        <label class="rl-field @(licenseStateError.Length > 0 ? "is-error" : "")">
-
-            <i class="fas fa-shield-halved"></i>
-
-            <select name="licenseState"
-
-                    aria-required="true"
-
-                    aria-invalid="@(licenseStateError.Length > 0)"
-
-                    @(licenseStateError.Length > 0 ? Html.Raw("aria-describedby=\"licenseStateError\"") : null)>
-
-                <option value="">@L["Select state"]</option>
-
-                @foreach (var st in Model.LicenseStates)
-
-                {
-
-                    <option value="@st" selected="@(s.LicenseState == st)">@st</option>
-
-                }
-
-            </select>
-
-        </label>
-
-        <span class="rl-field-error" id="licenseStateError">@licenseStateError</span>
-    </div>
-
-    <div class="rl-field-block">
-        <span class="rl-field-label">@L["City / Market Area"] <span class="rl-required" aria-hidden="true">*</span></span>
-        <label class="rl-field @(serviceAreasError.Length > 0 ? "is-error" : "")">
-            <i class="fas fa-map"></i>
-            <input type="text"
-                   name="serviceAreas"
-                   value="@s.ServiceAreas"
-                   placeholder="@L["Charlotte, NC"]"
-                   aria-required="true"
-                   aria-invalid="@(serviceAreasError.Length > 0)"
-                   @(serviceAreasError.Length > 0 ? Html.Raw("aria-describedby=\"serviceAreasError\"") : null) />
-        </label>
-        <span class="rl-field-error" id="serviceAreasError">@serviceAreasError</span>
-    </div>
-
-    <div class="rl-field-block rl-field-block--address">
-        <span class="rl-field-label">@L["Office Address"] <span class="rl-required" aria-hidden="true">*</span></span>
-        <label class="rl-field @(officeAddressError.Length > 0 ? "is-error" : "")">
-            <i class="fas fa-location-dot"></i>
-            <input type="text"
-                   id="rr-office-address"
-                   name="officeAddress"
-                   value="@s.OfficeAddress"
-                   placeholder="@L["House number and street name"]"
-                   autocomplete="address-line1"
-                   data-address-autocomplete
-                   data-ac-street-only="true"
-                   data-ac-city="rr-office-city"
-                   data-ac-state="rr-office-state"
-                   data-ac-zip="rr-office-zip"
-                   aria-required="true"
-                   aria-invalid="@(officeAddressError.Length > 0)"
-                   @(officeAddressError.Length > 0 ? Html.Raw("aria-describedby=\"officeAddressError\"") : null) />
-        </label>
-        <p class="rl-field-hint">@L["As you type, we'll suggest US addresses and auto-fill city, state, and ZIP when available."]</p>
-        <span class="rl-field-error" id="officeAddressError">@officeAddressError</span>
-
-        <div class="rl-reg-office-grid">
-            <p class="rl-field-hint rl-field-hint--section">@L["Complete city, state, and ZIP for your office address."]</p>
-            <div class="rl-field-block rl-field-block--compact">
-                <span class="rl-field-label">@L["City"] <span class="rl-required" aria-hidden="true">*</span></span>
-                <label class="rl-field @(officeCityError.Length > 0 ? "is-error" : "")">
-                    <i class="fas fa-building"></i>
-                    <input type="text"
-                           id="rr-office-city"
-                           name="officeCity"
-                           value="@s.OfficeCity"
-                           placeholder="@L["City"]"
-                           autocomplete="address-level2"
-                           data-city-autocomplete
-                           data-ac-state="rr-office-state"
-                           data-ac-zip="rr-office-zip"
-                           aria-required="true"
-                           aria-invalid="@(officeCityError.Length > 0)"
-                           @(officeCityError.Length > 0 ? Html.Raw("aria-describedby=\"officeCityError\"") : null) />
-                </label>
-                <span class="rl-field-error" id="officeCityError">@officeCityError</span>
-            </div>
-
-            <div class="rl-field-block rl-field-block--compact">
-                <span class="rl-field-label">@L["State"] <span class="rl-required" aria-hidden="true">*</span></span>
-                <label class="rl-field @(officeStateError.Length > 0 ? "is-error" : "")">
-                    <i class="fas fa-map"></i>
-                    <select id="rr-office-state"
-                            name="officeState"
-                            data-ac-zip="rr-office-zip"
-                            data-ac-city="rr-office-city"
-                            aria-required="true"
-                            aria-invalid="@(officeStateError.Length > 0)"
-                            @(officeStateError.Length > 0 ? Html.Raw("aria-describedby=\"officeStateError\"") : null)>
-                        <option value="">@L["State"]</option>
-                        @foreach (var st in Model.LicenseStates)
-                        {
-                            <option value="@st" selected="@(s.OfficeState == st)">@st</option>
-                        }
-                    </select>
-                </label>
-                <span class="rl-field-error" id="officeStateError">@officeStateError</span>
-            </div>
-
-            <div class="rl-field-block rl-field-block--compact">
-                <span class="rl-field-label">@L["ZIP"] <span class="rl-required" aria-hidden="true">*</span></span>
-                <label class="rl-field @(officeZipError.Length > 0 ? "is-error" : "")">
-                    <i class="fas fa-envelope"></i>
-                    <input type="text"
-                           id="rr-office-zip"
-                           name="officeZip"
-                           value="@s.OfficeZip"
-                           placeholder="@L["ZIP"]"
-                           inputmode="numeric"
-                           autocomplete="postal-code"
-                           maxlength="10"
-                           data-zip-input
-                           aria-required="true"
-                           aria-invalid="@(officeZipError.Length > 0)"
-                           @(officeZipError.Length > 0 ? Html.Raw("aria-describedby=\"officeZipError\"") : null) />
-                </label>
-                <span class="rl-field-hint" id="rr-office-zip-hint" data-ac-zip-hint-for="rr-office-zip" hidden>@L["Suggested from city and state. Change it if your office uses a different ZIP."]</span>
-                <span class="rl-field-error" id="officeZipError">@officeZipError</span>
-            </div>
-        </div>
-    </div>
-
-
-
-    <div class="rl-field-block">
-
-        <span class="rl-field-label">@L["Languages"] <span class="rl-required" aria-hidden="true">*</span></span>
-
-        <p class="rl-field-hint">@L["Select one or more: English and Spanish only."]</p>
-
-        <div class="rl-lang-options @(languagesError.Length > 0 ? "is-error" : "")"
-
-             id="rlSupportedLanguages"
-
-             data-supported-languages="@string.Join(",", Model.SupportedLanguages)"
-
-             @(languagesError.Length > 0 ? Html.Raw("aria-describedby=\"languagesError\"") : null)>
-
-            @foreach (var lang in Model.SupportedLanguages)
-
-            {
-
-                <label class="rl-lang-option">
-
-                    <input type="checkbox"
-
-                           name="languages"
-
-                           value="@lang"
-
-                           @(selectedLanguages.Contains(lang) ? "checked" : null) />
-
-                    <i class="fas fa-globe"></i>
-
-                    <span>@lang</span>
-
-                </label>
-
-            }
-
-        </div>
-
-        <span class="rl-field-error" id="languagesError">@languagesError</span>
-    </div>
-
-
-
-    <div class="rl-info-box">
-
-        <i class="fas fa-circle-info"></i>
-
-        <div>
-
-            <strong class="rl-info-box-title">@L["License Verification"]</strong>
-
-            <p>@L["Your realtor license verification may take up to 24 hours. You can continue using Home Indor while we review your information. If there is any issue with your license or we need more information, we will notify you."]</p>
-
-        </div>
-
-    </div>
-
-
-
-    <label class="rl-terms @(termsError.Length > 0 ? "is-error" : "")">
-
-        <input type="hidden" name="professionalTermsAccepted" value="false" />
-
-        <input type="checkbox"
-
-               id="professionalTermsAccepted"
-
-               name="professionalTermsAccepted"
-
-               value="true"
-
-               aria-required="true"
-
-               aria-invalid="@(termsError.Length > 0)"
-
-               @(s.ProfessionalTermsAccepted ? "checked" : null)
-
-               @(termsError.Length > 0 ? Html.Raw("aria-describedby=\"termsError\"") : null) />
-
-        <span>@L["I authorize Home Indor to verify my real estate license using the information provided."] <span class="rl-required" aria-hidden="true">*</span></span>
-
-    </label>
-
-    <span class="rl-field-error rl-field-error--terms" id="termsError">@termsError</span>
-
-    <div class="rl-error-banner rl-error-banner--inline is-hidden" id="profileFormContinueAlert" role="alert" aria-live="polite">
-        <i class="fas fa-triangle-exclamation"></i>
-        <div>
-            <strong id="profileFormContinueAlertTitle">@L["Please complete the required fields above."]</strong>
-            <ul class="rl-error-list" id="profileFormContinueAlertList"></ul>
-        </div>
-    </div>
+    <p class="rl-field-hint" style="margin-top:4px;margin-bottom:16px;">
+        @L["Complete the rest from your profile later"]
+    </p>
 
     <button type="submit" id="rlRegProfileContinueBtn" class="ob-btn ob-btn-primary">@L["Continue"]</button>
-
 </form>
 
-
-
 @section Scripts {
-<script src="~/js/realtor-license-number.js" asp-append-version="true"></script>
-<script src="~/js/zip-input.js" asp-append-version="true"></script>
-@await Html.PartialAsync("_AddressAutocompleteScripts")
 <script>
 (function () {
     var form = document.getElementById('rlRegProfileForm');
-    if (!form) {
-        return;
-    }
-
-    function scrollToFirstError() {
-        var firstFieldError = form.querySelector('.rl-field-error:not(:empty), .rl-field.is-error, .rl-terms.is-error, .rl-lang-options.is-error');
-        if (firstFieldError) {
-            var scrollTarget = firstFieldError.closest('.rl-field-block')
-                || firstFieldError.closest('.rl-terms')
-                || firstFieldError.closest('.rl-lang-options')
-                || firstFieldError;
-            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            return;
-        }
-
-        var banner = document.getElementById('profileFormErrorBanner');
-        if (banner && !banner.classList.contains('is-hidden')) {
-            banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    }
-
-    function showContinueAlert(messages) {
-        var alert = document.getElementById('profileFormContinueAlert');
-        var list = document.getElementById('profileFormContinueAlertList');
-        var title = document.getElementById('profileFormContinueAlertTitle');
-        if (!alert || !list) {
-            return;
-        }
-
-        list.innerHTML = '';
-        var seen = {};
-        messages.forEach(function (message) {
-            if (!message || seen[message]) {
-                return;
-            }
-            seen[message] = true;
-            var item = document.createElement('li');
-            item.textContent = message;
-            list.appendChild(item);
-        });
-
-        if (title) {
-            title.textContent = messages.length === 1
-                ? 'Please fix this before continuing:'
-                : 'Please fix the following before continuing:';
-        }
-
-        alert.classList.remove('is-hidden');
-    }
-
-    function hideContinueAlert() {
-        var alert = document.getElementById('profileFormContinueAlert');
-        var list = document.getElementById('profileFormContinueAlertList');
-        if (alert) {
-            alert.classList.add('is-hidden');
-        }
-        if (list) {
-            list.innerHTML = '';
-        }
-    }
-
-    function showFormErrorBanner(messages) {
-        var banner = document.getElementById('profileFormErrorBanner');
-        var summary = document.getElementById('profileFormErrorSummary');
-        var list = document.getElementById('profileFormErrorList');
-        if (!banner || !list) {
-            return;
-        }
-
-        list.innerHTML = '';
-        var seen = {};
-        messages.forEach(function (message) {
-            if (!message || seen[message]) {
-                return;
-            }
-            seen[message] = true;
-            var item = document.createElement('li');
-            item.textContent = message;
-            list.appendChild(item);
-        });
-
-        if (summary) {
-            summary.textContent = messages.length === 1
-                ? 'Please fix this before continuing:'
-                : 'Please fix the following before continuing:';
-        }
-
-        banner.classList.remove('is-hidden');
-        showContinueAlert(messages);
-    }
-
-    function hideFormErrorBanner() {
-        var banner = document.getElementById('profileFormErrorBanner');
-        var list = document.getElementById('profileFormErrorList');
-        if (banner) {
-            banner.classList.add('is-hidden');
-        }
-        if (list) {
-            list.innerHTML = '';
-        }
-        hideContinueAlert();
-    }
-
-    scrollToFirstError();
-    (function () {
-        var serverList = document.getElementById('profileFormErrorList');
-        if (!serverList || !serverList.children.length) {
-            return;
-        }
-        var serverMessages = Array.prototype.map.call(serverList.children, function (item) {
-            return (item.textContent || '').trim();
-        }).filter(Boolean);
-        if (serverMessages.length) {
-            showContinueAlert(serverMessages);
-        }
-    })();
-
-    var streetSuffixes = {
-        st: true, street: true, rd: true, road: true, ave: true, avenue: true,
-        blvd: true, boulevard: true, dr: true, drive: true, ln: true, lane: true,
-        way: true, ct: true, court: true, cir: true, circle: true, pl: true, place: true,
-        pkwy: true, parkway: true, ter: true, terrace: true, trl: true, trail: true,
-        hwy: true, highway: true, loop: true, pass: true, path: true, row: true,
-        run: true, walk: true, xing: true, crossing: true, pike: true, sq: true,
-        square: true, aly: true, alley: true, cres: true, crescent: true, cv: true,
-        cove: true, bnd: true, bend: true, pt: true, point: true, grv: true, grove: true,
-        vw: true, view: true
-    };
-    var streetDirectionals = {
-        n: true, s: true, e: true, w: true, ne: true, nw: true, se: true, sw: true,
-        north: true, south: true, east: true, west: true
-    };
-
-    function normalizeStreetToken(token) {
-        return token.replace(/^[.,#]+|[.,#]+$/g, '').toLowerCase();
-    }
-
-    function hasCompleteStreetLine(tokens) {
-        var normalized = tokens
-            .map(normalizeStreetToken)
-            .filter(function (token) { return token.length > 0; });
-
-        if (normalized.some(function (token) { return streetSuffixes[token]; })) {
-            return normalized.some(function (token) {
-                return /[a-zA-Z]/.test(token) && !streetDirectionals[token];
-            });
-        }
-
-        var nameTokens = normalized.filter(function (token) {
-            return /[a-zA-Z]/.test(token) && !streetDirectionals[token];
-        });
-        return nameTokens.length >= 2;
-    }
-
-    function isValidStreetAddress(value) {
-        var line = String(value || '').trim();
-        if (line.length < 5) return false;
-        if (!/[a-zA-Z]/.test(line)) return false;
-        if (/^[\d\s.,#-]+$/.test(line)) return false;
-        var tokens = line.split(/\s+/).filter(Boolean);
-        if (!/\d/.test(line)) return false;
-        return hasCompleteStreetLine(tokens);
-    }
-
-    var supportedRoot = document.getElementById('rlSupportedLanguages');
-    var supported = (supportedRoot?.dataset.supportedLanguages || 'English,Spanish')
-        .split(',')
-        .map(function (item) { return item.trim(); })
-        .filter(Boolean);
-
-    function setFieldError(errorId, fieldSelector, message) {
-        var errorEl = document.getElementById(errorId);
-        var field = form.querySelector(fieldSelector)?.closest('.rl-field');
-        if (errorEl) {
-            errorEl.textContent = message || '';
-        }
-        if (field) {
-            field.classList.toggle('is-error', !!message);
-        }
-        return !!message;
-    }
-
-    function setLanguagesError(message) {
-        var errorEl = document.getElementById('languagesError');
-        if (errorEl) {
-            errorEl.textContent = message || '';
-        }
-        if (supportedRoot) {
-            supportedRoot.classList.toggle('is-error', !!message);
-        }
-        return !!message;
-    }
-
-    function setTermsError(message) {
-        var errorEl = document.getElementById('termsError');
-        var terms = form.querySelector('.rl-terms');
-        if (errorEl) {
-            errorEl.textContent = message || '';
-        }
-        if (terms) {
-            terms.classList.toggle('is-error', !!message);
-        }
-        return !!message;
-    }
-
-    function setLicenseError(message) {
-        return setFieldError('licenseNumberError', 'input[name="licenseNumber"]', message);
-    }
-
-    function clearAllFieldErrors() {
-        setFieldError('brokerageNameError', 'input[name="brokerageName"]', '');
-        setLicenseError('');
-        setFieldError('licenseStateError', 'select[name="licenseState"]', '');
-        setFieldError('serviceAreasError', 'input[name="serviceAreas"]', '');
-        setFieldError('officeAddressError', 'input[name="officeAddress"]', '');
-        setFieldError('officeCityError', 'input[name="officeCity"]', '');
-        setFieldError('officeStateError', 'select[name="officeState"]', '');
-        setFieldError('officeZipError', 'input[name="officeZip"]', '');
-        setLanguagesError('');
-        setTermsError('');
-    }
-
-    function validateProfileForm() {
-        var hasError = false;
-        var messages = [];
-        clearAllFieldErrors();
-        hideFormErrorBanner();
-
-        var brokerage = form.querySelector('input[name="brokerageName"]');
-        if (!brokerage || !brokerage.value.trim()) {
-            var message = 'Brokerage / Company Name is required.';
-            hasError = setFieldError('brokerageNameError', 'input[name="brokerageName"]', message) || hasError;
-            messages.push(message);
-        }
-
-        var licenseInput = form.querySelector('input[name="licenseNumber"]');
-        if (licenseInput && window.IndorRealtorLicense) {
-            var licenseMessage = window.IndorRealtorLicense.validate(licenseInput.value);
-            if (licenseMessage) {
-                hasError = setLicenseError(licenseMessage) || hasError;
-                messages.push(licenseMessage);
-            }
-        } else if (licenseInput && !licenseInput.value.trim()) {
-            var licenseRequired = 'License number is required.';
-            hasError = setLicenseError(licenseRequired) || hasError;
-            messages.push(licenseRequired);
-        }
-
-        var licenseState = form.querySelector('select[name="licenseState"]');
-        if (!licenseState || !licenseState.value.trim()) {
-            var stateMessage = 'Please select your license state.';
-            hasError = setFieldError('licenseStateError', 'select[name="licenseState"]', stateMessage) || hasError;
-            messages.push(stateMessage);
-        }
-
-        var serviceAreas = form.querySelector('input[name="serviceAreas"]');
-        if (!serviceAreas || !serviceAreas.value.trim()) {
-            var areaMessage = 'City / market area is required.';
-            hasError = setFieldError('serviceAreasError', 'input[name="serviceAreas"]', areaMessage) || hasError;
-            messages.push(areaMessage);
-        }
-
-        var officeAddress = form.querySelector('input[name="officeAddress"]');
-        var officeCity = form.querySelector('input[name="officeCity"]');
-        var officeState = form.querySelector('select[name="officeState"]');
-        var officeZip = form.querySelector('input[name="officeZip"]');
-        var officeAddressMessage = 'Enter a complete street address with street name and type (e.g. 123 Main St).';
-
-        if (!officeAddress || !officeAddress.value.trim()) {
-            var addressRequiredMessage = 'Office address is required.';
-            hasError = setFieldError('officeAddressError', 'input[name="officeAddress"]', addressRequiredMessage) || hasError;
-            messages.push(addressRequiredMessage);
-        } else if (!isValidStreetAddress(officeAddress.value)) {
-            hasError = setFieldError('officeAddressError', 'input[name="officeAddress"]', officeAddressMessage) || hasError;
-            messages.push(officeAddressMessage);
-        }
-
-        if (!officeCity || !officeCity.value.trim()) {
-            var cityMessage = 'City is required.';
-            hasError = setFieldError('officeCityError', 'input[name="officeCity"]', cityMessage) || hasError;
-            messages.push(cityMessage);
-        }
-
-        if (!officeState || !officeState.value.trim()) {
-            var stateMessage = 'State is required.';
-            hasError = setFieldError('officeStateError', 'select[name="officeState"]', stateMessage) || hasError;
-            messages.push(stateMessage);
-        }
-
-        var zipMessage = 'Enter a valid 5-digit ZIP code (e.g. 77002).';
-        if (!officeZip || !officeZip.value.trim()) {
-            var zipRequiredMessage = 'ZIP code is required.';
-            hasError = setFieldError('officeZipError', 'input[name="officeZip"]', zipRequiredMessage) || hasError;
-            messages.push(zipRequiredMessage);
-        } else if (window.IndorZipInput && !window.IndorZipInput.isValidRequired(officeZip.value)) {
-            hasError = setFieldError('officeZipError', 'input[name="officeZip"]', zipMessage) || hasError;
-            messages.push(zipMessage);
-        } else if (!/^\d{5}(-\d{4})?$/.test(officeZip.value.trim())) {
-            hasError = setFieldError('officeZipError', 'input[name="officeZip"]', zipMessage) || hasError;
-            messages.push(zipMessage);
-        }
-
-        var checkedLanguages = form.querySelectorAll('input[name="languages"]:checked');
-        if (!checkedLanguages.length) {
-            var languagesMessage = 'Select at least one language.';
-            hasError = setLanguagesError(languagesMessage) || hasError;
-            messages.push(languagesMessage);
-        } else {
-            checkedLanguages.forEach(function (input) {
-                if (supported.indexOf(input.value) === -1) {
-                    var unsupportedMessage = 'Only English and Spanish are supported.';
-                    hasError = setLanguagesError(unsupportedMessage) || hasError;
-                    messages.push(unsupportedMessage);
-                }
-            });
-        }
-
-        var terms = document.getElementById('professionalTermsAccepted');
-        if (!terms || !terms.checked) {
-            var termsMessage = 'Please check the authorization box to verify your license before continuing.';
-            hasError = setTermsError(termsMessage) || hasError;
-            messages.push(termsMessage);
-        }
-
-        if (hasError) {
-            showFormErrorBanner(messages);
-            scrollToFirstError();
-            return false;
-        }
-
-        return true;
-    }
-
-    var licenseInput = form.querySelector('input[name="licenseNumber"]');
-    if (licenseInput && window.IndorRealtorLicense) {
-        window.IndorRealtorLicense.attach(licenseInput, {
-            errorEl: document.getElementById('licenseNumberError'),
-            validateOnLoad: false
-        });
-    }
-
-    [
-        'input[name="brokerageName"]',
-        'input[name="serviceAreas"]',
-        'input[name="officeAddress"]',
-        'input[name="officeCity"]',
-        'input[name="officeZip"]',
-        'select[name="licenseState"]',
-        'select[name="officeState"]'
-    ].forEach(function (selector) {
-        var input = form.querySelector(selector);
-        if (!input) {
-            return;
-        }
-        var errorId = input.name === 'licenseState'
-            ? 'licenseStateError'
-            : input.name === 'officeState'
-                ? 'officeStateError'
-            : input.name + 'Error';
-        input.addEventListener('input', function () {
-            setFieldError(errorId, selector, '');
-            hideFormErrorBanner();
-        });
-        input.addEventListener('blur', function () {
-            if (input.value.trim()) {
-                return;
-            }
-            var blurMessages = {
-                brokerageName: 'Brokerage / Company Name is required.',
-                serviceAreas: 'City / market area is required.',
-                officeAddress: 'Office address is required.',
-                officeCity: 'City is required.',
-                officeZip: 'ZIP code is required.'
-            };
-            var blurMessage = blurMessages[input.name];
-            if (blurMessage) {
-                setFieldError(errorId, selector, blurMessage);
-            }
-            if (input.name === 'licenseState' && !input.value.trim()) {
-                setFieldError('licenseStateError', 'select[name="licenseState"]', 'Please select your license state.');
-            }
-            if (input.name === 'officeState' && !input.value.trim()) {
-                setFieldError('officeStateError', 'select[name="officeState"]', 'State is required.');
-            }
-        });
-    });
-
-    if (licenseInput) {
-        licenseInput.addEventListener('input', function () {
-            setLicenseError('');
-            hideFormErrorBanner();
-        });
-    }
+    if (!form) return;
 
     form.addEventListener('submit', function (e) {
-        if (!validateProfileForm()) {
+        var input = form.querySelector('input[name="brokerageName"]');
+        var errorEl = document.getElementById('brokerageNameError');
+        var field = input?.closest('.rl-field');
+        var value = (input?.value || '').trim();
+        if (!value) {
             e.preventDefault();
+            if (errorEl) errorEl.textContent = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Brokerage / Company Name is required."].ToString()));
+            if (field) field.classList.add('is-error');
+            input?.focus();
+            return;
         }
+        if (errorEl) errorEl.textContent = '';
+        if (field) field.classList.remove('is-error');
     });
-
-    var continueBtn = document.getElementById('rlRegProfileContinueBtn');
-    if (continueBtn) {
-        continueBtn.addEventListener('click', function (e) {
-            if (!validateProfileForm()) {
-                e.preventDefault();
-                return;
-            }
-
-            if (typeof form.requestSubmit === 'function') {
-                e.preventDefault();
-                form.requestSubmit(continueBtn);
-            }
-        });
-    }
-
-    form.querySelectorAll('input[name="languages"]').forEach(function (input) {
-        input.addEventListener('change', function () {
-            setLanguagesError('');
-            hideFormErrorBanner();
-        });
-    });
-
-    var termsCheckbox = document.getElementById('professionalTermsAccepted');
-    if (termsCheckbox) {
-        termsCheckbox.addEventListener('change', function () {
-            setTermsError('');
-            hideFormErrorBanner();
-        });
-    }
-
-    var officeZipInput = document.getElementById('rr-office-zip');
-    if (officeZipInput && window.IndorZipInput) {
-        window.IndorZipInput.attach(officeZipInput, { required: true });
-    }
 })();
 </script>
 }
-

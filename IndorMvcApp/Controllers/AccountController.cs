@@ -524,7 +524,7 @@ public class AccountController : Controller
         }
 
         ViewBag.OnboardingStep = 2;
-        ViewBag.OnboardingTitle = _localizer["Create your profile"];
+        ViewBag.OnboardingTitle = _localizer["How will you use INDOR?"];
         ViewBag.OnboardingBackUrl = Url.Action(nameof(Welcome));
         ViewBag.OnboardingShowBack = true;
 
@@ -582,7 +582,7 @@ public class AccountController : Controller
         }
 
         ViewBag.OnboardingStep = 2;
-        ViewBag.OnboardingTitle = _localizer["Create your profile"];
+        ViewBag.OnboardingTitle = _localizer["How will you use INDOR?"];
         ViewBag.OnboardingBackUrl = Url.Action(nameof(Welcome));
         ViewBag.OnboardingShowBack = true;
         return View(model);
@@ -646,15 +646,9 @@ public class AccountController : Controller
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.UserId == user.Id);
 
-        if (proveedor == null)
+        if (proveedor == null || proveedor.RegistrationStatus == ProviderRegistrationStatuses.Draft)
         {
             return RedirectToAction("Entry", "ProviderRegistration");
-        }
-
-        if (proveedor.RegistrationStatus == ProviderRegistrationStatuses.Draft)
-        {
-            var action = _registration.ResolveWizardResumeAction(Math.Max(1, proveedor.CurrentStep));
-            return RedirectToAction(action, "ProviderRegistration");
         }
 
         return RedirectToAction("Dashboard", "Proveedor");
@@ -673,10 +667,13 @@ public class AccountController : Controller
 
         if (realtor.RegistrationStatus == RealtorRegistrationStatuses.Draft)
         {
-            var action = _realtorRegistration.ResolveWizardResumeAction(Math.Max(1, realtor.CurrentStep));
-            return action == "Dashboard"
-                ? RedirectToAction("Profile", "RealtorRegistration")
-                : RedirectToAction(action, "RealtorRegistration");
+            if (!string.IsNullOrWhiteSpace(realtor.BrokerageName))
+            {
+                await _realtorRegistration.CompleteVerificationAsync(skipped: true);
+                return RedirectToAction("Ready", "RealtorRegistration");
+            }
+
+            return RedirectToAction("Profile", "RealtorRegistration");
         }
 
         return RedirectToAction("Dashboard", "Realtor");

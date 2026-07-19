@@ -399,6 +399,17 @@
 .rl-ready-hero { text-align: center; margin-bottom: 24px; }
 .rl-ready-hero h1 { font-size: 1.35rem; margin: 0 0 8px; }
 .rl-ready-hero p { color: #64748B; margin: 0 0 16px; font-size: .9rem; }
+.rl-ready-check {
+    width: 64px;
+    height: 64px;
+    margin: 8px auto 16px;
+    border-radius: 50%;
+    background: #ECFDF5;
+    color: #059669;
+    display: grid;
+    place-items: center;
+    font-size: 1.5rem;
+}
 .rl-badge {
     display: inline-flex;
     align-items: center;

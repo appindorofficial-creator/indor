@@ -1114,14 +1114,14 @@ public class ProviderRegistrationService(
         await db.SaveChangesAsync(cancellationToken);
     }
 
-    public string ResolveWizardResumeAction(int currentStep) => currentStep switch
-    {
-        <= 1 => "Entry",
-        2 => "CompanyInfo",
-        3 => "Verification",
-        4 => "CategoriesAssessment",
-        _ => "ActivationCall"
-    };
+    public string ResolveWizardResumeAction(int currentStep) => "Entry";
+
+    private static string NormalizeOrganizationKind(string? value) =>
+        string.Equals(value, "Independent", StringComparison.OrdinalIgnoreCase)
+            ? "Independent"
+            : string.Equals(value, "Company", StringComparison.OrdinalIgnoreCase)
+                ? "Company"
+                : "";
 
     private static ProviderRegistrationState MapFromEntity(IndorProveedor entity)
     {
@@ -1177,6 +1177,7 @@ public class ProviderRegistrationService(
         var meta = new ProviderOnboardingMeta
         {
             OnboardingPath = state.OnboardingPath,
+            OrganizationKind = state.OrganizationKind,
             AssessmentSkipped = state.AssessmentSkipped,
             AssessmentStarted = state.AssessmentStarted,
             TermsAccepted = state.TermsAccepted,
@@ -1207,6 +1208,9 @@ public class ProviderRegistrationService(
             }
 
             state.OnboardingPath = meta.OnboardingPath;
+            state.OrganizationKind = string.IsNullOrWhiteSpace(meta.OrganizationKind)
+                ? NormalizeOrganizationKind(meta.OnboardingPath)
+                : meta.OrganizationKind;
             state.AssessmentSkipped = meta.AssessmentSkipped;
             state.AssessmentStarted = meta.AssessmentStarted;
             state.TermsAccepted = meta.TermsAccepted;

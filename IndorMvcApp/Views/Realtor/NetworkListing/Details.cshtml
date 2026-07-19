@@ -52,7 +52,7 @@
         <div asp-validation-summary="ModelOnly" class="rl-lw-validation"></div>
 
         @* ---------- STEP 1 — Why INDOR ---------- *@
-        <section class="rl-lw-step" data-step="1">
+        <section class="rl-lw-step is-active" data-step="1">
             <div class="rl-lw-hero">
                 <div class="rl-lw-hero-copy">
                     <h2 class="rl-lw-hero-title">@L["List smarter."]<br /><span class="rl-lw-hero-accent">@L["Reach closer."]</span></h2>
@@ -150,7 +150,12 @@
                     <div class="rl-listing-address-row rl-listing-address-row--inline">
                         <div class="rl-listing-address-field">
                             <span class="rl-listing-input-icon"><i class="fas fa-location-dot"></i></span>
-                            <input asp-for="Address" class="rl-form-input rl-form-input--with-icon" id="ListingAddress" placeholder="@L["Enter street address, city, state, ZIP"]" />
+                            <input asp-for="Address"
+                                   class="rl-form-input rl-form-input--with-icon"
+                                   id="ListingAddress"
+                                   placeholder="@L["Search address with Google…"]"
+                                   data-address-autocomplete
+                                   autocomplete="off" />
                         </div>
                         <button type="button" class="rl-listing-locate-btn" id="rlUseMyLocation" aria-label="@L["Use my location"]">
                             <i class="fas fa-crosshairs"></i>
@@ -361,8 +366,8 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+    @await Html.PartialAsync("_AddressAutocompleteScripts")
     <script src="@Url.Content("~/js/realtor-network-listing-wizard.js")" asp-append-version="true"></script>
-    <script>
     <script>
         window.rlListingWizardSteps = {
             1: { title: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Post Listing with INDOR"])), sub: '' },

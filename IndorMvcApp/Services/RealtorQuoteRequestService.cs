@@ -200,6 +200,71 @@ public class RealtorQuoteRequestService(
         await db.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task SavePropertyFromAddressAsync(
+        string address,
+        string? city = null,
+        string? state = null,
+        string? zip = null,
+        CancellationToken cancellationToken = default)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Realtor profile not found.");
+
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            throw new InvalidOperationException("Please select a property or enter an address.");
+        }
+
+        var street = address.Trim();
+        var cityRegion = FormatCityRegion(city, state, zip);
+        var displayAddress = string.IsNullOrWhiteSpace(cityRegion) ? street : $"{street}, {cityRegion}";
+
+        var existing = await db.IndorRealtorPropertyFiles
+            .FirstOrDefaultAsync(
+                p => p.RealtorId == realtor.Id &&
+                     p.Status == "Active" &&
+                     p.Address == displayAddress,
+                cancellationToken);
+
+        int propertyId;
+        if (existing != null)
+        {
+            propertyId = existing.Id;
+        }
+        else
+        {
+            var file = new IndorRealtorPropertyFile
+            {
+                RealtorId = realtor.Id,
+                Title = street,
+                Address = displayAddress,
+                CityRegion = string.IsNullOrWhiteSpace(cityRegion) ? null : cityRegion,
+                PhotoUrl = "/welcome-house.png",
+                Status = "Active",
+                FilePhase = RealtorPropertyFilePhases.General,
+                UpdatedUtc = DateTime.UtcNow,
+                FechaCreacion = DateTime.UtcNow
+            };
+            db.IndorRealtorPropertyFiles.Add(file);
+            await db.SaveChangesAsync(cancellationToken);
+            propertyId = file.Id;
+        }
+
+        await SavePropertyAsync(propertyId, cancellationToken);
+    }
+
+    private static string FormatCityRegion(string? city, string? state, string? zip)
+    {
+        var cityPart = (city ?? "").Trim();
+        var stateZip = string.Join(" ", new[] { (state ?? "").Trim(), (zip ?? "").Trim() }.Where(s => s.Length > 0));
+        if (cityPart.Length > 0 && stateZip.Length > 0)
+        {
+            return $"{cityPart}, {stateZip}";
+        }
+
+        return cityPart.Length > 0 ? cityPart : stateZip;
+    }
+
     public async Task<RealtorQuoteRequestDetailsViewModel> BuildRequestDetailsAsync(CancellationToken cancellationToken = default)
     {
         var draft = await GetDraftAsync(cancellationToken)
