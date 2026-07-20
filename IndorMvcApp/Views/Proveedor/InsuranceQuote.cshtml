@@ -5,68 +5,61 @@
     ViewBag.NavActive = "home";
     ViewData["ProviderProExtraCss"] = "insurance-quote.css";
 
-    var included = IndorMvcApp.ViewModels.InsuranceCatalog.IncludedFor(Model.Plan);
-    var protects = IndorMvcApp.ViewModels.InsuranceCatalog.Protects;
+    var indorBenefits = IndorMvcApp.ViewModels.InsuranceCatalog.IndorBenefitsFor(Model.Plan);
+    var securityBenefits = IndorMvcApp.ViewModels.InsuranceCatalog.SecurityBenefitsFor(Model.Plan);
 }
 
 <div class="prv-pro-shell ins-wiz@(Model.IsPremium ? " ins-wiz--premium" : "")">
     <header class="ins-hd">
-        <a asp-controller="Proveedor" asp-action="Dashboard" class="ins-hd-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
+        <a asp-controller="Proveedor" asp-action="InsurancePlans" class="ins-hd-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
         <div class="ins-hd-text">
-            <h1>@Model.PlanDisplayName</h1>
-            <p>@Model.PlanSubtitle</p>
+            <h1>@L[Model.PlanDisplayName]</h1>
+            <p>@L[Model.PlanSubtitle]</p>
         </div>
     </header>
-
-    @await Html.PartialAsync("_InsuranceStepper", 1)
 
     <div class="ins-summary">
         <span class="ins-summary-icon"><i class="fas fa-shield-halved"></i></span>
         <div class="ins-summary-body">
             <span class="ins-summary-lbl">
-                @Model.PlanDisplayName
+                @L[Model.PlanDisplayName]
                 @if (Model.IsPopular)
                 {
                     <span class="ins-popular">@L["Most Popular"]</span>
                 }
             </span>
             <div class="ins-summary-price">
-                <div><small>@L["Pay today"]</small><strong>$@Model.PayToday.ToString("0")</strong></div>
-                <div><small>@L["Then"]</small><strong>$@Model.Monthly.ToString("0")<span>@L["/month"]</span></strong></div>
+                <div><small>@L["Monthly"]</small><strong>$@Model.Monthly.ToString("0")<span>@L["/month"]</span></strong></div>
+                <div><small>@L["Initial activation"]</small><strong>$@Model.PayToday.ToString("0")</strong></div>
             </div>
         </div>
     </div>
 
-    <h2 class="ins-block-title">@L.T("What's included in {0}", Model.PlanDisplayName)</h2>
-    <div class="ins-incl-grid">
-        @foreach (var f in included)
+    <h2 class="ins-block-title">@L["INDOR benefits included"]</h2>
+    <ol class="ins-benefit-list">
+        @for (var i = 0; i < indorBenefits.Count; i++)
         {
-            <div class="ins-incl">
-                <span class="ins-incl-icon"><i class="fas @f.Icon"></i></span>
-                <div>
-                    <strong>@UiDisplayLocalization.Localize(L, f.Title)</strong>
-                    @if (!string.IsNullOrWhiteSpace(f.Desc))
-                    {
-                        <small>@UiDisplayLocalization.Localize(L, f.Desc)</small>
-                    }
-                </div>
-            </div>
-        }
-    </div>
-
-    <hr class="ins-divider" />
-
-    <h2 class="ins-block-title">@L["What this plan helps protect"]</h2>
-    <div class="ins-protect-grid">
-        @foreach (var f in protects)
-        {
-            <div class="ins-protect">
-                <span class="ins-protect-icon"><i class="fas @f.Icon"></i></span>
+            var f = indorBenefits[i];
+            <li>
+                <span class="ins-benefit-num">@(i + 1)</span>
+                <span class="ins-benefit-icon"><i class="fas @f.Icon"></i></span>
                 <strong>@UiDisplayLocalization.Localize(L, f.Title)</strong>
-                <small>@UiDisplayLocalization.Localize(L, f.Desc)</small>
-            </div>
+            </li>
         }
-    </div>
+    </ol>
+
+    <section class="ins-security-panel" aria-labelledby="insSecurityTitle">
+        <h2 id="insSecurityTitle" class="ins-block-title ins-block-title--on-panel">@L["Security and backing included"]</h2>
+        <ul class="ins-security-list">
+            @foreach (var f in securityBenefits)
+            {
+                <li>
+                    <span class="ins-security-check" aria-hidden="true"><i class="fas fa-check"></i></span>
+                    <strong>@UiDisplayLocalization.Localize(L, f.Title)</strong>
+                </li>
+            }
+        </ul>
+    </section>
 
     <div class="ins-note ins-note--info">
         <i class="fas fa-circle-info"></i>
@@ -74,7 +67,8 @@
     </div>
 
     <form asp-controller="Proveedor" asp-action="InsuranceQuote" method="post" class="ins-footer ins-footer--split">
-        <a asp-controller="Proveedor" asp-action="Dashboard" class="ins-cta ins-cta--ghost">@L["Back"]</a>
+        @Html.AntiForgeryToken()
+        <a asp-controller="Proveedor" asp-action="InsurancePlans" class="ins-cta ins-cta--ghost">@L["Back"]</a>
         <button type="submit" class="ins-cta">@L["Continue"]</button>
     </form>
 </div>

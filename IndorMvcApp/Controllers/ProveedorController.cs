@@ -395,6 +395,20 @@ public partial class ProveedorController(
     // Insurance — provider coverage acquisition
     // ---------------------------------------------------------------
 
+    /// <summary>INDOR Pro membership plan picker (Basic / Standard / Premium).</summary>
+    [HttpGet]
+    public async Task<IActionResult> InsurancePlans(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        ViewBag.NavActive = "home";
+        return View();
+    }
+
     // Step 1 — Coverage (plan summary)
     [HttpGet]
     public async Task<IActionResult> InsuranceQuote(string? plan, CancellationToken cancellationToken)

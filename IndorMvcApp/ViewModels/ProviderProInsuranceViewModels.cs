@@ -56,13 +56,11 @@ public abstract class InsuranceWizardStepViewModel
     public string CompanyInitial { get; set; } = "P";
     public string Plan { get; set; } = "Basic";
 
-    public string PlanDisplayName => $"{Plan} Plan";
+    public string PlanDisplayName => Plan;
     public string Coverage => "General Liability";
     public bool IsPopular => string.Equals(Plan, "Standard", StringComparison.OrdinalIgnoreCase);
     public bool IsPremium => string.Equals(Plan, "Premium", StringComparison.OrdinalIgnoreCase);
-    public string PlanSubtitle => IsPremium
-        ? "Premium protection + INDOR business benefits"
-        : "General Liability + INDOR business benefits";
+    public string PlanSubtitle => "Membership + INDOR benefits, security and backing included";
     public string CoverageTagline => IsPremium ? "Premium protection" : "General Liability";
     public decimal PayToday => InsuranceCatalog.Pricing(Plan).PayToday;
     public decimal Monthly => InsuranceCatalog.Pricing(Plan).Monthly;
@@ -120,9 +118,14 @@ public record InsuranceFeature(string Icon, string Title, string Desc);
 
 public static class InsuranceCatalog
 {
-    /// <summary>Test pricing: $1 for all plans (pay-today + monthly display).</summary>
+    /// <summary>INDOR Pro membership: monthly + initial activation (pay today).</summary>
     public static (decimal PayToday, decimal Monthly) Pricing(string? plan) =>
-        (1m, 1m);
+        (plan ?? "").Trim().ToLowerInvariant() switch
+        {
+            "standard" => (250m, 180m),
+            "premium" => (250m, 200m),
+            _ => (250m, 160m)
+        };
 
     public static readonly (string Value, string Icon)[] Trades =
     {
@@ -157,67 +160,49 @@ public static class InsuranceCatalog
         "SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"
     };
 
-    /// <summary>"What's included in {plan}" feature grid (Basic shows descriptions; tiers are title-only).</summary>
-    public static IReadOnlyList<InsuranceFeature> IncludedFor(string? plan)
+    /// <summary>"Beneficios INDOR incluidos" — platform benefits (same core list across plans).</summary>
+    public static IReadOnlyList<InsuranceFeature> IndorBenefitsFor(string? plan)
     {
-        switch ((plan ?? "").Trim().ToLowerInvariant())
+        _ = plan;
+        return new List<InsuranceFeature>
         {
-            case "standard":
-                // Ordered so a 2-col row-major grid matches the design columns.
-                return new List<InsuranceFeature>
-                {
-                    new("fa-shield-halved", "General Liability coverage", ""),
-                    new("fa-id-badge", "INDOR verified business badge", ""),
-                    new("fa-house", "Property damage claim support", ""),
-                    new("fa-eye", "Better visibility in INDOR", ""),
-                    new("fa-user", "Third-party injury claim support", ""),
-                    new("fa-clock", "Faster quote review", ""),
-                    new("fa-gavel", "Legal defense support", ""),
-                    new("fa-people-group", "More trust with customers", ""),
-                    new("fa-file-lines", "COI / proof of insurance support", ""),
-                    new("fa-briefcase", "More job opportunities through INDOR", ""),
-                    new("fa-bolt", "Priority COI support", ""),
-                    new("fa-building", "Stronger business presence", "")
-                };
-            case "premium":
-                // Ordered so a 2-col row-major grid matches the design columns.
-                return new List<InsuranceFeature>
-                {
-                    new("fa-house", "Property damage claim support", "Help with claims for damage you may cause."),
-                    new("fa-id-badge", "Premium INDOR business profile", "Stand out with advanced business tools."),
-                    new("fa-user", "Third-party injury claim support", "Support for injuries to others on the job."),
-                    new("fa-award", "Featured placement in INDOR", "Get noticed by more customers."),
-                    new("fa-gavel", "Legal defense support", "Access to legal support when you need it."),
-                    new("fa-arrow-trend-up", "Lead boost inside INDOR", "Increase your visibility and lead potential."),
-                    new("fa-file-lines", "COI / proof of insurance support", "Get Certificates of Insurance quickly."),
-                    new("fa-bolt", "Faster COI requests", "Get COIs when you need them, faster."),
-                    new("fa-headset", "Priority support", "Faster response from our expert support team."),
-                    new("fa-briefcase", "More job opportunities through INDOR", "Win more jobs and grow your business.")
-                };
-            default:
-                return new List<InsuranceFeature>
-                {
-                    new("fa-shield-halved", "General Liability coverage", "Protection for common third-party claims."),
-                    new("fa-house", "Property damage claim support", "Help with claims for damage you may cause."),
-                    new("fa-user", "Third-party injury claim support", "Support for injuries to others on the job."),
-                    new("fa-gavel", "Legal defense support", "Access to legal support when you need it."),
-                    new("fa-file-lines", "COI / proof of insurance support", "Get Certificates of Insurance quickly."),
-                    new("fa-id-card", "Basic INDOR profile", "Get listed in the INDOR network with your business profile."),
-                    new("fa-headset", "Standard support", "Reach our support team for your questions."),
-                    new("fa-people-group", "More trust with customers", "Show customers you're protected and professional."),
-                    new("fa-briefcase", "More job opportunities through INDOR", "Get discovered by more customers and win more jobs.")
-                };
-        }
+            new("fa-id-badge", "Professional profile within INDOR", ""),
+            new("fa-eye", "More visibility in the app", ""),
+            new("fa-briefcase", "More job opportunities", ""),
+            new("fa-file-invoice-dollar", "Quote requests and potential clients", ""),
+            new("fa-people-group", "More trust with customers", ""),
+            new("fa-file-lines", "COI / proof from the app", ""),
+            new("fa-building", "Stronger commercial presence", ""),
+            new("fa-headset", "Support and guidance within the ecosystem", "")
+        };
     }
 
-    /// <summary>"What this plan helps protect" cards (same across plans).</summary>
-    public static readonly InsuranceFeature[] Protects =
+    /// <summary>"Seguridad y respaldo incluidos" — protection / backing benefits.</summary>
+    public static IReadOnlyList<InsuranceFeature> SecurityBenefitsFor(string? plan)
     {
-        new("fa-house", "Customer property damage", "Coverage for damage you may cause to customer property."),
-        new("fa-user-injured", "Third-party injury claims", "Protection if others are injured on or near your jobsite."),
-        new("fa-shield-halved", "Jobsite credibility", "Show you're insured and take your business seriously."),
-        new("fa-file-lines", "Proof of insurance requests", "Provide COIs to clients and win more work.")
-    };
+        _ = plan;
+        return new List<InsuranceFeature>
+        {
+            new("fa-house", "Property damage claim support", ""),
+            new("fa-user", "Third-party injury claim support", ""),
+            new("fa-gavel", "Legal defense support", ""),
+            new("fa-hand-holding-dollar", "Lower risk of unexpected expenses", ""),
+            new("fa-heart", "More peace of mind to work", ""),
+            new("fa-shield-halved", "Protection benefits included according to the plan", "")
+        };
+    }
+
+    /// <summary>Combined included list for legacy review grids.</summary>
+    public static IReadOnlyList<InsuranceFeature> IncludedFor(string? plan)
+    {
+        var list = new List<InsuranceFeature>();
+        list.AddRange(IndorBenefitsFor(plan));
+        list.AddRange(SecurityBenefitsFor(plan));
+        return list;
+    }
+
+    /// <summary>Legacy protect cards — maps to security section.</summary>
+    public static IReadOnlyList<InsuranceFeature> Protects => SecurityBenefitsFor(null);
 
     /// <summary>"Included With Your {plan}" check grid (review screen) — icon + label.</summary>
     public static IReadOnlyList<InsuranceFeature> ReviewIncludesFor(string? plan)

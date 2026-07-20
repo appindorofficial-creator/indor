@@ -1,0 +1,81 @@
+@{
+    ViewData["Title"] = L["INDOR Pro Memberships"];
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+    ViewData["ProviderProExtraCss"] = "insurance-quote.css";
+
+    var pBasic = IndorMvcApp.ViewModels.InsuranceCatalog.Pricing("basic");
+    var pStandard = IndorMvcApp.ViewModels.InsuranceCatalog.Pricing("standard");
+    var pPremium = IndorMvcApp.ViewModels.InsuranceCatalog.Pricing("premium");
+}
+
+<div class="prv-pro-shell ins-wiz ins-plans">
+    <header class="ins-hd">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="ins-hd-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
+        <div class="ins-hd-text">
+            <h1>@L["INDOR Pro Memberships"]</h1>
+            <p>@L["Choose the plan that grows your business inside the INDOR ecosystem."]</p>
+        </div>
+    </header>
+
+    <div class="ins-info-banner" role="note">
+        <i class="fas fa-circle-info" aria-hidden="true"></i>
+        <p>@L["Join INDOR Pro. Grow with INDOR benefits, security and backing included."]</p>
+    </div>
+
+    <div class="ins-plan-pick">
+        <a asp-controller="Proveedor" asp-action="InsuranceQuote" asp-route-plan="basic" class="ins-plan-pick-card ins-plan-pick-card--basic">
+            <div class="ins-plan-pick-top">
+                <strong>@L["Basic"]</strong>
+                <i class="fas fa-shield-halved" aria-hidden="true"></i>
+            </div>
+            <p class="ins-plan-pick-tag">@L["Membership + INDOR benefits"]</p>
+            <div class="ins-plan-pick-price">$@pBasic.Monthly.ToString("0")<span>@L["/month"]</span></div>
+            <div class="ins-plan-pick-activation">@L["Initial activation"] $@pBasic.PayToday.ToString("0")</div>
+        </a>
+
+        <a asp-controller="Proveedor" asp-action="InsuranceQuote" asp-route-plan="standard" class="ins-plan-pick-card ins-plan-pick-card--standard is-popular">
+            <span class="ins-plan-pick-badge">@L["MOST POPULAR"]</span>
+            <div class="ins-plan-pick-top">
+                <strong>@L["Standard"]</strong>
+                <i class="fas fa-shield-halved" aria-hidden="true"></i>
+            </div>
+            <p class="ins-plan-pick-tag">@L["Membership + INDOR benefits"]</p>
+            <div class="ins-plan-pick-price">$@pStandard.Monthly.ToString("0")<span>@L["/month"]</span></div>
+            <div class="ins-plan-pick-activation">@L["Initial activation"] $@pStandard.PayToday.ToString("0")</div>
+        </a>
+
+        <a asp-controller="Proveedor" asp-action="InsuranceQuote" asp-route-plan="premium" class="ins-plan-pick-card ins-plan-pick-card--premium">
+            <div class="ins-plan-pick-top">
+                <strong>@L["Premium"]</strong>
+                <i class="fas fa-shield-halved" aria-hidden="true"></i>
+            </div>
+            <p class="ins-plan-pick-tag">@L["Membership + INDOR benefits"]</p>
+            <div class="ins-plan-pick-price">$@pPremium.Monthly.ToString("0")<span>@L["/month"]</span></div>
+            <div class="ins-plan-pick-activation">@L["Initial activation"] $@pPremium.PayToday.ToString("0")</div>
+        </a>
+    </div>
+
+    <div class="ins-value-row" aria-label="@L["INDOR Pro benefits"]">
+        <div class="ins-value-item">
+            <span><i class="fas fa-shield-halved"></i></span>
+            <strong>@L["INDOR benefits included"]</strong>
+            <small>@L["Tools and resources to grow your business."]</small>
+        </div>
+        <div class="ins-value-item">
+            <span><i class="fas fa-people-group"></i></span>
+            <strong>@L["More trust to sell"]</strong>
+            <small>@L["COI and backing that strengthen your professional image."]</small>
+        </div>
+        <div class="ins-value-item">
+            <span><i class="fas fa-briefcase"></i></span>
+            <strong>@L["More opportunities inside INDOR"]</strong>
+            <small>@L["Connect with clients looking for reliable providers."]</small>
+        </div>
+        <div class="ins-value-item">
+            <span><i class="fas fa-shield"></i></span>
+            <strong>@L["Security and backing included"]</strong>
+            <small>@L["More peace of mind, protection, and support for your business."]</small>
+        </div>
+    </div>
+</div>
