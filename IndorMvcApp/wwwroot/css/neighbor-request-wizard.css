@@ -951,6 +951,34 @@
     display: none;
 }
 
+.nr-required {
+    color: #EF4444;
+    font-weight: 800;
+}
+
+.nr-card.is-error .nr-chip-grid {
+    outline: 1.5px solid rgba(185, 28, 28, 0.35);
+    outline-offset: 4px;
+    border-radius: 12px;
+}
+
+.nr-budget-card.is-error .nr-budget-display {
+    outline: 1.5px solid rgba(185, 28, 28, 0.45);
+    outline-offset: 2px;
+    border-radius: 14px;
+}
+
+.nr-safety-item.is-error .nr-safety-select {
+    border-color: #B91C1C;
+    box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.12);
+}
+
+.nr-card.is-error .nr-safety-grid {
+    outline: 1.5px solid rgba(185, 28, 28, 0.25);
+    outline-offset: 4px;
+    border-radius: 12px;
+}
+
 /* Edit request flow */
 .nr-stepper {
     display: flex;

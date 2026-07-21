@@ -51,7 +51,7 @@ public class NeighborRequestCategoryOptionViewModel
     public string? ImageUrl { get; set; }
 }
 
-public class NeighborRequestDescribeStepViewModel : NeighborRequestWizardShellViewModel
+public class NeighborRequestDescribeStepViewModel : NeighborRequestWizardShellViewModel, IValidatableObject
 {
     public string CategoryLabel { get; set; } = string.Empty;
 
@@ -70,6 +70,37 @@ public class NeighborRequestDescribeStepViewModel : NeighborRequestWizardShellVi
     public string? ParkingAvailable { get; set; }
 
     public IReadOnlyList<(string Value, string Label, string IconClass)> ToolOptions { get; set; } = [];
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (SelectedTools.Count == 0)
+        {
+            yield return new ValidationResult(
+                "Select what the helper should bring.",
+                [nameof(SelectedTools)]);
+        }
+
+        if (string.IsNullOrWhiteSpace(PetsOnProperty))
+        {
+            yield return new ValidationResult(
+                "Select whether there are pets on the property.",
+                [nameof(PetsOnProperty)]);
+        }
+
+        if (string.IsNullOrWhiteSpace(HasStairs))
+        {
+            yield return new ValidationResult(
+                "Select whether there are stairs.",
+                [nameof(HasStairs)]);
+        }
+
+        if (string.IsNullOrWhiteSpace(ParkingAvailable))
+        {
+            yield return new ValidationResult(
+                "Select whether parking is available.",
+                [nameof(ParkingAvailable)]);
+        }
+    }
 }
 
 public class NeighborRequestPreferencesStepViewModel : NeighborRequestWizardShellViewModel, IValidatableObject
@@ -124,6 +155,11 @@ public class NeighborRequestPreferencesStepViewModel : NeighborRequestWizardShel
         if (string.IsNullOrWhiteSpace(PayTypeCode))
         {
             yield return new ValidationResult("Choose how you want to pay.", [nameof(PayTypeCode)]);
+        }
+
+        if (BudgetAmount is null or <= 0)
+        {
+            yield return new ValidationResult("Enter your budget.", [nameof(BudgetAmount)]);
         }
 
         if (WhenCode != NeighborRequestTimelineCodes.PickDate)

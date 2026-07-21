@@ -30,9 +30,9 @@
         </div>
     </section>
 
-    <section class="nr-card">
+    <section class="nr-card" id="nrToolsBlock">
         <header class="nr-card-head nr-card-head--stack">
-            <h2>@L["What should the helper bring?"]</h2>
+            <h2>@L["What should the helper bring?"] <span class="nr-required" aria-hidden="true">*</span></h2>
             <p>@L["Select all that apply."]</p>
         </header>
         <div class="nr-chip-grid">
@@ -46,6 +46,7 @@
                 </label>
             }
         </div>
+        <span asp-validation-for="SelectedTools" class="field-validation-error" id="nrToolsError"></span>
     </section>
 
     <section class="nr-card">
@@ -61,16 +62,17 @@
         </div>
     </section>
 
-    <section class="nr-card">
+    <section class="nr-card" id="nrSafetyBlock">
         <header class="nr-card-head nr-card-head--stack">
-            <h2>@L["Safety & access"]</h2>
+            <h2>@L["Safety & access"] <span class="nr-required" aria-hidden="true">*</span></h2>
             <p>@L["Help helpers arrive prepared and stay safe on your property."]</p>
         </header>
         <div class="nr-safety-grid">
             <label class="nr-safety-item">
                 <span class="nr-safety-icon"><i class="fas fa-paw"></i></span>
                 <span class="nr-safety-label">@L["Pets on property"]</span>
-                <select asp-for="PetsOnProperty" class="nr-safety-select">
+                <select asp-for="PetsOnProperty" class="nr-safety-select" aria-required="true">
+                    <option value="">@L["Select"]</option>
                     <option value="No">@L["No"]</option>
                     <option value="Yes">@L["Yes"]</option>
                 </select>
@@ -78,7 +80,8 @@
             <label class="nr-safety-item">
                 <span class="nr-safety-icon"><i class="fas fa-stairs"></i></span>
                 <span class="nr-safety-label">@L["Stairs"]</span>
-                <select asp-for="HasStairs" class="nr-safety-select">
+                <select asp-for="HasStairs" class="nr-safety-select" aria-required="true">
+                    <option value="">@L["Select"]</option>
                     <option value="No">@L["No"]</option>
                     <option value="Yes">@L["Yes"]</option>
                 </select>
@@ -91,12 +94,17 @@
             <label class="nr-safety-item">
                 <span class="nr-safety-icon"><i class="fas fa-car"></i></span>
                 <span class="nr-safety-label">@L["Parking available"]</span>
-                <select asp-for="ParkingAvailable" class="nr-safety-select">
+                <select asp-for="ParkingAvailable" class="nr-safety-select" aria-required="true">
+                    <option value="">@L["Select"]</option>
                     <option value="Yes">@L["Yes"]</option>
                     <option value="No">@L["No"]</option>
                 </select>
             </label>
         </div>
+        <span asp-validation-for="PetsOnProperty" class="field-validation-error"></span>
+        <span asp-validation-for="HasStairs" class="field-validation-error"></span>
+        <span asp-validation-for="ParkingAvailable" class="field-validation-error"></span>
+        <span class="field-validation-error" id="nrSafetyError"></span>
     </section>
 </form>
 
@@ -130,8 +138,72 @@
             document.querySelectorAll('.nr-chip input').forEach(function (input) {
                 input.addEventListener('change', function () {
                     input.closest('.nr-chip')?.classList.toggle('is-selected', input.checked);
+                    var toolsError = document.getElementById('nrToolsError');
+                    if (toolsError && document.querySelectorAll('.nr-chip input:checked').length) {
+                        toolsError.textContent = '';
+                        document.getElementById('nrToolsBlock')?.classList.remove('is-error');
+                    }
                 });
             });
+
+            var form = document.getElementById('nrDescribeForm');
+            if (form) {
+                var safetyMsg = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Complete Safety & access: pets, stairs, and parking."]));
+                var petsSelect = document.querySelector('[name="PetsOnProperty"]');
+                var stairsSelect = document.querySelector('[name="HasStairs"]');
+                var parkingSelect = document.querySelector('[name="ParkingAvailable"]');
+                var safetyError = document.getElementById('nrSafetyError');
+                var safetyBlock = document.getElementById('nrSafetyBlock');
+
+                function clearSafetyError() {
+                    if (safetyError) safetyError.textContent = '';
+                    safetyBlock?.classList.remove('is-error');
+                    [petsSelect, stairsSelect, parkingSelect].forEach(function (el) {
+                        el?.closest('.nr-safety-item')?.classList.remove('is-error');
+                    });
+                }
+
+                function safetyFilled() {
+                    return !!(petsSelect?.value && stairsSelect?.value && parkingSelect?.value);
+                }
+
+                [petsSelect, stairsSelect, parkingSelect].forEach(function (el) {
+                    el?.addEventListener('change', function () {
+                        if (safetyFilled()) clearSafetyError();
+                    });
+                });
+
+                form.addEventListener('submit', function (e) {
+                    var hasError = false;
+                    var checked = document.querySelectorAll('.nr-chip input:checked').length;
+                    var toolsError = document.getElementById('nrToolsError');
+                    var toolsBlock = document.getElementById('nrToolsBlock');
+                    if (!checked) {
+                        hasError = true;
+                        if (toolsError) {
+                            toolsError.textContent = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select what the helper should bring."]));
+                        }
+                        toolsBlock?.classList.add('is-error');
+                    }
+
+                    if (!safetyFilled()) {
+                        hasError = true;
+                        if (safetyError) safetyError.textContent = safetyMsg;
+                        safetyBlock?.classList.add('is-error');
+                        [petsSelect, stairsSelect, parkingSelect].forEach(function (el) {
+                            if (el && !el.value) {
+                                el.closest('.nr-safety-item')?.classList.add('is-error');
+                            }
+                        });
+                    }
+
+                    if (hasError) {
+                        e.preventDefault();
+                        var first = (!checked ? toolsBlock : null) || safetyBlock;
+                        first?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                });
+            }
 
             var input = document.getElementById('nrPhotoInput');
             var grid = document.getElementById('nrPhotoGrid');

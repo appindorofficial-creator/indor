@@ -118,17 +118,17 @@
                 @L["Fixed price"]
             </label>
         </div>
-        <div class="nr-budget-card">
-            <label asp-for="BudgetAmount">@L["Your budget"]</label>
+        <div class="nr-budget-card" id="nrBudgetBlock">
+            <label asp-for="BudgetAmount">@L["Your budget"] <span class="nr-required" aria-hidden="true">*</span></label>
             <div class="nr-budget-display">
-                <input asp-for="BudgetAmount" type="number" min="0" step="1" class="nr-budget-input" placeholder="25" />
+                <input asp-for="BudgetAmount" type="number" min="1" step="1" class="nr-budget-input" placeholder="25" inputmode="numeric" aria-required="true" />
                 <span class="nr-budget-suffix" id="nrBudgetSuffix">@L["/hr"]</span>
                 <span class="nr-budget-icon"><i class="fas fa-dollar-sign"></i></span>
             </div>
             <p class="nr-budget-hint">@L["This is the amount helpers will see in your job post."]</p>
         </div>
         <span asp-validation-for="PayTypeCode" class="field-validation-error"></span>
-        <span asp-validation-for="BudgetAmount" class="field-validation-error"></span>
+        <span asp-validation-for="BudgetAmount" class="field-validation-error" id="nrBudgetError"></span>
     </section>
   }
   else
@@ -232,6 +232,39 @@
             document.querySelectorAll('.nr-pay-toggle-btn input:checked').forEach(function (input) {
                 input.closest('.nr-pay-toggle-btn')?.classList.add('is-active');
             });
+
+            var form = document.getElementById('nrPreferencesForm');
+            var budgetInput = document.querySelector('[name="BudgetAmount"]');
+            var budgetError = document.getElementById('nrBudgetError');
+            var budgetBlock = document.getElementById('nrBudgetBlock');
+            var budgetRequiredMsg = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Enter your budget."]));
+
+            function clearBudgetError() {
+                if (budgetError) budgetError.textContent = '';
+                budgetBlock?.classList.remove('is-error');
+            }
+
+            function setBudgetError() {
+                if (budgetError) budgetError.textContent = budgetRequiredMsg;
+                budgetBlock?.classList.add('is-error');
+                budgetBlock?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+
+            if (budgetInput) {
+                budgetInput.addEventListener('input', function () {
+                    if (parseFloat(budgetInput.value) > 0) clearBudgetError();
+                });
+            }
+
+            if (form && budgetInput) {
+                form.addEventListener('submit', function (e) {
+                    var amount = parseFloat(budgetInput.value);
+                    if (!budgetInput.value || isNaN(amount) || amount <= 0) {
+                        e.preventDefault();
+                        setBudgetError();
+                    }
+                });
+            }
 
             function scrollCardIntoView(el) {
                 if (!el) return;

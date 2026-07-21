@@ -247,10 +247,10 @@ public class NeighborRequestWizardService(
             ExistingPhotoUrls = draft.PhotoPaths.ToList(),
             SelectedTools = draft.ToolsNeeded.ToList(),
             SpecialNotes = draft.SpecialNotes,
-            PetsOnProperty = draft.PetsOnProperty ?? "No",
-            HasStairs = draft.HasStairs ?? "No",
+            PetsOnProperty = draft.PetsOnProperty,
+            HasStairs = draft.HasStairs,
             GateCode = draft.GateCode,
-            ParkingAvailable = draft.ParkingAvailable ?? "Yes",
+            ParkingAvailable = draft.ParkingAvailable,
             ToolOptions = GetToolOptions(),
             BackUrl = $"/NeighborRequest/Preferences?propiedadId={draft.PropiedadId}",
             CloseUrl = "/Home/Index"
@@ -1413,10 +1413,10 @@ public class NeighborRequestWizardService(
     public void ApplyExtrasToDraft(NeighborRequestDraftState draft, NeighborRequestDescribeStepViewModel model)
     {
         draft.SpecialNotes = model.SpecialNotes?.Trim();
-        draft.PetsOnProperty = model.PetsOnProperty;
-        draft.HasStairs = model.HasStairs;
+        draft.PetsOnProperty = string.IsNullOrWhiteSpace(model.PetsOnProperty) ? null : model.PetsOnProperty.Trim();
+        draft.HasStairs = string.IsNullOrWhiteSpace(model.HasStairs) ? null : model.HasStairs.Trim();
         draft.GateCode = model.GateCode?.Trim();
-        draft.ParkingAvailable = model.ParkingAvailable;
+        draft.ParkingAvailable = string.IsNullOrWhiteSpace(model.ParkingAvailable) ? null : model.ParkingAvailable.Trim();
         draft.ToolsNeeded = model.SelectedTools?.Where(t => !string.IsNullOrWhiteSpace(t)).Distinct().ToList() ?? [];
     }
 

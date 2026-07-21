@@ -197,6 +197,25 @@ public class NeighborRequestController(
         await wizardService.SavePhotosAsync(draft, model.PhotoFiles, cancellationToken);
         wizardService.SaveDraft(HttpContext.Session, draft);
 
+        if (!ModelState.IsValid)
+        {
+            LocalizeNeighborRequestModelState();
+            var invalidVm = await wizardService.BuildDescribeStepAsync(draft, cancellationToken);
+            if (invalidVm == null)
+            {
+                return RestartWizard(model.PropiedadId);
+            }
+
+            invalidVm.SelectedTools = model.SelectedTools ?? [];
+            invalidVm.SpecialNotes = model.SpecialNotes;
+            invalidVm.PetsOnProperty = model.PetsOnProperty;
+            invalidVm.HasStairs = model.HasStairs;
+            invalidVm.GateCode = model.GateCode;
+            invalidVm.ParkingAvailable = model.ParkingAvailable;
+            await wizardService.ApplyPortalHomeUrlsAsync(invalidVm, userId, Url, cancellationToken);
+            return View(invalidVm);
+        }
+
         if (draft.EditingRequestId is > 0)
         {
             return RedirectToAction(nameof(Review), new { propiedadId = model.PropiedadId });

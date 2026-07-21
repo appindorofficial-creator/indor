@@ -169,8 +169,39 @@ public static class UiDisplayLocalization
             return localizer.T("Tomorrow, {0}", Localize(localizer, text["Tomorrow, ".Length..].Trim()));
         }
 
-        var tradeNeeded = Regex.Match(text, @"^(.+?)\s+needed$", RegexOptions.IgnoreCase);
-        if (tradeNeeded.Success)
+        var summaryLabelMatch = Regex.Match(
+            text,
+            @"^(Bring|Pets|Stairs|Parking|Gate code|Helpers|Duration|Pay):\s*(.+)$",
+            RegexOptions.IgnoreCase);
+        if (summaryLabelMatch.Success)
+        {
+            var prefixKey = summaryLabelMatch.Groups[1].Value.Trim() switch
+            {
+                var p when p.Equals("Bring", StringComparison.OrdinalIgnoreCase) => "Bring:",
+                var p when p.Equals("Pets", StringComparison.OrdinalIgnoreCase) => "Pets:",
+                var p when p.Equals("Stairs", StringComparison.OrdinalIgnoreCase) => "Stairs:",
+                var p when p.Equals("Parking", StringComparison.OrdinalIgnoreCase) => "Parking:",
+                var p when p.Equals("Gate code", StringComparison.OrdinalIgnoreCase) => "Gate code:",
+                var p when p.Equals("Helpers", StringComparison.OrdinalIgnoreCase) => "Helpers:",
+                var p when p.Equals("Duration", StringComparison.OrdinalIgnoreCase) => "Duration:",
+                var p when p.Equals("Pay", StringComparison.OrdinalIgnoreCase) => "Pay:",
+                _ => summaryLabelMatch.Groups[1].Value.Trim() + ":"
+            };
+            var rawValue = summaryLabelMatch.Groups[2].Value.Trim();
+            var localizedValue = rawValue.Contains(',', StringComparison.Ordinal)
+                ? string.Join(", ",
+                    rawValue.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                        .Select(v => Localize(localizer, v)))
+                : Localize(localizer, rawValue);
+            return $"{localizer.T(prefixKey)} {localizedValue}";
+        }
+
+        // Trade chips like "Plumber needed" — do not match phrases such as "No tools needed"
+        // or labeled summaries "Bring: ... needed".
+        var tradeNeeded = Regex.Match(text, @"^([A-Za-z][A-Za-z /&-]{0,40}?)\s+needed$", RegexOptions.IgnoreCase);
+        if (tradeNeeded.Success
+            && !text.Contains(':', StringComparison.Ordinal)
+            && !text.Equals("No tools needed", StringComparison.OrdinalIgnoreCase))
         {
             return localizer.T("{0} needed", localizer[tradeNeeded.Groups[1].Value.Trim()]);
         }
@@ -262,33 +293,6 @@ public static class UiDisplayLocalization
             return string.Join(" • ",
                 text.Split(" • ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                     .Select(part => Localize(localizer, part)));
-        }
-
-        var summaryLabelMatch = Regex.Match(
-            text,
-            @"^(Bring|Pets|Stairs|Parking|Gate code|Helpers|Duration|Pay):\s*(.+)$",
-            RegexOptions.IgnoreCase);
-        if (summaryLabelMatch.Success)
-        {
-            var prefixKey = summaryLabelMatch.Groups[1].Value.Trim() switch
-            {
-                var p when p.Equals("Bring", StringComparison.OrdinalIgnoreCase) => "Bring:",
-                var p when p.Equals("Pets", StringComparison.OrdinalIgnoreCase) => "Pets:",
-                var p when p.Equals("Stairs", StringComparison.OrdinalIgnoreCase) => "Stairs:",
-                var p when p.Equals("Parking", StringComparison.OrdinalIgnoreCase) => "Parking:",
-                var p when p.Equals("Gate code", StringComparison.OrdinalIgnoreCase) => "Gate code:",
-                var p when p.Equals("Helpers", StringComparison.OrdinalIgnoreCase) => "Helpers:",
-                var p when p.Equals("Duration", StringComparison.OrdinalIgnoreCase) => "Duration:",
-                var p when p.Equals("Pay", StringComparison.OrdinalIgnoreCase) => "Pay:",
-                _ => summaryLabelMatch.Groups[1].Value.Trim() + ":"
-            };
-            var rawValue = summaryLabelMatch.Groups[2].Value.Trim();
-            var localizedValue = rawValue.Contains(',', StringComparison.Ordinal)
-                ? string.Join(", ",
-                    rawValue.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-                        .Select(v => Localize(localizer, v)))
-                : Localize(localizer, rawValue);
-            return $"{localizer.T(prefixKey)} {localizedValue}";
         }
 
         if (text.StartsWith("Uploaded ", StringComparison.OrdinalIgnoreCase))
