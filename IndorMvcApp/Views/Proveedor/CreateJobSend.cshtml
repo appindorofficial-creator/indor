@@ -24,7 +24,7 @@
             <i class="fas @Model.ServiceCategoryIcon"></i>
         </span>
         <div>
-            <strong>@Model.JobTitle</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.JobTitle)</strong>
             <span class="prv-pro-customer-pill">@UiDisplayLocalization.Localize(L, Model.ServiceCategoryLabel)</span>
             <div class="prv-pro-send-meta">
                 <span><i class="fas fa-user"></i> @Model.CustomerName</span>
@@ -47,7 +47,7 @@
                 @foreach (var line in Model.EstimateLines)
                 {
                     <div class="prv-pro-ai-estimate-row">
-                        <span>@line.Label</span>
+                        <span>@UiDisplayLocalization.Localize(L, line.Label)</span>
                         <span>@line.AmountLabel</span>
                     </div>
                 }
@@ -56,7 +56,7 @@
             {
                 <div class="prv-pro-send-scope">
                     <i class="fas fa-file-lines"></i>
-                    <p>@Model.ScopeSummary</p>
+                    <p>@UiDisplayLocalization.Localize(L, Model.ScopeSummary)</p>
                 </div>
             }
         </section>
@@ -87,7 +87,7 @@
             <section class="prv-pro-wizard-card">
                 <h2>@L["Message to customer"]</h2>
                 <label class="prv-pro-send-message">
-                    <textarea name="CustomerMessage" rows="4">@Model.CustomerMessage</textarea>
+                    <textarea name="CustomerMessage" rows="4">@UiDisplayLocalization.Localize(L, Model.CustomerMessage)</textarea>
                     <i class="fas fa-pen"></i>
                 </label>
             </section>

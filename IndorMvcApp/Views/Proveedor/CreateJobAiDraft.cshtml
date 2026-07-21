@@ -40,7 +40,7 @@
 
     <section class="prv-pro-wizard-card">
         <h2><i class="fas fa-comment-dots"></i> @L["What the customer needs"]</h2>
-        <p class="prv-pro-ai-copy">@Model.AiCustomerNeeds</p>
+            <p class="prv-pro-ai-copy">@UiDisplayLocalization.Localize(L, Model.AiCustomerNeeds)</p>
     </section>
 
     <section class="prv-pro-wizard-card">
@@ -48,7 +48,7 @@
         <ol class="prv-pro-ai-scope">
             @foreach (var item in Model.AiRecommendedScope)
             {
-                <li>@item</li>
+                <li>@UiDisplayLocalization.Localize(L, item)</li>
             }
         </ol>
     </section>

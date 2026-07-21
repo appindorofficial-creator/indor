@@ -15,7 +15,7 @@ namespace IndorMvcApp.Services;
 
 
 
-public class ProviderProJobWorkflowService(AppDbContext db) : IProviderProJobWorkflowService
+public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer localizer) : IProviderProJobWorkflowService
 
 {
 
@@ -1237,7 +1237,9 @@ public class ProviderProJobWorkflowService(AppDbContext db) : IProviderProJobWor
     private static string BuildDefaultQuoteRequestNotes(ProviderProCreateJobDraft draft)
     {
         if (draft.ServiceCategoryId.Equals("inspection", StringComparison.OrdinalIgnoreCase)
-            || draft.Title.Contains("inspection", StringComparison.OrdinalIgnoreCase))
+            || draft.Title.Contains("inspection", StringComparison.OrdinalIgnoreCase)
+            || draft.Title.Contains("inspección", StringComparison.OrdinalIgnoreCase)
+            || draft.Title.Contains("inspeccion", StringComparison.OrdinalIgnoreCase))
         {
             return "Please inspect the water damage in the kitchen ceiling and adjacent living room. Identify the source, document affected areas, and provide a repair estimate. Include minor drywall repair and repaint as needed.";
         }
@@ -1265,7 +1267,9 @@ public class ProviderProJobWorkflowService(AppDbContext db) : IProviderProJobWor
     private static List<string> BuildAiRecommendedScope(ProviderProCreateJobDraft draft)
     {
         if (draft.ServiceCategoryId.Equals("inspection", StringComparison.OrdinalIgnoreCase)
-            || draft.Title.Contains("inspection", StringComparison.OrdinalIgnoreCase))
+            || draft.Title.Contains("inspection", StringComparison.OrdinalIgnoreCase)
+            || draft.Title.Contains("inspección", StringComparison.OrdinalIgnoreCase)
+            || draft.Title.Contains("inspeccion", StringComparison.OrdinalIgnoreCase))
         {
             return
             [
@@ -1289,7 +1293,9 @@ public class ProviderProJobWorkflowService(AppDbContext db) : IProviderProJobWor
     private static List<ProviderProCreateJobEstimateLineViewModel> BuildAiEstimateLines(ProviderProCreateJobDraft draft)
     {
         if (draft.ServiceCategoryId.Equals("inspection", StringComparison.OrdinalIgnoreCase)
-            || draft.Title.Contains("inspection", StringComparison.OrdinalIgnoreCase))
+            || draft.Title.Contains("inspection", StringComparison.OrdinalIgnoreCase)
+            || draft.Title.Contains("inspección", StringComparison.OrdinalIgnoreCase)
+            || draft.Title.Contains("inspeccion", StringComparison.OrdinalIgnoreCase))
         {
             return
             [
@@ -1312,7 +1318,9 @@ public class ProviderProJobWorkflowService(AppDbContext db) : IProviderProJobWor
     private static void RefineEstimateForSend(ProviderProCreateJobDraft draft)
     {
         if (draft.ServiceCategoryId.Equals("inspection", StringComparison.OrdinalIgnoreCase)
-            || draft.Title.Contains("inspection", StringComparison.OrdinalIgnoreCase))
+            || draft.Title.Contains("inspection", StringComparison.OrdinalIgnoreCase)
+            || draft.Title.Contains("inspección", StringComparison.OrdinalIgnoreCase)
+            || draft.Title.Contains("inspeccion", StringComparison.OrdinalIgnoreCase))
         {
             draft.EstimateLines =
             [
@@ -1331,10 +1339,14 @@ public class ProviderProJobWorkflowService(AppDbContext db) : IProviderProJobWor
             ? string.Join(" ", draft.AiRecommendedScope.Take(3)) + "."
             : $"Complete the requested {draft.ServiceCategoryLabel.ToLowerInvariant()} work and provide a detailed summary.";
 
-    private static string BuildDefaultCustomerMessage(ProviderProCreateJobDraft draft)
+    private string BuildDefaultCustomerMessage(ProviderProCreateJobDraft draft)
     {
         var firstName = draft.CustomerName.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? draft.CustomerName;
-        return $"Hi {firstName}, here's your quote for the {draft.Title.ToLowerInvariant()}. Let us know if you have any questions!";
+        var title = localizer.T(draft.Title).ToLowerInvariant();
+        return localizer.T(
+            "Hi {0}, here's your quote for the {1}. Let us know if you have any questions!",
+            firstName,
+            title);
     }
 
     private static ProviderProCreateJobEstimateLineViewModel Line(string label, decimal amount) =>

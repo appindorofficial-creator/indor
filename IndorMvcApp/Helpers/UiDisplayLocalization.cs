@@ -175,6 +175,30 @@ public static class UiDisplayLocalization
             return localizer.T("{0} needed", localizer[tradeNeeded.Groups[1].Value.Trim()]);
         }
 
+        var quoteMessageMatch = Regex.Match(
+            text,
+            @"^Hi\s+(.+),\s+here's your quote for the\s+(.+)\.\s+Let us know if you have any questions!$",
+            RegexOptions.IgnoreCase);
+        if (quoteMessageMatch.Success)
+        {
+            return localizer.T(
+                "Hi {0}, here's your quote for the {1}. Let us know if you have any questions!",
+                quoteMessageMatch.Groups[1].Value.Trim(),
+                Localize(localizer, quoteMessageMatch.Groups[2].Value.Trim()));
+        }
+
+        var estimateMessageMatch = Regex.Match(
+            text,
+            @"^Hi\s+(.+),\s+thanks again for having us out!\s+Attached is your estimate for the\s+(.+)\.\s+Let me know if you have any questions—I'm here to help!$",
+            RegexOptions.IgnoreCase | RegexOptions.Singleline);
+        if (estimateMessageMatch.Success)
+        {
+            return localizer.T(
+                "Hi {0}, thanks again for having us out! Attached is your estimate for the {1}. Let me know if you have any questions—I'm here to help!",
+                estimateMessageMatch.Groups[1].Value.Trim(),
+                Localize(localizer, estimateMessageMatch.Groups[2].Value.Trim()));
+        }
+
         var tradeRequest = Regex.Match(text, @"^(.+?)\s+request$", RegexOptions.IgnoreCase);
         if (tradeRequest.Success)
         {
