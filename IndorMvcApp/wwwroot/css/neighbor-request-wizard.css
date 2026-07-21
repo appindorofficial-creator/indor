@@ -1281,6 +1281,83 @@
     min-width: 0;
     overflow: hidden;
 }
+
+.nr-pick-date {
+    margin-top: 12px;
+    min-width: 0;
+    max-width: 100%;
+}
+
+.nr-pick-date-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: .82rem;
+    font-weight: 700;
+    color: #0A2540;
+}
+
+.nr-pick-date-control {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 52px;
+    padding: 12px 14px;
+    border: 1px solid #E5E7EB;
+    border-radius: 14px;
+    background: #F8FBFF;
+    box-sizing: border-box;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.nr-pick-date-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: #E8F1FB;
+    color: #0066CC;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.nr-pick-date-value {
+    flex: 1;
+    min-width: 0;
+    font-size: .88rem;
+    font-weight: 600;
+    color: #0A2540;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nr-pick-date-chevron {
+    color: #94A3B8;
+    font-size: .78rem;
+    flex-shrink: 0;
+}
+
+.nr-pick-date-native {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    cursor: pointer;
+    z-index: 2;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
 .nr-card-head {
     display: flex;
     align-items: center;

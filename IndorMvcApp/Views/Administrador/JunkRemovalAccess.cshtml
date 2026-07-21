@@ -53,6 +53,7 @@
                 {
                     <label class="pa-chip pa-chip--wide @(Model.PickupWhen == w.Value ? "is-selected" : null)">
                         <input type="radio" name="PickupWhen" value="@w.Value" @(Model.PickupWhen == w.Value ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--blue"><i class="fas fa-check"></i></span>
                         <i class="fas @w.Icon"></i>
                         <span>@w.Label</span>
                     </label>
@@ -88,6 +89,7 @@
                 {
                     <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Value ? "is-selected" : null)">
                         <input type="radio" name="EntryAccess" value="@e.Value" @(Model.EntryAccess == e.Value ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--blue"><i class="fas fa-check"></i></span>
                         <span>@e.Label</span>
                     </label>
                 }

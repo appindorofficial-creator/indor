@@ -1155,15 +1155,30 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-junk-items-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .pa-junk-item-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:12px;border:1.5px solid #E2E8F0;border-radius:14px;background:#fff;cursor:pointer;min-height:76px;font-size:.72rem;font-weight:600;color:#334155}
 .pa-junk-item-card input{position:absolute;opacity:0;pointer-events:none}
-.pa-junk-item-card.is-selected{border-color:#0066CC;background:#EFF6FF}
-.pa-junk-item-card.is-selected .pa-prev-service-check--blue{border-color:#0066CC;background:#0066CC;color:#fff}
-.pa-junk-item-card i.fas{color:#0066CC;font-size:.9rem}
+.pa-junk-item-card.is-selected,.pa-junk-item-card:has(input:checked){border-color:#0066CC;background:#EFF6FF;box-shadow:0 0 0 1px rgba(0,102,204,.12)}
+.pa-junk-item-card.is-selected .pa-prev-service-check--blue,.pa-junk-item-card:has(input:checked) .pa-prev-service-check--blue{border-color:#0066CC;background:#0066CC;color:#fff}
+/* Content icons only — never the fa-check inside the selection ring */
+.pa-junk-item-card > i.fas{color:#0066CC;font-size:.9rem}
+.pa-junk-item-card .pa-prev-service-check--blue > i{color:transparent;opacity:0}
+.pa-junk-item-card.is-selected .pa-prev-service-check--blue > i,
+.pa-junk-item-card:has(input:checked) .pa-prev-service-check--blue > i{color:#fff;opacity:1}
 .pa-junk-load-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .pa-junk-load-card{position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 6px;border:1.5px solid #E2E8F0;border-radius:14px;background:#fff;cursor:pointer;text-align:center;font-size:.64rem;font-weight:600;color:#334155}
 .pa-junk-load-card input{position:absolute;opacity:0;pointer-events:none}
-.pa-junk-load-card.is-selected{border-color:#0066CC;background:#EFF6FF}
-.pa-junk-load-card.is-selected .pa-prev-service-check--blue{border-color:#0066CC;background:#0066CC;color:#fff}
-.pa-junk-load-card i.fas{color:#0066CC;font-size:.9rem}
+.pa-junk-load-card.is-selected,.pa-junk-load-card:has(input:checked){border-color:#0066CC;background:#EFF6FF;box-shadow:0 0 0 1px rgba(0,102,204,.12)}
+.pa-junk-load-card.is-selected .pa-prev-service-check--blue,.pa-junk-load-card:has(input:checked) .pa-prev-service-check--blue{border-color:#0066CC;background:#0066CC;color:#fff}
+.pa-junk-load-card > i.fas{color:#0066CC;font-size:.9rem}
+.pa-junk-load-card .pa-prev-service-check--blue > i{color:transparent;opacity:0}
+.pa-junk-load-card.is-selected .pa-prev-service-check--blue > i,
+.pa-junk-load-card:has(input:checked) .pa-prev-service-check--blue > i{color:#fff;opacity:1}
+/* Access-step chips: empty ring like Moving Help (no floating check glyph) */
+.pa-emergency-form .pa-chip.pa-chip--wide{position:relative;padding-right:36px}
+.pa-emergency-form .pa-chip.pa-chip--wide.is-selected::after{content:none}
+.pa-emergency-form .pa-chip.pa-chip--wide .pa-prev-service-check--blue > i{color:transparent;opacity:0}
+.pa-emergency-form .pa-chip.pa-chip--wide.is-selected .pa-prev-service-check--blue,
+.pa-emergency-form .pa-chip.pa-chip--wide:has(input:checked) .pa-prev-service-check--blue{border-color:#0066CC;background:#0066CC;color:#fff}
+.pa-emergency-form .pa-chip.pa-chip--wide.is-selected .pa-prev-service-check--blue > i,
+.pa-emergency-form .pa-chip.pa-chip--wide:has(input:checked) .pa-prev-service-check--blue > i{color:#fff;opacity:1}
 .pa-junk-priority-banner{display:flex;align-items:center;gap:12px;padding:14px 16px;background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:14px;margin-bottom:18px;font-size:.76rem;color:#1E40AF;line-height:1.45}
 .pa-junk-priority-banner p{margin:0;flex:1}
 .pa-junk-priority-banner>i:first-child{color:#0066CC;font-size:1.1rem;flex-shrink:0}

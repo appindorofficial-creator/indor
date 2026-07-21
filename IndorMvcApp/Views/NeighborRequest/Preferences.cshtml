@@ -30,14 +30,22 @@
             }
         </div>
         <div class="nr-pick-date" id="nrPickDateWrap" hidden>
-            <label for="NeededByDate">@L["Pick a date"]</label>
-            <input name="NeededByDate"
-                   id="NeededByDate"
-                   type="date"
-                   class="nr-input"
-                   min="@Model.MinNeededByDateIso"
-                   data-min-date="@Model.MinNeededByDateIso"
-                   value="@(Model.NeededByDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "")" />
+            <span class="nr-pick-date-label">@L["Pick a date"]</span>
+            <label class="nr-pick-date-control" for="NeededByDate">
+                <span class="nr-pick-date-icon" aria-hidden="true"><i class="far fa-calendar"></i></span>
+                <input name="NeededByDate"
+                       id="NeededByDate"
+                       type="date"
+                       class="nr-pick-date-native"
+                       min="@Model.MinNeededByDateIso"
+                       data-min-date="@Model.MinNeededByDateIso"
+                       value="@(Model.NeededByDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "")"
+                       aria-label="@L["Pick a date"]" />
+                <span class="nr-pick-date-value" id="nrPickDateValue">
+                    @(Model.NeededByDate?.ToString("dddd, MMMM d", CultureInfo.CurrentUICulture) ?? L["Select a date"].ToString())
+                </span>
+                <i class="fas fa-chevron-right nr-pick-date-chevron" aria-hidden="true"></i>
+            </label>
             <span asp-validation-for="NeededByDate" class="field-validation-error"></span>
         </div>
         <span asp-validation-for="WhenCode" class="field-validation-error"></span>
@@ -167,7 +175,22 @@
         (function () {
             var pickDateWrap = document.getElementById('nrPickDateWrap');
             var neededByDate = document.getElementById('NeededByDate');
+            var pickDateValue = document.getElementById('nrPickDateValue');
             var minDate = neededByDate?.getAttribute('data-min-date') || neededByDate?.getAttribute('min') || '';
+            var selectDateLabel = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select a date"]));
+            var dateLocale = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L.CurrentCulture));
+
+            function formatPickDate(value) {
+                if (!value) return selectDateLabel;
+                var date = new Date(value + 'T12:00:00');
+                return date.toLocaleDateString(dateLocale, { weekday: 'long', month: 'long', day: 'numeric' });
+            }
+
+            function syncPickDateLabel() {
+                if (pickDateValue) {
+                    pickDateValue.textContent = formatPickDate(neededByDate?.value || '');
+                }
+            }
 
             function clampNeededByDate() {
                 if (!neededByDate || !minDate) return;
@@ -175,6 +198,7 @@
                 if (neededByDate.value && neededByDate.value < minDate) {
                     neededByDate.value = minDate;
                 }
+                syncPickDateLabel();
             }
 
             clampNeededByDate();
