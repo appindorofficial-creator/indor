@@ -7,7 +7,7 @@
     ViewBag.InviteFlowSubtitle = L["Fast plumbing help for occupied homes and Airbnb stays."].ToString();
     ViewBag.InviteFlowStep = Model.FlowStep <= 0 ? 1 : Model.FlowStep;
     ViewBag.InviteFlowSteps = new[] { L["Details"].ToString(), L["Access"].ToString(), L["Done"].ToString() };
-    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    ViewBag.FlowBackUrl = PropertyAdministratorFlowServiceSupport.ServicesUrl(Url, Model.ViewingProperty?.Id);
 }
 
 <div class="pa-portal-shell pa-portal-shell--flow">
@@ -111,16 +111,22 @@
             <label>@L["Add quick details"]</label>
             <textarea class="pa-textarea" name="QuickDetails" rows="3" placeholder="@L["Describe what's happening..."]">@Model.QuickDetails</textarea>
         </div>
+        @{
+            ViewData["PaMediaShowVoice"] = true;
+            ViewData["PaMediaFieldName"] = "MediaAttachmentsJson";
+            ViewData["PaMediaAttachmentsJson"] = Model.MediaAttachmentsJson ?? "[]";
+        }
         @await Html.PartialAsync("_PropertyAdminMediaCapture")
-
 
         <div class="pa-notify-banner pa-notify-banner--info">
             <i class="fas fa-circle-info"></i>
             <span>@L["Occupied guest stays are prioritized. We'll dispatch the closest available pro."]</span>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-back-link">@L["Back to start"]</a>
+        <div class="pa-flow-actions">
+            <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
+            <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back to services"]</a>
+        </div>
     </form>
 </div>
 

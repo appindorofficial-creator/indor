@@ -92,7 +92,9 @@ wireChipSearch('serviceSearch', 'serviceGrid');
     var form = document.getElementById('prvCompanyInfoForm');
     if (!form) return;
 
+    // localStorage survives Android WebView process death; sessionStorage does not.
     var key = 'indor.prv.companyInfo.draft';
+    var storage = window.localStorage || window.sessionStorage;
 
     function field(name) {
         return form.querySelector('[name="' + name + '"]');
@@ -154,13 +156,14 @@ wireChipSearch('serviceSearch', 'serviceGrid');
 
     function saveDraft() {
         try {
-            sessionStorage.setItem(key, JSON.stringify(collectDraft()));
+            storage.setItem(key, JSON.stringify(collectDraft()));
         } catch (_) { }
     }
 
     function clearDraft() {
         try {
-            sessionStorage.removeItem(key);
+            storage.removeItem(key);
+            if (window.sessionStorage) sessionStorage.removeItem(key);
         } catch (_) { }
     }
 
@@ -208,7 +211,14 @@ wireChipSearch('serviceSearch', 'serviceGrid');
 
     function restoreDraftFromStorage() {
         try {
-            var raw = sessionStorage.getItem(key);
+            var raw = storage.getItem(key);
+            if (!raw && window.sessionStorage) {
+                raw = sessionStorage.getItem(key);
+                if (raw) {
+                    // Migrate legacy session drafts so resume after backgrounding works.
+                    try { storage.setItem(key, raw); } catch (_) { }
+                }
+            }
             if (!raw) return;
             var draft = JSON.parse(raw);
             if (draftHasContent(draft)) {

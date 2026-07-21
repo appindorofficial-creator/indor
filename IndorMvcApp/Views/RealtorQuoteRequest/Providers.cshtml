@@ -1,12 +1,13 @@
 @model IndorMvcApp.ViewModels.RealtorQuoteRequestProvidersViewModel
 @{
     var isIndorMode = Model.ProviderSelectionMode == IndorMvcApp.Models.RealtorQuoteProviderSelectionModes.IndorRecommended;
+    // L[] avoids UiDisplayLocalization mangling "at least" → "en least".
     var formErrors = ViewData.ModelState
         .Where(x => x.Value?.Errors.Count > 0)
         .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
         .Where(m => !string.IsNullOrWhiteSpace(m))
+        .Select(m => L[m!])
         .Distinct()
-        .Select(m => UiDisplayLocalization.Localize(L, m))
         .ToList();
     var providerCountLabel = Model.SelectedCount == 1
         ? L.T("{0} provider selected", Model.SelectedCount)

@@ -20,7 +20,7 @@ var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringCompar
         <div class="summary-row"><i class="fas fa-droplet"></i><div style="flex:1;"><div class="summary-label">@L["Issue"]</div><div class="summary-value">@L.Catalog(Model.ProblemaResumen)</div></div></div>
         <div class="summary-row"><i class="fas fa-map-pin"></i><div style="flex:1;"><div class="summary-label">@L["Area"]</div><div class="summary-value">@Model.AreaResumen</div></div></div>
         <div class="summary-row"><i class="fas fa-circle-exclamation"></i><div style="flex:1;"><div class="summary-label">@L["Priority"]</div><div class="summary-value @(isEmergency ? "emergency" : "")">@Model.UrgenciaResumen</div></div></div>
-        <div class="summary-row"><i class="fas fa-images"></i><div style="flex:1;"><div class="summary-label">@L["Photos"]</div><div class="summary-value photos">@L.Catalog(Model.ArchivosResumen)</div></div></div>
+        <div class="summary-row"><i class="fas fa-images"></i><div style="flex:1;"><div class="summary-label">@L["Photos"]</div><div class="summary-value photos">@UiDisplayLocalization.Localize(L, Model.ArchivosResumen)</div></div></div>
         <div class="summary-row"><i class="fas fa-clock"></i><div style="flex:1;"><div class="summary-label">@L["Estimated arrival"]</div><div class="summary-value eta">@Model.TiempoLlegadaRango</div></div></div>
         <div class="summary-row"><i class="fas fa-truck-fast"></i><div style="flex:1;"><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-pill"><span class="status-dot"></span>@L.Catalog(Model.EstadoResumen)</span></div></div></div>
     </div>

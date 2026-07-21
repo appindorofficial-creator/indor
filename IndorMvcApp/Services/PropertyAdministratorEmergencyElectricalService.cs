@@ -13,6 +13,8 @@ public interface IPropertyAdministratorEmergencyElectricalService
     PropertyAdministratorEmergencyFeaturedViewModel BuildFeaturedCta(IUrlHelper url, int? propertyId);
     PropertyAdministratorNearestProViewModel BuildNearestPro();
     Task<PropertyAdministratorEmergencyElectricalFormViewModel> GetFormAsync(IUrlHelper url, int? propertyId, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorEmergencyElectricalReviewViewModel?> GetReviewAsync(
+        IUrlHelper url, PropertyAdministratorEmergencyElectricalSubmitInput input, CancellationToken cancellationToken = default);
     Task<int> SubmitAsync(PropertyAdministratorEmergencyElectricalSubmitInput input, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorEmergencyElectricalConfirmedViewModel?> GetConfirmedAsync(IUrlHelper url, int requestId, CancellationToken cancellationToken = default);
 }
@@ -51,6 +53,49 @@ public class PropertyAdministratorEmergencyElectricalService(
             ContactPhone = ""
         };
     }
+
+    public async Task<PropertyAdministratorEmergencyElectricalReviewViewModel?> GetReviewAsync(
+        IUrlHelper url, PropertyAdministratorEmergencyElectricalSubmitInput input, CancellationToken cancellationToken = default)
+    {
+        var admin = await LoadAdminAsync(cancellationToken: cancellationToken);
+        if (admin == null)
+        {
+            return null;
+        }
+
+        var shell = await BuildShellAsync(admin, cancellationToken);
+        var property = admin.PortfolioProperties.FirstOrDefault(p => p.Id == input.PropertyId)
+            ?? ResolveProperty(admin, input.PropertyId);
+        if (property == null)
+        {
+            return null;
+        }
+
+        var mapped = MapProperty(property);
+        input.PropertyId = property.Id;
+
+        return new PropertyAdministratorEmergencyElectricalReviewViewModel
+        {
+            DisplayName = shell.DisplayName,
+            PortfolioName = shell.PortfolioName,
+            ActivePropertyCount = shell.ActivePropertyCount,
+            Greeting = shell.Greeting,
+            NotificationCount = shell.NotificationCount,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            ViewingProperty = mapped,
+            Input = input,
+            SummaryRows = BuildReviewRows(input, mapped)
+        };
+    }
+
+    public static bool IsSubmitComplete(PropertyAdministratorEmergencyElectricalSubmitInput input) =>
+        !string.IsNullOrWhiteSpace(input.IssueType)
+        && !string.IsNullOrWhiteSpace(input.PowerFullyOut)
+        && !string.IsNullOrWhiteSpace(input.GuestsInside)
+        && !string.IsNullOrWhiteSpace(input.Urgency)
+        && !string.IsNullOrWhiteSpace(input.ProblemLocation)
+        && !string.IsNullOrWhiteSpace(input.EntryAccess)
+        && PropertyAdministratorContactPhone.IsProvided(input.ContactPhone);
 
     public async Task<int> SubmitAsync(
         PropertyAdministratorEmergencyElectricalSubmitInput input, CancellationToken cancellationToken = default)
@@ -146,26 +191,71 @@ public class PropertyAdministratorEmergencyElectricalService(
         }
     }
 
+    private static IReadOnlyList<PropertyAdministratorEmergencyElectricalReviewRowViewModel> BuildReviewRows(
+        PropertyAdministratorEmergencyElectricalSubmitInput input,
+        PropertyAdministratorFlowPropertyViewModel property) =>
+    [
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Property"),
+            Value = PropertyAdministratorDisplayLocalization.T("Viewing: {0}", property.PropertyName),
+            IconClass = "fa-house"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Issue"),
+            Value = $"{LabelIssue(input.IssueType)} / {LabelLocation(input.ProblemLocation)}",
+            IconClass = "fa-bolt"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Power fully out"),
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.PowerFullyOut),
+            IconClass = "fa-plug-circle-xmark",
+            Highlight = input.PowerFullyOut == "Yes"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Guests inside"),
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.GuestsInside),
+            IconClass = "fa-users",
+            Highlight = input.GuestsInside == "Yes"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Urgency"),
+            Value = LabelUrgency(input.Urgency),
+            IconClass = "fa-circle-exclamation",
+            Highlight = input.Urgency == "Emergency"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Access"),
+            Value = LabelAccess(input.EntryAccess),
+            IconClass = "fa-key"
+        }
+    ];
+
     private static IReadOnlyList<PropertyAdministratorEmergencyElectricalSummaryItemViewModel> BuildSummary(
         PropertyAdministratorEmergencyElectricalSubmitInput input) =>
     [
         new()
         {
             Label = PropertyAdministratorDisplayLocalization.L("Issue"),
-            Value = $"{LabelIssue(input.IssueType)} / {LabelLocation(input.ProblemLocation).ToLowerInvariant()}",
+            Value = $"{LabelIssue(input.IssueType)} / {LabelLocation(input.ProblemLocation)}",
             IconClass = "fa-triangle-exclamation"
         },
         new()
         {
-            Label = PropertyAdministratorDisplayLocalization.L("Occupied"),
-            Value = input.PowerFullyOut == "Yes" ? "Yes" : "No",
+            Label = PropertyAdministratorDisplayLocalization.L("Power fully out"),
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.PowerFullyOut),
             IconClass = "fa-user",
             Highlight = input.PowerFullyOut == "Yes"
         },
         new()
         {
             Label = PropertyAdministratorDisplayLocalization.L("Guests inside"),
-            Value = input.GuestsInside,
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.GuestsInside),
             IconClass = "fa-users",
             Highlight = input.GuestsInside == "Yes"
         },
@@ -178,10 +268,17 @@ public class PropertyAdministratorEmergencyElectricalService(
         new()
         {
             Label = PropertyAdministratorDisplayLocalization.L("Updates"),
-            Value = "Me + Guest",
+            Value = PropertyAdministratorDisplayLocalization.L("Me + Guest"),
             IconClass = "fa-bell"
         }
     ];
+
+    private static string LabelUrgency(string value) => value switch
+    {
+        "Urgent" => PropertyAdministratorDisplayLocalization.L("Urgent"),
+        "Emergency" => PropertyAdministratorDisplayLocalization.L("Emergency"),
+        _ => PropertyAdministratorDisplayLocalization.L("Normal")
+    };
 
     private static IReadOnlyList<PropertyAdministratorEmergencyAcTimelineItemViewModel> BuildTimeline(
         IndorPropertyAdminServiceRequest request)

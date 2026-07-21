@@ -213,7 +213,7 @@ public partial class InspeccionesController
             ArchivosResumen = EmergencyDisplayLabels.ArchivosAdjuntosTreeDamage(solicitud.Archivos.Count),
             TelefonoContacto = solicitud.TelefonoContacto ?? string.Empty,
             TiempoLlegadaRango = EmergencyDisplayLabels.TiempoLlegadaRangoTreeDamage(minutos),
-            NotaCorta = string.IsNullOrWhiteSpace(solicitud.NotaCorta) ? "None provided" : solicitud.NotaCorta
+            NotaCorta = EmergencyDisplayLabels.TextoOpcional(solicitud.NotaCorta)
         });
     }
 

@@ -65,36 +65,106 @@ public class RealtorUrgentQuoteController(
         string? urgencyLevel,
         string? newPropertyAddress)
     {
-        // Clear binder "The X field is required" messages for optional radio posts.
-        ModelState.Remove(nameof(requestCategory));
-        ModelState.Remove(nameof(serviceType));
-        ModelState.Remove(nameof(urgencyLevel));
+        // Radios omitted from the post produce English binder "The X field is required."
+        // Replace those with our localized, user-facing messages below.
+        ClearBinderRequiredErrors(
+            nameof(requestCategory),
+            nameof(serviceType),
+            nameof(urgencyLevel),
+            nameof(propertyFileId),
+            nameof(newPropertyAddress));
 
-        try
+        var category = requestCategory?.Trim() ?? string.Empty;
+        var service = serviceType?.Trim() ?? string.Empty;
+        var urgency = urgencyLevel?.Trim() ?? string.Empty;
+        var typedAddress = newPropertyAddress?.Trim();
+
+        if (propertyFileId <= 0 && string.IsNullOrWhiteSpace(typedAddress))
         {
-            await wizard.SavePropertyAsync(
-                propertyFileId,
-                requestCategory ?? string.Empty,
-                serviceType ?? string.Empty,
-                urgencyLevel ?? string.Empty,
-                newPropertyAddress);
-            return RedirectToAction(nameof(Issue));
-        }
-        catch (InvalidOperationException ex)
-        {
-            ModelState.AddModelError(string.Empty, localizer[ex.Message]);
-        }
-        catch
-        {
-            ModelState.AddModelError(string.Empty, localizer["Select a property and what you need to continue."]);
+            ModelState.AddModelError(string.Empty, localizer["Select a property or enter the property address to continue."]);
         }
 
-        var vm = await wizard.BuildPropertyAsync(newPropertyAddress);
+        if (string.IsNullOrWhiteSpace(category) ||
+            !RealtorUrgentQuoteCategories.Options.Any(o => o.Value == category))
+        {
+            ModelState.AddModelError(nameof(requestCategory), localizer["Select what you need."]);
+        }
+
+        if (string.IsNullOrWhiteSpace(service) ||
+            !RealtorUrgentQuoteServiceTypes.All.Contains(service))
+        {
+            ModelState.AddModelError(nameof(serviceType), localizer["Select a service type."]);
+        }
+
+        if (string.IsNullOrWhiteSpace(urgency) ||
+            !RealtorUrgentQuoteUrgencyLevels.Options.Any(o => o.Value == urgency))
+        {
+            ModelState.AddModelError(nameof(urgencyLevel), localizer["Select an urgency level."]);
+        }
+
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                await wizard.SavePropertyAsync(
+                    propertyFileId,
+                    category,
+                    service,
+                    urgency,
+                    typedAddress);
+                return RedirectToAction(nameof(Issue));
+            }
+            catch (InvalidOperationException ex)
+            {
+                ModelState.AddModelError(string.Empty, localizer[ex.Message]);
+            }
+            catch
+            {
+                ModelState.AddModelError(string.Empty, localizer["Select a property and what you need to continue."]);
+            }
+        }
+
+        var vm = await wizard.BuildPropertyAsync(typedAddress);
         vm.SelectedPropertyFileId = propertyFileId > 0 ? propertyFileId : null;
-        vm.RequestCategory = requestCategory ?? "";
-        vm.ServiceType = serviceType ?? "";
-        vm.UrgencyLevel = urgencyLevel ?? "";
+        vm.RequestCategory = category;
+        vm.ServiceType = service;
+        vm.UrgencyLevel = urgency;
         return View(vm);
+    }
+
+    private void ClearBinderRequiredErrors(params string[] fieldNames)
+    {
+        foreach (var field in fieldNames)
+        {
+            ModelState.Remove(field);
+        }
+
+        // Also drop any leftover English binder required messages under other keys.
+        foreach (var key in ModelState.Keys.ToList())
+        {
+            var entry = ModelState[key];
+            if (entry == null || entry.Errors.Count == 0)
+            {
+                continue;
+            }
+
+            var remaining = entry.Errors
+                .Where(e => e.ErrorMessage is not { Length: > 0 } msg
+                    || !msg.Contains("field is required", StringComparison.OrdinalIgnoreCase))
+                .Select(e => e.ErrorMessage)
+                .ToList();
+
+            if (remaining.Count == entry.Errors.Count)
+            {
+                continue;
+            }
+
+            entry.Errors.Clear();
+            foreach (var msg in remaining.Where(m => !string.IsNullOrWhiteSpace(m)))
+            {
+                entry.Errors.Add(msg!);
+            }
+        }
     }
 
     [HttpGet]

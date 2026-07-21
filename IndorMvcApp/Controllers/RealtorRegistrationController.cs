@@ -87,7 +87,7 @@ public class RealtorRegistrationController(
 
         return View(StepVm(1, "Welcome to INDOR for Realtors",
             "This is your professional space for clients, files, and quotes. No license or documents required to start.",
-            state, Url.Action("SelectRole", "Account")!,
+            state, Url.Action("SelectRole", "Account", new { userId = user?.Id })!,
             registration.GetLicenseStates()));
     }
 
@@ -96,6 +96,7 @@ public class RealtorRegistrationController(
     public async Task<IActionResult> Profile(string? brokerageName)
     {
         var state = await registration.GetAsync();
+        var user = await userManager.GetUserAsync(User);
 
         if (!BrokerageNameAttribute.IsValidBrokerageName(brokerageName, out var brokerageError, "Brokerage / Company Name"))
         {
@@ -107,7 +108,7 @@ public class RealtorRegistrationController(
             state.BrokerageName = brokerageName?.Trim() ?? "";
             return View(StepVm(1, "Welcome to INDOR for Realtors",
                 "This is your professional space for clients, files, and quotes. No license or documents required to start.",
-                state, Url.Action("SelectRole", "Account")!,
+                state, Url.Action("SelectRole", "Account", new { userId = user?.Id })!,
                 registration.GetLicenseStates()));
         }
 

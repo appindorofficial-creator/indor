@@ -35,4 +35,5 @@ public interface IProviderRegistrationService
     Task<IndorProveedor?> GetProveedorForCurrentUserAsync(CancellationToken cancellationToken = default);
     Task ActivateIndorProAsync(ProviderRegistrationState state, CancellationToken cancellationToken = default);
     string ResolveWizardResumeAction(int currentStep);
+    string ResolveWizardResumeAction(IndorProveedor proveedor);
 }

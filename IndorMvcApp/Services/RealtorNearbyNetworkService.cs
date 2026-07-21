@@ -290,9 +290,10 @@ public class RealtorNearbyNetworkService(
             ListingBadgeCss = item.BadgeCss,
             StatusBadge = string.IsNullOrWhiteSpace(item.StatusBadge) ? "" : localizer.T(item.StatusBadge),
             StatusCss = item.StatusCss,
-            // Keep listing title/name as stored (QA: "que quede con el nombre").
-            PriceLabel = item.Price is > 0 ? FormatCurrency(item.Price.Value) : item.Title,
-            Title = item.Title,
+            // Open-house demos often have no price; localize known seed titles (e.g. "Open House This Saturday").
+            // Unknown listing names pass through unchanged via the localizer.
+            PriceLabel = item.Price is > 0 ? FormatCurrency(item.Price.Value) : localizer.T(item.Title),
+            Title = localizer.T(item.Title),
             Address = item.Subtitle ?? "",
             SpecsLabel = RealtorDisplayLocalization.PropertySpecsSummary(localizer, item.Bedrooms, item.Bathrooms, item.SquareFeet, extras.YearBuilt),
             DistanceLabel = item.DistanceMiles is > 0
@@ -824,8 +825,8 @@ public class RealtorNearbyNetworkService(
             BadgeCss = item.BadgeCss,
             ImageUrl = imageUrl,
             IconClass = NearbyNetworkImageResolver.ResolveIconClass(item, imageUrl),
-            // Keep listing title/name as stored (QA: "que quede con el nombre").
-            Title = item.Title,
+            // Localize known seed/catalog titles; real listing names pass through unchanged.
+            Title = localizer.T(item.Title),
             PriceLabel = item.Price is > 0 && !item.Title.StartsWith('$')
                 ? FormatCurrency(item.Price.Value)
                 : null,

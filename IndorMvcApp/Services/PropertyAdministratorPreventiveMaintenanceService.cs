@@ -24,6 +24,28 @@ public class PropertyAdministratorPreventiveMaintenanceService(
     UserManager<ApplicationUser> userManager,
     IHttpContextAccessor httpContextAccessor) : IPropertyAdministratorPreventiveMaintenanceService
 {
+    /// <summary>Legacy Bug 30 shared default — replaced by per-service notes below.</summary>
+    internal const string LegacySharedScheduleNotesKey =
+        "Please service the HVAC and flush the water heater between guest stays if possible.";
+
+    /// <summary>English UI keys for schedule-step default notes, keyed by preventive catalog ServiceKey.</summary>
+    private static readonly Dictionary<string, string> DefaultNotesByServiceKey = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["HvacTuneUp"] = "Please service the HVAC between guest stays if possible.",
+        ["HvacFilterChange"] = "Please change the HVAC filter between guest stays if possible.",
+        ["WaterHeaterFlush"] = "Please flush the water heater between guest stays if possible.",
+        ["SmokeDetectorCheck"] = "Please test all smoke detectors and replace batteries as needed.",
+        ["DryerVentCleaning"] = "Please clean the dryer vent thoroughly for fire safety.",
+        ["GutterCleaning"] = "Please clear gutters and downspouts of debris.",
+        ["PlumbingCheck"] = "Please inspect plumbing for leaks and slow drains.",
+        ["ElectricalSafety"] = "Please check outlets, breakers, and detector wiring for safety.",
+        ["ApplianceCheck"] = "Please inspect major appliances for safe operation.",
+        ["PestPrevention"] = "Please treat common pest entry points around the property."
+    };
+
+    private const string MultiServiceDefaultNotesKey =
+        "Please complete the selected preventive maintenance between guest stays if possible.";
+
     private static readonly Dictionary<string, (string Title, string Description, decimal Monthly, decimal Bundle)> TierCatalog = new()
     {
         ["Basic"] = ("Basic Homecare", "Essential upkeep for core home systems.", 29m, 149m),
@@ -170,7 +192,8 @@ public class PropertyAdministratorPreventiveMaintenanceService(
             PreferredDay = plan.PreferredDay,
             EntryAccess = plan.EntryAccess,
             UpdateRecipients = plan.UpdateRecipients,
-            Notes = plan.Notes ?? PropertyAdministratorDisplayLocalization.L("Please service the HVAC and flush the water heater between guest stays if possible."),
+            // Keep English key in the VM; the schedule view localizes for display per selected service(s).
+            Notes = ResolveScheduleNotes(plan.Notes, selectedKeys),
             AutoReminders = plan.AutoReminders,
             FrequencyHint = BuildFrequencyHint(plan.Frequency),
             EstimatedPrice = $"${plan.BundlePrice:0}–${plan.BundlePrice + 80:0}"
@@ -221,7 +244,7 @@ public class PropertyAdministratorPreventiveMaintenanceService(
             PlanId = plan.Id,
             ViewingProperty = MapProperty(property),
             PlanTierLabel = tierLabel,
-            NextVisitLabel = PropertyAdministratorDisplayLocalization.L("Next visit in 14 days"),
+            NextVisitLabel = "Next visit in 14 days",
             BundlePriceLabel = $"${plan.BundlePrice:0}",
             SelectedServices = catalog.Where(c => selectedKeys.Contains(c.ServiceKey))
                 .Select(c => new PropertyAdministratorPreventiveServiceItemViewModel
@@ -233,12 +256,13 @@ public class PropertyAdministratorPreventiveMaintenanceService(
                     ToneClass = c.ToneClass,
                     IsSelected = true
                 }).ToList(),
+            // English catalog keys — PreventiveMaintenanceReview localizes via UiDisplayLocalization.
             Preferences =
             [
-                new() { Label = PropertyAdministratorDisplayLocalization.L("Preferred timing"), Value = LabelTiming(plan.PreferredTiming), IconClass = "fa-calendar" },
-                new() { Label = PropertyAdministratorDisplayLocalization.L("Access method"), Value = LabelAccess(plan.EntryAccess), IconClass = "fa-key" },
-                new() { Label = PropertyAdministratorDisplayLocalization.L("Updates to"), Value = LabelUpdates(plan.UpdateRecipients), IconClass = "fa-users" },
-                new() { Label = PropertyAdministratorDisplayLocalization.L("Auto-reminders"), Value = plan.AutoReminders ? "Enabled" : "Disabled", IconClass = "fa-bell" }
+                new() { Label = "Preferred timing", Value = LabelTiming(plan.PreferredTiming), IconClass = "fa-calendar" },
+                new() { Label = "Access method", Value = LabelAccess(plan.EntryAccess), IconClass = "fa-key" },
+                new() { Label = "Updates to", Value = LabelUpdates(plan.UpdateRecipients), IconClass = "fa-users" },
+                new() { Label = "Auto-reminders", Value = plan.AutoReminders ? "Enabled" : "Disabled", IconClass = "fa-bell" }
             ],
             PreventionBenefits =
             [
@@ -329,6 +353,79 @@ public class PropertyAdministratorPreventiveMaintenanceService(
         }
     }
 
+    /// <summary>
+    /// Prefills notes from the selected preventive service key(s). Replaces the legacy shared HVAC/water-heater
+    /// default when the plan still has that placeholder so unrelated services (e.g. smoke detector) get their own text.
+    /// </summary>
+    internal static string ResolveScheduleNotes(string? storedNotes, IReadOnlyList<string> selectedKeys)
+    {
+        if (!string.IsNullOrWhiteSpace(storedNotes) && !IsLegacySharedDefaultNotes(storedNotes))
+        {
+            return storedNotes;
+        }
+
+        return BuildDefaultScheduleNotes(selectedKeys);
+    }
+
+    internal static string BuildDefaultScheduleNotes(IReadOnlyList<string> selectedKeys)
+    {
+        var keys = selectedKeys
+            .Where(k => !string.IsNullOrWhiteSpace(k))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (keys.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        if (keys.Count == 1 && DefaultNotesByServiceKey.TryGetValue(keys[0], out var single))
+        {
+            return single;
+        }
+
+        // Classic HVAC + water heater combo keeps the original combined suggestion.
+        var hasHvac = keys.Any(k =>
+            k.Equals("HvacTuneUp", StringComparison.OrdinalIgnoreCase) ||
+            k.Equals("HvacFilterChange", StringComparison.OrdinalIgnoreCase));
+        var hasWaterHeater = keys.Any(k => k.Equals("WaterHeaterFlush", StringComparison.OrdinalIgnoreCase));
+        if (keys.Count == 2 && hasHvac && hasWaterHeater)
+        {
+            return LegacySharedScheduleNotesKey;
+        }
+
+        var mapped = keys
+            .Select(k => DefaultNotesByServiceKey.TryGetValue(k, out var note) ? note : null)
+            .Where(n => !string.IsNullOrWhiteSpace(n))
+            .Cast<string>()
+            .Distinct(StringComparer.Ordinal)
+            .ToList();
+
+        if (mapped.Count == 1)
+        {
+            return mapped[0];
+        }
+
+        if (mapped.Count == 0)
+        {
+            return string.Empty;
+        }
+
+        return MultiServiceDefaultNotesKey;
+    }
+
+    private static bool IsLegacySharedDefaultNotes(string notes)
+    {
+        var trimmed = notes.Trim();
+        return trimmed.Equals(LegacySharedScheduleNotesKey, StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals(
+                "Por favor, da servicio al HVAC y vacía/enjuaga el calentador de agua entre estadías de huéspedes si es posible.",
+                StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals(
+                "Por favor, da servicio al HVAC y lava el calentador de agua entre estadías de huéspedes si es posible.",
+                StringComparison.OrdinalIgnoreCase);
+    }
+
     private static string MapServiceFrequency(IndorPropertyAdminPreventiveServiceCatalogItem svc, string planFrequency) =>
         planFrequency switch
         {
@@ -348,26 +445,27 @@ public class PropertyAdministratorPreventiveMaintenanceService(
         _ => PropertyAdministratorDisplayLocalization.L("We'll filter change every 3 months. Full service visits twice a year.")
     };
 
+    // Keep English catalog keys so views localize via IIndorLocalizer / UiDisplayLocalization.
     private static string LabelTiming(string value) => value switch
     {
-        "Morning" => PropertyAdministratorDisplayLocalization.L("Weekdays, 9 AM – 12 PM"),
-        "Afternoon" => PropertyAdministratorDisplayLocalization.L("Weekdays, 12 PM – 5 PM"),
-        _ => PropertyAdministratorDisplayLocalization.L("Weekdays, 9 AM – 5 PM")
+        "Morning" => "Weekdays, 9 AM – 12 PM",
+        "Afternoon" => "Weekdays, 12 PM – 5 PM",
+        _ => "Weekdays, 9 AM – 5 PM"
     };
 
     private static string LabelAccess(string value) => value switch
     {
-        "SmartLock" => PropertyAdministratorDisplayLocalization.L("Lockbox"),
-        "GuestCoordination" => PropertyAdministratorDisplayLocalization.L("Coordinate with guest"),
-        _ => PropertyAdministratorDisplayLocalization.L("Host present")
+        "SmartLock" => "Lockbox",
+        "GuestCoordination" => "Coordinate with guest",
+        _ => "Host present"
     };
 
     private static string LabelUpdates(string value) => value switch
     {
-        "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
-        "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
-        "MeGuest" => PropertyAdministratorDisplayLocalization.L("Me + Guest"),
-        _ => PropertyAdministratorDisplayLocalization.L("Me")
+        "Guest" => "Guest",
+        "CoHost" => "Co-host",
+        "MeGuest" => "Me + Guest",
+        _ => "Me"
     };
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(

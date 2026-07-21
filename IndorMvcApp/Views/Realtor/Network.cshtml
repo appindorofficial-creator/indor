@@ -14,6 +14,16 @@
             centerLabel = Model.MapCenterLabel,
             activeFilter = Model.ActiveFilter,
             mapDataUrl = Url.Action("NetworkMapData", "Realtor"),
+            i18n = new Dictionary<string, string>
+            {
+                ["{0} mi radius"] = L["{0} mi radius"],
+                ["{0} provider"] = L["{0} provider"],
+                ["{0} providers"] = L["{0} providers"],
+                ["{0} listing"] = L["{0} listing"],
+                ["{0} listings"] = L["{0} listings"],
+                ["{0} nearby"] = L["{0} nearby"],
+                ["Your location"] = L["Your location"]
+            },
             providers = Model.MapProviders.Select(p => new
             {
                 id = p.ProviderId,

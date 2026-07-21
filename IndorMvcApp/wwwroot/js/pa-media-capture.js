@@ -154,11 +154,30 @@
             }
         }
 
+        if (libraryInput) {
+            // Gallery must never force the camera (capture= is camera-only on mobile).
+            libraryInput.removeAttribute('capture');
+        }
+
         photoInputs.forEach(function (input) {
             input.addEventListener('change', function () {
                 handlePhotoFiles(input);
             });
         });
+
+        function openFileInput(input) {
+            if (!input) {
+                return;
+            }
+            // Off-screen inputs use pointer-events:none; briefly enable for programmatic open.
+            var prev = input.style.pointerEvents;
+            input.style.pointerEvents = 'auto';
+            try {
+                input.click();
+            } finally {
+                input.style.pointerEvents = prev || '';
+            }
+        }
 
         if (photoBtn) {
             if (photoMenu && (cameraInput || libraryInput)) {
@@ -174,10 +193,14 @@
                         e.stopPropagation();
                         var source = item.getAttribute('data-pa-media-source');
                         closeMenu();
-                        var target = source === 'camera' ? (cameraInput || libraryInput) : (libraryInput || cameraInput);
-                        if (target) {
-                            target.click();
+                        // Library = no capture (gallery). Camera may use capture=environment.
+                        var target = source === 'camera'
+                            ? (cameraInput || libraryInput)
+                            : (libraryInput || cameraInput);
+                        if (target === libraryInput) {
+                            target.removeAttribute('capture');
                         }
+                        openFileInput(target);
                     });
                 });
 
@@ -192,9 +215,9 @@
                     }
                 });
             } else if (photoInputs.length) {
-                // Fallback: open first available file input.
+                // Fallback: prefer library (no capture) so OS offers camera + gallery.
                 photoBtn.addEventListener('click', function () {
-                    photoInputs[0].click();
+                    openFileInput(libraryInput || photoInputs[0]);
                 });
             }
         }

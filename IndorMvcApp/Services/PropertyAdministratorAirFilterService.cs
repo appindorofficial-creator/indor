@@ -58,7 +58,8 @@ public class PropertyAdministratorAirFilterService(
             GuestsInside = string.Empty,
             FilterSize = string.Empty,
             Frequency = string.Empty,
-            EntryAccess = string.Empty
+            EntryAccess = string.Empty,
+            MediaAttachmentsJson = "[]"
         };
     }
 

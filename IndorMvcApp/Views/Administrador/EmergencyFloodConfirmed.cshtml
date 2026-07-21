@@ -6,7 +6,7 @@
     ViewBag.FlowTotalSteps = Model.TotalSteps;
     ViewBag.FlowTitle = L["Emergency Flood request sent"].ToString();
     ViewBag.FlowSubtitle = L.T("A mitigation technician is on the way to {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"]).ToString();
-    ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Review"].ToString(), L["Done"].ToString() };
     ViewBag.FlowShowBack = false;
     var propertyLabel = Model.ViewingProperty != null
         ? $"{Model.ViewingProperty.PropertyTypeLabel} • {Model.ViewingProperty.Location}"

@@ -22,12 +22,12 @@
     <section class="tpl-selected">
         <span class="tpl-icon tpl-icon--@Model.Color"><i class="fas @Model.Icon"></i></span>
         <div class="tpl-selected-text">
-            <strong>@Model.Name</strong>
-            <small>@Model.Description</small>
+            <strong>@L[Model.Name]</strong>
+            <small>@L[Model.Description]</small>
         </div>
         @if (!string.IsNullOrWhiteSpace(Model.Badge))
         {
-            <span class="tpl-badge">@Model.Badge</span>
+            <span class="tpl-badge">@L[Model.Badge]</span>
         }
     </section>
 
@@ -37,7 +37,7 @@
         {
             <div class="tpl-section-row">
                 <span class="tpl-section-icon"><i class="fas @s.Icon"></i></span>
-                <span class="tpl-section-label">@s.Label</span>
+                <span class="tpl-section-label">@L[s.Label]</span>
                 <i class="fas fa-circle-check tpl-section-check"></i>
             </div>
         }

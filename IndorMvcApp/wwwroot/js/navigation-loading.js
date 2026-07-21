@@ -64,7 +64,9 @@
 
         try {
             var url = new URL(href, location.href);
-            if (url.pathname === location.pathname && url.search === location.search && url.hash) {
+            // Same document (with or without hash) never unloads — skip overlay
+            // so "Cargando..." cannot stick when Edit/Back points at this page.
+            if (url.pathname === location.pathname && url.search === location.search) {
                 return true;
             }
         } catch (err) {

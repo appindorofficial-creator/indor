@@ -8,7 +8,7 @@
     ViewBag.FlowSubtitle = !string.IsNullOrWhiteSpace(Model.TechnicianName)
         ? L.T("An electrician is on the way to {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"])
         : L.T("We're connecting you with a verified electrician near {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"]);
-    ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Review"].ToString(), L["Done"].ToString() };
     ViewBag.FlowShowBack = false;
     var propertyLabel = Model.ViewingProperty != null
         ? $"{Model.ViewingProperty.PropertyTypeLabel} • {Model.ViewingProperty.Location}"
@@ -127,7 +127,10 @@
         <span class="pa-tip-icon"><i class="fas fa-circle-info"></i></span>
         <p><strong>@L["Tip:"]</strong> @UiDisplayLocalization.Localize(L, Model.Tip)</p>
     </div>
-    @{ ViewBag.ConfirmedPropertyId = Model.ViewingProperty?.Id; }
+    @{
+        ViewBag.ConfirmedPropertyId = Model.ViewingProperty?.Id;
+        ViewBag.ConfirmedDashboardUrl = PropertyAdministratorFlowServiceSupport.ServicesUrl(Url, Model.ViewingProperty?.Id);
+    }
     @await Html.PartialAsync("_PropertyAdminConfirmedFooter")
 
 </div>

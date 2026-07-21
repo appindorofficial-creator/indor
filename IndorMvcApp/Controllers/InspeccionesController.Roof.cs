@@ -245,10 +245,10 @@ public partial class InspeccionesController
                 solicitud.TipoPropiedad, solicitud.NumeroPisos, solicitud.MaterialTecho),
             AccesoResumen = InspeccionDisplayLabels.AccesoPreferidoStructural(solicitud.AccesoPreferido),
             ArchivosResumen = archivos.Count == 0
-                ? DisplayLabelsLocalization.L("No files uploaded")
+                ? "No files uploaded"
                 : archivos.Count == 1
-                    ? DisplayLabelsLocalization.L("1 photo uploaded")
-                    : string.Format(DisplayLabelsLocalization.L("{0} photos uploaded"), archivos.Count),
+                    ? "1 photo uploaded"
+                    : string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} photos uploaded", archivos.Count),
             Archivos = archivos
                 .Select(a => new ExistingRoofFileViewModel
                 {

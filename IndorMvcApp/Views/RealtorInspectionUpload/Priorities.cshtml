@@ -190,11 +190,15 @@ else
                                 }
                             </div>
 
-                            @if (!string.IsNullOrWhiteSpace(finding.SourceExcerpt))
+                            @{
+                                var inspectorWording = UiDisplayLocalization.LocalizeInspectorWording(
+                                    L, finding.SourceExcerpt, finding.Description);
+                            }
+                            @if (!string.IsNullOrWhiteSpace(inspectorWording))
                             {
                                 <div class="rl-insp-inspector-wording">
                                     <span class="rl-insp-inspector-wording-label"><i class="fas fa-quote-left"></i> @L["Inspector wording"]</span>
-                                    <blockquote class="rl-insp-finding-quote">@UiDisplayLocalization.Localize(L, finding.SourceExcerpt)</blockquote>
+                                    <blockquote class="rl-insp-finding-quote">@inspectorWording</blockquote>
                                 </div>
                             }
 
@@ -235,9 +239,6 @@ else
                 <i class="fas fa-paper-plane"></i> @L["Send to providers"]
             </button>
         </div>
-        <div class="rl-insp-change-doc-wrap">
-            @await Html.PartialAsync("_ChangeInspectionDocument")
-        </div>
     </form>
 }
 
@@ -247,6 +248,12 @@ else
         <a asp-action="Analyze" class="rl-invite-cancel"><i class="fas fa-chevron-left"></i> @L["Back"]</a>
     </div>
 }
+
+@* Must stay outside prioritiesForm — nested forms are invalid HTML and the browser
+   ignores the inner <form>, so "Change document" would submit Priorities (or no-op). *@
+<div class="rl-insp-change-doc-wrap">
+    @await Html.PartialAsync("_ChangeInspectionDocument")
+</div>
 
 @section Scripts {
 <script>

@@ -128,7 +128,7 @@
                             class="rl-ep-language-chip @(isSelected ? "is-selected" : "")"
                             data-language="@lang"
                             aria-pressed="@(isSelected ? "true" : "false")">
-                        <i class="fas fa-globe" aria-hidden="true"></i> @lang
+                            <i class="fas fa-globe" aria-hidden="true"></i> @L[lang]
                     </button>
                 }
             </div>
@@ -234,24 +234,24 @@
 
                 var businessName = document.getElementById('BusinessName');
                 if (!businessName || !businessName.value.trim()) {
-                    hasError = setFieldError('BusinessName', 'Business Name is required.') || hasError;
+                    hasError = setFieldError('BusinessName', @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Business Name is required."].ToString()))) || hasError;
                 }
 
                 var brokerageName = document.getElementById('BrokerageName');
                 if (!brokerageName || !brokerageName.value.trim()) {
-                    hasError = setFieldError('BrokerageName', 'Brokerage Name is required.') || hasError;
+                    hasError = setFieldError('BrokerageName', @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Brokerage Name is required."].ToString()))) || hasError;
                 }
 
                 var email = document.getElementById('Email');
                 if (!email || !email.value.trim()) {
-                    hasError = setFieldError('Email', 'Email is required.') || hasError;
+                    hasError = setFieldError('Email', @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Email is required."].ToString()))) || hasError;
                 } else if (!/^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/.test(email.value.trim())) {
-                    hasError = setFieldError('Email', 'Enter a valid Email address.') || hasError;
+                    hasError = setFieldError('Email', @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Enter a valid Email address."].ToString()))) || hasError;
                 }
 
                 var languagesInput = document.getElementById('rlLanguagesInput');
                 if (!languagesInput || !languagesInput.value.trim()) {
-                    hasError = setLanguagesError('Select at least one language.') || hasError;
+                    hasError = setLanguagesError(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select at least one language."].ToString()))) || hasError;
                 }
 
                 if (hasError) {

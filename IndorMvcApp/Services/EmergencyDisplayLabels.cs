@@ -4,6 +4,11 @@
 
 public static class EmergencyDisplayLabels
 {
+    public static string TextoOpcional(string? value) =>
+        string.IsNullOrWhiteSpace(value)
+            ? DisplayLabelsLocalization.L("None provided")
+            : value.Trim();
+
     public static string TipoProblemaPlomeria(string? value) => value switch
     {
         "BurstPipe" => DisplayLabelsLocalization.L("Burst pipe"),
@@ -39,7 +44,7 @@ public static class EmergencyDisplayLabels
         "Priority" => DisplayLabelsLocalization.L("Priority"),
         "Today" => DisplayLabelsLocalization.L("Today"),
         "Normal" => DisplayLabelsLocalization.L("Normal"),
-        _ => value ?? "Emergency"
+        _ => DisplayLabelsLocalization.L("Emergency")
     };
 
     public static string AccesoSiAusente(string? value) => value switch
@@ -56,7 +61,7 @@ public static class EmergencyDisplayLabels
         if (string.Equals(aguaFluyendo, "Yes", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(tipoProblema, "Other", StringComparison.OrdinalIgnoreCase))
         {
-            return $"{problem} / active leak";
+            return $"{problem} / {DisplayLabelsLocalization.L("active leak")}";
         }
 
         return problem;
@@ -66,9 +71,9 @@ public static class EmergencyDisplayLabels
     {
         return count switch
         {
-            0 => DisplayLabelsLocalization.L("No files uploaded"),
-            1 => DisplayLabelsLocalization.L("1 photo"),
-            _ => string.Format(DisplayLabelsLocalization.L("{0} photos"), count)
+            0 => "No files uploaded",
+            1 => "1 photo",
+            _ => string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} photos", count)
         };
     }
 
@@ -76,9 +81,9 @@ public static class EmergencyDisplayLabels
     {
         return count switch
         {
-            0 => DisplayLabelsLocalization.L("No photos attached"),
-            1 => DisplayLabelsLocalization.L("1 attached"),
-            _ => string.Format(DisplayLabelsLocalization.L("{0} attached"), count)
+            0 => "No photos attached",
+            1 => "1 attached",
+            _ => string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} attached", count)
         };
     }
 
@@ -152,7 +157,7 @@ public static class EmergencyDisplayLabels
         "Basement" => DisplayLabelsLocalization.L("Basement"),
         "Outside" => DisplayLabelsLocalization.L("Outside"),
         "UtilityRoom" => DisplayLabelsLocalization.L("Utility room"),
-        _ => value ?? "Garage"
+        _ => DisplayLabelsLocalization.L("Garage")
     };
 
     public static string TipoUnidadWaterHeater(string? value) => value switch
@@ -161,7 +166,7 @@ public static class EmergencyDisplayLabels
         "Electric" => DisplayLabelsLocalization.L("Electric"),
         "Tankless" => DisplayLabelsLocalization.L("Tankless"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => value ?? "Not sure"
+        _ => DisplayLabelsLocalization.L("Not sure")
     };
 
     public static string SintomaWaterHeater(string? value) => value switch
@@ -174,7 +179,7 @@ public static class EmergencyDisplayLabels
         "ErrorCode" => DisplayLabelsLocalization.L("Error code"),
         "BurnerWontStayOn" => DisplayLabelsLocalization.L("Burner won't stay on"),
         "PoppingNoise" => DisplayLabelsLocalization.L("Popping noise"),
-        _ => value ?? string.Empty
+        _ => string.IsNullOrWhiteSpace(value) ? string.Empty : DisplayLabelsLocalization.L(value)
     };
 
     public static string FormatWaterHeaterIssues(string? tiposPipeSeparated, string? fallback)
@@ -212,9 +217,9 @@ public static class EmergencyDisplayLabels
     {
         return count switch
         {
-            0 => DisplayLabelsLocalization.L("None uploaded"),
-            1 => DisplayLabelsLocalization.L("1 uploaded"),
-            _ => string.Format(DisplayLabelsLocalization.L("{0} uploaded"), count)
+            0 => "None uploaded",
+            1 => "1 uploaded",
+            _ => string.Format(System.Globalization.CultureInfo.InvariantCulture, "{0} uploaded", count)
         };
     }
 
@@ -261,7 +266,7 @@ public static class EmergencyDisplayLabels
         "Laundry" => DisplayLabelsLocalization.L("Laundry"),
         "Garage" => DisplayLabelsLocalization.L("Garage"),
         "CrawlSpace" => DisplayLabelsLocalization.L("Crawl space"),
-        _ => value ?? "Unknown area"
+        _ => DisplayLabelsLocalization.L("Unknown area")
     };
 
     public static string AguaActivaFlood(string? value) => value switch
@@ -294,14 +299,14 @@ public static class EmergencyDisplayLabels
         "SmallArea" => DisplayLabelsLocalization.L("Small area"),
         "OneRoom" => DisplayLabelsLocalization.L("One room"),
         "SeveralRooms" => DisplayLabelsLocalization.L("Several rooms"),
-        _ => value ?? "One room"
+        _ => DisplayLabelsLocalization.L("One room")
     };
 
     public static string FormatFloodArea(string? ubicacion, string? cantidad)
     {
         var location = UbicacionAguaFlood(ubicacion);
         var amount = CantidadAguaFlood(cantidad);
-        if (string.Equals(amount, "One room", StringComparison.OrdinalIgnoreCase))
+        if (string.Equals(cantidad, "OneRoom", StringComparison.OrdinalIgnoreCase))
         {
             return $"{location} ({amount.ToLowerInvariant()})";
         }
@@ -346,7 +351,7 @@ public static class EmergencyDisplayLabels
         "Garage" => DisplayLabelsLocalization.L("Garage"),
         "Outside" => DisplayLabelsLocalization.L("Outside"),
         "ElectricalPanel" => DisplayLabelsLocalization.L("Electrical panel"),
-        _ => value ?? "Unknown area"
+        _ => DisplayLabelsLocalization.L("Unknown area")
     };
 
     public static string FormatAreaElectrical(string? ubicacion)
@@ -355,7 +360,7 @@ public static class EmergencyDisplayLabels
         if (string.Equals(ubicacion, "Garage", StringComparison.OrdinalIgnoreCase)
             || string.Equals(ubicacion, "ElectricalPanel", StringComparison.OrdinalIgnoreCase))
         {
-            return $"{location} / panel";
+            return $"{location} / {DisplayLabelsLocalization.L("panel")}";
         }
 
         return location;
@@ -369,7 +374,7 @@ public static class EmergencyDisplayLabels
         "WarmOutlet" => DisplayLabelsLocalization.L("Warm outlet"),
         "Buzzing" => DisplayLabelsLocalization.L("Buzzing"),
         "LightsFlickering" => DisplayLabelsLocalization.L("Lights flickering"),
-        _ => value ?? string.Empty
+        _ => string.IsNullOrWhiteSpace(value) ? string.Empty : DisplayLabelsLocalization.L(value)
     };
 
     public static string FormatSintomasElectrical(string? sintomasPipeSeparated)
@@ -413,7 +418,7 @@ public static class EmergencyDisplayLabels
         "Emergency" => DisplayLabelsLocalization.L("Emergency"),
         "Urgent" => DisplayLabelsLocalization.L("Urgent"),
         "Priority" => DisplayLabelsLocalization.L("Priority"),
-        _ => value ?? "Emergency"
+        _ => DisplayLabelsLocalization.L("Emergency")
     };
 
     public static string EstadoElectricalConfirmado(string? estado) => estado switch
@@ -442,7 +447,7 @@ public static class EmergencyDisplayLabels
         "Driveway" => DisplayLabelsLocalization.L("Driveway"),
         "Street" => DisplayLabelsLocalization.L("Street"),
         "SideOfHouse" => DisplayLabelsLocalization.L("Side of house"),
-        _ => value ?? "Unknown area"
+        _ => DisplayLabelsLocalization.L("Unknown area")
     };
 
     public static string FormatProblemaTreeDamage(string? tipo, string? ubicacion)
@@ -451,7 +456,7 @@ public static class EmergencyDisplayLabels
         if (string.Equals(tipo, "BlockedDriveway", StringComparison.OrdinalIgnoreCase)
             || string.Equals(tipo, "FallenBranch", StringComparison.OrdinalIgnoreCase))
         {
-            return $"{problem} / blocked driveway";
+            return $"{problem} / {DisplayLabelsLocalization.L("blocked driveway")}";
         }
 
         return problem;
@@ -463,7 +468,7 @@ public static class EmergencyDisplayLabels
         if (string.Equals(ubicacion, "Driveway", StringComparison.OrdinalIgnoreCase)
             || string.Equals(tipo, "BlockedDriveway", StringComparison.OrdinalIgnoreCase))
         {
-            return $"{location} / driveway";
+            return $"{location} / {DisplayLabelsLocalization.L("driveway")}";
         }
 
         return location;
@@ -491,7 +496,7 @@ public static class EmergencyDisplayLabels
         "Yes" => DisplayLabelsLocalization.L("Full"),
         "Partially" => DisplayLabelsLocalization.L("Partial"),
         "No" => DisplayLabelsLocalization.L("No access"),
-        _ => value ?? "Not specified"
+        _ => DisplayLabelsLocalization.L("Not specified")
     };
 
     public static string EntradaBloqueadaTreeDamage(string? value) => value switch
@@ -525,12 +530,7 @@ public static class EmergencyDisplayLabels
 
     public static string ArchivosAdjuntosTreeDamage(int count)
     {
-        return count switch
-        {
-            0 => "None attached",
-            1 => "1 attached",
-            _ => $"{count} attached"
-        };
+        return ArchivosAdjuntos(count);
     }
 
     public static string TipoProblemaRoofLeak(string? value) => value switch
@@ -552,7 +552,7 @@ public static class EmergencyDisplayLabels
         "NearWindow" => DisplayLabelsLocalization.L("Near window"),
         "GutterEdge" => DisplayLabelsLocalization.L("Gutter / edge"),
         "Unknown" => DisplayLabelsLocalization.L("Unknown"),
-        _ => value ?? "Unknown area"
+        _ => DisplayLabelsLocalization.L("Unknown area")
     };
 
     public static string FormatProblemaRoofLeak(string? tipo, string? ubicacion)
@@ -601,12 +601,7 @@ public static class EmergencyDisplayLabels
 
     public static string ArchivosAdjuntosRoofLeak(int count)
     {
-        return count switch
-        {
-            0 => "None attached",
-            1 => "1 attached",
-            _ => $"{count} attached"
-        };
+        return ArchivosAdjuntos(count);
     }
 
     public static string TipoProblemaSmokeDetector(string? value) => value switch
@@ -617,7 +612,7 @@ public static class EmergencyDisplayLabels
         "LowBatteryChirp" => DisplayLabelsLocalization.L("Low battery chirp"),
         "SmellOfGas" => DisplayLabelsLocalization.L("Smell of gas"),
         "NeedDetectorCheck" => DisplayLabelsLocalization.L("Need detector check"),
-        _ => value ?? "Smoke detector concern"
+        _ => DisplayLabelsLocalization.L("Smoke detector concern")
     };
 
     public static string UbicacionSmokeDetector(string? value) => value switch
@@ -628,7 +623,7 @@ public static class EmergencyDisplayLabels
         "Kitchen" => DisplayLabelsLocalization.L("Kitchen"),
         "CommonArea" => DisplayLabelsLocalization.L("Common area"),
         "Basement" => DisplayLabelsLocalization.L("Basement"),
-        _ => value ?? "Unknown"
+        _ => DisplayLabelsLocalization.L("Unknown")
     };
 
     public static string SituacionActualSmokeDetector(string? value) => value switch
@@ -638,7 +633,7 @@ public static class EmergencyDisplayLabels
         "IntermittentChirp" => DisplayLabelsLocalization.L("Intermittent chirp"),
         "GasSmell" => DisplayLabelsLocalization.L("Gas smell"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => value ?? "Not sure"
+        _ => DisplayLabelsLocalization.L("Not sure")
     };
 
     public static string PuedePermanecerAdentroSmokeDetector(string? value) => value switch
@@ -656,7 +651,7 @@ public static class EmergencyDisplayLabels
         "NoOneHome" => DisplayLabelsLocalization.L("No one home"),
         "SomeoneArriving" => DisplayLabelsLocalization.L("Someone arriving soon"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => value ?? "Adult home now"
+        _ => DisplayLabelsLocalization.L("Adult home now")
     };
 
     public static string FormatTiposProblemaSmokeDetector(string? csv)
@@ -672,7 +667,9 @@ public static class EmergencyDisplayLabels
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        return labels.Count == 0 ? "Smoke detector concern" : string.Join(" + ", labels);
+        return labels.Count == 0
+            ? DisplayLabelsLocalization.L("Smoke detector concern")
+            : string.Join(" + ", labels);
     }
 
     public static string FormatUbicacionesSmokeDetector(string? csv)
@@ -688,14 +685,16 @@ public static class EmergencyDisplayLabels
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        return labels.Count == 0 ? "Unknown" : string.Join(", ", labels);
+        return labels.Count == 0
+            ? DisplayLabelsLocalization.L("Unknown")
+            : string.Join(", ", labels);
     }
 
     public static string OlorGasSmokeDetector(string? tiposProblema, string? situacionActual)
     {
         var hasGas = ContainsCsvValue(tiposProblema, "SmellOfGas")
                      || string.Equals(situacionActual, "GasSmell", StringComparison.OrdinalIgnoreCase);
-        return hasGas ? "Yes" : "No";
+        return DisplayLabelsLocalization.L(hasGas ? "Yes" : "No");
     }
 
     public static string PreocupacionSmokeDetector(string? tiposProblema, string? situacionActual)

@@ -23,7 +23,8 @@
         string.Equals(name?.Trim(), "HVAC Inspection", StringComparison.OrdinalIgnoreCase);
 
     bool IsStructuralInspection(string? name) =>
-        string.Equals(name?.Trim(), "Structural Inspection", StringComparison.OrdinalIgnoreCase);
+        string.Equals(name?.Trim(), "Structural Inspection", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(name?.Trim(), "Foundation Inspection", StringComparison.OrdinalIgnoreCase);
 
     bool IsRoofInspection(string? name) =>
         string.Equals(name?.Trim(), "Roof Inspection", StringComparison.OrdinalIgnoreCase);

@@ -4,14 +4,13 @@
         .Where(x => x.Value?.Errors.Count > 0)
         .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
         .Where(m => !string.IsNullOrWhiteSpace(m))
+        .Select(m => L[m!])
         .Distinct()
-        .Select(m => UiDisplayLocalization.Localize(L, m))
         .ToList();
 }
 
 <form id="quoteReviewForm" asp-action="Send" method="post" class="rl-invite-form">
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
 
     @if (formErrors.Count > 0)
     {

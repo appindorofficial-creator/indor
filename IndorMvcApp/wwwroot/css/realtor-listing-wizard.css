@@ -1788,9 +1788,9 @@
 .rl-lw-stepper-item.is-active .rl-lw-step-label { color: #0066CC; }
 .rl-lw-stepper-item.is-done .rl-lw-step-label { color: #334155; }
 
-/* Step panels */
+/* Step panels — hide inactive only; keep active visible even if a later rule competes */
 .rl-lw-step { display: none; }
-.rl-lw-step.is-active { display: block; }
+.rl-lw-step.is-active { display: block !important; }
 
 /* Cards */
 .rl-listing-wizard-page--details .rl-lw-card {

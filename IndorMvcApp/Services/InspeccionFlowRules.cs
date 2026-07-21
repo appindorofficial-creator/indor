@@ -8,6 +8,7 @@ public static class InspeccionFlowRules
     public const string PlumbingInspectionName = "Plumbing Inspection";
     public const string HvacInspectionName = "HVAC Inspection";
     public const string StructuralInspectionName = "Structural Inspection";
+    public const string FoundationInspectionName = "Foundation Inspection";
     public const string RoofInspectionName = "Roof Inspection";
     public const string MoldMoistureInspectionName = "Mold and Moisture Inspection";
     public const string WindowsInsulationInspectionName = "Windows and Insulation Inspection";
@@ -56,10 +57,9 @@ public static class InspeccionFlowRules
 
     public static bool SupportsStructuralFlow(string? nombreInspeccion)
     {
-        return string.Equals(
-            nombreInspeccion?.Trim(),
-            StructuralInspectionName,
-            StringComparison.OrdinalIgnoreCase);
+        var name = nombreInspeccion?.Trim();
+        return string.Equals(name, StructuralInspectionName, StringComparison.OrdinalIgnoreCase)
+               || string.Equals(name, FoundationInspectionName, StringComparison.OrdinalIgnoreCase);
     }
 
     public static bool SupportsRoofFlow(string? nombreInspeccion)

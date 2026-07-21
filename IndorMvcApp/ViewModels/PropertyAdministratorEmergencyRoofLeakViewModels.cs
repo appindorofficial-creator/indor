@@ -11,6 +11,7 @@ public class PropertyAdministratorEmergencyRoofLeakStep1ViewModel : PropertyAdmi
     public string Urgency { get; set; } = "";
     public string LeakLocation { get; set; } = "";
     public string QuickDetails { get; set; } = "";
+    public string? MediaAttachmentsJson { get; set; }
 }
 
 public class PropertyAdministratorEmergencyRoofLeakStep1Input
@@ -22,6 +23,7 @@ public class PropertyAdministratorEmergencyRoofLeakStep1Input
     public string Urgency { get; set; } = "";
     public string LeakLocation { get; set; } = "";
     public string? QuickDetails { get; set; }
+    public string? MediaAttachmentsJson { get; set; }
 }
 
 public class PropertyAdministratorEmergencyRoofLeakStep2ViewModel : PropertyAdministratorPortalShellViewModel
@@ -46,6 +48,7 @@ public class PropertyAdministratorEmergencyRoofLeakStep2ViewModel : PropertyAdmi
     public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
     public string ProEtaLabel { get; set; } = "Earliest available roof leak pro: 26 min";
+    public string? MediaAttachmentsJson { get; set; }
 }
 
 public class PropertyAdministratorEmergencyRoofLeakSubmitInput
@@ -65,6 +68,7 @@ public class PropertyAdministratorEmergencyRoofLeakSubmitInput
     public string? AccessNotes { get; set; }
     public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
+    public string? MediaAttachmentsJson { get; set; }
 }
 
 public class PropertyAdministratorEmergencyRoofLeakConfirmedViewModel : PropertyAdministratorPortalShellViewModel

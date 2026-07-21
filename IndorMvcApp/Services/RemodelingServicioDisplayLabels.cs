@@ -38,4 +38,7 @@ public static class RemodelingServicioDisplayLabels
         "Email" => DisplayLabelsLocalization.L("Email"),
         _ => DisplayLabelsLocalization.L("Text message")
     };
+
+    public static string FormatPendingQuoteStatus() =>
+        DisplayLabelsLocalization.L("Pending quote");
 }

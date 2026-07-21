@@ -245,11 +245,11 @@ public class RealtorRegistrationService(
 
         return new RealtorReadyViewModel
         {
-            Step = 2,
-            TotalSteps = 2,
+            Step = 4,
+            TotalSteps = 4,
             BadgeLabel = entity.RegistrationStatus == RealtorRegistrationStatuses.Verified
                 ? "Verified Realtor"
-                : "Basic real estate agent",
+                : "Realtor Basic",
             LicenseNumberSaved = !string.IsNullOrWhiteSpace(entity.LicenseNumber),
             ProfileCreated = entity.ProfileCompletedUtc.HasValue,
             LicensePhotoUploaded = licensePhoto,

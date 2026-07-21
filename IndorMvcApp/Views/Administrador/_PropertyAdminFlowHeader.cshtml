@@ -12,8 +12,17 @@
         ?? ViewBag.FlowSteps as string[]
         ?? new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
     var anchorId = ViewBag.InviteFlowAnchorId as string;
+    var backUrl = ViewBag.FlowBackUrl as string;
+    var showBack = ViewBag.FlowShowBack as bool? ?? true;
+    var hasBack = showBack && !string.IsNullOrWhiteSpace(backUrl);
 }
 <header class="pa-svc-invite-topbar">
+    @if (hasBack)
+    {
+        <a href="@backUrl" class="pa-svc-invite-back" aria-label="@L["Back"]">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+    }
     <a asp-controller="Administrador" asp-action="Services" class="pa-svc-invite-logo" aria-label="@L["Services"]">
         <i class="fas fa-house"></i> INDOR
     </a>

@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ExteriorPaintConfirmedViewModel
 @{
     ViewData["Title"] = L["Paint Review Requested - INDOR"];
-    ViewData["WizardTitle"] = Model.NombreServicio;
+    ViewData["WizardTitle"] = L.Catalog(Model.NombreServicio);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
@@ -51,7 +51,7 @@
         <div class="reminder-box">
             <i class="fas fa-calendar-check"></i>
             <div>
-                Exterior paint reminder saved
+                @L["Exterior paint reminder saved"]
                 <span class="sub">@Model.ReminderTexto</span>
             </div>
         </div>
@@ -64,6 +64,6 @@
     @if (Model.PropiedadId.HasValue)
     {
         <a asp-controller="MyHome" asp-action="Maintenance" asp-route-id="@Model.PropiedadId" class="btn-outline" style="margin-top:10px;">
-            <i class="fas fa-bell"></i> Set reminder
+            <i class="fas fa-bell"></i> @L["Set reminder"]
         </a>
     }

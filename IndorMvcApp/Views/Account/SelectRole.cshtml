@@ -9,15 +9,10 @@
 
 <div class="login-container login-container--select-role sr-screen sr-screen--v4">
     <div class="top-bar top-bar--with-lang">
-        <a asp-controller="Account" asp-action="Welcome" class="back-btn" aria-label="@L["Back"]">
+        <a asp-controller="Account" asp-action="Welcome" class="back-btn" data-smart-back aria-label="@L["Back"]">
             <i class="fas fa-arrow-left"></i>
         </a>
         @await Html.PartialAsync("_LanguageSelector")
-    </div>
-
-    <div class="logo-container sr-logo-wrap">
-        <img src="~/images/indor-logo-transparent.png" alt="@L["Indor - The Home Operating System"]" class="smart-home-logo sr-logo" asp-append-version="true" />
-        <p class="sr-logo-tagline">@L["The Home Operating System"]</p>
     </div>
 
     <div class="brand-section sr-brand">

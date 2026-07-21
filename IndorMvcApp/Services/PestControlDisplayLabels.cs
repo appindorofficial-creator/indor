@@ -77,6 +77,9 @@ public static class PestControlDisplayLabels
             : string.Join(", ", pipe.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .Select(formatter));
 
+    public static string FormatConfirmedStatus() =>
+        DisplayLabelsLocalization.L("Reminder and service saved");
+
     public static DateTime GetDueDate(string? timing)
     {
         var today = DateTime.Today;

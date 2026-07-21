@@ -65,7 +65,7 @@ var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringCompar
                 <i class="fas fa-images"></i>
                 <div style="flex:1;">
                     <div class="summary-label">@L["Photos"]</div>
-                    <div class="summary-value">@L.Catalog(Model.ArchivosResumen)</div>
+                    <div class="summary-value">@UiDisplayLocalization.Localize(L, Model.ArchivosResumen)</div>
                 </div>
             </div>
         </div>

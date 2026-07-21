@@ -11,6 +11,7 @@ public class PropertyAdministratorEmergencyPlumbingStep1ViewModel : PropertyAdmi
     public string Urgency { get; set; } = "";
     public string ProblemLocation { get; set; } = "";
     public string QuickDetails { get; set; } = "";
+    public string? MediaAttachmentsJson { get; set; }
 }
 
 public class PropertyAdministratorEmergencyPlumbingStep1Input

@@ -1,0 +1,55 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorHomecarePlansViewModel
+@{
+    ViewData["Title"] = L["Homecare plans"];
+    Layout = "_PropertyAdminLayout";
+}
+
+<div class="pa-portal-shell pa-portal-shell--homecare-plans">
+    <header class="pa-personal-header">
+        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="@L["Back"]">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <div class="pa-personal-header-text">
+            <h1>@L["Homecare plans"]</h1>
+            <p>@L["View and manage recurring care plans."]</p>
+        </div>
+    </header>
+
+    <section class="pa-personal-section">
+        <h2>@L["Active homecare plans"]</h2>
+        @if (!Model.ActivePlans.Any())
+        {
+            <div class="pa-empty-note">
+                <p>@L["You don't have any active homecare plans yet. Set up a recurring care plan from Services."]</p>
+            </div>
+        }
+        else
+        {
+            <div class="pa-personal-list">
+                @foreach (var plan in Model.ActivePlans)
+                {
+                    var planName = UiDisplayLocalization.Localize(L, plan.PlanName);
+                    <div class="pa-homecare-plan-card">
+                        <span class="pa-homecare-plan-icon @plan.ToneClass"><i class="fas @plan.IconClass"></i></span>
+                        <div class="pa-homecare-plan-copy">
+                            <strong>@planName</strong>
+                            <small>@UiDisplayLocalization.Localize(L, plan.Frequency)</small>
+                            <span class="pa-homecare-plan-next">@L.T("Next: {0}", plan.NextDueLabel)</span>
+                        </div>
+                        <span class="pa-plan-status">@UiDisplayLocalization.Localize(L, plan.StatusLabel)</span>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+
+    <section class="pa-personal-info-card">
+        <div>
+            <strong>@L["Need a new plan?"]</strong>
+            <p>@L["Browse homecare services to set up recurring maintenance for your portfolio."]</p>
+        </div>
+        <a href="@Model.BrowseServicesUrl" class="pa-provider-browse" aria-label="@L["Browse services"]">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    </section>
+</div>

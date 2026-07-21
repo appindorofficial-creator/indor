@@ -28,6 +28,7 @@ public class PropertyAdministratorAirFilterFormViewModel : PropertyAdministrator
     public string UpdateRecipients { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string Details { get; set; } = "";
+    public string? MediaAttachmentsJson { get; set; }
     public string EstimatedPrice { get; set; } = "$59–$89";
     public string ProEtaLabel { get; set; } = "Nearest homecare pro available tomorrow 10–12 AM";
 }
@@ -44,6 +45,7 @@ public class PropertyAdministratorAirFilterSubmitInput
     public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
     public string? Details { get; set; }
+    public string? MediaAttachmentsJson { get; set; }
 }
 
 public class PropertyAdministratorAirFilterTimelineItemViewModel

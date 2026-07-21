@@ -241,7 +241,14 @@ public class AccountController : Controller
 
         if (ModelState.IsValid)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+            // Always persist the auth cookie on mobile/WebView — a session cookie is
+            // dropped when Android kills the process, which dumps users back at
+            // Welcome/SelectRole/Entry after briefly leaving the app.
+            var result = await _signInManager.PasswordSignInAsync(
+                model.Email,
+                model.Password,
+                isPersistent: true,
+                lockoutOnFailure: false);
 
             if (result.Succeeded)
             {
@@ -510,15 +517,28 @@ public class AccountController : Controller
 
     [HttpGet]
     [Authorize]
-    public async Task<IActionResult> SelectRole(string userId)
+    public async Task<IActionResult> SelectRole(string? userId = null)
     {
         var currentUser = await _userManager.GetUserAsync(User);
-        if (currentUser == null || currentUser.Id != userId)
+        if (currentUser == null)
         {
             return Challenge();
         }
 
-        if (!string.IsNullOrEmpty(currentUser.RolUsuario))
+        // Missing/mismatched userId used to Challenge() → LoginForm?ReturnUrl=/Account/SelectRole
+        // → authenticated LoginForm redirects back to SelectRole → ERR_TOO_MANY_REDIRECTS.
+        if (string.IsNullOrWhiteSpace(userId))
+        {
+            return RedirectToAction(nameof(SelectRole), new { userId = currentUser.Id });
+        }
+
+        if (!string.Equals(currentUser.Id, userId, StringComparison.Ordinal))
+        {
+            return RedirectToAction(nameof(SelectRole), new { userId = currentUser.Id });
+        }
+
+        if (!string.IsNullOrEmpty(currentUser.RolUsuario)
+            && !await CanRevisitRoleSelectionAsync(currentUser))
         {
             return await RedirectAuthenticatedUserAsync(user: currentUser);
         }
@@ -528,7 +548,13 @@ public class AccountController : Controller
         ViewBag.OnboardingBackUrl = Url.Action(nameof(Welcome));
         ViewBag.OnboardingShowBack = true;
 
-        return View(new SelectRoleViewModel { UserId = userId, SelectedRole = "Propietario" });
+        return View(new SelectRoleViewModel
+        {
+            UserId = currentUser.Id,
+            SelectedRole = string.IsNullOrWhiteSpace(currentUser.RolUsuario)
+                ? "Propietario"
+                : currentUser.RolUsuario
+        });
     }
 
     [HttpPost]
@@ -544,10 +570,11 @@ public class AccountController : Controller
 
         if (ModelState.IsValid && !string.IsNullOrEmpty(model.SelectedRole))
         {
+            var currentUserId = _userManager.GetUserId(User);
             var user = await _userManager.FindByIdAsync(model.UserId);
-            if (user == null || user.Id != _userManager.GetUserId(User))
+            if (user == null || currentUserId == null || user.Id != currentUserId)
             {
-                return Challenge();
+                return RedirectToAction(nameof(SelectRole), new { userId = currentUserId });
             }
 
             user.RolUsuario = model.SelectedRole;
@@ -590,15 +617,21 @@ public class AccountController : Controller
 
     private async Task<IActionResult> RedirectAuthenticatedUserAsync(string? returnUrl = null, ApplicationUser? user = null)
     {
-        if (Url.IsLocalUrl(returnUrl))
-        {
-            return Redirect(returnUrl);
-        }
-
         user ??= await _userManager.GetUserAsync(User);
         if (user == null)
         {
             return RedirectToAction(nameof(LoginForm));
+        }
+
+        if (Url.IsLocalUrl(returnUrl))
+        {
+            // Never bounce authenticated users through LoginForm↔SelectRole with a bare ReturnUrl.
+            if (IsSelectRolePath(returnUrl))
+            {
+                return RedirectToAction(nameof(SelectRole), new { userId = user.Id });
+            }
+
+            return Redirect(returnUrl);
         }
 
         if (!string.IsNullOrEmpty(user.RolUsuario))
@@ -640,15 +673,66 @@ public class AccountController : Controller
         return RedirectToAction(nameof(SelectRole), new { userId = user.Id });
     }
 
+    private static bool IsSelectRolePath(string returnUrl)
+    {
+        var path = returnUrl.Split('?', 2)[0];
+        return string.Equals(path, "/Account/SelectRole", StringComparison.OrdinalIgnoreCase);
+    }
+
+    /// <summary>
+    /// Providers (and other pros) mid-onboarding must be able to step Back to SelectRole
+    /// without being immediately redirected forward again.
+    /// </summary>
+    private async Task<bool> CanRevisitRoleSelectionAsync(ApplicationUser user)
+    {
+        if (string.Equals(user.RolUsuario, "ProveedorServicios", StringComparison.OrdinalIgnoreCase))
+        {
+            var proveedor = await _db.IndorProveedores
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.UserId == user.Id);
+
+            return proveedor == null
+                || string.Equals(proveedor.RegistrationStatus, ProviderRegistrationStatuses.Draft, StringComparison.OrdinalIgnoreCase);
+        }
+
+        if (string.Equals(user.RolUsuario, "Realtor", StringComparison.OrdinalIgnoreCase))
+        {
+            var realtor = await _db.IndorRealtors
+                .AsNoTracking()
+                .FirstOrDefaultAsync(r => r.UserId == user.Id);
+
+            return realtor == null
+                || string.Equals(realtor.RegistrationStatus, RealtorRegistrationStatuses.Draft, StringComparison.OrdinalIgnoreCase);
+        }
+
+        if (string.Equals(user.RolUsuario, "AdministradorPropiedades", StringComparison.OrdinalIgnoreCase))
+        {
+            var admin = await _db.IndorPropertyAdministrators
+                .AsNoTracking()
+                .FirstOrDefaultAsync(a => a.UserId == user.Id);
+
+            return admin == null
+                || string.Equals(admin.RegistrationStatus, PropertyAdministratorRegistrationStatuses.Draft, StringComparison.OrdinalIgnoreCase);
+        }
+
+        return false;
+    }
+
     private async Task<IActionResult> RedirectProveedorAsync(ApplicationUser user)
     {
         var proveedor = await _db.IndorProveedores
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.UserId == user.Id);
 
-        if (proveedor == null || proveedor.RegistrationStatus == ProviderRegistrationStatuses.Draft)
+        if (proveedor == null)
         {
             return RedirectToAction("Entry", "ProviderRegistration");
+        }
+
+        if (string.Equals(proveedor.RegistrationStatus, ProviderRegistrationStatuses.Draft, StringComparison.OrdinalIgnoreCase))
+        {
+            var action = _registration.ResolveWizardResumeAction(proveedor);
+            return RedirectToAction(action, "ProviderRegistration");
         }
 
         return RedirectToAction("Dashboard", "Proveedor");

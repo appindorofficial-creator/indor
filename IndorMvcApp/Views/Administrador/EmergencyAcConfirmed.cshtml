@@ -2,17 +2,19 @@
 @{
     ViewData["Title"] = L["Emergency AC request sent"];
     Layout = "_PropertyAdminLayout";
-    ViewBag.InviteFlowTitle = L["Emergency AC request sent"].ToString();
-    ViewBag.InviteFlowSubtitle = L.T("A technician is on the way to {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"]).ToString();
-    ViewBag.InviteFlowStep = Model.FlowStep;
-    ViewBag.InviteFlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Emergency AC request sent"].ToString();
+    ViewBag.FlowSubtitle = L.T("A technician is on the way to {0}.", Model.ViewingProperty?.PropertyName ?? L["your property"]).ToString();
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Review"].ToString(), L["Done"].ToString() };
+    ViewBag.FlowShowBack = false;
     var propertyLabel = Model.ViewingProperty != null
         ? $"{Model.ViewingProperty.PropertyTypeLabel} • {Model.ViewingProperty.Location}"
         : "";
 }
 
 <div class="pa-portal-shell pa-portal-shell--flow">
-    @await Html.PartialAsync("_PropertyAdminInviteFlowHeader")
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <div class="pa-success-banner">
         <span class="pa-success-icon"><i class="fas fa-check"></i></span>

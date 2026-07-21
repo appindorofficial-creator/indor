@@ -21,6 +21,13 @@ public static class UiTranslations
             UiTranslationsPropertyAdministratorFlows.Entries,
             UiTranslationsPropertyAdministratorUi.Entries,
             UiTranslationsFinal.Entries,
+            UiTranslationsEmergencyDisplay.Entries,
             // Last so Bug 20 moving-setup fixes override incomplete Flows/Final Spanish.
-            UiTranslationsMovingSetup.Entries);
+            UiTranslationsMovingSetup.Entries,
+            // Additive Property Snapshot (Resumen) keys — keep after shared merges.
+            UiTranslationsPropertySnapshot.Entries,
+            // Additive House Facts section chips + section pages (Datos del hogar).
+            UiTranslationsHouseFact.Entries,
+            // Provider profile / onboarding service catalog labels (must win over incomplete Drywall etc.).
+            UiTranslationsProviderCatalog.Entries);
 }

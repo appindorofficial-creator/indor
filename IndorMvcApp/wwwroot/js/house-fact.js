@@ -43,7 +43,7 @@
             overviewScreen.hidden = true;
             detailScreen.hidden = false;
             if (detailTitle) {
-                detailTitle.textContent = "All property details";
+                detailTitle.textContent = root.getAttribute("data-hf-all-details-title") || "All property details";
             }
             detailSections.forEach(function (section) {
                 section.hidden = false;
@@ -62,7 +62,7 @@
             detailScreen.hidden = false;
 
             if (detailTitle) {
-                detailTitle.textContent = title || "Section details";
+                detailTitle.textContent = title || root.getAttribute("data-hf-section-details-title") || "Section details";
             }
 
             detailSections.forEach(function (section) {

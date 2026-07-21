@@ -3,7 +3,10 @@
     ViewBag.NavActive = "network";
     var wizardModel = Model as IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel;
     var formModel = Model as IndorMvcApp.ViewModels.RealtorNetworkListingFormViewModel;
-    var pageTitle = wizardModel?.Title ?? (formModel?.IsEdit == true ? L["Edit Listing"] : L["Create Your Listing"]);
+    var pageTitle = wizardModel?.Title
+        ?? (formModel?.IsEdit == true
+            ? L["Edit Listing"]
+            : (ViewBag.ListingHideChrome == true ? L["Post Listing with INDOR"] : L["Create Your Listing"]));
 }
 <!DOCTYPE html>
 <html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
@@ -51,6 +54,7 @@
         @RenderBody()
     </div>
     @await Html.PartialAsync("~/Views/Realtor/_RealtorBottomNav.cshtml")
+    <script src="~/lib/jquery/dist/jquery.min.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>

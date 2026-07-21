@@ -100,6 +100,8 @@ public class Microservicio
         ["Basura Sin Estres"] = "Basura Sin Estrés",
         ["Cleaning Pro"] = "Limpieza Pro",
         ["Limpieza Pro"] = "Limpieza Pro",
+        ["Spotless Home Pro"] = "Limpieza Pro",
+        ["Hogar Impecable Pro"] = "Limpieza Pro",
     };
 
     /// <summary>Resolve display name for a Home Care Essentials brand.</summary>

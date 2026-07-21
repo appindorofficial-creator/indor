@@ -14,7 +14,8 @@ namespace IndorMvcApp.Controllers;
 public class LawnController(
     AppDbContext db,
     UserManager<ApplicationUser> userManager,
-    LawnCatalogService catalog) : Controller
+    LawnCatalogService catalog,
+    IIndorLocalizer localizer) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> LawnService(int id, CancellationToken ct)
@@ -300,12 +301,13 @@ public class LawnController(
             items = SplitPipePairs(microservicio.Incluye, null);
         }
 
+        var brandName = microservicio.LocalizedNombre(localizer.IsSpanish);
         return new LawnServiceViewModel
         {
             MicroservicioId = microservicio.Id,
             SolicitudId = existing?.Id ?? posted?.SolicitudId,
-            PageTitle = landing.PageTitle,
-            LandingTitulo = landing.LandingTitulo,
+            PageTitle = brandName,
+            LandingTitulo = brandName,
             LandingTagline = landing.LandingTagline ?? microservicio.Subtitulo,
             LandingSubtitulo = landing.LandingSubtitulo,
             ImagenUrl = ResolveImageUrl(landing.ImagenUrl ?? microservicio.ImagenUrl),
@@ -444,9 +446,11 @@ public class LawnController(
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
             IsReminderOnly = solicitud.ModoServicio == LawnServiceModes.ReminderOnly,
-            ServiceName = landing?.LandingTitulo
-                ?? solicitud.Microservicio?.LocalizedNombre(false)
-                ?? "Always Perfect Lawn",
+            ServiceName = Microservicio.ResolveBrandNombre(
+                solicitud.MicroservicioId,
+                solicitud.Microservicio?.Nombre ?? landing?.LandingTitulo ?? "Always Perfect Lawn",
+                solicitud.Microservicio?.NombreEs,
+                localizer.IsSpanish),
             FrequencyLabel = LawnDisplayLabels.FormatFrequencyLabel(solicitud.Frecuencia, solicitud.TipoServicio),
             AreaLabel = areaLabel,
             AddonsLabel = LawnDisplayLabels.FormatAddonsList(addonLabels),
@@ -483,7 +487,11 @@ public class LawnController(
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
             IsReminderOnly = solicitud.ModoServicio == LawnServiceModes.ReminderOnly,
-            NombreServicio = solicitud.Microservicio?.Nombre ?? "Always Perfect Lawn",
+            NombreServicio = Microservicio.ResolveBrandNombre(
+                solicitud.MicroservicioId,
+                solicitud.Microservicio?.Nombre ?? "Always Perfect Lawn",
+                solicitud.Microservicio?.NombreEs,
+                localizer.IsSpanish),
             FrequencyLabel = LawnDisplayLabels.FormatFrequencyLabel(solicitud.Frecuencia, solicitud.TipoServicio),
             AreaLabel = areaLabel,
             AddonsLabel = LawnDisplayLabels.FormatAddonsList(addonLabels),

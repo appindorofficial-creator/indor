@@ -13,7 +13,8 @@ namespace IndorMvcApp.Controllers;
 public class RealtorQuoteRequestController(
     IRealtorQuoteRequestService quoteRequest,
     IRealtorRegistrationService registration,
-    UserManager<ApplicationUser> userManager) : Controller
+    UserManager<ApplicationUser> userManager,
+    IIndorLocalizer localizer) : Controller
 {
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
@@ -223,12 +224,12 @@ public class RealtorQuoteRequestController(
         }
         catch (InvalidOperationException ex)
         {
-            ModelState.AddModelError(string.Empty, ex.Message);
+            ModelState.AddModelError(string.Empty, localizer[ex.Message]);
             return View(await quoteRequest.BuildProvidersAsync(q, filter));
         }
         catch
         {
-            ModelState.AddModelError(string.Empty, "Unable to save provider selection. Please try again.");
+            ModelState.AddModelError(string.Empty, localizer["Unable to save provider selection. Please try again."]);
             return View(await quoteRequest.BuildProvidersAsync(q, filter));
         }
     }
@@ -267,7 +268,7 @@ public class RealtorQuoteRequestController(
         {
             ModelState.AddModelError(
                 string.Empty,
-                ex is InvalidOperationException ? ex.Message : "Unable to send quote request. Please try again.");
+                localizer[ex is InvalidOperationException ? ex.Message : "Unable to send quote request. Please try again."]);
 
             var vm = await quoteRequest.BuildReviewAsync();
             vm.SendNow = sendNow;

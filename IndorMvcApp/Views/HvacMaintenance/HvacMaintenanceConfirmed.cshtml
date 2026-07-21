@@ -3,7 +3,7 @@
     ViewData["Title"] = L["Tune-up request sent - INDOR"];
 var scheduleUrl = $"{Url.Action("Index", "Home")}#section-schedule";
     var homeCareGuideUrl = Url.Action("HomeCareGuide", "Home");
-    ViewData["WizardTitle"] = Model.NombreServicio;
+    ViewData["WizardTitle"] = L.Catalog(Model.NombreServicio);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
@@ -16,11 +16,11 @@ var scheduleUrl = $"{Url.Action("Index", "Home")}#section-schedule";
     </div>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-fan"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-fan"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.NombreServicio)</div></div></div>
         <div class="summary-row"><i class="fas fa-barcode"></i><div><div class="summary-label">@L["System serial"]</div><div class="summary-value">@Model.SerialLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Last maintenance"]</div><div class="summary-value">@Model.LastMaintenanceLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">@L["Visit window"]</div><div class="summary-value">@Model.VisitWindowLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-bell"></i><div><div class="summary-label">@L["Reminder"]</div><div class="summary-value">@Model.ReminderLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Last maintenance"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.LastMaintenanceLabel)</div></div></div>
+        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">@L["Visit window"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.VisitWindowLabel)</div></div></div>
+        <div class="summary-row"><i class="fas fa-bell"></i><div><div class="summary-label">@L["Reminder"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.ReminderLabel)</div></div></div>
     </div>
 
     <div class="next-steps">

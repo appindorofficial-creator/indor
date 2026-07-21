@@ -4,3 +4,25 @@
 }
 <link rel="stylesheet" href="~/css/homeowner-bottom-nav.css" asp-append-version="true" />
 @await Html.PartialAsync("_HomeownerBottomNav")
+<script>
+    (function () {
+        if (window.__indorSyncBottomNavOffset) return;
+        window.__indorSyncBottomNavOffset = true;
+        function syncBottomNavOffset() {
+            var nav = document.querySelector('.bottom-nav');
+            if (!nav) return;
+            var navH = Math.ceil(nav.getBoundingClientRect().height);
+            if (navH > 0) {
+                document.documentElement.style.setProperty('--homeowner-bottom-nav-h', navH + 'px');
+            }
+        }
+        syncBottomNavOffset();
+        window.addEventListener('resize', syncBottomNavOffset);
+        window.addEventListener('orientationchange', function () {
+            window.setTimeout(syncBottomNavOffset, 120);
+        });
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener('resize', syncBottomNavOffset);
+        }
+    })();
+</script>

@@ -21,10 +21,12 @@ public class PropertyAdministratorTurnoverCleaningFormViewModel : PropertyAdmini
     public string UpdateRecipients { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string Details { get; set; } = "";
+    public string? MediaAttachmentsJson { get; set; }
     public string EstimatedPrice { get; set; } = "$149–$249";
-    public string ProEtaLabel { get; set; } = "Nearest turnover crew available today 11 AM–2 PM";
-    public string DurationLabel { get; set; } = "Usually 2–3 hours";
-    public string CrewLabel { get; set; } = "2–4 cleaners";
+    public string ProEtaLabel { get; set; } = "Nearest turnover crew available today {0}";
+    public string ProEtaTimeRange { get; set; } = "11 AM–2 PM";
+    public string DurationLabel { get; set; } = "Usually 2-3 hours";
+    public string CrewLabel { get; set; } = "2-4 cleaners";
 }
 
 public class PropertyAdministratorTurnoverCleaningSubmitInput
@@ -39,6 +41,7 @@ public class PropertyAdministratorTurnoverCleaningSubmitInput
     public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
     public string? Details { get; set; }
+    public string? MediaAttachmentsJson { get; set; }
 }
 
 public class PropertyAdministratorTurnoverCleaningTimelineItemViewModel

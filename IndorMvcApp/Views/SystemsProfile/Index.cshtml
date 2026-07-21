@@ -19,13 +19,13 @@
         {
             <a class="sp-filter @(Model.ActiveFilter == chip.Key ? "active" : "")"
                asp-controller="HouseFactPreview" asp-action="SystemsProfile"
-               asp-route-filter="@(chip.Key == "all" ? null : chip.Key)">@L.Catalog(chip.Label)</a>
+               asp-route-filter="@(chip.Key == "all" ? null : chip.Key)">@UiDisplayLocalization.Localize(L, chip.Label)</a>
         }
         else
         {
             <a class="sp-filter @(Model.ActiveFilter == chip.Key ? "active" : "")"
                asp-action="Index" asp-route-id="@Model.PropiedadId"
-               asp-route-filter="@(chip.Key == "all" ? null : chip.Key)">@L.Catalog(chip.Label)</a>
+               asp-route-filter="@(chip.Key == "all" ? null : chip.Key)">@UiDisplayLocalization.Localize(L, chip.Label)</a>
         }
     }
 </div>
@@ -77,10 +77,10 @@ else
             <a class="sp-system-card" asp-controller="HouseFactPreview" asp-action="SystemsDetail" asp-route-systemId="@system.Id">
                 <div class="sp-system-icon"><i class="fas @system.Icon"></i></div>
                 <div class="sp-system-body">
-                    <div class="sp-system-name">@L.Catalog(system.Name)</div>
-                    <div class="sp-system-sub">@L.Catalog(system.Subtitle)</div>
+                    <div class="sp-system-name">@UiDisplayLocalization.Localize(L, system.Name)</div>
+                    <div class="sp-system-sub">@UiDisplayLocalization.Localize(L, system.Subtitle)</div>
                 </div>
-                <span class="sp-status @system.StatusTone">@L.Catalog(system.Status)</span>
+                <span class="sp-status @system.StatusTone">@UiDisplayLocalization.Localize(L, system.Status)</span>
                 <i class="fas fa-chevron-right sp-chev"></i>
             </a>
         }
@@ -89,10 +89,10 @@ else
             <a class="sp-system-card" asp-action="Detail" asp-route-id="@Model.PropiedadId" asp-route-systemId="@system.Id">
                 <div class="sp-system-icon"><i class="fas @system.Icon"></i></div>
                 <div class="sp-system-body">
-                    <div class="sp-system-name">@L.Catalog(system.Name)</div>
-                    <div class="sp-system-sub">@L.Catalog(system.Subtitle)</div>
+                    <div class="sp-system-name">@UiDisplayLocalization.Localize(L, system.Name)</div>
+                    <div class="sp-system-sub">@UiDisplayLocalization.Localize(L, system.Subtitle)</div>
                 </div>
-                <span class="sp-status @system.StatusTone">@L.Catalog(system.Status)</span>
+                <span class="sp-status @system.StatusTone">@UiDisplayLocalization.Localize(L, system.Status)</span>
                 <i class="fas fa-chevron-right sp-chev"></i>
             </a>
         }

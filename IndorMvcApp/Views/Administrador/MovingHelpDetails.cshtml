@@ -9,7 +9,11 @@
     ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Review"].ToString(), L["Done"].ToString() };
     ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
     var propertyId = Model.ViewingProperty?.Id ?? 0;
-    var items = Model.ItemsToMove.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+    // Only draft/session choices — never treat empty/null as "all selected".
+    var items = string.IsNullOrWhiteSpace(Model.ItemsToMove)
+        ? new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        : Model.ItemsToMove.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 }
 
 <div class="pa-portal-shell pa-portal-shell--flow">
@@ -74,7 +78,7 @@
                     <label class="pa-moving-item-card @(items.Contains(i.Value) ? "is-selected" : null)">
                         <input type="checkbox" name="ItemsToMoveList" value="@i.Value" @(items.Contains(i.Value) ? "checked" : null) />
                         <span class="pa-prev-service-check pa-prev-service-check--blue"><i class="fas fa-check"></i></span>
-                        <i class="fas @i.Icon"></i>
+                        <span class="pa-moving-item-icon"><i class="fas @i.Icon"></i></span>
                         <span>@i.Label</span>
                     </label>
                 }
@@ -162,6 +166,12 @@
             });
         });
         document.querySelectorAll('.pa-moving-item-card input').forEach(function (input) {
+            // Respect server-rendered checked only — undo browser form autofill on first visit.
+            if (!input.defaultChecked) {
+                input.checked = false;
+            }
+            var card = input.closest('.pa-moving-item-card');
+            if (card) card.classList.toggle('is-selected', input.checked);
             input.addEventListener('change', function () {
                 this.closest('.pa-moving-item-card')?.classList.toggle('is-selected', this.checked);
             });

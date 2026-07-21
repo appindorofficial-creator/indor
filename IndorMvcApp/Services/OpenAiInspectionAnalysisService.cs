@@ -5,6 +5,8 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 
+using IndorMvcApp.Helpers;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 
 using Microsoft.Extensions.Options;
@@ -197,7 +199,7 @@ public class OpenAiInspectionAnalysisService(
 
 
 
-        return ParseAnalysisJson(json, pageCount, requireFindings: true);
+        return PreferSpanishFindingFields(ParseAnalysisJson(json, pageCount, requireFindings: true), useSpanish);
 
     }
 
@@ -417,7 +419,7 @@ public class OpenAiInspectionAnalysisService(
 
 
 
-        return new InspectionAnalysisResult
+        return PreferSpanishFindingFields(new InspectionAnalysisResult
 
         {
 
@@ -429,7 +431,7 @@ public class OpenAiInspectionAnalysisService(
 
             Findings = mergedFindings
 
-        };
+        }, useSpanish);
 
     }
 
@@ -711,6 +713,39 @@ public class OpenAiInspectionAnalysisService(
 
         return findings;
 
+    }
+
+
+
+    /// <summary>
+    /// When analysis ran for Spanish UI, keep catalog section names and inspector wording in Spanish
+    /// even if the model left English PDF quotes / headings.
+    /// </summary>
+    private static InspectionAnalysisResult PreferSpanishFindingFields(
+        InspectionAnalysisResult result,
+        bool useSpanish)
+    {
+        if (!useSpanish || result.Findings.Count == 0)
+        {
+            return result;
+        }
+
+        foreach (var finding in result.Findings)
+        {
+            if (!string.IsNullOrWhiteSpace(finding.SourceSection))
+            {
+                finding.SourceSection = CatalogText.PickWithUiFallback(finding.SourceSection, null, true);
+            }
+
+            if (UiDisplayLocalization.AppearsPrimarilyEnglish(finding.SourceExcerpt)
+                && !string.IsNullOrWhiteSpace(finding.Description)
+                && !UiDisplayLocalization.AppearsPrimarilyEnglish(finding.Description))
+            {
+                finding.SourceExcerpt = TruncateExcerpt(finding.Description);
+            }
+        }
+
+        return result;
     }
 
 

@@ -236,9 +236,7 @@ public partial class InspeccionesController
             UrgenciaResumen = EmergencyDisplayLabels.UrgenciaEmergencia(solicitud.Urgencia),
             UnidadFuncionandoResumen = EmergencyDisplayLabels.UnidadFuncionando(solicitud.UnidadFuncionando),
             ArchivosResumen = EmergencyDisplayLabels.ArchivosSubidos(solicitud.Archivos.Count),
-            DetallesAcceso = string.IsNullOrWhiteSpace(solicitud.DetallesAcceso)
-                ? "None provided"
-                : solicitud.DetallesAcceso
+            DetallesAcceso = EmergencyDisplayLabels.TextoOpcional(solicitud.DetallesAcceso)
         });
     }
 

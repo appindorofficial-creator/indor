@@ -18,6 +18,7 @@ public class SafeAirController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
     private readonly ILogger<SafeAirController> _logger;
+    private readonly IIndorLocalizer _localizer;
 
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"];
     private const long MaxFileSize = 10_000_000;
@@ -29,12 +30,14 @@ public class SafeAirController : Controller
         AppDbContext db,
         UserManager<ApplicationUser> userManager,
         IWebHostEnvironment env,
-        ILogger<SafeAirController> logger)
+        ILogger<SafeAirController> logger,
+        IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
         _env = env;
         _logger = logger;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -100,7 +103,11 @@ public class SafeAirController : Controller
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
-            PageTitle = solicitud.Microservicio?.Nombre ?? "Safe Air 365",
+            PageTitle = Microservicio.ResolveBrandNombre(
+                solicitud.MicroservicioId,
+                solicitud.Microservicio?.Nombre ?? "Safe Air 365",
+                solicitud.Microservicio?.NombreEs,
+                _localizer.IsSpanish),
             // Need type may come from the service CTA; other choices stay blank until saved.
             TipoNecesidad = solicitud.TipoNecesidad ?? string.Empty,
             CantidadFiltros = detailsSaved ? (solicitud.CantidadFiltros ?? string.Empty) : string.Empty,
@@ -328,7 +335,11 @@ public class SafeAirController : Controller
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
-            NombreServicio = solicitud.Microservicio?.Nombre ?? "Safe Air 365",
+            NombreServicio = Microservicio.ResolveBrandNombre(
+                solicitud.MicroservicioId,
+                solicitud.Microservicio?.Nombre ?? "Safe Air 365",
+                solicitud.Microservicio?.NombreEs,
+                _localizer.IsSpanish),
             TipoNecesidad = solicitud.TipoNecesidad ?? "IndorReplaces",
             VisitaLabel = SafeAirDisplayLabels.FormatVisitLabel(solicitud.TipoNecesidad, solicitud.VentanaTiempo),
             FiltroTamanioLabel = SafeAirDisplayLabels.FormatFilterSizeSummary(
@@ -372,7 +383,7 @@ public class SafeAirController : Controller
         return (microservicio, landing);
     }
 
-    private static SafeAirServiceViewModel BuildServiceViewModel(
+    private SafeAirServiceViewModel BuildServiceViewModel(
         Microservicio microservicio,
         SafeAirServicioLanding landing,
         SolicitudSafeAir? existing,
@@ -384,12 +395,13 @@ public class SafeAirController : Controller
             items = SplitPipePairs(microservicio.Incluye, null);
         }
 
+        var brandName = microservicio.LocalizedNombre(_localizer.IsSpanish);
         return new SafeAirServiceViewModel
         {
             MicroservicioId = microservicio.Id,
             SolicitudId = existing?.Id ?? posted?.SolicitudId,
-            PageTitle = landing.PageTitle,
-            LandingTitulo = landing.LandingTitulo,
+            PageTitle = brandName,
+            LandingTitulo = brandName,
             LandingTagline = landing.LandingTagline ?? microservicio.Subtitulo,
             LandingSubtitulo = landing.LandingSubtitulo,
             ImagenUrl = ResolveImageUrl(landing.ImagenUrl ?? microservicio.ImagenUrl),
@@ -514,12 +526,20 @@ public class SafeAirController : Controller
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
-            PageTitle = solicitud.Microservicio?.Nombre ?? "Safe Air 365",
+            PageTitle = Microservicio.ResolveBrandNombre(
+                solicitud.MicroservicioId,
+                solicitud.Microservicio?.Nombre ?? "Safe Air 365",
+                solicitud.Microservicio?.NombreEs,
+                _localizer.IsSpanish),
             TipoNecesidad = solicitud.TipoNecesidad ?? string.Empty,
             VentanaTiempo = scheduleSaved ? (solicitud.VentanaTiempo ?? string.Empty) : string.Empty,
             DetallesAcceso = scheduleSaved ? (solicitud.DetallesAcceso ?? string.Empty) : string.Empty,
             NotasAcceso = solicitud.NotasAcceso,
-            NombreServicio = solicitud.Microservicio?.Nombre ?? "Safe Air 365",
+            NombreServicio = Microservicio.ResolveBrandNombre(
+                solicitud.MicroservicioId,
+                solicitud.Microservicio?.Nombre ?? "Safe Air 365",
+                solicitud.Microservicio?.NombreEs,
+                _localizer.IsSpanish),
             CantidadFiltrosLabel = SafeAirDisplayLabels.FormatFilterCount(solicitud.CantidadFiltros),
             FiltroTamanioLabel = SafeAirDisplayLabels.FormatFilterSizeSummary(
                 solicitud.FiltroAncho, solicitud.FiltroAlto, solicitud.FiltroProfundidad, solicitud.FiltroTamanioDesconocido),

@@ -3292,7 +3292,7 @@ public partial class ProveedorController(
 
         {
 
-            var action = registration.ResolveWizardResumeAction(Math.Max(1, proveedor.CurrentStep));
+            var action = registration.ResolveWizardResumeAction(proveedor);
 
             return (RedirectToAction(action, "ProviderRegistration"), null);
 

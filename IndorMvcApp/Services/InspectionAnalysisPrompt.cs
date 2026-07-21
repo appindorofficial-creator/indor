@@ -61,8 +61,9 @@ public static class InspectionAnalysisPrompt
         Language:
         - Write summary, title, description, sourceSection, and sourceExcerpt in Spanish (es-US).
         - Keep priority and trade enum values exactly in English as specified in the schema.
-        - sourceSection: translate the report heading into natural Spanish (e.g. "SMOKE / FIRE DETECTORS..." → "Detectores de humo / fuego y monóxido de carbono").
+        - sourceSection: translate the report heading into natural Spanish (e.g. "Electrical System" → "Sistema eléctrico", "SMOKE / FIRE DETECTORS..." → "Detectores de humo / fuego y monóxido de carbono").
         - sourceExcerpt: provide a faithful Spanish paraphrase of the inspector's wording (do not leave English quotes).
+        - CRITICAL: Never leave sourceExcerpt or sourceSection in English when Language is Spanish — paraphrase/translate them.
         - sourceSectionNumber stays exactly as printed in the report (numbers/codes are language-neutral).
         """
             : SystemMessage;

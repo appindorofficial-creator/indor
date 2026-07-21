@@ -1,9 +1,18 @@
-﻿namespace IndorMvcApp.Services;
+﻿using System.Globalization;
+
+namespace IndorMvcApp.Services;
 
 // Localized via DisplayLabelsLocalization.L
 
 public static class LawnDisplayLabels
 {
+    public static string FormatServiceMode(string? value) => value switch
+    {
+        "FullService" => DisplayLabelsLocalization.L("FullService"),
+        "ReminderOnly" => DisplayLabelsLocalization.L("ReminderOnly"),
+        _ => string.IsNullOrWhiteSpace(value) ? "—" : DisplayLabelsLocalization.L(value)
+    };
+
     public static string FormatFrequency(string? value) => value switch
     {
         "Once" => DisplayLabelsLocalization.L("Once"),
@@ -79,7 +88,12 @@ public static class LawnDisplayLabels
         }
 
         var freq = FormatFrequency(frequencyCode);
-        var lead = DisplayLabelsLocalization.L(leadDays == 1 ? "1 day before" : $"{leadDays} days before");
+        var lead = leadDays == 1
+            ? DisplayLabelsLocalization.L("1 day before")
+            : string.Format(
+                CultureInfo.CurrentCulture,
+                DisplayLabelsLocalization.L("{0} days before"),
+                leadDays);
         var channelText = channels == null ? string.Empty : string.Join(", ", channels);
         return string.IsNullOrWhiteSpace(channelText)
             ? $"{DisplayLabelsLocalization.L("Active")} · {freq} · {lead}"

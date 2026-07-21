@@ -12,6 +12,8 @@ public interface IPropertyAdministratorEmergencyAcService
 {
     PropertyAdministratorEmergencyAcFeaturedViewModel BuildFeaturedCta(IUrlHelper url, int? propertyId);
     Task<PropertyAdministratorEmergencyAcFormViewModel> GetFormAsync(IUrlHelper url, int? propertyId, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorEmergencyAcReviewViewModel?> GetReviewAsync(
+        IUrlHelper url, PropertyAdministratorEmergencyAcSubmitInput input, CancellationToken cancellationToken = default);
     Task<int> SubmitAsync(PropertyAdministratorEmergencyAcSubmitInput input, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorEmergencyAcConfirmedViewModel?> GetConfirmedAsync(IUrlHelper url, int requestId, CancellationToken cancellationToken = default);
 }
@@ -46,7 +48,43 @@ public class PropertyAdministratorEmergencyAcService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
             // Leave blank so the urgent-contact field is not pre-filled with profile/demo data.
-            ContactPhone = ""
+            ContactPhone = "",
+            ProEtaLabel = PropertyAdministratorDisplayLocalization.NearestProAvailableInMinutes("HVAC", 25)
+        };
+    }
+
+    public async Task<PropertyAdministratorEmergencyAcReviewViewModel?> GetReviewAsync(
+        IUrlHelper url, PropertyAdministratorEmergencyAcSubmitInput input, CancellationToken cancellationToken = default)
+    {
+        var admin = await LoadAdminAsync(cancellationToken: cancellationToken);
+        if (admin == null)
+        {
+            return null;
+        }
+
+        var shell = await BuildShellAsync(admin, cancellationToken);
+        var property = admin.PortfolioProperties.FirstOrDefault(p => p.Id == input.PropertyId)
+            ?? ResolveProperty(admin, input.PropertyId);
+        if (property == null)
+        {
+            return null;
+        }
+
+        var mapped = MapProperty(property);
+        input.PropertyId = property.Id;
+
+        return new PropertyAdministratorEmergencyAcReviewViewModel
+        {
+            DisplayName = shell.DisplayName,
+            PortfolioName = shell.PortfolioName,
+            ActivePropertyCount = shell.ActivePropertyCount,
+            Greeting = shell.Greeting,
+            NotificationCount = shell.NotificationCount,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            ViewingProperty = mapped,
+            Input = input,
+            SummaryRows = BuildSummaryRows(input, mapped),
+            ProEtaLabel = PropertyAdministratorDisplayLocalization.NearestProAvailableInMinutes("HVAC", 25)
         };
     }
 
@@ -148,6 +186,85 @@ public class PropertyAdministratorEmergencyAcService(
         };
     }
 
+    private static IReadOnlyList<PropertyAdministratorEmergencyAcReviewRowViewModel> BuildSummaryRows(
+        PropertyAdministratorEmergencyAcSubmitInput input,
+        PropertyAdministratorFlowPropertyViewModel property) =>
+    [
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Property"),
+            Value = PropertyAdministratorDisplayLocalization.T("Viewing: {0}", property.PropertyName),
+            IconClass = "fa-house"
+        },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Issue"), Value = LabelProblem(input.ProblemType), IconClass = "fa-snowflake" },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Occupied"),
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.IsOccupied),
+            IconClass = "fa-user",
+            Highlight = input.IsOccupied == "Yes"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Guests inside"),
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.GuestsInside),
+            IconClass = "fa-users",
+            Highlight = input.GuestsInside == "Yes"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Indoor temperature"),
+            Value = string.IsNullOrWhiteSpace(input.IndoorTemperature) ? "—" : input.IndoorTemperature,
+            IconClass = "fa-temperature-half"
+        },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Access"), Value = LabelAccess(input.EntryAccess, input.EntryCode), IconClass = "fa-key" },
+        new() { Label = PropertyAdministratorDisplayLocalization.L("Updates"), Value = FormatRecipients(input.UpdateRecipientsList), IconClass = "fa-bell" }
+    ];
+
+    private static string LabelProblem(string? value) => value switch
+    {
+        "NoCooling" => PropertyAdministratorDisplayLocalization.L("No cooling"),
+        "WarmAir" => PropertyAdministratorDisplayLocalization.L("Warm air"),
+        "NoAirflow" => PropertyAdministratorDisplayLocalization.L("No airflow"),
+        "WaterLeak" => PropertyAdministratorDisplayLocalization.L("Water leak"),
+        "StrangeNoise" => PropertyAdministratorDisplayLocalization.L("Strange noise"),
+        "BurningSmell" => PropertyAdministratorDisplayLocalization.L("Burning smell"),
+        _ => string.IsNullOrWhiteSpace(value) ? "—" : value
+    };
+
+    private static string LabelAccess(string? entryAccess, string? entryCode)
+    {
+        var label = entryAccess switch
+        {
+            "SmartLock" => PropertyAdministratorDisplayLocalization.L("Yes, with smart lock"),
+            "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
+            "NeedApproval" => PropertyAdministratorDisplayLocalization.L("Need approval"),
+            _ => string.IsNullOrWhiteSpace(entryAccess) ? "—" : entryAccess
+        };
+
+        return string.IsNullOrWhiteSpace(entryCode)
+            ? label
+            : PropertyAdministratorDisplayLocalization.T("{0} • {1}", label, entryCode);
+    }
+
+    private static string FormatRecipients(IEnumerable<string> recipients)
+    {
+        var labels = recipients
+            .Select(r => r switch
+            {
+                "Me" => PropertyAdministratorDisplayLocalization.L("Me"),
+                "Guest" => PropertyAdministratorDisplayLocalization.L("Guest"),
+                "CoHost" => PropertyAdministratorDisplayLocalization.L("Co-host"),
+                _ => r
+            })
+            .Where(r => !string.IsNullOrWhiteSpace(r))
+            .ToList();
+
+        return labels.Count == 0
+            ? "—"
+            : string.Join(", ", labels);
+    }
+
     private static IReadOnlyList<PropertyAdministratorEmergencyAcTimelineItemViewModel> BuildTimeline(
         IndorPropertyAdminServiceRequest request)
     {
@@ -201,12 +318,6 @@ public class PropertyAdministratorEmergencyAcService(
         }
 
         return shell;
-    }
-
-    private async Task<ApplicationUser?> GetUserAsync()
-    {
-        var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
-        return string.IsNullOrEmpty(userId) ? null : await userManager.FindByIdAsync(userId);
     }
 
     private static IndorPropertyAdminPortfolioProperty? ResolveProperty(

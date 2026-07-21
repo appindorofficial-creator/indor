@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.NearbyPlacesIndexViewModel
 @{
-    ViewData["Title"] = L.Catalog(Model.PageTitle);
+    ViewData["Title"] = UiDisplayLocalization.Localize(L, Model.PageTitle);
     var hfPreview = ViewBag.HouseFactPreview as bool? == true;
     var addressParts = Model.Address.Split(',', 2);
     var line1 = addressParts[0].Trim();
@@ -8,8 +8,8 @@
 }
 
 <div class="np-head">
-    <h1 class="np-title">@L.Catalog(Model.PageTitle)</h1>
-    <p class="np-sub">@L.Catalog(Model.PageSubtitle)</p>
+    <h1 class="np-title">@UiDisplayLocalization.Localize(L, Model.PageTitle)</h1>
+    <p class="np-sub">@UiDisplayLocalization.Localize(L, Model.PageSubtitle)</p>
 </div>
 
 <div class="np-property">
@@ -34,16 +34,16 @@
         <div class="np-row">
             <div class="np-row-icon @Model.Tone"><i class="fas @place.Icon"></i></div>
             <div class="np-row-body">
-                <div class="np-row-title">@place.Name</div>
-                <div class="np-row-meta">@L.Catalog(place.Subtitle)</div>
-                <div class="np-row-distance"><i class="fas fa-location-dot"></i> @L.T("{0} away", place.Distance)</div>
+                <div class="np-row-title">@UiDisplayLocalization.Localize(L, place.Name)</div>
+                <div class="np-row-meta">@UiDisplayLocalization.Localize(L, place.Subtitle)</div>
+                <div class="np-row-distance"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, $"{place.Distance} away")</div>
             </div>
-            <span class="np-badge @place.BadgeTone">@L.Catalog(place.Badge)</span>
+            <span class="np-badge @place.BadgeTone">@UiDisplayLocalization.Localize(L, place.Badge)</span>
         </div>
     }
 </div>
 
 <div class="np-banner">
     <i class="fas fa-circle-info"></i>
-    @L.Catalog(Model.InfoBanner)
+    @UiDisplayLocalization.Localize(L, Model.InfoBanner)
 </div>

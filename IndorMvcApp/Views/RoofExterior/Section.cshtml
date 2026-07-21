@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RoofExteriorSectionViewModel
 @{
-    ViewData["Title"] = Model.Name;
+    ViewData["Title"] = UiDisplayLocalization.Localize(L, Model.Name);
     var isRoof = Model.SectionId == "roof";
     var hfPreview = ViewBag.HouseFactPreview as bool? == true;
 }
@@ -9,8 +9,8 @@
 }
 
 <div class="re-head">
-    <h1 class="re-title">@Model.Name</h1>
-    <p class="re-sub">@Model.PageSubtitle</p>
+    <h1 class="re-title">@UiDisplayLocalization.Localize(L, Model.Name)</h1>
+    <p class="re-sub">@UiDisplayLocalization.Localize(L, Model.PageSubtitle)</p>
 </div>
 
 <div class="re-tabs">
@@ -22,7 +22,7 @@
                asp-controller="HouseFactPreview" asp-action="RoofExteriorSection"
                asp-route-sectionId="@tab.Key"
                asp-route-tab="@tab.Key">
-                <i class="fas @tab.Icon"></i> @tab.Label
+                <i class="fas @tab.Icon"></i> @UiDisplayLocalization.Localize(L, tab.Label)
             </a>
         }
         else
@@ -32,7 +32,7 @@
                asp-route-id="@Model.PropiedadId"
                asp-route-sectionId="@tab.Key"
                asp-route-tab="@tab.Key">
-                <i class="fas @tab.Icon"></i> @tab.Label
+                <i class="fas @tab.Icon"></i> @UiDisplayLocalization.Localize(L, tab.Label)
             </a>
         }
     }
@@ -42,18 +42,18 @@
     <div class="re-property-thumb"><i class="fas fa-house"></i></div>
     <div style="flex:1;">
         <div class="re-property-address">@Model.Address</div>
-        <span class="re-status green" style="display:inline-flex;margin-top:8px;"><i class="fas fa-database"></i> Exterior section</span>
+        <span class="re-status green" style="display:inline-flex;margin-top:8px;"><i class="fas fa-database"></i> @L["Exterior section"]</span>
     </div>
     <i class="fas fa-chevron-right re-chev"></i>
 </div>
 
 @if (isRoof && Model.HealthBadges.Count > 0)
 {
-    <div class="re-section-title">Roof Health Summary</div>
+    <div class="re-section-title">@L["Roof Health Summary"]</div>
     <div class="re-health-badges">
         @foreach (var badge in Model.HealthBadges)
         {
-            <span class="re-health-pill @badge.StatusTone"><i class="fas @badge.Icon"></i> @badge.Label</span>
+            <span class="re-health-pill @badge.StatusTone"><i class="fas @badge.Icon"></i> @UiDisplayLocalization.Localize(L, badge.Label)</span>
         }
     </div>
 }
@@ -64,9 +64,9 @@
         @foreach (var card in Model.SummaryCards)
         {
             <div class="re-summary-card">
-                <div class="k"><i class="fas @card.Icon"></i> @card.Label</div>
-                <div class="v">@card.Value</div>
-                <span class="badge @card.StatusTone">@card.Status</span>
+                <div class="k"><i class="fas @card.Icon"></i> @UiDisplayLocalization.Localize(L, card.Label)</div>
+                <div class="v">@UiDisplayLocalization.Localize(L, card.Value)</div>
+                <span class="badge @card.StatusTone">@UiDisplayLocalization.Localize(L, card.Status)</span>
             </div>
         }
     </div>
@@ -76,7 +76,7 @@
 {
     <div class="re-banner">
         <i class="fas fa-circle-info"></i>
-        <div>@Model.InfoBanner</div>
+        <div>@UiDisplayLocalization.Localize(L, Model.InfoBanner)</div>
     </div>
 }
 
@@ -86,10 +86,10 @@
         <div class="re-detail-row">
             <div class="icon"><i class="fas @row.Icon"></i></div>
             <div class="body">
-                <div class="t">@row.Title</div>
-                <div class="s">@row.Subtitle</div>
+                <div class="t">@UiDisplayLocalization.Localize(L, row.Title)</div>
+                <div class="s">@UiDisplayLocalization.Localize(L, row.Subtitle)</div>
             </div>
-            <span class="re-status @row.StatusTone">@row.Status</span>
+            <span class="re-status @row.StatusTone">@UiDisplayLocalization.Localize(L, row.Status)</span>
             <i class="fas fa-chevron-down re-chev" style="font-size:.75rem;"></i>
         </div>
     }
@@ -97,11 +97,11 @@
 
 @if (Model.Reminders.Count > 0)
 {
-    <div class="re-section-title">Helpful reminders</div>
+    <div class="re-section-title">@L["Helpful reminders"]</div>
     <div class="re-care-card">
         @foreach (var reminder in Model.Reminders)
         {
-            <div class="re-reminder"><i class="fas fa-circle-check"></i> @reminder</div>
+            <div class="re-reminder"><i class="fas fa-circle-check"></i> @UiDisplayLocalization.Localize(L, reminder)</div>
         }
     </div>
 }
@@ -111,8 +111,8 @@
     <div class="re-banner">
         <i class="fas fa-circle-info"></i>
         <div>
-            <strong>@Model.WhyItMattersTitle</strong><br />
-            @Model.WhyItMattersText
+            <strong>@UiDisplayLocalization.Localize(L, Model.WhyItMattersTitle)</strong><br />
+            @UiDisplayLocalization.Localize(L, Model.WhyItMattersText)
         </div>
     </div>
 }
@@ -126,11 +126,11 @@
             {
                 if (!string.IsNullOrWhiteSpace(action.Url))
                 {
-                    <a class="re-btn-primary" href="@action.Url" style="margin-top:0;"><i class="fas @action.Icon"></i> @action.Title</a>
+                    <a class="re-btn-primary" href="@action.Url" style="margin-top:0;"><i class="fas @action.Icon"></i> @UiDisplayLocalization.Localize(L, action.Title)</a>
                 }
                 else
                 {
-                    <button type="button" class="re-btn-primary" style="margin-top:0;"><i class="fas @action.Icon"></i> @action.Title</button>
+                    <button type="button" class="re-btn-primary" style="margin-top:0;"><i class="fas @action.Icon"></i> @UiDisplayLocalization.Localize(L, action.Title)</button>
                 }
             }
         </div>
@@ -141,11 +141,11 @@
         {
             if (!string.IsNullOrWhiteSpace(action.Url))
             {
-                <a class="re-btn-secondary" href="@action.Url"><i class="fas @action.Icon"></i> @action.Title</a>
+                <a class="re-btn-secondary" href="@action.Url"><i class="fas @action.Icon"></i> @UiDisplayLocalization.Localize(L, action.Title)</a>
             }
             else
             {
-                <button type="button" class="re-btn-secondary"><i class="fas @action.Icon"></i> @action.Title</button>
+                <button type="button" class="re-btn-secondary"><i class="fas @action.Icon"></i> @UiDisplayLocalization.Localize(L, action.Title)</button>
             }
         }
     }
@@ -153,9 +153,9 @@
 
 @if (hfPreview)
 {
-    <a asp-controller="HouseFactPreview" asp-action="RoofExterior" asp-route-tab="@Model.ActiveTab" class="re-btn-secondary">Back to Roof &amp; Exterior</a>
+    <a asp-controller="HouseFactPreview" asp-action="RoofExterior" asp-route-tab="@Model.ActiveTab" class="re-btn-secondary">@L["Back to Roof & Exterior"]</a>
 }
 else
 {
-    <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="@Model.ActiveTab" class="re-btn-secondary">Back to Roof &amp; Exterior</a>
+    <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="@Model.ActiveTab" class="re-btn-secondary">@L["Back to Roof & Exterior"]</a>
 }

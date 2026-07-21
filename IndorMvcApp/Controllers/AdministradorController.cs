@@ -137,7 +137,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await emergencyElectrical.GetFormAsync(Url, propertyId));
+        var model = await emergencyElectrical.GetFormAsync(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorEmergencyElectricalSubmitInput>(model, "ElectricalStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -149,7 +151,56 @@ public class AdministradorController(
             return redirect;
         }
 
+        TempData["ElectricalStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(EmergencyElectricalReview));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EmergencyElectricalReview()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData.Peek("ElectricalStep1") is not string json)
+        {
+            return RedirectToAction(nameof(EmergencyElectricalDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorEmergencyElectricalSubmitInput>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(EmergencyElectricalDetails));
+        }
+
+        var model = await emergencyElectrical.GetReviewAsync(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(EmergencyElectricalDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EmergencyElectricalReview(PropertyAdministratorEmergencyElectricalSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (!PropertyAdministratorEmergencyElectricalService.IsSubmitComplete(input))
+        {
+            TempData["ElectricalStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+            return RedirectToAction(nameof(EmergencyElectricalDetails), new { propertyId = input.PropertyId > 0 ? input.PropertyId : (int?)null });
+        }
+
         var requestId = await emergencyElectrical.SubmitAsync(input);
+        TempData.Remove("ElectricalStep1");
         return RedirectToAction(nameof(EmergencyElectricalConfirmed), new { id = requestId });
     }
 
@@ -164,7 +215,7 @@ public class AdministradorController(
         var model = await emergencyElectrical.GetConfirmedAsync(Url, id);
         if (model == null)
         {
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Services));
         }
 
         ViewBag.HideBottomNav = true;
@@ -180,7 +231,26 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await emergencyAc.GetFormAsync(Url, propertyId));
+        var model = await emergencyAc.GetFormAsync(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorEmergencyAcSubmitInput>(model, "AcStep1");
+        if (TempData.Peek("AcStep1") is string acDraftJson
+            && !string.IsNullOrWhiteSpace(acDraftJson))
+        {
+            try
+            {
+                var draft = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorEmergencyAcSubmitInput>(acDraftJson);
+                if (draft?.UpdateRecipientsList is { Count: > 0 })
+                {
+                    model.UpdateRecipients = string.Join(",", draft.UpdateRecipientsList);
+                }
+            }
+            catch (System.Text.Json.JsonException)
+            {
+                // Keep blank recipients when draft JSON is invalid.
+            }
+        }
+
+        return View(model);
     }
 
     [HttpPost]
@@ -192,12 +262,56 @@ public class AdministradorController(
             return redirect;
         }
 
+        TempData["AcStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(EmergencyAcReview));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EmergencyAcReview()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData.Peek("AcStep1") is not string json)
+        {
+            return RedirectToAction(nameof(EmergencyAcDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorEmergencyAcSubmitInput>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(EmergencyAcDetails));
+        }
+
+        var model = await emergencyAc.GetReviewAsync(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(EmergencyAcDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EmergencyAcReview(PropertyAdministratorEmergencyAcSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
         if (!PropertyAdministratorEmergencyAcService.IsSubmitComplete(input))
         {
+            TempData["AcStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
             return RedirectToAction(nameof(EmergencyAcDetails), new { propertyId = input.PropertyId > 0 ? input.PropertyId : (int?)null });
         }
 
         var requestId = await emergencyAc.SubmitAsync(input);
+        TempData.Remove("AcStep1");
         return RedirectToAction(nameof(EmergencyAcConfirmed), new { id = requestId });
     }
 
@@ -212,7 +326,7 @@ public class AdministradorController(
         var model = await emergencyAc.GetConfirmedAsync(Url, id);
         if (model == null)
         {
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Services));
         }
 
         ViewBag.HideBottomNav = true;
@@ -287,7 +401,8 @@ public class AdministradorController(
 
         if (!PropertyAdministratorEmergencyPlumbingService.IsSubmitComplete(input))
         {
-            return RedirectToAction(nameof(EmergencyPlumbingAccess));
+            TempData["PlumbingStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+            return RedirectToAction(nameof(EmergencyPlumbingDetails), new { propertyId = input.PropertyId > 0 ? input.PropertyId : (int?)null });
         }
 
         var requestId = await emergencyPlumbing.SubmitAsync(input);
@@ -306,7 +421,7 @@ public class AdministradorController(
         var model = await emergencyPlumbing.GetConfirmedAsync(Url, id);
         if (model == null)
         {
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Services));
         }
 
         ViewBag.HideBottomNav = true;
@@ -381,7 +496,8 @@ public class AdministradorController(
 
         if (!PropertyAdministratorEmergencyRoofLeakService.IsSubmitComplete(input))
         {
-            return RedirectToAction(nameof(EmergencyRoofLeakAccess));
+            TempData["RoofLeakStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+            return RedirectToAction(nameof(EmergencyRoofLeakDetails), new { propertyId = input.PropertyId > 0 ? input.PropertyId : (int?)null });
         }
 
         var requestId = await emergencyRoofLeak.SubmitAsync(input);
@@ -400,7 +516,7 @@ public class AdministradorController(
         var model = await emergencyRoofLeak.GetConfirmedAsync(Url, id);
         if (model == null)
         {
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Services));
         }
 
         ViewBag.HideBottomNav = true;
@@ -494,7 +610,7 @@ public class AdministradorController(
         var model = await emergencyTreeBranch.GetConfirmedAsync(Url, id);
         if (model == null)
         {
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Services));
         }
 
         ViewBag.HideBottomNav = true;
@@ -583,7 +699,7 @@ public class AdministradorController(
         var model = await lockoutAccess.GetConfirmedAsync(Url, id);
         if (model == null)
         {
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Services));
         }
 
         ViewBag.HideBottomNav = true;
@@ -672,7 +788,7 @@ public class AdministradorController(
         var model = await brokenWindowBoardUp.GetConfirmedAsync(Url, id);
         if (model == null)
         {
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Services));
         }
 
         ViewBag.HideBottomNav = true;
@@ -760,7 +876,7 @@ public class AdministradorController(
         var model = await emergencySewerBackup.GetConfirmedAsync(Url, id);
         if (model == null)
         {
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Services));
         }
 
         ViewBag.HideBottomNav = true;
@@ -848,7 +964,7 @@ public class AdministradorController(
         var model = await emergencyWaterHeater.GetConfirmedAsync(Url, id);
         if (model == null)
         {
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Services));
         }
 
         ViewBag.HideBottomNav = true;
@@ -864,7 +980,9 @@ public class AdministradorController(
         }
 
         ViewBag.HideBottomNav = true;
-        return View(await emergencyFlood.GetFormAsync(Url, propertyId));
+        var model = await emergencyFlood.GetFormAsync(Url, propertyId);
+        ApplyStep1DraftFromTempData<PropertyAdministratorEmergencyFloodSubmitInput>(model, "FloodStep1");
+        return View(model);
     }
 
     [HttpPost]
@@ -876,7 +994,50 @@ public class AdministradorController(
             return redirect;
         }
 
+        TempData["FloodStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(EmergencyFloodReview));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EmergencyFloodReview()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData.Peek("FloodStep1") is not string json)
+        {
+            return RedirectToAction(nameof(EmergencyFloodDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorEmergencyFloodSubmitInput>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(EmergencyFloodDetails));
+        }
+
+        var model = await emergencyFlood.GetReviewAsync(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(EmergencyFloodDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EmergencyFloodReview(PropertyAdministratorEmergencyFloodSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
         var requestId = await emergencyFlood.SubmitAsync(input);
+        TempData.Remove("FloodStep1");
         return RedirectToAction(nameof(EmergencyFloodConfirmed), new { id = requestId });
     }
 
@@ -891,7 +1052,7 @@ public class AdministradorController(
         var model = await emergencyFlood.GetConfirmedAsync(Url, id);
         if (model == null)
         {
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Services));
         }
 
         ViewBag.HideBottomNav = true;
@@ -2489,6 +2650,17 @@ public class AdministradorController(
         }
 
         return View(await portal.GetSavedProvidersAsync(Url));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> HomecarePlans()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        return View(await portal.GetHomecarePlansAsync(Url));
     }
 
     [HttpGet]

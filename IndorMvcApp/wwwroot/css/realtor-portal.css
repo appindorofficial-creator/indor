@@ -3387,6 +3387,11 @@ ul.rl-next-steps li > span:first-child {
 }
 .rl-premium-card--file .rl-premium-card-img,
 .rl-premium-card--quote .rl-premium-card-img { height: 120px; }
+/* Keep status off the ⋯ menu corner on home file cards */
+.rl-premium-card--file .rl-card-image-badge {
+    right: auto;
+    left: 8px;
+}
 .rl-card-image-badge {
     position: absolute;
     top: 8px;

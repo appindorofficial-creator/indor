@@ -86,4 +86,11 @@ public static class PropertyAdministratorDisplayLocalization
 
     public static string FormatLotSizeAcres(decimal acres) =>
         T("{0} acres", acres.ToString("N2", CultureInfo.CurrentCulture));
+
+    /// <summary>
+    /// Shared ETA line for PA emergency / trade cards:
+    /// "Nearest {trade} pro available in {minutes} minutes".
+    /// </summary>
+    public static string NearestProAvailableInMinutes(string tradeEnglish, int minutes) =>
+        T("Nearest {0} pro available in {1} minutes", L(tradeEnglish), minutes);
 }

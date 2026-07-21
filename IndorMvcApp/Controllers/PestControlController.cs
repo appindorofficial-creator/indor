@@ -213,7 +213,7 @@ public class PestControlController : Controller
             TimingLabel = PestControlDisplayLabels.FormatTiming(solicitud.TimingPreferido),
             ConcernsLabel = PestControlDisplayLabels.FormatPipeList(solicitud.AreasPreocupacion, PestControlDisplayLabels.FormatArea),
             PetsChildrenLabel = PestControlDisplayLabels.FormatYesNo(solicitud.MascotasONinos),
-            StatusLabel = "Reminder and service saved",
+            StatusLabel = PestControlDisplayLabels.FormatConfirmedStatus(),
             WhyYearlyItems = SplitPipePairs(landing?.WhyYearlyItems, landing?.WhyYearlyIconos)
         });
     }

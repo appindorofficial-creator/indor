@@ -151,9 +151,11 @@
             <span>@L["We'll send status updates to you and the guest."]</span>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Request emergency service"]</button>
-        <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit">@L["Edit details"]</a>
-        <a href="@Url.Action("Services", "Administrador", new { propertyId = Model.PropertyId })" class="pa-back-link">@L["Back to start"]</a>
+        <div class="pa-flow-actions">
+            <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Request emergency service"]</button>
+            <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit" data-no-nav-loading="true">@L["Edit details"]</a>
+            <a href="@PropertyAdministratorFlowServiceSupport.ServicesUrl(Url, Model.PropertyId)" class="pa-flow-back-link">@L["Back to services"]</a>
+        </div>
     </form>
 </div>
 

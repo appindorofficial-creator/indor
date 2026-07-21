@@ -1,13 +1,14 @@
 @{
     var trackUrl = ViewBag.ConfirmedTrackUrl as string
         ?? Url.Action("Tasks", "Administrador", new { filter = "inprogress" }) ?? "#";
-    var dashboardUrl = ViewBag.ConfirmedDashboardUrl as string
-        ?? Url.Action("Services", "Administrador", new { propertyId = ViewBag.ConfirmedPropertyId }) ?? "#";
+    int? confirmedPropertyId = ViewBag.ConfirmedPropertyId is int pid ? pid : null;
+    var servicesUrl = ViewBag.ConfirmedDashboardUrl as string
+        ?? PropertyAdministratorFlowServiceSupport.ServicesUrl(Url, confirmedPropertyId);
     var trackIcon = ViewBag.ConfirmedTrackIcon as string ?? "fa-chevron-right";
 }
 <a href="@trackUrl" class="ob-btn ob-btn-primary pa-flow-submit">
     @L["Track request"] <i class="fas @trackIcon"></i>
 </a>
-<a href="@dashboardUrl" class="ob-btn ob-btn-outline pa-flow-edit">
-    @L["Back to start"]
+<a href="@servicesUrl" class="ob-btn ob-btn-outline pa-flow-edit">
+    @L["Back to services"]
 </a>

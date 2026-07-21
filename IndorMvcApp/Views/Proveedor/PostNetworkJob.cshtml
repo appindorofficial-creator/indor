@@ -50,7 +50,7 @@
                 {
                     <label class="prv-net-optionchip">
                         <input type="radio" name="TradeId" value="@trade.Id" checked="@(Model.SelectedTradeId == trade.Id)" />
-                        <span><i class="fas @trade.IconClass"></i> @trade.Label</span>
+                        <span><i class="fas @trade.IconClass"></i> @UiDisplayLocalization.Localize(L, trade.Label)</span>
                     </label>
                 }
             </div>

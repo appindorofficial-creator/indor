@@ -38,9 +38,9 @@ public static class HvacMaintenanceDisplayLabels
 
     public static string FormatTimeWindow(string? code) => code switch
     {
-        "Morning" => "Morning 8–11",
-        "Midday" => "Midday 11–2",
-        "Afternoon" => "Afternoon 2–5",
+        "Morning" => DisplayLabelsLocalization.L("Morning 8–11"),
+        "Midday" => DisplayLabelsLocalization.L("Midday 11–2"),
+        "Afternoon" => DisplayLabelsLocalization.L("Afternoon 2–5"),
         _ => code ?? "—"
     };
 

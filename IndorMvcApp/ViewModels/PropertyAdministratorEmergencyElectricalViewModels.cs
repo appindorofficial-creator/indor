@@ -28,7 +28,7 @@ public class PropertyAdministratorRecentRequestViewModel
 
 public class PropertyAdministratorEmergencyElectricalFormViewModel : PropertyAdministratorPortalShellViewModel
 {
-    public int FlowStep { get; set; } = 2;
+    public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string IssueType { get; set; } = "";
@@ -53,6 +53,25 @@ public class PropertyAdministratorEmergencyElectricalSubmitInput
     public string EntryAccess { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string? Notes { get; set; }
+}
+
+public class PropertyAdministratorEmergencyElectricalReviewRowViewModel
+{
+    public string Label { get; set; } = "";
+    public string Value { get; set; } = "";
+    public string IconClass { get; set; } = "fa-circle";
+    public bool Highlight { get; set; }
+}
+
+public class PropertyAdministratorEmergencyElectricalReviewViewModel : PropertyAdministratorPortalShellViewModel
+{
+    public int FlowStep { get; set; } = 2;
+    public int TotalSteps { get; set; } = 3;
+    public PropertyAdministratorEmergencyElectricalSubmitInput Input { get; set; } = new();
+    public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
+    public IReadOnlyList<PropertyAdministratorEmergencyElectricalReviewRowViewModel> SummaryRows { get; set; } = [];
+    public string ProEtaLabel { get; set; } = "Nearest electrician pro available in 24 minutes";
+    public string EstimatedPrice { get; set; } = "$129–$189";
 }
 
 public class PropertyAdministratorEmergencyElectricalSummaryItemViewModel

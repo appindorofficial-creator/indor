@@ -34,8 +34,8 @@
             <a asp-controller="Proveedor" asp-action="TemplateDetails" asp-route-key="@t.Key" class="tpl-row">
                 <span class="tpl-icon tpl-icon--@t.Color"><i class="fas @t.Icon"></i></span>
                 <span class="tpl-row-text">
-                    <strong>@t.Name</strong>
-                    <small>@t.Description</small>
+                    <strong>@L[t.Name]</strong>
+                    <small>@L[t.Description]</small>
                 </span>
                 <i class="fas fa-chevron-right tpl-row-chevron"></i>
             </a>
@@ -51,7 +51,7 @@
                 <a asp-controller="Proveedor" asp-action="TemplateDetails" asp-route-key="@t.Key" class="tpl-row tpl-row--compact">
                     <span class="tpl-icon tpl-icon--@t.Color"><i class="fas @t.Icon"></i></span>
                     <span class="tpl-row-text">
-                        <strong>@t.Name</strong>
+                        <strong>@L[t.Name]</strong>
                     </span>
                     <i class="fas fa-chevron-right tpl-row-chevron"></i>
                 </a>

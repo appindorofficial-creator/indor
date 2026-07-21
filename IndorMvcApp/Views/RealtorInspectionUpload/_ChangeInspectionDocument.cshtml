@@ -1,4 +1,4 @@
-<form asp-action="ChangeDocument" method="post" class="rl-analyze-change-doc">
+<form asp-controller="RealtorInspectionUpload" asp-action="ChangeDocument" method="post" class="rl-analyze-change-doc">
     @Html.AntiForgeryToken()
     <button type="submit" class="rl-analyze-change-doc-btn">
         <i class="fas fa-arrow-left" aria-hidden="true"></i> @L["Change document"]

@@ -46,7 +46,9 @@ public class PropertyAdministratorMovingHelpService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest checkout today" : null
+            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest checkout today" : null,
+            // First visit: no move items pre-selected (draft restore happens in the controller).
+            ItemsToMove = ""
         };
     }
 

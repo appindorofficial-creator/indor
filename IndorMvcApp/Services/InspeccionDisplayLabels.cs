@@ -503,7 +503,7 @@ public static class InspeccionDisplayLabels
         "GutterEdge" => DisplayLabelsLocalization.L("Gutter / edge"),
         "AtticCeiling" => DisplayLabelsLocalization.L("Attic / ceiling"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => value ?? "Main roof"
+        _ => string.Empty
     };
 
     public static string MotivoRevisionTecho(string? value) => value switch
@@ -593,9 +593,7 @@ public static class InspeccionDisplayLabels
         {
             return string.Join(", ",
                 ParsePipeValues(areasPipe)
-                    .Select(v => UbicacionProblemaTecho(v) is { Length: > 0 } label && !string.Equals(v, "NotSure", StringComparison.OrdinalIgnoreCase)
-                        ? label.ToLowerInvariant()
-                        : TipoProblemaTecho(v).ToLowerInvariant())
+                    .Select(LabelRoofFocusArea)
                     .Where(v => !string.IsNullOrWhiteSpace(v)));
         }
 
@@ -603,24 +601,15 @@ public static class InspeccionDisplayLabels
         var location = UbicacionProblemaTecho(ubicacion);
         if (!string.IsNullOrWhiteSpace(location) && !string.Equals(ubicacion, "NotSure", StringComparison.OrdinalIgnoreCase))
         {
-            parts.Add(location.ToLowerInvariant());
+            parts.Add(location);
         }
 
         foreach (var tipo in ParsePipeValues(tiposPipe))
         {
-            var label = TipoProblemaTecho(tipo).ToLowerInvariant();
-            if (label.Contains("gutter", StringComparison.OrdinalIgnoreCase))
+            var label = LabelRoofFocusArea(tipo);
+            if (!string.IsNullOrWhiteSpace(label))
             {
-                parts.Add("gutters");
-            }
-            else if (label.Contains("ceiling", StringComparison.OrdinalIgnoreCase)
-                     || label.Contains("attic", StringComparison.OrdinalIgnoreCase))
-            {
-                parts.Add("attic stain");
-            }
-            else if (label.Contains("leak", StringComparison.OrdinalIgnoreCase))
-            {
-                parts.Add("valley");
+                parts.Add(label);
             }
         }
 
@@ -630,6 +619,23 @@ public static class InspeccionDisplayLabels
         }
 
         return string.Join(", ", parts.Distinct(StringComparer.OrdinalIgnoreCase));
+    }
+
+    private static string LabelRoofFocusArea(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value)
+            || string.Equals(value, "NotSure", StringComparison.OrdinalIgnoreCase))
+        {
+            return string.Empty;
+        }
+
+        var location = UbicacionProblemaTecho(value);
+        if (!string.IsNullOrWhiteSpace(location))
+        {
+            return location;
+        }
+
+        return TipoProblemaTecho(value);
     }
 
     public static string TipoProblemaMoldMoisture(string? value) => value switch
@@ -861,25 +867,49 @@ public static class InspeccionDisplayLabels
         string? fallbackTipo,
         string? danoHumedadVisible)
     {
+        // Emit English labels; WindowsInsulationReview localizes at display time.
         var issues = ParsePipeValues(tiposPipe)
-            .Select(TipoProblemaWindowsInsulation)
+            .Select(TipoProblemaWindowsInsulationEnglish)
             .Where(v => !string.IsNullOrWhiteSpace(v))
             .ToList();
 
         if (issues.Count == 0 && !string.IsNullOrWhiteSpace(fallbackTipo))
         {
-            issues.Add(TipoProblemaWindowsInsulation(fallbackTipo));
+            issues.Add(TipoProblemaWindowsInsulationEnglish(fallbackTipo));
         }
 
-        var moisture = DanoHumedadVisibleWindowsInsulation(danoHumedadVisible);
+        var moisture = danoHumedadVisible?.Trim() switch
+        {
+            "Yes" => "Yes",
+            "NotSure" => "Not sure",
+            _ => "No"
+        };
         var baseText = issues.Count == 0
-            ? DisplayLabelsLocalization.L("Efficiency concern")
+            ? "Efficiency concern"
             : string.Join(", ", issues);
         return string.Format(
-            DisplayLabelsLocalization.L("{0}, Visible moisture: {1}"),
+            System.Globalization.CultureInfo.InvariantCulture,
+            "{0}, Visible moisture: {1}",
             baseText,
             moisture);
     }
+
+    private static string TipoProblemaWindowsInsulationEnglish(string? value) => value switch
+    {
+        "DraftAir" => "Draft / air coming in",
+        "HighEnergyBill" => "High energy bill",
+        "ColdRoom" => "Cold room",
+        "HotRoom" => "Hot room",
+        "WindowCondensation" => "Window condensation",
+        "WindowSealing" => "Window sealing issue",
+        "DamagedInsulation" => "Damaged insulation",
+        "AtticInsulation" => "Attic insulation",
+        "WallInsulation" => "Wall insulation",
+        "MoistureAroundWindow" => "Moisture around window",
+        "WholeHouseReview" => "Whole-house review",
+        "NotSure" => "Not sure",
+        _ => value ?? "Draft / air coming in"
+    };
 
     public static string FormatWindowsInsulationConcern(string? tiposPipe, string? fallbackTipo)
     {
@@ -932,42 +962,44 @@ public static class InspeccionDisplayLabels
             codes = ParsePipeValues(areasAtencion);
         }
 
+        // English labels for display-time localization (LocalizeCommaList).
         var labels = codes
-            .Select(ResolveWindowsInsulationFocusLabel)
+            .Select(ResolveWindowsInsulationFocusLabelEnglish)
             .Where(v => !string.IsNullOrWhiteSpace(v)
-                        && !string.Equals(v, DisplayLabelsLocalization.L("Not sure"), StringComparison.OrdinalIgnoreCase)
                         && !string.Equals(v, "Not sure", StringComparison.OrdinalIgnoreCase))
             .Distinct(StringComparer.OrdinalIgnoreCase)
             .ToList();
 
         return labels.Count == 0
-            ? DisplayLabelsLocalization.L("Windows, attic insulation")
+            ? "Windows, attic insulation"
             : string.Join(", ", labels);
     }
 
-    private static string ResolveWindowsInsulationFocusLabel(string? code)
+    private static string ResolveWindowsInsulationFocusLabelEnglish(string? code)
     {
         if (string.IsNullOrWhiteSpace(code))
         {
             return string.Empty;
         }
 
-        foreach (Func<string?, string> mapper in new Func<string?, string>[]
-                 {
-                     AreaEnfoqueWindowsInsulation,
-                     AreaAtencionWindowsInsulation,
-                     TipoProblemaWindowsInsulation
-                 })
+        // Room/attention codes often land in AreasEnfoque via BuildDefaultWindowsInsulationFocusAreas.
+        return code.Trim() switch
         {
-            var label = mapper(code);
-            if (!string.IsNullOrWhiteSpace(label)
-                && !string.Equals(label, code, StringComparison.OrdinalIgnoreCase))
-            {
-                return label;
-            }
-        }
-
-        return DisplayLabelsLocalization.L(code);
+            "LivingRoom" => "Living room",
+            "Bedroom" => "Bedroom",
+            "Attic" => "Attic",
+            "CrawlSpace" => "Crawl space",
+            "AroundWindows" => "Around windows",
+            "ExteriorWall" => "Exterior wall",
+            "WholeHouse" => "Whole house",
+            "Windows" => "Windows",
+            "AtticInsulation" => "Attic insulation",
+            "Doors" => "Doors",
+            "CrawlSpaceInsulation" => "Crawl space insulation",
+            "ExteriorWalls" => "Exterior walls",
+            "NotSure" => "Not sure",
+            _ => TipoProblemaWindowsInsulationEnglish(code)
+        };
     }
 
     public static string FormatWindowsInsulationFilesSummary(IEnumerable<(string? CategoriaArchivo, string? NombreArchivo)> archivos)
@@ -975,7 +1007,7 @@ public static class InspeccionDisplayLabels
         var list = archivos.ToList();
         if (list.Count == 0)
         {
-            return DisplayLabelsLocalization.L("No files uploaded");
+            return "No files uploaded";
         }
 
         var photos = list.Count(a =>
@@ -1006,7 +1038,7 @@ public static class InspeccionDisplayLabels
         return parts.Count == 0 ? $"{list.Count} file{(list.Count == 1 ? "" : "s")} uploaded" : string.Join(" and ", parts);
     }
 
-    public static string TipoProblemaHomeSafety(string? value) => value switch
+    public static string TipoProblemaHomeSafety(string? value) => NormalizeHomeSafetyIssueKey(value) switch
     {
         "SmokeDetectorConcern" => DisplayLabelsLocalization.L("Smoke detector concern"),
         "CoDetectorConcern" => DisplayLabelsLocalization.L("CO detector concern"),
@@ -1020,7 +1052,7 @@ public static class InspeccionDisplayLabels
         "ChildSafetyConcern" => DisplayLabelsLocalization.L("Child safety concern"),
         "GeneralSafetyReview" => DisplayLabelsLocalization.L("General safety review"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => value ?? "Smoke detector concern"
+        _ => DisplayLabelsLocalization.L(string.IsNullOrWhiteSpace(value) ? "Smoke detector concern" : value.Trim())
     };
 
     public static string AreaAtencionHomeSafety(string? value) => value switch
@@ -1163,6 +1195,7 @@ public static class InspeccionDisplayLabels
             return string.Empty;
         }
 
+        var trimmed = code.Trim();
         foreach (Func<string?, string> mapper in new Func<string?, string>[]
                  {
                      AreaEnfoqueHomeSafety,
@@ -1170,15 +1203,93 @@ public static class InspeccionDisplayLabels
                      TipoProblemaHomeSafety
                  })
         {
-            var label = mapper(code);
+            var label = mapper(trimmed);
             if (!string.IsNullOrWhiteSpace(label)
-                && !string.Equals(label, code, StringComparison.OrdinalIgnoreCase))
+                && !string.Equals(label, trimmed, StringComparison.OrdinalIgnoreCase))
             {
                 return label;
             }
         }
 
-        return DisplayLabelsLocalization.L(code);
+        return DisplayLabelsLocalization.L(trimmed);
+    }
+
+    private static string NormalizeHomeSafetyIssueKey(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        var trimmed = value.Trim();
+        if (trimmed.Equals("SmokeDetectorConcern", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("Smoke detector concern", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("Detector de humo concern", StringComparison.OrdinalIgnoreCase))
+        {
+            return "SmokeDetectorConcern";
+        }
+
+        if (trimmed.Equals("CoDetectorConcern", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("CO detector concern", StringComparison.OrdinalIgnoreCase))
+        {
+            return "CoDetectorConcern";
+        }
+
+        if (trimmed.Equals("FireExtinguisherConcern", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("Fire extinguisher concern", StringComparison.OrdinalIgnoreCase))
+        {
+            return "FireExtinguisherConcern";
+        }
+
+        if (trimmed.Equals("StairRailingConcern", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("Stair / railing concern", StringComparison.OrdinalIgnoreCase))
+        {
+            return "StairRailingConcern";
+        }
+
+        if (trimmed.Equals("ChildSafetyConcern", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("Child safety concern", StringComparison.OrdinalIgnoreCase))
+        {
+            return "ChildSafetyConcern";
+        }
+
+        if (trimmed.Equals("TripFallHazard", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("Trip / fall hazard", StringComparison.OrdinalIgnoreCase))
+        {
+            return "TripFallHazard";
+        }
+
+        if (trimmed.Equals("DoorLockSafety", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("Door / lock safety", StringComparison.OrdinalIgnoreCase))
+        {
+            return "DoorLockSafety";
+        }
+
+        if (trimmed.Equals("OutletBasicHazard", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("Outlet / basic hazard", StringComparison.OrdinalIgnoreCase))
+        {
+            return "OutletBasicHazard";
+        }
+
+        if (trimmed.Equals("GeneralSafetyReview", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("General safety review", StringComparison.OrdinalIgnoreCase))
+        {
+            return "GeneralSafetyReview";
+        }
+
+        if (trimmed.Equals("NoDetectors", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("No detectors", StringComparison.OrdinalIgnoreCase))
+        {
+            return "NoDetectors";
+        }
+
+        if (trimmed.Equals("ChirpingAlarm", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("Chirping alarm", StringComparison.OrdinalIgnoreCase))
+        {
+            return "ChirpingAlarm";
+        }
+
+        return trimmed;
     }
 
     public static string FormatHomeSafetyFilesSummary(IEnumerable<(string? CategoriaArchivo, string? NombreArchivo)> archivos)
@@ -1186,7 +1297,7 @@ public static class InspeccionDisplayLabels
         var list = archivos.ToList();
         if (list.Count == 0)
         {
-            return DisplayLabelsLocalization.L("No files uploaded");
+            return "No files uploaded";
         }
 
         var photos = list.Count(a =>
@@ -1319,7 +1430,7 @@ public static class InspeccionDisplayLabels
         var list = archivos.ToList();
         if (list.Count == 0)
         {
-            return DisplayLabelsLocalization.L("No files uploaded");
+            return "No files uploaded";
         }
 
         var photos = list.Count(a =>
@@ -1362,8 +1473,9 @@ public static class InspeccionDisplayLabels
             return new List<string>();
         }
 
+        // Accept legacy comma-separated selections as well as pipe-separated codes.
         return pipeSeparated
-            .Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Split(['|', ','], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .ToList();
     }
 
@@ -1374,8 +1486,6 @@ public static class InspeccionDisplayLabels
             return null;
         }
 
-        return pipeSeparated
-            .Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .FirstOrDefault();
+        return ParsePipeValues(pipeSeparated).FirstOrDefault();
     }
 }

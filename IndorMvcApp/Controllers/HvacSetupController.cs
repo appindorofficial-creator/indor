@@ -246,6 +246,10 @@ public class HvacSetupController : Controller
 
         if (!viewModel.ConfirmInfo || !viewModel.AuthorizeStorage)
         {
+            // Replace DataAnnotation English ErrorMessages with localized copy.
+            ModelState.Remove(nameof(viewModel.ConfirmInfo));
+            ModelState.Remove(nameof(viewModel.AuthorizeStorage));
+
             if (!viewModel.ConfirmInfo)
             {
                 ModelState.AddModelError(nameof(viewModel.ConfirmInfo), _localizer["Please confirm your equipment information."]);

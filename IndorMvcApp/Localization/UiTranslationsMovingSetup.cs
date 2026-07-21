@@ -322,6 +322,7 @@ public static class UiTranslationsMovingSetup
             ["Always Perfect Lawn"] = "Césped Siempre Perfecto",
             ["Stress-Free Trash"] = "Basura Sin Estrés",
             ["Cleaning Pro"] = "Limpieza Pro",
+            ["Spotless Home Pro"] = "Limpieza Pro",
             ["8–11 AM"] = "8–11 a. m.",
             ["11 AM–2 PM"] = "11 a. m.–2 p. m.",
             ["2–5 PM"] = "2–5 p. m.",
@@ -329,10 +330,12 @@ public static class UiTranslationsMovingSetup
             ["Activate service"] = "Activar servicio",
 
             // Cleaning Pro / Lawn / Trash leftover UI (overrides Spanglish in Flows)
+            ["Next"] = "Siguiente",
             ["Next: Review"] = "Siguiente: Revisar",
             ["View schedule"] = "Ver agenda",
             ["View booking"] = "Ver reserva",
             ["Manage reminder"] = "Administrar recordatorio",
+            ["Next visit"] = "Siguiente visita",
             ["Your pickup day"] = "Tu día de recolección",
             ["Optional add-ons"] = "Complementos opcionales",
             ["Please review your selected details and pricing."] = "Revisa los detalles y precios seleccionados.",
@@ -426,20 +429,30 @@ public static class UiTranslationsMovingSetup
             ["leak signs and flashing"] = "señales de fuga y flashing",
             ["shingles and sealant"] = "tejas y sellador",
 
-            // Realtor quick entry (mockup)
-            ["Welcome to INDOR for Realtors"] = "Bienvenido a INDOR para Realtors",
+            // Realtor quick entry
+            ["Welcome to INDOR for Realtors"] = "Bienvenido a INDOR para agentes inmobiliarios",
             ["This is your professional space for clients, files, and quotes. No license or documents required to start."] =
                 "Este es tu espacio profesional para clientes, expedientes y cotizaciones. No se requiere licencia ni documentos para empezar.",
-            ["Brokerage / Company"] = "Brokerage / compañía",
+            ["Brokerage / Company"] = "Nombre de la correduría / empresa",
             ["Complete the rest from your profile later"] = "Completa el resto desde tu perfil más adelante",
-            ["Welcome, realtor!"] = "¡Bienvenido, realtor!",
+            ["Welcome, realtor!"] = "¡Bienvenido, agente!",
             ["You can now enter the INDOR ecosystem. Complete license, market, and documents later from your profile."] =
                 "Ya puedes entrar al ecosistema INDOR. Completa licencia, mercado y documentos después desde tu perfil.",
             ["Enter the INDOR ecosystem"] = "Entrar al ecosistema INDOR",
             ["Complete profile later"] = "Completar perfil después",
             ["Basic real estate agent"] = "Agente inmobiliario básico",
-            ["Brokerage / Company Name"] = "Brokerage / compañía",
-            ["Brokerage / Company Name is required."] = "Brokerage / compañía es obligatorio.",
+            ["Brokerage / Company Name"] = "Nombre de la correduría / empresa",
+            ["Brokerage / Company Name is required."] = "El nombre de la correduría / empresa es obligatorio.",
+            ["Realtor Verification"] = "Verificación de agente inmobiliario",
+            ["Enter your license information so we can verify your realtor profile."] =
+                "Ingresa la información de tu licencia para verificar tu perfil de agente.",
+            ["Real Estate License Number"] = "Número de licencia inmobiliaria",
+            ["License State"] = "Estado de la licencia",
+            ["City / Market Area"] = "Ciudad / área de mercado",
+            ["As you type, we'll suggest US addresses and auto-fill city, state, and ZIP when available."] =
+                "Al escribir, sugeriremos direcciones de EE. UU. y completaremos ciudad, estado y código postal cuando estén disponibles.",
+            ["Complete city, state, and ZIP for your office address."] =
+                "Completa ciudad, estado y código postal de la dirección de tu oficina.",
             ["Search address with Google…"] = "Buscar dirección con Google…",
             ["Search address with Google"] = "Buscar dirección con Google",
             ["Add a property by address to request a work quote"] = "Agrega una propiedad por dirección para pedir cotización de trabajo",
@@ -453,5 +466,38 @@ public static class UiTranslationsMovingSetup
                 "Elige un expediente existente para que fotos, informes y cotizaciones queden conectados, o agrega una dirección nueva con Google.",
             ["Please select a property."] = "Selecciona una propiedad.",
             ["Please select a property or enter an address."] = "Selecciona una propiedad o ingresa una dirección.",
+
+            // Bug 2 — Realtor registration documents step + verification leftovers (last-merge wins)
+            ["No required documents attached. Please upload your license photo and government ID, or choose Skip for now."] =
+                "No hay documentos obligatorios adjuntos. Sube la foto de tu licencia y tu identificación oficial, o elige Omitir por ahora.",
+            ["Please attach your {0} before continuing, or choose Skip for now."] =
+                "Adjunta {0} antes de continuar, o elige Omitir por ahora.",
+            ["Choose file"] = "Elegir archivo",
+            ["No file selected"] = "No hay archivo seleccionado",
+            ["You can do this now or update it later from your profile."] =
+                "Puedes hacerlo ahora o actualizarlo después desde tu perfil.",
+            ["Government-issued ID"] = "Identificación oficial",
+            ["Uploaded"] = "Subido",
+            ["Remove selected file"] = "Quitar archivo seleccionado",
+            ["Please fix the following before continuing:"] = "Corrige lo siguiente antes de continuar:",
+            ["Brokerage / Company Name is required."] = "El nombre de la correduría / empresa es obligatorio.",
+            ["License number is required."] = "El número de licencia es obligatorio.",
+            ["Please select your license state."] = "Selecciona el estado de tu licencia.",
+            ["City / market area is required."] = "La ciudad / área de mercado es obligatoria.",
+            ["Office address is required."] = "La dirección de oficina es obligatoria.",
+            ["City is required."] = "La ciudad es obligatoria.",
+            ["State is required."] = "El estado es obligatorio.",
+            ["ZIP code is required."] = "El código postal es obligatorio.",
+            ["Office Address"] = "Dirección de oficina",
+            ["Select state"] = "Selecciona el estado",
+            ["Optional Verification"] = "Verificación opcional",
+            ["License photo"] = "Foto de licencia",
+            ["Government ID"] = "Identificación oficial",
+            ["Business card (optional)"] = "Tarjeta de presentación (opcional)",
+            ["Upload files"] = "Subir archivos",
+            ["Save and continue"] = "Guardar y continuar",
+            ["Skip for now"] = "Omitir por ahora",
+            ["Without these documents, you can continue with a Basic profile and complete your verification later."] =
+                "Sin estos documentos puedes continuar con un perfil Básico y completar tu verificación más adelante.",
         };
 }

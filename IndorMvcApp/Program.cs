@@ -50,6 +50,8 @@ builder.Services.AddSession(options =>
         ? CookieSecurePolicy.SameAsRequest
         : CookieSecurePolicy.Always;
     options.Cookie.Name = "Indor.Session";
+    // Survive brief Android WebView backgrounding (session cookies die with the process).
+    options.Cookie.MaxAge = TimeSpan.FromHours(8);
 });
 
 builder.Services.Configure<RequestLocalizationOptions>(options =>
@@ -109,8 +111,10 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
         ? CookieSecurePolicy.SameAsRequest
         : CookieSecurePolicy.Always;
+    // Keep auth alive across Android WebView / PWA background kills.
     options.SlidingExpiration = true;
     options.ExpireTimeSpan = TimeSpan.FromDays(30);
+    options.Cookie.MaxAge = TimeSpan.FromDays(30);
 });
 
 // Register HttpClient and property services

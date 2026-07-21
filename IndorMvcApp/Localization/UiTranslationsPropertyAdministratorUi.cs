@@ -130,8 +130,8 @@ public static class UiTranslationsPropertyAdministratorUi
         ["Fast plumbing help for occupied homes and Airbnb stays."] = "Ayuda de plomería rápida para viviendas ocupadas y estadías de Airbnb.",
         ["Fast response"] = "Respuesta rápida",
         ["Front door code"] = "Código de la puerta principal",
-        ["Nearest homecare pro available tomorrow 10–12 AM"] = "Profesional de cuidado del hogar cercano disponible mañana de 10 a. m. a 12 p. m.",
-        ["Nearest homecare pro available tomorrow 1–3 PM"] = "Profesional de cuidado del hogar cercano disponible mañana de 1 p. m. a 3 p. m.",
+        ["Nearest homecare pro available tomorrow 10–12 AM"] = "Profesional de cuidado del hogar más cercano disponible mañana de 10 a. m. a 12 m.",
+        ["Nearest homecare pro available tomorrow 1–3 PM"] = "Profesional de cuidado del hogar más cercano disponible mañana de 1 p. m. a 3 p. m.",
         ["Gate / access code"] = "Código de portón / acceso",
         ["Gate / access notes"] = "Notas de portón / acceso",
         ["Gate, parking, or access notes"] = "Notas sobre portón, estacionamiento o acceso",
@@ -176,6 +176,7 @@ public static class UiTranslationsPropertyAdministratorUi
         ["Is anyone in immediate danger?"] = "¿Hay alguien en peligro inmediato?",
         ["Is exterior power available?"] = "¿Hay electricidad exterior disponible?",
         ["Is power fully out right now?"] = "¿No hay electricidad por completo ahora?",
+        ["Power fully out"] = "Sin electricidad",
         ["Is sewage or dirty water coming back up now?"] = "¿Está regresando ahora el drenaje o agua sucia?",
         ["Is someone currently outside?"] = "¿Hay alguien afuera actualmente?",
         ["Is the home occupied right now?"] = "¿La vivienda está ocupada ahora?",
@@ -601,6 +602,9 @@ public static class UiTranslationsPropertyAdministratorUi
         ["Overview"] = "Resumen",
         ["Password"] = "Contraseña",
         ["Payment method"] = "Método de pago",
+        ["{0} ending in {1}"] = "{0} terminada en {1}",
+        ["Visa ending in {0}"] = "Visa terminada en {0}",
+        ["Expires {0}"] = "Vence {0}",
         ["Personal details"] = "Datos personales",
         ["Pest Control"] = "Control de plagas",
         ["Pet Deep Clean"] = "Limpieza profunda para mascotas",
@@ -614,6 +618,31 @@ public static class UiTranslationsPropertyAdministratorUi
         ["Please attach your {0} before continuing, or choose Skip for now."] = "Adjunta {0} antes de continuar o selecciona Omitir por ahora.",
         ["Please enter {0}."] = "Ingresa {0}.",
         ["Please select {0}."] = "Selecciona {0}.",
+        // Preventive maintenance schedule defaults (per catalog ServiceKey)
+        ["Please service the HVAC between guest stays if possible."] =
+            "Por favor, da servicio al HVAC entre estadías de huéspedes si es posible.",
+        ["Please change the HVAC filter between guest stays if possible."] =
+            "Por favor, cambia el filtro del HVAC entre estadías de huéspedes si es posible.",
+        ["Please flush the water heater between guest stays if possible."] =
+            "Por favor, lava el calentador de agua entre estadías de huéspedes si es posible.",
+        ["Please test all smoke detectors and replace batteries as needed."] =
+            "Por favor, prueba todos los detectores de humo y reemplaza las baterías según sea necesario.",
+        ["Please clean the dryer vent thoroughly for fire safety."] =
+            "Por favor, limpia a fondo el conducto de la secadora por seguridad contra incendios.",
+        ["Please clear gutters and downspouts of debris."] =
+            "Por favor, limpia canaletas y bajantes de residuos.",
+        ["Please inspect plumbing for leaks and slow drains."] =
+            "Por favor, revisa la plomería en busca de fugas y drenajes lentos.",
+        ["Please check outlets, breakers, and detector wiring for safety."] =
+            "Por favor, revisa tomacorrientes, breakers y el cableado de detectores por seguridad.",
+        ["Please inspect major appliances for safe operation."] =
+            "Por favor, revisa los electrodomésticos principales para un funcionamiento seguro.",
+        ["Please treat common pest entry points around the property."] =
+            "Por favor, trata los puntos comunes de entrada de plagas alrededor de la propiedad.",
+        ["Please complete the selected preventive maintenance between guest stays if possible."] =
+            "Por favor, completa el mantenimiento preventivo seleccionado entre estadías de huéspedes si es posible.",
+        ["Please service the HVAC and flush the water heater between guest stays if possible."] =
+            "Por favor, da servicio al HVAC y vacía/enjuaga el calentador de agua entre estadías de huéspedes si es posible.",
         ["Pool / Hot Tub Service"] = "Servicio de piscina / jacuzzi",
         ["Pool & Hot Tub"] = "Piscina y jacuzzi",
         ["Pool & Hot Tub Repair"] = "Reparación de piscina y jacuzzi",
@@ -645,7 +674,7 @@ public static class UiTranslationsPropertyAdministratorUi
         ["Schedule preventive services"] = "Programar servicios preventivos",
         ["Schedule turnover cleaning"] = "Programar limpieza de rotación",
         ["Scheduled"] = "Programado",
-        ["Search in my portfolio neighborhoods..."] = "Buscar en los vecindarios de mi portafolio...",
+        ["Search in my portfolio neighborhoods..."] = "Buscar en mis vecindarios...",
         ["Search neighborhoods"] = "Buscar vecindarios",
         ["Search services"] = "Buscar servicios",
         ["Search services (e.g., plumbing, cleaning)"] = "Buscar servicios (p. ej., plomería, limpieza)",
@@ -856,6 +885,11 @@ public static class UiTranslationsPropertyAdministratorUi
         ["Add Warranty"] = "Agregar garantía",
         ["Broker-in-Charge (Optional)"] = "Corredor responsable (opcional)",
         ["Cancel Request"] = "Cancelar solicitud",
+        ["Quote Request Details"] = "Detalles de la solicitud de cotización",
+        ["Requested by"] = "Solicitado por",
+        ["Requested providers"] = "Proveedores solicitados",
+        ["Requested Services"] = "Servicios solicitados",
+        ["No repair items linked to this request yet."] = "Aún no hay elementos de reparación vinculados a esta solicitud.",
         ["Client is in closing and needs a quote response today."] = "El cliente está cerrando la operación y necesita una respuesta de cotización hoy.",
         ["Complete your verification to build trust, improve visibility, and unlock more opportunities in INDOR."] = "Completa tu verificación para generar confianza, mejorar la visibilidad y acceder a más oportunidades en INDOR.",
         ["Describe your property in a few sentences..."] = "Describe tu propiedad en unas cuantas oraciones...",
@@ -982,5 +1016,11 @@ public static class UiTranslationsPropertyAdministratorUi
         ["Your service has been booked for {0}."] = "Tu servicio ha sido reservado para {0}.",
         ["Your team is confirmed for {0}."] = "Tu equipo está confirmado para {0}.",
         ["{0} miles away"] = "{0} millas de distancia",
+
+        // Bug 29 — Turnover cleaning crew card + media labels
+        ["Nearest turnover crew available today {0}"] = "Equipo de rotación más cercano disponible hoy {0}",
+        ["11 AM–2 PM"] = "11 a. m.–2 p. m.",
+        ["Usually 2-3 hours"] = "Generalmente 2-3 horas",
+        ["2-4 cleaners"] = "2-4 limpiadores",
     };
 }

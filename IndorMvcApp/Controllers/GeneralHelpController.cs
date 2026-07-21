@@ -251,7 +251,7 @@ public class GeneralHelpController : Controller
             SolicitudId = solicitud.Id,
             DireccionPropiedad = solicitud.DireccionPropiedad ?? "—",
             VentanaTiempoLabel = GeneralHelpDisplayLabels.FormatTiming(solicitud.VentanaTiempo),
-            EstadoLabel = "Pending confirmation"
+            EstadoLabel = GeneralHelpDisplayLabels.FormatPendingConfirmationStatus()
         });
     }
 

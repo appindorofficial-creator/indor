@@ -31,6 +31,7 @@ public interface IPropertyAdministratorPortalService
         CancellationToken cancellationToken = default);
     Task<PropertyAdministratorPaymentsBillingViewModel> GetPaymentsBillingAsync(IUrlHelper url, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorSavedProvidersViewModel> GetSavedProvidersAsync(IUrlHelper url, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorHomecarePlansViewModel> GetHomecarePlansAsync(IUrlHelper url, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorHelpSupportViewModel> GetHelpSupportAsync(IUrlHelper url, CancellationToken cancellationToken = default);
     Task EnsurePortalDataAsync(CancellationToken cancellationToken = default);
     void MarkNotificationsViewed(int administratorId);
@@ -610,7 +611,7 @@ public class PropertyAdministratorPortalService(
                     Label = PaL("Homecare plans"),
                     Description = PaL("View and manage recurring care plans."),
                     IconClass = "fa-shield-halved",
-                    Url = url.Action("Services", "Administrador", new { filter = "homecare" }) ?? "#"
+                    Url = url.Action("HomecarePlans", "Administrador") ?? "#"
                 },
                 new()
                 {
@@ -737,8 +738,9 @@ public class PropertyAdministratorPortalService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             BackUrl = url.Action("Profile", "Administrador") ?? "#",
-            PaymentMethodLabel = PaT("Visa ending in {0}", "4242"),
-            PaymentMethodExpiry = PaT("Expires {0}", "08/28"),
+            // English canonical templates — localized at display time in PaymentsBilling.cshtml.
+            PaymentMethodLabel = "Visa ending in 4242",
+            PaymentMethodExpiry = "Expires 08/28",
             OutstandingLabel = FormatCurrency(outstanding),
             PaidThisMonthLabel = FormatCurrency(paidThisMonth),
             Invoices = invoices
@@ -772,6 +774,28 @@ public class PropertyAdministratorPortalService(
             BackUrl = url.Action("Profile", "Administrador") ?? "#",
             BrowseServicesUrl = url.Action("Services", "Administrador") ?? "#",
             Providers = providers
+        };
+    }
+
+    public async Task<PropertyAdministratorHomecarePlansViewModel> GetHomecarePlansAsync(
+        IUrlHelper url, CancellationToken cancellationToken = default)
+    {
+        await EnsurePortalDataAsync(cancellationToken);
+        var admin = await LoadAdminAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Property administrator not found.");
+        var shell = await BuildShellAsync(admin, url, cancellationToken);
+
+        return new PropertyAdministratorHomecarePlansViewModel
+        {
+            DisplayName = shell.DisplayName,
+            PortfolioName = shell.PortfolioName,
+            ActivePropertyCount = shell.ActivePropertyCount,
+            Greeting = shell.Greeting,
+            NotificationCount = shell.NotificationCount,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BackUrl = url.Action("Profile", "Administrador") ?? "#",
+            BrowseServicesUrl = url.Action("Services", "Administrador", new { filter = "homecare" }) ?? "#",
+            ActivePlans = admin.HomecarePlans.Where(p => p.Activo).OrderBy(p => p.Orden).Select(MapPlan).ToList()
         };
     }
 
@@ -1182,7 +1206,8 @@ public class PropertyAdministratorPortalService(
 
         return new PropertyAdministratorBillingInvoiceViewModel
         {
-            Title = LocalizeBillingTitle(request.Title),
+            // Keep English/Spanglish stored titles; PaymentsBilling localizes via UiDisplayLocalization.
+            Title = request.Title,
             PropertyName = request.PropertyName,
             DateLabel = request.ScheduledUtc?.ToLocalTime().ToString("MMM d, yyyy", CultureInfo.CurrentCulture) ?? request.FechaCreacion.ToLocalTime().ToString("MMM d, yyyy", CultureInfo.CurrentCulture),
             AmountLabel = FormatCurrency(amount),
@@ -1251,11 +1276,12 @@ public class PropertyAdministratorPortalService(
         return new PropertyAdministratorSavedProviderViewModel
         {
             Name = name,
-            TradeLabel = PaL(request.TechnicianTitle ?? request.Category ?? string.Empty),
+            // Keep English/Spanglish stored labels; SavedProviders localizes via UiDisplayLocalization.
+            TradeLabel = request.TechnicianTitle ?? request.Category ?? string.Empty,
             RatingLabel = request.TechnicianRating is > 0
                 ? request.TechnicianRating.Value.ToString("0.0")
                 : null,
-            LastServiceLabel = LocalizeBillingTitle(request.Title),
+            LastServiceLabel = request.Title ?? string.Empty,
             RequestUrl = url.Action("Services", "Administrador") ?? "#"
         };
     }

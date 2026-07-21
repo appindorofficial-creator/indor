@@ -6,7 +6,7 @@
 <div class="ob-nav">
     @if (showBack && !string.IsNullOrEmpty(backUrl))
     {
-        <a href="@backUrl" class="ob-nav-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
+        <a href="@backUrl" class="ob-nav-back" data-smart-back aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
     }
     else
     {

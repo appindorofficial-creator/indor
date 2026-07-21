@@ -6,9 +6,9 @@
     var licenseNumber = ViewBag.LicenseNumber as string ?? Model.State.LicenseNumber;
     var uploadFields = new (string DocumentType, string InputName, string Label, string Description)[]
     {
-        (RealtorDocumentTypes.LicensePhoto, "licensePhotoFile", "License photo", "Professional license image"),
-        (RealtorDocumentTypes.GovernmentId, "governmentIdFile", "Government ID", "Government-issued identification image"),
-        (RealtorDocumentTypes.BusinessCard, "businessCardFile", "Business card (optional)", "Business card image")
+        (RealtorDocumentTypes.LicensePhoto, "licensePhotoFile", "License photo", "License photo"),
+        (RealtorDocumentTypes.GovernmentId, "governmentIdFile", "Government ID", "Government-issued ID"),
+        (RealtorDocumentTypes.BusinessCard, "businessCardFile", "Business card (optional)", "Business card")
     };
 }
 <div class="ob-head-block">

@@ -1,8 +1,8 @@
 @model IndorMvcApp.ViewModels.PermitsDetailViewModel
 @{
-    ViewData["Title"] = Model.Name;
+    ViewData["Title"] = UiDisplayLocalization.Localize(L, Model.Name);
     var hfPreview = ViewBag.HouseFactPreview as bool? == true;
-    var detailTabs = new[] { ("overview", "Overview"), ("history", "History"), ("docs", "Docs") };
+    var detailTabs = new[] { ("overview", L["Overview"].ToString()), ("history", L["History"].ToString()), ("docs", L["Docs"].ToString()) };
     var isOverview = Model.ActiveTab == "overview";
 }
 @section Head {
@@ -10,8 +10,8 @@
 }
 
 <div class="pi-head">
-    <h1 class="pi-title">@Model.Name</h1>
-    <p class="pi-sub">@Model.PageSubtitle</p>
+    <h1 class="pi-title">@UiDisplayLocalization.Localize(L, Model.Name)</h1>
+    <p class="pi-sub">@UiDisplayLocalization.Localize(L, Model.PageSubtitle)</p>
 </div>
 
 <div class="pi-detail-tabs">
@@ -49,33 +49,33 @@
         {
             <div class="pi-summary-mini">
                 <i class="fas @card.Icon"></i>
-                <div class="k">@card.Label</div>
-                <div class="v @(card.StatusTone != "default" ? card.StatusTone : "")">@card.Value</div>
+                <div class="k">@UiDisplayLocalization.Localize(L, card.Label)</div>
+                <div class="v @(card.StatusTone != "default" ? card.StatusTone : "")">@UiDisplayLocalization.Localize(L, card.Value)</div>
             </div>
         }
     </div>
 
-    <div class="pi-section-title">Verification checklist</div>
+    <div class="pi-section-title">@L["Verification checklist"]</div>
     <div class="pi-detail-card">
         @foreach (var row in Model.VerificationItems)
         {
             <div class="pi-detail-row">
                 <div class="icon"><i class="fas @row.Icon"></i></div>
-                <div class="body"><div class="t">@row.Title</div></div>
-                <span class="pi-status @row.StatusTone">@row.Status</span>
+                <div class="body"><div class="t">@UiDisplayLocalization.Localize(L, row.Title)</div></div>
+                <span class="pi-status @row.StatusTone">@UiDisplayLocalization.Localize(L, row.Status)</span>
                 <i class="fas fa-chevron-right pi-chev"></i>
             </div>
         }
     </div>
 
-    <div class="pi-section-title">Public / uploaded records</div>
+    <div class="pi-section-title">@L["Public / uploaded records"]</div>
     <div class="pi-detail-card">
         @foreach (var row in Model.RecordItems)
         {
             <div class="pi-detail-row">
                 <div class="icon"><i class="fas @row.Icon"></i></div>
-                <div class="body"><div class="t">@row.Title</div></div>
-                <span class="pi-status @row.StatusTone">@row.Status</span>
+                <div class="body"><div class="t">@UiDisplayLocalization.Localize(L, row.Title)</div></div>
+                <span class="pi-status @row.StatusTone">@UiDisplayLocalization.Localize(L, row.Status)</span>
                 <i class="fas fa-chevron-right pi-chev"></i>
             </div>
         }
@@ -83,26 +83,26 @@
 
     <div class="pi-banner">
         <i class="fas fa-circle-info"></i>
-        <div>@Model.InfoBanner</div>
+        <div>@UiDisplayLocalization.Localize(L, Model.InfoBanner)</div>
     </div>
 
     <div class="pi-btn-row">
         @if (hfPreview)
         {
             <a asp-controller="Propietario" asp-action="PropertyDetails" class="pi-btn-primary">
-                <i class="fas fa-file-circle-plus"></i> Add @(Model.PermitId == "roof" ? "roof " : "")document
+                <i class="fas fa-file-circle-plus"></i> @L["Add documents"]
             </a>
             <a asp-controller="HouseFactPreview" asp-action="PermitsImprovements" asp-route-tab="missing-docs" class="pi-btn-secondary">
-                <i class="fas fa-shield-check"></i> Request verification
+                <i class="fas fa-shield-check"></i> @L["Request verification"]
             </a>
         }
         else
         {
             <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="pi-btn-primary">
-                <i class="fas fa-file-circle-plus"></i> Add @(Model.PermitId == "roof" ? "roof " : "")document
+                <i class="fas fa-file-circle-plus"></i> @L["Add documents"]
             </a>
             <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="missing-docs" class="pi-btn-secondary">
-                <i class="fas fa-shield-check"></i> Request verification
+                <i class="fas fa-shield-check"></i> @L["Request verification"]
             </a>
         }
     </div>
@@ -111,33 +111,33 @@ else if (Model.ActiveTab == "history")
 {
     <div class="pi-empty-note">
         <i class="fas fa-clock-rotate-left" style="font-size:1.5rem;color:#94A3B8;margin-bottom:8px;"></i>
-        <div>@Model.HistoryNote</div>
+        <div>@UiDisplayLocalization.Localize(L, Model.HistoryNote)</div>
     </div>
     @if (hfPreview)
     {
-        <a asp-controller="HouseFactPreview" asp-action="PermitsDetail" asp-route-permitId="@Model.PermitId" asp-route-tab="overview" class="pi-btn-secondary">Back to overview</a>
+        <a asp-controller="HouseFactPreview" asp-action="PermitsDetail" asp-route-permitId="@Model.PermitId" asp-route-tab="overview" class="pi-btn-secondary">@L["Back to overview"]</a>
     }
     else
     {
-        <a asp-action="Detail" asp-route-id="@Model.PropiedadId" asp-route-permitId="@Model.PermitId" asp-route-tab="overview" class="pi-btn-secondary">Back to overview</a>
+        <a asp-action="Detail" asp-route-id="@Model.PropiedadId" asp-route-permitId="@Model.PermitId" asp-route-tab="overview" class="pi-btn-secondary">@L["Back to overview"]</a>
     }
 }
 else
 {
     <div class="pi-empty-note">
         <i class="fas fa-folder-open" style="font-size:1.5rem;color:#94A3B8;margin-bottom:8px;"></i>
-        <div>@Model.DocumentsNote</div>
+        <div>@UiDisplayLocalization.Localize(L, Model.DocumentsNote)</div>
     </div>
     @if (hfPreview)
     {
         <a asp-controller="Propietario" asp-action="PropertyDetails" class="pi-btn-primary">
-            <i class="fas fa-cloud-arrow-up"></i> Upload documents
+            <i class="fas fa-cloud-arrow-up"></i> @L["Upload documents"]
         </a>
     }
     else
     {
         <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="pi-btn-primary">
-            <i class="fas fa-cloud-arrow-up"></i> Upload documents
+            <i class="fas fa-cloud-arrow-up"></i> @L["Upload documents"]
         </a>
     }
 }

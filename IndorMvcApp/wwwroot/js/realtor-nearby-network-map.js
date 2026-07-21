@@ -398,20 +398,33 @@ window.rlInitNearbyNetworkMap = function () {
         var providerCount = data.providerCount != null ? data.providerCount : (data.providers || []).length;
         var listingCount = data.listingCount != null ? data.listingCount : (data.listings || []).length;
         var total = data.totalCount != null ? data.totalCount : providerCount + listingCount;
+        var i18n = config.i18n || {};
+
+        function formatTpl(key, value) {
+            var template = i18n[key] || key;
+            return String(template).replace('{0}', value);
+        }
 
         var title = data.centerLabel || 'Nearby';
+        if (title === 'Your location' && i18n['Your location']) {
+            title = i18n['Your location'];
+        }
         var parts = [];
         if (providerCount > 0) {
-            parts.push(providerCount + ' provider' + (providerCount === 1 ? '' : 's'));
+            parts.push(formatTpl(
+                providerCount === 1 ? '{0} provider' : '{0} providers',
+                providerCount));
         }
         if (listingCount > 0) {
-            parts.push(listingCount + ' listing' + (listingCount === 1 ? '' : 's'));
+            parts.push(formatTpl(
+                listingCount === 1 ? '{0} listing' : '{0} listings',
+                listingCount));
         }
-        var subtitle = (config.radiusMiles || 3).toFixed(1) + ' mi radius';
+        var subtitle = formatTpl('{0} mi radius', (config.radiusMiles || 3).toFixed(1));
         if (parts.length) {
             subtitle += ' \u00b7 ' + parts.join(' \u00b7 ');
         } else {
-            subtitle += ' \u00b7 ' + total + ' nearby';
+            subtitle += ' \u00b7 ' + formatTpl('{0} nearby', total);
         }
 
         updateFootLabel(title, subtitle);

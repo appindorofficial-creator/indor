@@ -179,7 +179,7 @@
             }
             else
             {
-                <button type="button" class="hf-jump-chip" data-hf-open-category="@jump.Key" data-hf-title="@jump.Label">
+                <button type="button" class="hf-jump-chip" data-hf-open-category="@jump.Key" data-hf-title="@UiDisplayLocalization.Localize(L, jump.Label)">
                     <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
                     <span class="hf-jump-text">@UiDisplayLocalization.Localize(L, jump.Label)</span>
                 </button>
@@ -417,7 +417,7 @@
                 <button type="button"
                         class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "")"
                         data-hf-open-category="@card.Key"
-                        data-hf-title="@card.Title"
+                        data-hf-title="@UiDisplayLocalization.Localize(L, card.Title)"
                         data-hf-section-ids="@string.Join(",", card.SectionIds)">
                     @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
                 </button>

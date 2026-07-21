@@ -431,7 +431,7 @@ public class RealtorQuoteRequestService(
             finalProviderIds = (providerIds ?? []).Distinct().Take(5).ToList();
             if (finalProviderIds.Count == 0)
             {
-                throw new InvalidOperationException("Select at least one provider.");
+                throw new InvalidOperationException("Please select at least one provider.");
             }
         }
 

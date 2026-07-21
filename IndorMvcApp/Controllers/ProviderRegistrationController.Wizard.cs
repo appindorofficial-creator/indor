@@ -15,7 +15,7 @@ public partial class ProviderRegistrationController
         var user = await userManager.GetUserAsync(User);
         state.Email ??= user?.Email ?? "";
 
-        return View(EntryStepVm(state));
+        return View(EntryStepVm(state, user?.Id));
     }
 
     [HttpPost]
@@ -23,6 +23,7 @@ public partial class ProviderRegistrationController
     public async Task<IActionResult> Entry(string? path, string? action)
     {
         var state = await registration.GetAsync();
+        var user = await userManager.GetUserAsync(User);
         var termsAccepted = IsCheckboxChecked("termsAccepted");
         var organizationKind = ResolveOrganizationKind(path);
 
@@ -30,7 +31,7 @@ public partial class ProviderRegistrationController
         {
             ModelState.AddModelError(string.Empty, localizer["Please agree to INDOR's Terms & Conditions."]);
             state.OrganizationKind = organizationKind;
-            return View(EntryStepVm(state));
+            return View(EntryStepVm(state, user?.Id));
         }
 
         // One decision only (company vs independent) for analytics counts, then enter the ecosystem.
@@ -43,7 +44,7 @@ public partial class ProviderRegistrationController
         return RedirectToAction("Dashboard", "Proveedor");
     }
 
-    private ProviderRegistrationStepViewModel EntryStepVm(ProviderRegistrationState state) =>
+    private ProviderRegistrationStepViewModel EntryStepVm(ProviderRegistrationState state, string? userId = null) =>
         new()
         {
             Step = 1,
@@ -51,7 +52,8 @@ public partial class ProviderRegistrationController
             Title = localizer["Welcome to INDOR for providers"],
             Subtitle = localizer["How do you want to enter?"],
             State = state,
-            BackUrl = Url.Action("SelectRole", "Account"),
+            // Include userId — bare /Account/SelectRole Challenge()s and loops with LoginForm.
+            BackUrl = Url.Action("SelectRole", "Account", new { userId }),
         };
 
     private static string ResolveOrganizationKind(string? path) =>

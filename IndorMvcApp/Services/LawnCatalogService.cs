@@ -179,7 +179,8 @@ public class LawnCatalogService(AppDbContext db)
             LawnCatalogGroups.ReminderLead =>
             [
                 new() { Code = "1", LabelEn = "1 day before", IconClass = "fa-bell", SortOrder = 1 },
-                new() { Code = "2", LabelEn = "2 days before", IconClass = "fa-bell", SortOrder = 2 }
+                new() { Code = "2", LabelEn = "2 days before", IconClass = "fa-bell", SortOrder = 2 },
+                new() { Code = "3", LabelEn = "3 days before", IconClass = "fa-bell", SortOrder = 3 }
             ],
             LawnCatalogGroups.ReminderChannel =>
             [

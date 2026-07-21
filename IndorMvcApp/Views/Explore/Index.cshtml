@@ -13,7 +13,9 @@
     bool IsCompleteHomeInspection(string? name) => string.Equals(name?.Trim(), "Complete Home Inspection", StringComparison.OrdinalIgnoreCase);
     bool IsPlumbingInspection(string? name) => string.Equals(name?.Trim(), "Plumbing Inspection", StringComparison.OrdinalIgnoreCase);
     bool IsHvacInspection(string? name) => string.Equals(name?.Trim(), "HVAC Inspection", StringComparison.OrdinalIgnoreCase);
-    bool IsStructuralInspection(string? name) => string.Equals(name?.Trim(), "Structural Inspection", StringComparison.OrdinalIgnoreCase);
+    bool IsStructuralInspection(string? name) =>
+        string.Equals(name?.Trim(), "Structural Inspection", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(name?.Trim(), "Foundation Inspection", StringComparison.OrdinalIgnoreCase);
     bool IsRoofInspection(string? name) => string.Equals(name?.Trim(), "Roof Inspection", StringComparison.OrdinalIgnoreCase);
     bool IsMoldMoistureInspection(string? name) => string.Equals(name?.Trim(), "Mold and Moisture Inspection", StringComparison.OrdinalIgnoreCase);
     bool IsWindowsInsulationInspection(string? name) => string.Equals(name?.Trim(), "Windows and Insulation Inspection", StringComparison.OrdinalIgnoreCase);

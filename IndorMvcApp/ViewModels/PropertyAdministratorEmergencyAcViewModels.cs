@@ -19,7 +19,7 @@ public class PropertyAdministratorFlowPropertyViewModel
 
 public class PropertyAdministratorEmergencyAcFormViewModel : PropertyAdministratorPortalShellViewModel
 {
-    public int FlowStep { get; set; } = 2;
+    public int FlowStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 3;
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string ProblemType { get; set; } = "";
@@ -47,6 +47,25 @@ public class PropertyAdministratorEmergencyAcSubmitInput
     public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";
     public string? Details { get; set; }
+}
+
+public class PropertyAdministratorEmergencyAcReviewRowViewModel
+{
+    public string Label { get; set; } = "";
+    public string Value { get; set; } = "";
+    public string IconClass { get; set; } = "fa-circle";
+    public bool Highlight { get; set; }
+}
+
+public class PropertyAdministratorEmergencyAcReviewViewModel : PropertyAdministratorPortalShellViewModel
+{
+    public int FlowStep { get; set; } = 2;
+    public int TotalSteps { get; set; } = 3;
+    public PropertyAdministratorEmergencyAcSubmitInput Input { get; set; } = new();
+    public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
+    public IReadOnlyList<PropertyAdministratorEmergencyAcReviewRowViewModel> SummaryRows { get; set; } = [];
+    public string ProEtaLabel { get; set; } = "Nearest HVAC pro available in 25 minutes";
+    public string EstimatedPrice { get; set; } = "$129–$169";
 }
 
 public class PropertyAdministratorEmergencyAcTimelineItemViewModel

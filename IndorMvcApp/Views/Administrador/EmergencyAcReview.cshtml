@@ -1,0 +1,77 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorEmergencyAcReviewViewModel
+@{
+    ViewData["Title"] = L["Review emergency request"];
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Review emergency request"].ToString();
+    ViewBag.FlowSubtitle = L["Make sure everything looks right before we dispatch help."].ToString();
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Review"].ToString(), L["Done"].ToString() };
+    ViewBag.FlowBackUrl = Url.Action("EmergencyAcDetails", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    var input = Model.Input;
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <article class="pa-moving-review-card">
+        @foreach (var row in Model.SummaryRows)
+        {
+            <div class="pa-moving-review-row">
+                <span class="pa-moving-review-label"><i class="fas @row.IconClass"></i> @UiDisplayLocalization.Localize(L, row.Label)</span>
+                <strong class="pa-moving-review-value @(row.Highlight ? "is-alert" : null)">@UiDisplayLocalization.Localize(L, row.Value)</strong>
+            </div>
+        }
+    </article>
+
+    <article class="pa-sewer-pro-bar">
+        <span class="pa-sewer-pro-bar-icon"><i class="fas fa-user-gear"></i></span>
+        <div>
+            <strong>@UiDisplayLocalization.Localize(L, Model.ProEtaLabel)</strong>
+            <small>@L["Licensed • Insured • Background checked"]</small>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </article>
+
+    <article class="pa-tree-pro-card">
+        <div class="pa-tree-pro-head">
+            <span class="pa-tree-pro-icon"><i class="fas fa-tags"></i></span>
+            <div>
+                <strong>@L["Estimated diagnostic visit"]</strong>
+                <div class="pa-trust-badges">
+                    <span>@L["Licensed"]</span><span>@L["Insured"]</span><span>@L["Fast response"]</span>
+                </div>
+            </div>
+        </div>
+        <p>@L["Estimated diagnostic visit:"] <strong>@Model.EstimatedPrice</strong></p>
+        <p>@L["Emergency priority fee:"] <span class="pa-included">@L["Included"]</span></p>
+    </article>
+
+    <form asp-action="EmergencyAcReview" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@input.PropertyId" />
+        <input type="hidden" name="ProblemType" value="@input.ProblemType" />
+        <input type="hidden" name="IsOccupied" value="@input.IsOccupied" />
+        <input type="hidden" name="GuestsInside" value="@input.GuestsInside" />
+        <input type="hidden" name="IndoorTemperature" value="@input.IndoorTemperature" />
+        <input type="hidden" name="EntryAccess" value="@input.EntryAccess" />
+        <input type="hidden" name="EntryCode" value="@input.EntryCode" />
+        <input type="hidden" name="ContactPhone" value="@input.ContactPhone" />
+        <input type="hidden" name="Details" value="@input.Details" />
+        @foreach (var recipient in input.UpdateRecipientsList)
+        {
+            <input type="hidden" name="UpdateRecipientsList" value="@recipient" />
+        }
+
+        <div class="pa-notify-banner">
+            <i class="fas fa-bullhorn"></i>
+            <span>@L["We'll send status updates to you and the guest."]</span>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Request emergency service"]</button>
+    </form>
+    <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit" data-no-nav-loading="true">@L["Edit details"]</a>
+    <a href="@PropertyAdministratorFlowServiceSupport.ServicesUrl(Url, Model.ViewingProperty?.Id)" class="pa-back-link">@L["Back to services"]</a>
+</div>

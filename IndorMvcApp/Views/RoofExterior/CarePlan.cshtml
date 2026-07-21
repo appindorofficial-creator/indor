@@ -1,16 +1,16 @@
 @model IndorMvcApp.ViewModels.RoofExteriorCarePlanViewModel
 @{
-    ViewData["Title"] = "Roof & Exterior Care Plan";
+    ViewData["Title"] = L["Roof & Exterior Care Plan"];
     var hfPreview = ViewBag.HouseFactPreview as bool? == true;
-    var steps = new[] { "Overview", "Review details", "Verify & upload", "Set care plan" };
+    var steps = new[] { L["Overview"].ToString(), L["Review details"].ToString(), L["Verify & upload"].ToString(), L["Set care plan"].ToString() };
 }
 @section Head {
     <link rel="stylesheet" href="~/css/roof-exterior.css" asp-append-version="true" />
 }
 
 <div class="re-head">
-    <h1 class="re-title">Roof &amp; Exterior Care Plan</h1>
-    <p class="re-sub">Turn property facts into reminders, verification, and next steps.</p>
+    <h1 class="re-title">@L["Roof & Exterior Care Plan"]</h1>
+    <p class="re-sub">@L["Turn property facts into reminders, verification, and next steps."]</p>
 </div>
 
 <div class="re-stepper">
@@ -26,8 +26,8 @@
     <div class="re-care-card-head">
         <div class="icon"><i class="fas fa-calendar-check"></i></div>
         <div>
-            <div class="re-section-title" style="margin:0;">Recommended actions for this home</div>
-            <div class="re-sub">Smart suggestions based on your property facts</div>
+            <div class="re-section-title" style="margin:0;">@L["Recommended actions for this home"]</div>
+            <div class="re-sub">@L["Smart suggestions based on your property facts"]</div>
         </div>
     </div>
     @foreach (var action in Model.RecommendedActions)
@@ -37,10 +37,10 @@
             <a class="re-care-item" href="@action.Url">
                 <div class="re-list-icon" style="width:40px;height:40px;"><i class="fas @action.Icon"></i></div>
                 <div class="re-list-body">
-                    <div class="re-list-title">@action.Title</div>
-                    <div class="re-list-sub">@action.Frequency</div>
+                    <div class="re-list-title">@UiDisplayLocalization.Localize(L, action.Title)</div>
+                    <div class="re-list-sub">@UiDisplayLocalization.Localize(L, action.Frequency)</div>
                 </div>
-                <span class="re-status @action.StatusTone">@action.Status</span>
+                <span class="re-status @action.StatusTone">@UiDisplayLocalization.Localize(L, action.Status)</span>
                 <i class="fas fa-chevron-right re-chev"></i>
             </a>
         }
@@ -49,10 +49,10 @@
             <div class="re-care-item">
                 <div class="re-list-icon" style="width:40px;height:40px;"><i class="fas @action.Icon"></i></div>
                 <div class="re-list-body">
-                    <div class="re-list-title">@action.Title</div>
-                    <div class="re-list-sub">@action.Frequency</div>
+                    <div class="re-list-title">@UiDisplayLocalization.Localize(L, action.Title)</div>
+                    <div class="re-list-sub">@UiDisplayLocalization.Localize(L, action.Frequency)</div>
                 </div>
-                <span class="re-status @action.StatusTone">@action.Status</span>
+                <span class="re-status @action.StatusTone">@UiDisplayLocalization.Localize(L, action.Status)</span>
                 <i class="fas fa-chevron-right re-chev"></i>
             </div>
         }
@@ -63,12 +63,12 @@
     <div class="re-care-card-head">
         <div class="icon"><i class="fas fa-shield-check"></i></div>
         <div style="flex:1;">
-            <div class="re-section-title" style="margin:0;">Verification center</div>
-            <div class="re-sub">Keep your records up to date</div>
+            <div class="re-section-title" style="margin:0;">@L["Verification center"]</div>
+            <div class="re-sub">@L["Keep your records up to date"]</div>
         </div>
     </div>
     <div class="re-progress-head">
-        <span>@Model.VerifiedCount of @Model.TotalCount completed</span>
+        <span>@L.T("{0} of {1} completed", Model.VerifiedCount, Model.TotalCount)</span>
     </div>
     <div class="re-progress-bar">
         <div class="re-progress-fill" style="width:@Model.ProgressPercent%;"></div>
@@ -78,16 +78,16 @@
         <div class="re-care-item">
             <div class="re-list-icon" style="width:40px;height:40px;"><i class="fas @item.Icon"></i></div>
             <div class="re-list-body">
-                <div class="re-list-title">@item.Title</div>
-                <div class="re-list-sub">@item.Subtitle</div>
+                <div class="re-list-title">@UiDisplayLocalization.Localize(L, item.Title)</div>
+                <div class="re-list-sub">@UiDisplayLocalization.Localize(L, item.Subtitle)</div>
             </div>
-            <span class="re-status @item.StatusTone">@item.Status</span>
+            <span class="re-status @item.StatusTone">@UiDisplayLocalization.Localize(L, item.Status)</span>
             <i class="fas fa-chevron-right re-chev"></i>
         </div>
     }
 </div>
 
-<div class="re-section-title">Service options</div>
+<div class="re-section-title">@L["Service options"]</div>
 <div class="re-service-grid">
     @foreach (var service in Model.ServiceOptions)
     {
@@ -95,16 +95,16 @@
         {
             <a class="re-service" href="@service.Url">
                 <i class="fas @service.Icon"></i>
-                <div class="t">@service.Title</div>
-                <div class="s">@service.Subtitle</div>
+                <div class="t">@UiDisplayLocalization.Localize(L, service.Title)</div>
+                <div class="s">@UiDisplayLocalization.Localize(L, service.Subtitle)</div>
             </a>
         }
         else
         {
             <div class="re-service">
                 <i class="fas @service.Icon"></i>
-                <div class="t">@service.Title</div>
-                <div class="s">@service.Subtitle</div>
+                <div class="t">@UiDisplayLocalization.Localize(L, service.Title)</div>
+                <div class="s">@UiDisplayLocalization.Localize(L, service.Subtitle)</div>
             </div>
         }
     }
@@ -113,26 +113,26 @@
 <div class="re-care-card">
     <div class="re-care-card-head">
         <div class="icon"><i class="fas fa-users"></i></div>
-        <div class="re-section-title" style="margin:0;">What happens next</div>
+        <div class="re-section-title" style="margin:0;">@L["What happens next"]</div>
     </div>
     <ul class="re-next-list">
         @foreach (var note in Model.WhatHappensNext)
         {
-            <li><i class="fas fa-circle-check"></i> @note</li>
+            <li><i class="fas fa-circle-check"></i> @UiDisplayLocalization.Localize(L, note)</li>
         }
     </ul>
 </div>
 
-<button type="button" class="re-btn-primary"><i class="fas fa-floppy-disk"></i> Save care plan</button>
+<button type="button" class="re-btn-primary"><i class="fas fa-floppy-disk"></i> @L["Save care plan"]</button>
 @if (hfPreview)
 {
     <a asp-controller="HouseFactPreview" asp-action="RoofExterior" class="re-btn-secondary">
-        <i class="fas fa-arrow-left"></i> Back to Roof &amp; Exterior
+        <i class="fas fa-arrow-left"></i> @L["Back to Roof & Exterior"]
     </a>
 }
 else
 {
     <a asp-action="Index" asp-route-id="@Model.PropiedadId" class="re-btn-secondary">
-        <i class="fas fa-arrow-left"></i> Back to Roof &amp; Exterior
+        <i class="fas fa-arrow-left"></i> @L["Back to Roof & Exterior"]
     </a>
 }

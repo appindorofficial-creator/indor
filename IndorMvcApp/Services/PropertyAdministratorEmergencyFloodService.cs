@@ -13,6 +13,8 @@ public interface IPropertyAdministratorEmergencyFloodService
     PropertyAdministratorEmergencyFeaturedViewModel BuildFeaturedCta(IUrlHelper url, int? propertyId);
     PropertyAdministratorNearestProViewModel BuildNearestPro();
     Task<PropertyAdministratorEmergencyFloodFormViewModel> GetFormAsync(IUrlHelper url, int? propertyId, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorEmergencyFloodReviewViewModel?> GetReviewAsync(
+        IUrlHelper url, PropertyAdministratorEmergencyFloodSubmitInput input, CancellationToken cancellationToken = default);
     Task<int> SubmitAsync(PropertyAdministratorEmergencyFloodSubmitInput input, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorEmergencyFloodConfirmedViewModel?> GetConfirmedAsync(IUrlHelper url, int requestId, CancellationToken cancellationToken = default);
 }
@@ -58,7 +60,43 @@ public class PropertyAdministratorEmergencyFloodService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = ""
+            ContactPhone = "",
+            ProEtaLabel = PropertyAdministratorDisplayLocalization.NearestProAvailableInMinutes("water mitigation", 19)
+        };
+    }
+
+    public async Task<PropertyAdministratorEmergencyFloodReviewViewModel?> GetReviewAsync(
+        IUrlHelper url, PropertyAdministratorEmergencyFloodSubmitInput input, CancellationToken cancellationToken = default)
+    {
+        var admin = await LoadAdminAsync(cancellationToken: cancellationToken);
+        if (admin == null)
+        {
+            return null;
+        }
+
+        var shell = await BuildShellAsync(admin, cancellationToken);
+        var property = admin.PortfolioProperties.FirstOrDefault(p => p.Id == input.PropertyId)
+            ?? ResolveProperty(admin, input.PropertyId);
+        if (property == null)
+        {
+            return null;
+        }
+
+        var mapped = MapProperty(property);
+        input.PropertyId = property.Id;
+
+        return new PropertyAdministratorEmergencyFloodReviewViewModel
+        {
+            DisplayName = shell.DisplayName,
+            PortfolioName = shell.PortfolioName,
+            ActivePropertyCount = shell.ActivePropertyCount,
+            Greeting = shell.Greeting,
+            NotificationCount = shell.NotificationCount,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            ViewingProperty = mapped,
+            Input = input,
+            SummaryRows = BuildReviewSummaryRows(input, mapped),
+            ProEtaLabel = PropertyAdministratorDisplayLocalization.NearestProAvailableInMinutes("water mitigation", 19)
         };
     }
 
@@ -161,6 +199,63 @@ public class PropertyAdministratorEmergencyFloodService(
         }
     }
 
+    private static IReadOnlyList<PropertyAdministratorEmergencyFloodReviewRowViewModel> BuildReviewSummaryRows(
+        PropertyAdministratorEmergencyFloodSubmitInput input,
+        PropertyAdministratorFlowPropertyViewModel property) =>
+    [
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Property"),
+            Value = PropertyAdministratorDisplayLocalization.T("Viewing: {0}", property.PropertyName),
+            IconClass = "fa-house"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Issue"),
+            Value = $"{LabelProblem(input.ProblemType)} / {LabelLocation(input.WaterLocation)}",
+            IconClass = "fa-droplet"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Is water actively coming in right now?"),
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.WaterActivelyComingIn),
+            IconClass = "fa-water",
+            Highlight = input.WaterActivelyComingIn == "Yes"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Guests inside"),
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.GuestsInside),
+            IconClass = "fa-users",
+            Highlight = input.GuestsInside == "Yes"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("How urgent is it?"),
+            Value = LabelUrgency(input.Urgency),
+            IconClass = "fa-triangle-exclamation",
+            Highlight = input.Urgency == "Emergency"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Location"),
+            Value = LabelLocation(input.WaterLocation),
+            IconClass = "fa-location-dot"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Access"),
+            Value = LabelAccess(input.EntryAccess),
+            IconClass = "fa-key"
+        },
+        new()
+        {
+            Label = PropertyAdministratorDisplayLocalization.L("Insurance"),
+            Value = PropertyAdministratorFlowServiceSupport.YesNo(input.ProcessThroughInsurance),
+            IconClass = "fa-shield-halved"
+        }
+    ];
+
     private static IReadOnlyList<PropertyAdministratorEmergencyElectricalSummaryItemViewModel> BuildSummary(
         PropertyAdministratorEmergencyFloodSubmitInput input) =>
     [
@@ -259,6 +354,14 @@ public class PropertyAdministratorEmergencyFloodService(
         "HostMeet" => PropertyAdministratorDisplayLocalization.L("Host will meet"),
         "GuestApproval" => PropertyAdministratorDisplayLocalization.L("Need guest approval"),
         _ => PropertyAdministratorDisplayLocalization.L("Smart lock code provided")
+    };
+
+    private static string LabelUrgency(string value) => value switch
+    {
+        "Urgent" => PropertyAdministratorDisplayLocalization.L("Urgent"),
+        "Soon" => PropertyAdministratorDisplayLocalization.L("Soon"),
+        "NotUrgent" => PropertyAdministratorDisplayLocalization.L("Not urgent"),
+        _ => PropertyAdministratorDisplayLocalization.L("Emergency")
     };
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(

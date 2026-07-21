@@ -6,16 +6,13 @@
     ViewBag.FlowTotalSteps = Model.TotalSteps;
     ViewBag.FlowTitle = L["Emergency Flood"].ToString();
     ViewBag.FlowSubtitle = L["Tell us what's happening, how bad it is, and whether you have insurance details ready."].ToString();
-    ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
-    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
-    ViewBag.InviteFlowAnchorId = "pa-emergency-form-top";
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Review"].ToString(), L["Done"].ToString() };
+    ViewBag.FlowBackUrl = PropertyAdministratorFlowServiceSupport.ServicesUrl(Url, Model.ViewingProperty?.Id);
     var propertyId = Model.ViewingProperty?.Id ?? 0;
 }
 
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
-
-    
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
 
@@ -128,15 +125,16 @@
             <textarea class="pa-textarea" name="Notes" rows="3">@Model.Notes</textarea>
         </div>
 
-        <div class="pa-flow-question">
+        <div class="pa-flow-question" data-pa-optional>
             <span class="pa-flow-qnum">9</span>
             <label><i class="fas fa-camera pa-q-icon"></i> @L["Photos & voice"]</label>
             @{
                 ViewData["PaMediaLarge"] = true;
+                ViewData["PaMediaStack"] = true;
                 ViewData["PaMediaShowVoice"] = true;
                 ViewData["PaMediaFieldName"] = "MediaAttachmentsJson";
                 ViewData["PaMediaKind"] = "photo";
-                ViewData["PaMediaAccept"] = "image/*,video/*,.pdf,application/pdf";
+                ViewData["PaMediaAccept"] = "image/*,video/*";
                 ViewData["PaMediaPhotoIcon"] = "fa-camera";
                 ViewData["PaMediaButtonClass"] = null;
                 ViewData["PaMediaPhotoLabel"] = L["Add photos — Help us assess faster"].ToString();
@@ -177,6 +175,7 @@
             @{
                 ViewData["PaMediaShowVoice"] = false;
                 ViewData["PaMediaLarge"] = false;
+                ViewData["PaMediaStack"] = false;
                 ViewData["PaMediaFieldName"] = "PolicyDocsJson";
                 ViewData["PaMediaKind"] = "document";
                 ViewData["PaMediaAccept"] = "image/*,.pdf,application/pdf";
@@ -188,33 +187,15 @@
             @await Html.PartialAsync("_PropertyAdminMediaCapture")
         </article>
 
-        <div class="pa-flow-summary-grid">
-            <div class="pa-flow-summary-card">
-                <h3>@L["Request summary"]</h3>
-                <ul class="pa-summary-list">
-                    <li><i class="fas fa-house"></i> @(Model.ViewingProperty?.PropertyName)</li>
-                    <li><i class="fas fa-droplet"></i> @L["Active flooding"]</li>
-                    <li><i class="fas fa-users"></i> @L["Guests inside: Yes"]</li>
-                    <li><i class="fas fa-key"></i> @L["Smart lock"]</li>
-                    <li><i class="fas fa-shield-halved"></i> @L["Insurance: Yes"]</li>
-                </ul>
-            </div>
-            <div class="pa-flow-pro-card pa-flow-pro-card--flood">
-                <strong>@UiDisplayLocalization.Localize(L, Model.ProEtaLabel)</strong>
-                <small>@L["Licensed • Insured • IICRC-ready"]</small>
-                <p>@L["Estimated:"] <strong>@Model.EstimatedPrice</strong> @L["diagnostic / emergency mitigation triage"]</p>
-                <p>@L["Priority"] <span class="pa-included">@L["included"]</span> <i class="fas fa-star pa-included"></i></p>
-            </div>
-        </div>
-
         <div class="pa-notify-banner pa-notify-banner--warn">
             <i class="fas fa-circle-info"></i>
             <span>@L["We can help coordinate with insurance-backed mitigation if documentation is available."]</span>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Request emergency service"] <i class="fas fa-arrow-right"></i></button>
-        <a href="#pa-emergency-form-top" class="ob-btn ob-btn-outline pa-flow-edit">@L["Edit details"]</a>
-        <a href="@ViewBag.FlowBackUrl" class="pa-back-link">@L["Back to start"]</a>
+        <div class="pa-flow-actions">
+            <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
+            <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back to services"]</a>
+        </div>
     </form>
 </div>
 

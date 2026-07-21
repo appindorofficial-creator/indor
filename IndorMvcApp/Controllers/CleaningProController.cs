@@ -15,11 +15,13 @@ public class CleaningProController : Controller
 {
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IIndorLocalizer _localizer;
 
-    public CleaningProController(AppDbContext db, UserManager<ApplicationUser> userManager)
+    public CleaningProController(AppDbContext db, UserManager<ApplicationUser> userManager, IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -88,6 +90,11 @@ public class CleaningProController : Controller
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
+            PageTitle = Microservicio.ResolveBrandNombre(
+                solicitud.MicroservicioId,
+                solicitud.Microservicio?.Nombre ?? "Cleaning Pro",
+                solicitud.Microservicio?.NombreEs,
+                _localizer.IsSpanish),
             Frecuencia = solicitud.Frecuencia ?? "OneTime",
             CantidadLimpiadores = solicitud.CantidadLimpiadores ?? "One",
             DireccionPropiedad = defaultAddress ?? string.Empty
@@ -270,7 +277,11 @@ public class CleaningProController : Controller
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
-            NombreServicio = solicitud.Microservicio?.Nombre ?? "Cleaning Pro",
+            NombreServicio = Microservicio.ResolveBrandNombre(
+                solicitud.MicroservicioId,
+                solicitud.Microservicio?.Nombre ?? "Cleaning Pro",
+                solicitud.Microservicio?.NombreEs,
+                _localizer.IsSpanish),
             CrewSummary = $"{CleaningProDisplayLabels.FormatCrew(solicitud.CantidadLimpiadores)} • ${breakdown.HourlyRate:0}{DisplayLabelsLocalization.L("/hr")}",
             HoursLabel = CleaningProDisplayLabels.FormatHours(solicitud.HorasEstimadas),
             ServiceEstimate = breakdown.ServiceSubtotal,
@@ -338,7 +349,7 @@ public class CleaningProController : Controller
         return (microservicio, landing);
     }
 
-    private static CleaningProServiceViewModel BuildServiceViewModel(
+    private CleaningProServiceViewModel BuildServiceViewModel(
         Microservicio microservicio,
         CleaningProServicioLanding landing,
         SolicitudCleaningPro? existing,
@@ -350,12 +361,13 @@ public class CleaningProController : Controller
             items = SplitPipePairs(microservicio.Incluye, null);
         }
 
+        var brandName = microservicio.LocalizedNombre(_localizer.IsSpanish);
         return new CleaningProServiceViewModel
         {
             MicroservicioId = microservicio.Id,
             SolicitudId = existing?.Id ?? posted?.SolicitudId,
-            PageTitle = landing.PageTitle,
-            LandingTitulo = landing.LandingTitulo,
+            PageTitle = brandName,
+            LandingTitulo = brandName,
             LandingTagline = landing.LandingTagline ?? microservicio.Subtitulo,
             LandingSubtitulo = landing.LandingSubtitulo,
             ImagenUrl = ResolveImageUrl(landing.ImagenUrl ?? microservicio.ImagenUrl),
@@ -382,6 +394,11 @@ public class CleaningProController : Controller
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
+            PageTitle = Microservicio.ResolveBrandNombre(
+                solicitud.MicroservicioId,
+                solicitud.Microservicio?.Nombre ?? "Cleaning Pro",
+                solicitud.Microservicio?.NombreEs,
+                _localizer.IsSpanish),
             Frecuencia = frequency,
             CantidadLimpiadores = crew,
             AreasLimpieza = posted?.AreasLimpieza ?? solicitud.AreasLimpieza ?? "Bathrooms|Kitchen|LivingRoom|Baseboards|Floors|InsideFridge|Windows|Dusting",
@@ -402,7 +419,16 @@ public class CleaningProController : Controller
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
-            NombreServicio = solicitud.Microservicio?.Nombre ?? "Cleaning Pro",
+            PageTitle = Microservicio.ResolveBrandNombre(
+                solicitud.MicroservicioId,
+                solicitud.Microservicio?.Nombre ?? "Cleaning Pro",
+                solicitud.Microservicio?.NombreEs,
+                _localizer.IsSpanish),
+            NombreServicio = Microservicio.ResolveBrandNombre(
+                solicitud.MicroservicioId,
+                solicitud.Microservicio?.Nombre ?? "Cleaning Pro",
+                solicitud.Microservicio?.NombreEs,
+                _localizer.IsSpanish),
             FrequencyLabel = CleaningProDisplayLabels.FormatFrequency(solicitud.Frecuencia),
             AreasLabel = CleaningProDisplayLabels.FormatAreasList(solicitud.AreasLimpieza),
             CrewLabel = CleaningProDisplayLabels.FormatCrewShort(solicitud.CantidadLimpiadores),

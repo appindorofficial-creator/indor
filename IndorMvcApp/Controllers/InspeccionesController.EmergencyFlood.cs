@@ -226,7 +226,7 @@ public partial class InspeccionesController
             PuedeApagarElectricidadResumen = EmergencyDisplayLabels.PuedeApagarElectricidadFlood(solicitud.PuedeApagarElectricidad),
             CantidadAguaResumen = EmergencyDisplayLabels.CantidadAguaFlood(solicitud.CantidadAgua),
             ArchivosResumen = EmergencyDisplayLabels.ArchivosSubidos(solicitud.Archivos.Count),
-            NotaCorta = string.IsNullOrWhiteSpace(solicitud.NotaCorta) ? "None provided" : solicitud.NotaCorta
+            NotaCorta = EmergencyDisplayLabels.TextoOpcional(solicitud.NotaCorta)
         });
     }
 

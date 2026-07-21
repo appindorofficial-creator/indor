@@ -101,7 +101,15 @@ public sealed class HomeIndexQueryService(IDbContextFactory<AppDbContext> dbFact
         var solicitudesCompletaTask = RunAsync(db => PendingInspection(db.SolicitudesInspeccionCompleta, userId, InspeccionFlowRules.CompleteHomeInspectionName, ct));
         var solicitudesPlomeriaTask = RunAsync(db => PendingInspection(db.SolicitudesInspeccionPlomeria, userId, InspeccionFlowRules.PlumbingInspectionName, ct));
         var solicitudesHvacTask = RunAsync(db => PendingInspection(db.SolicitudesInspeccionHvac, userId, InspeccionFlowRules.HvacInspectionName, ct));
-        var solicitudesStructuralTask = RunAsync(db => PendingInspection(db.SolicitudesInspeccionStructural, userId, InspeccionFlowRules.StructuralInspectionName, ct));
+        var solicitudesStructuralTask = RunAsync(db => PendingInspection(
+            db.SolicitudesInspeccionStructural,
+            userId,
+            new[]
+            {
+                InspeccionFlowRules.StructuralInspectionName,
+                InspeccionFlowRules.FoundationInspectionName
+            },
+            ct));
         var solicitudesRoofTask = RunAsync(db => PendingInspection(db.SolicitudesInspeccionRoof, userId, InspeccionFlowRules.RoofInspectionName, ct));
         var solicitudesMoldTask = RunAsync(db => PendingInspection(db.SolicitudesInspeccionMoldMoisture, userId, InspeccionFlowRules.MoldMoistureInspectionName, ct));
         var solicitudesWindowsTask = RunAsync(db => PendingInspection(db.SolicitudesInspeccionWindowsInsulation, userId, InspeccionFlowRules.WindowsInsulationInspectionName, ct));
@@ -215,13 +223,21 @@ public sealed class HomeIndexQueryService(IDbContextFactory<AppDbContext> dbFact
         string inspectionName,
         CancellationToken ct)
         where T : class
+        => PendingInspection(set, userId, new[] { inspectionName }, ct);
+
+    private static Task<List<T>> PendingInspection<T>(
+        DbSet<T> set,
+        string userId,
+        string[] inspectionNames,
+        CancellationToken ct)
+        where T : class
     {
         return set
             .Include("Inspeccion")
             .Include("Archivos")
             .Where(s => EF.Property<string>(s, "UserId") == userId
                         && EF.Property<Inspeccion?>(s, "Inspeccion") != null
-                        && EF.Property<Inspeccion?>(s, "Inspeccion")!.Nombre == inspectionName
+                        && inspectionNames.Contains(EF.Property<Inspeccion?>(s, "Inspeccion")!.Nombre)
                         && EF.Property<string>(s, "Estado") != "Skipped"
                         && EF.Property<string>(s, "Estado") != "Completed"
                         && EF.Property<string>(s, "Estado") != "Confirmed")

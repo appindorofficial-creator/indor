@@ -10,10 +10,10 @@
 
 <div class="ps-page-head">
     <h1 class="ps-title">@L["Property Snapshot"]</h1>
-    <p class="ps-sub">@L.Catalog(Model.PageSubtitle)</p>
+    <p class="ps-sub">@UiDisplayLocalization.Localize(L, Model.PageSubtitle)</p>
     <div class="ps-address">@Model.Address</div>
     <div class="ps-badges">
-        <span class="ps-badge ps-badge-estimated"><i class="fas fa-circle-notch"></i> @L.Catalog(Model.ConfidenceBadge)</span>
+        <span class="ps-badge ps-badge-estimated"><i class="fas fa-circle-notch"></i> @UiDisplayLocalization.Localize(L, Model.ConfidenceBadge)</span>
         <span class="ps-badge ps-badge-fields"><i class="fas fa-table-cells"></i> @Model.FieldCount @L["fields"]</span>
     </div>
 </div>
@@ -59,9 +59,9 @@ else if (Model.ActiveTab == "details")
         {
             <div class="ps-field @(field.FullWidth ? "full" : "")">
                 <i class="fas @field.Icon"></i>
-                <div class="k">@L.Catalog(field.Label)</div>
+                <div class="k">@UiDisplayLocalization.Localize(L, field.Label)</div>
                 <div class="v">
-                    @L.Catalog(field.Value)
+                    @UiDisplayLocalization.Localize(L, field.Value)
                     @if (field.IsEstimated) { <span class="ps-estimated-dot"></span> }
                 </div>
             </div>
@@ -88,9 +88,9 @@ else if (Model.ActiveTab == "lot")
         {
             <div class="ps-field">
                 <i class="fas @field.Icon"></i>
-                <div class="k">@L.Catalog(field.Label)</div>
+                <div class="k">@UiDisplayLocalization.Localize(L, field.Label)</div>
                 <div class="v">
-                    @L.Catalog(field.Value)
+                    @UiDisplayLocalization.Localize(L, field.Value)
                     @if (field.IsEstimated) { <span class="ps-estimated-dot"></span> }
                 </div>
             </div>
@@ -108,7 +108,7 @@ else if (Model.ActiveTab == "notes")
                 <span class="e">@L["Estimated"]</span>
                 <span class="v">@L["Needs verification"]</span>
             </div>
-            <p class="ps-sub" style="margin-top:8px;">@L.Catalog(Model.Notes.ConfidenceSummary)</p>
+            <p class="ps-sub" style="margin-top:8px;">@UiDisplayLocalization.Localize(L, Model.Notes.ConfidenceSummary)</p>
         </div>
     </div>
 
@@ -116,7 +116,7 @@ else if (Model.ActiveTab == "notes")
     <div class="ps-sources">
         @foreach (var source in Model.Notes.Sources)
         {
-            <div class="ps-source"><i class="fas @source.Icon"></i>@L.Catalog(source.Name)</div>
+            <div class="ps-source"><i class="fas @source.Icon"></i>@UiDisplayLocalization.Localize(L, source.Name)</div>
         }
     </div>
 
@@ -127,8 +127,8 @@ else if (Model.ActiveTab == "notes")
             <div class="ps-missing">
                 <i class="fas @item.Icon"></i>
                 <div>
-                    <div class="t">@L.Catalog(item.Title)</div>
-                    <div class="s">@L.Catalog(item.Status)</div>
+                    <div class="t">@UiDisplayLocalization.Localize(L, item.Title)</div>
+                    <div class="s">@UiDisplayLocalization.Localize(L, item.Status)</div>
                 </div>
                 <i class="fas fa-chevron-right chev"></i>
             </div>
@@ -153,13 +153,13 @@ else
         {
             <div class="ps-stat">
                 <i class="fas @stat.Icon"></i>
-                <div class="v">@stat.Value</div>
-                <div class="k">@stat.Label</div>
+                <div class="v">@UiDisplayLocalization.Localize(L, stat.Value)</div>
+                <div class="k">@UiDisplayLocalization.Localize(L, stat.Label)</div>
             </div>
         }
     </div>
 
-    <div class="ps-section-title">Quick sections</div>
+    <div class="ps-section-title">@L["Quick sections"]</div>
     <div class="ps-quick-scroll">
         @foreach (var quick in Model.QuickSections)
         {
@@ -167,32 +167,32 @@ else
             {
                 <a class="ps-quick-card" asp-controller="HouseFactPreview" asp-action="PropertySnapshot" asp-route-tab="@quick.Tab">
                     <i class="fas @quick.Icon"></i>
-                    <div class="t">@quick.Title</div>
-                    <div class="s">@quick.Subtitle</div>
-                    <div class="a">Open <i class="fas fa-chevron-right"></i></div>
+                    <div class="t">@UiDisplayLocalization.Localize(L, quick.Title)</div>
+                    <div class="s">@UiDisplayLocalization.Localize(L, quick.Subtitle)</div>
+                    <div class="a">@L["Open"] <i class="fas fa-chevron-right"></i></div>
                 </a>
             }
             else
             {
                 <a class="ps-quick-card" asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="@quick.Tab">
                     <i class="fas @quick.Icon"></i>
-                    <div class="t">@quick.Title</div>
-                    <div class="s">@quick.Subtitle</div>
-                    <div class="a">Open <i class="fas fa-chevron-right"></i></div>
+                    <div class="t">@UiDisplayLocalization.Localize(L, quick.Title)</div>
+                    <div class="s">@UiDisplayLocalization.Localize(L, quick.Subtitle)</div>
+                    <div class="a">@L["Open"] <i class="fas fa-chevron-right"></i></div>
                 </a>
             }
         }
     </div>
 
-    <div class="ps-section-title">Snapshot highlights</div>
+    <div class="ps-section-title">@L["Snapshot highlights"]</div>
     <div class="ps-highlight-grid">
         @foreach (var item in Model.Highlights)
         {
             <div class="ps-highlight">
                 <i class="fas @item.Icon"></i>
-                <div class="k">@item.Label</div>
+                <div class="k">@UiDisplayLocalization.Localize(L, item.Label)</div>
                 <div class="v">
-                    @item.Value
+                    @UiDisplayLocalization.Localize(L, item.Value)
                     @if (item.IsEstimated) { <span class="ps-estimated-dot"></span> }
                 </div>
             </div>
@@ -205,13 +205,13 @@ else
     if (hfPreview)
     {
         <a asp-controller="HouseFactPreview" asp-action="PropertySnapshot" asp-route-tab="@Model.NextTab" class="ps-btn-primary">
-            @Model.NextTabLabel
+            @UiDisplayLocalization.Localize(L, Model.NextTabLabel)
         </a>
     }
     else
     {
         <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="@Model.NextTab" class="ps-btn-primary">
-            @Model.NextTabLabel
+            @UiDisplayLocalization.Localize(L, Model.NextTabLabel)
         </a>
     }
 }

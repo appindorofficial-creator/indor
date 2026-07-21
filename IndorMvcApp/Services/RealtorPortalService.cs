@@ -2689,9 +2689,10 @@ public class RealtorPortalService(
         {
             Id = activity.Id,
             ActivityType = activity.ActivityType,
-            Description = UiDisplayLocalization.LocalizeNotification(localizer, activity.Description),
+            // Keep English templates; views localize via UiDisplayLocalization.LocalizeNotification*.
+            Description = activity.Description,
             OccurredLabel = FormatRelativeTime(activity.OccurredUtc),
-            CategoryTag = UiDisplayLocalization.LocalizeNotificationTag(localizer, activity.CategoryTag),
+            CategoryTag = activity.CategoryTag,
             TargetUrl = MapActivityTargetUrl(activity.CategoryTag),
             IconClass = MapActivityIcon(activity.ActivityType),
             TagCssClass = MapActivityTagCss(activity.CategoryTag)

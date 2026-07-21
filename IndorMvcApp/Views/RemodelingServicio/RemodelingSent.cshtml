@@ -18,7 +18,7 @@
     <div class="summary-card">
         <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Address"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
         <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Timeline"]</div><div class="summary-value">@Model.VentanaTiempoLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-hourglass-half"></i><div><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-pending"><i class="fas fa-clock"></i> @L[Model.EstadoLabel]</span></div></div></div>
+        <div class="summary-row"><i class="fas fa-hourglass-half"></i><div><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-pending"><i class="fas fa-clock"></i> @Model.EstadoLabel</span></div></div></div>
     </div>
 
     <a asp-controller="Home" asp-action="Index" asp-fragment="section-services" class="btn-primary" style="display:block;text-align:center;text-decoration:none;">@L["Back to Services"]</a>

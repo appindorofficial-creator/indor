@@ -19,7 +19,7 @@
                 <img src="@Url.Content($"~{Model.EquipmentImageUrl}")" alt="@L["Your HVAC label photo"]" />
             }
             <div class="hvac-summary-list hvac-summary-list-inline">
-                <div class="hvac-summary-item"><i class="fas fa-snowflake icon"></i><span class="k">@L["Type"]</span><span class="v">@Model.SystemTypeLabel</span></div>
+                <div class="hvac-summary-item"><i class="fas fa-snowflake icon"></i><span class="k">@L["Type"]</span><span class="v">@UiDisplayLocalization.Localize(L, Model.SystemTypeLabel)</span></div>
                 <div class="hvac-summary-item"><i class="fas fa-tag icon"></i><span class="k">@L["Brand"]</span><span class="v">@Model.Brand</span></div>
                 <div class="hvac-summary-item"><i class="fas fa-cube icon"></i><span class="k">@L["Model"]</span><span class="v">@Model.EquipmentModel</span></div>
                 <div class="hvac-summary-item"><i class="fas fa-barcode icon"></i><span class="k">@L["Serial number"]</span><span class="v">@Model.SerialNumber</span></div>

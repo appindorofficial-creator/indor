@@ -104,61 +104,11 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
             </div>
 
             <button type="submit" class="btn-primary" name="action" value="next">
-                <i class="fas fa-arrow-right"></i> @L["Next"]
+                @L["Next"] <i class="fas fa-arrow-right"></i>
             </button>
             <button type="submit" class="btn-secondary" name="action" value="skip">@L["Skip for now"]</button>
         </form>
 
 @section Scripts {
-    <script>
-        function setSegment(group, value) {
-            const targetId = group.dataset.target;
-            const input = document.getElementById(targetId);
-            const boolValue = value === 'true';
-            input.value = boolValue ? 'True' : 'False';
-            group.querySelectorAll('.segment-btn').forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.value === value);
-            });
-        }
-
-        function setSingle(group, selector, value) {
-            const targetId = group.dataset.target;
-            document.getElementById(targetId).value = value;
-            group.querySelectorAll(selector).forEach(btn => {
-                btn.classList.toggle('active', btn.dataset.value === value);
-            });
-        }
-
-        document.querySelectorAll('.segmented').forEach(group => {
-            group.querySelectorAll('.segment-btn').forEach(btn => {
-                btn.addEventListener('click', () => setSegment(group, btn.dataset.value));
-            });
-            const target = document.getElementById(group.dataset.target);
-            if (target.value === 'True' || target.value === 'False') {
-                const current = target.value === 'True' ? 'true' : 'false';
-                setSegment(group, current);
-            }
-        });
-
-        document.querySelectorAll('.chip-group').forEach(group => {
-            group.querySelectorAll('.chip-btn').forEach(btn => {
-                btn.addEventListener('click', () => setSingle(group, '.chip-btn', btn.dataset.value));
-            });
-            const value = document.getElementById(group.dataset.target).value;
-            if (value) {
-                setSingle(group, '.chip-btn', value);
-            }
-        });
-
-        document.querySelectorAll('.goal-grid').forEach(group => {
-            group.querySelectorAll('.goal-btn').forEach(btn => {
-                btn.addEventListener('click', () => setSingle(group, '.goal-btn', btn.dataset.value));
-            });
-            const value = document.getElementById(group.dataset.target).value;
-            if (value) {
-                setSingle(group, '.goal-btn', value);
-            }
-        });
-    
-</script>
+    <script src="~/js/purchase-details.js" asp-append-version="true"></script>
 }

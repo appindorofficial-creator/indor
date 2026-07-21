@@ -359,8 +359,9 @@
     document.querySelectorAll('[data-pa-service-search]').forEach(bindServiceSearch);
 
     /**
-     * Pin Continue / Back into a single solid footer bar so actions do not
-     * float mid-form (iOS Safari bug with individually position:fixed CTAs).
+     * Group Continue / Edit / Back into .pa-flow-actions (document-flow footer).
+     * Also pulls orphan Edit/Back links that sit immediately after the form
+     * (common on review screens) so they stay with the submit CTA.
      */
     function promotePaFlowActions(root) {
         var scope = root && root.querySelectorAll ? root : document;
@@ -368,29 +369,44 @@
             if (container.dataset.paFlowActionsBound === 'true') {
                 return;
             }
-            if (container.querySelector(':scope > .pa-flow-actions')) {
-                container.dataset.paFlowActionsBound = 'true';
-                return;
-            }
 
-            var submit = container.querySelector(':scope > .pa-flow-submit, :scope > a.pa-flow-submit');
+            var footer = container.querySelector(':scope > .pa-flow-actions');
+            var submit = footer
+                ? footer.querySelector('.pa-flow-submit, a.pa-flow-submit')
+                : container.querySelector(':scope > .pa-flow-submit, :scope > a.pa-flow-submit');
+
             if (!submit) {
                 container.dataset.paFlowActionsBound = 'true';
                 return;
             }
 
-            var back = null;
-            var next = submit.nextElementSibling;
-            if (next && next.classList.contains('pa-flow-back-link')) {
-                back = next;
+            if (!footer) {
+                var actions = [submit];
+                var cursor = submit.nextElementSibling;
+                while (cursor && cursor.classList.contains('pa-flow-edit')) {
+                    actions.push(cursor);
+                    cursor = cursor.nextElementSibling;
+                }
+                if (cursor && (cursor.classList.contains('pa-flow-back-link') || cursor.classList.contains('pa-back-link'))) {
+                    actions.push(cursor);
+                }
+
+                footer = document.createElement('div');
+                footer.className = 'pa-flow-actions';
+                submit.parentNode.insertBefore(footer, submit);
+                actions.forEach(function (node) {
+                    footer.appendChild(node);
+                });
             }
 
-            var footer = document.createElement('div');
-            footer.className = 'pa-flow-actions';
-            submit.parentNode.insertBefore(footer, submit);
-            footer.appendChild(submit);
-            if (back) {
-                footer.appendChild(back);
+            // Review screens often leave Edit/Back as siblings after </form>.
+            var after = container.nextElementSibling;
+            while (after && (after.classList.contains('pa-flow-edit')
+                || after.classList.contains('pa-flow-back-link')
+                || after.classList.contains('pa-back-link'))) {
+                var next = after.nextElementSibling;
+                footer.appendChild(after);
+                after = next;
             }
 
             container.dataset.paFlowActionsBound = 'true';

@@ -29,7 +29,7 @@
                     </div>
                 }
                 <div class="hvac-review-rows">
-                    <div class="hvac-review-row"><span>@L["System type"]</span><strong>@Model.SystemTypeLabel</strong></div>
+                    <div class="hvac-review-row"><span>@L["System type"]</span><strong>@UiDisplayLocalization.Localize(L, Model.SystemTypeLabel)</strong></div>
                     <div class="hvac-review-row"><span>@L["Brand"]</span><strong>@Model.Brand</strong></div>
                     <div class="hvac-review-row"><span>@L["Model"]</span><strong>@Model.EquipmentModel</strong></div>
                     <div class="hvac-review-row"><span>@L["Serial number"]</span><strong>@Model.SerialNumber</strong></div>
@@ -64,7 +64,7 @@
                    asp-route-propiedadId="@Model.PropiedadId"
                    class="hvac-terms-link">
                     <i class="fas fa-file-lines"></i>
-                    View full terms &amp; privacy
+                    @L["View full terms & privacy"]
                     <i class="fas fa-chevron-right"></i>
                 </a>
             </div>

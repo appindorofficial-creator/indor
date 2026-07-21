@@ -25,6 +25,8 @@ public sealed class IndorLocalizer : IIndorLocalizer
             return string.Empty;
         }
 
+        key = key.Trim();
+
         if (!IsSpanish)
         {
             return key;

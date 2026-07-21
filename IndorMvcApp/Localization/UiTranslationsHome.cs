@@ -1319,6 +1319,8 @@ public static class UiTranslationsHome
             ["Snapshot"] = "Resumen",
             ["Systems"] = "Sistemas",
             ["Permits"] = "Permisos",
+            ["Roof & Exterior"] = "Techo y exterior",
+            ["HOA & Community"] = "HOA y comunidad",
             ["More"] = "Más",
             ["Year built"] = "Año de construcción",
             ["Living area"] = "Área habitable",

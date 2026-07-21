@@ -7,7 +7,7 @@
     ViewBag.FlowTitle = L["Emergency Roof Leak"].ToString();
     ViewBag.FlowSubtitle = L["Tell us what's happening so we can dispatch help fast."].ToString();
     ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Access"].ToString(), L["Done"].ToString() };
-    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    ViewBag.FlowBackUrl = PropertyAdministratorFlowServiceSupport.ServicesUrl(Url, Model.ViewingProperty?.Id);
     var propertyId = Model.ViewingProperty?.Id ?? 0;
 }
 
@@ -118,6 +118,11 @@
             <label>@L["Add quick details"]</label>
             <textarea class="pa-textarea" name="QuickDetails" rows="3" placeholder="@L["Describe what's happening..."]">@Model.QuickDetails</textarea>
         </div>
+        @{
+            ViewData["PaMediaFieldName"] = "MediaAttachmentsJson";
+            ViewData["PaMediaShowVoice"] = true;
+            ViewData["PaMediaAttachmentsJson"] = Model.MediaAttachmentsJson ?? "[]";
+        }
         @await Html.PartialAsync("_PropertyAdminMediaCapture")
 
 
@@ -126,8 +131,10 @@
             <span>@L["Occupied guest stays are prioritized. We'll dispatch the nearest available roof repair pro."]</span>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-back-link">@L["Back to start"]</a>
+        <div class="pa-flow-actions">
+            <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
+            <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back to services"]</a>
+        </div>
     </form>
 </div>
 

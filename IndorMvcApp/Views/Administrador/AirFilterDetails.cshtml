@@ -147,8 +147,12 @@
 
         @{
             ViewData["PaMediaLarge"] = true;
+            ViewData["PaMediaShowVoice"] = true;
+            ViewData["PaMediaFieldName"] = "MediaAttachmentsJson";
+            ViewData["PaMediaKind"] = "photo";
             ViewData["PaMediaPhotoLabel"] = L["Add photos — Help us prep the right filter"].ToString();
             ViewData["PaMediaVoiceLabel"] = L["Voice note — Tap to record"].ToString();
+            ViewData["PaMediaAttachmentsJson"] = Model.MediaAttachmentsJson ?? "[]";
         }
         @await Html.PartialAsync("_PropertyAdminMediaCapture")
 
@@ -156,7 +160,7 @@
             <div class="pa-flow-pro-head">
                 <img src="/inspeccion2.jpeg" alt="" class="pa-flow-pro-avatar" />
                 <div>
-                    <strong>@L[Model.ProEtaLabel]</strong>
+                    <strong>@UiDisplayLocalization.Localize(L, Model.ProEtaLabel)</strong>
                     <div class="pa-trust-badges">
                         <span>@L["Licensed"]</span>
                         <span>@L["Insured"]</span>

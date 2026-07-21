@@ -1114,7 +1114,56 @@ public class ProviderRegistrationService(
         await db.SaveChangesAsync(cancellationToken);
     }
 
-    public string ResolveWizardResumeAction(int currentStep) => "Entry";
+    public string ResolveWizardResumeAction(int currentStep) =>
+        ResolveWizardResumeAction(currentStep, usesNewWizard: true);
+
+    public string ResolveWizardResumeAction(IndorProveedor proveedor)
+    {
+        var usesNewWizard = true;
+        if (!string.IsNullOrWhiteSpace(proveedor.OnboardingMetaJson))
+        {
+            try
+            {
+                var meta = JsonSerializer.Deserialize<ProviderOnboardingMeta>(proveedor.OnboardingMetaJson, JsonOptions);
+                if (meta != null)
+                {
+                    usesNewWizard = meta.UsesNewWizard;
+                }
+            }
+            catch (JsonException)
+            {
+                // Fall back to the new wizard map when meta is unreadable.
+            }
+        }
+
+        return ResolveWizardResumeAction(Math.Max(1, proveedor.CurrentStep), usesNewWizard);
+    }
+
+    private static string ResolveWizardResumeAction(int currentStep, bool usesNewWizard)
+    {
+        if (usesNewWizard)
+        {
+            return currentStep switch
+            {
+                <= 1 => "Entry",
+                2 => "CompanyInfo",
+                3 => "Verification",
+                4 => "CategoriesAssessment",
+                _ => "ActivationCall",
+            };
+        }
+
+        // Legacy trade-first wizard.
+        return currentStep switch
+        {
+            <= 1 => "Categories",
+            2 => "Services",
+            3 => "Business",
+            4 => "ExamIntro",
+            5 => "Documents",
+            _ => "Review",
+        };
+    }
 
     private static string NormalizeOrganizationKind(string? value) =>
         string.Equals(value, "Independent", StringComparison.OrdinalIgnoreCase)

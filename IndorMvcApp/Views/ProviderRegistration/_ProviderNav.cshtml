@@ -4,7 +4,7 @@
     var isEntrySkin = string.Equals(ViewData["PrvWizardSkin"] as string, "prv-page--entry", StringComparison.Ordinal);
 }
 <nav class="ob-nav prv-wiz-nav">
-    <a href="@backUrl" class="ob-nav-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
+    <a href="@backUrl" class="ob-nav-back" data-smart-back aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
     @if (isEntrySkin)
     {
         <div class="prv-entry-brand" aria-label="INDOR home index">

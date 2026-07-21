@@ -50,6 +50,9 @@ public static class GeneralHelpDisplayLabels
         _ => value ?? "—"
     };
 
+    public static string FormatPendingConfirmationStatus() =>
+        DisplayLabelsLocalization.L("Pending confirmation");
+
     public static string FormatAccessList(string? pipeValue) =>
         string.IsNullOrWhiteSpace(pipeValue)
             ? "—"

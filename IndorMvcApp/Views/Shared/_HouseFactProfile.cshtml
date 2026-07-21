@@ -16,7 +16,7 @@
 }
 else if (compact)
 {
-    <div class="hf-profile hf-compact" data-house-fact-root>
+    <div class="hf-profile hf-compact" data-house-fact-root data-hf-all-details-title="@L["All property details"]" data-hf-section-details-title="@L["Section details"]">
         <div class="hf-accordion-list">
             @foreach (var factSection in Model.Sections)
             {
@@ -25,10 +25,10 @@ else if (compact)
                     <summary class="hf-accordion-summary">
                         <div class="hf-accordion-icon"><i class="fas @factSection.Icon"></i></div>
                         <div class="hf-accordion-text">
-                            <div class="hf-accordion-title">@factSection.DisplayTitle</div>
+                            <div class="hf-accordion-title">@UiDisplayLocalization.Localize(L, factSection.DisplayTitle)</div>
                             @if (!string.IsNullOrWhiteSpace(factSection.Summary))
                             {
-                                <div class="hf-accordion-preview">@factSection.Summary</div>
+                                <div class="hf-accordion-preview">@UiDisplayLocalization.Localize(L, factSection.Summary)</div>
                             }
                         </div>
                         <i class="fas fa-chevron-down hf-accordion-chevron"></i>
@@ -43,7 +43,7 @@ else if (compact)
 }
 else
 {
-    <div class="hf-app" data-house-fact-root>
+    <div class="hf-app" data-house-fact-root data-hf-all-details-title="@L["All property details"]" data-hf-section-details-title="@L["Section details"]">
         <div class="hf-screen hf-screen-overview" data-hf-screen="overview">
             @await Html.PartialAsync("_HouseFactOverview", Model)
         </div>
@@ -71,10 +71,10 @@ else
                         <summary class="hf-accordion-summary">
                             <div class="hf-accordion-icon"><i class="fas @factSection.Icon"></i></div>
                             <div class="hf-accordion-text">
-                                <div class="hf-accordion-title">@factSection.DisplayTitle</div>
+                                <div class="hf-accordion-title">@UiDisplayLocalization.Localize(L, factSection.DisplayTitle)</div>
                                 @if (!string.IsNullOrWhiteSpace(factSection.Summary))
                                 {
-                                    <div class="hf-accordion-preview">@factSection.Summary</div>
+                                    <div class="hf-accordion-preview">@UiDisplayLocalization.Localize(L, factSection.Summary)</div>
                                 }
                             </div>
                             <div class="hf-accordion-meta">

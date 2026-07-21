@@ -313,6 +313,13 @@ public class PropertyAdministratorSavedProvidersViewModel : PropertyAdministrato
     public IReadOnlyList<PropertyAdministratorSavedProviderViewModel> Providers { get; set; } = [];
 }
 
+public class PropertyAdministratorHomecarePlansViewModel : PropertyAdministratorPortalShellViewModel
+{
+    public string BackUrl { get; set; } = "#";
+    public string BrowseServicesUrl { get; set; } = "#";
+    public IReadOnlyList<PropertyAdministratorHomecarePlanItemViewModel> ActivePlans { get; set; } = [];
+}
+
 public class PropertyAdministratorHelpTopicViewModel
 {
     public string Title { get; set; } = "";

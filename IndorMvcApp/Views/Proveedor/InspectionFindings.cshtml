@@ -58,15 +58,15 @@
                         </div>
                         @if (!string.IsNullOrWhiteSpace(item.ReportReference))
                         {
-                            <p class="prv-pro-inspection-ref"><i class="fas fa-bookmark"></i> @item.ReportReference</p>
+                            <p class="prv-pro-inspection-ref"><i class="fas fa-bookmark"></i> @UiDisplayLocalization.Localize(L, item.ReportReference)</p>
                         }
-                        @if (!string.IsNullOrWhiteSpace(item.SourceExcerpt))
-                        {
-                            <blockquote class="prv-pro-finding-note">@item.SourceExcerpt</blockquote>
+                        @{
+                            var inspectorNote = UiDisplayLocalization.LocalizeInspectorWording(
+                                L, item.SourceExcerpt, item.Description);
                         }
-                        else if (!string.IsNullOrWhiteSpace(item.Description))
+                        @if (!string.IsNullOrWhiteSpace(inspectorNote))
                         {
-                            <p class="prv-pro-finding-note">@item.Description</p>
+                            <blockquote class="prv-pro-finding-note">@inspectorNote</blockquote>
                         }
                         <div class="prv-pro-finding-actions">
                             @if (!string.IsNullOrWhiteSpace(Model.InspectionReportUrl) && item.SourcePage.HasValue)

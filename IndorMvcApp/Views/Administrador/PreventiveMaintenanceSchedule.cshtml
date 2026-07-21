@@ -99,8 +99,11 @@
 
         <div class="pa-flow-question">
             <label>@L["Add notes (optional)"]</label>
-            <textarea class="pa-textarea" name="Notes" rows="3" maxlength="250" id="prevNotes">@UiDisplayLocalization.Localize(L, Model.Notes)</textarea>
-            <small class="pa-char-count"><span id="notesCount">@Model.Notes.Length</span> @L["/ 250 characters"]</small>
+            @{
+                var notesText = UiDisplayLocalization.Localize(L, Model.Notes);
+            }
+            <textarea class="pa-textarea" name="Notes" rows="3" maxlength="250" id="prevNotes">@notesText</textarea>
+            <small class="pa-char-count"><span id="notesCount">@notesText.Length</span> @L["/ 250 characters"]</small>
         </div>
 
         <div class="pa-flow-question pa-reminder-toggle">

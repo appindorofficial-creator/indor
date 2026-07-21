@@ -13,6 +13,8 @@
         if (window.__indorSmartBack) return;
         window.__indorSmartBack = true;
 
+        var LAST_URL_KEY = 'indor.lastInAppUrl';
+
         function internalReferrer() {
             try { return !!document.referrer && new URL(document.referrer).origin === location.origin; }
             catch (e) { return false; }
@@ -27,8 +29,49 @@
             } catch (e) { return false; }
         }
 
+        function normalizePath(pathname) {
+            return (pathname || '').replace(/\/+$/, '').toLowerCase() || '/';
+        }
+
+        function isRootScreen() {
+            var path = normalizePath(location.pathname);
+            if (path === '/' || path === '/account/welcome' || path === '/account/loginform') return true;
+            if (path === '/home' || path === '/home/index') return true;
+            if (path === '/proveedor/dashboard' || path === '/realtor/dashboard') return true;
+            if (path === '/administrador' || path === '/administrador/index' || path === '/administrador/dashboard') return true;
+            return false;
+        }
+
+        function findBackLink() {
+            return document.querySelector(
+                'a[data-smart-back][href], a.ob-nav-back[href], a.back-btn[href], a.iw-wizard-nav-btn[href], a.app-back-btn[href], a[aria-label="Back"][href]'
+            );
+        }
+
+        function resolveBackHref(el) {
+            if (!el) return '';
+            var href = el.getAttribute('href') || '';
+            if (!href || href === '#' || href.toLowerCase().indexOf('javascript:') === 0) return '';
+            return href;
+        }
+
+        function rememberInAppUrl() {
+            try {
+                if (isRootScreen()) return;
+                localStorage.setItem(LAST_URL_KEY, location.pathname + location.search + location.hash);
+            } catch (e) { }
+        }
+
+        function navigateTo(href) {
+            if (!href) return;
+            if (typeof window.indorShowNavigationLoading === 'function') {
+                window.indorShowNavigationLoading();
+            }
+            window.location.assign(href);
+        }
+
         function clearNavigationBusyState() {
-            document.querySelectorAll('.nr-wizard-nav-btn.is-busy, .app-back-btn.is-busy').forEach(function (el) {
+            document.querySelectorAll('.nr-wizard-nav-btn.is-busy, .app-back-btn.is-busy, a[data-smart-back].is-busy, a.ob-nav-back.is-busy, a.back-btn.is-busy').forEach(function (el) {
                 el.classList.remove('is-busy');
                 el.removeAttribute('aria-busy');
             });
@@ -53,21 +96,22 @@
         });
 
         // Blank-screen self-heal: some mobile WebViews discard the render surface
-        // when the app is backgrounded. On return the page can come back blank and
-        // otherwise requires the user to force-close and reopen the app. We detect
-        // that collapsed/blank state after the app becomes visible again and reload
-        // once (guarded against loops) so it recovers on its own.
+        // when the app is backgrounded. Be conservative — false positives feel like
+        // a full app restart and can wipe mid-flow UX on resume.
         var RESUME_RELOAD_KEY = '__indorResumeReloads';
+        var blankHits = 0;
         function resumeReloadCount() {
             try { return parseInt(window.sessionStorage.getItem(RESUME_RELOAD_KEY) || '0', 10) || 0; }
             catch (e) { return 0; }
         }
         function markHealthy() {
+            blankHits = 0;
             try { window.sessionStorage.removeItem(RESUME_RELOAD_KEY); } catch (e) { }
         }
         function looksBlank() {
             var b = document.body;
             if (!b) return true;
+            if (b.childElementCount > 0 && (b.textContent || '').trim().length > 40) return false;
             var rectH = b.getBoundingClientRect ? b.getBoundingClientRect().height : 0;
             var h = Math.max(b.scrollHeight || 0, b.offsetHeight || 0, rectH || 0);
             // A real INDOR screen fills the viewport; a lost surface collapses to ~0.
@@ -76,23 +120,29 @@
         function checkBlankAndRecover() {
             if (document.visibilityState !== 'visible') return;
             if (!looksBlank()) { markHealthy(); return; }
-            if (resumeReloadCount() >= 2) return; // stop retrying to avoid loops
+            blankHits += 1;
+            if (blankHits < 2) {
+                window.setTimeout(checkBlankAndRecover, 400);
+                return;
+            }
+            if (resumeReloadCount() >= 1) return; // one reload max — avoid restart loops
             try { window.sessionStorage.setItem(RESUME_RELOAD_KEY, String(resumeReloadCount() + 1)); } catch (e) { }
             window.location.reload();
         }
         function scheduleBlankCheck() {
-            // Wait a beat so the WebView has a chance to repaint before we judge it.
-            window.setTimeout(checkBlankAndRecover, 450);
+            blankHits = 0;
+            window.setTimeout(checkBlankAndRecover, 700);
         }
-        window.addEventListener('pageshow', scheduleBlankCheck);
+        window.addEventListener('pageshow', function (e) {
+            // bfcache restore is already the real page — never treat it as blank.
+            if (e.persisted) { markHealthy(); return; }
+            scheduleBlankCheck();
+        });
         document.addEventListener('visibilitychange', function () {
             if (document.visibilityState === 'visible') {
                 scheduleBlankCheck();
             }
         });
-        // Once a page has painted normally, clear any stale reload counter — but
-        // only if it is genuinely not blank, otherwise we would reset the loop guard
-        // on a blank reload and recurse forever.
         function resetCounterIfHealthy() {
             window.setTimeout(function () { if (!looksBlank()) markHealthy(); }, 500);
         }
@@ -102,14 +152,62 @@
             window.addEventListener('load', resetCounterIfHealthy);
         }
 
+        rememberInAppUrl();
+
+        // System / gesture back: when history is shallow (PWA / WebView launcher),
+        // Android back exits the app. Arm a one-shot history entry on mid-flow
+        // screens that already expose an in-app Back link, then route popstate to
+        // that same href. Root screens stay unguarded so exit remains possible.
+        (function armSystemBackGuard() {
+            if (isRootScreen()) return;
+            var backEl = findBackLink();
+            var backHref = resolveBackHref(backEl);
+            if (!backHref) return;
+            if (history.state && history.state.indorNavGuard === 'armed') return;
+
+            try {
+                var pageState = Object.assign({}, history.state || {}, {
+                    indorNavGuard: 'page',
+                    indorBackHref: backHref
+                });
+                history.replaceState(pageState, '');
+                history.pushState({ indorNavGuard: 'armed', indorBackHref: backHref }, '');
+            } catch (e) {
+                return;
+            }
+
+            window.addEventListener('popstate', function (event) {
+                var href = (event.state && event.state.indorBackHref) || backHref;
+                if (!href) return;
+                try {
+                    var target = new URL(href, location.origin);
+                    if (normalizePath(target.pathname) === normalizePath(location.pathname)
+                        && target.search === location.search) {
+                        return;
+                    }
+                } catch (err) { }
+                navigateTo(href);
+            });
+        })();
+
         document.addEventListener('click', function (e) {
             if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
             if (!e.target || !e.target.closest) return;
-            var el = e.target.closest('a[aria-label="Back"]:not([data-nr-history-back]):not(.nr-wizard-nav-btn), a[data-smart-back]');
+            var el = e.target.closest('a[aria-label="Back"]:not([data-nr-history-back]):not(.nr-wizard-nav-btn), a[data-smart-back], a.ob-nav-back');
             if (!el) return;
 
-            var href = el.getAttribute('href') || '';
-            if (isHomeHref(href)) {
+            var href = resolveBackHref(el);
+            if (!href || isHomeHref(href)) {
+                return;
+            }
+
+            // When the system-back guard is armed, history.back() only pops the
+            // sentinel and stays on the same screen — follow the explicit href.
+            if (history.state && history.state.indorNavGuard === 'armed') {
+                e.preventDefault();
+                el.classList.add('is-busy');
+                el.setAttribute('aria-busy', 'true');
+                navigateTo(href);
                 return;
             }
 

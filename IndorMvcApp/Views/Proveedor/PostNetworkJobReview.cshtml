@@ -74,7 +74,7 @@
         <span class="prv-net-review-ic prv-net-review-ic--green"><i class="fas fa-dollar-sign"></i></span>
         <div class="prv-net-review-body">
             <span class="prv-net-review-label">@L["Budget"]</span>
-            <strong>@(string.IsNullOrWhiteSpace(Model.BudgetRange) ? L["Not set"].ToString() : Model.BudgetRange)</strong>
+            <strong>@(string.IsNullOrWhiteSpace(Model.BudgetRange) ? L["Not set"].ToString() : UiDisplayLocalization.Localize(L, Model.BudgetRange))</strong>
             <p class="prv-net-review-meta">
                 @if (!string.IsNullOrWhiteSpace(Model.QuoteTypeLabel))
                 {

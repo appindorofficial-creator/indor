@@ -20,7 +20,7 @@
             <a class="re-tab @(Model.ActiveTab == tab.Key ? "active" : "")"
                asp-controller="HouseFactPreview" asp-action="RoofExterior"
                asp-route-tab="@tab.Key">
-                <i class="fas @tab.Icon"></i> @L.Catalog(tab.Label)
+                <i class="fas @tab.Icon"></i> @UiDisplayLocalization.Localize(L, tab.Label)
             </a>
         }
         else
@@ -29,7 +29,7 @@
                asp-action="Index"
                asp-route-id="@Model.PropiedadId"
                asp-route-tab="@tab.Key">
-                <i class="fas @tab.Icon"></i> @L.Catalog(tab.Label)
+                <i class="fas @tab.Icon"></i> @UiDisplayLocalization.Localize(L, tab.Label)
             </a>
         }
     }
@@ -56,16 +56,16 @@ else
         @foreach (var card in Model.SummaryCards)
         {
             <div class="re-summary-card">
-                <div class="k"><i class="fas @card.Icon"></i> @L.Catalog(card.Label)</div>
-                <div class="v">@L.Catalog(card.Value)</div>
-                <span class="badge @card.StatusTone">@L.Catalog(card.Status)</span>
+                <div class="k"><i class="fas @card.Icon"></i> @UiDisplayLocalization.Localize(L, card.Label)</div>
+                <div class="v">@UiDisplayLocalization.Localize(L, card.Value)</div>
+                <span class="badge @card.StatusTone">@UiDisplayLocalization.Localize(L, card.Status)</span>
             </div>
         }
     </div>
 
     <div class="re-banner">
         <i class="fas fa-circle-info"></i>
-        <div>@L.Catalog(Model.InfoBanner)</div>
+        <div>@UiDisplayLocalization.Localize(L, Model.InfoBanner)</div>
     </div>
 
     @foreach (var item in Model.Items)
@@ -79,10 +79,10 @@ else
                asp-route-tab="@Model.ActiveTab">
                 <div class="re-list-icon"><i class="fas @item.Icon"></i></div>
                 <div class="re-list-body">
-                    <div class="re-list-title">@L.Catalog(item.Title)</div>
-                    <div class="re-list-sub">@L.Catalog(item.Subtitle)</div>
+                    <div class="re-list-title">@UiDisplayLocalization.Localize(L, item.Title)</div>
+                    <div class="re-list-sub">@UiDisplayLocalization.Localize(L, item.Subtitle)</div>
                 </div>
-                <span class="re-status @item.StatusTone">@L.Catalog(item.Status)</span>
+                <span class="re-status @item.StatusTone">@UiDisplayLocalization.Localize(L, item.Status)</span>
                 <i class="fas fa-chevron-right re-chev"></i>
             </a>
         }
@@ -95,10 +95,10 @@ else
                asp-route-tab="@Model.ActiveTab">
                 <div class="re-list-icon"><i class="fas @item.Icon"></i></div>
                 <div class="re-list-body">
-                    <div class="re-list-title">@L.Catalog(item.Title)</div>
-                    <div class="re-list-sub">@L.Catalog(item.Subtitle)</div>
+                    <div class="re-list-title">@UiDisplayLocalization.Localize(L, item.Title)</div>
+                    <div class="re-list-sub">@UiDisplayLocalization.Localize(L, item.Subtitle)</div>
                 </div>
-                <span class="re-status @item.StatusTone">@L.Catalog(item.Status)</span>
+                <span class="re-status @item.StatusTone">@UiDisplayLocalization.Localize(L, item.Status)</span>
                 <i class="fas fa-chevron-right re-chev"></i>
             </a>
         }

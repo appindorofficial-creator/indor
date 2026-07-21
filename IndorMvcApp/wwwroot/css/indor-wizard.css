@@ -18,8 +18,8 @@
 .nr-wizard-shell {
     max-width: 480px;
     margin: 0 auto;
-    min-height: 100vh;
-    min-height: 100dvh;
+    /* Viewport fill lives on body; shell min-height turned early </div> into a blank screen. */
+    min-height: 0;
     padding: 0 16px var(--indor-page-footer-scroll, calc(96px + env(safe-area-inset-bottom, 0)));
 }
 
@@ -481,33 +481,28 @@ body:has(.prv-pro-bottom-nav) {
     padding-bottom: calc(var(--indor-page-footer-scroll) + var(--indor-action-h) + var(--indor-action-gap));
 }
 
-/* Property administrator service flows — pin actions in .pa-flow-actions
-   (same pattern as .prv-wiz-footer). Individual fixed buttons + iOS Safari
-   mis-position and float over form content; a single solid footer avoids that. */
+/* Property administrator service flows — keep Continue / Back in document flow
+   after the form. A fixed .pa-flow-actions bar was overlapping mid-form fields
+   on long wizards (e.g. Moving Help) so options under Continuar were untappable. */
 .pa-portal-page .pa-portal-shell--flow,
 .pa-portal-page .pa-portal-shell--flow form {
-    padding-bottom: var(--indor-page-footer-scroll);
-}
-
-.pa-portal-page .pa-portal-shell--flow:has(.pa-flow-back-link),
-.pa-portal-page .pa-portal-shell--flow form:has(.pa-flow-back-link) {
-    padding-bottom: calc(var(--indor-page-footer-scroll) + 36px);
+    padding-bottom: 24px;
 }
 
 .pa-portal-page .pa-flow-actions {
-    position: fixed !important;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
     top: auto !important;
-    z-index: 41;
-    max-width: 480px;
-    margin: 0 auto;
-    padding: var(--indor-footer-pad-y) 16px var(--indor-page-footer-bottom);
-    /* Solid fill — backdrop-filter on fixed elements mis-positions on iOS Safari */
-    background: #F0F7FF;
-    border-top: 1px solid rgba(15, 23, 42, .06);
-    box-shadow: 0 -6px 18px rgba(10, 37, 64, .06);
+    z-index: auto !important;
+    max-width: none;
+    width: 100%;
+    margin: 16px 0 0;
+    padding: 0;
+    background: transparent;
+    border-top: none;
+    box-shadow: none;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -517,7 +512,9 @@ body:has(.prv-pro-bottom-nav) {
 
 .pa-portal-page .pa-flow-actions > .pa-flow-submit,
 .pa-portal-page .pa-flow-actions > a.pa-flow-submit.ob-btn,
-.pa-portal-page .pa-flow-actions > .pa-flow-back-link {
+.pa-portal-page .pa-flow-actions > .pa-flow-back-link,
+.pa-portal-page .pa-flow-actions > .pa-back-link,
+.pa-portal-page .pa-flow-actions > .pa-flow-edit {
     position: static !important;
     left: auto !important;
     right: auto !important;
@@ -529,7 +526,8 @@ body:has(.prv-pro-bottom-nav) {
     transform: none !important;
 }
 
-.pa-portal-page .pa-flow-actions > .pa-flow-back-link {
+.pa-portal-page .pa-flow-actions > .pa-flow-back-link,
+.pa-portal-page .pa-flow-actions > .pa-back-link {
     text-align: center;
 }
 
@@ -546,7 +544,9 @@ body:has(.prv-pro-bottom-nav) {
 }
 
 .pa-portal-page form:not(:has(.pa-flow-actions)) > .pa-flow-back-link,
-.pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > .pa-flow-back-link {
+.pa-portal-page form:not(:has(.pa-flow-actions)) > .pa-back-link,
+.pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > .pa-flow-back-link,
+.pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > .pa-back-link {
     position: static;
     display: block;
     text-align: center;

@@ -86,7 +86,7 @@
                     <i class="fas fa-crosshairs"></i>
                     <div>
                         <div class="summary-label">@L[Model.ResumenSecundarioEtiqueta!]</div>
-                        <div class="summary-value">@UiDisplayLocalization.Localize(L, Model.ResumenSecundario)</div>
+                        <div class="summary-value">@UiDisplayLocalization.LocalizeCommaList(L, Model.ResumenSecundario)</div>
                     </div>
                 </div>
             }
@@ -110,7 +110,7 @@
             </div>
         }
 
-        <a asp-action="BookingConfirmed" asp-route-type="@Model.FlowType" asp-route-id="@Model.SolicitudId" class="btn-primary">
+        <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-primary">
             @L["View appointment"] <i class="fas fa-arrow-right"></i>
         </a>
         <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-secondary">

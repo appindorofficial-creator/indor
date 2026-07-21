@@ -2,12 +2,20 @@ using System.Globalization;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace IndorMvcApp.Services;
 
 /// <summary>Shared shell, property mapping, and timeline helpers for PA service wizards.</summary>
 public static class PropertyAdministratorFlowServiceSupport
 {
+    /// <summary>
+    /// PA Servicios catalog (emergencies list / service hub). Use for wizard "Volver al inicio"
+    /// / "Back to start" — never <c>Administrador/Index</c> (portfolio home).
+    /// </summary>
+    public static string ServicesUrl(IUrlHelper url, int? propertyId = null) =>
+        url.Action("Services", "Administrador", new { propertyId }) ?? "#";
+
     public static PropertyAdministratorPortalShellViewModel BuildShell(IndorPropertyAdministrator admin)
     {
         var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()

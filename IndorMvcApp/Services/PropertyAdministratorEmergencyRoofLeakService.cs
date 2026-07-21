@@ -79,6 +79,7 @@ public class PropertyAdministratorEmergencyRoofLeakService(
             Urgency = step1.Urgency,
             LeakLocation = step1.LeakLocation,
             QuickDetails = step1.QuickDetails ?? "",
+            MediaAttachmentsJson = step1.MediaAttachmentsJson ?? "[]",
             EntryCode = "",
             InteriorDamage = "",
             AccessNotes = "",

@@ -41,7 +41,7 @@ public static class UiTranslationsRemaining
             ["Edit manually"] = "Editar manualmente",
             ["Faster Hiring"] = "Contratación más rápida",
             ["Fastest"] = "Más rápido",
-            ["Feed, nearby help, hosts & local updates"] = "Actividad, ayuda cercana, anfitriones y novedades locales",
+            ["Feed, nearby help, hosts & local updates"] = "Actividad, ayuda y novedades",
             ["Full Calendar"] = "Calendario completo",
             ["Gallery"] = "Galería",
             ["Help & support"] = "Ayuda y soporte",

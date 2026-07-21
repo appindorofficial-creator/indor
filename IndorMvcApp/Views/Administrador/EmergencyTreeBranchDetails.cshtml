@@ -7,7 +7,7 @@
     ViewBag.FlowTitle = L["Tree / Branch Emergency"].ToString();
     ViewBag.FlowSubtitle = L["Tell us what happened so we can dispatch help fast."].ToString();
     ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Review"].ToString(), L["Done"].ToString() };
-    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    ViewBag.FlowBackUrl = PropertyAdministratorFlowServiceSupport.ServicesUrl(Url, Model.ViewingProperty?.Id);
     var propertyId = Model.ViewingProperty?.Id ?? 0;
     var damageAreas = Model.DamageAreasList.ToHashSet(StringComparer.OrdinalIgnoreCase);
 }
@@ -144,8 +144,10 @@
             <span>@L["If power lines are involved, keep guests away and we'll prioritize dispatch."]</span>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-back-link">@L["Back to start"]</a>
+        <div class="pa-flow-actions">
+            <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
+            <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back to services"]</a>
+        </div>
     </form>
 </div>
 

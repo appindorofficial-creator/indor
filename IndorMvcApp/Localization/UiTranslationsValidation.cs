@@ -55,5 +55,29 @@ public static class UiTranslationsValidation
             ["Office address is required."] = "La dirección de oficina es obligatoria.",
             ["Please check the authorization box to verify your license before continuing."] =
                 "Marca la casilla de autorización para verificar tu licencia antes de continuar.",
+            // ASP.NET binder defaults for omitted radio posts (Urgent Quote Property step).
+            ["The requestCategory field is required."] = "Selecciona qué necesitas.",
+            ["The serviceType field is required."] = "Selecciona un tipo de servicio.",
+            ["The urgencyLevel field is required."] = "Selecciona un nivel de urgencia.",
+            ["Select a property and what you need to continue."] =
+                "Selecciona una propiedad y lo que necesitas para continuar.",
+            ["Select a property or enter the property address to continue."] =
+                "Selecciona una propiedad o ingresa la dirección para continuar.",
+            ["Select what you need."] = "Selecciona qué necesitas.",
+            ["Select a service type."] = "Selecciona un tipo de servicio.",
+            ["Select an urgency level."] = "Selecciona un nivel de urgencia.",
+
+            // Bug 21 — homeowner offered-service confirm/status chips (shared across remodeling + siblings)
+            ["Pending quote"] = "Cotización pendiente",
+            ["Pending confirmation"] = "Confirmación pendiente",
+            ["Text"] = "Mensaje de texto",
+            ["Reminder and service saved"] = "Recordatorio y servicio guardados",
+            ["Set reminder"] = "Configurar recordatorio",
+            ["Exterior paint reminder saved"] = "Recordatorio de pintura exterior guardado",
+            ["Request received"] = "Solicitud recibida",
+            ["Provider matching"] = "Asignando proveedor",
+            ["Assigning provider"] = "Asignando proveedor",
+            ["Next reminder active"] = "Próximo recordatorio activo",
+            ["Reminder active"] = "Recordatorio activo",
         };
 }

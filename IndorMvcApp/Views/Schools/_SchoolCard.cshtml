@@ -1,88 +1,88 @@
-@model IndorMvcApp.ViewModels.SchoolItemViewModel
-@{
-    var propiedadId = ViewBag.PropiedadId as int? ?? 0;
-    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
-    var compact = ViewData["Compact"] as bool? ?? false;
-    var cardClass = compact ? "sch-card sch-card-compact sch-tone-" + Model.Tone : "sch-card sch-tone-" + Model.Tone;
-}
-
-@if (compact)
-{
-    if (hfPreview)
-    {
-        <a class="@cardClass" asp-controller="HouseFactPreview" asp-action="SchoolsProfile" asp-route-schoolId="@Model.Id">
-            <div class="sch-card-top">
-                <div class="sch-card-icon"><i class="fas @Model.Icon"></i></div>
-                <div>
-                    <div class="sch-card-name">@Model.Name</div>
-                    <div class="sch-card-meta">@Model.Subtitle</div>
-                    @if (!string.IsNullOrWhiteSpace(Model.RatingValue))
-                    {
-                        <span class="sch-rating"><span class="star"><i class="fas fa-star"></i> @Model.RatingValue</span>@(Model.RatingLabel ?? "Rated")</span>
-                    }
-                    <div style="margin-top:10px;font-size:.78rem;font-weight:700;color:#0066CC;">View details <i class="fas fa-chevron-right"></i></div>
-                </div>
-            </div>
-        </a>
-    }
-    else
-    {
-        <a class="@cardClass" asp-controller="Schools" asp-action="Profile" asp-route-id="@propiedadId" asp-route-schoolId="@Model.Id">
-            <div class="sch-card-top">
-                <div class="sch-card-icon"><i class="fas @Model.Icon"></i></div>
-                <div>
-                    <div class="sch-card-name">@Model.Name</div>
-                    <div class="sch-card-meta">@Model.Subtitle</div>
-                    @if (!string.IsNullOrWhiteSpace(Model.RatingValue))
-                    {
-                        <span class="sch-rating"><span class="star"><i class="fas fa-star"></i> @Model.RatingValue</span>@(Model.RatingLabel ?? "Rated")</span>
-                    }
-                    <div style="margin-top:10px;font-size:.78rem;font-weight:700;color:#0066CC;">View details <i class="fas fa-chevron-right"></i></div>
-                </div>
-            </div>
-        </a>
-    }
-}
-else
-{
-    <article class="@cardClass">
-        <div class="sch-card-top">
-            <div class="sch-card-icon"><i class="fas @Model.Icon"></i></div>
-            <div>
-                <div class="sch-card-name">@Model.Name</div>
-                <div class="sch-card-meta">@Model.Subtitle</div>
-                @if (Model.IsAssigned)
-                {
-                    <span class="sch-pill-assigned">Assigned</span>
-                }
-            </div>
-            @if (!string.IsNullOrWhiteSpace(Model.RatingValue))
-            {
-                <div class="sch-rating">
-                    <span class="star"><i class="fas fa-star"></i> @Model.RatingValue</span>
-                    @(Model.RatingLabel ?? "Rated")
-                </div>
-            }
-        </div>
-        <div class="sch-card-actions">
-            @if (hfPreview)
-            {
-                <a asp-controller="HouseFactPreview" asp-action="SchoolsProfile" asp-route-schoolId="@Model.Id">
-                    View details <i class="fas fa-chevron-right"></i>
-                </a>
-                <a asp-controller="HouseFactPreview" asp-action="SchoolsMap">
-                    Open map <i class="fas fa-arrow-up-right-from-square"></i>
-                </a>
-            }
-            else
-            {
-                <a asp-controller="Schools" asp-action="Profile" asp-route-id="@propiedadId" asp-route-schoolId="@Model.Id">
-                    View details <i class="fas fa-chevron-right"></i>
-                </a>
-                <a asp-controller="Schools" asp-action="Map" asp-route-id="@propiedadId">
-                    Open map <i class="fas fa-arrow-up-right-from-square"></i>
-                </a>
-            }
-        </div>
-    </article>
-}
+@model IndorMvcApp.ViewModels.SchoolItemViewModel
+@{
+    var propiedadId = ViewBag.PropiedadId as int? ?? 0;
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+    var compact = ViewData["Compact"] as bool? ?? false;
+    var cardClass = compact ? "sch-card sch-card-compact sch-tone-" + Model.Tone : "sch-card sch-tone-" + Model.Tone;
+}
+
+@if (compact)
+{
+    if (hfPreview)
+    {
+        <a class="@cardClass" asp-controller="HouseFactPreview" asp-action="SchoolsProfile" asp-route-schoolId="@Model.Id">
+            <div class="sch-card-top">
+                <div class="sch-card-icon"><i class="fas @Model.Icon"></i></div>
+                <div>
+                    <div class="sch-card-name">@Model.Name</div>
+                    <div class="sch-card-meta">@UiDisplayLocalization.Localize(L, Model.Subtitle)</div>
+                    @if (!string.IsNullOrWhiteSpace(Model.RatingValue))
+                    {
+                        <span class="sch-rating"><span class="star"><i class="fas fa-star"></i> @Model.RatingValue</span>@UiDisplayLocalization.Localize(L, Model.RatingLabel ?? "Rated")</span>
+                    }
+                    <div style="margin-top:10px;font-size:.78rem;font-weight:700;color:#0066CC;">@L["View details"] <i class="fas fa-chevron-right"></i></div>
+                </div>
+            </div>
+        </a>
+    }
+    else
+    {
+        <a class="@cardClass" asp-controller="Schools" asp-action="Profile" asp-route-id="@propiedadId" asp-route-schoolId="@Model.Id">
+            <div class="sch-card-top">
+                <div class="sch-card-icon"><i class="fas @Model.Icon"></i></div>
+                <div>
+                    <div class="sch-card-name">@Model.Name</div>
+                    <div class="sch-card-meta">@UiDisplayLocalization.Localize(L, Model.Subtitle)</div>
+                    @if (!string.IsNullOrWhiteSpace(Model.RatingValue))
+                    {
+                        <span class="sch-rating"><span class="star"><i class="fas fa-star"></i> @Model.RatingValue</span>@UiDisplayLocalization.Localize(L, Model.RatingLabel ?? "Rated")</span>
+                    }
+                    <div style="margin-top:10px;font-size:.78rem;font-weight:700;color:#0066CC;">@L["View details"] <i class="fas fa-chevron-right"></i></div>
+                </div>
+            </div>
+        </a>
+    }
+}
+else
+{
+    <article class="@cardClass">
+        <div class="sch-card-top">
+            <div class="sch-card-icon"><i class="fas @Model.Icon"></i></div>
+            <div>
+                <div class="sch-card-name">@Model.Name</div>
+                <div class="sch-card-meta">@UiDisplayLocalization.Localize(L, Model.Subtitle)</div>
+                @if (Model.IsAssigned)
+                {
+                    <span class="sch-pill-assigned">@L["Assigned"]</span>
+                }
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.RatingValue))
+            {
+                <div class="sch-rating">
+                    <span class="star"><i class="fas fa-star"></i> @Model.RatingValue</span>
+                    @UiDisplayLocalization.Localize(L, Model.RatingLabel ?? "Rated")
+                </div>
+            }
+        </div>
+        <div class="sch-card-actions">
+            @if (hfPreview)
+            {
+                <a asp-controller="HouseFactPreview" asp-action="SchoolsProfile" asp-route-schoolId="@Model.Id">
+                    @L["View details"] <i class="fas fa-chevron-right"></i>
+                </a>
+                <a asp-controller="HouseFactPreview" asp-action="SchoolsMap">
+                    @L["Open map"] <i class="fas fa-arrow-up-right-from-square"></i>
+                </a>
+            }
+            else
+            {
+                <a asp-controller="Schools" asp-action="Profile" asp-route-id="@propiedadId" asp-route-schoolId="@Model.Id">
+                    @L["View details"] <i class="fas fa-chevron-right"></i>
+                </a>
+                <a asp-controller="Schools" asp-action="Map" asp-route-id="@propiedadId">
+                    @L["Open map"] <i class="fas fa-arrow-up-right-from-square"></i>
+                </a>
+            }
+        </div>
+    </article>
+}

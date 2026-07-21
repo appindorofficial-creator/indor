@@ -140,6 +140,14 @@
             <textarea class="pa-textarea" name="Details" rows="3" maxlength="250" id="toDetails">@Model.Details</textarea>
             <small class="pa-char-count"><span id="toDetailsCount">@Model.Details.Length</span> @L["/ 250 characters"]</small>
         </div>
+        @{
+            ViewData["PaMediaShowVoice"] = true;
+            ViewData["PaMediaFieldName"] = "MediaAttachmentsJson";
+            ViewData["PaMediaKind"] = "photo";
+            ViewData["PaMediaPhotoLabel"] = L["Add photos"].ToString();
+            ViewData["PaMediaVoiceLabel"] = L["Voice note"].ToString();
+            ViewData["PaMediaAttachmentsJson"] = Model.MediaAttachmentsJson ?? "[]";
+        }
         @await Html.PartialAsync("_PropertyAdminMediaCapture")
 
 
@@ -147,7 +155,7 @@
             <div class="pa-flow-pro-head">
                 <span class="pa-flow-pro-icon pa-flow-pro-icon--purple"><i class="fas fa-broom"></i></span>
                 <div>
-                    <strong>@UiDisplayLocalization.Localize(L, Model.ProEtaLabel)</strong>
+                    <strong>@L.T("Nearest turnover crew available today {0}", L[Model.ProEtaTimeRange])</strong>
                     <div class="pa-trust-badges">
                         <span>@L["Licensed"]</span>
                         <span>@L["Insured"]</span>
@@ -156,8 +164,8 @@
                 </div>
             </div>
             <div class="pa-to-stats">
-                <span><i class="fas fa-clock"></i> @UiDisplayLocalization.Localize(L, Model.DurationLabel)</span>
-                <span><i class="fas fa-users"></i> @UiDisplayLocalization.Localize(L, Model.CrewLabel)</span>
+                <span><i class="fas fa-clock"></i> @L["Usually 2-3 hours"]</span>
+                <span><i class="fas fa-users"></i> @L["2-4 cleaners"]</span>
             </div>
             <p>@L["Estimated visit:"] <strong>@Model.EstimatedPrice</strong> <small>@L["Final price confirmed before service"]</small></p>
         </div>

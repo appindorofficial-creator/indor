@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
@@ -288,7 +289,7 @@ public static class AttomFieldExtractor
         if (string.IsNullOrWhiteSpace(path)) return "Value";
 
         var leaf = path.Split('.').Last();
-        if (LabelMap.TryGetValue(leaf, out var mapped))
+        if (TryMapLabel(leaf, out var mapped))
         {
             return mapped;
         }
@@ -296,11 +297,39 @@ public static class AttomFieldExtractor
         return HumanizeGroup(leaf);
     }
 
+    private static bool TryMapLabel(string key, out string mapped)
+    {
+        if (LabelMap.TryGetValue(key, out mapped!))
+        {
+            return true;
+        }
+
+        // UPPER_SNAKE / snake_case keys (e.g. ESTIMATED_VALUE) → match camelCase LabelMap entries.
+        if (key.Contains('_', StringComparison.Ordinal))
+        {
+            var compact = key.Replace("_", string.Empty, StringComparison.Ordinal);
+            if (LabelMap.TryGetValue(compact, out mapped!))
+            {
+                return true;
+            }
+        }
+
+        mapped = string.Empty;
+        return false;
+    }
+
     private static string HumanizeGroup(string key)
     {
-        if (LabelMap.TryGetValue(key, out var mapped))
+        if (TryMapLabel(key, out var mapped))
         {
             return mapped;
+        }
+
+        // Prefer readable Title Case for SCREAMING_SNAKE / snake_case JSON keys.
+        if (key.Contains('_', StringComparison.Ordinal))
+        {
+            var parts = key.Split('_', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            return string.Join(' ', parts.Select(ToTitleWord));
         }
 
         var sb = new StringBuilder();
@@ -314,7 +343,14 @@ public static class AttomFieldExtractor
             sb.Append(i == 0 ? char.ToUpper(c) : c);
         }
 
-        return sb.ToString().Replace('_', ' ');
+        return sb.ToString();
+    }
+
+    private static string ToTitleWord(string word)
+    {
+        if (string.IsNullOrWhiteSpace(word)) return word;
+        if (word.Length == 1) return word.ToUpperInvariant();
+        return char.ToUpperInvariant(word[0]) + word[1..].ToLowerInvariant();
     }
 
     private static string FormatScalar(JsonNode? node)

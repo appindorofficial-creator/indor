@@ -1,16 +1,35 @@
 @* Reusable PA photo + voice + document capture. Place inside a form.
-   On mobile, "Add photos" opens a chooser: Take photo (camera) or Choose from library. *@
+   On mobile, "Add photos" opens a chooser: Take photo (camera) or Choose from library.
+   Library input must NOT use capture= and should prefer image/* so the OS opens the gallery
+   (pdf/video-heavy accept often opens Files instead of Photos on iOS/Android). *@
 @{
     var photoLabel = ViewData["PaMediaPhotoLabel"] as string ?? L["Add photos"].ToString();
     var voiceLabel = ViewData["PaMediaVoiceLabel"] as string ?? L["Voice note"].ToString();
     var large = ViewData["PaMediaLarge"] as bool? == true;
     var showVoice = ViewData["PaMediaShowVoice"] as bool? != false;
     var fieldName = ViewData["PaMediaFieldName"] as string ?? "MediaAttachmentsJson";
-    var accept = ViewData["PaMediaAccept"] as string ?? "image/*,video/*,.pdf,application/pdf";
     var uploadKind = ViewData["PaMediaKind"] as string ?? "photo";
+    var isDocument = string.Equals(uploadKind, "document", StringComparison.OrdinalIgnoreCase);
+    var accept = ViewData["PaMediaAccept"] as string;
+    if (string.IsNullOrWhiteSpace(accept))
+    {
+        accept = isDocument ? "image/*,.pdf,application/pdf" : "image/*";
+    }
+    // Camera: images (or docs). Library: images for photos so gallery opens; keep full accept for documents.
+    var cameraAccept = isDocument ? accept : "image/*";
+    var libraryAccept = isDocument
+        ? accept
+        : (accept.IndexOf("video", StringComparison.OrdinalIgnoreCase) >= 0
+            ? "image/jpeg,image/png,image/webp,image/*,video/*"
+            : "image/jpeg,image/png,image/webp,image/*");
     var photoIcon = ViewData["PaMediaPhotoIcon"] as string ?? "fa-camera";
     var existingJson = ViewData["PaMediaAttachmentsJson"] as string ?? "[]";
     var captureClass = showVoice ? "pa-media-capture" : "pa-media-capture pa-media-capture--photos-only";
+    // Large labels (Air Filter / Flood) stack full-width so the photo chooser menu
+    // does not collide with a side-by-side voice button — matches original PA design.
+    var actionsClass = !showVoice
+        ? "pa-media-actions pa-media-actions--single"
+        : (large ? "pa-media-actions pa-media-actions--stack" : "pa-media-actions");
     string photoBtnClass;
     if (ViewData["PaMediaButtonClass"] is string customBtn && !string.IsNullOrWhiteSpace(customBtn))
     {
@@ -35,10 +54,19 @@
      data-msg-upload-fail="@L["Could not upload media. Try again."]"
      data-msg-remove="@L["Remove"]">
     <input type="hidden" name="@fieldName" class="pa-media-attachments-json" value="@existingJson" />
-    <input type="file" class="pa-media-photo-input pa-media-photo-input--camera" accept="@accept" multiple capture="environment" hidden />
-    <input type="file" class="pa-media-photo-input pa-media-photo-input--library" accept="@accept" multiple hidden />
+    @* Visually hidden (not display:none / HTML hidden) so mobile browsers allow programmatic .click().
+       capture= only on the photo camera input — never on library, or mobile forces camera-only. *@
+    @if (isDocument)
+    {
+        <input type="file" class="pa-media-photo-input pa-media-photo-input--camera" accept="@cameraAccept" multiple aria-hidden="true" tabindex="-1" />
+    }
+    else
+    {
+        <input type="file" class="pa-media-photo-input pa-media-photo-input--camera" accept="@cameraAccept" multiple capture="environment" aria-hidden="true" tabindex="-1" />
+    }
+    <input type="file" class="pa-media-photo-input pa-media-photo-input--library" accept="@libraryAccept" multiple aria-hidden="true" tabindex="-1" />
 
-    <div class="pa-media-actions@(showVoice ? "" : " pa-media-actions--single")">
+    <div class="@actionsClass">
         <div class="pa-media-photo-wrap">
             <button type="button"
                     class="@photoBtnClass pa-media-photo-btn"

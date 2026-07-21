@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.WaterHeaterFlushConfirmedViewModel
 @{
     ViewData["Title"] = L["Water heater maintenance booked - INDOR"];
-    ViewData["WizardTitle"] = Model.NombreServicio;
+    ViewData["WizardTitle"] = L.Catalog(Model.NombreServicio);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 }
 
@@ -13,10 +13,10 @@
     </div>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-droplet"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Frequency"]</div><div class="summary-value">@Model.FrequencyLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">@L["Preferred time"]</div><div class="summary-value">@Model.PreferredTimeLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-shield-check"></i><div><div class="summary-label">@L["Unit info received"]</div><div class="summary-value">@Model.UnitInfoLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-droplet"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.NombreServicio)</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Frequency"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.FrequencyLabel)</div></div></div>
+        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">@L["Preferred time"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.PreferredTimeLabel)</div></div></div>
+        <div class="summary-row"><i class="fas fa-shield-check"></i><div><div class="summary-label">@L["Unit info received"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.UnitInfoLabel)</div></div></div>
     </div>
 
     <div class="benefit-row">

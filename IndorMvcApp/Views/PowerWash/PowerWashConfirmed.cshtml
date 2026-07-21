@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.PowerWashConfirmedViewModel
 @{
     ViewData["Title"] = L["Power Wash Request Confirmed - INDOR"];
-    ViewData["WizardTitle"] = Model.NombreServicio;
+    ViewData["WizardTitle"] = L.Catalog(Model.NombreServicio);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }

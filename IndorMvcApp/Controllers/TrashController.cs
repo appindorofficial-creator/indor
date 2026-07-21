@@ -14,11 +14,13 @@ public class TrashController : Controller
 {
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IIndorLocalizer _localizer;
 
-    public TrashController(AppDbContext db, UserManager<ApplicationUser> userManager)
+    public TrashController(AppDbContext db, UserManager<ApplicationUser> userManager, IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -135,6 +137,11 @@ public class TrashController : Controller
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
+            PageTitle = Microservicio.ResolveBrandNombre(
+                solicitud.MicroservicioId,
+                solicitud.Microservicio?.Nombre ?? "Stress-Free Trash",
+                solicitud.Microservicio?.NombreEs,
+                _localizer.IsSpanish),
             TipoAyuda = solicitud.TipoAyuda ?? "TakeOutReturn",
             RecordatorioCuando = solicitud.RecordatorioCuando ?? "OneDayBefore",
             VentanaRecoleccion = solicitud.VentanaRecoleccion ?? "Morning7_12",
@@ -278,7 +285,7 @@ public class TrashController : Controller
         return (microservicio, landing);
     }
 
-    private static TrashServiceViewModel BuildServiceViewModel(
+    private TrashServiceViewModel BuildServiceViewModel(
         Microservicio microservicio,
         TrashServicioLanding landing,
         SolicitudTrash? existing,
@@ -290,12 +297,13 @@ public class TrashController : Controller
             items = SplitPipePairs(microservicio.Incluye, null);
         }
 
+        var brandName = microservicio.LocalizedNombre(_localizer.IsSpanish);
         return new TrashServiceViewModel
         {
             MicroservicioId = microservicio.Id,
             SolicitudId = existing?.Id ?? posted?.SolicitudId,
-            PageTitle = landing.PageTitle,
-            LandingTitulo = landing.LandingTitulo,
+            PageTitle = brandName,
+            LandingTitulo = brandName,
             LandingTagline = landing.LandingTagline ?? microservicio.Subtitulo,
             LandingSubtitulo = landing.LandingSubtitulo,
             ImagenUrl = ResolveImageUrl(landing.ImagenUrl ?? microservicio.ImagenUrl),
@@ -312,6 +320,11 @@ public class TrashController : Controller
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
+            PageTitle = Microservicio.ResolveBrandNombre(
+                solicitud.MicroservicioId,
+                solicitud.Microservicio?.Nombre ?? "Stress-Free Trash",
+                solicitud.Microservicio?.NombreEs,
+                _localizer.IsSpanish),
             BinsSeleccionados = posted?.BinsSeleccionados ?? solicitud.BinsSeleccionados ?? "Trash",
             CantidadBins = posted?.CantidadBins ?? solicitud.CantidadBins ?? "One",
             Frecuencia = posted?.Frecuencia ?? solicitud.Frecuencia ?? "OneTime",
@@ -319,11 +332,16 @@ public class TrashController : Controller
             PrecioMensual = TrashPricingService.GetMonthlyPrice(posted?.CantidadBins ?? solicitud.CantidadBins)
         };
 
-    private static TrashReviewViewModel BuildReviewViewModel(SolicitudTrash solicitud, string? infoBox) =>
+    private TrashReviewViewModel BuildReviewViewModel(SolicitudTrash solicitud, string? infoBox) =>
         new()
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
+            PageTitle = Microservicio.ResolveBrandNombre(
+                solicitud.MicroservicioId,
+                solicitud.Microservicio?.Nombre ?? "Stress-Free Trash",
+                solicitud.Microservicio?.NombreEs,
+                _localizer.IsSpanish),
             BinsLabel = TrashDisplayLabels.FormatBinsList(solicitud.BinsSeleccionados),
             ServiceTypeLabel = TrashDisplayLabels.FormatHelpType(solicitud.TipoAyuda),
             FrequencyLabel = TrashDisplayLabels.FormatFrequency(solicitud.Frecuencia),

@@ -69,8 +69,13 @@
             <div class="rl-hscroll">
                 @foreach (var file in Model.PropertyFiles)
                 {
+                    var fileCode = $"PF-{file.Id}";
                     <article class="rl-premium-card rl-premium-card--file">
-                        <button type="button" class="rl-card-menu" aria-label="@L["Options"]"><i class="fas fa-ellipsis-vertical"></i></button>
+                        <button type="button" class="rl-card-menu" aria-label="@L["Options"]" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-vertical"></i></button>
+                        <div class="rl-card-menu-dropdown" role="menu" hidden>
+                            <a href="@file.ActionUrl" class="rl-card-menu-item" role="menuitem"><i class="fas fa-folder-open"></i> @L["Open file"]</a>
+                            <button type="button" class="rl-card-menu-item" data-copy="@fileCode" role="menuitem"><i class="fas fa-copy"></i> @L["Copy File ID"]</button>
+                        </div>
                         <div class="rl-premium-card-media">
                             <img src="@file.PhotoUrl" alt="" class="rl-premium-card-img" />
                             <span class="rl-card-image-badge rl-status-pill rl-status-pill--@file.StatusCss">@UiDisplayLocalization.Localize(L, file.StatusLabel)</span>
@@ -200,4 +205,77 @@
             </ul>
         </div>
     </section>
+
+    <div class="rl-toast" id="rlHomeToast" role="status" aria-live="polite" hidden></div>
 </div>
+
+@section Scripts {
+<script>
+    (function () {
+        var fileIdCopiedTemplate = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["File ID copied: {0}"]));
+        var copyFileIdPrompt = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Copy File ID:"]));
+
+        function closeAllMenus(except) {
+            document.querySelectorAll('.rl-card-menu-dropdown:not([hidden])').forEach(function (menu) {
+                if (menu === except) { return; }
+                menu.hidden = true;
+                var btn = menu.previousElementSibling;
+                if (btn && btn.hasAttribute('aria-expanded')) {
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+
+        function toggleMenu(btn, menu) {
+            var willOpen = menu.hidden;
+            closeAllMenus(willOpen ? menu : null);
+            menu.hidden = !willOpen;
+            btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        }
+
+        document.querySelectorAll('.rl-card-menu').forEach(function (btn) {
+            var menu = btn.nextElementSibling;
+            if (!menu || !menu.classList.contains('rl-card-menu-dropdown')) { return; }
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                toggleMenu(btn, menu);
+            });
+        });
+
+        var toast = document.getElementById('rlHomeToast');
+        var toastTimer = null;
+        function showToast(message) {
+            if (!toast) { return; }
+            toast.textContent = message;
+            toast.hidden = false;
+            toast.classList.add('is-visible');
+            if (toastTimer) { clearTimeout(toastTimer); }
+            toastTimer = setTimeout(function () {
+                toast.classList.remove('is-visible');
+                toastTimer = setTimeout(function () { toast.hidden = true; }, 250);
+            }, 2200);
+        }
+
+        document.querySelectorAll('.rl-card-menu-item[data-copy]').forEach(function (item) {
+            item.addEventListener('click', async function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var value = item.getAttribute('data-copy') || '';
+                try {
+                    await navigator.clipboard.writeText(value);
+                    showToast(fileIdCopiedTemplate.replace('{0}', value));
+                } catch (_) {
+                    window.prompt(copyFileIdPrompt, value);
+                }
+                closeAllMenus(null);
+            });
+        });
+
+        document.addEventListener('click', function () { closeAllMenus(null); });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') { closeAllMenus(null); }
+        });
+    })();
+</script>
+}

@@ -28,7 +28,7 @@ var isDanger = string.Equals(Model.PeligroInmediatoResumen, "Yes", StringCompari
             <div class="summary-row"><i class="fas fa-circle-exclamation danger"></i><div style="flex:1;"><div class="summary-label">@L["Immediate danger"]</div><div class="summary-value @(isDanger ? "danger" : "")">@Model.PeligroInmediatoResumen</div></div></div>
             <div class="summary-row"><i class="fas fa-bolt"></i><div style="flex:1;"><div class="summary-label">@L["Utility risk"]</div><div class="summary-value">@Model.RiesgoUtilidadResumen</div></div></div>
             <div class="summary-row"><i class="fas fa-road"></i><div style="flex:1;"><div class="summary-label">@L["Access"]</div><div class="summary-value">@Model.AccesoCasaResumen</div></div></div>
-            <div class="summary-row"><i class="fas fa-images"></i><div style="flex:1;"><div class="summary-label">@L["Photos"]</div><div class="summary-value @(hasPhotos ? "photos" : "")">@L.Catalog(Model.ArchivosResumen)</div></div></div>
+            <div class="summary-row"><i class="fas fa-images"></i><div style="flex:1;"><div class="summary-label">@L["Photos"]</div><div class="summary-value @(hasPhotos ? "photos" : "")">@UiDisplayLocalization.Localize(L, Model.ArchivosResumen)</div></div></div>
             <div class="summary-row"><i class="fas fa-phone"></i><div style="flex:1;"><div class="summary-label">@L["Contact"]</div><div class="summary-value">@Model.TelefonoContacto</div></div></div>
             <div class="summary-row"><i class="fas fa-clock"></i><div style="flex:1;"><div class="summary-label">@L["Estimated arrival"]</div><div class="summary-value eta">@Model.TiempoLlegadaRango</div></div></div>
         </div>

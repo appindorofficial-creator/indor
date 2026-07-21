@@ -238,7 +238,7 @@ public class RemodelingServicioController : Controller
             NombreServicio = solicitud.Servicio?.Nombre ?? "Remodeling project",
             DireccionPropiedad = solicitud.DireccionPropiedad ?? "—",
             VentanaTiempoLabel = RemodelingServicioDisplayLabels.FormatTiming(solicitud.VentanaTiempo),
-            EstadoLabel = "Pending quote"
+            EstadoLabel = RemodelingServicioDisplayLabels.FormatPendingQuoteStatus()
         });
     }
 

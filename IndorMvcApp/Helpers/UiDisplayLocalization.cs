@@ -31,7 +31,10 @@ public static class UiDisplayLocalization
         (new Regex(@"^(\d+)\s+bed$", RegexOptions.IgnoreCase), "{0} bed"),
         (new Regex(@"^(\d+)\s+beds$", RegexOptions.IgnoreCase), "{0} beds"),
         (new Regex(@"^(\d+(?:\.\d+)?)\s+baths?$", RegexOptions.IgnoreCase), "{0} baths"),
+        (new Regex(@"^Built\s+(\d+)$", RegexOptions.IgnoreCase), "Built {0}"),
+        (new Regex(@"^(\d{1,3}(?:,\d{3})*)\s+sq\s*ft$", RegexOptions.IgnoreCase), "{0} sq ft"),
         (new Regex(@"^(\d{1,3}(?:,\d{3})*)\s+sqft$", RegexOptions.IgnoreCase), "{0} sqft"),
+        (new Regex(@"^([\d.]+)\s+acres$", RegexOptions.IgnoreCase), "{0} acres"),
         (new Regex(@"^([\d.]+) mi away$", RegexOptions.IgnoreCase), "{0} mi away"),
         (new Regex(@"^([\d.]+)\s+miles away$", RegexOptions.IgnoreCase), "{0} miles away"),
         (new Regex(@"^([\d.]+) miles around you$", RegexOptions.IgnoreCase), "{0} miles around you"),
@@ -44,6 +47,13 @@ public static class UiDisplayLocalization
         (new Regex(@"^(\d+)\s+urgent items?$", RegexOptions.IgnoreCase), "{0} urgent items"),
         (new Regex(@"^(\d+)\s+high-priority items?$", RegexOptions.IgnoreCase), "{0} high-priority items"),
         (new Regex(@"^(\d+)\s+moderate items?$", RegexOptions.IgnoreCase), "{0} moderate items"),
+        (new Regex(@"^(\d+)\s+photos uploaded$", RegexOptions.IgnoreCase), "{0} photos uploaded"),
+        (new Regex(@"^1 photo uploaded$", RegexOptions.IgnoreCase), "1 photo uploaded"),
+        (new Regex(@"^(\d+)\s+photos$", RegexOptions.IgnoreCase), "{0} photos"),
+        (new Regex(@"^(\d+)\s+attached$", RegexOptions.IgnoreCase), "{0} attached"),
+        (new Regex(@"^(\d+)\s+uploaded$", RegexOptions.IgnoreCase), "{0} uploaded"),
+        // Reminder lead chips (Lawn and sibling wizards)
+        (new Regex(@"^(\d+)\s+days before$", RegexOptions.IgnoreCase), "{0} days before"),
     ];
 
     /// <summary>
@@ -97,6 +107,46 @@ public static class UiDisplayLocalization
             {
                 return ignoreCaseHit;
             }
+        }
+
+        var activeRiskMatch = Regex.Match(
+            text,
+            @"^(.+),\s*Active risk:\s*(.+)$",
+            RegexOptions.IgnoreCase);
+        if (activeRiskMatch.Success)
+        {
+            return localizer.T(
+                "{0}, Active risk: {1}",
+                Localize(localizer, activeRiskMatch.Groups[1].Value.Trim()),
+                Localize(localizer, activeRiskMatch.Groups[2].Value.Trim()));
+        }
+
+        var visibleMoistureMatch = Regex.Match(
+            text,
+            @"^(.+),\s*Visible moisture:\s*(.+)$",
+            RegexOptions.IgnoreCase);
+        if (visibleMoistureMatch.Success)
+        {
+            return localizer.T(
+                "{0}, Visible moisture: {1}",
+                Localize(localizer, visibleMoistureMatch.Groups[1].Value.Trim()),
+                Localize(localizer, visibleMoistureMatch.Groups[2].Value.Trim()));
+        }
+
+        // Card payment lines: "Visa ending in 4242" / "Expires 08/28"
+        var endingInMatch = Regex.Match(text, @"^(.+?)\s+ending in\s+(\d{2,4})$", RegexOptions.IgnoreCase);
+        if (endingInMatch.Success)
+        {
+            return localizer.T(
+                "{0} ending in {1}",
+                Localize(localizer, endingInMatch.Groups[1].Value.Trim()),
+                endingInMatch.Groups[2].Value);
+        }
+
+        var expiresMatch = Regex.Match(text, @"^Expires\s+(.+)$", RegexOptions.IgnoreCase);
+        if (expiresMatch.Success)
+        {
+            return localizer.T("Expires {0}", expiresMatch.Groups[1].Value.Trim());
         }
 
         if (text.StartsWith("Today, ", StringComparison.OrdinalIgnoreCase))
@@ -621,6 +671,17 @@ public static class UiDisplayLocalization
             return localizer.T("{0} Package", text[..^" Package".Length].Trim());
         }
 
+        // Time-of-day schedule labels: "Morning 8–11", "Afternoon 2–5", etc.
+        var timeOfDayMatch = Regex.Match(
+            text,
+            @"^(Morning|Midday|Afternoon|Evening)\s+(.+)$",
+            RegexOptions.IgnoreCase);
+        if (timeOfDayMatch.Success)
+        {
+            var period = localizer.T(timeOfDayMatch.Groups[1].Value);
+            return $"{period} {timeOfDayMatch.Groups[2].Value}";
+        }
+
         if (text.StartsWith("From: ", StringComparison.OrdinalIgnoreCase))
         {
             return localizer.T("From: {0}", text["From: ".Length..].Trim());
@@ -753,16 +814,21 @@ public static class UiDisplayLocalization
         }
 
         // Realtor activity notifications (must run before the generic "at/in/en" matcher).
-        if (text.StartsWith("You expressed interest in ", StringComparison.OrdinalIgnoreCase))
+        // Accept Spanglish "… interest en …" when a prior pass already swapped in→en.
+        var expressedInterestMatch = Regex.Match(
+            text,
+            @"^You expressed interest (?:in|en) (.+)$",
+            RegexOptions.IgnoreCase);
+        if (expressedInterestMatch.Success)
         {
             return localizer.T(
                 "You expressed interest in {0}",
-                text["You expressed interest in ".Length..].Trim());
+                expressedInterestMatch.Groups[1].Value.Trim());
         }
 
         var interestedListingMatch = Regex.Match(
             text,
-            @"^(.+) is interested in your listing at (.+)$",
+            @"^(.+) is interested (?:in|en) your listing (?:at|in|en) (.+)$",
             RegexOptions.IgnoreCase);
         if (interestedListingMatch.Success)
         {
@@ -948,19 +1014,45 @@ public static class UiDisplayLocalization
             return localizer.T("Findings sent to providers");
         }
 
-        // Match "Name at Address" style labels (also Spanglish "Lawn Care en …" / "… in …").
-        // Avoid phrases like "at least".
-        var atPropertyMatch = Regex.Match(
+        // PA nearest-pro ETA lines (must run before the generic "at/in/en" matcher,
+        // which would otherwise split on "available in N minutes").
+        var nearestProMatch = Regex.Match(
             text,
-            @"^(.+?)\s+(?:at|in|en)\s+(.+)$",
+            @"^Nearest (.+?) pro available in (\d+) minutes$",
             RegexOptions.IgnoreCase);
-        if (atPropertyMatch.Success
-            && !atPropertyMatch.Groups[2].Value.StartsWith("least", StringComparison.OrdinalIgnoreCase))
+        if (nearestProMatch.Success)
         {
             return localizer.T(
-                "{0} at {1}",
-                Localize(localizer, atPropertyMatch.Groups[1].Value.Trim()),
-                Localize(localizer, atPropertyMatch.Groups[2].Value.Trim()));
+                "Nearest {0} pro available in {1} minutes",
+                Localize(localizer, nearestProMatch.Groups[1].Value.Trim()),
+                nearestProMatch.Groups[2].Value);
+        }
+
+        // Match "Name at Address" style labels (also Spanglish "Lawn Care en …" / "… in …").
+        // Never rewrite phrases that contain "at least" (e.g. validation: "select at least one…"),
+        // or "{0} at {1}" becomes "{0} en {1}" and yields "… en least …".
+        // Skip realtor notification bodies — they have dedicated templates above; this matcher
+        // would otherwise turn "You expressed interest in …" into Spanglish "… interest en …".
+        if (!text.Contains(" at least ", StringComparison.OrdinalIgnoreCase)
+            && !text.Contains(" at least.", StringComparison.OrdinalIgnoreCase)
+            && !text.StartsWith("You expressed interest ", StringComparison.OrdinalIgnoreCase)
+            && !text.StartsWith("Created property ", StringComparison.OrdinalIgnoreCase)
+            && !text.Contains(" is interested ", StringComparison.OrdinalIgnoreCase)
+            && !text.Contains(" interested in your listing ", StringComparison.OrdinalIgnoreCase)
+            && !text.Contains(" interested en your listing ", StringComparison.OrdinalIgnoreCase))
+        {
+            var atPropertyMatch = Regex.Match(
+                text,
+                @"^(.+?)\s+(?:at|in|en)\s+(.+)$",
+                RegexOptions.IgnoreCase);
+            if (atPropertyMatch.Success
+                && !atPropertyMatch.Groups[2].Value.StartsWith("least", StringComparison.OrdinalIgnoreCase))
+            {
+                return localizer.T(
+                    "{0} at {1}",
+                    Localize(localizer, atPropertyMatch.Groups[1].Value.Trim()),
+                    Localize(localizer, atPropertyMatch.Groups[2].Value.Trim()));
+            }
         }
 
         var timestampAtMatch = Regex.Match(text, @"^(.+?) at (\d{1,2}:\d{2} [AP]M)$", RegexOptions.IgnoreCase);
@@ -1054,6 +1146,58 @@ public static class UiDisplayLocalization
         return string.Join(", ",
             text.Split(", ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                 .Select(part => Localize(localizer, part)));
+    }
+
+    /// <summary>
+    /// Inspector wording is often a raw English PDF quote. When UI is Spanish, prefer a Spanish
+    /// AI summary (description) if the excerpt was not translated and still looks English.
+    /// </summary>
+    public static string LocalizeInspectorWording(
+        IIndorLocalizer localizer,
+        string? sourceExcerpt,
+        string? spanishFallbackDescription)
+    {
+        if (!localizer.IsSpanish)
+        {
+            return string.IsNullOrWhiteSpace(sourceExcerpt)
+                ? (spanishFallbackDescription ?? string.Empty)
+                : Localize(localizer, sourceExcerpt);
+        }
+
+        if (!string.IsNullOrWhiteSpace(sourceExcerpt))
+        {
+            var localized = Localize(localizer, sourceExcerpt);
+            if (!string.Equals(localized, sourceExcerpt, StringComparison.Ordinal)
+                || !AppearsPrimarilyEnglish(sourceExcerpt))
+            {
+                return localized;
+            }
+        }
+
+        if (!string.IsNullOrWhiteSpace(spanishFallbackDescription))
+        {
+            return Localize(localizer, spanishFallbackDescription);
+        }
+
+        return sourceExcerpt ?? string.Empty;
+    }
+
+    public static bool AppearsPrimarilyEnglish(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        if (text.IndexOfAny(['á', 'é', 'í', 'ó', 'ú', 'ñ', 'ü', 'Á', 'É', 'Í', 'Ó', 'Ú', 'Ñ', 'Ü', '¿', '¡']) >= 0)
+        {
+            return false;
+        }
+
+        return Regex.IsMatch(
+            text,
+            @"\b(the|are|is|was|were|and|with|from|this|that|than|of|on|in|to|for|not|a|an)\b",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
     }
 
     private static string LocalizeRelativeTimestamp(IIndorLocalizer localizer, string value)

@@ -26,7 +26,7 @@
             {
                 <details class="roof-rec-item">
                     <summary class="roof-rec-row">
-                        <div class="left"><i class="fas @item.Icon"></i><span>@L.Catalog(item.Text)</span></div>
+                        <div class="left"><i class="fas @item.Icon"></i><span>@L[item.Text]</span></div>
                         <div class="right" aria-hidden="true"><i class="fas fa-chevron-right"></i></div>
                     </summary>
                     @if (!string.IsNullOrWhiteSpace(item.Subtext))
@@ -45,7 +45,7 @@
             <div class="check-grid-3">
                 @foreach (var item in Model.CheckItems)
                 {
-                    <div class="check-item"><i class="fas @item.Icon"></i><span>@L.Catalog(item.Text)</span></div>
+                    <div class="check-item"><i class="fas @item.Icon"></i><span>@L[item.Text]</span></div>
                 }
             </div>
         </div>

@@ -32,8 +32,8 @@
             <div class="pa-personal-row pa-billing-method">
                 <span class="pa-personal-row-icon"><i class="fas fa-credit-card"></i></span>
                 <div>
-                    <strong>@Model.PaymentMethodLabel</strong>
-                    <small>@Model.PaymentMethodExpiry</small>
+                    <strong>@UiDisplayLocalization.Localize(L, Model.PaymentMethodLabel)</strong>
+                    <small>@UiDisplayLocalization.Localize(L, Model.PaymentMethodExpiry)</small>
                 </div>
                 <i class="fas fa-chevron-right"></i>
             </div>
@@ -47,12 +47,12 @@
             {
                 <div class="pa-billing-invoice">
                     <div class="pa-billing-invoice-main">
-                        <strong>@invoice.Title</strong>
+                        <strong>@UiDisplayLocalization.Localize(L, invoice.Title)</strong>
                         <small>@invoice.PropertyName • @invoice.DateLabel</small>
                     </div>
                     <div class="pa-billing-invoice-meta">
                         <span class="pa-billing-amount">@invoice.AmountLabel</span>
-                        <span class="pa-billing-status is-@invoice.StatusCss">@invoice.StatusLabel</span>
+                        <span class="pa-billing-status is-@invoice.StatusCss">@UiDisplayLocalization.Localize(L, invoice.StatusLabel)</span>
                     </div>
                 </div>
             }

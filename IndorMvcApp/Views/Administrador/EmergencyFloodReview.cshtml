@@ -1,0 +1,79 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorEmergencyFloodReviewViewModel
+@{
+    ViewData["Title"] = L["Review emergency request"];
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Review emergency request"].ToString();
+    ViewBag.FlowSubtitle = L["Make sure everything looks right before we dispatch help."].ToString();
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Review"].ToString(), L["Done"].ToString() };
+    ViewBag.FlowBackUrl = Url.Action("EmergencyFloodDetails", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    var input = Model.Input;
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <article class="pa-moving-review-card">
+        @foreach (var row in Model.SummaryRows)
+        {
+            <div class="pa-moving-review-row">
+                <span class="pa-moving-review-label"><i class="fas @row.IconClass"></i> @UiDisplayLocalization.Localize(L, row.Label)</span>
+                <strong class="pa-moving-review-value @(row.Highlight ? "is-alert" : null)">@UiDisplayLocalization.Localize(L, row.Value)</strong>
+            </div>
+        }
+    </article>
+
+    <article class="pa-sewer-pro-bar">
+        <span class="pa-sewer-pro-bar-icon"><i class="fas fa-water"></i></span>
+        <div>
+            <strong>@UiDisplayLocalization.Localize(L, Model.ProEtaLabel)</strong>
+            <small>@L["Licensed • Insured • IICRC-ready"]</small>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </article>
+
+    <article class="pa-tree-pro-card">
+        <div class="pa-tree-pro-head">
+            <span class="pa-tree-pro-icon"><i class="fas fa-tags"></i></span>
+            <div>
+                <strong>@L["Estimated diagnostic visit"]</strong>
+                <div class="pa-trust-badges">
+                    <span>@L["Licensed"]</span><span>@L["Insured"]</span><span>@L["Fast response"]</span>
+                </div>
+            </div>
+        </div>
+        <p>@L["Estimated:"] <strong>@Model.EstimatedPrice</strong> @L["diagnostic / emergency mitigation triage"]</p>
+        <p>@L["Priority"] <span class="pa-included">@L["included"]</span></p>
+    </article>
+
+    <form asp-action="EmergencyFloodReview" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@input.PropertyId" />
+        <input type="hidden" name="ProblemType" value="@input.ProblemType" />
+        <input type="hidden" name="WaterActivelyComingIn" value="@input.WaterActivelyComingIn" />
+        <input type="hidden" name="GuestsInside" value="@input.GuestsInside" />
+        <input type="hidden" name="Urgency" value="@input.Urgency" />
+        <input type="hidden" name="WaterLocation" value="@input.WaterLocation" />
+        <input type="hidden" name="EntryAccess" value="@input.EntryAccess" />
+        <input type="hidden" name="ContactPhone" value="@input.ContactPhone" />
+        <input type="hidden" name="Notes" value="@input.Notes" />
+        <input type="hidden" name="ProcessThroughInsurance" value="@input.ProcessThroughInsurance" />
+        <input type="hidden" name="InsuranceCarrier" value="@input.InsuranceCarrier" />
+        <input type="hidden" name="ClaimOpened" value="@input.ClaimOpened" />
+        <input type="hidden" name="ClaimNumber" value="@input.ClaimNumber" />
+        <input type="hidden" name="MediaAttachmentsJson" value="@input.MediaAttachmentsJson" />
+        <input type="hidden" name="PolicyDocsJson" value="@input.PolicyDocsJson" />
+
+        <div class="pa-notify-banner pa-notify-banner--warn">
+            <i class="fas fa-circle-info"></i>
+            <span>@L["We can help coordinate with insurance-backed mitigation if documentation is available."]</span>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Request emergency service"]</button>
+    </form>
+    <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit" data-no-nav-loading="true">@L["Edit details"]</a>
+    <a href="@PropertyAdministratorFlowServiceSupport.ServicesUrl(Url, Model.ViewingProperty?.Id)" class="pa-back-link">@L["Back to services"]</a>
+</div>

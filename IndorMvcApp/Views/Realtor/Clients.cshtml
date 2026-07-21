@@ -23,8 +23,8 @@
                asp-route-returnTo="clients"
                class="rl-btn-primary rl-btn-primary--sm rl-page-hero-btn"
                id="rlClientsAddBtn"
-               aria-label="@L["Add client — start invite wizard"]">
-                <i class="fas fa-plus" aria-hidden="true"></i> @L["Add Client"]
+               aria-label="@L["Invite Client"]">
+                <i class="fas fa-plus" aria-hidden="true"></i> @L["Invite Client"]
             </a>
         </div>
 
@@ -66,11 +66,6 @@
     <section class="rl-dash-section rl-clients-qa-section">
         <h2 class="rl-clients-qa-title">@L["Quick Actions"]</h2>
         <div class="rl-qa-grid">
-            <a asp-controller="RealtorInviteClient" asp-action="New" asp-route-returnTo="clients" class="rl-qa-card">
-                <span class="rl-qa-icon rl-qa-icon--blue"><i class="fas fa-user-plus"></i></span>
-                <span class="rl-qa-label">@L["Invite Client"]</span>
-                <i class="fas fa-chevron-right rl-qa-chevron"></i>
-            </a>
             <a asp-controller="RealtorPropertyFile" asp-action="Details" asp-route-returnTo="clients" class="rl-qa-card">
                 <span class="rl-qa-icon rl-qa-icon--green"><i class="fas fa-folder-plus"></i></span>
                 <span class="rl-qa-label">@L["Create File"]</span>

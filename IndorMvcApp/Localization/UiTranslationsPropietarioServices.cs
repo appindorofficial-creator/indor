@@ -69,6 +69,8 @@ public static class UiTranslationsPropietarioServices
             ["Next available"] = "Próximo disponible",
             ["Morning"] = "Mañana",
             ["Afternoon"] = "Tarde",
+            ["Midday"] = "Mediodía",
+            ["Evening"] = "Noche",
             ["Flexible"] = "Flexible",
             ["Access details"] = "Detalles de acceso",
             ["House"] = "Casa",
@@ -151,9 +153,17 @@ public static class UiTranslationsPropietarioServices
             ["5–8 PM"] = "5–8 p. m.",
             ["1 day before"] = "1 día antes",
             ["2 days before"] = "2 días antes",
+            ["3 days before"] = "3 días antes",
+            ["{0} days before"] = "{0} días antes",
+            ["Reminder channel"] = "Canal de recordatorio",
+            ["FullService"] = "Servicio completo",
+            ["ReminderOnly"] = "Solo recordatorio",
+            ["Morning 8–11"] = "Mañana 8–11",
+            ["Midday 11–2"] = "Mediodía 11–2",
+            ["Afternoon 2–5"] = "Tarde 2–5",
             ["Push"] = "Notificación",
             ["SMS"] = "SMS",
-            ["Email"] = "Correo",
+            ["Email"] = "Correo electrónico",
 
             // Trash — landing & setup
             ["Trash"] = "Basura",
@@ -250,15 +260,17 @@ public static class UiTranslationsPropietarioServices
             // Cleaning Pro confirmed
             ["Your {0} service is all set."] = "Tu servicio de {0} está listo.",
 
-            // DisplayLabels — inspections
+            // DisplayLabels — inspections (+ ElectricalDetails chips)
             ["Buying a home"] = "Comprar una vivienda",
             ["Safety check"] = "Revisión de seguridad",
             ["Issue at home"] = "Problema en el hogar",
             ["Inspection follow-up"] = "Seguimiento de inspección",
-            ["Breaker trips"] = "Interruptor salta",
+            ["Breaker trips"] = "Se dispara el breaker",
             ["Lights flicker"] = "Luces parpadean",
             ["Outlets not working"] = "Tomas sin funcionar",
             ["Old panel"] = "Panel antiguo",
+            ["Burning smell"] = "Olor a quemado",
+            ["General review"] = "Revisión general",
             ["General electrical review"] = "Revisión eléctrica general",
             ["Understand repair risks"] = "Entender riesgos de reparación",
             ["Home purchase review"] = "Revisión de compra de vivienda",

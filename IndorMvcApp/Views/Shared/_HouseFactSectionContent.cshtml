@@ -9,19 +9,34 @@
         _ => "school"
     };
 
-    string SchoolLevelShort(string level) => level.ToUpperInvariant() switch
+    string SchoolLevelShort(string level)
     {
-        "ELEMENTARY" => "Elem",
-        "MIDDLE" => "Mid",
-        "HIGH" => "High",
-        "DISTRICT" => "Dist",
-        _ => "Sch"
-    };
+        if (L.IsSpanish)
+        {
+            return level.ToUpperInvariant() switch
+            {
+                "ELEMENTARY" => "Prim",
+                "MIDDLE" => "Media",
+                "HIGH" => "Prep",
+                "DISTRICT" => "Dist",
+                _ => "Esc"
+            };
+        }
+
+        return level.ToUpperInvariant() switch
+        {
+            "ELEMENTARY" => "Elem",
+            "MIDDLE" => "Mid",
+            "HIGH" => "High",
+            "DISTRICT" => "Dist",
+            _ => "Sch"
+        };
+    }
 }
 
 @if (!string.IsNullOrWhiteSpace(Model.Paragraph))
 {
-    <p class="hf-narrative">@Model.Paragraph</p>
+    <p class="hf-narrative">@UiDisplayLocalization.Localize(L, Model.Paragraph)</p>
 }
 
 @if (Model.Schools.Count > 0)
@@ -38,7 +53,7 @@
                 <div class="hf-school-level @levelClass">@SchoolLevelShort(school.Level)</div>
                 <div class="hf-school-info">
                     <div class="hf-school-name">@school.Name</div>
-                    <div class="hf-school-detail">@school.Detail</div>
+                    <div class="hf-school-detail">@UiDisplayLocalization.Localize(L, school.Detail)</div>
                     @if (!string.IsNullOrWhiteSpace(school.Distance) || !string.IsNullOrWhiteSpace(school.Rating))
                     {
                         <div class="hf-school-tags">
@@ -66,10 +81,10 @@
             <li>
                 <i class="fas @(Model.SectionKind == "questions" ? "fa-comment-dots" : Model.SectionKind == "action-flow" ? "fa-route" : "fa-circle-exclamation")"></i>
                 <span>
-                    @item.Item
+                    @UiDisplayLocalization.Localize(L, item.Item)
                     @if (!string.IsNullOrWhiteSpace(item.Status))
                     {
-                        <span class="hf-checklist-status">@item.Status</span>
+                        <span class="hf-checklist-status">@UiDisplayLocalization.Localize(L, item.Status)</span>
                     }
                 </span>
             </li>
@@ -82,17 +97,17 @@ else if (Model.SectionKind == "sources")
         @foreach (var source in Model.Sources)
         {
             <div class="hf-source-card">
-                <div class="hf-source-name">@source.SourceName</div>
+                <div class="hf-source-name">@UiDisplayLocalization.Localize(L, source.SourceName)</div>
                 @if (!string.IsNullOrWhiteSpace(source.Link))
                 {
                     <a class="hf-source-link" href="@source.Link" target="_blank" rel="noopener noreferrer">
                         <i class="fas fa-arrow-up-right-from-square"></i> @L["Open source"]
                     </a>
                 }
-                <div class="hf-source-info">@source.InformationFound</div>
+                <div class="hf-source-info">@UiDisplayLocalization.Localize(L, source.InformationFound)</div>
                 @if (!string.IsNullOrWhiteSpace(source.Conflicts))
                 {
-                    <div class="hf-source-conflict"><i class="fas fa-triangle-exclamation"></i> @source.Conflicts</div>
+                    <div class="hf-source-conflict"><i class="fas fa-triangle-exclamation"></i> @UiDisplayLocalization.Localize(L, source.Conflicts)</div>
                 }
             </div>
         }
@@ -107,8 +122,8 @@ else if (Model.Fields.Count > 0)
                 || field.Label.Contains("description", StringComparison.OrdinalIgnoreCase)
                 || field.Label.Contains("legal", StringComparison.OrdinalIgnoreCase);
             <div class="hf-field @(isLong ? "full" : "")">
-                <div class="hf-field-label">@field.Label</div>
-                <div class="hf-field-value @(field.NeedsVerification ? "verify" : "")">@field.Value</div>
+                <div class="hf-field-label">@UiDisplayLocalization.Localize(L, field.Label)</div>
+                <div class="hf-field-value @(field.NeedsVerification ? "verify" : "")">@UiDisplayLocalization.Localize(L, field.Value)</div>
             </div>
         }
     </div>
@@ -116,5 +131,5 @@ else if (Model.Fields.Count > 0)
 
 @if (!string.IsNullOrWhiteSpace(Model.Notes))
 {
-    <p class="hf-section-note"><i class="fas fa-circle-info"></i> @Model.Notes</p>
+    <p class="hf-section-note"><i class="fas fa-circle-info"></i> @UiDisplayLocalization.Localize(L, Model.Notes)</p>
 }

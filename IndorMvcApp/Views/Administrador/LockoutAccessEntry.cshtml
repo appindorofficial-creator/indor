@@ -111,8 +111,8 @@
         </div>
 
         <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Review request"]</button>
-        <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit">@L["Edit details"]</a>
-        <a href="@Url.Action("Services", "Administrador", new { propertyId = Model.PropertyId })" class="pa-back-link">@L["Back to start"]</a>
+        <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit" data-no-nav-loading="true">@L["Edit details"]</a>
+        <a href="@PropertyAdministratorFlowServiceSupport.ServicesUrl(Url, Model.PropertyId)" class="pa-back-link">@L["Back to services"]</a>
     </form>
 </div>
 

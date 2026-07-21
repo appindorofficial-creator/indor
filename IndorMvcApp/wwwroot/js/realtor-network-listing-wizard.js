@@ -300,13 +300,16 @@ window.rlListingWizardInit = function (config) {
     // ---------- Multi-step wizard navigation ----------
     var wizard = document.getElementById('rlListingWizard');
     if (wizard) {
-        var stepSections = Array.prototype.slice.call(wizard.querySelectorAll('.rl-lw-step'));
-        var stepperItems = Array.prototype.slice.call(wizard.querySelectorAll('.rl-lw-stepper-item'));
+        var stepSections = Array.prototype.slice.call(wizard.querySelectorAll('section.rl-lw-step[data-step]'));
+        var stepperItems = Array.prototype.slice.call(wizard.querySelectorAll('.rl-lw-stepper-item[data-step]'));
         var titleEl = document.getElementById('rlLwTitle');
         var subEl = document.getElementById('rlLwSub');
         var backBtn = document.getElementById('rlLwBack');
         var feedUrl = wizard.getAttribute('data-feed-url') || '/Realtor/Network';
-        var minStep = parseInt(wizard.getAttribute('data-start-step'), 10) || 1;
+        var minStep = parseInt(wizard.getAttribute('data-start-step'), 10);
+        if (isNaN(minStep) || minStep < 1) {
+            minStep = 1;
+        }
         var totalSteps = stepSections.length || 4;
         var currentStep = minStep;
 
@@ -395,6 +398,10 @@ window.rlListingWizardInit = function (config) {
         }
 
         function setStep(step, skipValidation) {
+            step = parseInt(step, 10);
+            if (isNaN(step)) {
+                step = minStep;
+            }
             step = Math.max(minStep, Math.min(totalSteps, step));
             if (step > currentStep && !skipValidation) {
                 for (var s = currentStep; s < step; s++) {
@@ -405,17 +412,28 @@ window.rlListingWizardInit = function (config) {
             }
             currentStep = step;
 
+            var activated = false;
             stepSections.forEach(function (section) {
                 var sStep = parseInt(section.getAttribute('data-step'), 10);
-                section.classList.toggle('is-active', sStep === step);
+                var on = sStep === step;
+                section.classList.toggle('is-active', on);
+                if (on) {
+                    activated = true;
+                }
             });
+            // Never leave every panel display:none (blank white body under the stepper).
+            if (!activated && stepSections.length) {
+                stepSections[0].classList.add('is-active');
+                currentStep = parseInt(stepSections[0].getAttribute('data-step'), 10) || minStep;
+                step = currentStep;
+            }
             stepperItems.forEach(function (item) {
                 var iStep = parseInt(item.getAttribute('data-step'), 10);
                 item.classList.toggle('is-done', iStep < step);
                 item.classList.toggle('is-active', iStep === step);
             });
 
-            var meta = stepMeta[step] || { title: '', sub: '' };
+            var meta = stepMeta[step] || stepMeta[String(step)] || { title: '', sub: '' };
             if (titleEl) { titleEl.textContent = meta.title; }
             if (subEl) {
                 subEl.textContent = meta.sub;
