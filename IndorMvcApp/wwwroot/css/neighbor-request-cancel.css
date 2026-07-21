@@ -5,6 +5,9 @@
     font-family: Inter, system-ui, sans-serif;
     min-height: 100vh;
     min-height: 100dvh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .nr-cancel-shell {
@@ -12,7 +15,10 @@
     margin: 0 auto;
     min-height: 100vh;
     min-height: 100dvh;
-    padding: 0 16px 28px;
+    padding: 0 16px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
 }
 
 .nr-cancel-top {
@@ -195,6 +201,8 @@
     display: flex;
     flex-direction: column;
     gap: 14px;
+    flex: 1;
+    min-height: 0;
 }
 
 .nr-cancel-field label {
@@ -243,7 +251,7 @@
 
 .nr-cancel-textarea {
     width: 100%;
-    min-height: 112px;
+    min-height: 88px;
     border: 1px solid #E5E7EB;
     border-radius: 14px;
     padding: 14px;
@@ -266,7 +274,12 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 4px;
+    margin-top: auto;
+    padding: 16px 0 calc(24px + env(safe-area-inset-bottom, 0px));
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    background: linear-gradient(180deg, rgba(240, 247, 255, 0) 0%, var(--indor-bg-sky, #F0F7FF) 32%);
 }
 
 .nr-cancel-submit {

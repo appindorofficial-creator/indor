@@ -697,6 +697,8 @@ public static class UiTranslationsFinal
             ["SCHEDULED"] = "PROGRAMADO",
             ["IN PROGRESS"] = "EN CURSO",
             ["COMPLETED"] = "COMPLETADO",
+            ["ACTIVE"] = "ACTIVO",
+            ["CANCELLED"] = "CANCELADA",
             ["OPEN"] = "ABIERTO",
             ["View documents"] = "Ver documentos",
             ["Deeds, insurance, and more"] = "Escrituras, seguros y más",

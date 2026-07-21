@@ -7,7 +7,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     <title>@L["Cancel request"] - INDOR</title>
     @await Html.PartialAsync("_IndorStandalonePageHead")
     <link rel="stylesheet" href="~/css/neighbor-request-cancel.css" asp-append-version="true" />
@@ -36,9 +36,9 @@
                     <i class="fas @Model.IconClass"></i>
                 </span>
                 <div class="nr-cancel-title-wrap">
-                    <h2 class="nr-cancel-title">@Model.Title</h2>
+                    <h2 class="nr-cancel-title">@UiDisplayLocalization.Localize(L, Model.Title)</h2>
                 </div>
-                <span class="nr-cancel-status @Model.StatusCss">@Model.StatusLabel</span>
+                <span class="nr-cancel-status @Model.StatusCss">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
             </div>
 
             @if (!string.IsNullOrWhiteSpace(Model.LocationAddress))
