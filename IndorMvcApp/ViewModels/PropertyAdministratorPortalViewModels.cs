@@ -100,6 +100,7 @@ public class PropertyAdministratorPropertiesPortalViewModel : PropertyAdministra
     public string BackUrl { get; set; } = "#";
     public bool ShowBackHeader { get; set; }
     public string AddPropertyUrl { get; set; } = "#";
+    public string ImportPortfolioUrl { get; set; } = "#";
 }
 
 public class PropertyAdministratorPropertyDetailViewModel : PropertyAdministratorPortalShellViewModel

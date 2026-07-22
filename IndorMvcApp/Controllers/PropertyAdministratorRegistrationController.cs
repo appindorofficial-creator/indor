@@ -266,31 +266,34 @@ public class PropertyAdministratorRegistrationController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> ImportPortfolio()
+    public async Task<IActionResult> ImportPortfolio(string? returnUrl = null)
     {
         if (!await CanAccessPropertiesStepAsync())
         {
             return RedirectToAction(nameof(Portfolio));
         }
 
-        return View(await BuildImportPortfolioViewModelAsync());
+        return View(await BuildImportPortfolioViewModelAsync(returnUrl));
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ImportPortfolio(IFormFile? csvFile, IFormFile? portfolioFile)
+    public async Task<IActionResult> ImportPortfolio(
+        IFormFile? csvFile,
+        IFormFile? portfolioFile,
+        string? returnUrl = null)
     {
         var file = csvFile ?? portfolioFile;
         if (file == null || file.Length == 0)
         {
-            var emptyModel = await BuildImportPortfolioViewModelAsync();
+            var emptyModel = await BuildImportPortfolioViewModelAsync(returnUrl);
             emptyModel.FormError = "Choose a CSV file to import.";
             return View(emptyModel);
         }
 
         if (file.Length > 1024 * 1024)
         {
-            var largeModel = await BuildImportPortfolioViewModelAsync();
+            var largeModel = await BuildImportPortfolioViewModelAsync(returnUrl);
             largeModel.FormError = "CSV files must be 1 MB or smaller.";
             return View(largeModel);
         }
@@ -299,7 +302,7 @@ public class PropertyAdministratorRegistrationController(
         if (!string.Equals(extension, ".csv", StringComparison.OrdinalIgnoreCase)
             && !string.Equals(file.ContentType, "text/csv", StringComparison.OrdinalIgnoreCase))
         {
-            var typeModel = await BuildImportPortfolioViewModelAsync();
+            var typeModel = await BuildImportPortfolioViewModelAsync(returnUrl);
             typeModel.FormError = "Upload a .csv file.";
             return View(typeModel);
         }
@@ -312,7 +315,7 @@ public class PropertyAdministratorRegistrationController(
 
         if (result.ImportedCount == 0)
         {
-            var failedModel = await BuildImportPortfolioViewModelAsync();
+            var failedModel = await BuildImportPortfolioViewModelAsync(returnUrl);
             failedModel.FormError = result.Errors.FirstOrDefault() ?? "No properties were imported.";
             return View(failedModel);
         }
@@ -328,6 +331,18 @@ public class PropertyAdministratorRegistrationController(
         TempData["PropertyAdminImportErrors"] = result.Errors.Count > 0
             ? string.Join('\n', result.Errors)
             : null;
+
+        var safeReturn = ResolveLocalReturnUrl(returnUrl);
+        if (!string.IsNullOrWhiteSpace(safeReturn))
+        {
+            if (!string.IsNullOrWhiteSpace(successMessage))
+            {
+                TempData["PropertyAdminSuccess"] = successMessage;
+            }
+
+            return LocalRedirect(safeReturn);
+        }
+
         return RedirectAfterPropertyChange(successMessage);
     }
 
@@ -688,19 +703,30 @@ public class PropertyAdministratorRegistrationController(
         return !string.IsNullOrWhiteSpace(state.PortfolioType);
     }
 
-    private async Task<PropertyAdministratorImportPortfolioViewModel> BuildImportPortfolioViewModelAsync()
+    private async Task<PropertyAdministratorImportPortfolioViewModel> BuildImportPortfolioViewModelAsync(
+        string? returnUrl = null)
     {
         var state = await registration.GetAsync();
+        var isComplete = await IsRegistrationCompleteAsync();
+        var defaultBack = isComplete
+            ? (Url.Action("Properties", "Administrador") ?? "#")
+            : (Url.Action(nameof(Properties)) ?? "#");
         return new PropertyAdministratorImportPortfolioViewModel
         {
             DisplayStep = 3,
             TotalSteps = 5,
             Title = "Import portfolio",
             Subtitle = "Upload a CSV file to add multiple properties at once.",
-            BackUrl = Url.Action(nameof(Properties))!,
-            State = state
+            BackUrl = ResolveLocalReturnUrl(returnUrl) ?? defaultBack,
+            State = state,
+            IsRegistrationComplete = isComplete
         };
     }
+
+    private string? ResolveLocalReturnUrl(string? returnUrl) =>
+        !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)
+            ? returnUrl
+            : null;
 
     private async Task<PropertyAdministratorUploadDocumentsViewModel> BuildUploadDocumentsViewModelAsync()
     {

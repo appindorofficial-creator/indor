@@ -211,7 +211,9 @@ else if (TempData["PropertyAdminError"] is string err)
     </form>
 </details>
 
-<a asp-action="ImportPortfolio" class="pa-action-row pa-action-row--property-option">
+<a asp-action="ImportPortfolio"
+   asp-route-returnUrl="@Url.Action("Properties", "PropertyAdministratorRegistration")"
+   class="pa-action-row pa-action-row--property-option">
     <span><i class="fas fa-file-import"></i> @L["Import portfolio"]</span>
     <i class="fas fa-chevron-right"></i>
 </a>

@@ -339,6 +339,10 @@ public class PropertyAdministratorPortalService(
                 ? url.Action("Profile", "Administrador") ?? "#"
                 : url.Action("Index", "Administrador") ?? "#",
             AddPropertyUrl = url.Action("Properties", "PropertyAdministratorRegistration") ?? "#",
+            ImportPortfolioUrl = url.Action(
+                "ImportPortfolio",
+                "PropertyAdministratorRegistration",
+                new { returnUrl = url.Action("Properties", "Administrador") }) ?? "#",
             Properties = properties
                 .Select(p => MapPropertyListItem(p, url))
                 .ToList()

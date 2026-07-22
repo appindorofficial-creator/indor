@@ -138,6 +138,7 @@ public class PropertyAdministratorImportPortfolioViewModel : PropertyAdministrat
 {
     public string? FormError { get; set; }
     public string? FormSuccess { get; set; }
+    public bool IsRegistrationComplete { get; set; }
 }
 
 public class PropertyAdministratorUploadDocumentsViewModel : PropertyAdministratorRegistrationStepViewModel

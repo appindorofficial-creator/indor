@@ -1,76 +1,38 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorImportPortfolioViewModel
 @using IndorMvcApp.Models
-@await Html.PartialAsync("_PropertyAdminRegHead", Model)
+@{
+    if (Model.IsRegistrationComplete)
+    {
+        Layout = "_PropertyAdminLayout";
+        ViewData["Title"] = L["Import portfolio"];
+        ViewBag.NavActive = "properties";
+    }
+}
 
-@if (!string.IsNullOrWhiteSpace(Model.FormError))
+@if (Model.IsRegistrationComplete)
 {
-    <div class="pa-summary-error">@UiDisplayLocalization.Localize(L, Model.FormError)</div>
-}
-
-<div class="pa-review-card" style="margin-bottom:16px;">
-    <p class="pa-step-hint" style="margin:0 0 10px;">@L["Use a CSV file with one property per row. Required columns:"]</p>
-    <div class="pa-check-item"><i class="fas fa-circle-check"></i> @L["HouseNumber, StreetName, City, State, ZipCode, PropertyType"]</div>
-    <div class="pa-check-item"><i class="fas fa-circle-check"></i> @L["Nickname (optional)"]</div>
-    <p class="pa-step-hint" style="margin:12px 0 0;">
-        @L["Property type values:"]
-        @string.Join(", ", PropertyAdministratorCatalog.PropertyTypes.Select(type =>
-            L[type.Label]))
-    </p>
-</div>
-
-<p style="margin-bottom:16px;">
-    <a asp-action="DownloadPortfolioTemplate" class="pa-reg-action-back" style="display:inline-flex;align-items:center;gap:6px;">
-        <i class="fas fa-download"></i> @L["Download CSV template"]
-    </a>
-</p>
-
-<form asp-action="ImportPortfolio" method="post" enctype="multipart/form-data" id="importPortfolioForm">
-    @Html.AntiForgeryToken()
-
-    <div class="pa-file-picker" id="csvFilePicker">
-        <i class="fas fa-file-csv pa-file-picker-icon" aria-hidden="true"></i>
-        <input type="file"
-               id="csvFile"
-               name="csvFile"
-               class="pa-file-picker-input"
-               accept=".csv,text/csv,.txt"
-               required />
-        <label for="csvFile" class="pa-file-picker-btn">@L["Choose CSV file"]</label>
-        <span class="pa-file-picker-name" id="csvFileName" data-empty-label="@L["No file selected"]">@L["No file selected"]</span>
+    <div class="pa-portal-shell pa-portal-shell--portfolio">
+        <header class="pa-portfolio-page-header">
+            <a href="@Model.BackUrl" class="pa-profile-back" aria-label="@L["Back"]">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <div class="pa-portfolio-page-header-text">
+                @await Html.PartialAsync("_PropertyAdminRegHead", Model)
+            </div>
+        </header>
+        <div class="pa-portfolio-add-content">
+            @await Html.PartialAsync("_ImportPortfolioBody", Model)
+            <div class="pa-reg-actions" style="margin-top:18px;">
+                <a href="@Model.BackUrl" class="pa-reg-action-back">@L["Back to properties"]</a>
+            </div>
+        </div>
     </div>
-
-    <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">@L["Import properties"]</button>
-</form>
-
-@section Scripts {
-<script>
-    (function () {
-        const input = document.getElementById('csvFile');
-        const nameEl = document.getElementById('csvFileName');
-        const picker = document.getElementById('csvFilePicker');
-        if (!input || !nameEl || !picker) return;
-
-        const emptyLabel = nameEl.dataset.emptyLabel || 'No file selected';
-
-        function syncFileLabel() {
-            const file = input.files && input.files[0];
-            if (file) {
-                nameEl.textContent = file.name;
-                nameEl.classList.add('is-selected');
-                picker.classList.add('has-file');
-            } else {
-                nameEl.textContent = emptyLabel;
-                nameEl.classList.remove('is-selected');
-                picker.classList.remove('has-file');
-            }
-        }
-
-        input.addEventListener('change', syncFileLabel);
-        syncFileLabel();
-    })();
-</script>
 }
-
-<div class="pa-reg-actions" style="margin-top:18px;">
-    <a href="@Model.BackUrl" class="pa-reg-action-back">@L["Back to properties"]</a>
-</div>
+else
+{
+    @await Html.PartialAsync("_PropertyAdminRegHead", Model)
+    @await Html.PartialAsync("_ImportPortfolioBody", Model)
+    <div class="pa-reg-actions" style="margin-top:18px;">
+        <a href="@Model.BackUrl" class="pa-reg-action-back">@L["Back to properties"]</a>
+    </div>
+}
