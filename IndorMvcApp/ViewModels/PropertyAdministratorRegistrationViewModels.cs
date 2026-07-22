@@ -143,9 +143,15 @@ public class PropertyAdministratorImportPortfolioViewModel : PropertyAdministrat
 
 public class PropertyAdministratorUploadDocumentsViewModel : PropertyAdministratorRegistrationStepViewModel
 {
-    public IReadOnlyList<string> UploadedFiles { get; set; } = [];
+    public IReadOnlyList<PropertyAdministratorUploadedDocumentItem> UploadedFiles { get; set; } = [];
     public string? FormError { get; set; }
     public string? FormSuccess { get; set; }
+}
+
+public class PropertyAdministratorUploadedDocumentItem
+{
+    public string Id { get; set; } = "";
+    public string Label { get; set; } = "";
 }
 
 public class PropertyAdministratorDashboardViewModel

@@ -435,7 +435,7 @@ public class PropertyAdministratorRegistrationController(
         var folder = Path.Combine(webRoot, "uploads", "property-admin-registration", userId);
         Directory.CreateDirectory(folder);
 
-        var saved = GetUploadedPropertyDocuments();
+        var saved = GetUploadedPropertyDocumentEntries();
         var errors = new List<string>();
         foreach (var file in files)
         {
@@ -460,13 +460,17 @@ public class PropertyAdministratorRegistrationController(
             }
 
             var label = $"{file.FileName} ({FormatFileSize(file.Length)})";
-            if (!saved.Any(s => s.Equals(label, StringComparison.OrdinalIgnoreCase)))
+            if (!saved.Any(s => s.Label.Equals(label, StringComparison.OrdinalIgnoreCase)))
             {
-                saved.Add(label);
+                saved.Add(new UploadedDocumentEntry
+                {
+                    StoredFileName = stored,
+                    Label = label
+                });
             }
         }
 
-        SaveUploadedPropertyDocuments(saved);
+        SaveUploadedPropertyDocumentEntries(saved);
 
         var uploadedCount = files.Count - errors.Count;
         if (uploadedCount == 0)
@@ -486,6 +490,58 @@ public class PropertyAdministratorRegistrationController(
         }
 
         return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveUploadedPropertyDocument(string? fileId, string? label)
+    {
+        if (!await CanAccessPropertiesStepAsync())
+        {
+            return RedirectToAction(nameof(Portfolio));
+        }
+
+        var entries = GetUploadedPropertyDocumentEntries();
+        UploadedDocumentEntry? match = null;
+        if (!string.IsNullOrWhiteSpace(fileId))
+        {
+            match = entries.FirstOrDefault(e =>
+                e.StoredFileName.Equals(fileId, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (match == null && !string.IsNullOrWhiteSpace(label))
+        {
+            match = entries.FirstOrDefault(e =>
+                e.Label.Equals(label, StringComparison.OrdinalIgnoreCase));
+        }
+
+        if (match != null)
+        {
+            entries.Remove(match);
+            SaveUploadedPropertyDocumentEntries(entries);
+
+            var userId = userManager.GetUserId(User);
+            var safeName = Path.GetFileName(match.StoredFileName);
+            if (!string.IsNullOrWhiteSpace(userId)
+                && !string.IsNullOrWhiteSpace(safeName)
+                && string.Equals(safeName, match.StoredFileName, StringComparison.Ordinal))
+            {
+                var physical = Path.Combine(
+                    ResolveWebRootPath(),
+                    "uploads",
+                    "property-admin-registration",
+                    userId,
+                    safeName);
+                if (System.IO.File.Exists(physical))
+                {
+                    System.IO.File.Delete(physical);
+                }
+            }
+        }
+
+        var model = await BuildUploadDocumentsViewModelAsync();
+        model.FormSuccess = L["Document removed."].ToString();
+        return View(nameof(UploadPropertyDocuments), model);
     }
 
     [HttpPost]
@@ -774,11 +830,23 @@ public class PropertyAdministratorRegistrationController(
             Subtitle = "Add leases, deeds, or spreadsheets to help INDOR understand your portfolio.",
             BackUrl = Url.Action(nameof(Properties))!,
             State = state,
-            UploadedFiles = GetUploadedPropertyDocuments()
+            UploadedFiles = GetUploadedPropertyDocumentEntries()
+                .Select(e => new PropertyAdministratorUploadedDocumentItem
+                {
+                    Id = e.StoredFileName,
+                    Label = e.Label
+                })
+                .ToList()
         };
     }
 
-    private List<string> GetUploadedPropertyDocuments()
+    private sealed class UploadedDocumentEntry
+    {
+        public string StoredFileName { get; set; } = "";
+        public string Label { get; set; } = "";
+    }
+
+    private List<UploadedDocumentEntry> GetUploadedPropertyDocumentEntries()
     {
         var raw = HttpContext.Session.GetString(UploadedPropertyDocumentsSessionKey);
         if (string.IsNullOrWhiteSpace(raw))
@@ -788,14 +856,26 @@ public class PropertyAdministratorRegistrationController(
 
         return raw
             .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(line =>
+            {
+                var parts = line.Split('\t', 2);
+                return parts.Length == 2
+                    ? new UploadedDocumentEntry { StoredFileName = parts[0], Label = parts[1] }
+                    : new UploadedDocumentEntry { Label = line };
+            })
             .ToList();
     }
 
-    private void SaveUploadedPropertyDocuments(IReadOnlyList<string> files)
+    private void SaveUploadedPropertyDocumentEntries(IReadOnlyList<UploadedDocumentEntry> files)
     {
         HttpContext.Session.SetString(
             UploadedPropertyDocumentsSessionKey,
-            string.Join('\n', files));
+            string.Join(
+                '\n',
+                files.Select(f =>
+                    string.IsNullOrWhiteSpace(f.StoredFileName)
+                        ? f.Label
+                        : $"{f.StoredFileName}\t{f.Label}")));
     }
 
     private static string FormatFileSize(long bytes)

@@ -847,6 +847,7 @@ public static class UiTranslationsPropertyAdministratorUi
         ["Save property"] = "Guardar propiedad",
         ["Saved providers"] = "Proveedores guardados",
         ["Scan or upload documents"] = "Escanear o subir documentos",
+        ["Document removed."] = "Documento eliminado.",
         ["Schedule detector check"] = "Programar revisión de detectores",
         ["Scheduled requests"] = "Solicitudes programadas",
         ["Scheduled visits"] = "Visitas programadas",

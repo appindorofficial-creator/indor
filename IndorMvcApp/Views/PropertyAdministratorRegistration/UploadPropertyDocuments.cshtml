@@ -15,7 +15,17 @@
     <div class="pa-review-card" style="margin-bottom:16px;">
         @foreach (var file in Model.UploadedFiles)
         {
-            <div class="pa-check-item"><i class="fas fa-circle-check"></i> @file</div>
+            <div class="pa-check-item pa-check-item--file">
+                <span class="pa-check-item-label"><i class="fas fa-circle-check"></i> @file.Label</span>
+                <form asp-action="RemoveUploadedPropertyDocument" method="post" class="pa-file-remove-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="fileId" value="@file.Id" />
+                    <input type="hidden" name="label" value="@file.Label" />
+                    <button type="submit" class="pa-file-remove-btn" aria-label="@L["Remove"] @file.Label">
+                        <i class="fas fa-xmark" aria-hidden="true"></i>
+                    </button>
+                </form>
+            </div>
         }
     </div>
 }
