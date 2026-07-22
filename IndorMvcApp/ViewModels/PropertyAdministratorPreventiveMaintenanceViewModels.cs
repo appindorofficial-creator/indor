@@ -62,7 +62,7 @@ public class PropertyAdministratorPreventiveScheduleStepViewModel : PropertyAdmi
     public string EntryAccess { get; set; } = "";
     public string UpdateRecipients { get; set; } = "";
     public string Notes { get; set; } = "";
-    public bool AutoReminders { get; set; } = true;
+    public bool AutoReminders { get; set; }
     public string FrequencyHint { get; set; } = "";
     public string EstimatedPrice { get; set; } = "$149–$229";
 }
@@ -76,7 +76,7 @@ public class PropertyAdministratorPreventiveScheduleStepInput
     public string EntryAccess { get; set; } = "";
     public string UpdateRecipients { get; set; } = "";
     public string? Notes { get; set; }
-    public bool AutoReminders { get; set; } = true;
+    public bool AutoReminders { get; set; }
 }
 
 public class PropertyAdministratorPreventiveReviewStepViewModel : PropertyAdministratorPortalShellViewModel

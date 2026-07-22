@@ -136,9 +136,6 @@
                      || feedFilter.Equals("NeighborRequests", StringComparison.OrdinalIgnoreCase))
                 feedFilter = "Services";
 
-            bool FeedChipActive(string chip) =>
-                feedFilter.Equals(chip, StringComparison.OrdinalIgnoreCase);
-
             var knownFeedFilters = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
             {
                 "All", "Listings", "Services", "Promotions", "Emergency"
@@ -146,12 +143,14 @@
             if (!knownFeedFilters.Contains(feedFilter))
                 feedFilter = "All";
 
-            var showFeedActions = FeedChipActive("All") || FeedChipActive("Services");
-            var showFeedEmergency = FeedChipActive("All") || FeedChipActive("Emergency");
+            var showFeedActions = feedFilter.Equals("All", StringComparison.OrdinalIgnoreCase)
+                || feedFilter.Equals("Services", StringComparison.OrdinalIgnoreCase);
+            var showFeedEmergency = feedFilter.Equals("All", StringComparison.OrdinalIgnoreCase)
+                || feedFilter.Equals("Emergency", StringComparison.OrdinalIgnoreCase);
             var showFeedEmpty = !showFeedActions && !showFeedEmergency;
-            var feedEmptyMessage = FeedChipActive("Listings")
+            var feedEmptyMessage = feedFilter.Equals("Listings", StringComparison.OrdinalIgnoreCase)
                 ? L["No nearby home listings yet. Check back soon or browse all categories."].ToString()
-                : FeedChipActive("Promotions")
+                : feedFilter.Equals("Promotions", StringComparison.OrdinalIgnoreCase)
                     ? L["No promotions in your area yet. Check back soon."].ToString()
                     : L["No nearby items match your filters yet."].ToString();
             var feedChips = new (string Value, string Label, string Icon, bool Danger)[]
@@ -172,7 +171,7 @@
             <div class="pa-network-chips" role="navigation" aria-label="@L["Filter feed"]">
                 @foreach (var chip in feedChips)
                 {
-                    var active = FeedChipActive(chip.Value);
+                    var active = feedFilter.Equals(chip.Value, StringComparison.OrdinalIgnoreCase);
                     <a asp-controller="Administrador"
                        asp-action="Index"
                        asp-route-view="feed"

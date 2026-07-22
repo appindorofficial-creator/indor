@@ -97,7 +97,7 @@
             </div>
         </div>
 
-        <div class="pa-flow-question">
+        <div class="pa-flow-question" data-pa-optional>
             <label>@L["Add notes (optional)"]</label>
             @{
                 var notesText = UiDisplayLocalization.Localize(L, Model.Notes);
@@ -106,7 +106,7 @@
             <small class="pa-char-count"><span id="notesCount">@notesText.Length</span> @L["/ 250 characters"]</small>
         </div>
 
-        <div class="pa-flow-question pa-reminder-toggle">
+        <div class="pa-flow-question pa-reminder-toggle" data-pa-optional>
             <div>
                 <label>@L["Auto-reminders (optional)"]</label>
                 <small>@L["We'll remind you before each scheduled visit."]</small>

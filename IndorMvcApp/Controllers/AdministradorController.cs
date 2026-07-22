@@ -2229,6 +2229,15 @@ public class AdministradorController(
             return redirect;
         }
 
+        if (string.IsNullOrWhiteSpace(input.Frequency)
+            || string.IsNullOrWhiteSpace(input.PreferredTiming)
+            || string.IsNullOrWhiteSpace(input.PreferredDay)
+            || string.IsNullOrWhiteSpace(input.EntryAccess)
+            || string.IsNullOrWhiteSpace(input.UpdateRecipients))
+        {
+            return RedirectToAction(nameof(PreventiveMaintenanceSchedule), new { planId = input.PlanId });
+        }
+
         await preventiveMaintenance.SaveScheduleStepAsync(input);
         return RedirectToAction(nameof(PreventiveMaintenanceReview), new { planId = input.PlanId });
     }

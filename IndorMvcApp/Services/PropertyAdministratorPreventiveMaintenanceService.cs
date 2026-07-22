@@ -154,6 +154,9 @@ public class PropertyAdministratorPreventiveMaintenanceService(
             db.IndorPropertyAdminPreventivePlans.Add(plan);
         }
 
+        // Schedule step must start blank — user chooses frequency/timing/access explicitly.
+        ClearScheduleSelections(plan);
+
         await db.SaveChangesAsync(cancellationToken);
         return plan.Id;
     }
@@ -173,6 +176,7 @@ public class PropertyAdministratorPreventiveMaintenanceService(
         var catalog = await db.IndorPropertyAdminPreventiveServiceCatalog.AsNoTracking()
             .Where(c => c.Activo).ToListAsync(cancellationToken);
         var selectedKeys = DeserializeServices(plan.SelectedServicesJson);
+        var scheduleConfigured = IsScheduleConfigured(plan);
 
         return new PropertyAdministratorPreventiveScheduleStepViewModel
         {
@@ -187,15 +191,15 @@ public class PropertyAdministratorPreventiveMaintenanceService(
             SelectedServiceLabels = selectedKeys
                 .Select(k => catalog.FirstOrDefault(c => c.ServiceKey == k)?.ServiceName ?? k)
                 .ToList(),
-            Frequency = plan.Frequency,
-            PreferredTiming = plan.PreferredTiming,
-            PreferredDay = plan.PreferredDay,
-            EntryAccess = plan.EntryAccess,
-            UpdateRecipients = plan.UpdateRecipients,
-            // Keep English key in the VM; the schedule view localizes for display per selected service(s).
-            Notes = ResolveScheduleNotes(plan.Notes, selectedKeys),
-            AutoReminders = plan.AutoReminders,
-            FrequencyHint = BuildFrequencyHint(plan.Frequency),
+            Frequency = scheduleConfigured ? plan.Frequency : "",
+            PreferredTiming = scheduleConfigured ? plan.PreferredTiming : "",
+            PreferredDay = scheduleConfigured ? plan.PreferredDay : "",
+            EntryAccess = scheduleConfigured ? plan.EntryAccess : "",
+            UpdateRecipients = scheduleConfigured ? plan.UpdateRecipients : "",
+            // Only show notes the user saved; do not prefill service templates.
+            Notes = scheduleConfigured ? (plan.Notes ?? "") : "",
+            AutoReminders = scheduleConfigured && plan.AutoReminders,
+            FrequencyHint = scheduleConfigured ? BuildFrequencyHint(plan.Frequency) : "",
             EstimatedPrice = $"${plan.BundlePrice:0}–${plan.BundlePrice + 80:0}"
         };
     }
@@ -206,12 +210,22 @@ public class PropertyAdministratorPreventiveMaintenanceService(
         var plan = await LoadPlanAsync(input.PlanId, trackChanges: true, cancellationToken)
             ?? throw new InvalidOperationException("Plan not found.");
 
+        if (string.IsNullOrWhiteSpace(input.Frequency)
+            || string.IsNullOrWhiteSpace(input.PreferredTiming)
+            || string.IsNullOrWhiteSpace(input.PreferredDay)
+            || string.IsNullOrWhiteSpace(input.EntryAccess)
+            || string.IsNullOrWhiteSpace(input.UpdateRecipients))
+        {
+            throw new InvalidOperationException("Complete all required schedule selections.");
+        }
+
         plan.Frequency = input.Frequency;
         plan.PreferredTiming = input.PreferredTiming;
         plan.PreferredDay = input.PreferredDay;
         plan.EntryAccess = input.EntryAccess;
         plan.UpdateRecipients = input.UpdateRecipients;
-        plan.Notes = input.Notes;
+        // Empty string (not null) marks the schedule step as configured for draft plans.
+        plan.Notes = input.Notes ?? "";
         plan.AutoReminders = input.AutoReminders;
         await db.SaveChangesAsync(cancellationToken);
     }
@@ -439,11 +453,45 @@ public class PropertyAdministratorPreventiveMaintenanceService(
 
     private static string BuildFrequencyHint(string frequency) => frequency switch
     {
+        "" => "",
         "Monthly" => PropertyAdministratorDisplayLocalization.L("We'll schedule visits every month."),
         "TwiceAYear" => PropertyAdministratorDisplayLocalization.L("We'll filter change every 3 months. Full service visits twice a year."),
         "Yearly" => PropertyAdministratorDisplayLocalization.L("We'll schedule annual preventive visits."),
-        _ => PropertyAdministratorDisplayLocalization.L("We'll filter change every 3 months. Full service visits twice a year.")
+        "Every3Months" => PropertyAdministratorDisplayLocalization.L("We'll filter change every 3 months. Full service visits twice a year."),
+        _ => ""
     };
+
+    /// <summary>
+    /// Draft plans created before schedule defaults were removed still carry factory values.
+    /// Notes == null means the schedule step was never POSTed (SaveSchedule writes Notes as "").
+    /// </summary>
+    private static bool IsScheduleConfigured(IndorPropertyAdminPreventivePlan plan)
+    {
+        if (string.IsNullOrWhiteSpace(plan.Frequency))
+        {
+            return false;
+        }
+
+        if (plan.Status == PropertyAdministratorPreventivePlanStatuses.Draft
+            && plan.ActivatedUtc == null
+            && plan.Notes == null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    private static void ClearScheduleSelections(IndorPropertyAdminPreventivePlan plan)
+    {
+        plan.Frequency = "";
+        plan.PreferredTiming = "";
+        plan.PreferredDay = "";
+        plan.EntryAccess = "";
+        plan.UpdateRecipients = "";
+        plan.Notes = null;
+        plan.AutoReminders = false;
+    }
 
     // Keep English catalog keys so views localize via IIndorLocalizer / UiDisplayLocalization.
     private static string LabelTiming(string value) => value switch
