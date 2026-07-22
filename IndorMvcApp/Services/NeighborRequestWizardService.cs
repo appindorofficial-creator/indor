@@ -200,8 +200,8 @@ public class NeighborRequestWizardService(
             PropiedadId = propiedadId,
             PageTitle = "Post Quick Job",
             DisplayStep = 1,
-            TotalSteps = 4,
-            StepLabels = ["Details", "Schedule", "Extras", "Helpers"],
+            TotalSteps = 5,
+            StepLabels = ["Details", "Schedule", "Extras", "Review", "Helpers"],
             BackUrl = url.Action("Index", "Home"),
             CloseUrl = url.Action("Index", "Home")!,
             CategoryId = fieldDraft?.CategoryId ?? 0,
@@ -241,8 +241,8 @@ public class NeighborRequestWizardService(
             PropiedadId = draft.PropiedadId,
             PageTitle = "Post Quick Job",
             DisplayStep = 3,
-            TotalSteps = 4,
-            StepLabels = ["Details", "Schedule", "Extras", "Helpers"],
+            TotalSteps = 5,
+            StepLabels = ["Details", "Schedule", "Extras", "Review", "Helpers"],
             CategoryLabel = ResolveQuickJobCategoryLabel(category.Code, category.LabelEn),
             ExistingPhotoUrls = draft.PhotoPaths.ToList(),
             SelectedTools = draft.ToolsNeeded.ToList(),
@@ -276,10 +276,10 @@ public class NeighborRequestWizardService(
             IsEditMode = isEdit,
             PageTitle = isEdit ? "Edit request" : "Post Quick Job",
             DisplayStep = isEdit ? 2 : 2,
-            TotalSteps = isEdit ? 3 : 4,
+            TotalSteps = isEdit ? 3 : 5,
             StepLabels = isEdit
                 ? ["Details", "Preferences", "Review"]
-                : ["Details", "Schedule", "Extras", "Helpers"],
+                : ["Details", "Schedule", "Extras", "Review", "Helpers"],
             WhenCode = isEdit || draft.ScheduleConfigured ? draft.TimelineCode : string.Empty,
             PreferredTimeCode = isEdit || draft.ScheduleConfigured ? draft.PreferredTimeCode : string.Empty,
             HelperCount = isEdit || draft.ScheduleConfigured ? draft.HelperCount : 0,
@@ -361,7 +361,7 @@ public class NeighborRequestWizardService(
             TotalSteps = isEdit ? 3 : 5,
             StepLabels = isEdit
                 ? ["Details", "Preferences", "Review"]
-                : ["Category", "Describe", "Preferences", "Review", "Done"],
+                : ["Details", "Schedule", "Extras", "Review", "Helpers"],
             CategoryLabel = ResolveQuickJobCategoryLabel(category.Code, category.LabelEn),
             CategoryIconClass = category.IconClass,
             Title = draft.Title,
@@ -378,7 +378,7 @@ public class NeighborRequestWizardService(
                 : null,
             BackUrl = isEdit
                 ? $"/NeighborRequest/Preferences?propiedadId={draft.PropiedadId}"
-                : $"/NeighborRequest/Preferences?propiedadId={draft.PropiedadId}",
+                : $"/NeighborRequest/Describe?propiedadId={draft.PropiedadId}",
             CloseUrl = isEdit && draft.EditingRequestId is > 0
                 ? $"/NeighborRequest/Detail/{draft.EditingRequestId}"
                 : "/Home/Index",
@@ -1160,9 +1160,9 @@ public class NeighborRequestWizardService(
             PropiedadId = request.PropiedadId,
             RequestId = requestId,
             PageTitle = "Helpers Nearby",
-            DisplayStep = 4,
-            TotalSteps = 4,
-            StepLabels = ["Details", "Schedule", "Extras", "Helpers"],
+            DisplayStep = 5,
+            TotalSteps = 5,
+            StepLabels = ["Details", "Schedule", "Extras", "Review", "Helpers"],
             JobTitle = request.Title,
             WhenLabel = FormatWhenLabel(request),
             TimeLabel = FormatPreferredTimeLabel(request),

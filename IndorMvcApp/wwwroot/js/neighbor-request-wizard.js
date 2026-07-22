@@ -189,13 +189,10 @@
                 return;
             }
 
-            if (window.history.length > 1) {
-                e.preventDefault();
-                markBusy(link);
-                window.history.back();
-                return;
-            }
-
+            // Always follow the explicit BackUrl. history.back() fights the
+            // pushState system-back guard and can restore a wizard step after
+            // the draft was already published/cleared (bfcache), which then
+            // kicks the user out of the flow on the next continue.
             markBusy(link);
         });
     });

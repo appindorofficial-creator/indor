@@ -216,27 +216,7 @@ public class NeighborRequestController(
             return View(invalidVm);
         }
 
-        if (draft.EditingRequestId is > 0)
-        {
-            return RedirectToAction(nameof(Review), new { propiedadId = model.PropiedadId });
-        }
-
-        var requestId = await wizardService.PublishAsync(userId, draft, cancellationToken);
-        if (requestId == null)
-        {
-            TempData["NeighborRequestError"] = localizer["We could not publish your job. Please try again."];
-            var invalidVm = await wizardService.BuildDescribeStepAsync(draft, cancellationToken);
-            if (invalidVm == null)
-            {
-                return RestartWizard(model.PropiedadId);
-            }
-
-            await wizardService.ApplyPortalHomeUrlsAsync(invalidVm, userId, Url, cancellationToken);
-            return View(invalidVm);
-        }
-
-        wizardService.ClearDraft(HttpContext.Session);
-        return RedirectToAction(nameof(Helpers), new { id = requestId });
+        return RedirectToAction(nameof(Review), new { propiedadId = model.PropiedadId });
     }
 
     [HttpGet]

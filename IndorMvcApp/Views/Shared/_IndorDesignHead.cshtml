@@ -44,7 +44,7 @@
 
         function findBackLink() {
             return document.querySelector(
-                'a[data-smart-back][href], a.ob-nav-back[href], a.back-btn[href], a.iw-wizard-nav-btn[href], a.app-back-btn[href], a[aria-label="Back"][href]'
+                'a[data-smart-back][href], a.ob-nav-back[href], a.back-btn[href], a.iw-wizard-nav-btn[href], a.app-back-btn[href], a[aria-label="Back"][href]:not(.nr-wizard-nav-btn):not([data-nr-history-back])'
             );
         }
 
@@ -201,25 +201,13 @@
                 return;
             }
 
-            // When the system-back guard is armed, history.back() only pops the
-            // sentinel and stays on the same screen — follow the explicit href.
-            if (history.state && history.state.indorNavGuard === 'armed') {
-                e.preventDefault();
-                el.classList.add('is-busy');
-                el.setAttribute('aria-busy', 'true');
-                navigateTo(href);
-                return;
-            }
-
-            if (window.history.length > 1 && internalReferrer()) {
-                e.preventDefault();
-                el.classList.add('is-busy');
-                el.setAttribute('aria-busy', 'true');
-                if (typeof window.indorShowNavigationLoading === 'function') {
-                    window.indorShowNavigationLoading();
-                }
-                window.history.back();
-            }
+            // Always follow the explicit Back href. history.back() can restore a
+            // previous wizard step from bfcache after the draft was cleared, or
+            // only pop the pushState sentinel and leave the user stranded.
+            e.preventDefault();
+            el.classList.add('is-busy');
+            el.setAttribute('aria-busy', 'true');
+            navigateTo(href);
         });
     })();
 </script>
