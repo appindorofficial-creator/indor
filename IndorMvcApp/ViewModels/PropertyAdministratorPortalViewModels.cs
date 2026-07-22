@@ -158,6 +158,8 @@ public class PropertyAdministratorServiceCategoryViewModel
     public string CategoryKey { get; set; } = "";
     public string CategoryTitle { get; set; } = "";
     public int CategoryOrder { get; set; }
+    public int TotalItemCount { get; set; }
+    public bool HasMoreItems { get; set; }
     public IReadOnlyList<PropertyAdministratorServiceCatalogItemViewModel> Items { get; set; } = [];
 }
 

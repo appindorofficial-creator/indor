@@ -491,21 +491,35 @@ public class PropertyAdministratorPortalService(
             .OrderBy(c => c.CategoryOrder).ThenBy(c => c.Orden)
             .ToListAsync(cancellationToken);
 
+        // Overview ("all") shows a short preview per category; "View all" opens the full filtered list.
+        const int overviewPreviewCount = 3;
+        var isOverview = activeFilter == "all";
+
         var categories = catalog
             .GroupBy(c => new { c.CategoryKey, c.CategoryTitle, c.CategoryOrder })
             .OrderBy(g => g.Key.CategoryOrder)
-            .Select(g => new PropertyAdministratorServiceCategoryViewModel
+            .Select(g =>
             {
-                CategoryKey = g.Key.CategoryKey,
-                CategoryTitle = g.Key.CategoryTitle,
-                CategoryOrder = g.Key.CategoryOrder,
-                Items = g.Select(item => new PropertyAdministratorServiceCatalogItemViewModel
+                var allItems = g.Select(item => new PropertyAdministratorServiceCatalogItemViewModel
                 {
                     ServiceName = item.ServiceName,
                     IconClass = item.IconClass,
                     ToneClass = item.ToneClass,
                     Url = BuildCatalogUrl(url, item)
-                }).ToList()
+                }).ToList();
+
+                var totalCount = allItems.Count;
+                var showPreview = isOverview && totalCount > overviewPreviewCount;
+
+                return new PropertyAdministratorServiceCategoryViewModel
+                {
+                    CategoryKey = g.Key.CategoryKey,
+                    CategoryTitle = g.Key.CategoryTitle,
+                    CategoryOrder = g.Key.CategoryOrder,
+                    TotalItemCount = totalCount,
+                    HasMoreItems = showPreview,
+                    Items = showPreview ? allItems.Take(overviewPreviewCount).ToList() : allItems
+                };
             }).ToList();
 
         return new PropertyAdministratorServicesViewModel

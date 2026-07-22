@@ -52,7 +52,12 @@
         <section class="pa-section" data-pa-service-section>
             <div class="pa-section-head">
                 <h2>@UiDisplayLocalization.Localize(L, category.CategoryTitle)</h2>
-                <a asp-controller="Administrador" asp-action="Services" asp-route-filter="@category.CategoryKey">@L["View all"] <i class="fas fa-chevron-right"></i></a>
+                @if (category.HasMoreItems)
+                {
+                    <a asp-controller="Administrador" asp-action="Services" asp-route-filter="@category.CategoryKey">
+                        @L["View all"] <i class="fas fa-chevron-right"></i>
+                    </a>
+                }
             </div>
             <div class="pa-service-grid">
                 @foreach (var item in category.Items)

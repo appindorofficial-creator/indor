@@ -1,62 +1,32 @@
 @using IndorMvcApp.Helpers
 @{
     var step = ViewData["WizardStep"] as int?;
-
     var totalSteps = ViewData["WizardTotalSteps"] as int? ?? 3;
-
     var title = ViewData["WizardTitle"] as string ?? L["Service"];
-
     var backUrl = HomeNavigationUrls.NormalizeWizardBackUrl(ViewData["WizardBackUrl"] as string);
-
     var showClose = ViewData["WizardShowClose"] as bool? ?? false;
-
     var closeUrl = HomeNavigationUrls.NormalizeWizardBackUrl(ViewData["WizardCloseUrl"] as string ?? "/Home/Index");
-
 }
-
-
 
 @if (step is > 0)
-
 {
-
     @await Html.PartialAsync("_IndorWizardHeader", new IndorMvcApp.ViewModels.IndorWizardShellViewModel
-
     {
-
         PageTitle = title,
-
         DisplayStep = step.Value,
-
         TotalSteps = totalSteps,
-
         BackUrl = backUrl,
-
         CloseUrl = closeUrl,
-
         ShowClose = showClose
-
     })
-
 }
-
 else if (!string.IsNullOrWhiteSpace(backUrl))
-
 {
-
     <header class="iw-wizard-top">
-
         <a href="@backUrl" class="iw-wizard-nav-btn" data-smart-back aria-label="@L["Back"]"><i class="fas fa-arrow-left"></i></a>
-
         <div class="iw-wizard-top-center">
-
             <strong class="iw-wizard-top-title">@title</strong>
-
         </div>
-
         <span class="iw-wizard-nav-btn iw-wizard-nav-btn--spacer"></span>
-
     </header>
-
 }
-
