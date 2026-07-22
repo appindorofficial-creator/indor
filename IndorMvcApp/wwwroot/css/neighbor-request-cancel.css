@@ -1,4 +1,11 @@
 /* Neighbor Request — cancel confirmation */
+.nr-cancel-page,
+.nr-cancel-page *,
+.nr-cancel-page *::before,
+.nr-cancel-page *::after {
+    box-sizing: border-box;
+}
+
 .nr-cancel-page {
     background: var(--indor-bg-sky, #F0F7FF);
     color: var(--indor-navy, #0A2540);
@@ -11,12 +18,12 @@
 }
 
 .nr-cancel-shell {
+    width: 100%;
     max-width: 480px;
     margin: 0 auto;
     min-height: 100vh;
     min-height: 100dvh;
     padding: 0 16px;
-    box-sizing: border-box;
     display: flex;
     flex-direction: column;
 }
@@ -202,7 +209,14 @@
     flex-direction: column;
     gap: 14px;
     flex: 1;
+    width: 100%;
+    min-width: 0;
     min-height: 0;
+}
+
+.nr-cancel-field {
+    width: 100%;
+    min-width: 0;
 }
 
 .nr-cancel-field label {
@@ -224,6 +238,7 @@
 
 .nr-cancel-select {
     width: 100%;
+    max-width: 100%;
     appearance: none;
     border: 1px solid #E5E7EB;
     border-radius: 14px;
@@ -250,11 +265,14 @@
 }
 
 .nr-cancel-textarea {
+    display: block;
     width: 100%;
+    max-width: 100%;
     min-height: 88px;
     border: 1px solid #E5E7EB;
     border-radius: 14px;
     padding: 14px;
+    margin: 0;
     font: inherit;
     font-size: .88rem;
     color: #0A2540;
@@ -273,47 +291,52 @@
 .nr-cancel-actions {
     display: flex;
     flex-direction: column;
+    align-items: stretch;
     gap: 10px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     margin-top: auto;
     padding: 16px 0 calc(24px + env(safe-area-inset-bottom, 0px));
     position: sticky;
     bottom: 0;
+    left: 0;
+    right: 0;
     z-index: 5;
     background: linear-gradient(180deg, rgba(240, 247, 255, 0) 0%, var(--indor-bg-sky, #F0F7FF) 32%);
 }
 
-.nr-cancel-submit {
+.nr-cancel-submit,
+.nr-cancel-keep {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
     min-height: 50px;
     padding: 14px 20px;
-    border: none;
+    margin: 0;
     border-radius: 14px;
-    background: #EF4444;
-    color: #fff;
     font: inherit;
     font-size: .95rem;
-    font-weight: 800;
+    line-height: 1.2;
     cursor: pointer;
+}
+
+.nr-cancel-submit {
+    border: none;
+    background: #EF4444;
+    color: #fff;
+    font-weight: 800;
     box-shadow: 0 8px 20px rgba(239, 68, 68, 0.24);
 }
 
 .nr-cancel-keep {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 50px;
-    padding: 14px 20px;
     border: 1.5px solid #0066CC;
-    border-radius: 14px;
     background: #fff;
     color: #0066CC;
-    font: inherit;
-    font-size: .95rem;
     font-weight: 700;
     text-decoration: none;
 }
