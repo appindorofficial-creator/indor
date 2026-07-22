@@ -187,7 +187,7 @@
             <div class="pa-network-actions"
                  data-pa-feed-panel
                  data-show-filters="All,Services"
-                 @(showFeedActions ? null : "hidden")>
+                 hidden="@(!showFeedActions)">
                     @{
                         var neighborPropiedadId = Model.ViewingProperty?.PropiedadId
                             ?? Model.Properties.FirstOrDefault(p => p.PropiedadId is > 0)?.PropiedadId;
@@ -225,7 +225,7 @@
                class="pa-network-emergency"
                data-pa-feed-panel
                data-show-filters="All,Emergency"
-               @(showFeedEmergency ? null : "hidden")>
+               hidden="@(!showFeedEmergency)">
                     <span class="pa-network-emergency-badge">@L["EMERGENCY"]</span>
                     <div class="pa-network-emergency-main">
                         <span class="pa-network-emergency-icon"><i class="fas fa-bell"></i></span>
@@ -246,7 +246,7 @@
             <div class="pa-network-empty-feed"
                  data-pa-feed-panel
                  data-show-filters="Listings"
-                 @(showListingsEmpty ? null : "hidden")>
+                 hidden="@(!showListingsEmpty)">
                 <i class="fas fa-inbox"></i>
                 <p>@L["No nearby home listings yet. Check back soon or browse all categories."]</p>
             </div>
@@ -254,7 +254,7 @@
             <div class="pa-network-empty-feed"
                  data-pa-feed-panel
                  data-show-filters="Promotions"
-                 @(showPromotionsEmpty ? null : "hidden")>
+                 hidden="@(!showPromotionsEmpty)">
                 <i class="fas fa-inbox"></i>
                 <p>@L["No promotions in your area yet. Check back soon."]</p>
             </div>
