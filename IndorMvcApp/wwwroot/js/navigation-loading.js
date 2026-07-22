@@ -99,7 +99,15 @@
 
     function ensureOverlay() {
         var overlay = document.getElementById(OVERLAY_ID);
-        if (overlay) return overlay;
+        var host = document.documentElement || document.body;
+        if (!host) return null;
+
+        if (overlay) {
+            if (overlay.parentNode !== host) {
+                host.appendChild(overlay);
+            }
+            return overlay;
+        }
 
         overlay = document.createElement("div");
         overlay.id = OVERLAY_ID;
@@ -120,7 +128,7 @@
                 '<div class="indor-nav-loading__text"></div>' +
             '</div>';
 
-        document.body.appendChild(overlay);
+        host.appendChild(overlay);
         updateLoadingText(overlay);
         return overlay;
     }
@@ -170,6 +178,7 @@
         updateLoadingText(overlay);
         overlay.removeAttribute("hidden");
         overlay.classList.add("is-visible");
+        document.documentElement.classList.add("indor-nav-loading-active");
         document.body.classList.add("indor-nav-loading-active");
         if (opts.autoHide) {
             scheduleHideNavigationLoading(opts.autoHideDelay);
@@ -191,6 +200,7 @@
 
         overlay.classList.remove("is-visible");
         overlay.setAttribute("hidden", "hidden");
+        document.documentElement.classList.remove("indor-nav-loading-active");
         document.body.classList.remove("indor-nav-loading-active");
     }
 

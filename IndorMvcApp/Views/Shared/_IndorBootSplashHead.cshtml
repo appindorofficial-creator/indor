@@ -20,13 +20,26 @@ body {
     min-height: 100dvh;
 }
 #indorBootSplash {
-    position: fixed;
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    left: 0 !important;
     inset: 0;
-    z-index: 10001;
+    width: 100% !important;
+    width: 100vw !important;
+    height: 100% !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    min-height: 100vh;
+    min-height: 100dvh;
+    margin: 0 !important;
+    z-index: 2147483001;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 24px;
+    box-sizing: border-box;
     background:
         radial-gradient(120% 70% at 85% -5%, rgba(140, 196, 255, .35) 0%, rgba(140, 196, 255, 0) 55%),
         radial-gradient(110% 60% at 0% 0%, rgba(99, 160, 255, .18) 0%, rgba(99, 160, 255, 0) 50%),
@@ -35,6 +48,8 @@ body {
     visibility: visible;
     pointer-events: auto;
     transition: opacity 0.28s ease, visibility 0.28s ease;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
 }
 #indorBootSplash.is-done {
     opacity: 0;
@@ -119,7 +134,7 @@ body {
     }
 
     function ensure() {
-        var host = document.body;
+        var host = document.documentElement;
         if (!host) return null;
 
         var el = document.getElementById("indorBootSplash");
@@ -138,7 +153,9 @@ body {
                     '<div class="indor-boot-brand">INDOR</div>' +
                     '<div class="indor-boot-text"></div>' +
                 '</div>';
-            host.insertBefore(el, host.firstChild);
+            host.appendChild(el);
+        } else if (el.parentNode !== host) {
+            host.appendChild(el);
         }
 
         var label = loadingLabel();
@@ -175,16 +192,16 @@ body {
     window.indorShowBootSplash = show;
     window.indorHideBootSplash = hide;
 
-    if (document.body) {
+    if (document.documentElement) {
         ensure();
     } else {
         var obs = new MutationObserver(function () {
-            if (document.body) {
+            if (document.documentElement) {
                 ensure();
                 obs.disconnect();
             }
         });
-        obs.observe(document.documentElement, { childList: true });
+        obs.observe(document, { childList: true });
     }
 
     // If a resume reload armed the splash flag, keep it visible across the reload.
