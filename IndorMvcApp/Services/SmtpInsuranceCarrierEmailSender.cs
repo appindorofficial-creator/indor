@@ -36,9 +36,9 @@ public class SmtpInsuranceCarrierEmailSender(
             };
             message.To.Add(new MailAddress(_insurance.CarrierEmail, _insurance.CarrierName));
 
-            if (!string.IsNullOrWhiteSpace(_insurance.CopyToEmail))
+            foreach (var copyEmail in ParseCopyEmails(_insurance.CopyToEmail, _insurance.CarrierEmail))
             {
-                message.CC.Add(new MailAddress(_insurance.CopyToEmail));
+                message.CC.Add(new MailAddress(copyEmail));
             }
 
             if (!string.IsNullOrWhiteSpace(model.OwnerEmail))
@@ -66,6 +66,33 @@ public class SmtpInsuranceCarrierEmailSender(
         {
             logger.LogError(ex, "Failed to send insurance issuance email {Code} to carrier.", model.RequestCode);
             return InsuranceEmailResult.Failed;
+        }
+    }
+
+    /// <summary>
+    /// Splits <paramref name="copyTo"/> on comma/semicolon and skips blanks
+    /// or addresses that already match the primary carrier inbox.
+    /// </summary>
+    internal static IEnumerable<string> ParseCopyEmails(string? copyTo, string? carrierEmail)
+    {
+        if (string.IsNullOrWhiteSpace(copyTo))
+        {
+            yield break;
+        }
+
+        var carrier = carrierEmail?.Trim();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        if (!string.IsNullOrWhiteSpace(carrier))
+        {
+            seen.Add(carrier);
+        }
+
+        foreach (var part in copyTo.Split([',', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            if (seen.Add(part))
+            {
+                yield return part;
+            }
         }
     }
 

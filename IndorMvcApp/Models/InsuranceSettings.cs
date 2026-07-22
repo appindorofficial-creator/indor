@@ -13,8 +13,12 @@ public class InsuranceSettings
     /// <summary>Display name for the carrier (used in the email greeting).</summary>
     public string CarrierName { get; set; } = "Insurance Carrier";
 
-    /// <summary>Optional internal address that also receives a copy (CC).</summary>
-    public string? CopyToEmail { get; set; }
+    /// <summary>
+    /// Optional address(es) that also receive a copy (CC).
+    /// Supports multiple emails separated by comma or semicolon.
+    /// Default: Carolina Coverage Insurance issuance copy.
+    /// </summary>
+    public string? CopyToEmail { get; set; } = "jeanna@carolinacoverageinsurance.com";
 
     public bool IsConfigured => !string.IsNullOrWhiteSpace(CarrierEmail);
 }
