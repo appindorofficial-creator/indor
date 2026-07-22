@@ -7,7 +7,6 @@
     ViewBag.NavActive = "home";
     ViewBag.CompanyInitial = Model.CompanyInitial;
     var money = CultureInfo.GetCultureInfo("en-US");
-    var todayIso = DateTime.Today.ToString("yyyy-MM-dd");
 }
 
 <div class="prv-pro-shell prv-pro-shell--home">
@@ -71,7 +70,7 @@
     </a>
 
     <section class="prv-pro-home-metrics">
-        <a asp-controller="Proveedor" asp-action="DaySchedule" asp-route-date="@todayIso" asp-route-from="home" class="prv-pro-home-metric">
+        <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="today" class="prv-pro-home-metric">
             <span class="prv-pro-home-metric-icon prv-pro-home-metric-icon--blue"><i class="fas fa-calendar-days"></i></span>
             <div class="prv-pro-home-metric-copy">
                 <strong><span class="prv-pro-home-metric-num">@Model.Metrics.JobsToday</span> @L["Jobs Today"]</strong>
@@ -241,11 +240,9 @@
             }
         }
         <div class="prv-pro-home-jobs-actions">
-            <a asp-controller="Proveedor" asp-action="DaySchedule" asp-route-date="@todayIso" asp-route-from="home" class="prv-pro-home-jobs-action prv-pro-home-jobs-action--schedule">
+            <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="today" class="prv-pro-home-jobs-action prv-pro-home-jobs-action--schedule">
                 @L["View all"] <i class="fas fa-chevron-right"></i>
             </a>
-            <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="home" class="prv-pro-home-jobs-action prv-pro-home-jobs-action--new">
-                <i class="fas fa-plus"></i> @L["New job"]</a>
         </div>
     </section>
 </div>

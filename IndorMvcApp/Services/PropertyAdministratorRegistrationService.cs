@@ -105,10 +105,25 @@ public class PropertyAdministratorRegistrationService(
             return [];
         }
 
-        return await db.IndorPropertyAdminPortfolioProperties
+        // Materialize first so ResolvePortfolioImageUrl / LabelPropertyType always run in-process
+        // (EF cannot translate those helpers inside Select).
+        var rows = await db.IndorPropertyAdminPortfolioProperties
             .AsNoTracking()
             .Where(p => p.AdministratorId == adminId)
             .OrderByDescending(p => p.FechaCreacion)
+            .Select(p => new
+            {
+                p.Id,
+                p.PropiedadId,
+                p.PropertyName,
+                p.Location,
+                p.PropertyType,
+                p.ImageUrl,
+                p.Status
+            })
+            .ToListAsync(cancellationToken);
+
+        return rows
             .Select(p => new PropertyAdministratorPropertyItemViewModel
             {
                 Id = p.Id,
@@ -120,7 +135,7 @@ public class PropertyAdministratorRegistrationService(
                 ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(p.ImageUrl, p.PropertyType),
                 Status = p.Status
             })
-            .ToListAsync(cancellationToken);
+            .ToList();
     }
 
     public async Task AddPortfolioPropertyAsync(PropertyAdministratorPropertyInput input, CancellationToken cancellationToken = default)

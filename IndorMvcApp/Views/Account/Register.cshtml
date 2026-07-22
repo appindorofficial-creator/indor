@@ -32,7 +32,9 @@
                         <label asp-for="FullName" class="ob-label">@L["Full Name"]</label>
                         <input asp-for="FullName" class="ob-control" placeholder="John Smith" autocomplete="name"
                                inputmode="text" autocapitalize="words" spellcheck="false"
-                               aria-describedby="fullNameHint" />
+                               aria-describedby="fullNameHint"
+                               data-val="true"
+                               data-val-required="@L["Full name is required"]" />
                         <span id="fullNameHint" class="ob-error" style="color:#64748B;font-size:.75rem;margin-top:4px;display:block">
                             @L["Use your first and last name (letters only)."]
                         </span>
@@ -41,7 +43,10 @@
 
                     <div class="ob-field">
                         <label asp-for="Email" class="ob-label">@L["Email"]</label>
-                        <input asp-for="Email" type="email" class="ob-control" placeholder="john@gmail.com" autocomplete="email" id="Email" />
+                        <input asp-for="Email" type="email" class="ob-control" placeholder="john@gmail.com" autocomplete="email" id="Email"
+                               data-val="true"
+                               data-val-required="@L["Email is required"]"
+                               data-val-email="@L["Invalid email address"]" />
                         <span asp-validation-for="Email" class="ob-error"></span>
                     </div>
 
@@ -63,7 +68,12 @@
                         <div class="ob-control-wrap">
                             <input name="Password" id="passwordInput" type="password" class="ob-control"
                                    placeholder="@L["Create a password"]" autocomplete="new-password"
-                                   value="@(Model?.Password)" />
+                                   value="@(Model?.Password)"
+                                   data-val="true"
+                                   data-val-required="@L["Password is required"]"
+                                   data-val-length="@L["Password must be at least 8 characters"]"
+                                   data-val-length-min="8"
+                                   data-val-length-max="100" />
                             <button type="button" class="ob-pw-toggle" id="togglePassword" aria-label="@L["Show password"]" aria-pressed="false">
                                 <i class="fas fa-eye-slash" aria-hidden="true"></i>
                             </button>

@@ -8,10 +8,9 @@
 
 <div class="prv-pro-shell prv-pro-shell--upload-report">
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
-    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
 
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
-        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
+        <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["Select Job or Property"]</h1>
             <small>@L["Choose the completed or active job this report belongs to."]</small>
@@ -19,7 +18,12 @@
         <span class="prv-pro-step-badge">@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</span>
     </header>
 
-    <p class="prv-pro-upload-report-hint">@L["Search for a job, then tap"]<strong>@L["Select"]</strong> on the matching card to continue.</p>
+    @if (TempData["UploadReportError"] is string uploadReportError && !string.IsNullOrWhiteSpace(uploadReportError))
+    {
+        <div class="prv-pro-form-error-banner" role="alert">@uploadReportError</div>
+    }
+
+    <p class="prv-pro-upload-report-hint">@L["Search for a job, then tap"] <strong>@L["Select"]</strong> @L["on the matching card to continue."]</p>
 
     <form method="get" asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-upload-report-search">
         <div class="prv-pro-search-wrap">
@@ -36,7 +40,7 @@
             <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-filter="@key" asp-route-q="@Model.SearchQuery"
                class="prv-pro-upload-report-filter @(Model.ActiveFilter == key ? "is-active" : "")">
                 @if (!string.IsNullOrEmpty(icon)) { <i class="fas @icon"></i> }
-                @label
+                @L[label]
             </a>
         }
     </div>
@@ -47,18 +51,18 @@
             <div class="prv-pro-upload-report-empty">
                 @if (Model.HasSearchWithNoResults)
                 {
-                    <p>@L["No jobs matched"]<strong>@Model.SearchQuery</strong>.</p>
+                    <p>@L["No jobs matched"] <strong>@Model.SearchQuery</strong>.</p>
                     <p>@L["Try a shorter address, job ID, or customer name, or clear the search to see all jobs."]</p>
                     <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-filter="@Model.ActiveFilter" class="prv-pro-btn prv-pro-btn--outline">@L["Clear search"]</a>
                 }
                 else if (Model.TotalJobsAvailable == 0)
                 {
                     <p>@L["You don't have any jobs yet. Create a job first, then return here to upload a report."]</p>
-                    <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-btn prv-pro-btn--primary">@L["Create Job"]</a>
+                    <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-btn prv-pro-btn--outline">@L["Back to Reports"]</a>
                 }
                 else
                 {
-                    <p>@L["No jobs match the current filter. Try"]<strong>@L["All"]</strong> or another filter.</p>
+                    <p>@L["No jobs match the current filter. Try"] <strong>@L["All"]</strong> @L["or another filter."]</p>
                     <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-q="@Model.SearchQuery" class="prv-pro-btn prv-pro-btn--outline">@L["Show all jobs"]</a>
                 }
             </div>
@@ -95,6 +99,6 @@
     </div>
 
     <div class="prv-pro-upload-report-actions">
-        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-btn prv-pro-btn--outline">@L["Cancel"]</a>
+        <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-btn prv-pro-btn--outline">@L["Cancel"]</a>
     </div>
 </div>

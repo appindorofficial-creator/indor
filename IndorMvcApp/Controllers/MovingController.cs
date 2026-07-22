@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -15,16 +16,22 @@ public class MovingController : Controller
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
+    private readonly IIndorLocalizer _localizer;
 
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png"];
     private const long MaxFileSize = 10_000_000;
     private const int MaxFiles = 5;
 
-    public MovingController(AppDbContext db, UserManager<ApplicationUser> userManager, IWebHostEnvironment env)
+    public MovingController(
+        AppDbContext db,
+        UserManager<ApplicationUser> userManager,
+        IWebHostEnvironment env,
+        IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
         _env = env;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -51,9 +58,14 @@ public class MovingController : Controller
         var userId = RequireUserId();
         if (userId == null) return Challenge();
 
+        // Prefer the submit button's form value; ambient route "action" can mask it.
+        var flowAction = Request.Form["action"].FirstOrDefault() ?? action;
+
         if (string.IsNullOrWhiteSpace(model.TipoMovimiento))
         {
             ModelState.AddModelError(nameof(model.TipoMovimiento), "Select a move type.");
+            ModelState.AddModelError(string.Empty, "Select a move type.");
+            ModelState.LocalizeModelState(_localizer);
             return View(BuildServiceViewModel(bundle.Value.Servicio, bundle.Value.Landing, null, model));
         }
 
@@ -75,7 +87,7 @@ public class MovingController : Controller
 
             await _db.SaveChangesAsync();
 
-            if (string.Equals(action, "estimate", StringComparison.OrdinalIgnoreCase))
+            if (string.Equals(flowAction, "estimate", StringComparison.OrdinalIgnoreCase))
             {
                 return RedirectToAction(nameof(MovingReview), new { id = solicitud.Id });
             }
@@ -142,6 +154,7 @@ public class MovingController : Controller
 
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             model.NombreServicio = solicitud.MovingSetupServicio!.Nombre;
             return View(model);
         }

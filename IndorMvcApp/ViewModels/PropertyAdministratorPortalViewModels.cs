@@ -101,6 +101,14 @@ public class PropertyAdministratorPropertiesPortalViewModel : PropertyAdministra
     public bool ShowBackHeader { get; set; }
     public string AddPropertyUrl { get; set; } = "#";
     public string ImportPortfolioUrl { get; set; } = "#";
+    /// <summary>all | active</summary>
+    public string ActiveFilter { get; set; } = "all";
+    public string TotalPropertiesUrl { get; set; } = "#";
+    public string ActivePropertiesUrl { get; set; } = "#";
+    public string PendingTasksUrl { get; set; } = "#";
+    public string KeepPortfolioUpdatedUrl { get; set; } = "#";
+    /// <summary>profile | manage | switch | empty (main Properties tab).</summary>
+    public string EntryContext { get; set; } = "";
 }
 
 public class PropertyAdministratorPropertyDetailViewModel : PropertyAdministratorPortalShellViewModel

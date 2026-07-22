@@ -341,6 +341,7 @@ public class ProviderProCreateJobQuoteInput
 {
     public bool SendQuote { get; set; } = true;
     public string QuoteRequestNotes { get; set; } = "";
+    public bool HasVoiceRecording { get; set; }
     public string SubmitAction { get; set; } = "ai";
 }
 

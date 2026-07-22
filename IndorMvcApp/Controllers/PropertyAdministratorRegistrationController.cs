@@ -205,7 +205,7 @@ public class PropertyAdministratorRegistrationController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> Properties()
+    public async Task<IActionResult> Properties(string? mode = null)
     {
         var state = await registration.GetAsync();
         if (string.IsNullOrWhiteSpace(state.PortfolioType))
@@ -213,7 +213,7 @@ public class PropertyAdministratorRegistrationController(
             return RedirectToAction(nameof(Portfolio));
         }
 
-        var model = await BuildPropertiesViewModelAsync();
+        var model = await BuildPropertiesViewModelAsync(entryMode: mode);
         if (TempData["PropertyAdminSuccess"] is string success)
         {
             model.FormSuccess = success;
@@ -381,7 +381,18 @@ public class PropertyAdministratorRegistrationController(
     }
 
     [HttpGet]
-    public IActionResult DownloadPortfolioTemplate()
+    public async Task<IActionResult> DownloadPortfolioTemplate(string? returnUrl = null)
+    {
+        if (!await CanAccessPropertiesStepAsync())
+        {
+            return RedirectToAction(nameof(Portfolio));
+        }
+
+        return View(await BuildPortfolioTemplateViewModelAsync(returnUrl));
+    }
+
+    [HttpGet]
+    public IActionResult DownloadPortfolioTemplateFile()
     {
         var csv = L.IsSpanish
             ? """
@@ -472,18 +483,23 @@ public class PropertyAdministratorRegistrationController(
 
         SaveUploadedPropertyDocumentEntries(saved);
 
-        var uploadedCount = files.Count - errors.Count;
-        if (uploadedCount == 0)
+        var batchUploadedCount = files.Count - errors.Count;
+        if (batchUploadedCount == 0)
         {
             var failed = await BuildUploadDocumentsViewModelAsync();
             failed.FormError = errors.Count > 0 ? string.Join(" ", errors.Take(3)) : "Upload failed. Please try again.";
             return View(failed);
         }
 
+        // Status must reflect total documents on hand (session), not only this POST batch.
+        var totalDocuments = saved.Count;
         var model = await BuildUploadDocumentsViewModelAsync();
-        model.FormSuccess = uploadedCount == 1
-            ? "1 document uploaded."
-            : $"{uploadedCount} documents uploaded.";
+        model.FormSuccess = totalDocuments == 1
+            ? L["1 document uploaded."].ToString()
+            : string.Format(
+                System.Globalization.CultureInfo.CurrentCulture,
+                L["{0} documents uploaded."].ToString(),
+                totalDocuments);
         if (errors.Count > 0)
         {
             model.FormError = string.Join(" ", errors.Take(3));
@@ -780,6 +796,27 @@ public class PropertyAdministratorRegistrationController(
         };
     }
 
+    private async Task<PropertyAdministratorPortfolioTemplateViewModel> BuildPortfolioTemplateViewModelAsync(
+        string? returnUrl = null)
+    {
+        var state = await registration.GetAsync();
+        var isComplete = await IsRegistrationCompleteAsync();
+        // Always return to Import Portfolio (preserve outer returnUrl for that screen).
+        var backToImport = Url.Action(nameof(ImportPortfolio), new { returnUrl }) ?? "#";
+        return new PropertyAdministratorPortfolioTemplateViewModel
+        {
+            DisplayStep = 3,
+            TotalSteps = 5,
+            Title = "Download CSV template",
+            Subtitle = "Download the sample file, then return to import your portfolio.",
+            BackUrl = backToImport,
+            State = state,
+            IsRegistrationComplete = isComplete,
+            FileDownloadUrl = Url.Action(nameof(DownloadPortfolioTemplateFile)) ?? "#",
+            FileName = L.IsSpanish ? "indor-plantilla-portafolio.csv" : "indor-portfolio-template.csv"
+        };
+    }
+
     private string? ResolveLocalReturnUrl(string? returnUrl) =>
         !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)
             ? returnUrl
@@ -947,26 +984,43 @@ public class PropertyAdministratorRegistrationController(
     }
 
     private async Task<PropertyAdministratorPropertiesStepViewModel> BuildPropertiesViewModelAsync(
-        PropertyAdministratorPropertyInput? draft = null)
+        PropertyAdministratorPropertyInput? draft = null,
+        string? entryMode = null)
     {
         var state = await registration.GetAsync();
         var properties = await registration.GetPortfolioPropertiesAsync();
         var isComplete = await IsRegistrationCompleteAsync();
         var doneUrl = Url.Action("Properties", "Administrador") ?? "#";
+        var normalizedMode = string.Equals(entryMode, "manual", StringComparison.OrdinalIgnoreCase)
+            ? "manual"
+            : string.Equals(entryMode, "import", StringComparison.OrdinalIgnoreCase)
+                ? "import"
+                : null;
+
+        // After registration, portal "Add property" is manual-only; CSV/docs live on ImportPortfolio.
+        // During onboarding, keep the shared hub with all options.
+        var showBulkImport = !isComplete
+            || string.Equals(normalizedMode, "import", StringComparison.OrdinalIgnoreCase);
+        var manualOnly = isComplete && !showBulkImport;
+
         return new PropertyAdministratorPropertiesStepViewModel
         {
             DisplayStep = 3,
             TotalSteps = 5,
             Title = isComplete ? "Add property" : "Add your properties",
-            Subtitle = isComplete
-                ? "Add manually, import a CSV, or upload documents for your portfolio."
-                : "Start building your portfolio inside INDOR.",
+            Subtitle = manualOnly
+                ? "Enter the address and details for one property."
+                : isComplete
+                    ? "Add manually, import a CSV, or upload documents for your portfolio."
+                    : "Start building your portfolio inside INDOR.",
             BackUrl = isComplete ? doneUrl : Url.Action(nameof(Portfolio))!,
             State = state,
             Properties = properties,
             DraftProperty = draft,
             IsRegistrationComplete = isComplete,
-            DoneUrl = doneUrl
+            DoneUrl = doneUrl,
+            ShowBulkImportOptions = showBulkImport,
+            EntryMode = normalizedMode
         };
     }
 

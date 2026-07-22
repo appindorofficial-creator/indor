@@ -48,3 +48,33 @@ public class ScheduleReminderItemViewModel
 
     public string EditLabel { get; set; } = "Edit";
 }
+
+public class HomeownerCalendarViewModel
+{
+    public int? PropiedadId { get; set; }
+
+    public DateTime FocusMonth { get; set; }
+
+    public string MonthLabel { get; set; } = string.Empty;
+
+    public List<HomeownerCalendarDayViewModel> Days { get; set; } = [];
+
+    public List<ScheduleReminderItemViewModel> Items { get; set; } = [];
+
+    public string? PrevUrl { get; set; }
+
+    public string? NextUrl { get; set; }
+
+    public string? BackUrl { get; set; }
+}
+
+public class HomeownerCalendarDayViewModel
+{
+    public DateTime Date { get; set; }
+
+    public bool IsCurrentMonth { get; set; }
+
+    public bool IsToday { get; set; }
+
+    public bool HasEvents { get; set; }
+}

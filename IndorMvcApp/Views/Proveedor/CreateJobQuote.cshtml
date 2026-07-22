@@ -33,6 +33,7 @@
         @Html.AntiForgeryToken()
         <input type="hidden" name="SendQuote" id="createJobSendQuote" value="@(Model.SendQuote ? "true" : "false")" />
         <input type="hidden" name="SubmitAction" id="createJobQuoteAction" value="ai" />
+        <input type="hidden" name="HasVoiceRecording" id="createJobHasVoice" value="false" />
 
         <section class="prv-pro-wizard-card">
             <h2>@L["Would you like to send a quote from INDOR?"]</h2>
@@ -54,16 +55,25 @@
             </label>
             <div class="prv-pro-quote-charcount"><span id="createJobQuoteCount">@charCount</span> / @Model.MaxCharacters</div>
 
-            <div class="prv-pro-quote-audio">
-                <button type="button" class="prv-pro-quote-mic" title="@L["Record audio"]"><i class="fas fa-microphone"></i></button>
+            <div class="prv-pro-quote-audio"
+                 id="createJobQuoteAudio"
+                 data-label-record="@L["Record audio"]"
+                 data-label-stop="@L["Stop recording"]"
+                 data-label-recorded="@L["Audio recorded"]"
+                 data-msg-mic-denied="@L["Microphone permission is required to record audio."]"
+                 data-msg-mic-unavailable="@L["Microphone is not available in this browser."]">
+                <button type="button" class="prv-pro-quote-mic" id="createJobQuoteMic" title="@L["Record audio"]" aria-pressed="false">
+                    <i class="fas fa-microphone"></i>
+                </button>
                 <div class="prv-pro-quote-audio-body">
-                    <button type="button" class="prv-pro-quote-record-btn">@L["Record audio"]</button>
-                    <div class="prv-pro-quote-wave" aria-hidden="true">
+                    <button type="button" class="prv-pro-quote-record-btn" id="createJobQuoteRecord">@L["Record audio"]</button>
+                    <div class="prv-pro-quote-wave" id="createJobQuoteWave" aria-hidden="true">
                         @for (var i = 0; i < 24; i++) { <span></span> }
                     </div>
-                    <small>00:00</small>
+                    <small id="createJobQuoteTimer">00:00</small>
                 </div>
             </div>
+            <p class="prv-pro-quote-audio-error is-hidden" id="createJobQuoteAudioError" role="alert"></p>
             <small class="prv-pro-wizard-hint">@L["AI will transcribe audio automatically"]</small>
 
             <div class="prv-pro-quote-attachments">
@@ -114,6 +124,19 @@
             var notes = document.getElementById('createJobQuoteNotes');
             var count = document.getElementById('createJobQuoteCount');
             var toggles = document.querySelectorAll('.prv-pro-quote-toggle-btn');
+            var audioRoot = document.getElementById('createJobQuoteAudio');
+            var micBtn = document.getElementById('createJobQuoteMic');
+            var recordBtn = document.getElementById('createJobQuoteRecord');
+            var wave = document.getElementById('createJobQuoteWave');
+            var timerEl = document.getElementById('createJobQuoteTimer');
+            var errorEl = document.getElementById('createJobQuoteAudioError');
+            var hasVoiceInput = document.getElementById('createJobHasVoice');
+            var mediaRecorder = null;
+            var mediaStream = null;
+            var recordedChunks = [];
+            var timerId = null;
+            var startedAt = 0;
+            var recording = false;
 
             function setSendQuote(enabled) {
                 sendInput.value = enabled ? 'true' : 'false';
@@ -140,6 +163,111 @@
                     btn.closest('.prv-pro-quote-attachment')?.remove();
                 });
             });
+
+            function fmtTime(ms) {
+                var total = Math.floor(ms / 1000);
+                var m = String(Math.floor(total / 60)).padStart(2, '0');
+                var s = String(total % 60).padStart(2, '0');
+                return m + ':' + s;
+            }
+
+            function showAudioError(message) {
+                if (!errorEl) return;
+                errorEl.textContent = message || '';
+                errorEl.classList.toggle('is-hidden', !message);
+            }
+
+            function setRecordingUi(isRecording) {
+                recording = isRecording;
+                audioRoot?.classList.toggle('is-recording', isRecording);
+                micBtn?.classList.toggle('is-recording', isRecording);
+                micBtn?.setAttribute('aria-pressed', isRecording ? 'true' : 'false');
+                if (recordBtn && audioRoot) {
+                    recordBtn.textContent = isRecording
+                        ? (audioRoot.getAttribute('data-label-stop') || 'Stop recording')
+                        : (hasVoiceInput && hasVoiceInput.value === 'true'
+                            ? (audioRoot.getAttribute('data-label-recorded') || 'Audio recorded')
+                            : (audioRoot.getAttribute('data-label-record') || 'Record audio'));
+                }
+            }
+
+            function stopTimer() {
+                if (timerId) {
+                    clearInterval(timerId);
+                    timerId = null;
+                }
+            }
+
+            function startTimer() {
+                startedAt = Date.now();
+                if (timerEl) timerEl.textContent = '00:00';
+                stopTimer();
+                timerId = setInterval(function () {
+                    if (timerEl) timerEl.textContent = fmtTime(Date.now() - startedAt);
+                }, 250);
+            }
+
+            function cleanupStream() {
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach(function (t) { t.stop(); });
+                    mediaStream = null;
+                }
+            }
+
+            function stopRecording() {
+                if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder.stop();
+                } else {
+                    cleanupStream();
+                    stopTimer();
+                    setRecordingUi(false);
+                }
+            }
+
+            async function startRecording() {
+                showAudioError('');
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') {
+                    showAudioError(audioRoot?.getAttribute('data-msg-mic-unavailable') || 'Microphone is not available in this browser.');
+                    return;
+                }
+                try {
+                    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    recordedChunks = [];
+                    var mime = MediaRecorder.isTypeSupported('audio/webm')
+                        ? 'audio/webm'
+                        : (MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : '');
+                    mediaRecorder = mime
+                        ? new MediaRecorder(mediaStream, { mimeType: mime })
+                        : new MediaRecorder(mediaStream);
+                    mediaRecorder.addEventListener('dataavailable', function (e) {
+                        if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+                    });
+                    mediaRecorder.addEventListener('stop', function () {
+                        cleanupStream();
+                        stopTimer();
+                        var hasAudio = recordedChunks.some(function (c) { return c && c.size > 0; });
+                        if (hasVoiceInput) hasVoiceInput.value = hasAudio ? 'true' : hasVoiceInput.value;
+                        setRecordingUi(false);
+                        if (hasAudio && wave) wave.classList.add('is-recorded');
+                    });
+                    mediaRecorder.start();
+                    startTimer();
+                    setRecordingUi(true);
+                } catch (_) {
+                    cleanupStream();
+                    stopTimer();
+                    setRecordingUi(false);
+                    showAudioError(audioRoot?.getAttribute('data-msg-mic-denied') || 'Microphone permission is required to record audio.');
+                }
+            }
+
+            function toggleRecording() {
+                if (recording) stopRecording();
+                else startRecording();
+            }
+
+            micBtn?.addEventListener('click', toggleRecording);
+            recordBtn?.addEventListener('click', toggleRecording);
         })();
     </script>
 }

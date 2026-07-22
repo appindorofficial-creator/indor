@@ -7,7 +7,6 @@
 
 <div class="prv-pro-shell prv-pro-shell--upload-report prv-pro-shell--report-success">
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
-    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
 
     <section class="prv-pro-job-success-hero">
         <div class="prv-pro-job-success-icon"><i class="fas fa-circle-check"></i></div>
@@ -38,15 +37,8 @@
                 <i class="fas fa-eye"></i> @L["View Report"]
             </a>
         }
-        <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="ready" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">
-            <i class="fas fa-paper-plane"></i> @L["Send to Homeowner"]
+        <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">
+            <i class="fas fa-arrow-left"></i> @L["Back to Reports"]
         </a>
-        <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="housefacts" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">
-            <i class="fas fa-house"></i> @L["Add to House Facts"]
-        </a>
-        <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">
-            <i class="fas fa-file-circle-plus"></i> @L["Upload Another Report"]
-        </a>
-        <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-customer-add-another">&lt; @L["Back to Reports"]</a>
     </div>
 </div>

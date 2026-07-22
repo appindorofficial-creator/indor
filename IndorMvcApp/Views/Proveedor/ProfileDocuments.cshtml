@@ -1,11 +1,14 @@
 @model IndorMvcApp.ViewModels.ProviderProfileDocumentsViewModel
 @{
-    ViewData["Title"] = L["Documents & Verification - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "profile";
     ViewBag.CompanyInitial = Model.CompanyInitial;
     ViewBag.ProfileFlowStep = 3;
     var activeSection = Model.Sections.FirstOrDefault(s => s.IsExpanded);
+    var openedFromInsurance = string.Equals(activeSection?.Id, "insurance", StringComparison.OrdinalIgnoreCase);
+    ViewData["Title"] = openedFromInsurance
+        ? L["Insurance & Docs"]
+        : L["Documents & Verification - INDOR PRO"];
 }
 
 <div class="prv-pro-shell prv-pro-shell--profile prv-flow-shell">
@@ -16,8 +19,8 @@
             <i class="fas fa-chevron-left"></i>
         </a>
         <div>
-            <h1>@L["Documents &amp; verification"]</h1>
-            <p>@L["Upload credentials so INDOR can verify your account."]</p>
+            <h1>@(openedFromInsurance ? L["Insurance & Docs"] : L["Documents & verification"])</h1>
+            <p>@(openedFromInsurance ? L["See insurance active and documents ready"] : L["Upload credentials so INDOR can verify your account."])</p>
         </div>
     </header>
 
@@ -65,7 +68,7 @@
         <form asp-controller="Proveedor" asp-action="ProfileDocuments" method="post" enctype="multipart/form-data" class="prv-flow-form prv-flow-docs-form" id="prvFlowDocsForm" novalidate>
             @Html.AntiForgeryToken()
             <input type="hidden" name="documentType" id="prvFlowDocType" value="" />
-            <input type="hidden" name="Section" value="@activeSection.Id" />
+            <input type="hidden" name="Section" id="prvFlowActiveSection" value="@activeSection.Id" />
 
             <section class="prv-flow-detail-card">
                 <header class="prv-flow-detail-head">
@@ -94,7 +97,7 @@
         </a>
     }
 
-    <a asp-controller="Proveedor" asp-action="Profile" class="prv-flow-exit">@L["Save &amp; Exit"]</a>
+    <a asp-controller="Proveedor" asp-action="Profile" class="prv-flow-exit">@L["Save & Exit"]</a>
 
     @await Html.PartialAsync("_ProfileFlowStepper")
 </div>

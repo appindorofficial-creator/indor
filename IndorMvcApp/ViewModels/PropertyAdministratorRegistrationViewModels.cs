@@ -90,6 +90,13 @@ public class PropertyAdministratorPropertiesStepViewModel : PropertyAdministrato
     public bool CanUploadDocuments => Properties.Any(p => p.PropiedadId is > 0);
     public bool IsRegistrationComplete { get; set; }
     public string DoneUrl { get; set; } = "#";
+    /// <summary>
+    /// When false, hide CSV/document import rows so "Add property" is manual-only
+    /// (portal Import portfolio CTA goes to ImportPortfolio instead).
+    /// </summary>
+    public bool ShowBulkImportOptions { get; set; } = true;
+    /// <summary>manual | import | null (registration hub)</summary>
+    public string? EntryMode { get; set; }
 }
 
 public class PropertyAdministratorPortfolioImportResult
@@ -138,6 +145,13 @@ public class PropertyAdministratorImportPortfolioViewModel : PropertyAdministrat
 {
     public string? FormError { get; set; }
     public string? FormSuccess { get; set; }
+    public bool IsRegistrationComplete { get; set; }
+}
+
+public class PropertyAdministratorPortfolioTemplateViewModel : PropertyAdministratorRegistrationStepViewModel
+{
+    public string FileDownloadUrl { get; set; } = "#";
+    public string FileName { get; set; } = "indor-portfolio-template.csv";
     public bool IsRegistrationComplete { get; set; }
 }
 

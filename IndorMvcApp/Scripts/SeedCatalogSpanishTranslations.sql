@@ -207,12 +207,158 @@ BEGIN TRY
 
     IF OBJECT_ID(N'dbo.IndorProveedorOfertasCatalogo', N'U') IS NOT NULL
     BEGIN
+        -- Generic offerings
         UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalaciones' WHERE Id = N'installations';
         UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Reparaciones' WHERE Id = N'repairs';
         UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Mantenimiento' WHERE Id = N'maintenance';
         UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Mejoras' WHERE Id = N'upgrades';
         UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Inspecciones' WHERE Id = N'inspections';
         UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Servicios de emergencia' WHERE Id = N'emergency';
+
+        -- Handyman (Profile > Servicios ofrecidos)
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Parche y reparación de tablaroca' WHERE Id = N'drywall_patch';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Ajustes de puertas' WHERE Id = N'door_adjustments';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Montaje de TV / cuadros' WHERE Id = N'tv_mounting';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalación de estanterías' WHERE Id = N'shelving_install';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Ensamblaje de muebles' WHERE Id = N'furniture_assembly';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Reemplazo de herrajes' WHERE Id = N'hardware_replacement';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Calafateo y sellado' WHERE Id = N'caulking_sealing';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Reparaciones menores de lista de pendientes' WHERE Id = N'punch_list';
+
+        -- Construction
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Ampliaciones de vivienda' WHERE Id = N'home_additions';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Remodelaciones completas de vivienda' WHERE Id = N'full_remodels';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Armado estructural' WHERE Id = N'structural_framing';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Tablaroca' WHERE Id = N'drywall';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Trabajo de concreto' WHERE Id = N'concrete_work';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Carpintería de acabados' WHERE Id = N'finish_carpentry';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Decks y porches' WHERE Id = N'decks_porches';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Renovaciones exteriores' WHERE Id = N'exterior_renovations';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Demolición' WHERE Id = N'demolition';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Gestión de proyectos' WHERE Id = N'project_management';
+
+        -- Bathroom remodeling
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Renovación completa de baño' WHERE Id = N'full_bathroom_renovation';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalación de ducha / bañera' WHERE Id = N'shower_tub_install';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalación de tocador' WHERE Id = N'vanity_install';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Losa y pisos' WHERE Id = N'tile_flooring';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalación de inodoro' WHERE Id = N'toilet_install';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Reemplazo de accesorios' WHERE Id = N'fixture_replacement';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Impermeabilización' WHERE Id = N'waterproofing';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Tablaroca y pintura' WHERE Id = N'drywall_paint';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Mejoras de accesibilidad' WHERE Id = N'accessibility_upgrades';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalación de puerta de vidrio' WHERE Id = N'glass_door_install';
+
+        -- Plumbing
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Reparación de fugas' WHERE Id = N'leak_repair';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Limpieza de drenajes' WHERE Id = N'drain_cleaning';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Servicio de calentador de agua' WHERE Id = N'water_heater';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalación de accesorios' WHERE Id = N'fixture_install';
+
+        -- HVAC
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Reparación de A/C' WHERE Id = N'ac_repair';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalación de A/C' WHERE Id = N'ac_install';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Reparación de calefacción' WHERE Id = N'heating_repair';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Servicio de bomba de calor' WHERE Id = N'heat_pump';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Ductos' WHERE Id = N'ductwork';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Termostato' WHERE Id = N'thermostat';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Calidad del aire interior' WHERE Id = N'indoor_air_quality';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Mini-split' WHERE Id = N'mini_split';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'HVAC comercial' WHERE Id = N'commercial_hvac';
+
+        -- Kitchen
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Remodelación completa de cocina' WHERE Id = N'full_kitchen_remodel';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalación de gabinetes' WHERE Id = N'cabinet_installation';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Reemplazo de gabinetes' WHERE Id = N'cabinet_replacement';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalación de mesadas' WHERE Id = N'countertop_installation';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalación de salpicadero' WHERE Id = N'backsplash_installation';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Pisos' WHERE Id = N'kitchen_flooring';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Pintura y acabados' WHERE Id = N'painting_finish_work';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalación de electrodomésticos' WHERE Id = N'appliance_installation';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Reemplazo de fregadero y grifo' WHERE Id = N'sink_faucet_replacement';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Coordinación de iluminación y accesorios' WHERE Id = N'lighting_fixture_coordination';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Demolición' WHERE Id = N'kitchen_demolition';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Carpintería de molduras y acabados' WHERE Id = N'trim_finish_carpentry';
+
+        -- Roofing
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Reemplazo de techo de tejas' WHERE Id = N'shingle_roof_replacement';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Reparaciones de techo' WHERE Id = N'roof_repairs';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Techo metálico' WHERE Id = N'metal_roofing';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Techo plano' WHERE Id = N'flat_roofing';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Detección de fugas' WHERE Id = N'leak_detection';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Tapajuntas y ventilación' WHERE Id = N'flashing_ventilation';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalación de canaletas' WHERE Id = N'gutter_installation';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Servicio de lona de emergencia' WHERE Id = N'emergency_tarp_service';
+
+        -- Painting
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Pintura interior' WHERE Id = N'interior_painting';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Pintura exterior' WHERE Id = N'exterior_painting';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Pintura de gabinetes' WHERE Id = N'cabinet_painting';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Preparación y parches de tablaroca' WHERE Id = N'drywall_prep_patching';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Molduras y puertas' WHERE Id = N'trim_doors';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Tinción de decks y cercas' WHERE Id = N'deck_fence_staining';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Remoción de papel tapiz' WHERE Id = N'wallpaper_removal';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Preparación con hidrolavado' WHERE Id = N'pressure_washing_prep';
+
+        -- Flooring
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalación de madera' WHERE Id = N'hardwood_installation';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Laminado' WHERE Id = N'laminate';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Vinilo / LVP' WHERE Id = N'vinyl_lvp';
+        -- tile_flooring id is shared with bathroom ("Tile & Flooring"); LabelEs set in bathroom block
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalación de alfombra' WHERE Id = N'carpet_installation';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Reparación de pisos' WHERE Id = N'floor_repair';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Reparación de subpiso' WHERE Id = N'subfloor_repair';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Acabado de pisos' WHERE Id = N'refinishing';
+
+        -- Cleaning
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Limpieza estándar' WHERE Id = N'standard_cleaning';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Limpieza profunda' WHERE Id = N'deep_cleaning';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Mudanza de entrada / salida' WHERE Id = N'move_in_move_out';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Limpieza postconstrucción' WHERE Id = N'post_construction_cleaning';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Limpieza de oficinas' WHERE Id = N'office_cleaning';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Rotación Airbnb' WHERE Id = N'airbnb_turnover';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Limpieza recurrente' WHERE Id = N'recurring_cleaning';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Limpieza de ventanas' WHERE Id = N'window_cleaning';
+
+        -- Landscaping
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Corte de césped' WHERE Id = N'lawn_mowing';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Mantenimiento de césped' WHERE Id = N'lawn_maintenance';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Acolchado' WHERE Id = N'mulching';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Plantación' WHERE Id = N'planting';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Poda de árboles' WHERE Id = N'tree_trimming';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Poda de setos' WHERE Id = N'hedge_trimming';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Instalación de césped en rollo' WHERE Id = N'sod_installation';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Riego' WHERE Id = N'irrigation';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Limpieza de temporada' WHERE Id = N'seasonal_cleanup';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Mantenimiento de superficies duras' WHERE Id = N'hardscape_maintenance';
+
+        -- Pest control
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Control general de plagas' WHERE Id = N'general_pest_control';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Control de hormigas' WHERE Id = N'ant_control';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Control de cucarachas' WHERE Id = N'roach_control';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Control de roedores' WHERE Id = N'rodent_control';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Inspección de termitas' WHERE Id = N'termite_inspection';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Tratamiento de termitas' WHERE Id = N'termite_treatment';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Tratamiento de mosquitos' WHERE Id = N'mosquito_treatment';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Servicio de chinches' WHERE Id = N'bed_bug_service';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Remoción de avispas / abejas' WHERE Id = N'wasp_bee_removal';
+
+        -- Appliance repair
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Refrigerador' WHERE Id = N'refrigerator';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Congelador' WHERE Id = N'freezer';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Lavavajillas' WHERE Id = N'dishwasher';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Horno / estufa' WHERE Id = N'oven_range';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Parrilla / cubierta' WHERE Id = N'cooktop';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Microondas' WHERE Id = N'microwave';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Lavadora' WHERE Id = N'washer';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Secadora' WHERE Id = N'dryer';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Triturador de basura' WHERE Id = N'garbage_disposal';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Máquina de hielo' WHERE Id = N'ice_maker';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Compactador de basura' WHERE Id = N'trash_compactor';
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Otros electrodomésticos pequeños' WHERE Id = N'other_small_appliances';
+
+        -- Shared preventive maintenance id (pest / hvac)
+        UPDATE dbo.IndorProveedorOfertasCatalogo SET LabelEs = N'Mantenimiento preventivo' WHERE Id = N'preventive_maintenance';
     END
 
     /* ---------- Categorías de solicitudes vecinales ---------- */

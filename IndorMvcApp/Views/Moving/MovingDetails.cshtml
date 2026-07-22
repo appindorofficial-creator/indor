@@ -92,7 +92,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoServicio">
             <span class="field-label">@L["Service type"]</span>
             <div class="service-block" data-target="TipoServicio" data-value="MoversOnly">
                 <strong>@L["Movers only"]</strong>
@@ -130,26 +130,34 @@
         initTiles('[data-target="TamanoHogar"]', 'TamanoHogar', '@Model.TamanoHogar');
 
         const serviceHidden = document.getElementById('TipoServicio');
-        document.querySelectorAll('.service-block').forEach(block => {
-            block.addEventListener('click', () => {
-                document.querySelectorAll('.service-block').forEach(b => b.classList.remove('active'));
-                block.classList.add('active');
-                serviceHidden.value = block.dataset.value;
-            });
-            if (block.dataset.value === serviceHidden.value) block.classList.add('active');
+        const serviceBlocks = document.querySelectorAll('.service-block');
+        function setServiceType(value) {
+            if (!serviceHidden) return;
+            serviceHidden.value = value || '';
+            serviceBlocks.forEach(b => b.classList.toggle('active', b.dataset.value === serviceHidden.value));
+        }
+        serviceBlocks.forEach(block => {
+            block.addEventListener('click', () => setServiceType(block.dataset.value));
         });
+        setServiceType(serviceHidden?.value || serviceBlocks[0]?.dataset.value || '');
 
         const timeHidden = document.getElementById('VentanaHorario');
         const timeSelect = document.getElementById('VentanaHorarioSelect');
-        timeSelect.value = timeHidden.value || 'Morning';
-        timeSelect.addEventListener('change', () => timeHidden.value = timeSelect.value);
+        if (timeHidden && timeSelect) {
+            timeSelect.value = timeHidden.value || 'Morning';
+            timeHidden.value = timeSelect.value;
+            timeSelect.addEventListener('change', () => { timeHidden.value = timeSelect.value; });
+        }
 
         const form = document.getElementById('movingDetailsForm');
-        const addressMessage = 'Please enter a valid street address (e.g. 123 Main St, Charlotte, NC).';
+        const isEs = (document.documentElement.lang || '').toLowerCase().indexOf('es') === 0;
+        const addressMessage = isEs
+            ? 'Ingresa una dirección completa (ej. 123 Main St, Charlotte, NC).'
+            : 'Please enter a valid street address (e.g. 123 Main St, Charlotte, NC).';
         const requiredFields = [
-            { id: 'DireccionOrigen', message: 'Please enter the pick-up address.', validateAddress: true },
-            { id: 'DireccionDestino', message: 'Please enter the drop-off address.', validateAddress: true },
-            { name: 'FechaMovimiento', message: 'Please select a move date.' }
+            { id: 'DireccionOrigen', message: isEs ? 'Ingresa la dirección de recogida.' : 'Please enter the pick-up address.', validateAddress: true },
+            { id: 'DireccionDestino', message: isEs ? 'Ingresa la dirección de entrega.' : 'Please enter the drop-off address.', validateAddress: true },
+            { name: 'FechaMovimiento', message: isEs ? 'Selecciona una fecha de mudanza.' : 'Please select a move date.' }
         ];
 
         function isValidStreetAddress(value) {

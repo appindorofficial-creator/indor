@@ -41,7 +41,7 @@
                        data-min-date="@Model.MinNeededByDateIso"
                        value="@(Model.NeededByDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "")"
                        aria-label="@L["Pick a date"]" />
-                <span class="nr-pick-date-value" id="nrPickDateValue">
+                <span class="nr-pick-date-value @(Model.NeededByDate == null ? "is-placeholder" : null)" id="nrPickDateValue">
                     @(Model.NeededByDate?.ToString("dddd, MMMM d", CultureInfo.CurrentUICulture) ?? L["Select a date"].ToString())
                 </span>
                 <i class="fas fa-chevron-right nr-pick-date-chevron" aria-hidden="true"></i>
@@ -188,7 +188,9 @@
 
             function syncPickDateLabel() {
                 if (pickDateValue) {
+                    var hasValue = !!(neededByDate && neededByDate.value);
                     pickDateValue.textContent = formatPickDate(neededByDate?.value || '');
+                    pickDateValue.classList.toggle('is-placeholder', !hasValue);
                 }
             }
 
@@ -285,6 +287,9 @@
                     var amount = parseFloat(budgetInput.value);
                     if (!budgetInput.value || isNaN(amount) || amount <= 0) {
                         e.preventDefault();
+                        if (typeof window.indorHideNavigationLoading === 'function') {
+                            window.indorHideNavigationLoading();
+                        }
                         setBudgetError();
                     }
                 });

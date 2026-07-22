@@ -46,7 +46,7 @@
             @foreach (var job in Model.Jobs)
             {
                 <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@job.Id" class="prv-pro-schedule-row">
-                    <div class="prv-pro-schedule-row-time">@job.TimeLabel</div>
+                    <div class="prv-pro-schedule-row-time">@UiDisplayLocalization.Localize(L, job.TimeLabel)</div>
                     <div class="prv-pro-schedule-row-body">
                         <strong>@job.Title</strong>
                         <small>@job.Address</small>

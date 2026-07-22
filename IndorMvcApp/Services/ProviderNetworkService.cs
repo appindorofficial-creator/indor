@@ -60,6 +60,7 @@ public sealed class ProviderNetworkService(
         bool insuredOnly,
         bool availableNow,
         bool docsReady,
+        string? mode = null,
         CancellationToken cancellationToken = default)
     {
         var catalog = await LoadCatalogAsync(cancellationToken);
@@ -69,6 +70,7 @@ public sealed class ProviderNetworkService(
 
         trade = string.IsNullOrWhiteSpace(trade) ? "all" : trade.Trim();
         view = string.Equals(view, "map", StringComparison.OrdinalIgnoreCase) ? "map" : "list";
+        var normalizedMode = NormalizeFindMode(mode);
         var normalizedQuery = query?.Trim();
 
         var filtered = providers.AsEnumerable();
@@ -111,6 +113,15 @@ public sealed class ProviderNetworkService(
         {
             cards = cards.OrderBy(c => c.DistanceLabel == null ? double.MaxValue : ParseMiles(c.DistanceLabel)).ToList();
         }
+        else if (normalizedMode == "services")
+        {
+            // Trade/service browse: group by primary trade label, then rating.
+            cards = cards
+                .OrderBy(c => c.TradeLabel ?? "zzz", StringComparer.OrdinalIgnoreCase)
+                .ThenByDescending(c => c.Rating ?? 0)
+                .ThenByDescending(c => c.ReviewCount)
+                .ToList();
+        }
         else
         {
             cards = cards
@@ -123,6 +134,7 @@ public sealed class ProviderNetworkService(
         return new FindSubcontractorsViewModel
         {
             CompanyName = ResolveMyName(me),
+            Mode = normalizedMode,
             Query = normalizedQuery,
             ActiveTrade = trade,
             ActiveView = view,
@@ -132,9 +144,26 @@ public sealed class ProviderNetworkService(
             FilterDocsReady = docsReady,
             TradeChips = BuildTradeChips(catalog, providers),
             Results = cards,
-            SortLabel = nearby && hasLocation ? "Nearest" : "Best Match",
+            SortLabel = nearby && hasLocation
+                ? "Nearest"
+                : normalizedMode == "services" ? "By Trade" : "Best Match",
             HasLocation = hasLocation
         };
+    }
+
+    private static string NormalizeFindMode(string? mode)
+    {
+        if (string.Equals(mode, "verified", StringComparison.OrdinalIgnoreCase))
+        {
+            return "verified";
+        }
+
+        if (string.Equals(mode, "services", StringComparison.OrdinalIgnoreCase))
+        {
+            return "services";
+        }
+
+        return "find";
     }
 
     // ---------------------------------------------------------------- Profile
@@ -224,7 +253,13 @@ public sealed class ProviderNetworkService(
         var catalog = await LoadCatalogAsync(cancellationToken);
         var options = catalog.Values
             .OrderBy(c => c.SortOrder)
-            .Select(c => new NetworkTradeChipViewModel { Id = c.Id, Label = c.LabelEn, IconClass = c.IconClass })
+            .Select(c => new NetworkTradeChipViewModel
+            {
+                Id = c.Id,
+                Label = c.LabelEn,
+                LabelEs = c.LabelEs,
+                IconClass = c.IconClass
+            })
             .ToList();
 
         var draft = draftId.HasValue ? await LoadDraftAsync(me.Id, draftId.Value, cancellationToken) : null;
@@ -674,6 +709,87 @@ public sealed class ProviderNetworkService(
         }
     }
 
+    public async Task<MessageSubcontractorViewModel?> GetMessageComposeAsync(
+        IndorProveedor me,
+        int subcontractorId,
+        CancellationToken cancellationToken = default)
+    {
+        var provider = await db.IndorProveedores
+            .AsNoTracking()
+            .Include(p => p.Categorias)
+            .FirstOrDefaultAsync(p => p.Id == subcontractorId, cancellationToken);
+
+        if (provider == null || provider.Id == me.Id)
+        {
+            return null;
+        }
+
+        var catalog = await LoadCatalogAsync(cancellationToken);
+        var primaryTrade = provider.Categorias.Select(c => c.CategoriaId).FirstOrDefault();
+        catalog.TryGetValue(primaryTrade ?? "", out var primaryCat);
+
+        return new MessageSubcontractorViewModel
+        {
+            SubcontractorId = provider.Id,
+            Name = ResolveName(provider),
+            TradeLabel = primaryCat?.LabelEn ?? provider.ServiceDescription,
+            PhotoUrl = LogoUrl(provider),
+            IconClass = primaryCat?.IconClass ?? "fa-screwdriver-wrench"
+        };
+    }
+
+    public async Task<MessageSubcontractorSentViewModel?> SendMessageAsync(
+        IndorProveedor me,
+        MessageSubcontractorInput input,
+        CancellationToken cancellationToken = default)
+    {
+        var body = (input.Body ?? string.Empty).Trim();
+        if (string.IsNullOrWhiteSpace(body) || input.SubcontractorId <= 0 || input.SubcontractorId == me.Id)
+        {
+            return null;
+        }
+
+        if (body.Length > 600)
+        {
+            body = body[..600];
+        }
+
+        var provider = await db.IndorProveedores
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == input.SubcontractorId, cancellationToken);
+
+        if (provider == null)
+        {
+            return null;
+        }
+
+        try
+        {
+            db.IndorProveedorNetworkInvitaciones.Add(new IndorProveedorNetworkInvitacion
+            {
+                InviterProveedorId = me.Id,
+                SubcontractorProveedorId = provider.Id,
+                JobTitle = "Direct message",
+                Description = body,
+                TimingPreference = NetworkInvitationTimings.Flexible,
+                Status = NetworkInvitationStatuses.Sent,
+                FechaCreacion = DateTime.UtcNow
+            });
+            await db.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
+        {
+            logger.LogWarning(ex, "Network invitations table missing; message not saved.");
+            return null;
+        }
+
+        return new MessageSubcontractorSentViewModel
+        {
+            SubcontractorId = provider.Id,
+            Name = ResolveName(provider)
+        };
+    }
+
     // ---------------------------------------------------------------- Loaders
 
     private async Task<Dictionary<string, IndorProveedorCategoriaCatalogo>> LoadCatalogAsync(CancellationToken ct)
@@ -881,7 +997,13 @@ public sealed class ProviderNetworkService(
         return catalog.Values
             .Where(c => usedTradeIds.Count == 0 || usedTradeIds.Contains(c.Id))
             .OrderBy(c => c.SortOrder)
-            .Select(c => new NetworkTradeChipViewModel { Id = c.Id, Label = c.LabelEn, IconClass = c.IconClass })
+            .Select(c => new NetworkTradeChipViewModel
+            {
+                Id = c.Id,
+                Label = c.LabelEn,
+                LabelEs = c.LabelEs,
+                IconClass = c.IconClass
+            })
             .ToList();
     }
 

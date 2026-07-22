@@ -73,6 +73,8 @@ public class NeighborRequestDescribeStepViewModel : NeighborRequestWizardShellVi
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
+        // Unchecked chip groups often bind as null — treat as empty, never NRE.
+        SelectedTools ??= [];
         if (SelectedTools.Count == 0)
         {
             yield return new ValidationResult(

@@ -1,6 +1,16 @@
 @model IndorMvcApp.ViewModels.FindSubcontractorsViewModel
 @{
-    ViewData["Title"] = L["Find Subcontractors"];
+    var pageTitle = Model.IsServicesMode
+        ? L["Service Providers"].ToString()
+        : Model.IsVerifiedMode
+            ? L["Verified Subcontractors"].ToString()
+            : L["Find Subcontractors"].ToString();
+    var pageSubtitle = Model.IsServicesMode
+        ? L["Browse trusted specialists by trade or service."].ToString()
+        : Model.IsVerifiedMode
+            ? L["Browse insured, qualified pros near you."].ToString()
+            : L["Search and connect with verified pros."].ToString();
+    ViewData["Title"] = pageTitle;
     Layout = "_ProviderProLayout";
     ViewData["ProviderProExtraCss"] = "provider-network.css";
     ViewBag.NavActive = "jobs";
@@ -15,12 +25,13 @@
 
         <div class="prv-net-hero-title">
             <div>
-                <h1>@L["Verified Subcontractors"]</h1>
-                <p>@L["Browse trusted pros near you."]</p>
+                <h1>@pageTitle</h1>
+                <p>@pageSubtitle</p>
             </div>
         </div>
 
         <form method="get" asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-net-searchbar">
+            <input type="hidden" name="mode" value="@Model.Mode" />
             <input type="hidden" name="trade" value="@Model.ActiveTrade" />
             <input type="hidden" name="view" value="@Model.ActiveView" />
             @if (Model.FilterNearby) { <input type="hidden" name="nearby" value="true" /> }
@@ -29,33 +40,42 @@
             @if (Model.FilterDocsReady) { <input type="hidden" name="docs" value="true" /> }
             <div class="prv-net-search">
                 <i class="fas fa-magnifying-glass"></i>
-                <input type="search" name="q" value="@Model.Query" placeholder="@L["Search subcontractors, trades, or services"]" />
+                <input type="search" name="q" value="@Model.Query" placeholder="@(Model.IsServicesMode ? L["Search by trade or service"] : L["Search subcontractors, trades, or services"])" />
             </div>
             <button type="submit" class="prv-net-filter"><i class="fas fa-sliders"></i></button>
         </form>
 
         <div class="prv-net-toggle" style="margin:14px 0 0;background:rgba(255,255,255,.16);">
             <a asp-controller="Proveedor" asp-action="FindSubcontractors"
-               asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="map"
-               asp-route-nearby="@Model.FilterNearby" asp-route-insured="@Model.FilterInsuredOnly" asp-route-available="@Model.FilterAvailableNow"
+               asp-route-mode="@Model.Mode" asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="map"
+               asp-route-nearby="@Model.FilterNearby" asp-route-insured="@Model.FilterInsuredOnly" asp-route-available="@Model.FilterAvailableNow" asp-route-docs="@Model.FilterDocsReady"
                class="@(Model.ActiveView == "map" ? "is-active" : null)" style="color:@(Model.ActiveView == "map" ? "" : "#fff")"><i class="fas fa-map-location-dot"></i> @L["Map"]</a>
             <a asp-controller="Proveedor" asp-action="FindSubcontractors"
-               asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="list"
-               asp-route-nearby="@Model.FilterNearby" asp-route-insured="@Model.FilterInsuredOnly" asp-route-available="@Model.FilterAvailableNow"
+               asp-route-mode="@Model.Mode" asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="list"
+               asp-route-nearby="@Model.FilterNearby" asp-route-insured="@Model.FilterInsuredOnly" asp-route-available="@Model.FilterAvailableNow" asp-route-docs="@Model.FilterDocsReady"
                class="@(Model.ActiveView == "list" ? "is-active" : null)" style="color:@(Model.ActiveView == "list" ? "" : "#fff")"><i class="fas fa-list"></i> @L["List"]</a>
         </div>
     </header>
 
+    @if (Model.IsServicesMode && Model.TradeChips.Count > 0)
+    {
+        <div class="prv-net-sec-head" style="padding-top:14px;">
+            <h2>@L["Browse by trade"]</h2>
+        </div>
+    }
+
     @if (Model.TradeChips.Count > 0)
     {
-        <div class="prv-net-chips">
-            <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-q="@Model.Query" asp-route-view="@Model.ActiveView"
+        <div class="prv-net-chips @(Model.IsServicesMode ? "prv-net-chips--services" : null)">
+            <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-mode="@Model.Mode" asp-route-q="@Model.Query" asp-route-view="@Model.ActiveView"
+               asp-route-nearby="@Model.FilterNearby" asp-route-insured="@Model.FilterInsuredOnly" asp-route-available="@Model.FilterAvailableNow" asp-route-docs="@Model.FilterDocsReady"
                class="prv-net-chip @(Model.ActiveTrade == "all" ? "is-active" : null)"><i class="fas fa-border-all"></i> @L["All"]</a>
             @foreach (var chip in Model.TradeChips)
             {
-                <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-q="@Model.Query" asp-route-trade="@chip.Id" asp-route-view="@Model.ActiveView"
+                <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-mode="@Model.Mode" asp-route-q="@Model.Query" asp-route-trade="@chip.Id" asp-route-view="@Model.ActiveView"
+                   asp-route-nearby="@Model.FilterNearby" asp-route-insured="@Model.FilterInsuredOnly" asp-route-available="@Model.FilterAvailableNow" asp-route-docs="@Model.FilterDocsReady"
                    class="prv-net-chip @(Model.ActiveTrade == chip.Id ? "is-active" : null)">
-                    <i class="fas @chip.IconClass"></i> @UiDisplayLocalization.Localize(L, chip.Label)
+                    <i class="fas @chip.IconClass"></i> @ProviderProDisplayLocalization.CatalogLabel(chip.Label, chip.LabelEs)
                 </a>
             }
         </div>
@@ -66,28 +86,38 @@
     }
     <div class="prv-net-fpills">
         <a asp-controller="Proveedor" asp-action="FindSubcontractors"
-           asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
+           asp-route-mode="@(Model.IsVerifiedMode ? "find" : Model.Mode)" asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
            class="prv-net-fpill @(noFilters ? "is-active" : null)"><i class="fas fa-border-all"></i> @L["All"]</a>
         <a asp-controller="Proveedor" asp-action="FindSubcontractors"
-           asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
+           asp-route-mode="@Model.Mode" asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
            asp-route-nearby="@Model.FilterNearby" asp-route-insured="@Model.FilterInsuredOnly" asp-route-available="@(!Model.FilterAvailableNow)" asp-route-docs="@Model.FilterDocsReady"
            class="prv-net-fpill @(Model.FilterAvailableNow ? "is-active" : null)"><i class="fas fa-clock"></i> @L["Available Now"]</a>
         <a asp-controller="Proveedor" asp-action="FindSubcontractors"
-           asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
+           asp-route-mode="@Model.Mode" asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
            asp-route-nearby="@Model.FilterNearby" asp-route-insured="@(!Model.FilterInsuredOnly)" asp-route-available="@Model.FilterAvailableNow" asp-route-docs="@Model.FilterDocsReady"
            class="prv-net-fpill @(Model.FilterInsuredOnly ? "is-active" : null)"><i class="fas fa-shield-halved"></i> @L["Insurance Active"]</a>
         <a asp-controller="Proveedor" asp-action="FindSubcontractors"
-           asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
+           asp-route-mode="@Model.Mode" asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
            asp-route-nearby="@Model.FilterNearby" asp-route-insured="@Model.FilterInsuredOnly" asp-route-available="@Model.FilterAvailableNow" asp-route-docs="@(!Model.FilterDocsReady)"
            class="prv-net-fpill @(Model.FilterDocsReady ? "is-active" : null)"><i class="fas fa-file-lines"></i> @L["Docs Ready"]</a>
         <a asp-controller="Proveedor" asp-action="FindSubcontractors"
-           asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
+           asp-route-mode="@Model.Mode" asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
            asp-route-nearby="@(!Model.FilterNearby)" asp-route-insured="@Model.FilterInsuredOnly" asp-route-available="@Model.FilterAvailableNow" asp-route-docs="@Model.FilterDocsReady"
            class="prv-net-fpill @(Model.FilterNearby ? "is-active" : null)"><i class="fas fa-location-dot"></i> @L["Nearby"]</a>
     </div>
 
     <div class="prv-net-count">
-        <span>@L.T("{0} subcontractor(s) found", Model.ResultCount)@(Model.HasLocation ? $" {L["near you"]}" : "")</span>
+        <span>
+            @if (Model.IsServicesMode)
+            {
+                @L.T("{0} specialist(s) found", Model.ResultCount)
+            }
+            else
+            {
+                @L.T("{0} subcontractor(s) found", Model.ResultCount)
+            }
+            @(Model.HasLocation && (Model.FilterNearby || Model.IsVerifiedMode) ? $" {L["near you"]}" : "")
+        </span>
         <span>@L["Sort by:"]<strong>@UiDisplayLocalization.Localize(L, Model.SortLabel)</strong></span>
     </div>
 
@@ -142,7 +172,9 @@
         <div class="prv-net-empty">
             <i class="fas fa-magnifying-glass"></i>
             <h3>@L["No matches found"]</h3>
-            <p>@L["Try a different trade or remove some filters to see more verified subcontractors."]</p>
+            <p>@(Model.IsServicesMode
+                ? L["Try a different trade or service to see more specialists."]
+                : L["Try a different trade or remove some filters to see more verified subcontractors."])</p>
         </div>
     }
     else if (Model.ActiveView != "map")

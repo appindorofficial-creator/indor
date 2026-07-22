@@ -36,7 +36,7 @@
                     docTypeField.value = input.getAttribute('data-doc-type') || '';
                 }
                 if (sectionField) {
-                    sectionField.value = input.getAttribute('data-section') || '';
+                    sectionField.value = input.getAttribute('data-section') || sectionField.value || '';
                 }
 
                 pendingFileInput = input;

@@ -1,0 +1,30 @@
+@model IndorMvcApp.ViewModels.MessageSubcontractorSentViewModel
+@{
+    ViewData["Title"] = L["Message sent successfully"];
+    Layout = "_ProviderProLayout";
+    ViewData["ProviderProExtraCss"] = "provider-network.css";
+    ViewBag.NavActive = "jobs";
+}
+
+<div class="prv-net-shell">
+    <header class="prv-net-pro-hero">
+        <a asp-controller="Proveedor" asp-action="SubcontractorProfile" asp-route-id="@Model.SubcontractorId" class="prv-net-back">
+            <i class="fas fa-chevron-left"></i> @L["Back"]
+        </a>
+    </header>
+
+    <section class="prv-net-profile-card" style="text-align:center;padding:28px 18px;">
+        <div class="prv-net-ready-ic" style="margin:0 auto 12px;"><i class="fas fa-circle-check"></i></div>
+        <h1 style="margin:0 0 8px;font-size:1.25rem;color:var(--net-navy);">@L["Message sent successfully"]</h1>
+        <p style="margin:0;color:var(--net-muted);">@L.T("Your message was sent to {0}.", Model.Name)</p>
+    </section>
+
+    <div class="prv-net-actionbar">
+        <a asp-controller="Proveedor" asp-action="SubcontractorProfile" asp-route-id="@Model.SubcontractorId" class="prv-net-btn prv-net-btn--primary">
+            <i class="fas fa-user"></i> @L["Back to profile"]
+        </a>
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-net-btn prv-net-btn--ghost">
+            @L["Back to Search"]
+        </a>
+    </div>
+</div>

@@ -400,7 +400,7 @@ public class NeighborRequestWizardService(
                 ? string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:C0}", draft.BudgetAmount.Value)
                 : null,
             BackUrl = isEdit
-                ? $"/NeighborRequest/Preferences?propiedadId={draft.PropiedadId}"
+                ? $"/NeighborRequest/Preferences?propiedadId={draft.PropiedadId}&requestId={draft.EditingRequestId}"
                 : $"/NeighborRequest/Describe?propiedadId={draft.PropiedadId}",
             CloseUrl = isEdit && draft.EditingRequestId is > 0
                 ? $"/NeighborRequest/Detail/{draft.EditingRequestId}"
@@ -557,6 +557,7 @@ public class NeighborRequestWizardService(
         draft.AudienceCode = request.AudienceCode;
         draft.TimelineCode = request.TimelineCode;
         draft.BudgetAmount = request.BudgetAmount;
+        draft.ScheduleConfigured = true;
         SaveDraft(session, draft);
         return true;
     }
@@ -1055,7 +1056,9 @@ public class NeighborRequestWizardService(
             CancelUrl = url.Action("Cancel", "NeighborRequest", new { id = request.Id }) ?? "#",
             ProvidersUrl = url.Action("Edit", "NeighborRequest", new { id = request.Id, step = "providers" }) ?? "#",
             SeeAllOffersUrl = url.Action("Offers", "NeighborRequest", new { id = request.Id }) ?? "#",
-            ViewProvidersUrl = url.Action("Index", "Home") + "#section-services"
+            // Stay on this request's detail providers panel — do not bounce to Home Servicios.
+            ViewProvidersUrl = (url.Action("Detail", "NeighborRequest", new { id = request.Id }) ?? "#")
+                + "#nr-detail-providers"
         };
     }
 
@@ -1413,7 +1416,9 @@ public class NeighborRequestWizardService(
         draft.BudgetAmount = model.BudgetAmount is > 0 ? model.BudgetAmount : null;
         draft.ScheduleConfigured = true;
 
-        var today = DateTime.UtcNow.Date;
+        // Use local Today to match IsNeededByDateAllowed (DateTime.Today). UtcNow.Date
+        // can be yesterday in US timezones and then Review rejects "Today" selections.
+        var today = DateTime.Today;
         draft.NeededByDate = draft.TimelineCode switch
         {
             NeighborRequestTimelineCodes.Today => today,
@@ -1698,8 +1703,10 @@ public class NeighborRequestWizardService(
                 IsVerified = string.Equals(provider.RegistrationStatus, ProviderRegistrationStatuses.IndorProActive, StringComparison.OrdinalIgnoreCase)
                     || string.Equals(provider.RegistrationStatus, ProviderRegistrationStatuses.Approved, StringComparison.OrdinalIgnoreCase),
                 IsProviderOffer = true,
-                DetailUrl = url.Action("Index", "Home") + "#section-services",
-                ViewUrl = url.Action("Index", "Home") + "#section-services",
+                DetailUrl = (url.Action("Detail", "NeighborRequest", new { id = request.Id }) ?? "#")
+                    + "#nr-detail-providers",
+                ViewUrl = (url.Action("Detail", "NeighborRequest", new { id = request.Id }) ?? "#")
+                    + "#nr-detail-providers",
                 MessageUrl = url.Action("Index", "Home") + "#section-more"
             });
         }

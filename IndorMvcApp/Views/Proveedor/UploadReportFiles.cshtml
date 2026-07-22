@@ -7,7 +7,6 @@
 
 <div class="prv-pro-shell prv-pro-shell--upload-report">
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
-    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
 
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
         <a asp-controller="Proveedor" asp-action="UploadReportType" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
@@ -62,8 +61,8 @@
                 };
                 <div class="prv-pro-upload-doc-row">
                     <div>
-                        <strong>@doc.Slot @(doc.Required ? "(PDF)" : "")</strong>
-                        <span>@(doc.Required ? "Required" : "Optional")</span>
+                        <strong>@L[doc.Slot] @(doc.Required ? "(PDF)" : "")</strong>
+                        <span>@(doc.Required ? L["Required"] : L["Optional"])</span>
                     </div>
                     <input type="file" name="@inputName" accept=".pdf,.jpg,.jpeg,.png" />
                     @if (!string.IsNullOrWhiteSpace(doc.FileName))

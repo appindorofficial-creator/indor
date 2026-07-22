@@ -166,8 +166,16 @@
             <i class="fas fa-paper-plane"></i> @L["Invite to Job"]
         </a>
         <div class="prv-net-btn-row">
-            <a asp-controller="Proveedor" asp-action="Network" class="prv-net-btn prv-net-btn--ghost"><i class="fas fa-comment"></i> @L["Message"]</a>
-            <form asp-controller="Proveedor" asp-action="ToggleSaveSubcontractor" method="post" style="flex:1;">
+            <a asp-controller="Proveedor"
+               asp-action="MessageSubcontractor"
+               asp-route-id="@Model.Id"
+               class="prv-net-btn prv-net-btn--ghost prv-net-btn-row__item">
+                <i class="fas fa-comment"></i> @L["Message"]
+            </a>
+            <form asp-controller="Proveedor"
+                  asp-action="ToggleSaveSubcontractor"
+                  method="post"
+                  class="prv-net-btn-row__item">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="id" value="@Model.Id" />
                 <button type="submit" class="prv-net-btn prv-net-btn--ghost">

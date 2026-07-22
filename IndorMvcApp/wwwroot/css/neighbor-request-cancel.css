@@ -23,7 +23,8 @@
     margin: 0 auto;
     min-height: 100vh;
     min-height: 100dvh;
-    padding: 0 16px;
+    /* Keep stacked CTAs above the home indicator; page scrolls when content is tall. */
+    padding: 0 16px calc(16px + env(safe-area-inset-bottom, 0px));
     display: flex;
     flex-direction: column;
 }
@@ -297,13 +298,10 @@
     max-width: 100%;
     min-width: 0;
     margin-top: auto;
-    padding: 16px 0 calc(24px + env(safe-area-inset-bottom, 0px));
-    position: sticky;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 5;
-    background: linear-gradient(180deg, rgba(240, 247, 255, 0) 0%, var(--indor-bg-sky, #F0F7FF) 32%);
+    padding: 16px 0 8px;
+    /* Static document flow (same approach as PA confirmation footers) so
+       Mantener solicitud stays fully tappable above the safe-area inset. */
+    position: static;
 }
 
 .nr-cancel-submit,

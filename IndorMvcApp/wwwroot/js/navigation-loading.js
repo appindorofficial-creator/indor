@@ -7,7 +7,9 @@
     var BOTTOM_NAV_SPA_TARGET_SELECTOR =
         ".bottom-nav [data-target], .prv-pro-bottom-nav [data-target], .rl-bottom-nav [data-target], .pa-bottom-nav [data-target]";
     var SPA_HIDE_DELAY_MS = 650;
+    var MAX_VISIBLE_MS = 15000;
     var hideTimer = null;
+    var maxVisibleTimer = null;
 
     function isPlainLeftClick(e) {
         return e.button === 0
@@ -144,6 +146,12 @@
         hideTimer = null;
     }
 
+    function clearMaxVisibleTimer() {
+        if (!maxVisibleTimer) return;
+        window.clearTimeout(maxVisibleTimer);
+        maxVisibleTimer = null;
+    }
+
     function scheduleHideNavigationLoading(delay) {
         clearHideTimer();
         hideTimer = window.setTimeout(function () {
@@ -158,17 +166,26 @@
         if (!opts.keepScheduledHide) {
             clearHideTimer();
         }
+        clearMaxVisibleTimer();
         updateLoadingText(overlay);
         overlay.removeAttribute("hidden");
         overlay.classList.add("is-visible");
         document.body.classList.add("indor-nav-loading-active");
         if (opts.autoHide) {
             scheduleHideNavigationLoading(opts.autoHideDelay);
+        } else {
+            // Never leave a stuck "Cargando..." if navigation/error never completes.
+            var maxMs = typeof opts.maxVisibleMs === "number" ? opts.maxVisibleMs : MAX_VISIBLE_MS;
+            maxVisibleTimer = window.setTimeout(function () {
+                maxVisibleTimer = null;
+                hideNavigationLoading();
+            }, maxMs);
         }
     }
 
     function hideNavigationLoading() {
         clearHideTimer();
+        clearMaxVisibleTimer();
         var overlay = document.getElementById(OVERLAY_ID);
         if (!overlay) return;
 
@@ -223,7 +240,10 @@
 
         var event = e;
         window.setTimeout(function () {
-            if (event.defaultPrevented) return;
+            if (event.defaultPrevented) {
+                hideNavigationLoading();
+                return;
+            }
             showNavigationLoading();
         }, 0);
     }, false);

@@ -366,6 +366,9 @@ public static class UiTranslationsPropertyAdministratorFlows
             ["Choose files"] = "Elegir archivos",
             ["No files selected"] = "No hay archivos seleccionados",
             ["{0} files selected"] = "{0} archivos seleccionados",
+            ["1 document uploaded."] = "1 documento subido.",
+            ["{0} documents uploaded."] = "{0} documentos subidos.",
+            ["Remove file"] = "Eliminar archivo",
             ["Back to properties"] = "Volver a propiedades",
             ["Back to review"] = "Volver a la revisión",
             ["Choose CSV file"] = "Elegir archivo CSV",
@@ -391,6 +394,7 @@ public static class UiTranslationsPropertyAdministratorFlows
                 "El CSV debe incluir las columnas: Número, Calle, Ciudad, Estado, ZIP, Tipo.",
             // PA add-property screen
             ["Add manually, import a CSV, or upload documents for your portfolio."] = "Agrega manualmente, importa un CSV o sube documentos de tu portafolio.",
+            ["Enter the address and details for one property."] = "Ingresa la dirección y los detalles de una propiedad.",
             ["Add your properties"] = "Agrega tus propiedades",
             ["Start building your portfolio inside INDOR."] = "Empieza a armar tu portafolio dentro de INDOR.",
             ["Added"] = "Agregada",

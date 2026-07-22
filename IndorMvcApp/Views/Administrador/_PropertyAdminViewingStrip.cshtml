@@ -2,7 +2,7 @@
 @if (Model != null && Model.Id > 0)
 {
     <div class="pa-viewing-strip">
-        <img src="@(Model.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
+        <img src="@(Model.ImageUrl ?? "/welcome-house.png")" alt="" class="pa-viewing-strip-thumb" />
         <div class="pa-viewing-strip-main">
             <strong>@L.T("Viewing: {0}", Model.PropertyName)</strong>
             @if (!string.IsNullOrWhiteSpace(ViewBag.BadgeLabel as string ?? Model.OccupancyLabel))

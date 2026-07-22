@@ -55,7 +55,6 @@ public class NeighborRequestController(
             wizardService.MarkFreshStart(HttpContext.Session);
         }
 
-        var fromWizard = IsNeighborRequestWizardReferrer();
         var isFreshStart = wizardService.IsFreshStart(HttpContext.Session);
         var draft = wizardService.LoadDraft(HttpContext.Session);
 
@@ -64,7 +63,10 @@ public class NeighborRequestController(
             return RedirectToAction(nameof(Edit), new { id = editId });
         }
 
-        var resumeDraft = fromWizard && !isFreshStart && draft is { CategoryId: > 0 };
+        // Resume any in-progress draft unless this is an explicit fresh start.
+        // Requiring a wizard Referer wiped drafts on recovery redirects and sent
+        // users back to an empty category menu after "Review request".
+        var resumeDraft = !isFreshStart && draft is { CategoryId: > 0 };
 
         if (!resumeDraft)
         {
@@ -187,16 +189,33 @@ public class NeighborRequestController(
             return RedirectToAction("Login", "Account");
         }
 
+        // Sticky footer CTA is outside <form>; client uses data-nr-wizard-submit.
+        // Still recover PropiedadId if a WebView omits hidden fields.
+        if (model.PropiedadId <= 0)
+        {
+            var sessionDraft = wizardService.LoadDraft(HttpContext.Session);
+            if (sessionDraft is { PropiedadId: > 0 })
+            {
+                model.PropiedadId = sessionDraft.PropiedadId;
+            }
+        }
+
         var draft = await RequireDraftAsync(model.PropiedadId, minCategory: true, cancellationToken);
         if (draft == null)
         {
             return RestartWizard(model.PropiedadId);
         }
 
-        wizardService.ApplyExtrasToDraft(draft, model);
-        await wizardService.SavePhotosAsync(draft, model.PhotoFiles, cancellationToken);
-        wizardService.SaveDraft(HttpContext.Session, draft);
+        model.SelectedTools ??= [];
+        if (model.SelectedTools.Count == 0
+            && !ModelState.ContainsKey(nameof(model.SelectedTools)))
+        {
+            ModelState.AddModelError(
+                nameof(model.SelectedTools),
+                localizer["Select what the helper should bring."]);
+        }
 
+        // Validate before photo I/O so empty continue fails fast (no long loader).
         if (!ModelState.IsValid)
         {
             LocalizeNeighborRequestModelState();
@@ -206,7 +225,7 @@ public class NeighborRequestController(
                 return RestartWizard(model.PropiedadId);
             }
 
-            invalidVm.SelectedTools = model.SelectedTools ?? [];
+            invalidVm.SelectedTools = model.SelectedTools;
             invalidVm.SpecialNotes = model.SpecialNotes;
             invalidVm.PetsOnProperty = model.PetsOnProperty;
             invalidVm.HasStairs = model.HasStairs;
@@ -216,13 +235,33 @@ public class NeighborRequestController(
             return View(invalidVm);
         }
 
-        return RedirectToAction(nameof(Review), new { propiedadId = model.PropiedadId });
+        wizardService.ApplyExtrasToDraft(draft, model);
+        await wizardService.SavePhotosAsync(draft, model.PhotoFiles, cancellationToken);
+        wizardService.SaveDraft(HttpContext.Session, draft);
+
+        // Render Review in this request (same pattern as PA MovingHelp). A redirect
+        // to Review can lose the in-memory session draft; RequireDraftAsync then
+        // fails and recovery used to send users back to the category menu.
+        var reviewVm = await wizardService.BuildReviewStepAsync(draft, cancellationToken);
+        if (reviewVm == null)
+        {
+            return RestartWizard(model.PropiedadId);
+        }
+
+        await wizardService.ApplyPortalHomeUrlsAsync(reviewVm, userId, Url, cancellationToken);
+        return View("Review", reviewVm);
     }
 
     [HttpGet]
-    public async Task<IActionResult> Preferences(int propiedadId, CancellationToken cancellationToken)
+    public async Task<IActionResult> Preferences(int propiedadId, int? requestId, CancellationToken cancellationToken)
     {
-        var draft = await RequireDraftAsync(propiedadId, minCategory: true, cancellationToken);
+        var userId = userManager.GetUserId(User);
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var draft = await RequireDraftOrReloadEditAsync(userId, propiedadId, requestId, cancellationToken);
         if (draft == null)
         {
             return RestartWizard(propiedadId);
@@ -233,7 +272,6 @@ public class NeighborRequestController(
             return RestartWizard(propiedadId);
         }
 
-        var userId = userManager.GetUserId(User)!;
         var prefVm = wizardService.BuildPreferencesStep(draft);
         await wizardService.ApplyPortalHomeUrlsAsync(prefVm, userId, Url, cancellationToken);
         return View(prefVm);
@@ -243,10 +281,36 @@ public class NeighborRequestController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Preferences(NeighborRequestPreferencesStepViewModel model, CancellationToken cancellationToken)
     {
-        var draft = await RequireDraftAsync(model.PropiedadId, minCategory: true, cancellationToken);
+        var userId = userManager.GetUserId(User);
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        if (model.PropiedadId <= 0)
+        {
+            var sessionDraft = wizardService.LoadDraft(HttpContext.Session);
+            if (sessionDraft is { PropiedadId: > 0 })
+            {
+                model.PropiedadId = sessionDraft.PropiedadId;
+            }
+        }
+
+        var draft = await RequireDraftOrReloadEditAsync(
+            userId,
+            model.PropiedadId,
+            model.RequestId,
+            cancellationToken);
         if (draft == null)
         {
             return RestartWizard(model.PropiedadId);
+        }
+
+        // Prefer session edit flag when the posted hidden field is dropped (WebViews).
+        if (!model.IsEditMode && draft.EditingRequestId is > 0)
+        {
+            model.IsEditMode = true;
+            model.RequestId = draft.EditingRequestId;
         }
 
         if (!ModelState.IsValid)
@@ -254,6 +318,7 @@ public class NeighborRequestController(
             LocalizeNeighborRequestModelState();
             var invalidVm = wizardService.BuildPreferencesStep(draft);
             MergePreferencesPostedValues(invalidVm, model);
+            await wizardService.ApplyPortalHomeUrlsAsync(invalidVm, userId, Url, cancellationToken);
             return View(invalidVm);
         }
 
@@ -266,22 +331,42 @@ public class NeighborRequestController(
         }
 
         wizardService.SaveDraft(HttpContext.Session, draft);
+        await wizardService.PersistPreferencesAsync(userId, draft, cancellationToken);
 
-        var userId = userManager.GetUserId(User);
-        if (userId != null)
+        // Same-request next step (Describe fix family). Redirecting can drop the
+        // session draft; RequireDraft then RestartWizard → category / service menu.
+        if (model.IsEditMode || draft.EditingRequestId is > 0)
         {
-            await wizardService.PersistPreferencesAsync(userId, draft, cancellationToken);
+            var reviewVm = await wizardService.BuildReviewStepAsync(draft, cancellationToken);
+            if (reviewVm == null)
+            {
+                return RestartWizard(model.PropiedadId);
+            }
+
+            await wizardService.ApplyPortalHomeUrlsAsync(reviewVm, userId, Url, cancellationToken);
+            return View("Review", reviewVm);
         }
 
-        return model.IsEditMode
-            ? RedirectToAction(nameof(Review), new { propiedadId = model.PropiedadId })
-            : RedirectToAction(nameof(Describe), new { propiedadId = model.PropiedadId });
+        var describeVm = await wizardService.BuildDescribeStepAsync(draft, cancellationToken);
+        if (describeVm == null)
+        {
+            return RestartWizard(model.PropiedadId);
+        }
+
+        await wizardService.ApplyPortalHomeUrlsAsync(describeVm, userId, Url, cancellationToken);
+        return View("Describe", describeVm);
     }
 
     [HttpGet]
-    public async Task<IActionResult> Review(int propiedadId, CancellationToken cancellationToken)
+    public async Task<IActionResult> Review(int propiedadId, int? requestId, CancellationToken cancellationToken)
     {
-        var draft = await RequireDraftAsync(propiedadId, minCategory: true, cancellationToken);
+        var userId = userManager.GetUserId(User);
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var draft = await RequireDraftOrReloadEditAsync(userId, propiedadId, requestId, cancellationToken);
         if (draft == null)
         {
             return RestartWizard(propiedadId);
@@ -300,18 +385,22 @@ public class NeighborRequestController(
                 return RedirectToAction(nameof(Edit), new { id = editId });
             }
 
-            return RedirectToAction(nameof(Preferences), new { propiedadId });
+            return RedirectToAction(nameof(Preferences), new { propiedadId, requestId = draft.EditingRequestId });
         }
 
         var vm = await wizardService.BuildReviewStepAsync(draft, cancellationToken);
-        return vm == null
-            ? RestartWizard(propiedadId)
-            : View(vm);
+        if (vm == null)
+        {
+            return RestartWizard(propiedadId);
+        }
+
+        await wizardService.ApplyPortalHomeUrlsAsync(vm, userId, Url, cancellationToken);
+        return View(vm);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Publish(int propiedadId, CancellationToken cancellationToken)
+    public async Task<IActionResult> Publish(int propiedadId, int? requestId, CancellationToken cancellationToken)
     {
         var userId = userManager.GetUserId(User);
         if (userId == null)
@@ -319,9 +408,14 @@ public class NeighborRequestController(
             return RedirectToAction("Login", "Account");
         }
 
-        var draft = await RequireDraftAsync(propiedadId, minCategory: true, cancellationToken);
+        var draft = await RequireDraftOrReloadEditAsync(userId, propiedadId, requestId, cancellationToken);
         if (draft == null || string.IsNullOrWhiteSpace(draft.Title))
         {
+            if (requestId is > 0)
+            {
+                return RedirectToAction(nameof(Edit), new { id = requestId.Value });
+            }
+
             return RestartWizard(propiedadId);
         }
 
@@ -333,14 +427,14 @@ public class NeighborRequestController(
                 return RedirectToAction(nameof(Edit), new { id = editId });
             }
 
-            return RedirectToAction(nameof(Review), new { propiedadId });
+            return RedirectToAction(nameof(Review), new { propiedadId, requestId = draft.EditingRequestId });
         }
 
-        var requestId = await wizardService.PublishAsync(userId, draft, cancellationToken);
-        if (requestId == null)
+        var publishedRequestId = await wizardService.PublishAsync(userId, draft, cancellationToken);
+        if (publishedRequestId == null)
         {
             TempData["NeighborRequestError"] = localizer["We could not publish your request. Please try again."];
-            return RedirectToAction(nameof(Review), new { propiedadId });
+            return RedirectToAction(nameof(Review), new { propiedadId, requestId });
         }
 
         var editingRequestId = draft.EditingRequestId;
@@ -352,7 +446,7 @@ public class NeighborRequestController(
             return RedirectToAction(nameof(Detail), new { id = editingRequestId.Value });
         }
 
-        return RedirectToAction(nameof(Helpers), new { id = requestId });
+        return RedirectToAction(nameof(Helpers), new { id = publishedRequestId });
     }
 
     [HttpGet]
@@ -469,10 +563,22 @@ public class NeighborRequestController(
         }
 
         var propiedadId = await wizardService.LoadRequestForEditAsync(userId, id, HttpContext.Session, cancellationToken);
-
-        if (string.Equals(step, "providers", StringComparison.OrdinalIgnoreCase) && propiedadId != null)
+        if (propiedadId == null)
         {
-            return RedirectToAction(nameof(Preferences), new { propiedadId });
+            return RedirectToAction("Index", "Home");
+        }
+
+        if (string.Equals(step, "providers", StringComparison.OrdinalIgnoreCase))
+        {
+            var draft = wizardService.LoadDraft(HttpContext.Session);
+            if (draft == null)
+            {
+                return RestartWizard(propiedadId.Value);
+            }
+
+            var prefVm = wizardService.BuildPreferencesStep(draft);
+            await wizardService.ApplyPortalHomeUrlsAsync(prefVm, userId, Url, cancellationToken);
+            return View("Preferences", prefVm);
         }
 
         var vm = await wizardService.BuildEditDetailsStepAsync(userId, id, Url, cancellationToken);
@@ -487,6 +593,15 @@ public class NeighborRequestController(
         if (userId == null)
         {
             return RedirectToAction("Login", "Account");
+        }
+
+        if (model.PropiedadId <= 0)
+        {
+            var sessionDraft = wizardService.LoadDraft(HttpContext.Session);
+            if (sessionDraft is { PropiedadId: > 0 })
+            {
+                model.PropiedadId = sessionDraft.PropiedadId;
+            }
         }
 
         if (!ModelState.IsValid || model.RequestId is not > 0)
@@ -533,7 +648,21 @@ public class NeighborRequestController(
             return View(failedVm);
         }
 
-        return RedirectToAction(nameof(Preferences), new { propiedadId = model.PropiedadId });
+        // Continuar after edit: stay in-wizard. Redirect → Preferences can lose the
+        // session draft and RestartWizard sends users to category (service) selection.
+        var draft = await RequireDraftOrReloadEditAsync(
+            userId,
+            model.PropiedadId,
+            model.RequestId,
+            cancellationToken);
+        if (draft == null)
+        {
+            return RedirectToAction(nameof(Edit), new { id = model.RequestId });
+        }
+
+        var nextVm = wizardService.BuildPreferencesStep(draft);
+        await wizardService.ApplyPortalHomeUrlsAsync(nextVm, userId, Url, cancellationToken);
+        return View("Preferences", nextVm);
     }
 
     [HttpGet]
@@ -575,8 +704,12 @@ public class NeighborRequestController(
         return RedirectToAction(nameof(Mine), new { propiedadId });
     }
 
+    /// <summary>
+    /// Recover to category without wiping session (unlike Create, which clears the draft).
+    /// Category resumes when CategoryId is still present.
+    /// </summary>
     private IActionResult RestartWizard(int propiedadId) =>
-        RedirectToAction(nameof(Create), new { propiedadId });
+        RedirectToAction(nameof(Category), new { propiedadId });
 
     private async Task<IActionResult> RedirectWhenPropertyUnavailableAsync(
         string userId,
@@ -590,12 +723,6 @@ public class NeighborRequestController(
         }
 
         return RedirectToAction("Index", "Home");
-    }
-
-    private bool IsNeighborRequestWizardReferrer()
-    {
-        var referer = Request.Headers.Referer.ToString();
-        return referer.Contains("/NeighborRequest/", StringComparison.OrdinalIgnoreCase);
     }
 
     private static void MergePreferencesPostedValues(
@@ -664,6 +791,46 @@ public class NeighborRequestController(
         }
 
         return draft;
+    }
+
+    /// <summary>
+    /// Loads the session draft, or rebuilds it from a published request when editing
+    /// after the session was cleared/lost (common after publish + back-to-edit).
+    /// </summary>
+    private async Task<NeighborRequestDraftState?> RequireDraftOrReloadEditAsync(
+        string userId,
+        int propiedadId,
+        int? requestId,
+        CancellationToken ct)
+    {
+        var draft = await RequireDraftAsync(propiedadId, minCategory: true, ct);
+        if (draft != null)
+        {
+            return draft;
+        }
+
+        if (requestId is not > 0)
+        {
+            var sessionDraft = wizardService.LoadDraft(HttpContext.Session);
+            requestId = sessionDraft?.EditingRequestId;
+        }
+
+        if (requestId is not > 0)
+        {
+            return null;
+        }
+
+        var loadedPropiedadId = await wizardService.LoadRequestForEditAsync(
+            userId,
+            requestId.Value,
+            HttpContext.Session,
+            ct);
+        if (loadedPropiedadId == null)
+        {
+            return null;
+        }
+
+        return await RequireDraftAsync(loadedPropiedadId.Value, minCategory: true, ct);
     }
 
     private static string NormalizeTimeline(string? code) =>

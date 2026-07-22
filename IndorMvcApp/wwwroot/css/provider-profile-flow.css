@@ -89,6 +89,13 @@
 
 .prv-flow-page-head {
     margin-bottom: 12px;
+    position: relative;
+    z-index: 2;
+}
+
+.prv-flow-page-head .prv-pro-lead-back {
+    position: relative;
+    z-index: 2;
 }
 
 /* Hero summary card */
@@ -198,7 +205,7 @@
 
 .prv-flow-hero-actions {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 10px;
     margin-top: 16px;
 }

@@ -33,6 +33,13 @@ public static class UiTranslationsMovingSetup
             ["Full Move"] = "Mudanza completa",
             ["Get estimate"] = "Obtener estimado",
             ["Select a move type."] = "Selecciona un tipo de mudanza.",
+            ["Please enter the pick-up address."] = "Ingresa la dirección de recogida.",
+            ["Please enter the drop-off address."] = "Ingresa la dirección de entrega.",
+            ["Please select a move date."] = "Selecciona una fecha de mudanza.",
+            ["Please enter a valid street address (e.g. 123 Main St, Charlotte, NC)."] =
+                "Ingresa una dirección completa (ej. 123 Main St, Charlotte, NC).",
+            ["Enter a complete address with city and state (e.g. 123 Main St, Charlotte, NC)."] =
+                "Ingresa una dirección completa con ciudad y estado (ej. 123 Main St, Charlotte, NC).",
             ["Final pricing may vary based on onsite assessment and actual service needs."] =
                 "El precio final puede variar según la evaluación en sitio y las necesidades reales del servicio.",
 
@@ -160,7 +167,7 @@ public static class UiTranslationsMovingSetup
             ["Mount TV"] = "Montar TV",
             ["Dismount TV"] = "Desmontar TV",
             ["Re-mount existing TV"] = "Remontar TV existente",
-            ["Drywall"] = "Drywall",
+            ["Drywall"] = "Tablaroca",
             ["Brick"] = "Ladrillo",
             ["Concrete"] = "Concreto",
             ["Ground floor"] = "Planta baja",

@@ -35,7 +35,7 @@ else if (TempData["PropertyAdminError"] is string err)
 
 @if (!string.IsNullOrWhiteSpace(Model.FormSuccess))
 {
-    <div class="pa-summary-success">@Model.FormSuccess</div>
+    <div class="pa-summary-success">@UiDisplayLocalization.Localize(L, Model.FormSuccess)</div>
 }
 
 @if (Model.ImportErrors.Count > 0)
@@ -211,13 +211,16 @@ else if (TempData["PropertyAdminError"] is string err)
     </form>
 </details>
 
-<a asp-action="ImportPortfolio"
-   asp-route-returnUrl="@Url.Action("Properties", "PropertyAdministratorRegistration")"
-   class="pa-action-row pa-action-row--property-option">
-    <span><i class="fas fa-file-import"></i> @L["Import portfolio"]</span>
-    <i class="fas fa-chevron-right"></i>
-</a>
-<a asp-action="UploadPropertyDocuments" class="pa-action-row pa-action-row--property-option">
-    <span><i class="fas fa-file-lines"></i> @L["Scan or upload documents"]</span>
-    <i class="fas fa-chevron-right"></i>
-</a>
+@if (Model.ShowBulkImportOptions)
+{
+    <a asp-action="ImportPortfolio"
+       asp-route-returnUrl="@Url.Action("Properties", "PropertyAdministratorRegistration")"
+       class="pa-action-row pa-action-row--property-option">
+        <span><i class="fas fa-file-import"></i> @L["Import portfolio"]</span>
+        <i class="fas fa-chevron-right"></i>
+    </a>
+    <a asp-action="UploadPropertyDocuments" class="pa-action-row pa-action-row--property-option">
+        <span><i class="fas fa-file-lines"></i> @L["Scan or upload documents"]</span>
+        <i class="fas fa-chevron-right"></i>
+    </a>
+}

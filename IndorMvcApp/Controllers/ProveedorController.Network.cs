@@ -40,6 +40,7 @@ public partial class ProveedorController
         bool insured,
         bool available,
         bool docs,
+        string? mode,
         CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
@@ -49,7 +50,7 @@ public partial class ProveedorController
         }
 
         var model = await network.GetFindAsync(
-            proveedor.Entity!, q, trade, view, nearby, insured, available, docs, cancellationToken);
+            proveedor.Entity!, q, trade, view, nearby, insured, available, docs, mode, cancellationToken);
         return View(model);
     }
 
@@ -86,6 +87,53 @@ public partial class ProveedorController
         }
 
         return RedirectToAction(nameof(SubcontractorProfile), new { id });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> MessageSubcontractor(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await network.GetMessageComposeAsync(proveedor.Entity!, id, cancellationToken);
+        return model == null ? NotFound() : View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> MessageSubcontractor(MessageSubcontractorInput input, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var compose = await network.GetMessageComposeAsync(proveedor.Entity!, input.SubcontractorId, cancellationToken);
+        if (compose == null)
+        {
+            return NotFound();
+        }
+
+        if (string.IsNullOrWhiteSpace(input.Body))
+        {
+            compose.Body = input.Body;
+            compose.ErrorMessage = "Please write a message before sending.";
+            return View(compose);
+        }
+
+        var sent = await network.SendMessageAsync(proveedor.Entity!, input, cancellationToken);
+        if (sent == null)
+        {
+            compose.Body = input.Body;
+            compose.ErrorMessage = "Unable to send message. Please try again.";
+            return View(compose);
+        }
+
+        return View("MessageSubcontractorSent", sent);
     }
 
     // ------------------------------------------------------ Screen 4: Post a Job (3-step wizard)

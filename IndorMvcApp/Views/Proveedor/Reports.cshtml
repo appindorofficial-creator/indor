@@ -13,7 +13,6 @@
         ("housefacts", "House Facts")
     };
     var quickActions = new (string icon, string label, string color, string? action)[] {
-        ("fa-plus", "Create Report", "blue", "ReportTemplates"),
         ("fa-cloud-arrow-up", "Upload Photos", "green", "UploadPhotos"),
         ("fa-paper-plane", "Send Reports", "indigo", null),
         ("fa-layer-group", "Templates", "purple", "Templates"),
@@ -187,5 +186,4 @@
         </section>
     }
 
-    <a asp-controller="Proveedor" asp-action="ReportTemplates" class="prv-pro-fab" aria-label="@L["Create report"]"><i class="fas fa-plus"></i></a>
 </div>

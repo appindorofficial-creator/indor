@@ -71,7 +71,7 @@
             @foreach (var item in Model.Items)
             {
                 <article class="prv-pro-day-timeline-item">
-                    <div class="prv-pro-day-timeline-time">@item.TimeLabel</div>
+                    <div class="prv-pro-day-timeline-time">@UiDisplayLocalization.Localize(L, item.TimeLabel)</div>
                     <div class="prv-pro-day-timeline-body">
                         <div class="prv-pro-day-timeline-head">
                             <strong><i class="fas @item.IconClass"></i> @UiDisplayLocalization.Localize(L, item.Title)</strong>

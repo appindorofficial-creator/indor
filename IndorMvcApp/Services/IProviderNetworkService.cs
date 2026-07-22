@@ -20,6 +20,7 @@ public interface IProviderNetworkService
         bool insuredOnly,
         bool availableNow,
         bool docsReady,
+        string? mode = null,
         CancellationToken cancellationToken = default);
 
     Task<SubcontractorProfileViewModel?> GetProfileAsync(
@@ -67,4 +68,14 @@ public interface IProviderNetworkService
         CancellationToken cancellationToken = default);
 
     Task<bool> ToggleSaveAsync(int ownerProveedorId, int subcontractorId, CancellationToken cancellationToken = default);
+
+    Task<MessageSubcontractorViewModel?> GetMessageComposeAsync(
+        IndorProveedor me,
+        int subcontractorId,
+        CancellationToken cancellationToken = default);
+
+    Task<MessageSubcontractorSentViewModel?> SendMessageAsync(
+        IndorProveedor me,
+        MessageSubcontractorInput input,
+        CancellationToken cancellationToken = default);
 }

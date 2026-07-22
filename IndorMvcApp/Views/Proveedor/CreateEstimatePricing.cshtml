@@ -34,7 +34,7 @@
                     <input type="hidden" name="LineDescriptions" value="@line.Description" />
                     <input type="hidden" name="LineTaxable" value="@(line.IsTaxable ? "true" : "false")" />
                     <div class="prv-pro-pricing-line-head">
-                        <strong>@line.Label</strong>
+                        <strong>@UiDisplayLocalization.Localize(L, line.Label)</strong>
                         <span class="prv-pro-pricing-tax @(line.IsTaxable ? "is-taxable" : "")">@(line.IsTaxable ? L["Taxable"] : L["Non-Taxable"])</span>
                     </div>
                     <small>@line.Description</small>

@@ -47,8 +47,8 @@ var reminderDate = Model.FechaProximoRecordatorio?.ToString("MMMM d, yyyy") ?? D
         <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["If you selected \"I changed it myself,\" your reminder has been updated."]</span></div>
     }
 
-    <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-primary">
-        <i class="fas fa-calendar"></i> @L["View appointment"] <i class="fas fa-chevron-right"></i>
+    <a asp-controller="Home" asp-action="Calendar" class="btn-primary">
+        <i class="fas fa-calendar"></i> @L["View calendar"] <i class="fas fa-chevron-right"></i>
     </a>
     @if (string.Equals(Model.TipoNecesidad, "ChangedMyself", StringComparison.OrdinalIgnoreCase))
     {

@@ -8,9 +8,13 @@
         </div>
     </div>
 
-    <div class="pa-portfolio-actions pa-portfolio-actions--single">
-        <a asp-controller="PropertyAdministratorRegistration" asp-action="Properties" class="pa-portfolio-action">
+    <div class="pa-portfolio-actions">
+        <a asp-controller="PropertyAdministratorRegistration" asp-action="Properties" asp-route-mode="manual" class="pa-portfolio-action">
             <i class="fas fa-plus"></i> @L["Add property"]
+        </a>
+        <span class="pa-portfolio-action-divider" aria-hidden="true"></span>
+        <a asp-controller="Administrador" asp-action="Properties" asp-route-from="manage" class="pa-portfolio-action">
+            <i class="fas fa-gear"></i> @L["Manage properties"]
         </a>
     </div>
 
@@ -23,19 +27,27 @@
                     <a asp-controller="Administrador" asp-action="Index" asp-route-propertyId="@property.Id"
                        class="pa-property-thumb-btn @(Model.ViewingProperty.Id == property.Id ? "is-active" : null)"
                        title="@property.PropertyName">
-                        <img src="@(property.ImageUrl ?? "/inspeccion2.jpeg")" alt="" />
+                        <img src="@(property.ImageUrl ?? "/welcome-house.png")" alt="" />
                     </a>
                 }
             </div>
-            <div class="pa-viewing-property-main">
+            <a asp-controller="Administrador"
+               asp-action="PropertyDetail"
+               asp-route-id="@Model.ViewingProperty.Id"
+               class="pa-viewing-property-main"
+               aria-label="@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)">
                 <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.ViewingProperty.OccupancyLabel))
                 {
                     <span class="pa-occupancy-badge">@UiDisplayLocalization.Localize(L, Model.ViewingProperty.OccupancyLabel)</span>
                 }
                 <small>@UiDisplayLocalization.Localize(L, Model.ViewingProperty.PropertyTypeLabel) • @Model.ViewingProperty.Location</small>
-            </div>
-            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="@L["Switch property"]">
+            </a>
+            <a asp-controller="Administrador"
+               asp-action="Properties"
+               asp-route-from="switch"
+               class="pa-viewing-switch"
+               aria-label="@L["Switch property"]">
                 <i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i>
             </a>
         </div>

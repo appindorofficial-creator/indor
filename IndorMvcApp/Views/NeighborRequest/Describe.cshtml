@@ -32,16 +32,8 @@
                     <i class="fas fa-plus"></i>
                     <span>@L["Add more"]</span>
                 </button>
-                <div class="nr-photo-menu" id="nrPhotoMenu" role="menu" hidden>
-                    <button type="button" class="nr-photo-menu-item" data-nr-photo-source="library" role="menuitem">
-                        <i class="fas fa-images"></i> @L["Photo Library"]
-                    </button>
-                    <button type="button" class="nr-photo-menu-item" data-nr-photo-source="camera" role="menuitem">
-                        <i class="fas fa-camera"></i> @L["Take Photo"]
-                    </button>
-                    <button type="button" class="nr-photo-menu-item" data-nr-photo-source="files" role="menuitem">
-                        <i class="fas fa-folder"></i> @L["Choose Files"]
-                    </button>
+                <div class="nr-photo-menu indor-file-source-menu" id="nrPhotoMenu" role="menu" hidden>
+                    @await Html.PartialAsync("_IndorFileSourceMenu")
                 </div>
                 @* Separate inputs so the in-app menu can open camera / gallery / files without the OS English sheet. *@
                 <input type="file" id="nrPhotoInputCamera" accept="image/jpeg,image/png,image/webp,image/*" capture="environment" multiple hidden />
@@ -60,7 +52,7 @@
         <div class="nr-chip-grid">
             @foreach (var tool in Model.ToolOptions)
             {
-                var isSelected = Model.SelectedTools.Contains(tool.Value);
+                var isSelected = Model.SelectedTools != null && Model.SelectedTools.Contains(tool.Value);
                 <label class="nr-chip @(isSelected ? "is-selected" : null)">
                     <input type="checkbox" name="SelectedTools" value="@tool.Value" @(isSelected ? "checked" : null) />
                     <i class="fas @tool.IconClass"></i>
@@ -131,7 +123,11 @@
 </form>
 
 @section WizardFooter {
-    @{ ViewData["NrWizardFormId"] = "nrDescribeForm"; ViewData["NrWizardContinueLabel"] = L["Review request"]; ViewData["NrWizardContinueIconAfter"] = "fa-arrow-right"; }
+    @{
+        ViewData["NrWizardFormId"] = "nrDescribeForm";
+        ViewData["NrWizardContinueLabel"] = L["Review job"];
+        ViewData["NrWizardContinueIconAfter"] = "fa-arrow-right";
+    }
     @await Html.PartialAsync("_NrWizardFooter")
 }
 
@@ -157,20 +153,54 @@
                 update();
             }
 
+            var toolsRequiredMsg = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select what the helper should bring."]));
+            var safetyMsg = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Complete Safety & access: pets, stairs, and parking."]));
+
+            function hideDescribeLoading() {
+                if (typeof window.indorHideNavigationLoading === 'function') {
+                    window.indorHideNavigationLoading();
+                }
+            }
+
+            function syncToolChipSelection(changedInput) {
+                var chip = changedInput.closest('.nr-chip');
+                if (chip) {
+                    chip.classList.toggle('is-selected', changedInput.checked);
+                }
+
+                // "No tools needed" is mutually exclusive with the other options.
+                if (changedInput.value === 'none' && changedInput.checked) {
+                    document.querySelectorAll('.nr-chip input').forEach(function (other) {
+                        if (other !== changedInput) {
+                            other.checked = false;
+                            var otherChip = other.closest('.nr-chip');
+                            if (otherChip) otherChip.classList.remove('is-selected');
+                        }
+                    });
+                } else if (changedInput.value !== 'none' && changedInput.checked) {
+                    document.querySelectorAll('.nr-chip input[value="none"]').forEach(function (noneInput) {
+                        noneInput.checked = false;
+                        var noneChip = noneInput.closest('.nr-chip');
+                        if (noneChip) noneChip.classList.remove('is-selected');
+                    });
+                }
+
+                var toolsError = document.getElementById('nrToolsError');
+                var toolsBlock = document.getElementById('nrToolsBlock');
+                if (document.querySelectorAll('.nr-chip input:checked').length) {
+                    if (toolsError) toolsError.textContent = '';
+                    if (toolsBlock) toolsBlock.classList.remove('is-error');
+                }
+            }
+
             document.querySelectorAll('.nr-chip input').forEach(function (input) {
                 input.addEventListener('change', function () {
-                    input.closest('.nr-chip')?.classList.toggle('is-selected', input.checked);
-                    var toolsError = document.getElementById('nrToolsError');
-                    if (toolsError && document.querySelectorAll('.nr-chip input:checked').length) {
-                        toolsError.textContent = '';
-                        document.getElementById('nrToolsBlock')?.classList.remove('is-error');
-                    }
+                    syncToolChipSelection(input);
                 });
             });
 
             var form = document.getElementById('nrDescribeForm');
             if (form) {
-                var safetyMsg = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Complete Safety & access: pets, stairs, and parking."]));
                 var petsSelect = document.querySelector('[name="PetsOnProperty"]');
                 var stairsSelect = document.querySelector('[name="HasStairs"]');
                 var parkingSelect = document.querySelector('[name="ParkingAvailable"]');
@@ -179,18 +209,23 @@
 
                 function clearSafetyError() {
                     if (safetyError) safetyError.textContent = '';
-                    safetyBlock?.classList.remove('is-error');
+                    if (safetyBlock) safetyBlock.classList.remove('is-error');
                     [petsSelect, stairsSelect, parkingSelect].forEach(function (el) {
-                        el?.closest('.nr-safety-item')?.classList.remove('is-error');
+                        if (!el) return;
+                        var item = el.closest('.nr-safety-item');
+                        if (item) item.classList.remove('is-error');
                     });
                 }
 
                 function safetyFilled() {
-                    return !!(petsSelect?.value && stairsSelect?.value && parkingSelect?.value);
+                    return !!(petsSelect && petsSelect.value
+                        && stairsSelect && stairsSelect.value
+                        && parkingSelect && parkingSelect.value);
                 }
 
                 [petsSelect, stairsSelect, parkingSelect].forEach(function (el) {
-                    el?.addEventListener('change', function () {
+                    if (!el) return;
+                    el.addEventListener('change', function () {
                         if (safetyFilled()) clearSafetyError();
                     });
                 });
@@ -203,26 +238,30 @@
                     if (!checked) {
                         hasError = true;
                         if (toolsError) {
-                            toolsError.textContent = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select what the helper should bring."]));
+                            toolsError.textContent = toolsRequiredMsg;
                         }
-                        toolsBlock?.classList.add('is-error');
+                        if (toolsBlock) toolsBlock.classList.add('is-error');
                     }
 
                     if (!safetyFilled()) {
                         hasError = true;
                         if (safetyError) safetyError.textContent = safetyMsg;
-                        safetyBlock?.classList.add('is-error');
+                        if (safetyBlock) safetyBlock.classList.add('is-error');
                         [petsSelect, stairsSelect, parkingSelect].forEach(function (el) {
                             if (el && !el.value) {
-                                el.closest('.nr-safety-item')?.classList.add('is-error');
+                                var item = el.closest('.nr-safety-item');
+                                if (item) item.classList.add('is-error');
                             }
                         });
                     }
 
                     if (hasError) {
                         e.preventDefault();
+                        hideDescribeLoading();
                         var first = (!checked ? toolsBlock : null) || safetyBlock;
-                        first?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        if (first && typeof first.scrollIntoView === 'function') {
+                            first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
                     }
                 });
             }
@@ -303,6 +342,9 @@
                 e.preventDefault();
                 e.stopPropagation();
                 setMenuOpen(menu.hidden);
+                if (window.IndorFileSourceChooser && typeof window.IndorFileSourceChooser.applyLabels === 'function') {
+                    window.IndorFileSourceChooser.applyLabels(addWrap || document);
+                }
             });
 
             menu.querySelectorAll('[data-nr-photo-source]').forEach(function (item) {

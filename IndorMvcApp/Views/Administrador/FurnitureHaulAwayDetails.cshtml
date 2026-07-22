@@ -141,18 +141,33 @@
 
 @section Scripts {
     <script>
+        function syncPaOptionCard(input, cardSelector) {
+            // Respect server-rendered checked only — undo browser form autofill on first visit.
+            if (!input.defaultChecked) {
+                input.checked = false;
+            }
+            var card = input.closest(cardSelector);
+            if (card) card.classList.toggle('is-selected', input.checked);
+        }
         document.querySelectorAll('.pa-junk-item-card input').forEach(function (input) {
+            syncPaOptionCard(input, '.pa-junk-item-card');
             input.addEventListener('change', function () {
                 this.closest('.pa-junk-item-card')?.classList.toggle('is-selected', this.checked);
             });
         });
         document.querySelectorAll('.pa-junk-load-card input').forEach(function (input) {
+            syncPaOptionCard(input, '.pa-junk-load-card');
             input.addEventListener('change', function () {
                 document.querySelectorAll('.pa-junk-load-card').forEach(function (el) { el.classList.remove('is-selected'); });
                 this.closest('.pa-junk-load-card')?.classList.add('is-selected');
             });
         });
         document.querySelectorAll('.pa-chip input[type="radio"], .pa-toggle-btn input').forEach(function (input) {
+            if (!input.defaultChecked) {
+                input.checked = false;
+            }
+            var selected = input.closest('.pa-chip, .pa-toggle-btn');
+            if (selected) selected.classList.toggle('is-selected', input.checked);
             input.addEventListener('change', function () {
                 var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
                 if (!group) return;

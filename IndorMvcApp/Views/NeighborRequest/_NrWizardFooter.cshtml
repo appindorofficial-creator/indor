@@ -28,7 +28,12 @@
         }
         else
         {
-            <button type="submit" form="@formId" class="nr-btn-primary">
+            @* type=button + data-nr-wizard-submit: sticky footer lives outside <form>.
+               Native form="…" association drops fields / hangs loading on some WebViews. *@
+            <button type="button"
+                    class="nr-btn-primary"
+                    data-nr-wizard-submit="@formId"
+                    @(string.IsNullOrWhiteSpace(formId) ? null : Html.Raw($"aria-controls=\"{formId}\""))>
                 @if (!string.IsNullOrWhiteSpace(iconBefore))
                 {
                     <i class="fas @iconBefore"></i>

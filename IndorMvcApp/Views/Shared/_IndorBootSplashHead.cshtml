@@ -1,0 +1,349 @@
+@*
+  Immediate first-paint shell: sky background + INDOR loading overlay.
+  Must load BEFORE render-blocking CSS so WebViews never sit on blank white.
+  Also exposes indorShowBootSplash() for resume/re-entry recovery (EN/ES via meta).
+*@
+@using IndorMvcApp.Localization
+@inject IIndorLocalizer L
+@{
+    var loadingText = L["Loading..."].ToString() ?? "Loading...";
+    var persist = ViewData["IndorBootPersist"] as bool? == true;
+}
+<style id="indor-boot-critical">
+html {
+    background: #E9F2FE !important;
+}
+body {
+    background: #E9F2FE !important;
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+#indorBootSplash {
+    position: fixed;
+    inset: 0;
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background:
+        radial-gradient(120% 70% at 85% -5%, rgba(140, 196, 255, .35) 0%, rgba(140, 196, 255, 0) 55%),
+        radial-gradient(110% 60% at 0% 0%, rgba(99, 160, 255, .18) 0%, rgba(99, 160, 255, 0) 50%),
+        linear-gradient(180deg, #E9F2FE 0%, #F2F8FF 22%, #F7FBFF 48%, #FFFFFF 100%);
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.28s ease, visibility 0.28s ease;
+}
+#indorBootSplash.is-done {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+#indorBootSplash .indor-boot-panel {
+    position: relative;
+    text-align: center;
+}
+#indorBootSplash .indor-boot-spinner {
+    position: relative;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 18px;
+}
+#indorBootSplash .indor-boot-ring {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 3px solid transparent;
+}
+#indorBootSplash .indor-boot-ring--outer {
+    border-top-color: #2E8BFF;
+    border-right-color: rgba(46, 139, 255, 0.25);
+    animation: indorBootSpin 0.9s linear infinite;
+}
+#indorBootSplash .indor-boot-ring--inner {
+    inset: 10px;
+    border-bottom-color: #0066CC;
+    border-left-color: rgba(0, 102, 204, 0.2);
+    animation: indorBootSpin 0.65s linear infinite reverse;
+}
+#indorBootSplash .indor-boot-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    margin: -5px 0 0 -5px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2E8BFF, #0066CC);
+    box-shadow: 0 0 12px rgba(0, 102, 204, 0.45);
+}
+#indorBootSplash .indor-boot-brand {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #0A2540;
+    margin-bottom: 6px;
+}
+#indorBootSplash .indor-boot-text {
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #334155;
+    line-height: 1.3;
+}
+@@keyframes indorBootSpin {
+    to { transform: rotate(360deg); }
+}
+</style>
+<meta name="indor-loading-text" content="@loadingText" />
+<script>
+(function () {
+    if (window.__indorBootSplash) return;
+    window.__indorBootSplash = true;
+
+    var PERSIST = @(persist ? "true" : "false");
+    var TEXT = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(loadingText));
+    var shownAt = Date.now();
+    var hideTimer = null;
+    var removeTimer = null;
+
+    function loadingLabel() {
+        var meta = document.querySelector('meta[name="indor-loading-text"]');
+        if (meta && meta.content) return meta.content;
+        var lang = (document.documentElement.lang || "").toLowerCase();
+        return lang.indexOf("es") === 0 ? "Cargando..." : (TEXT || "Loading...");
+    }
+
+    function ensure() {
+        var host = document.body;
+        if (!host) return null;
+
+        var el = document.getElementById("indorBootSplash");
+        if (!el) {
+            el = document.createElement("div");
+            el.id = "indorBootSplash";
+            el.setAttribute("role", "status");
+            el.setAttribute("aria-live", "polite");
+            el.innerHTML =
+                '<div class="indor-boot-panel">' +
+                    '<div class="indor-boot-spinner" aria-hidden="true">' +
+                        '<span class="indor-boot-ring indor-boot-ring--outer"></span>' +
+                        '<span class="indor-boot-ring indor-boot-ring--inner"></span>' +
+                        '<span class="indor-boot-dot"></span>' +
+                    '</div>' +
+                    '<div class="indor-boot-brand">INDOR</div>' +
+                    '<div class="indor-boot-text"></div>' +
+                '</div>';
+            host.insertBefore(el, host.firstChild);
+        }
+
+        var label = loadingLabel();
+        el.setAttribute("aria-label", label);
+        var textEl = el.querySelector(".indor-boot-text");
+        if (textEl) textEl.textContent = label;
+        el.classList.remove("is-done");
+        el.removeAttribute("hidden");
+        shownAt = Date.now();
+        return el;
+    }
+
+    function show() {
+        if (hideTimer) { window.clearTimeout(hideTimer); hideTimer = null; }
+        if (removeTimer) { window.clearTimeout(removeTimer); removeTimer = null; }
+        ensure();
+    }
+
+    function hide() {
+        if (PERSIST) return;
+        var el = document.getElementById("indorBootSplash");
+        if (!el || el.classList.contains("is-done")) return;
+        var wait = Math.max(0, 160 - (Date.now() - shownAt));
+        hideTimer = window.setTimeout(function () {
+            hideTimer = null;
+            el.classList.add("is-done");
+            removeTimer = window.setTimeout(function () {
+                removeTimer = null;
+                if (el.parentNode) el.parentNode.removeChild(el);
+            }, 300);
+        }, wait);
+    }
+
+    window.indorShowBootSplash = show;
+    window.indorHideBootSplash = hide;
+
+    if (document.body) {
+        ensure();
+    } else {
+        var obs = new MutationObserver(function () {
+            if (document.body) {
+                ensure();
+                obs.disconnect();
+            }
+        });
+        obs.observe(document.documentElement, { childList: true });
+    }
+
+    // If a resume reload armed the splash flag, keep it visible across the reload.
+    try {
+        if (window.sessionStorage.getItem("__indorKeepBootSplash") === "1") {
+            window.sessionStorage.removeItem("__indorKeepBootSplash");
+            PERSIST = false;
+            show();
+            window.setTimeout(hide, 900);
+        }
+    } catch (e) { }
+
+    if (!PERSIST) {
+        if (document.readyState === "complete") {
+            hide();
+        } else if (document.readyState === "interactive") {
+            window.setTimeout(hide, 0);
+        } else {
+            document.addEventListener("DOMContentLoaded", hide);
+        }
+        // Safety: never leave the splash stuck if a script errors mid-boot.
+        window.setTimeout(hide, 8000);
+    }
+
+    // ---- Resume / re-entry heal (language-agnostic) ----
+    // WebViews often keep the DOM but lose the paint surface on return-to-foreground.
+    if (!window.__indorResumeHeal) {
+        window.__indorResumeHeal = true;
+        var RESUME_RELOAD_KEY = "__indorResumeReloads";
+        var RESUME_RELOAD_AT_KEY = "__indorResumeReloadAt";
+        var blankHits = 0;
+        var resumeTimer = null;
+        var lastResumeAt = 0;
+        var hiddenAt = 0;
+
+        function resumeReloadCount() {
+            try {
+                var at = parseInt(window.sessionStorage.getItem(RESUME_RELOAD_AT_KEY) || "0", 10) || 0;
+                if (at && (Date.now() - at) > 30000) {
+                    window.sessionStorage.removeItem(RESUME_RELOAD_KEY);
+                    window.sessionStorage.removeItem(RESUME_RELOAD_AT_KEY);
+                    return 0;
+                }
+                return parseInt(window.sessionStorage.getItem(RESUME_RELOAD_KEY) || "0", 10) || 0;
+            } catch (err) { return 0; }
+        }
+        function markHealthy() {
+            blankHits = 0;
+            try {
+                window.sessionStorage.removeItem(RESUME_RELOAD_KEY);
+                window.sessionStorage.removeItem(RESUME_RELOAD_AT_KEY);
+            } catch (err) { }
+        }
+        function forceRepaint() {
+            var root = document.documentElement;
+            var body = document.body;
+            if (!body) return;
+            var y = window.scrollY || 0;
+            var splashEl = document.getElementById("indorBootSplash");
+            try {
+                var hidden = [];
+                Array.prototype.forEach.call(body.children, function (node) {
+                    if (splashEl && node === splashEl) return;
+                    hidden.push({ node: node, display: node.style.display });
+                    node.style.display = "none";
+                });
+                void body.offsetHeight;
+                hidden.forEach(function (item) {
+                    item.node.style.display = item.display;
+                });
+                root.style.transform = "translateZ(0)";
+                void root.offsetHeight;
+                root.style.transform = "";
+                window.scrollTo(0, y);
+            } catch (err) { }
+        }
+        function looksBlank() {
+            var b = document.body;
+            if (!b) return true;
+            if (window.innerHeight <= 0) return false;
+            var rectH = b.getBoundingClientRect ? b.getBoundingClientRect().height : 0;
+            var h = Math.max(b.scrollHeight || 0, b.offsetHeight || 0, rectH || 0);
+            if (h < 10) return true;
+            var shell = document.querySelector(
+                ".wl-screen, .rl-dash-page, .prv-pro-body, .pa-portal-page, .auth-page, .ob-shell, .iw-wizard-shell, .nr-wizard-shell, main, .home-search-overlay"
+            );
+            if (shell) {
+                var r = shell.getBoundingClientRect();
+                if (r.width < 2 && r.height < 2 && window.innerWidth > 0) return true;
+            }
+            return b.childElementCount === 0;
+        }
+        function reloadForBlank() {
+            if (resumeReloadCount() >= 2) return;
+            try {
+                window.sessionStorage.setItem(RESUME_RELOAD_KEY, String(resumeReloadCount() + 1));
+                window.sessionStorage.setItem(RESUME_RELOAD_AT_KEY, String(Date.now()));
+                window.sessionStorage.setItem("__indorKeepBootSplash", "1");
+            } catch (err) { }
+            show();
+            window.location.reload();
+        }
+        function finishResumeRecovery() {
+            if (document.visibilityState !== "visible") return;
+            if (!looksBlank()) {
+                markHealthy();
+                hide();
+                return;
+            }
+            blankHits += 1;
+            if (blankHits < 2) {
+                forceRepaint();
+                resumeTimer = window.setTimeout(finishResumeRecovery, 350);
+                return;
+            }
+            reloadForBlank();
+        }
+        function onAppResume(opts) {
+            opts = opts || {};
+            var now = Date.now();
+            if (now - lastResumeAt < 300) return;
+            lastResumeAt = now;
+            if (resumeTimer) {
+                window.clearTimeout(resumeTimer);
+                resumeTimer = null;
+            }
+            blankHits = 0;
+            var awayMs = typeof opts.awayMs === "number" ? opts.awayMs : 0;
+            var longAway = !!opts.force || awayMs >= 1200;
+            if (longAway) show();
+            forceRepaint();
+            resumeTimer = window.setTimeout(function () {
+                if (looksBlank()) {
+                    show();
+                    finishResumeRecovery();
+                    return;
+                }
+                markHealthy();
+                hide();
+            }, longAway ? 400 : 180);
+        }
+
+        document.addEventListener("visibilitychange", function () {
+            if (document.visibilityState === "hidden") {
+                hiddenAt = Date.now();
+                return;
+            }
+            if (document.visibilityState === "visible") {
+                var away = hiddenAt ? (Date.now() - hiddenAt) : 0;
+                hiddenAt = 0;
+                onAppResume({ awayMs: away });
+            }
+        });
+        window.addEventListener("pageshow", function (e) {
+            if (e.persisted) onAppResume({ force: true, awayMs: 9999 });
+        });
+        document.addEventListener("resume", function () {
+            onAppResume({ force: true, awayMs: 9999 });
+        });
+    }
+})();
+</script>

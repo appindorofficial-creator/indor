@@ -30,8 +30,9 @@
         var defaultKind = root.getAttribute('data-upload-kind') || 'photo';
         var cameraInput = root.querySelector('.pa-media-photo-input--camera');
         var libraryInput = root.querySelector('.pa-media-photo-input--library');
+        var filesInput = root.querySelector('.pa-media-photo-input--files');
         // Legacy single-input markup still works.
-        var photoInputs = [cameraInput, libraryInput, root.querySelector('.pa-media-photo-input')]
+        var photoInputs = [cameraInput, libraryInput, filesInput, root.querySelector('.pa-media-photo-input')]
             .filter(function (el, i, arr) { return el && arr.indexOf(el) === i; });
         var photoBtn = root.querySelector('.pa-media-photo-btn');
         var photoMenu = root.querySelector('.pa-media-photo-menu');
@@ -187,17 +188,25 @@
                     setMenuOpen(photoMenu.hidden);
                 });
 
-                root.querySelectorAll('[data-pa-media-source]').forEach(function (item) {
+                // Prefer shared _PaFileSourceMenu (data-pa-file-source); keep legacy data-pa-media-source.
+                root.querySelectorAll('[data-pa-file-source], [data-pa-media-source]').forEach(function (item) {
                     item.addEventListener('click', function (e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        var source = item.getAttribute('data-pa-media-source');
+                        var source = item.getAttribute('data-pa-file-source')
+                            || item.getAttribute('data-pa-media-source');
                         closeMenu();
                         // Library = no capture (gallery). Camera may use capture=environment.
-                        var target = source === 'camera'
-                            ? (cameraInput || libraryInput)
-                            : (libraryInput || cameraInput);
-                        if (target === libraryInput) {
+                        // Files = broader accept (PDF etc.) without forcing the English OS sheet first.
+                        var target;
+                        if (source === 'camera') {
+                            target = cameraInput || libraryInput;
+                        } else if (source === 'files') {
+                            target = filesInput || libraryInput || cameraInput;
+                        } else {
+                            target = libraryInput || cameraInput;
+                        }
+                        if (target === libraryInput || target === filesInput) {
                             target.removeAttribute('capture');
                         }
                         openFileInput(target);

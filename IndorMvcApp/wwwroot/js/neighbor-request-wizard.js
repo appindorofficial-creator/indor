@@ -161,6 +161,7 @@
             }
 
             e.preventDefault();
+            hideNavLoading();
             if (firstInvalid.type === 'date') {
                 var minDate = firstInvalid.getAttribute('data-min-date') || '';
                 firstInvalid.setCustomValidity(resolveDateMinMessage(firstInvalid, minDate));
@@ -197,11 +198,71 @@
         });
     });
 
+    function hideNavLoading() {
+        if (typeof window.indorHideNavigationLoading === 'function') {
+            window.indorHideNavigationLoading();
+        }
+    }
+
+    function submitWizardForm(form) {
+        if (!form) return;
+        if (typeof form.requestSubmit === 'function') {
+            form.requestSubmit();
+            return;
+        }
+
+        var submitEvent;
+        try {
+            submitEvent = new Event('submit', { bubbles: true, cancelable: true });
+        } catch (err) {
+            submitEvent = document.createEvent('Event');
+            submitEvent.initEvent('submit', true, true);
+        }
+
+        if (!form.dispatchEvent(submitEvent)) {
+            hideNavLoading();
+            return;
+        }
+
+        HTMLFormElement.prototype.submit.call(form);
+    }
+
+    function bindWizardFooterSubmitButtons(root) {
+        (root || document).querySelectorAll('[data-nr-wizard-submit]').forEach(function (btn) {
+            if (btn.dataset.nrWizardSubmitBound === 'true') return;
+            btn.dataset.nrWizardSubmitBound = 'true';
+
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                var formId = btn.getAttribute('data-nr-wizard-submit');
+                var form = formId ? document.getElementById(formId) : null;
+                if (!form) return;
+                submitWizardForm(form);
+            });
+        });
+    }
+
     initDateInputs();
     document.querySelectorAll('.nr-step-form, .nr-edit-form').forEach(bindEnglishFormValidation);
+    bindWizardFooterSubmitButtons();
+
+    // When HTML5 / custom validation cancels submit, never leave INDOR loader up.
+    document.addEventListener('submit', function (e) {
+        var form = e.target;
+        if (!form || form.tagName !== 'FORM') return;
+        if (!form.classList.contains('nr-step-form') && !form.classList.contains('nr-edit-form')) return;
+
+        window.setTimeout(function () {
+            if (e.defaultPrevented) {
+                hideNavLoading();
+            }
+        }, 0);
+    }, false);
 
     window.addEventListener('pageshow', function () {
         clearBusy();
+        hideNavLoading();
         initDateInputs();
+        bindWizardFooterSubmitButtons();
     });
 })();

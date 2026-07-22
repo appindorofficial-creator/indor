@@ -8,6 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <meta name="theme-color" content="#0066CC" />
     <title>@ViewData["Title"] - @L["Indor Real Estate"]</title>
+    @* Critical boot splash before Bootstrap so WebViews never flash pure white. *@
+    @await Html.PartialAsync("_IndorBootSplashHead")
     <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" asp-append-version="true" />
     @await Html.PartialAsync("_IndorDesignHead")

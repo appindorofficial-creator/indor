@@ -3,6 +3,8 @@ using System.Text.Json;
 
 using IndorMvcApp.Data;
 
+using IndorMvcApp.Helpers;
+
 using IndorMvcApp.Models;
 
 using IndorMvcApp.ViewModels;
@@ -51,11 +53,11 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
         {
 
-            "week" => jobs.Where(j => j.ScheduledAt >= today && j.ScheduledAt < today.AddDays(7)),
+            "week" => jobs.Where(j => IsJobForTodayWindow(j, today, today.AddDays(7))),
 
-            "month" => jobs.Where(j => j.ScheduledAt >= today && j.ScheduledAt < today.AddMonths(1)),
+            "month" => jobs.Where(j => IsJobForTodayWindow(j, today, today.AddMonths(1))),
 
-            _ => jobs.Where(j => j.ScheduledAt >= today && j.ScheduledAt < today.AddDays(1))
+            _ => jobs.Where(j => IsJobForTodayWindow(j, today, today.AddDays(1)))
 
         };
 
@@ -71,7 +73,7 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
                 Id = j.Id,
 
-                TimeLabel = j.ScheduledAt.HasValue ? j.ScheduledAt.Value.ToLocalTime().ToString("h:mm tt") : "TBD",
+                TimeLabel = j.ScheduledAt.HasValue ? j.ScheduledAt.Value.ToLocalTime().ToString("h:mm tt") : ProviderProDisplayLocalization.L("TBD"),
 
                 Title = j.Title,
 
@@ -97,7 +99,7 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
             DateLabel = today.ToString("dddd, MMM d"),
 
-            JobsTodayCount = jobs.Count(j => j.ScheduledAt >= today && j.ScheduledAt < today.AddDays(1)),
+            JobsTodayCount = jobs.Count(j => IsJobForTodayWindow(j, today, today.AddDays(1))),
 
             Jobs = items,
 
@@ -245,7 +247,7 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
                 TimeLabel = j.ScheduledAt!.Value.ToLocalTime().ToString("h:mm tt"),
                 Title = j.Title,
                 Address = j.Address,
-                CustomerName = j.Cliente?.Name ?? "Customer",
+                CustomerName = j.Cliente?.Name ?? ProviderProDisplayLocalization.L("Customer"),
                 StatusLabel = MapJobStatusLabel(j.Status),
                 StatusClass = MapJobStatusClass(j.Status),
                 IconClass = MapCalendarServiceIcon(j.ServiceType ?? j.Title),
@@ -520,9 +522,13 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
             CustomerName = draft.CustomerName,
             CustomerInitials = DeriveCustomerInitials(draft.CustomerName),
             CustomerTone = DeriveAvatarTone(draft.ClienteId ?? draft.CustomerName.GetHashCode()),
-            AiCustomerNeeds = draft.AiCustomerNeeds,
-            AiRecommendedScope = draft.AiRecommendedScope,
-            EstimateLines = draft.EstimateLines,
+            AiCustomerNeeds = UiDisplayLocalization.Localize(localizer, draft.AiCustomerNeeds),
+            AiRecommendedScope = draft.AiRecommendedScope
+                .Select(item => UiDisplayLocalization.Localize(localizer, item))
+                .ToList(),
+            EstimateLines = draft.EstimateLines
+                .Select(l => Line(localizer.T(l.Label), l.Amount))
+                .ToList(),
             EstimateTotalLabel = FormatCurrency(draft.EstimateTotal),
             StepSubtitle = "AI estimate assistant",
             WizardSteps = BuildCreateJobWizardSteps(4)
@@ -553,6 +559,13 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
             ? BuildDefaultCustomerMessage(draft)
             : draft.CustomerMessage;
 
+        // Localize preview fields for the active UI culture (EN keys stay in draft storage).
+        var estimateLines = draft.EstimateLines
+            .Select(l => Line(localizer.T(l.Label), l.Amount))
+            .ToList();
+        var scopeSummary = UiDisplayLocalization.Localize(localizer, draft.ScopeSummary);
+        var localizedMessage = UiDisplayLocalization.Localize(localizer, message);
+
         return Task.FromResult<ProviderProCreateJobSendViewModel?>(new ProviderProCreateJobSendViewModel
         {
             CompanyName = ResolveCompanyName(proveedor),
@@ -562,11 +575,11 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
             ServiceCategoryTone = tone,
             CustomerName = draft.CustomerName,
             Address = draft.Address,
-            EstimateLines = draft.EstimateLines,
+            EstimateLines = estimateLines,
             EstimateTotalLabel = draft.SendQuote ? FormatCurrency(draft.EstimateTotal) : "",
-            ScopeSummary = draft.ScopeSummary,
+            ScopeSummary = scopeSummary,
             DeliveryMethod = draft.DeliveryMethod,
-            CustomerMessage = message,
+            CustomerMessage = localizedMessage,
             IncludeAiSummary = draft.IncludeAiSummary,
             IncludeVoiceTranscript = draft.HasVoiceRecording && draft.IncludeVoiceTranscript,
             SendQuote = draft.SendQuote,
@@ -625,10 +638,11 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
     public async Task<int> CreateJobAsync(int proveedorId, ProviderProCreateJobInput input, CancellationToken cancellationToken = default)
     {
         var startTime = string.IsNullOrWhiteSpace(input.StartTimeLabel) ? input.TimeLabel : input.StartTimeLabel;
-        var scheduledAt = input.SaveAsDraft
+        // Create Job wizard often omits VisitDate; unscheduled jobs must still land in "Jobs today".
+        DateTime? scheduledAt = input.SaveAsDraft
             ? null
-            : ParseVisitSchedule(input.VisitDate, startTime);
-        var scheduledEndAt = input.SaveAsDraft
+            : ParseVisitSchedule(input.VisitDate, startTime) ?? DateTime.Now;
+        DateTime? scheduledEndAt = input.SaveAsDraft
             ? null
             : ParseVisitSchedule(input.VisitDate, input.EndTimeLabel);
 
@@ -747,9 +761,9 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
             PaymentLabel = job.PaymentAmount.HasValue ? job.PaymentAmount.Value.ToString("C0") : null,
 
-            CustomerName = customer?.Name ?? "Customer",
+            CustomerName = customer?.Name ?? ProviderProDisplayLocalization.L("Customer"),
 
-            CustomerInitials = BuildInitials(customer?.Name ?? "Customer"),
+            CustomerInitials = BuildInitials(customer?.Name ?? ProviderProDisplayLocalization.L("Customer")),
 
             IsHomeownerVerified = customer?.IsPropertyVerified ?? false,
 
@@ -1097,6 +1111,30 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
     }
 
+    /// <summary>
+    /// Jobs scheduled in [from, to), or unscheduled non-draft jobs created in that local window.
+    /// </summary>
+    private static bool IsJobForTodayWindow(IndorProveedorJob job, DateTime fromInclusive, DateTime toExclusive)
+    {
+        if (job.IsDraft)
+        {
+            return false;
+        }
+
+        if (job.ScheduledAt.HasValue)
+        {
+            var scheduled = job.ScheduledAt.Value.Kind == DateTimeKind.Utc
+                ? job.ScheduledAt.Value.ToLocalTime()
+                : job.ScheduledAt.Value;
+            return scheduled >= fromInclusive && scheduled < toExclusive;
+        }
+
+        var created = job.FechaCreacion.Kind == DateTimeKind.Utc
+            ? job.FechaCreacion.ToLocalTime()
+            : job.FechaCreacion;
+        return created >= fromInclusive && created < toExclusive;
+    }
+
 
 
     private static List<ProviderProFlowStepViewModel> CalendarOverviewFlowSteps() =>
@@ -1234,17 +1272,22 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
         return match == default ? ("fa-wrench", "blue") : (match.Icon, match.Tone);
     }
 
-    private static string BuildDefaultQuoteRequestNotes(ProviderProCreateJobDraft draft)
+    private string BuildDefaultQuoteRequestNotes(ProviderProCreateJobDraft draft)
     {
         if (draft.ServiceCategoryId.Equals("inspection", StringComparison.OrdinalIgnoreCase)
             || draft.Title.Contains("inspection", StringComparison.OrdinalIgnoreCase)
             || draft.Title.Contains("inspección", StringComparison.OrdinalIgnoreCase)
             || draft.Title.Contains("inspeccion", StringComparison.OrdinalIgnoreCase))
         {
-            return "Please inspect the water damage in the kitchen ceiling and adjacent living room. Identify the source, document affected areas, and provide a repair estimate. Include minor drywall repair and repaint as needed.";
+            return localizer.T(
+                "Please inspect the water damage in the kitchen ceiling and adjacent living room. Identify the source, document affected areas, and provide a repair estimate. Include minor drywall repair and repaint as needed.");
         }
 
-        return $"Please review the requested {draft.ServiceCategoryLabel.ToLowerInvariant()} work at {draft.Address}. Document findings and provide a repair estimate with recommended next steps.";
+        var category = localizer.T(draft.ServiceCategoryLabel).ToLowerInvariant();
+        return localizer.T(
+            "Please review the requested {0} work at {1}. Document findings and provide a repair estimate with recommended next steps.",
+            category,
+            draft.Address);
     }
 
     private static List<ProviderProCreateJobAttachmentViewModel> BuildDefaultQuoteAttachments() =>
@@ -1342,7 +1385,9 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
     private string BuildDefaultCustomerMessage(ProviderProCreateJobDraft draft)
     {
         var firstName = draft.CustomerName.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? draft.CustomerName;
-        var title = localizer.T(draft.Title).ToLowerInvariant();
+        // Persist English catalog title so the message template localizes as a whole unit.
+        var titleKey = UiDisplayLocalization.ToCatalogKey(draft.Title);
+        var title = localizer.T(titleKey).ToLowerInvariant();
         return localizer.T(
             "Hi {0}, here's your quote for the {1}. Let us know if you have any questions!",
             firstName,
@@ -1450,17 +1495,18 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
     {
         if (!start.HasValue)
         {
-            return "Not scheduled";
+            return ProviderProDisplayLocalization.L("Not scheduled");
         }
 
+        var culture = CultureInfo.CurrentCulture;
         var localStart = start.Value.ToLocalTime();
-        var dateLabel = localStart.ToString("MMM d, yyyy");
-        var timeLabel = localStart.ToString("h:mm tt");
+        var dateLabel = localStart.ToString("MMM d, yyyy", culture);
+        var timeLabel = localStart.ToString("h:mm tt", culture);
 
         if (end.HasValue)
         {
             var localEnd = end.Value.ToLocalTime();
-            timeLabel = $"{timeLabel} – {localEnd:h:mm tt}";
+            timeLabel = $"{timeLabel} – {localEnd.ToString("h:mm tt", culture)}";
         }
 
         return $"{dateLabel}, {timeLabel}";
@@ -1678,17 +1724,23 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
         {
 
-            return "Not scheduled";
+            return ProviderProDisplayLocalization.L("Not scheduled");
 
         }
 
 
 
+        var culture = CultureInfo.CurrentCulture;
+
         var local = when.Value.Kind == DateTimeKind.Utc ? when.Value.ToLocalTime() : when.Value;
 
-        var day = local.Date == DateTime.Today ? "Today" : local.Date == DateTime.Today.AddDays(1) ? "Tomorrow" : local.ToString("MMM d");
+        var day = local.Date == DateTime.Today ? ProviderProDisplayLocalization.L("Today")
 
-        return $"{day}, {local:h:mm tt}";
+            : local.Date == DateTime.Today.AddDays(1) ? ProviderProDisplayLocalization.L("Tomorrow")
+
+            : local.ToString("MMM d", culture);
+
+        return $"{day}, {local.ToString("h:mm tt", culture)}";
 
     }
 

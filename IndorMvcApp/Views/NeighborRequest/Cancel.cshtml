@@ -38,7 +38,7 @@
                 <div class="nr-cancel-title-wrap">
                     <h2 class="nr-cancel-title">@UiDisplayLocalization.Localize(L, Model.Title)</h2>
                 </div>
-                <span class="nr-cancel-status @Model.StatusCss">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
+                <span class="nr-cancel-status @Model.StatusCss">@UiDisplayLocalization.Localize(L, string.Equals(Model.StatusLabel, "ACTIVE", StringComparison.OrdinalIgnoreCase) ? "Active" : Model.StatusLabel)</span>
             </div>
 
             @if (!string.IsNullOrWhiteSpace(Model.LocationAddress))

@@ -49,7 +49,7 @@
     </section>
 
     <section class="prv-pro-job-meta-row">
-        <div><i class="fas fa-clock"></i><strong>@Model.AppointmentLabel</strong><span>@L["Appointment"]</span></div>
+        <div><i class="fas fa-clock"></i><strong>@UiDisplayLocalization.Localize(L, Model.AppointmentLabel)</strong><span>@L["Appointment"]</span></div>
         <div><i class="fas fa-circle-dot"></i><strong>@UiDisplayLocalization.Localize(L, Model.StatusLabel)</strong><span>@L["Status"]</span></div>
         @if (!string.IsNullOrWhiteSpace(Model.EstimateCode))
         {

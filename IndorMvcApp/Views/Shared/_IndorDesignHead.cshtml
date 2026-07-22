@@ -1,4 +1,6 @@
 @* Global INDOR design system — sky background + UI layer on every screen *@
+@* Boot splash first so first paint is branded before Google Fonts / CSS bundles. *@
+@await Html.PartialAsync("_IndorBootSplashHead")
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
@@ -6,6 +8,7 @@
 <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
 @await Html.PartialAsync("_NavigationLoadingHead")
 @await Html.PartialAsync("_IndorGreetingHead")
+@await Html.PartialAsync("_IndorFileSourceHead")
 <script>
     // Smart back + navigation recovery (see PreventWebViewCacheMiddleware: no-store is
     // avoided so bfcache can restore pages instantly when the browser allows it).
@@ -95,62 +98,9 @@
             }
         });
 
-        // Blank-screen self-heal: some mobile WebViews discard the render surface
-        // when the app is backgrounded. Be conservative — false positives feel like
-        // a full app restart and can wipe mid-flow UX on resume.
-        var RESUME_RELOAD_KEY = '__indorResumeReloads';
-        var blankHits = 0;
-        function resumeReloadCount() {
-            try { return parseInt(window.sessionStorage.getItem(RESUME_RELOAD_KEY) || '0', 10) || 0; }
-            catch (e) { return 0; }
-        }
-        function markHealthy() {
-            blankHits = 0;
-            try { window.sessionStorage.removeItem(RESUME_RELOAD_KEY); } catch (e) { }
-        }
-        function looksBlank() {
-            var b = document.body;
-            if (!b) return true;
-            if (b.childElementCount > 0 && (b.textContent || '').trim().length > 40) return false;
-            var rectH = b.getBoundingClientRect ? b.getBoundingClientRect().height : 0;
-            var h = Math.max(b.scrollHeight || 0, b.offsetHeight || 0, rectH || 0);
-            // A real INDOR screen fills the viewport; a lost surface collapses to ~0.
-            return h < 10 && window.innerHeight > 0;
-        }
-        function checkBlankAndRecover() {
-            if (document.visibilityState !== 'visible') return;
-            if (!looksBlank()) { markHealthy(); return; }
-            blankHits += 1;
-            if (blankHits < 2) {
-                window.setTimeout(checkBlankAndRecover, 400);
-                return;
-            }
-            if (resumeReloadCount() >= 1) return; // one reload max — avoid restart loops
-            try { window.sessionStorage.setItem(RESUME_RELOAD_KEY, String(resumeReloadCount() + 1)); } catch (e) { }
-            window.location.reload();
-        }
-        function scheduleBlankCheck() {
-            blankHits = 0;
-            window.setTimeout(checkBlankAndRecover, 700);
-        }
-        window.addEventListener('pageshow', function (e) {
-            // bfcache restore is already the real page — never treat it as blank.
-            if (e.persisted) { markHealthy(); return; }
-            scheduleBlankCheck();
-        });
-        document.addEventListener('visibilitychange', function () {
-            if (document.visibilityState === 'visible') {
-                scheduleBlankCheck();
-            }
-        });
-        function resetCounterIfHealthy() {
-            window.setTimeout(function () { if (!looksBlank()) markHealthy(); }, 500);
-        }
-        if (document.readyState === 'complete') {
-            resetCounterIfHealthy();
-        } else {
-            window.addEventListener('load', resetCounterIfHealthy);
-        }
+        // Blank / resume compositor recovery lives in _IndorBootSplashHead
+        // (indorShowBootSplash + visibility/pageshow heal) so Welcome and all
+        // portals share one language-agnostic path.
 
         rememberInAppUrl();
 

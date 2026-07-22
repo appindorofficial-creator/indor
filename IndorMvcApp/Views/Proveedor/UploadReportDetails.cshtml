@@ -7,7 +7,6 @@
 
 <div class="prv-pro-shell prv-pro-shell--upload-report">
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
-    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
 
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
         <a asp-controller="Proveedor" asp-action="UploadReportFiles" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
@@ -19,6 +18,11 @@
     </header>
 
     @await Html.PartialAsync("_UploadReportJobCard", Model.Job)
+
+    @if (TempData["UploadReportError"] is string uploadReportError && !string.IsNullOrWhiteSpace(uploadReportError))
+    {
+        <div class="prv-pro-form-error-banner" role="alert">@uploadReportError</div>
+    }
 
     <form asp-controller="Proveedor" asp-action="UploadReportDetails" method="post" class="prv-pro-upload-report-details-form">
         @Html.AntiForgeryToken()

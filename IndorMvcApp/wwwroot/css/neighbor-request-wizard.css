@@ -1094,6 +1094,9 @@
 .nr-edit-picker {
     position: relative;
     display: block;
+    overflow: hidden;
+    isolation: isolate;
+    contain: paint;
 }
 
 .nr-edit-picker-native {
@@ -1101,9 +1104,20 @@
     inset: 0;
     width: 100%;
     height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
     opacity: 0;
     cursor: pointer;
     z-index: 2;
+    background: transparent;
+    color: transparent;
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 1;
+    min-height: 0;
 }
 
 .nr-edit-picker-face,
@@ -1116,6 +1130,8 @@
     border: 1px solid #E5E7EB;
     border-radius: 14px;
     background: #fff;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 .nr-edit-picker-icon {
@@ -1128,6 +1144,9 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .nr-edit-picker-label {
@@ -1136,19 +1155,46 @@
     font-size: .88rem;
     font-weight: 600;
     color: #0A2540;
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .nr-edit-picker-chevron {
     color: #94A3B8;
     font-size: .78rem;
     flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .nr-edit-picker-native--date {
     position: absolute;
     inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
     opacity: 0;
     cursor: pointer;
+    z-index: 2;
+    background: transparent;
+    color: transparent;
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 1;
+    min-height: 0;
+}
+
+.nr-edit-picker-native--date::-webkit-date-and-time-value,
+.nr-edit-picker-native--date::-webkit-datetime-edit,
+.nr-edit-picker-native--date::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    color: transparent;
 }
 
 .nr-edit-audience {
@@ -1311,6 +1357,8 @@
     background: #F8FBFF;
     box-sizing: border-box;
     overflow: hidden;
+    isolation: isolate;
+    contain: paint;
     cursor: pointer;
 }
 
@@ -1324,6 +1372,9 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
 }
 
 .nr-pick-date-value {
@@ -1335,27 +1386,53 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.nr-pick-date-value.is-placeholder {
+    color: #64748B;
+    font-weight: 600;
 }
 
 .nr-pick-date-chevron {
     color: #94A3B8;
     font-size: .78rem;
     flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
 }
 
+/* Invisible hit-target only. Do not use appearance:none — WebKit date inputs
+   become opaque white boxes that cover the custom face and overflow the card. */
 .nr-pick-date-native {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
+    max-width: 100%;
+    max-height: 100%;
     opacity: 0;
     border: 0;
     margin: 0;
     padding: 0;
     cursor: pointer;
     z-index: 2;
-    -webkit-appearance: none;
-    appearance: none;
+    background: transparent;
+    color: transparent;
+    box-sizing: border-box;
+    font-size: 16px;
+    line-height: 1;
+    min-height: 0;
+}
+
+.nr-pick-date-native::-webkit-date-and-time-value,
+.nr-pick-date-native::-webkit-datetime-edit,
+.nr-pick-date-native::-webkit-calendar-picker-indicator {
+    opacity: 0;
+    color: transparent;
 }
 
 .nr-card-head {
@@ -1560,11 +1637,15 @@
     left: 0;
     z-index: 40;
     min-width: 210px;
-    background: #fff;
+    background: #ffffff;
     border: 1px solid #E2E8F0;
     border-radius: 14px;
-    box-shadow: 0 12px 28px rgba(15, 23, 42, .14);
+    box-shadow: 0 8px 20px rgba(15, 23, 42, .12);
     padding: 6px;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    filter: none;
+    text-shadow: none;
 }
 .nr-photo-menu[hidden] { display: none !important; }
 .nr-photo-menu-item {
@@ -1579,9 +1660,12 @@
     font: inherit;
     font-size: .82rem;
     font-weight: 600;
-    color: #0A2540;
+    color: #0F172A;
     text-align: left;
     cursor: pointer;
+    text-shadow: none;
+    filter: none;
+    -webkit-font-smoothing: antialiased;
 }
 .nr-photo-menu-item:hover,
 .nr-photo-menu-item:focus-visible {

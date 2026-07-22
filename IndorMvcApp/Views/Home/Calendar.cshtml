@@ -1,0 +1,151 @@
+@model IndorMvcApp.ViewModels.HomeownerCalendarViewModel
+@{
+    ViewData["Title"] = L["Calendar"];
+    Layout = null;
+    var culture = System.Globalization.CultureInfo.CurrentUICulture;
+    var firstDow = (int)culture.DateTimeFormat.FirstDayOfWeek;
+    var allDayNames = culture.DateTimeFormat.AbbreviatedDayNames;
+    var dayNames = Enumerable.Range(0, 7).Select(i => allDayNames[(firstDow + i) % 7]).ToArray();
+}
+<!DOCTYPE html>
+<html lang="@(L.IsSpanish ? "es" : "en")">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@L["Calendar"] - INDOR</title>
+    @await Html.PartialAsync("_IndorStandalonePageHead")
+    <link rel="stylesheet" href="~/css/schedule-section.css" asp-append-version="true" />
+    <style>
+        body { font-family: 'Inter', sans-serif; color: #0A2540; margin: 0; min-height: 100vh; background: #F8FAFC; }
+        .ho-cal-page { max-width: 480px; margin: 0 auto; padding: 16px 16px 40px; }
+        .ho-cal-top { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+        .ho-cal-back {
+            width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid #E5E7EB;
+            background: #FFF; display: inline-flex; align-items: center; justify-content: center;
+            color: #0A2540; text-decoration: none; flex-shrink: 0;
+        }
+        .ho-cal-title { font-size: 1.35rem; font-weight: 800; margin: 0; flex: 1; letter-spacing: -0.02em; }
+        .ho-cal-sub { font-size: 0.85rem; color: #64748B; margin: 0 0 18px 52px; line-height: 1.4; }
+        .ho-cal-month-nav {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 8px; margin-bottom: 14px; padding: 10px 12px;
+            background: #FFF; border: 1px solid #EEF2F7; border-radius: 14px;
+            box-shadow: 0 4px 14px rgba(10, 37, 64, 0.04);
+        }
+        .ho-cal-month-nav strong { font-size: 0.95rem; font-weight: 700; text-transform: capitalize; }
+        .ho-cal-nav-btn {
+            width: 36px; height: 36px; border-radius: 50%; border: 1px solid #E5E7EB;
+            background: #FFF; color: #0066CC; display: inline-flex; align-items: center;
+            justify-content: center; text-decoration: none;
+        }
+        .ho-cal-grid {
+            display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px;
+            margin-bottom: 22px; padding: 12px; background: #FFF;
+            border: 1px solid #EEF2F7; border-radius: 16px;
+            box-shadow: 0 6px 18px rgba(10, 37, 64, 0.05);
+        }
+        .ho-cal-dow {
+            text-align: center; font-size: 0.68rem; font-weight: 700;
+            color: #94A3B8; padding: 4px 0 8px; text-transform: uppercase;
+        }
+        .ho-cal-day {
+            aspect-ratio: 1; border-radius: 12px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; gap: 3px; position: relative;
+            font-size: 0.82rem; font-weight: 600; color: #0A2540;
+        }
+        .ho-cal-day.is-outside { color: #CBD5E1; }
+        .ho-cal-day.is-today { background: rgba(0, 102, 204, 0.1); color: #0066CC; }
+        .ho-cal-day.has-events::after {
+            content: ""; width: 5px; height: 5px; border-radius: 50%;
+            background: #0066CC; display: block;
+        }
+        .ho-cal-day.is-outside.has-events::after { background: #94A3B8; }
+        .ho-cal-section-head {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        .ho-cal-section-head h2 {
+            margin: 0; font-size: 0.95rem; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .ho-cal-section-head a {
+            font-size: 0.8rem; font-weight: 600; color: #0066CC; text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="ho-cal-page">
+    <div class="ho-cal-top">
+        <a href="@(Model.BackUrl ?? Url.Action("Index", "Home") + "#section-schedule")" class="ho-cal-back" aria-label="@L["Back"]">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <h1 class="ho-cal-title">@L["Calendar"]</h1>
+    </div>
+    <p class="ho-cal-sub">@L["See upcoming reminders and scheduled home services."]</p>
+
+    <div class="ho-cal-month-nav">
+        <a class="ho-cal-nav-btn" href="@Model.PrevUrl" aria-label="@L["Previous month"]"><i class="fas fa-chevron-left"></i></a>
+        <strong>@Model.MonthLabel</strong>
+        <a class="ho-cal-nav-btn" href="@Model.NextUrl" aria-label="@L["Next month"]"><i class="fas fa-chevron-right"></i></a>
+    </div>
+
+    <div class="ho-cal-grid" role="grid" aria-label="@Model.MonthLabel">
+        @foreach (var name in dayNames)
+        {
+            <div class="ho-cal-dow">@name</div>
+        }
+        @foreach (var day in Model.Days)
+        {
+            var classes = "ho-cal-day"
+                + (day.IsCurrentMonth ? "" : " is-outside")
+                + (day.IsToday ? " is-today" : "")
+                + (day.HasEvents ? " has-events" : "");
+            <div class="@classes" role="gridcell" aria-label="@day.Date.ToString("D", culture)">
+                <span>@day.Date.Day</span>
+            </div>
+        }
+    </div>
+
+    <div class="ho-cal-section-head">
+        <h2><i class="far fa-calendar"></i> @L["This month"]</h2>
+        <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule">@L["Back to Schedule"]</a>
+    </div>
+
+    @if (Model.Items.Count == 0)
+    {
+        <div class="sch-empty">
+            <img class="sch-empty-art" src="~/images/schedule/schedule-empty-calendar.png" alt="" loading="lazy" decoding="async" asp-append-version="true" />
+            <p>@L["No reminders this month."]</p>
+            <small>@L["Add trash, lawn, AC, filter, or gutter reminders from Schedule."]</small>
+        </div>
+    }
+    else
+    {
+        <div class="sch-reminder-list">
+            @foreach (var item in Model.Items)
+            {
+                <article class="sch-reminder-card">
+                    <span class="sch-reminder-icon @item.ToneClass">
+                        <i class="fas @item.IconClass"></i>
+                    </span>
+                    <div class="sch-reminder-body">
+                        <div class="sch-reminder-top">
+                            <h3 class="sch-reminder-title">@UiDisplayLocalization.Localize(L, item.Title)</h3>
+                            <a href="@item.EditUrl" class="sch-edit-link">
+                                <i class="fas fa-pen"></i>
+                                @UiDisplayLocalization.Localize(L, item.EditLabel)
+                            </a>
+                        </div>
+                        <p class="sch-reminder-sub">@UiDisplayLocalization.Localize(L, item.Subtitle)</p>
+                        <p class="sch-reminder-date">
+                            <i class="far fa-calendar"></i>
+                            @item.DateLabel
+                        </p>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+</div>
+</body>
+</html>

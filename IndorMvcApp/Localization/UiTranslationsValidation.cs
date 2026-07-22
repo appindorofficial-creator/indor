@@ -29,6 +29,13 @@ public static class UiTranslationsValidation
             ["Enter a complete street address (e.g. 123 Main St, Charlotte, NC)."] = "Ingresa una dirección completa (ej. 123 Main St, Charlotte, NC).",
             ["Enter a street number (e.g. 123 Main St)."] = "Ingresa un número de calle (ej. 123 Main St).",
             ["Please enter a valid street address."] = "Ingresa una dirección válida.",
+            ["Please enter a valid street address (e.g. 123 Main St, Charlotte, NC)."] =
+                "Ingresa una dirección completa (ej. 123 Main St, Charlotte, NC).",
+            ["Enter a complete address with city and state (e.g. 123 Main St, Charlotte, NC)."] =
+                "Ingresa una dirección completa con ciudad y estado (ej. 123 Main St, Charlotte, NC).",
+            ["Please enter the pick-up address."] = "Ingresa la dirección de recogida.",
+            ["Please enter the drop-off address."] = "Ingresa la dirección de entrega.",
+            ["Please select a move date."] = "Selecciona una fecha de mudanza.",
             ["Please enter a job title."] = "El título del trabajo es obligatorio.",
             ["Please enter a location."] = "La ubicación es obligatoria.",
             ["The Title field is required."] = "El título del trabajo es obligatorio.",
@@ -79,5 +86,17 @@ public static class UiTranslationsValidation
             ["Assigning provider"] = "Asignando proveedor",
             ["Next reminder active"] = "Próximo recordatorio activo",
             ["Reminder active"] = "Recordatorio activo",
+
+            // Auth / login DataAnnotations (also in Shared — kept here so validation catalog is complete)
+            ["Email is required"] = "El correo electrónico es obligatorio",
+            ["Invalid email address"] = "Correo electrónico inválido",
+            ["Password is required"] = "La contraseña es obligatoria",
+            ["Full name is required"] = "El nombre completo es obligatorio",
+            ["Enter the 6-digit code"] = "Ingresa el código de 6 dígitos",
+            ["The code must be 6 digits"] = "El código debe tener 6 dígitos",
+            ["Confirm your password"] = "Confirma tu contraseña",
+            ["Passwords do not match"] = "Las contraseñas no coinciden",
+            ["Password must be at least 8 characters"] = "La contraseña debe tener al menos 8 caracteres",
+            ["Password must be at least {2} characters."] = "La contraseña debe tener al menos {2} caracteres.",
         };
 }

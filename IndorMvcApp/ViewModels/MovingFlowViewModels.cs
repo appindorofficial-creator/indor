@@ -65,6 +65,8 @@ public class MovingDetailsViewModel
     public string DireccionDestino { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Please select a move date.")]
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+    [DataType(DataType.Date)]
     public DateTime? FechaMovimiento { get; set; }
 
     [Required]

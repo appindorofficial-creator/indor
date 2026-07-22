@@ -1,5 +1,6 @@
 @* Reusable PA photo + voice + document capture. Place inside a form.
-   On mobile, "Add photos" opens a chooser: Take photo (camera) or Choose from library.
+   On mobile, "Add photos" opens an in-app chooser (localized Photo Library / Take Photo /
+   Choose Files) so iOS does not show the English OS action sheet.
    Library input must NOT use capture= and should prefer image/* so the OS opens the gallery
    (pdf/video-heavy accept often opens Files instead of Photos on iOS/Android). *@
 @{
@@ -22,6 +23,11 @@
         : (accept.IndexOf("video", StringComparison.OrdinalIgnoreCase) >= 0
             ? "image/jpeg,image/png,image/webp,image/*,video/*"
             : "image/jpeg,image/png,image/webp,image/*");
+    var filesAccept = isDocument
+        ? accept
+        : (accept.IndexOf("pdf", StringComparison.OrdinalIgnoreCase) >= 0 || accept.IndexOf("video", StringComparison.OrdinalIgnoreCase) >= 0
+            ? accept
+            : "image/jpeg,image/png,image/webp,image/*,.pdf,application/pdf");
     var photoIcon = ViewData["PaMediaPhotoIcon"] as string ?? "fa-camera";
     var existingJson = ViewData["PaMediaAttachmentsJson"] as string ?? "[]";
     var captureClass = showVoice ? "pa-media-capture" : "pa-media-capture pa-media-capture--photos-only";
@@ -65,6 +71,7 @@
         <input type="file" class="pa-media-photo-input pa-media-photo-input--camera" accept="@cameraAccept" multiple capture="environment" aria-hidden="true" tabindex="-1" />
     }
     <input type="file" class="pa-media-photo-input pa-media-photo-input--library" accept="@libraryAccept" multiple aria-hidden="true" tabindex="-1" />
+    <input type="file" class="pa-media-photo-input pa-media-photo-input--files" accept="@filesAccept" multiple aria-hidden="true" tabindex="-1" />
 
     <div class="@actionsClass">
         <div class="pa-media-photo-wrap">
@@ -74,13 +81,8 @@
                     aria-expanded="false">
                 <i class="fas @photoIcon"></i> @photoLabel
             </button>
-            <div class="pa-media-photo-menu" role="menu" hidden>
-                <button type="button" class="pa-media-photo-menu-item" data-pa-media-source="camera" role="menuitem">
-                    <i class="fas fa-camera"></i> @L["Take photo"]
-                </button>
-                <button type="button" class="pa-media-photo-menu-item" data-pa-media-source="library" role="menuitem">
-                    <i class="fas fa-image"></i> @L["Choose from library"]
-                </button>
+            <div class="pa-media-photo-menu indor-file-source-menu" role="menu" hidden>
+                @await Html.PartialAsync("_IndorFileSourceMenu")
             </div>
         </div>
         @if (showVoice)

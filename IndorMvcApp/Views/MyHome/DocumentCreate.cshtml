@@ -12,8 +12,14 @@
         .hf-validation-summary ul { margin:0; padding-left:18px; }
         .hf-field-error { display:block; color:#B91C1C; font-size:0.82rem; font-weight:600; margin:-6px 0 12px; }
         .hf-document-form { padding-bottom:calc(var(--homeowner-bottom-nav-h, 80px) + 88px + env(safe-area-inset-bottom, 0px)); }
-        .hf-file-input { padding:12px; background:#FFF; }
-        .hf-file-name { display:block; margin:-4px 0 12px; font-size:0.82rem; font-weight:600; color:#0066CC; word-break:break-all; }
+        .hf-file-picker { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 14px; border:1.5px solid #E5E7EB; border-radius:12px; background:#FFF; margin-bottom:12px; }
+        .hf-file-picker:focus-within { border-color:#93C5FD; box-shadow:0 0 0 3px rgba(0,102,204,.15); }
+        .hf-file-picker.has-file { border-color:#BFDBFE; }
+        .hf-file-picker-input { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+        .hf-file-picker-btn { display:inline-flex; align-items:center; justify-content:center; min-height:36px; padding:0 14px; border:1.5px solid #0066CC; border-radius:10px; background:#FFF; color:#0066CC; font-size:0.82rem; font-weight:600; cursor:pointer; white-space:nowrap; }
+        .hf-file-picker-btn:hover, .hf-file-picker-btn:focus-visible { background:rgba(0,102,204,0.08); }
+        .hf-file-picker-name { font-size:0.82rem; color:#64748B; min-width:0; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .hf-file-picker-name.is-selected { color:#0A2540; font-weight:600; }
         .hf-form-actions {
             position:fixed;
             left:0;
@@ -48,8 +54,16 @@
     <input asp-for="Title" class="hf-input" required maxlength="200" placeholder="@L["Document title"]" />
     <span asp-validation-for="Title" class="hf-field-error"></span>
     <label for="documentFile" class="hf-label">@L["File"]</label>
-    <input type="file" name="file" id="documentFile" class="hf-input hf-file-input" accept="image/*,.pdf,.doc,.docx,.heic,.heif" required />
-    <span id="documentFileName" class="hf-file-name" hidden></span>
+    <div class="hf-file-picker" id="documentFilePicker">
+        <input type="file"
+               name="file"
+               id="documentFile"
+               class="hf-file-picker-input"
+               accept="image/*,.pdf,.doc,.docx,.heic,.heif"
+               required />
+        <label for="documentFile" class="hf-file-picker-btn">@L["Choose file"]</label>
+        <span class="hf-file-picker-name" id="documentFileName" data-empty-label="@L["No file selected"]">@L["No file selected"]</span>
+    </div>
     @if (ViewData.ModelState["file"]?.Errors.Count > 0)
     {
         <span class="hf-field-error">@ViewData.ModelState["file"]!.Errors[0].ErrorMessage</span>
@@ -65,17 +79,26 @@
     (function () {
         var fileInput = document.getElementById('documentFile');
         var fileName = document.getElementById('documentFileName');
-        fileInput?.addEventListener('change', function () {
-            if (!fileName) return;
+        var picker = document.getElementById('documentFilePicker');
+        if (!fileInput || !fileName || !picker) return;
+
+        var emptyLabel = fileName.dataset.emptyLabel || 'No file selected';
+
+        function syncFileLabel() {
             var selected = fileInput.files && fileInput.files[0];
             if (selected) {
                 fileName.textContent = selected.name;
-                fileName.hidden = false;
+                fileName.classList.add('is-selected');
+                picker.classList.add('has-file');
             } else {
-                fileName.textContent = '';
-                fileName.hidden = true;
+                fileName.textContent = emptyLabel;
+                fileName.classList.remove('is-selected');
+                picker.classList.remove('has-file');
             }
-        });
+        }
+
+        fileInput.addEventListener('change', syncFileLabel);
+        syncFileLabel();
     })();
 </script>
 }

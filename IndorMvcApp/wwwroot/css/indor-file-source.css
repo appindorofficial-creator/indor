@@ -1,0 +1,59 @@
+/* Global in-app photo/file source sheet — opaque, no glow/blur artifacts on mobile WebView. */
+.indor-file-source-menu,
+.pa-media-photo-menu,
+.pa-file-source-menu,
+.nr-photo-menu {
+    background: #ffffff !important;
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    filter: none !important;
+    text-shadow: none !important;
+    opacity: 1 !important;
+    isolation: isolate;
+}
+
+.indor-file-source-item,
+.pa-media-photo-menu-item,
+.pa-file-source-menu-item,
+.nr-photo-menu-item {
+    background: transparent !important;
+    text-shadow: none !important;
+    filter: none !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #0F172A !important;
+}
+
+.indor-file-source-item:hover,
+.indor-file-source-item:focus-visible,
+.pa-media-photo-menu-item:hover,
+.pa-media-photo-menu-item:focus-visible,
+.pa-file-source-menu-item:hover,
+.pa-file-source-menu-item:focus-visible,
+.nr-photo-menu-item:hover,
+.nr-photo-menu-item:focus-visible {
+    background: #F1F5F9 !important;
+    outline: none;
+}
+
+.indor-file-source-label {
+    display: inline-block;
+    text-shadow: none !important;
+    filter: none !important;
+    background: transparent !important;
+    color: inherit;
+    font-weight: 600;
+    line-height: 1.25;
+}
+
+.indor-file-source-item i,
+.pa-media-photo-menu-item i,
+.pa-file-source-menu-item i,
+.nr-photo-menu-item i {
+    text-shadow: none !important;
+    filter: none !important;
+    color: #0066CC;
+    width: 18px;
+    text-align: center;
+    flex-shrink: 0;
+}

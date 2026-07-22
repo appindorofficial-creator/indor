@@ -1270,6 +1270,58 @@ form .btn-primary[type="submit"] .btn-label {
     box-shadow: none;
 }
 
+/* Clip baked-in English tagline from indor-logo-transparent.png; show localized text. */
+.auth-brand-mark-wrap {
+    text-align: center;
+}
+
+.auth-brand-mark {
+    width: min(100%, 340px);
+    margin: 0 auto;
+    overflow: hidden;
+    /* Keep INDOR + "home Indor" + rule; crop the English tagline (~bottom 38%). */
+    aspect-ratio: 1.72 / 1;
+}
+
+.auth-brand-mark__img {
+    width: 100% !important;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+    display: block;
+    margin: 0 auto;
+}
+
+.auth-brand-mark__tagline {
+    margin: 6px auto 0;
+    max-width: 300px;
+    padding: 0 8px;
+    font-size: 0.72rem;
+    line-height: 1.35;
+    font-weight: 500;
+    color: #5B6B80;
+}
+
+.login-container--signin .auth-brand-mark {
+    width: min(78%, 250px);
+}
+
+.login-container--signin .auth-brand-mark__tagline {
+    font-size: 0.68rem;
+    max-width: 260px;
+}
+
+@media (max-height: 720px) {
+    .login-container--signin .auth-brand-mark {
+        width: min(62%, 200px);
+    }
+
+    .login-container--signin .auth-brand-mark__tagline {
+        font-size: 0.64rem;
+        margin-top: 4px;
+    }
+}
+
 /* "or" divider */
 .auth-or {
     display: flex;

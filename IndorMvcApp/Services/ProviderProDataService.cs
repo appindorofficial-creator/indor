@@ -21,12 +21,20 @@ public partial class ProviderProDataService(
         var tomorrow = today.AddDays(1);
         var monthStart = new DateTime(today.Year, today.Month, 1);
         var prevMonthStart = monthStart.AddMonths(-1);
+        var createdFromUtc = DateTime.SpecifyKind(today, DateTimeKind.Local).ToUniversalTime();
+        var createdToUtc = DateTime.SpecifyKind(tomorrow, DateTimeKind.Local).ToUniversalTime();
 
         var todaysJobRows = await db.IndorProveedorJobs
             .AsNoTracking()
             .Include(j => j.Cliente)
-            .Where(j => j.ProveedorId == proveedorId && j.ScheduledAt >= today && j.ScheduledAt < tomorrow)
-            .OrderBy(j => j.ScheduledAt)
+            .Where(j => j.ProveedorId == proveedorId
+                && !j.IsDraft
+                && (
+                    (j.ScheduledAt >= today && j.ScheduledAt < tomorrow)
+                    || (!j.ScheduledAt.HasValue
+                        && j.FechaCreacion >= createdFromUtc
+                        && j.FechaCreacion < createdToUtc)))
+            .OrderBy(j => j.ScheduledAt ?? j.FechaCreacion)
             .ToListAsync(cancellationToken);
 
         var todaysJobs = todaysJobRows.Select(j =>
@@ -216,7 +224,7 @@ public partial class ProviderProDataService(
             .Where(r => r.ProveedorId == proveedor.Id)
             .ToListAsync(cancellationToken);
 
-        var todayCount = jobRows.Count(j => j.ScheduledAt >= today && j.ScheduledAt < tomorrow);
+        var todayCount = jobRows.Count(j => IsJobForToday(j, today, tomorrow));
         var activeCount = jobRows.Count(j => j.Status is ProviderJobStatuses.InProgress
             or ProviderJobStatuses.Scheduled
             or ProviderJobStatuses.Confirmed
@@ -239,8 +247,8 @@ public partial class ProviderProDataService(
         {
             "all" => allItems,
             "today" => jobRows
-                .Where(j => j.ScheduledAt >= today && j.ScheduledAt < tomorrow)
-                .OrderBy(j => j.ScheduledAt)
+                .Where(j => IsJobForToday(j, today, tomorrow))
+                .OrderBy(j => j.ScheduledAt ?? j.FechaCreacion)
                 .Select(MapJobWorkItem)
                 .ToList(),
             "leads" => leadRows
@@ -337,8 +345,8 @@ public partial class ProviderProDataService(
         var items = new List<ProviderProJobsWorkItemViewModel>();
 
         items.AddRange(jobs
-            .Where(j => j.ScheduledAt >= today && j.ScheduledAt < tomorrowEnd)
-            .OrderBy(j => j.ScheduledAt)
+            .Where(j => IsJobForToday(j, today, tomorrowEnd))
+            .OrderBy(j => j.ScheduledAt ?? j.FechaCreacion)
             .Select(MapJobWorkItem));
 
         items.AddRange(leads
@@ -1739,8 +1747,12 @@ public partial class ProviderProDataService(
         var photos = ParsePhotoUrls(lead?.PhotosJson, estimate.ImageUrl ?? lead?.ImageUrl);
         var delivery = NormalizeDeliveryMethodKey(estimate.DeliveryMethod);
         var firstName = customerName.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? customerName;
+        var serviceLabel = ProviderProDisplayLocalization.L(serviceType).ToLowerInvariant();
         var defaultMessage = string.IsNullOrWhiteSpace(estimate.HomeownerNotes)
-            ? $"Hi {firstName}, thanks again for having us out! Attached is your estimate for the {serviceType.ToLowerInvariant()}. Let me know if you have any questions—I'm here to help!"
+            ? ProviderProDisplayLocalization.T(
+                "Hi {0}, thanks again for having us out! Attached is your estimate for the {1}. Let me know if you have any questions—I'm here to help!",
+                firstName,
+                serviceLabel)
             : estimate.HomeownerNotes;
 
         return new ProviderProSendEstimatePageViewModel
@@ -2754,7 +2766,7 @@ public partial class ProviderProDataService(
 
     private static List<ProviderProFlowStepViewModel> UploadReportSelectJobFlowSteps() =>
     [
-        new() { Label = "From: Home Dashboard", IconClass = "fa-house", IsLink = true, Url = "/Proveedor/Dashboard" },
+        new() { Label = "From: Reports", IconClass = "fa-file-lines", IsLink = true, Url = "/Proveedor/Reports" },
         new() { Label = "Pressed: Upload Report", IconClass = "fa-cloud-arrow-up" },
         new() { Label = "Now: Select Job", IconClass = "fa-briefcase", IsCurrent = true }
     ];
@@ -2858,6 +2870,30 @@ public partial class ProviderProDataService(
         }
 
         return date;
+    }
+
+    /// <summary>
+    /// Jobs scheduled for the local day window, or unscheduled non-draft jobs created that day.
+    /// </summary>
+    private static bool IsJobForToday(IndorProveedorJob job, DateTime today, DateTime tomorrow)
+    {
+        if (job.IsDraft)
+        {
+            return false;
+        }
+
+        if (job.ScheduledAt.HasValue)
+        {
+            var scheduled = job.ScheduledAt.Value.Kind == DateTimeKind.Utc
+                ? job.ScheduledAt.Value.ToLocalTime()
+                : job.ScheduledAt.Value;
+            return scheduled >= today && scheduled < tomorrow;
+        }
+
+        var created = job.FechaCreacion.Kind == DateTimeKind.Utc
+            ? job.FechaCreacion.ToLocalTime()
+            : job.FechaCreacion;
+        return created >= today && created < tomorrow;
     }
 
     private static ProviderProJobsWorkItemViewModel MapEstimateWorkItem(

@@ -16,6 +16,30 @@ public static class UiDisplayLocalization
         return map;
     });
 
+    /// <summary>
+    /// Reverse map of Spanish UI values → English catalog keys (first key wins on collisions).
+    /// Used so wizard fields that show Spanish still persist English keys for templates.
+    /// </summary>
+    private static readonly Lazy<IReadOnlyDictionary<string, string>> SpanishToEnglishKey = new(() =>
+    {
+        var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var pair in Localization.UiTranslations.Spanish)
+        {
+            if (string.IsNullOrWhiteSpace(pair.Value)
+                || string.Equals(pair.Key, pair.Value, StringComparison.Ordinal))
+            {
+                continue;
+            }
+
+            if (!map.ContainsKey(pair.Value))
+            {
+                map[pair.Value] = pair.Key;
+            }
+        }
+
+        return map;
+    });
+
     private static readonly (Regex Regex, string Key)[] CountPatterns =
     [
         (new Regex(@"^(\d+)\s+nearby$", RegexOptions.IgnoreCase), "{0} nearby"),
@@ -74,6 +98,23 @@ public static class UiDisplayLocalization
         }
 
         return localizer.T(tag.Trim());
+    }
+
+    /// <summary>
+    /// If <paramref name="text"/> is a known Spanish UI value, return its English catalog key;
+    /// otherwise return the trimmed original. Keeps stored job/quote titles English-keyed.
+    /// </summary>
+    public static string ToCatalogKey(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return text ?? string.Empty;
+        }
+
+        var trimmed = text.Trim();
+        return SpanishToEnglishKey.Value.TryGetValue(trimmed, out var english)
+            ? english
+            : trimmed;
     }
 
     public static string Localize(IIndorLocalizer localizer, string? text)
@@ -216,6 +257,28 @@ public static class UiDisplayLocalization
                 "Hi {0}, here's your quote for the {1}. Let us know if you have any questions!",
                 quoteMessageMatch.Groups[1].Value.Trim(),
                 Localize(localizer, quoteMessageMatch.Groups[2].Value.Trim()));
+        }
+
+        var completeRequestedMatch = Regex.Match(
+            text,
+            @"^Complete the requested (.+) work and provide a detailed summary\.$",
+            RegexOptions.IgnoreCase);
+        if (completeRequestedMatch.Success)
+        {
+            return localizer.T(
+                "Complete the requested {0} work and provide a detailed summary.",
+                Localize(localizer, completeRequestedMatch.Groups[1].Value.Trim()));
+        }
+
+        var assessRequestedMatch = Regex.Match(
+            text,
+            @"^Assess the requested (.+) work$",
+            RegexOptions.IgnoreCase);
+        if (assessRequestedMatch.Success)
+        {
+            return localizer.T(
+                "Assess the requested {0} work",
+                Localize(localizer, assessRequestedMatch.Groups[1].Value.Trim()));
         }
 
         var estimateMessageMatch = Regex.Match(

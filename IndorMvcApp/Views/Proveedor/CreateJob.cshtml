@@ -5,10 +5,11 @@
     var createJobCancelAction = (ViewBag.CreateJobCancelAction as string) ?? "Jobs";
     var selectedId = Model.SelectedCategoryId ?? Model.Categories.FirstOrDefault()?.Id;
     var selectedCategory = Model.Categories.FirstOrDefault(c => c.Id == selectedId) ?? Model.Categories.FirstOrDefault();
+    // Keep English catalog keys in the submitted Title so quote templates / AI drafts
+    // localize cleanly at display (avoid Spanglish "Hi … inspección …").
     var jobTitle = !string.IsNullOrWhiteSpace(Model.JobTitle)
-        ? Model.JobTitle
+        ? UiDisplayLocalization.ToCatalogKey(Model.JobTitle)
         : selectedCategory?.SuggestedJobName ?? "";
-    jobTitle = UiDisplayLocalization.Localize(L, jobTitle);
 }
 
 <div class="prv-pro-shell prv-pro-shell--create-job prv-pro-shell--wizard">
@@ -31,7 +32,7 @@
                 @foreach (var cat in Model.Categories)
                 {
                     var isSelected = cat.Id == selectedId;
-                    <label class="prv-pro-type-tile @(isSelected ? "is-selected" : "")" data-suggested="@UiDisplayLocalization.Localize(L, cat.SuggestedJobName)">
+                    <label class="prv-pro-type-tile @(isSelected ? "is-selected" : "")" data-suggested="@cat.SuggestedJobName" data-suggested-display="@UiDisplayLocalization.Localize(L, cat.SuggestedJobName)">
                         <input type="radio" name="ServiceCategoryId" value="@cat.Id" @(isSelected ? "checked" : "") required />
                         <span class="prv-pro-wizard-type-icon prv-pro-wizard-type-icon--@cat.ToneClass">
                             <i class="fas @cat.IconClass"></i>
@@ -50,7 +51,7 @@
             <h2>@L["Job naming"]</h2>
             <label class="prv-pro-form-label">
                 @L["Job name"]
-                <input type="text" name="Title" id="createJobTitle" value="@jobTitle" placeholder="@L["Water Damage Inspection"]" required />
+                <input type="text" name="Title" id="createJobTitle" value="@UiDisplayLocalization.Localize(L, jobTitle)" placeholder="@L["Water Damage Inspection"]" required />
             </label>
             <small class="prv-pro-wizard-hint">@L["This will help classify the job in your list."]</small>
         </section>
@@ -82,8 +83,8 @@
                     tile.appendChild(checkEl);
                     var radio = tile.querySelector('input[type="radio"]');
                     if (radio) radio.checked = true;
-                    var suggested = tile.dataset.suggested;
-                    if (suggested && titleInput && !titleInput.value.trim()) {
+                    var suggested = tile.dataset.suggestedDisplay || tile.dataset.suggested;
+                    if (suggested && titleInput) {
                         titleInput.value = suggested;
                     }
                 });

@@ -17,9 +17,17 @@
     </p>
 </div>
 
+@{
+    var csvFileName = L.IsSpanish ? "indor-plantilla-portafolio.csv" : "indor-portfolio-template.csv";
+    var csvFileUrl = Url.Action("DownloadPortfolioTemplateFile") ?? "#";
+    var csvTemplatePageUrl = Url.Action("DownloadPortfolioTemplate", new { returnUrl = Model.BackUrl }) ?? "#";
+}
+
 <p style="margin-bottom:16px;">
-    <a asp-action="DownloadPortfolioTemplate"
-       download
+    <a href="@csvTemplatePageUrl"
+       id="paDownloadCsvTemplate"
+       data-file-url="@csvFileUrl"
+       data-file-name="@csvFileName"
        data-no-nav-loading
        class="pa-reg-action-back"
        style="display:inline-flex;align-items:center;gap:6px;">
@@ -51,24 +59,61 @@
         const input = document.getElementById('csvFile');
         const nameEl = document.getElementById('csvFileName');
         const picker = document.getElementById('csvFilePicker');
-        if (!input || !nameEl || !picker) return;
+        if (input && nameEl && picker) {
+            const emptyLabel = nameEl.dataset.emptyLabel || 'No file selected';
 
-        const emptyLabel = nameEl.dataset.emptyLabel || 'No file selected';
-
-        function syncFileLabel() {
-            const file = input.files && input.files[0];
-            if (file) {
-                nameEl.textContent = file.name;
-                nameEl.classList.add('is-selected');
-                picker.classList.add('has-file');
-            } else {
-                nameEl.textContent = emptyLabel;
-                nameEl.classList.remove('is-selected');
-                picker.classList.remove('has-file');
+            function syncFileLabel() {
+                const file = input.files && input.files[0];
+                if (file) {
+                    nameEl.textContent = file.name;
+                    nameEl.classList.add('is-selected');
+                    picker.classList.add('has-file');
+                } else {
+                    nameEl.textContent = emptyLabel;
+                    nameEl.classList.remove('is-selected');
+                    picker.classList.remove('has-file');
+                }
             }
+
+            input.addEventListener('change', syncFileLabel);
+            syncFileLabel();
         }
 
-        input.addEventListener('change', syncFileLabel);
-        syncFileLabel();
+        // Download CSV without leaving Import Portfolio (avoids blank/stuck WebView pages).
+        const downloadLink = document.getElementById('paDownloadCsvTemplate');
+        if (!downloadLink) return;
+
+        downloadLink.addEventListener('click', function (e) {
+            const fileUrl = downloadLink.getAttribute('data-file-url');
+            const fileName = downloadLink.getAttribute('data-file-name') || 'indor-portfolio-template.csv';
+            const fallbackUrl = downloadLink.getAttribute('href');
+            if (!fileUrl || fileUrl === '#') return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            fetch(fileUrl, { credentials: 'same-origin' })
+                .then(function (res) {
+                    if (!res.ok) throw new Error('download failed');
+                    return res.blob();
+                })
+                .then(function (blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+                })
+                .catch(function () {
+                    // Fallback: open the template page (has back navigation).
+                    if (fallbackUrl && fallbackUrl !== '#') {
+                        window.location.assign(fallbackUrl);
+                    }
+                });
+        });
     })();
 </script>

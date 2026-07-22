@@ -23,7 +23,7 @@
         </div>
         <dl class="prv-pro-job-success-list">
             <div><dt><i class="fas fa-wrench"></i> @L["Service"]</dt><dd>@Model.Title</dd></div>
-            <div><dt><i class="fas fa-calendar"></i> @L["Date &amp; Time"]</dt><dd>@Model.ScheduleLabel</dd></div>
+            <div><dt><i class="fas fa-calendar"></i> @L["Date &amp; Time"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.ScheduleLabel)</dd></div>
             <div><dt><i class="fas fa-location-dot"></i> @L["Address"]</dt><dd>@Model.Address</dd></div>
             <div><dt><i class="fas fa-hashtag"></i> @L["Job Number"]</dt><dd>@Model.JobCode</dd></div>
             <div><dt><i class="fas fa-clock"></i> @L["Status"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.StatusLabel)</dd></div>

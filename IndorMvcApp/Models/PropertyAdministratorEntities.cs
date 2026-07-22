@@ -602,9 +602,11 @@ public static class PropertyAdministratorCatalog
             return false;
         }
 
-        return normalized.Contains("/priority-", StringComparison.Ordinal)
-            || normalized.Contains("/servicio", StringComparison.Ordinal)
-            || normalized.Contains("/emergency-", StringComparison.Ordinal)
-            || System.Text.RegularExpressions.Regex.IsMatch(normalized, @"/inspeccion\d+\.jpe?g$");
+        // Old defaults used service/inspection assets (e.g. priority-crawlspace-check, inspeccion2).
+        return normalized.Contains("priority-", StringComparison.Ordinal)
+            || normalized.Contains("crawlspace", StringComparison.Ordinal)
+            || normalized.Contains("servicio", StringComparison.Ordinal)
+            || normalized.Contains("emergency-", StringComparison.Ordinal)
+            || System.Text.RegularExpressions.Regex.IsMatch(normalized, @"inspeccion\d+\.jpe?g");
     }
 }

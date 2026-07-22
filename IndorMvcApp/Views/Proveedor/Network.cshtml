@@ -52,14 +52,14 @@
             @foreach (var chip in Model.TradeChips)
             {
                 <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-trade="@chip.Id" class="prv-net-chip">
-                    <i class="fas @chip.IconClass"></i> @UiDisplayLocalization.Localize(L, chip.Label)
+                    <i class="fas @chip.IconClass"></i> @ProviderProDisplayLocalization.CatalogLabel(chip.Label, chip.LabelEs)
                 </a>
             }
         </div>
     }
 
     <section class="prv-net-illus-cards">
-        <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-net-illus-card">
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-mode="find" class="prv-net-illus-card">
             <div class="prv-net-illus-head">
                 <div>
                     <strong>@L["Find Subcontractors"]</strong>
@@ -71,7 +71,7 @@
             </div>
             <img src="~/images/network/find-subcontractors.png" alt="@L["Find subcontractors"]" class="prv-net-illus-img prv-net-illus-img--workers" asp-append-version="true" />
         </a>
-        <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-trade="all" class="prv-net-illus-card">
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-mode="services" class="prv-net-illus-card">
             <div class="prv-net-illus-head">
                 <div>
                     <strong>@L["Service Providers"]</strong>
@@ -86,23 +86,25 @@
     </section>
 
     <section class="prv-net-tools">
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors"
+           asp-route-mode="verified" asp-route-insured="true" asp-route-nearby="true"
+           class="prv-net-tool">
+            <span class="prv-net-tool-ic prv-net-tool-ic--blue">
+                <svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M12 2 4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm-1.03 13.03L7.7 11.7l1.41-1.41 2.12 2.12 4.42-4.41 1.41 1.42-5.83 5.83z"/></svg>
+            </span>
+            <div>
+                <strong>@L["Verified Subcontractors"]</strong>
+                <span>@L.T("{0} insured, qualified pros near you", Model.VerifiedSubcontractorsCount)</span>
+            </div>
+            <span class="prv-net-tool-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
+        </a>
         <a asp-controller="Proveedor" asp-action="ProfileDocuments" asp-route-section="insurance" class="prv-net-tool">
             <span class="prv-net-tool-ic prv-net-tool-ic--purple">
                 <svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm-1 2 5 5h-5V4zM8 13h8v2H8v-2zm0 4h8v2H8v-2z"/></svg>
             </span>
             <div>
-                <strong>@L["Insurance &amp; Docs"]</strong>
+                <strong>@L["Insurance & Docs"]</strong>
                 <span>@L["See insurance active and documents ready"]</span>
-            </div>
-            <span class="prv-net-tool-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
-        </a>
-        <a asp-controller="Proveedor" asp-action="PostNetworkJob" class="prv-net-tool">
-            <span class="prv-net-tool-ic prv-net-tool-ic--green">
-                <svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M11 11V4h2v7h7v2h-7v7h-2v-7H4v-2h7z"/></svg>
-            </span>
-            <div>
-                <strong>@L["Post a Job"]</strong>
-                <span>@L["Get matched with subcontractors fast"]</span>
             </div>
             <span class="prv-net-tool-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
         </a>

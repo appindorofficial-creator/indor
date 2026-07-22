@@ -382,6 +382,12 @@
 
 .prv-net-chips::-webkit-scrollbar { display: none; }
 
+.prv-net-chips--services {
+    flex-wrap: wrap;
+    overflow-x: visible;
+    padding-top: 8px;
+}
+
 .prv-net-chip {
     flex-shrink: 0;
     display: inline-flex;
@@ -889,6 +895,8 @@
 }
 
 .prv-net-back {
+    position: relative;
+    z-index: 3;
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -1117,7 +1125,23 @@
     box-shadow: 0 10px 24px rgba(0, 102, 204, .32);
 }
 
-.prv-net-btn-row { display: flex; gap: 10px; }
+.prv-net-btn-row {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+}
+
+/* Equal hit targets: Message link + Save form must not overlap. */
+.prv-net-btn-row__item {
+    flex: 1 1 0;
+    min-width: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.prv-net-btn-row__item .prv-net-btn {
+    width: 100%;
+}
 
 .prv-net-btn--ghost {
     background: #fff;

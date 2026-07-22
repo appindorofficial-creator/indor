@@ -1,0 +1,54 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPortfolioTemplateViewModel
+
+<div class="pa-review-card" style="margin-bottom:16px;">
+    <p class="pa-step-hint" style="margin:0;">
+        @L["Use the sample CSV, fill in your properties, then return here to import the file."]
+    </p>
+</div>
+
+<p style="margin-bottom:16px;">
+    <a href="@Model.FileDownloadUrl"
+       id="paCsvTemplateFileLink"
+       download="@Model.FileName"
+       data-no-nav-loading
+       class="ob-btn ob-btn-outline"
+       style="display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;">
+        <i class="fas fa-download"></i> @L["Download CSV template"]
+    </a>
+</p>
+
+<script>
+    (function () {
+        const link = document.getElementById('paCsvTemplateFileLink');
+        if (!link) return;
+
+        link.addEventListener('click', function (e) {
+            const href = link.getAttribute('href');
+            const fileName = link.getAttribute('download') || 'indor-portfolio-template.csv';
+            if (!href || href === '#') return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            fetch(href, { credentials: 'same-origin' })
+                .then(function (res) {
+                    if (!res.ok) throw new Error('download failed');
+                    return res.blob();
+                })
+                .then(function (blob) {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = fileName;
+                    a.style.display = 'none';
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+                })
+                .catch(function () {
+                    // Stay on this page (has back navigation) rather than navigating to a file response.
+                });
+        });
+    })();
+</script>

@@ -17,7 +17,7 @@
         <input type="hidden" asp-for="CondicionesAcceso" id="CondicionesAcceso" />
         <input type="hidden" asp-for="RequiereMontaje" id="RequiereMontaje" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <span class="field-label">@L["What needs to be moved?"]</span>
             <div class="tile-grid" id="itemsGroup">
                 <button type="button" class="tile-btn" data-value="Sofa"><i class="fas fa-couch"></i>@L["Sofa"]</button>
@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <span class="field-label">@L["What are the access conditions?"]</span>
             <div class="chip-row" id="accessGroup" style="flex-wrap:wrap;">
                 <button type="button" class="chip-btn" data-value="Stairs"><i class="fas fa-stairs"></i> @L["Stairs"]</button>

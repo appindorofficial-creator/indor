@@ -302,41 +302,64 @@ public partial class ProviderProDataService
 
         UpdateOnboardingMeta(entity, meta =>
         {
-            meta.ProfileDocuments.LicenseNumber = TrimOrNull(input.LicenseNumber);
-            meta.ProfileDocuments.LicenseType = TrimOrNull(input.LicenseType);
-            meta.ProfileDocuments.LicenseState = TrimOrNull(input.LicenseState);
-            meta.ProfileDocuments.LicenseExpiry = TrimOrNull(input.LicenseExpiry);
-            meta.ProfileDocuments.LicenseNotApplicable = input.LicenseNotApplicable;
-            meta.ProfileDocuments.LicenseUnknown = input.LicenseUnknown;
+            var section = (input.Section ?? "").Trim().ToLowerInvariant();
 
-            meta.ProfileDocuments.InsuranceCompany = TrimOrNull(input.InsuranceCompany);
-            meta.ProfileDocuments.PolicyNumber = TrimOrNull(input.PolicyNumber);
-            meta.ProfileDocuments.CoverageAmount = TrimOrNull(input.CoverageAmount);
-            meta.ProfileDocuments.InsuranceExpiry = TrimOrNull(input.InsuranceExpiry);
-            meta.ProfileDocuments.InsuranceNotApplicable = input.InsuranceNotApplicable;
-            meta.ProfileDocuments.InsuranceUnknown = input.InsuranceUnknown;
-
-            meta.ProfileDocuments.W9LegalName = TrimOrNull(input.W9LegalName);
-            meta.ProfileDocuments.W9DbaName = TrimOrNull(input.W9DbaName);
-            meta.ProfileDocuments.W9TaxClassification = TrimOrNull(input.W9TaxClassification);
-            meta.ProfileDocuments.W9Ein = TrimOrNull(input.W9Ein);
-            meta.ProfileDocuments.W9NotApplicable = input.W9NotApplicable;
-            meta.ProfileDocuments.W9Unknown = input.W9Unknown;
-
-            meta.ProfileDocuments.BackgroundFullName = TrimOrNull(input.BackgroundFullName);
-            meta.ProfileDocuments.BackgroundDob = TrimOrNull(input.BackgroundDob);
-            meta.ProfileDocuments.BackgroundSsnLast4 = TrimOrNull(input.BackgroundSsnLast4);
-            meta.ProfileDocuments.BackgroundState = TrimOrNull(input.BackgroundState);
-            meta.ProfileDocuments.BackgroundConsent = input.BackgroundConsent;
-
-            if (!string.IsNullOrWhiteSpace(input.W9Ein))
+            if (section is "" or "license")
             {
-                meta.EinNumber = TrimOrNull(input.W9Ein);
+                meta.ProfileDocuments.LicenseNumber = TrimOrNull(input.LicenseNumber);
+                meta.ProfileDocuments.LicenseType = TrimOrNull(input.LicenseType);
+                meta.ProfileDocuments.LicenseState = TrimOrNull(input.LicenseState);
+                meta.ProfileDocuments.LicenseExpiry = TrimOrNull(input.LicenseExpiry);
+                meta.ProfileDocuments.LicenseNotApplicable = input.LicenseNotApplicable;
+                meta.ProfileDocuments.LicenseUnknown = input.LicenseUnknown;
+            }
+
+            if (section is "" or "insurance")
+            {
+                meta.ProfileDocuments.InsuranceCompany = TrimOrNull(input.InsuranceCompany);
+                meta.ProfileDocuments.PolicyNumber = TrimOrNull(input.PolicyNumber);
+                meta.ProfileDocuments.CoverageAmount = TrimOrNull(input.CoverageAmount);
+                meta.ProfileDocuments.InsuranceExpiry = TrimOrNull(input.InsuranceExpiry);
+                meta.ProfileDocuments.InsuranceNotApplicable = input.InsuranceNotApplicable;
+                meta.ProfileDocuments.InsuranceUnknown = input.InsuranceUnknown;
+            }
+
+            if (section is "" or "w9")
+            {
+                meta.ProfileDocuments.W9LegalName = TrimOrNull(input.W9LegalName);
+                meta.ProfileDocuments.W9DbaName = TrimOrNull(input.W9DbaName);
+                meta.ProfileDocuments.W9TaxClassification = TrimOrNull(input.W9TaxClassification);
+                meta.ProfileDocuments.W9Ein = TrimOrNull(input.W9Ein);
+                meta.ProfileDocuments.W9NotApplicable = input.W9NotApplicable;
+                meta.ProfileDocuments.W9Unknown = input.W9Unknown;
+
+                if (!string.IsNullOrWhiteSpace(input.W9Ein))
+                {
+                    meta.EinNumber = TrimOrNull(input.W9Ein);
+                }
+            }
+
+            if (section is "" or "background")
+            {
+                meta.ProfileDocuments.BackgroundFullName = TrimOrNull(input.BackgroundFullName);
+                meta.ProfileDocuments.BackgroundDob = TrimOrNull(input.BackgroundDob);
+                meta.ProfileDocuments.BackgroundSsnLast4 = TrimOrNull(input.BackgroundSsnLast4);
+                meta.ProfileDocuments.BackgroundState = TrimOrNull(input.BackgroundState);
+                meta.ProfileDocuments.BackgroundConsent = input.BackgroundConsent;
             }
         });
 
-        entity.LicenseNumber = TrimOrNull(input.LicenseNumber) ?? entity.LicenseNumber;
-        entity.BackgroundCheckConsent = input.BackgroundConsent;
+        var activeSection = (input.Section ?? "").Trim().ToLowerInvariant();
+        if (activeSection is "" or "license")
+        {
+            entity.LicenseNumber = TrimOrNull(input.LicenseNumber) ?? entity.LicenseNumber;
+        }
+
+        if (activeSection is "" or "background")
+        {
+            entity.BackgroundCheckConsent = input.BackgroundConsent;
+        }
+
         entity.FechaActualizacion = DateTime.UtcNow;
 
         await db.SaveChangesAsync(cancellationToken);
@@ -377,10 +400,10 @@ public partial class ProviderProDataService
             MakeSection("basic", ProviderProDisplayLocalization.L("Basic Information"), ProviderProDisplayLocalization.L("Add your business details and contact info"), "fa-circle-info", basicComplete, false, ProviderProDisplayLocalization.L("Edit"), "/Proveedor/ProfileBusiness"),
             MakeSection("services", ProviderProDisplayLocalization.L("Services Offered"), ProviderProDisplayLocalization.L("Tell homeowners what you specialize in"), "fa-wrench", servicesComplete, false, ProviderProDisplayLocalization.L("Edit"), "/Proveedor/ProfileBusiness#services"),
             MakeSection("areas", ProviderProDisplayLocalization.L("Service Areas"), ProviderProDisplayLocalization.L("Define the areas you serve"), "fa-map-location-dot", areasComplete, false, ProviderProDisplayLocalization.L("Edit"), "/Proveedor/ProfileBusiness#areas"),
-            MakeSection("license", ProviderProDisplayLocalization.L("License"), ProviderProDisplayLocalization.L("Upload or verify your business license"), "fa-id-card", licenseComplete, IsLicensePending(proveedor, docMeta, HasDoc(ProviderDocumentTypes.License)), licenseComplete ? ProviderProDisplayLocalization.L("Edit") : ProviderProDisplayLocalization.L("Complete"), "/Proveedor/ProfileDocuments?section=license"),
+            MakeSection("license", ProviderProDisplayLocalization.L("License"), ProviderProDisplayLocalization.L("Upload or verify your business license"), "fa-id-card", licenseComplete, IsLicensePending(proveedor, docMeta, HasDoc(ProviderDocumentTypes.License)), licenseComplete ? ProviderProDisplayLocalization.L("Edit") : ProviderProDisplayLocalization.L("Upload"), "/Proveedor/ProfileDocuments?section=license"),
             MakeSection("insurance", ProviderProDisplayLocalization.L("Insurance & COI"), ProviderProDisplayLocalization.L("Add proof of insurance and COI"), "fa-shield-halved", insuranceComplete, IsInsurancePending(proveedor, docMeta, HasDoc(ProviderDocumentTypes.Insurance)), insuranceComplete ? ProviderProDisplayLocalization.L("Edit") : ProviderProDisplayLocalization.L("Upload"), "/Proveedor/ProfileDocuments?section=insurance"),
             MakeSection("w9", ProviderProDisplayLocalization.L("W-9"), ProviderProDisplayLocalization.L("Upload your tax form"), "fa-file-invoice", w9Complete, IsW9Pending(docMeta, HasDoc(ProviderDocumentTypes.W9)), w9Complete ? ProviderProDisplayLocalization.L("Edit") : ProviderProDisplayLocalization.L("Upload"), "/Proveedor/ProfileDocuments?section=w9"),
-            MakeSection("background", ProviderProDisplayLocalization.L("Background Check"), ProviderProDisplayLocalization.L("Complete trust and safety review"), "fa-user-shield", backgroundComplete, IsBackgroundPending(proveedor, docMeta), backgroundComplete ? ProviderProDisplayLocalization.L("Edit") : ProviderProDisplayLocalization.L("Complete"), "/Proveedor/ProfileDocuments?section=background")
+            MakeSection("background", ProviderProDisplayLocalization.L("Background Check"), ProviderProDisplayLocalization.L("Complete trust and safety review"), "fa-user-shield", backgroundComplete, IsBackgroundPending(proveedor, docMeta), backgroundComplete ? ProviderProDisplayLocalization.L("Edit") : ProviderProDisplayLocalization.L("Continue"), "/Proveedor/ProfileDocuments?section=background")
         ];
 
         ProviderProfileSectionViewModel MakeSection(
@@ -453,9 +476,9 @@ public partial class ProviderProDataService
         var (statusKind, statusLabel) = ResolveSectionStatus(id, complete, pendingReview);
         var actionLabel = complete
             ? ProviderProDisplayLocalization.L("Edit")
-            : id is "insurance" or "w9"
-                ? ProviderProDisplayLocalization.L("Upload")
-                : ProviderProDisplayLocalization.L("Complete");
+            : id == "background"
+                ? ProviderProDisplayLocalization.L("Continue")
+                : ProviderProDisplayLocalization.L("Upload");
 
         return new ProviderProfileDocumentSectionViewModel
         {

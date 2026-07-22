@@ -12,8 +12,8 @@ public static class UiTranslationsProviderCatalog
     public static IEnumerable<KeyValuePair<string, string>> Entries =>
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
-            // Categories
-            ["Electrical"] = "Electricidad",
+            // Categories — match SeedCatalogSpanishTranslations / catalog LabelEs tone
+            ["Electrical"] = "Eléctrico",
             ["Plumbing"] = "Plomería",
             ["HVAC"] = "HVAC",
             ["Handyman"] = "Manitas",

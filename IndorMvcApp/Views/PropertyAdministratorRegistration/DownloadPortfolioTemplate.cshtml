@@ -1,0 +1,37 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPortfolioTemplateViewModel
+@{
+    if (Model.IsRegistrationComplete)
+    {
+        Layout = "_PropertyAdminLayout";
+        ViewData["Title"] = L["Download CSV template"];
+        ViewBag.NavActive = "properties";
+    }
+}
+
+@if (Model.IsRegistrationComplete)
+{
+    <div class="pa-portal-shell pa-portal-shell--portfolio">
+        <header class="pa-portfolio-page-header">
+            <a href="@Model.BackUrl" class="pa-profile-back" aria-label="@L["Back"]">
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            <div class="pa-portfolio-page-header-text">
+                @await Html.PartialAsync("_PropertyAdminRegHead", Model)
+            </div>
+        </header>
+        <div class="pa-portfolio-add-content">
+            @await Html.PartialAsync("_DownloadPortfolioTemplateBody", Model)
+            <div class="pa-reg-actions" style="margin-top:18px;">
+                <a href="@Model.BackUrl" class="pa-reg-action-back">@L["Back to import portfolio"]</a>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    @await Html.PartialAsync("_PropertyAdminRegHead", Model)
+    @await Html.PartialAsync("_DownloadPortfolioTemplateBody", Model)
+    <div class="pa-reg-actions" style="margin-top:18px;">
+        <a href="@Model.BackUrl" class="pa-reg-action-back">@L["Back to import portfolio"]</a>
+    </div>
+}

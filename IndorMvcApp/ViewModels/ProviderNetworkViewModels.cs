@@ -7,6 +7,8 @@ public sealed class NetworkTradeChipViewModel
 {
     public required string Id { get; init; }
     public required string Label { get; init; }
+    /// <summary>Optional Spanish catalog label from <c>IndorProveedorCategoriasCatalogo.LabelEs</c>.</summary>
+    public string? LabelEs { get; init; }
     public string IconClass { get; init; } = "fa-screwdriver-wrench";
 }
 
@@ -61,6 +63,8 @@ public sealed class NetworkHomeViewModel
 public sealed class FindSubcontractorsViewModel
 {
     public required string CompanyName { get; init; }
+    /// <summary>Entry mode from Trabajos cards: find | verified | services.</summary>
+    public string Mode { get; init; } = "find";
     public string? Query { get; init; }
     public string ActiveTrade { get; init; } = "all";
     public string ActiveView { get; init; } = "list";
@@ -73,6 +77,12 @@ public sealed class FindSubcontractorsViewModel
     public int ResultCount => Results.Count;
     public string SortLabel { get; init; } = "Best Match";
     public bool HasLocation { get; init; }
+
+    public bool IsServicesMode =>
+        string.Equals(Mode, "services", StringComparison.OrdinalIgnoreCase);
+
+    public bool IsVerifiedMode =>
+        string.Equals(Mode, "verified", StringComparison.OrdinalIgnoreCase);
 }
 
 public sealed class NetworkReviewViewModel
@@ -131,6 +141,30 @@ public sealed class SubcontractorProfileViewModel
     public string? Email { get; init; }
 
     public bool IsSaved { get; init; }
+}
+
+/// <summary>Compose a direct message to a subcontractor from their profile.</summary>
+public sealed class MessageSubcontractorViewModel
+{
+    public int SubcontractorId { get; init; }
+    public required string Name { get; init; }
+    public string? TradeLabel { get; init; }
+    public string? PhotoUrl { get; init; }
+    public string IconClass { get; init; } = "fa-screwdriver-wrench";
+    public string? Body { get; set; }
+    public string? ErrorMessage { get; set; }
+}
+
+public sealed class MessageSubcontractorInput
+{
+    public int SubcontractorId { get; set; }
+    public string? Body { get; set; }
+}
+
+public sealed class MessageSubcontractorSentViewModel
+{
+    public int SubcontractorId { get; init; }
+    public required string Name { get; init; }
 }
 
 /// <summary>Budget options shown as chips in the Post a Job wizard.</summary>

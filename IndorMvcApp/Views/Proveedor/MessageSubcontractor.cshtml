@@ -1,0 +1,62 @@
+@model IndorMvcApp.ViewModels.MessageSubcontractorViewModel
+@{
+    ViewData["Title"] = L["Message"];
+    Layout = "_ProviderProLayout";
+    ViewData["ProviderProExtraCss"] = "provider-network.css";
+    ViewBag.NavActive = "jobs";
+}
+
+<div class="prv-net-shell">
+    <header class="prv-net-pro-hero">
+        <a asp-controller="Proveedor" asp-action="SubcontractorProfile" asp-route-id="@Model.SubcontractorId" class="prv-net-back">
+            <i class="fas fa-chevron-left"></i> @L["Back"]
+        </a>
+    </header>
+
+    <section class="prv-net-profile-card">
+        <div class="prv-net-profile-top">
+            @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+            {
+                <span class="prv-net-profile-avatar" style="background-image:url('@Model.PhotoUrl');background-size:cover;"></span>
+            }
+            else
+            {
+                <span class="prv-net-profile-avatar prv-net-avatar--trade"><i class="fas @Model.IconClass"></i></span>
+            }
+            <div class="prv-net-profile-info">
+                <h1>@Model.Name</h1>
+                @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
+                {
+                    <p class="trade">@UiDisplayLocalization.Localize(L, Model.TradeLabel)</p>
+                }
+                <p class="trade">@L["Write a message to this pro."]</p>
+            </div>
+        </div>
+    </section>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="prv-net-form-error" style="margin:12px 18px 0;">
+            <i class="fas fa-circle-exclamation"></i> @L[Model.ErrorMessage]
+        </div>
+    }
+
+    <form method="post" asp-controller="Proveedor" asp-action="MessageSubcontractor" class="prv-net-form" style="margin-top:12px;">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="SubcontractorId" value="@Model.SubcontractorId" />
+
+        <div class="prv-net-field">
+            <label for="messageBody"><i class="fas fa-comment"></i> @L["Message"]</label>
+            <textarea id="messageBody"
+                      name="Body"
+                      rows="5"
+                      maxlength="600"
+                      required
+                      placeholder="@L["Write a message..."]">@Model.Body</textarea>
+        </div>
+
+        <button type="submit" class="prv-net-btn prv-net-btn--primary">
+            <i class="fas fa-paper-plane"></i> @L["Send Message"]
+        </button>
+    </form>
+</div>

@@ -15,7 +15,6 @@
 
 <div class="prv-pro-shell prv-pro-shell--upload-report">
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
-    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
 
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
         <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>

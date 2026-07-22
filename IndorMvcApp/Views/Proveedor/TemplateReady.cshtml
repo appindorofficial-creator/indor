@@ -29,10 +29,10 @@
         <h2 class="tpl-ready-title">@L["Template Ready"]</h2>
 
         <dl class="tpl-summary">
-            <div><dt>@L["Template Name"]</dt><dd>@Model.Name</dd></div>
+            <div><dt>@L["Template Name"]</dt><dd>@L[Model.Name]</dd></div>
             <div><dt>@L["Includes"]</dt><dd>@L.T("{0} sections", Model.Sections.Count)</dd></div>
-            <div><dt>@L["Category"]</dt><dd>@Model.Category</dd></div>
-            <div><dt>@L["Saved To"]</dt><dd>@Model.SavedTo</dd></div>
+            <div><dt>@L["Category"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.Category)</dd></div>
+            <div><dt>@L["Saved To"]</dt><dd>@L[Model.SavedTo]</dd></div>
         </dl>
     </section>
 

@@ -13,7 +13,7 @@ public interface IPropertyAdministratorPortalService
 {
     Task<PropertyAdministratorHomeViewModel> GetHomeAsync(IUrlHelper url, int? propertyId = null, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorCalendarViewModel> GetCalendarAsync(IUrlHelper url, CancellationToken cancellationToken = default);
-    Task<PropertyAdministratorPropertiesPortalViewModel> GetPropertiesAsync(IUrlHelper url, string? from = null, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorPropertiesPortalViewModel> GetPropertiesAsync(IUrlHelper url, string? from = null, string? filter = null, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorPropertyDetailViewModel?> GetPropertyDetailAsync(IUrlHelper url, int propertyId, string? tab = null, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorServicesViewModel> GetServicesAsync(IUrlHelper url, string? filter, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorTasksViewModel> GetTasksAsync(IUrlHelper url, string? filter, CancellationToken cancellationToken = default);
@@ -308,13 +308,39 @@ public class PropertyAdministratorPortalService(
     }
 
     public async Task<PropertyAdministratorPropertiesPortalViewModel> GetPropertiesAsync(
-        IUrlHelper url, string? from = null, CancellationToken cancellationToken = default)
+        IUrlHelper url, string? from = null, string? filter = null, CancellationToken cancellationToken = default)
     {
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
         var shell = await BuildShellAsync(admin, url, cancellationToken);
         var properties = admin.PortfolioProperties.OrderByDescending(p => p.FechaCreacion).ToList();
-        var fromProfile = string.Equals(from, "profile", StringComparison.OrdinalIgnoreCase);
+        var fromKey = (from ?? string.Empty).Trim().ToLowerInvariant();
+        var fromProfile = fromKey == "profile";
+        var fromHomeContext = fromKey is "manage" or "switch";
+        var showBackHeader = fromProfile || fromHomeContext;
+        var fromRouteValue = showBackHeader ? fromKey : null;
+        var activeFilter = string.Equals(filter, "active", StringComparison.OrdinalIgnoreCase) ? "active" : "all";
+        var listAnchor = "#pa-properties-list";
+        var propertiesRoute = fromRouteValue != null ? new { from = fromRouteValue } : null;
+        var propertiesActiveRoute = fromRouteValue != null
+            ? (object)new { from = fromRouteValue, filter = "active" }
+            : new { filter = "active" };
+        // Bug 47: distinct destinations — manual add vs CSV/document import (not the shared hub).
+        var addPropertyUrl = url.Action(
+            "Properties",
+            "PropertyAdministratorRegistration",
+            new { mode = "manual" }) ?? "#";
+        var importPortfolioUrl = url.Action(
+            "ImportPortfolio",
+            "PropertyAdministratorRegistration",
+            new { returnUrl = url.Action("Properties", "Administrador") }) ?? "#";
+        var totalPropertiesUrl = (url.Action("Properties", "Administrador", propertiesRoute) ?? "#") + listAnchor;
+        var activePropertiesUrl = (url.Action("Properties", "Administrador", propertiesActiveRoute) ?? "#") + listAnchor;
+        var pendingTasksUrl = url.Action("Tasks", "Administrador", new { filter = "pending" }) ?? "#";
+
+        var visible = activeFilter == "active"
+            ? properties.Where(p => IsActivePropertyStatus(p.Status)).ToList()
+            : properties;
 
         return new PropertyAdministratorPropertiesPortalViewModel
         {
@@ -334,16 +360,19 @@ public class PropertyAdministratorPortalService(
                 r.Status is PropertyAdministratorRequestStatuses.Open
                     or PropertyAdministratorRequestStatuses.Emergency
                     or PropertyAdministratorRequestStatuses.InProgress),
-            ShowBackHeader = fromProfile,
+            ShowBackHeader = showBackHeader,
             BackUrl = fromProfile
                 ? url.Action("Profile", "Administrador") ?? "#"
                 : url.Action("Index", "Administrador") ?? "#",
-            AddPropertyUrl = url.Action("Properties", "PropertyAdministratorRegistration") ?? "#",
-            ImportPortfolioUrl = url.Action(
-                "ImportPortfolio",
-                "PropertyAdministratorRegistration",
-                new { returnUrl = url.Action("Properties", "Administrador") }) ?? "#",
-            Properties = properties
+            AddPropertyUrl = addPropertyUrl,
+            ImportPortfolioUrl = importPortfolioUrl,
+            ActiveFilter = activeFilter,
+            TotalPropertiesUrl = totalPropertiesUrl,
+            ActivePropertiesUrl = activePropertiesUrl,
+            PendingTasksUrl = pendingTasksUrl,
+            KeepPortfolioUpdatedUrl = addPropertyUrl,
+            EntryContext = fromRouteValue ?? "",
+            Properties = visible
                 .Select(p => MapPropertyListItem(p, url))
                 .ToList()
         };
@@ -509,6 +538,10 @@ public class PropertyAdministratorPortalService(
         {
             requests = activeFilter switch
             {
+                "pending" => requests.Where(r =>
+                    r.Status is PropertyAdministratorRequestStatuses.Open
+                        or PropertyAdministratorRequestStatuses.Emergency
+                        or PropertyAdministratorRequestStatuses.InProgress),
                 "emergency" => requests.Where(r => r.IsEmergency || r.Status == PropertyAdministratorRequestStatuses.Emergency),
                 "scheduled" => requests.Where(r => r.Status == PropertyAdministratorRequestStatuses.Scheduled),
                 "inprogress" => requests.Where(r => r.Status == PropertyAdministratorRequestStatuses.InProgress),

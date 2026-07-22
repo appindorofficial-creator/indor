@@ -1,0 +1,34 @@
+@using IndorMvcApp.Localization
+@inject IIndorLocalizer L
+@{
+    Layout = null;
+    ViewData["IndorBootPersist"] = true;
+    var continueUrl = ViewData["ContinueUrl"] as string ?? Url.Action("ContinueEntry", "Account")!;
+    var loadingText = L["Loading..."].ToString() ?? "Loading...";
+}
+<!DOCTYPE html>
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#0066CC" />
+    <meta http-equiv="refresh" content="0;url=@continueUrl" />
+    <title>INDOR</title>
+    @await Html.PartialAsync("_IndorBootSplashHead")
+</head>
+<body>
+    <noscript>
+        <p style="font-family:system-ui,sans-serif;text-align:center;padding:48px 24px;color:#0A2540;">
+            <strong>INDOR</strong><br />
+            <a href="@continueUrl">@loadingText</a>
+        </p>
+    </noscript>
+    <script>
+        (function () {
+            var url = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(continueUrl));
+            try { window.location.replace(url); }
+            catch (e) { window.location.href = url; }
+        })();
+    </script>
+</body>
+</html>

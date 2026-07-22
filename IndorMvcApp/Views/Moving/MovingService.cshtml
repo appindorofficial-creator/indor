@@ -33,18 +33,21 @@
     <input type="hidden" asp-for="CtaEstimateTexto" />
     <input type="hidden" asp-for="TipoMovimiento" id="TipoMovimiento" />
 
-    <div class="chip-row" id="moveTypeGroup">
-        @foreach (var moveType in Model.MoveTypes)
-        {
-            <button type="button" class="chip-btn @(moveType.Value == Model.TipoMovimiento ? "active" : "")" data-value="@moveType.Value">
-                <i class="fas @moveType.Icon"></i> @L.Catalog(moveType.Label)
-            </button>
-        }
+    <div class="field-card" data-svc-required="TipoMovimiento">
+        <span class="field-label">@L["Move type"]</span>
+        <div class="chip-row" id="moveTypeGroup">
+            @foreach (var moveType in Model.MoveTypes)
+            {
+                <button type="button" class="chip-btn @(moveType.Value == Model.TipoMovimiento ? "active" : "")" data-value="@moveType.Value">
+                    <i class="fas @moveType.Icon"></i> @L.Catalog(moveType.Label)
+                </button>
+            }
+        </div>
     </div>
 
     @if (Model.IncludedItems.Count > 0)
     {
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <span class="field-label">@L["What's included"]</span>
             @foreach (var item in Model.IncludedItems)
             {

@@ -1,5 +1,7 @@
 using System.Text.Json;
 
+using IndorMvcApp.Helpers;
+
 using IndorMvcApp.Models;
 
 using IndorMvcApp.Services;
@@ -1235,7 +1237,7 @@ public partial class ProveedorController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UploadReportDetails(ProviderProUploadReportDetailsInput input, CancellationToken cancellationToken)
+    public async Task<IActionResult> UploadReportDetails(ProviderProUploadReportDetailsInput? input, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -1243,27 +1245,38 @@ public partial class ProveedorController(
             return proveedor.Result;
         }
 
+        input ??= new ProviderProUploadReportDetailsInput();
         var draft = GetUploadReportDraft();
-        draft.Title = input.Title.Trim();
-        draft.Summary = input.Summary.Trim();
-        draft.WorkCompleted = input.WorkCompleted.Trim();
-        draft.MaterialsUsed = input.MaterialsUsed.Trim();
-        draft.WarrantyInfo = input.WarrantyInfo.Trim();
-        draft.Recommendations = input.Recommendations.Trim();
-        draft.InternalNotes = input.InternalNotes.Trim();
+        if (!draft.JobId.HasValue)
+        {
+            TempData["UploadReportError"] = localizer["Select a job before submitting the report."].ToString();
+            return RedirectToAction(nameof(UploadReport));
+        }
+
+        draft.Title = TrimOrEmpty(input.Title);
+        draft.Summary = TrimOrEmpty(input.Summary);
+        draft.WorkCompleted = TrimOrEmpty(input.WorkCompleted);
+        draft.MaterialsUsed = TrimOrEmpty(input.MaterialsUsed);
+        draft.WarrantyInfo = TrimOrEmpty(input.WarrantyInfo);
+        draft.Recommendations = TrimOrEmpty(input.Recommendations);
+        draft.InternalNotes = TrimOrEmpty(input.InternalNotes);
         draft.SendToHomeowner = input.SendToHomeowner;
         draft.RequestApproval = input.RequestApproval;
         draft.CreateHouseFactsRecord = input.CreateHouseFactsRecord;
         SaveUploadReportDraft(draft);
 
-        if (string.IsNullOrWhiteSpace(draft.Title))
+        if (string.IsNullOrWhiteSpace(draft.Title)
+            || string.IsNullOrWhiteSpace(draft.Summary)
+            || string.IsNullOrWhiteSpace(draft.WorkCompleted))
         {
+            TempData["UploadReportError"] = localizer["Please complete the required report fields before submitting."].ToString();
             return RedirectToAction(nameof(UploadReportDetails));
         }
 
         var reportId = await proData.SaveUploadReportFromDraftAsync(proveedor.Entity!.Id, draft, cancellationToken);
         if (!reportId.HasValue)
         {
+            TempData["UploadReportError"] = localizer["We couldn't save your report. Please select the job again and try once more."].ToString();
             return RedirectToAction(nameof(UploadReport));
         }
 
@@ -2891,7 +2904,7 @@ public partial class ProveedorController(
         var draft = GetCreateJobDraft();
         draft.ServiceCategoryId = input.ServiceCategoryId.Trim();
         draft.ServiceCategoryLabel = detailsModel.ServiceCategoryLabel;
-        draft.Title = input.Title.Trim();
+        draft.Title = UiDisplayLocalization.ToCatalogKey(input.Title.Trim());
         SaveCreateJobDraft(draft);
 
         return RedirectToAction(nameof(CreateJobDetails));
@@ -2948,7 +2961,9 @@ public partial class ProveedorController(
         }
 
         draft.ServiceCategoryId = input.ServiceCategoryId;
-        draft.Title = string.IsNullOrWhiteSpace(input.Title) ? draft.Title : input.Title.Trim();
+        draft.Title = string.IsNullOrWhiteSpace(input.Title)
+            ? draft.Title
+            : UiDisplayLocalization.ToCatalogKey(input.Title.Trim());
         draft.ClienteId = input.ClienteId;
         draft.CustomerName = input.CustomerName.Trim();
         draft.Address = input.Address.Trim();
@@ -3000,6 +3015,11 @@ public partial class ProveedorController(
         draft.SendQuote = input.SendQuote && !string.Equals(input.SubmitAction, "skip", StringComparison.OrdinalIgnoreCase);
         draft.QuoteRequestNotes = input.QuoteRequestNotes.Trim();
         draft.Description = draft.QuoteRequestNotes;
+        draft.HasVoiceRecording = input.HasVoiceRecording;
+        if (input.HasVoiceRecording)
+        {
+            draft.IncludeVoiceTranscript = true;
+        }
         draft.AiDraftGenerated = false;
         SaveCreateJobDraft(draft);
 
@@ -3115,6 +3135,12 @@ public partial class ProveedorController(
             Description = draft.QuoteRequestNotes ?? draft.Description,
             Priority = draft.Priority,
             Notes = draft.Notes,
+            VisitDate = draft.VisitDate,
+            StartTimeLabel = draft.StartTimeLabel,
+            EndTimeLabel = draft.EndTimeLabel,
+            AssignedTechnician = draft.AssignedTechnician,
+            Reminder = draft.Reminder,
+            AddToCalendar = draft.AddToCalendar,
             SaveAsDraft = saveAsDraft,
             SendQuoteWithJob = sendQuote,
             EstimateAmount = sendQuote ? draft.EstimateTotal : null,
@@ -3409,8 +3435,36 @@ public partial class ProveedorController(
             return new ProviderProUploadReportDraft();
         }
 
-        return JsonSerializer.Deserialize<ProviderProUploadReportDraft>(json, CreateJobDraftJsonOptions)
+        var draft = JsonSerializer.Deserialize<ProviderProUploadReportDraft>(json, CreateJobDraftJsonOptions)
             ?? new ProviderProUploadReportDraft();
+        NormalizeUploadReportDraft(draft);
+        return draft;
+    }
+
+    private static void NormalizeUploadReportDraft(ProviderProUploadReportDraft draft)
+    {
+        draft.Title ??= "";
+        draft.Summary ??= "";
+        draft.WorkCompleted ??= "";
+        draft.MaterialsUsed ??= "";
+        draft.WarrantyInfo ??= "";
+        draft.Recommendations ??= "";
+        draft.InternalNotes ??= "";
+        draft.ReportType ??= ProviderReportTypes.Completion;
+        draft.PhotoSlots ??=
+        [
+            new() { Slot = "Before" },
+            new() { Slot = "During" },
+            new() { Slot = "After" },
+            new() { Slot = "Final Result" }
+        ];
+        draft.DocumentSlots ??=
+        [
+            new() { Slot = "Invoice", Required = true },
+            new() { Slot = "Warranty Document", Required = false },
+            new() { Slot = "Permit / Receipt", Required = false }
+        ];
+        draft.GeneralFiles ??= [];
     }
 
     private void SaveUploadReportDraft(ProviderProUploadReportDraft draft) =>

@@ -232,6 +232,75 @@ public class HomeController : Controller
         return View(propiedades);
     }
 
+    /// <summary>Full calendar of upcoming homeowner reminders and scheduled services.</summary>
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Calendar(int? id, int? year, int? month)
+    {
+        var userId = _userManager.GetUserId(User);
+        int? propiedadId = id;
+        if (!propiedadId.HasValue)
+        {
+            propiedadId = await _db.Propiedades
+                .AsNoTracking()
+                .Where(p => p.UserId == userId && p.Activo)
+                .OrderByDescending(p => p.FechaCreacion)
+                .Select(p => (int?)p.Id)
+                .FirstOrDefaultAsync();
+        }
+        else if (!await _db.Propiedades.AsNoTracking().AnyAsync(p => p.Id == propiedadId && p.UserId == userId && p.Activo))
+        {
+            return NotFound();
+        }
+
+        var schedule = await ScheduleDisplayService.BuildAsync(_dbFactory, userId!, propiedadId, Url);
+        var today = DateTime.Today;
+        var culture = System.Globalization.CultureInfo.CurrentUICulture;
+        var focusYear = year is >= 2000 and <= 2100 ? year.Value : today.Year;
+        var focusMonth = month is >= 1 and <= 12 ? month.Value : today.Month;
+        var monthStart = new DateTime(focusYear, focusMonth, 1);
+        var monthEnd = monthStart.AddMonths(1).AddDays(-1);
+        var firstDayOfWeek = (int)culture.DateTimeFormat.FirstDayOfWeek;
+        var monthStartDow = (int)monthStart.DayOfWeek;
+        var monthEndDow = (int)monthEnd.DayOfWeek;
+        var gridStart = monthStart.AddDays(-((monthStartDow - firstDayOfWeek + 7) % 7));
+        var gridEnd = monthEnd.AddDays((firstDayOfWeek + 6 - monthEndDow + 7) % 7);
+
+        var eventDates = schedule.ComingUpItems
+            .Select(i => i.SortDate.Date)
+            .ToHashSet();
+
+        var days = new List<HomeownerCalendarDayViewModel>();
+        for (var d = gridStart; d <= gridEnd; d = d.AddDays(1))
+        {
+            days.Add(new HomeownerCalendarDayViewModel
+            {
+                Date = d,
+                IsCurrentMonth = d.Month == focusMonth,
+                IsToday = d == today,
+                HasEvents = eventDates.Contains(d)
+            });
+        }
+
+        var prev = monthStart.AddMonths(-1);
+        var next = monthStart.AddMonths(1);
+
+        return View(new HomeownerCalendarViewModel
+        {
+            PropiedadId = propiedadId,
+            FocusMonth = monthStart,
+            MonthLabel = monthStart.ToString("MMMM yyyy", culture),
+            Days = days,
+            Items = schedule.ComingUpItems
+                .Where(i => i.SortDate.Date >= monthStart && i.SortDate.Date <= monthEnd)
+                .OrderBy(i => i.SortDate)
+                .ToList(),
+            PrevUrl = Url.Action(nameof(Calendar), new { id = propiedadId, year = prev.Year, month = prev.Month }),
+            NextUrl = Url.Action(nameof(Calendar), new { id = propiedadId, year = next.Year, month = next.Month }),
+            BackUrl = Url.Action(nameof(Index)) + "#section-schedule"
+        });
+    }
+
     /// <summary>Full list of Home Care Guide maintenance tasks (not MyHome maintenance log).</summary>
     [Authorize]
     [HttpGet]

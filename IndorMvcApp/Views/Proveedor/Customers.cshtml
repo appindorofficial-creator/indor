@@ -102,7 +102,10 @@
         @if (Model.Customers.Count == 0)
         {
             <div class="prv-pro-customers-empty">
-                <img src="~/images/customers-empty.png" alt="" class="prv-pro-customers-empty-art" asp-append-version="true" />
+                <div class="prv-pro-customers-empty-art" aria-hidden="true">
+                    <i class="fas fa-users"></i>
+                    <span class="prv-pro-customers-empty-spark"><i class="fas fa-plus"></i></span>
+                </div>
                 <h2>@L["No customers yet"]</h2>
                 <p>@L["When you add customers, they'll appear here along with their properties, connection status, and recent activity."]</p>
                 <a asp-controller="Proveedor" asp-action="AddCustomer" asp-route-fresh="true" class="prv-pro-customers-empty-btn">

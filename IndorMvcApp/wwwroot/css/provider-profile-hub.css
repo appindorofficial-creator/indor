@@ -412,10 +412,10 @@ a.prv-pro-profile-v2-card {
     z-index: 1;
 }
 
-/* Business information rows */
+/* Business information rows (read-only summary; card header owns navigation) */
 .prv-pro-profile-v2-biz-row {
     display: grid;
-    grid-template-columns: 32px 1fr auto 14px;
+    grid-template-columns: 32px 1fr auto;
     gap: 8px;
     align-items: center;
     padding: 12px 0;
@@ -457,11 +457,6 @@ a.prv-pro-profile-v2-card {
 
 .prv-pro-profile-v2-biz-value {
     max-width: 140px;
-}
-
-.prv-pro-profile-v2-biz-row > .fa-chevron-right {
-    color: #cbd5e1;
-    font-size: 0.72rem;
 }
 
 /* Service areas */

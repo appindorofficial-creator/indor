@@ -29,5 +29,7 @@ public static class UiTranslations
             // Additive House Facts section chips + section pages (Datos del hogar).
             UiTranslationsHouseFact.Entries,
             // Provider profile / onboarding service catalog labels (must win over incomplete Drywall etc.).
-            UiTranslationsProviderCatalog.Entries);
+            UiTranslationsProviderCatalog.Entries,
+            // Global photo/file source sheet — last so every persona inherits Biblioteca/Tomar/Elegir.
+            UiTranslationsFileSource.Entries);
 }

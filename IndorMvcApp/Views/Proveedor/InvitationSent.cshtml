@@ -33,7 +33,7 @@
             </div>
             <div class="prv-inv-summary-row">
                 <span><i class="fas fa-calendar-check"></i> @L["Schedule"]</span>
-                <strong>@Model.ScheduleLabel</strong>
+                <strong>@UiDisplayLocalization.Localize(L, Model.ScheduleLabel)</strong>
             </div>
             <div class="prv-inv-summary-row">
                 <span><i class="fas fa-dollar-sign"></i> @L["Budget"]</span>
@@ -72,7 +72,7 @@
         <span>@L.T("You can continue browsing other subcontractors while you wait. We'll notify you when {0} responds.", Model.Sub.Name)</span>
     </div>
 
-    <a asp-controller="Proveedor" asp-action="InvitationSent" asp-route-id="@Model.Id" class="prv-req-btn prv-req-btn--primary prv-req-btn--block">
+    <a asp-controller="Proveedor" asp-action="MyRequests" class="prv-req-btn prv-req-btn--primary prv-req-btn--block">
         <i class="fas fa-paper-plane"></i> @L["Track Request"]</a>
     <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-req-btn prv-req-btn--ghost prv-req-btn--block">
         @L["Back to Search"]

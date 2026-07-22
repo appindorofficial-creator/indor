@@ -30,13 +30,28 @@
     @await Html.PartialAsync("_PropertyAdminHomePortfolio", Model)
 
     <section class="pa-network">
-        <header class="pa-network-section-head">
-            <span class="pa-network-mode-icon"><i class="fas fa-people-group"></i></span>
-            <div class="pa-network-mode-body">
-                <strong>@L["Portfolio Network"]</strong>
-                <small>@L["Feed, nearby help, hosts &amp; local updates"]</small>
-            </div>
-        </header>
+        <div class="pa-network-modes" role="navigation" aria-label="@L["Portfolio navigation"]">
+            <a asp-controller="Administrador"
+               asp-action="Index"
+               asp-route-view="@Model.NetworkView"
+               asp-route-filter="@Model.NetworkFilter"
+               asp-route-propertyId="@(Model.ViewingProperty?.Id)"
+               class="pa-network-mode is-active"
+               aria-current="page">
+                <span class="pa-network-mode-icon"><i class="fas fa-people-group"></i></span>
+                <div class="pa-network-mode-body">
+                    <strong>@L["Portfolio Network"]</strong>
+                    <small>@L["Feed, nearby help, hosts &amp; local updates"]</small>
+                </div>
+            </a>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-network-mode">
+                <span class="pa-network-mode-icon pa-network-mode-icon--muted"><i class="fas fa-house"></i></span>
+                <div class="pa-network-mode-body">
+                    <strong>@L["My Properties"]</strong>
+                    <small>@L["Your homes dashboard"]</small>
+                </div>
+            </a>
+        </div>
 
         <div class="pa-network-viewtoggle" role="tablist" aria-label="@L["Network view"]">
             <a asp-controller="Administrador" asp-action="Index" asp-route-view="map" asp-route-filter="@Model.NetworkFilter"

@@ -80,7 +80,8 @@
         '.concern-btn',
         '.concern-card',
         '.cable-card',
-        '.pref-btn'
+        '.pref-btn',
+        '.service-block'
     ].join(',');
 
     var MULTI_CHOICE = [

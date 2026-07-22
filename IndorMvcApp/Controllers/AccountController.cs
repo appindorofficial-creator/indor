@@ -57,7 +57,8 @@ public class AccountController : Controller
     {
         if (!string.IsNullOrWhiteSpace(model.Email) && !ValidEmailAttribute.IsValidAddress(model.Email, out var emailError))
         {
-            ModelState.AddModelError(nameof(model.Email), emailError ?? _localizer["Enter a valid email address."]);
+            ModelState.AddModelError(nameof(model.Email),
+                _localizer[emailError ?? "Enter a valid email address."]);
         }
 
         if (!UsPhoneOptionalAttribute.IsValidOptional(model.Telefono))
@@ -97,6 +98,7 @@ public class AccountController : Controller
             }
         }
 
+        ModelState.LocalizeModelState(_localizer);
         ViewBag.OnboardingStep = 1;
         ViewBag.OnboardingTitle = _localizer["Create Account"];
         ViewBag.OnboardingBackUrl = Url.Action(nameof(Welcome));
@@ -126,14 +128,34 @@ public class AccountController : Controller
 
     [HttpGet]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public async Task<IActionResult> Welcome()
+    public IActionResult Welcome()
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            return await RedirectAuthenticatedUserAsync();
+            // Paint branded splash immediately; resolve role/dashboard on ContinueEntry
+            // so cold entry never blocks first HTML on DB lookups.
+            return EntryLoadingResult();
         }
 
         return View();
+    }
+
+    /// <summary>
+    /// Lightweight post-auth handoff: shows INDOR loading shell, then routes to the
+    /// correct home. Keeps first paint fast when opening the app or after login.
+    /// </summary>
+    [HttpGet]
+    [Authorize]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public async Task<IActionResult> ContinueEntry(string? returnUrl = null)
+    {
+        return await RedirectAuthenticatedUserAsync(returnUrl);
+    }
+
+    private IActionResult EntryLoadingResult(string? returnUrl = null)
+    {
+        ViewData["ContinueUrl"] = Url.Action(nameof(ContinueEntry), new { returnUrl });
+        return View("EntryLoading");
     }
 
     [HttpGet]
@@ -210,11 +232,11 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Login(string? returnUrl = null)
+    public IActionResult Login(string? returnUrl = null)
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            return await RedirectAuthenticatedUserAsync(returnUrl);
+            return EntryLoadingResult(returnUrl);
         }
 
         return RedirectToAction(nameof(Welcome));
@@ -222,11 +244,11 @@ public class AccountController : Controller
 
     [HttpGet]
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
-    public async Task<IActionResult> LoginForm(string? returnUrl = null)
+    public IActionResult LoginForm(string? returnUrl = null)
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            return await RedirectAuthenticatedUserAsync(returnUrl);
+            return EntryLoadingResult(returnUrl);
         }
 
         ViewData["ReturnUrl"] = returnUrl;
@@ -258,12 +280,15 @@ public class AccountController : Controller
                     await ApplyUserCultureAfterLoginAsync(user);
                 }
 
-                return await RedirectAuthenticatedUserAsync(returnUrl);
+                // Splash HTML (with auth cookie) instead of a bare 302 so the WebView
+                // shows INDOR loading while role/dashboard routing runs.
+                return EntryLoadingResult(returnUrl);
             }
 
             ModelState.AddModelError(string.Empty, _localizer["Invalid login attempt."]);
         }
 
+        ModelState.LocalizeModelState(_localizer);
         return View("LoginForm", model);
     }
 
@@ -346,6 +371,7 @@ public class AccountController : Controller
     {
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             ViewBag.OnboardingTitle = _localizer["Reset password"];
             ViewBag.OnboardingBackUrl = Url.Action(nameof(LoginForm));
             ViewBag.OnboardingShowBack = true;
@@ -430,6 +456,7 @@ public class AccountController : Controller
 
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             return View(model);
         }
 
@@ -473,6 +500,7 @@ public class AccountController : Controller
 
             record.Attempts += 1;
             await _db.SaveChangesAsync();
+            ModelState.LocalizeModelState(_localizer);
             return View(model);
         }
 

@@ -342,7 +342,9 @@ body:has(.prv-pro-bottom-nav) {
     --indor-page-footer-scroll: calc(var(--indor-action-h) + var(--indor-footer-pad-y) * 2 + var(--indor-bottom-nav-offset) + 16px + env(safe-area-inset-bottom, 0px));
 }
 
-/* Shared fixed footer bar (containers) */
+/* Shared fixed footer bar (containers).
+   pointer-events: none on the bar (auto on children) matches Bug 25 / prv-wiz-footer:
+   the transparent gradient must not steal taps from move-type chips or mid-form fields. */
 .iw-wizard-page .sticky-footer,
 .iw-wizard-page .sticky-total {
     position: fixed !important;
@@ -360,6 +362,12 @@ body:has(.prv-pro-bottom-nav) {
     flex-direction: column;
     gap: var(--indor-action-gap);
     box-sizing: border-box;
+    pointer-events: none;
+}
+
+.iw-wizard-page .sticky-footer > *,
+.iw-wizard-page .sticky-total > * {
+    pointer-events: auto;
 }
 
 .iw-wizard-page .sticky-footer .btn-primary,
@@ -417,6 +425,11 @@ body:has(.prv-pro-bottom-nav) {
     flex-direction: column;
     gap: var(--indor-action-gap, 10px);
     box-sizing: border-box;
+    pointer-events: none;
+}
+
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)) .cl-form-actions > * {
+    pointer-events: auto;
 }
 
 .iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)) .cl-form-actions .btn-primary,
@@ -506,7 +519,8 @@ body:has(.prv-pro-bottom-nav) {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--indor-action-gap);
+    /* Clear vertical separation between stacked CTAs (Track / Back to services). */
+    gap: 14px;
     box-sizing: border-box;
 }
 
@@ -556,6 +570,17 @@ body:has(.prv-pro-bottom-nav) {
 .pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > .pa-flow-submit,
 .pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > a.pa-flow-submit {
     margin-top: 16px;
+}
+
+/* Confirmed screens that still emit Track + Back as bare siblings (no footer wrap).
+   Bug 25 zeroed submit margin-bottom here, which glued the stacked buttons together. */
+.pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > .pa-flow-submit + .pa-flow-edit,
+.pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > a.pa-flow-submit.ob-btn + .pa-flow-edit {
+    display: flex;
+    width: 100%;
+    max-width: 448px;
+    margin: 14px auto 0;
+    box-sizing: border-box;
 }
 
 .pa-portal-page form:not(:has(.pa-flow-actions)) > .pa-flow-back-link,

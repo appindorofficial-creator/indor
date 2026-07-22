@@ -127,6 +127,10 @@
 <form asp-action="Publish" method="post" id="nrReviewPublishForm">
     @Html.AntiForgeryToken()
     <input type="hidden" name="propiedadId" value="@Model.PropiedadId" />
+    @if (Model.RequestId is > 0)
+    {
+        <input type="hidden" name="requestId" value="@Model.RequestId" />
+    }
 </form>
 
 @section WizardFooter {

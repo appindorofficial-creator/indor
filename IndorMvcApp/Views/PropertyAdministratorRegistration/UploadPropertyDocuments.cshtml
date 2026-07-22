@@ -21,7 +21,7 @@
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="fileId" value="@file.Id" />
                     <input type="hidden" name="label" value="@file.Label" />
-                    <button type="submit" class="pa-file-remove-btn" aria-label="@L["Remove"] @file.Label">
+                    <button type="submit" class="pa-file-remove-btn" aria-label="@L["Remove file"]: @file.Label" title="@L["Remove"]">
                         <i class="fas fa-xmark" aria-hidden="true"></i>
                     </button>
                 </form>
@@ -37,17 +37,47 @@
 <form asp-action="UploadPropertyDocuments" method="post" enctype="multipart/form-data" id="uploadDocumentsForm">
     @Html.AntiForgeryToken()
 
-    <div class="pa-file-picker" id="documentFilesPicker">
+    @* In-app localized chooser — avoids the English iOS OS sheet from a bare label-for-file. *@
+    <div class="pa-file-picker" id="documentFilesPicker" data-indor-file-source-chooser data-pa-file-source-chooser>
         <i class="fas fa-file-arrow-up pa-file-picker-icon" aria-hidden="true"></i>
+        <div class="pa-file-source-wrap">
+            <button type="button"
+                    class="pa-file-picker-btn pa-file-source-btn indor-file-source-btn"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+                @L["Choose files"]
+            </button>
+            <div class="pa-file-source-menu pa-media-photo-menu indor-file-source-menu" role="menu" hidden>
+                @await Html.PartialAsync("_IndorFileSourceMenu")
+            </div>
+        </div>
+        <input type="file"
+               class="pa-file-source-input--camera pa-file-picker-input"
+               accept="image/jpeg,image/png,image/webp,image/*,.heic"
+               capture="environment"
+               multiple
+               aria-hidden="true"
+               tabindex="-1" />
+        <input type="file"
+               class="pa-file-source-input--library pa-file-picker-input"
+               accept="image/jpeg,image/png,image/webp,image/*,.heic"
+               multiple
+               aria-hidden="true"
+               tabindex="-1" />
         <input type="file"
                id="documentFiles"
                name="documentFiles"
-               class="pa-file-picker-input"
+               class="pa-file-source-input--files pa-file-picker-input"
+               data-pa-file-target
+               data-indor-file-target
                accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,image/*,application/pdf"
-               multiple />
-        <label for="documentFiles" class="pa-file-picker-btn">@L["Choose files"]</label>
-        <span class="pa-file-picker-name" id="documentFilesName" data-empty-label="@L["No files selected"]" data-many-label="@L["{0} files selected"]">@L["No files selected"]</span>
+               multiple
+               aria-hidden="true"
+               tabindex="-1" />
+        <span class="pa-file-picker-name" id="documentFilesName" data-empty-label="@L["No files selected"]">@L["No files selected"]</span>
     </div>
+    <div class="pa-staged-files" id="documentFilesList" hidden
+         data-remove-label="@L["Remove file"]"></div>
 
     <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">@L["Upload documents"]</button>
 </form>
@@ -62,31 +92,74 @@
         const input = document.getElementById('documentFiles');
         const nameEl = document.getElementById('documentFilesName');
         const picker = document.getElementById('documentFilesPicker');
-        if (!input || !nameEl || !picker) return;
+        const listEl = document.getElementById('documentFilesList');
+        if (!input || !nameEl || !picker || !listEl) return;
 
         const emptyLabel = nameEl.dataset.emptyLabel || 'No files selected';
-        const manyLabel = nameEl.dataset.manyLabel || '{0} files selected';
+        const removeLabel = listEl.dataset.removeLabel || 'Remove file';
+        let selectedFiles = [];
 
-        function syncFileLabel() {
-            const files = input.files ? Array.from(input.files) : [];
-            if (files.length === 0) {
+        function syncInputFromSelection() {
+            if (typeof DataTransfer === 'undefined') {
+                if (selectedFiles.length === 0) {
+                    input.value = '';
+                }
+                return;
+            }
+            const dt = new DataTransfer();
+            selectedFiles.forEach(function (file) { dt.items.add(file); });
+            input.files = dt.files;
+        }
+
+        function renderStagedFiles() {
+            listEl.innerHTML = '';
+            if (selectedFiles.length === 0) {
                 nameEl.textContent = emptyLabel;
                 nameEl.classList.remove('is-selected');
+                nameEl.hidden = false;
                 picker.classList.remove('has-file');
+                listEl.hidden = true;
                 return;
             }
 
-            if (files.length === 1) {
-                nameEl.textContent = files[0].name;
-            } else {
-                nameEl.textContent = manyLabel.replace('{0}', String(files.length));
-            }
+            nameEl.hidden = true;
             nameEl.classList.add('is-selected');
             picker.classList.add('has-file');
+            listEl.hidden = false;
+
+            selectedFiles.forEach(function (file, index) {
+                const row = document.createElement('div');
+                row.className = 'pa-check-item pa-check-item--file pa-staged-file';
+
+                const label = document.createElement('span');
+                label.className = 'pa-check-item-label';
+                label.innerHTML = '<i class="fas fa-file" aria-hidden="true"></i> ';
+                label.appendChild(document.createTextNode(file.name));
+
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'pa-file-remove-btn';
+                removeBtn.setAttribute('aria-label', removeLabel + ': ' + file.name);
+                removeBtn.title = removeLabel;
+                removeBtn.innerHTML = '<i class="fas fa-xmark" aria-hidden="true"></i>';
+                removeBtn.addEventListener('click', function () {
+                    selectedFiles.splice(index, 1);
+                    syncInputFromSelection();
+                    renderStagedFiles();
+                });
+
+                row.appendChild(label);
+                row.appendChild(removeBtn);
+                listEl.appendChild(row);
+            });
         }
 
-        input.addEventListener('change', syncFileLabel);
-        syncFileLabel();
+        input.addEventListener('change', function () {
+            selectedFiles = input.files ? Array.from(input.files) : [];
+            renderStagedFiles();
+        });
+
+        renderStagedFiles();
     })();
 </script>
 }

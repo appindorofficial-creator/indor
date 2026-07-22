@@ -18,6 +18,7 @@ public static class UiTranslationsFinal
             ["Clients &amp; CRM"] = "Clientes y CRM",
             ["Confirm &amp; Schedule"] = "Confirmar y programar",
             ["Create job &amp; send quote"] = "Crear trabajo y enviar cotización",
+            ["Documents & verification"] = "Documentos y verificación",
             ["Documents &amp; verification"] = "Documentos y verificación",
             ["Estimates &amp; invoices"] = "Cotizaciones y facturas",
             ["Feed, nearby help, hosts &amp; local updates"] = "Actividad, ayuda y novedades",
@@ -38,6 +39,7 @@ public static class UiTranslationsFinal
             ["Privacy &amp; terms"] = "Privacidad y términos",
             ["Promotions &amp; tips"] = "Promociones y consejos",
             ["Reports &amp; property history"] = "Informes e historial de la propiedad",
+            ["Save & Exit"] = "Guardar y salir",
             ["Save &amp; Exit"] = "Guardar y salir",
             ["Support &amp; Account"] = "Soporte y cuenta",
             ["Terms &amp; Conditions"] = "Términos y condiciones",
@@ -55,7 +57,7 @@ public static class UiTranslationsFinal
             ["e.g. Mon–Fri 8am–6pm"] = "ej. lun–vie 8am–6pm",
             ["For anyone joining INDOR-whether you own a home, rent, or are just getting started."] =
                 "Para cualquiera que se una a INDOR, ya sea que tenga casa, alquile o esté comenzando.",
-            ["Mon–Fri, 8:00 a.m. – 6:00 p.m."] = "lun–vie, 8:00 a. m. – 6:00 p. m.",
+            ["Mon–Fri, 8:00 a.m. – 6:00 p.m."] = "Lun–vie, 8:00 a. m. – 6:00 p. m.",
             ["Optional - if entered, use 10 digits (US)."] = "Opcional: si lo ingresas, usa 10 dígitos (EE. UU.).",
             ["Schedule &amp; preferences"] = "Agenda y preferencias",
             ["Schedule Work"] = "Programar trabajo",
@@ -65,7 +67,7 @@ public static class UiTranslationsFinal
             ["Stored under Files &gt; Active"] = "Guardado en Archivos > Activos",
             ["Subcontractor"] = "Subcontratista",
             ["Suggested estimate"] = "Estimado sugerido",
-            ["This"] = "Este",
+            ["This"] = "Esto",
             ["Top Rated"] = "Mejor calificado",
             ["Track invoices and record payments directly in INDOR Pro."] =
                 "Rastrea facturas y registra pagos directamente en INDOR Pro.",
@@ -406,11 +408,31 @@ public static class UiTranslationsFinal
             ["Service Providers"] = "Proveedores de servicio",
             ["Browse trusted specialists by trade or service."] =
                 "Explora especialistas de confianza por oficio o servicio.",
+            ["Browse insured, qualified pros near you."] =
+                "Explora profesionales asegurados y calificados cerca de ti.",
+            ["Browse by trade"] = "Explorar por oficio",
+            ["Search by trade or service"] = "Buscar por oficio o servicio",
+            ["By Trade"] = "Por oficio",
+            ["{0} specialist(s) found"] = "{0} especialista(s) encontrado(s)",
+            ["Try a different trade or service to see more specialists."] =
+                "Prueba otro oficio o servicio para ver más especialistas.",
             ["Verified Subcontractors"] = "Subcontratistas verificados",
+            ["Insurance & Docs"] = "Seguro y documentos",
             ["Insurance &amp; Docs"] = "Seguro y documentos",
             ["See insurance active and documents ready"] = "Ver seguro activo y documentos listos",
+            ["Sort by:"] = "Ordenar por:",
             ["Get matched with subcontractors fast"] = "Conéctate con subcontratistas rápidamente",
             ["My Requests"] = "Mis solicitudes",
+            // Bug 10 — Proveedor Mis solicitudes (override Proveedor Spanglish / identity)
+            ["Track posted jobs, quotes, and hiring progress."] =
+                "Sigue trabajos publicados, cotizaciones y progreso de contratación.",
+            ["Search my requests..."] = "Buscar mis solicitudes...",
+            ["No requests yet"] = "Aún no hay solicitudes",
+            ["Post a job to start receiving quotes from verified subcontractors."] =
+                "Publica un trabajo para empezar a recibir cotizaciones de subcontratistas verificados.",
+            ["Waiting for Quotes"] = "Esperando cotizaciones",
+            ["Quotes Received"] = "Cotizaciones recibidas",
+            ["View Request"] = "Ver solicitud",
             ["See all"] = "Ver todos",
             ["Insurance Active"] = "Seguro activo",
             ["Docs Ready"] = "Documentos listos",
@@ -522,7 +544,7 @@ public static class UiTranslationsFinal
             ["Recent Work"] = "Trabajo reciente",
             ["Message"] = "Mensaje",
             ["Draft"] = "Borrador",
-            ["Not scheduled"] = "Sin programar",
+            ["Not scheduled"] = "No programado",
             ["TBD"] = "Por definir",
             ["Pending homeowner approval"] = "Aprobación del propietario pendiente",
             ["Before photos missing"] = "Faltan fotos previas",
@@ -636,6 +658,7 @@ public static class UiTranslationsFinal
             ["My account"] = "Mi cuenta",
             ["Add property"] = "Agregar propiedad",
             ["Manage properties"] = "Administrar propiedades",
+            ["Choose which home you want to view and manage."] = "Elige qué vivienda quieres ver y administrar.",
             ["Viewing: {0}"] = "Viendo: {0}",
             ["{0} / sewer backup"] = "{0} / desbordamiento de alcantarillado",
             ["Dirty water backing up"] = "Agua sucia regresando",
@@ -833,12 +856,18 @@ public static class UiTranslationsFinal
             ["Invite team members"] = "Invitar miembros del equipo",
             ["Add colleagues who will help manage your portfolio."] = "Agrega colegas que te ayudarán a administrar tu portafolio.",
             ["Add your properties"] = "Agrega tus propiedades",
+            ["Enter the address and details for one property."] = "Ingresa la dirección y los detalles de una propiedad.",
             ["You can add properties now or skip and add them later from your dashboard."] = "Puedes agregar propiedades ahora u omitir y agregarlas después desde tu panel.",
             ["Review & finish setup"] = "Revisar y finalizar configuración",
             ["Confirm your portfolio details before opening your dashboard."] = "Confirma los detalles de tu portafolio antes de abrir tu panel.",
             ["Add another invite"] = "Agregar otra invitación",
             ["Send invite"] = "Enviar invitación",
             ["Download CSV template"] = "Descargar plantilla CSV",
+            ["Back to import portfolio"] = "Volver a importar portafolio",
+            ["Download the sample file, then return to import your portfolio."] =
+                "Descarga el archivo de ejemplo y luego vuelve para importar tu portafolio.",
+            ["Use the sample CSV, fill in your properties, then return here to import the file."] =
+                "Usa el CSV de ejemplo, completa tus propiedades y luego vuelve aquí para importar el archivo.",
             // Bug 40: keep Import Portfolio CSV help Spanish-only (no English headers/enums in UI).
             ["Use a CSV file with one property per row. Required columns:"] =
                 "Usa un archivo CSV con una propiedad por fila. Columnas requeridas:",
@@ -1362,10 +1391,23 @@ public static class UiTranslationsFinal
                 "Inspeccionar las áreas afectadas, identificar fuentes de humedad, documentar daños y entregar un informe detallado con recomendaciones.",
             ["Inspect affected areas, identify moisture sources, document damage, and provide a detailed report with recommendations"] =
                 "Inspeccionar las áreas afectadas, identificar fuentes de humedad, documentar daños y entregar un informe detallado con recomendaciones",
+            ["Please review the requested {0} work at {1}. Document findings and provide a repair estimate with recommended next steps."] =
+                "Por favor revise el trabajo de {0} solicitado en {1}. Documente los hallazgos y proporcione una cotización de reparación con los siguientes pasos recomendados.",
+            ["Please inspect the water damage in the kitchen ceiling and adjacent living room. Identify the source, document affected areas, and provide a repair estimate. Include minor drywall repair and repaint as needed."] =
+                "Por favor inspeccione el daño por agua en el techo de la cocina y la sala contigua. Identifique la fuente, documente las áreas afectadas y proporcione una cotización de reparación. Incluya reparación menor de drywall y repintado según sea necesario.",
+            ["Stop recording"] = "Detener grabación",
+            ["Audio recorded"] = "Audio grabado",
+            ["Microphone permission is required to record audio."] =
+                "Se necesita permiso del micrófono para grabar audio.",
+            ["Microphone is not available in this browser."] =
+                "El micrófono no está disponible en este navegador.",
             ["Hi {0}, here's your quote for the {1}. Let us know if you have any questions!"] =
-                "Hola {0}, aquí tienes tu cotización para {1}. ¡Avísanos si tienes alguna pregunta!",
+                "Hola {0}, aquí está tu cotización para la {1}. ¡Avísanos si tienes alguna pregunta!",
             ["Hi {0}, thanks again for having us out! Attached is your estimate for the {1}. Let me know if you have any questions—I'm here to help!"] =
                 "Hola {0}, ¡gracias otra vez por recibirnos! Adjunto está tu cotización para {1}. Avísame si tienes preguntas—¡estoy para ayudarte!",
+            ["Assess the requested {0} work"] = "Evaluar el trabajo de {0} solicitado",
+            ["Complete the requested {0} work and provide a detailed summary."] =
+                "Completar el trabajo de {0} solicitado y entregar un resumen detallado.",
             ["Service call"] = "Visita de servicio",
             ["Inspection & moisture assessment"] = "Inspección y evaluación de humedad",
             ["Minor drywall repair allowance"] = "Tolerancia para reparación menor de drywall",
@@ -3417,6 +3459,16 @@ public static class UiTranslationsFinal
             ["General review"] = "Revisión general",
 
             // Bug 5 — Proveedor Configuración menu + destination screens
+            // Only keys not already defined earlier in this file (Dictionary rejects duplicates).
+            ["Settings - INDOR PRO"] = "Configuración - INDOR PRO",
+            ["Help Center - INDOR PRO"] = "Centro de ayuda - INDOR PRO",
+            ["Notifications - INDOR PRO"] = "Notificaciones - INDOR PRO",
+            ["Subscription - INDOR PRO"] = "Suscripción - INDOR PRO",
+            ["Public Profile - INDOR PRO"] = "Perfil público - INDOR PRO",
+            ["Templates - INDOR PRO"] = "Plantillas - INDOR PRO",
+            ["Report Templates - INDOR PRO"] = "Plantillas de informes - INDOR PRO",
+            ["Template Details - INDOR PRO"] = "Detalles de la plantilla - INDOR PRO",
+            ["Template Ready - INDOR PRO"] = "Plantilla lista - INDOR PRO",
             ["Manage your business profile, tools, and account."] =
                 "Administra tu perfil de negocio, herramientas y cuenta.",
             ["Business Profile"] = "Perfil de negocio",
@@ -3430,11 +3482,13 @@ public static class UiTranslationsFinal
                 "Vista previa de cómo ven los propietarios tu negocio en INDOR.",
             ["Manage how homeowners see your business on INDOR."] =
                 "Administra cómo ven los propietarios tu negocio en INDOR.",
+            ["Report Templates"] = "Plantillas de informes",
             ["Manage saved templates for job reports."] =
                 "Administra las plantillas guardadas para informes de trabajo.",
             ["Job Templates"] = "Plantillas de trabajo",
             ["Configure reusable job and estimate templates."] =
                 "Configura plantillas reutilizables de trabajos y cotizaciones.",
+            ["Notifications"] = "Notificaciones",
             ["Manage job, lead, payment, and report alerts."] =
                 "Administra alertas de trabajos, prospectos, pagos e informes.",
             ["Guides, verification steps, and support resources."] =
@@ -3450,6 +3504,7 @@ public static class UiTranslationsFinal
             ["Schedule activation call"] = "Programar llamada de activación",
             ["Complete provider activation for INDOR lead opportunities."] =
                 "Completa la activación de proveedor para oportunidades de prospectos en INDOR.",
+            ["Privacy Policy"] = "Política de privacidad",
             ["Review INDOR platform terms for service providers."] =
                 "Revisa los términos de la plataforma INDOR para proveedores de servicios.",
             ["How INDOR handles your business and account data."] =
@@ -3468,8 +3523,12 @@ public static class UiTranslationsFinal
             ["Jobs, photos &amp; scheduling"] = "Trabajos, fotos y programación",
             ["Documents uploaded"] = "Documentos subidos",
             ["Provider verification"] = "Verificación del proveedor",
+            ["Payment processing"] = "Procesamiento de pagos",
             ["Choose a template to start faster."] = "Elige una plantilla para empezar más rápido.",
+            ["Choose the type of report you want to create."] =
+                "Elige el tipo de informe que quieres crear.",
             ["Search templates"] = "Buscar plantillas",
+            ["Most Used"] = "Más usadas",
             ["My Templates"] = "Mis plantillas",
             ["Step 1 of 3"] = "Paso 1 de 3",
             ["Step 2 of 3"] = "Paso 2 de 3",
@@ -3478,6 +3537,15 @@ public static class UiTranslationsFinal
                 "Puedes personalizar cualquier informe después de elegir una plantilla.",
             ["Template Details"] = "Detalles de la plantilla",
             ["Template Ready"] = "Plantilla lista",
+            ["Template Name"] = "Nombre de la plantilla",
+            ["Ready to Use"] = "Lista para usar",
+            ["Saved To"] = "Guardado en",
+            ["Includes"] = "Incluye",
+            ["You can edit this template anytime before creating a report."] =
+                "Puedes editar esta plantilla en cualquier momento antes de crear un informe.",
+            ["Template created and ready for your next report."] =
+                "Plantilla creada y lista para tu próximo informe.",
+            ["Back to Templates"] = "Volver a plantillas",
             ["Review sections included in this template."] =
                 "Revisa las secciones incluidas en esta plantilla.",
             ["Included Sections"] = "Secciones incluidas",
@@ -3498,6 +3566,9 @@ public static class UiTranslationsFinal
             ["Crew"] = "Equipo",
             ["Site Notes"] = "Notas del sitio",
             ["Captions"] = "Descripciones",
+            ["Rating"] = "Calificación",
+            ["Share"] = "Compartir",
+            ["Verified Provider"] = "Proveedor verificado",
             ["Complete your profile to build trust and start receiving homeowner requests."] =
                 "Completa tu perfil para generar confianza y empezar a recibir solicitudes de propietarios.",
             ["Complete each section to verify your business."] =
@@ -3525,8 +3596,10 @@ public static class UiTranslationsFinal
             ["View my provider profile on INDOR"] = "Ver mi perfil de proveedor en INDOR",
 
             // Bug 4 — Proveedor Profile Setup overview + edit forms (ES)
+            // Overview (screenshot leftovers): full Spanish — no word-swap Spanglish.
+            // (Public profile / Business profile / Complete each section / Documents & verification
+            //  already set earlier in this file; Profile Setup reinforced here.)
             ["Profile Setup"] = "Configuración del perfil",
-            ["Public Profile"] = "Perfil público",
             ["Services offered"] = "Servicios ofrecidos",
             ["Business address"] = "Dirección del negocio",
             ["Business details"] = "Detalles del negocio",
@@ -3572,7 +3645,6 @@ public static class UiTranslationsFinal
             ["Brief description of your services"] = "Breve descripción de tus servicios",
             ["City, state"] = "Ciudad, estado",
             ["e.g. Mon–Fri 8am–6pm"] = "p. ej. lun–vie 8am–6pm",
-            ["Mon–Fri, 8:00 a.m. – 6:00 p.m."] = "Lun–vie, 8:00 a. m. – 6:00 p. m.",
             ["ZIP codes served"] = "Códigos postales atendidos",
             ["Save business info"] = "Guardar info del negocio",
             ["Save service areas"] = "Guardar áreas de servicio",
@@ -3581,6 +3653,226 @@ public static class UiTranslationsFinal
             ["Individual"] = "Persona física",
             ["Website"] = "Sitio web",
             ["Basic information"] = "Información básica",
-            ["Clients &amp; CRM"] = "Clientes y CRM",
+            // Edit form / payments / verification chrome (override Proveedor Spanglish / English)
+            ["Account status"] = "Estado de la cuenta",
+            ["Clear selected file"] = "Quitar archivo seleccionado",
+            ["Manage payments"] = "Administrar pagos",
+            ["Payout account"] = "Cuenta de pagos",
+            ["Payout Account"] = "Cuenta de pagos",
+            ["Ready to upload"] = "Listo para subir",
+            ["Replace"] = "Reemplazar",
+            ["Tap to open full document"] = "Toca para abrir el documento completo",
+            ["Upload a clear photo or PDF"] = "Sube una foto clara o un PDF",
+            ["JPG, PNG or WEBP · Max 10 MB"] = "JPG, PNG o WEBP · Máx. 10 MB",
+            ["JPG, PNG, WEBP or PDF · Max 10 MB"] = "JPG, PNG, WEBP o PDF · Máx. 10 MB",
+            ["View pending, overdue, and paid invoices from your jobs and estimates."] =
+                "Ver facturas pendientes, vencidas y pagadas de tus trabajos y cotizaciones.",
+            ["Review payout status and manage invoices."] =
+                "Revisa el estado de pagos y administra facturas.",
+            ["Liability insurance"] = "Seguro de responsabilidad civil",
+            ["Trade license"] = "Licencia comercial",
+            ["Business license"] = "Licencia comercial",
+            ["W-9 / Tax form"] = "Formulario W-9 / impuestos",
+            ["W-9 / tax form"] = "Formulario W-9 / impuestos",
+            ["W-9 form"] = "Formulario W-9",
+            ["Documents & Verification - INDOR PRO"] = "Documentos y verificación - INDOR PRO",
+            ["Verification & Documents - INDOR PRO"] = "Verificación y documentos - INDOR PRO",
+            ["Business Profile - INDOR PRO"] = "Perfil de negocio - INDOR PRO",
+            ["Payments &amp; Banking - INDOR PRO"] = "Pagos y banca - INDOR PRO",
+            ["Edit Services - INDOR PRO"] = "Editar servicios - INDOR PRO",
+            ["Save profile"] = "Guardar perfil",
+            ["Save services"] = "Guardar servicios",
+            ["Profile updated successfully."] = "Perfil actualizado correctamente.",
+            ["Back to profile"] = "Volver al perfil",
+            ["Current profile photo"] = "Foto de perfil actual",
+            ["Change photo"] = "Cambiar foto",
+            ["Profile photo"] = "Foto de perfil",
+            ["Primary contact"] = "Contacto principal",
+            ["What services do you offer?"] = "¿Qué servicios ofreces?",
+            ["View invoices"] = "Ver facturas",
+            ["Subscription / plan"] = "Suscripción / plan",
+            ["Next payout"] = "Próximo pago",
+            ["Next Payout"] = "Próximo pago",
+            ["Payment Processing"] = "Procesamiento de pagos",
+            ["Profile setup progress"] = "Progreso de la configuración del perfil",
+
+            // Bug 2 — Proveedor ProfileBusiness (Información básica) ES
+            // Keys below were missing from Final (only in Proveedor). Reinforce so merge wins.
+            // (Business profile / Complete your business's main information. / Basic information
+            //  already reinforced earlier in this file.)
+            ["Business name"] = "Nombre del negocio",
+            ["Legal business name"] = "Nombre legal del negocio",
+            ["Select category"] = "Seleccionar categoría",
+            ["Short summary of your business"] = "Breve resumen de tu negocio",
+            ["Hours"] = "Horario",
+
+            // Bug 9 — Proveedor Post a Job wizard (Publicar trabajo) ES
+            // Override any leftover word-swap Spanglish in UiTranslationsProveedor.
+            ["Tell us what you need and get matched fast."] = "Cuéntanos qué necesitas y te conectamos rápido.",
+            ["e.g. Fix leak under kitchen sink"] = "ej. Reparar fuga bajo el fregadero de la cocina",
+            ["Tell us more about the issue, what needs to be done, and any important details."] =
+                "Cuéntanos más sobre el problema, qué hay que hacer y cualquier detalle importante.",
+            ["Photos help pros understand the job"] = "Las fotos ayudan a los profesionales a entender el trabajo",
+            ["What do you need help with?"] = "¿Con qué necesitas ayuda?",
+            ["Job title"] = "Título del trabajo",
+            ["Describe the job"] = "Describe el trabajo",
+            ["Add photos"] = "Agregar fotos",
+            ["optional"] = "opcional",
+            ["(Optional)"] = "(Opcional)",
+            ["When do you need it?"] = "¿Cuándo lo necesitas?",
+            ["This Week"] = "Esta semana",
+            ["Add location and budget."] = "Agrega ubicación y presupuesto.",
+            ["Job Location"] = "Ubicación del trabajo",
+            ["Enter address or neighborhood"] = "Ingresa dirección o vecindario",
+            ["Clear selection"] = "Limpiar",
+            ["Property Type"] = "Tipo de propiedad",
+            ["Who will meet the pro?"] = "¿Quién recibirá al profesional?",
+            ["Budget"] = "Presupuesto",
+            ["Quote Type"] = "Tipo de cotización",
+            ["Fixed Price"] = "Precio fijo",
+            ["Get a set price for the entire job."] = "Obtén un precio fijo por todo el trabajo.",
+            ["Hourly Estimate"] = "Cotización por hora",
+            ["Pay for time and materials as the job goes."] = "Paga por tiempo y materiales según avance el trabajo.",
+            ["Access Notes"] = "Notas de acceso",
+            ["Add any details about access, gate codes, parking, etc."] =
+                "Agrega detalles sobre acceso, códigos de portón, estacionamiento, etc.",
+            ["Review Your Job"] = "Revisa tu trabajo",
+            ["Confirm everything before posting."] = "Confirma todo antes de publicar.",
+            ["What happens next"] = "Qué sigue",
+            ["Verified pros review your request"] = "Profesionales verificados revisan tu solicitud",
+            ["You receive quotes and messages"] = "Recibes cotizaciones y mensajes",
+            ["Hire the right pro fast"] = "Contrata al profesional adecuado rápido",
+            ["Post Job"] = "Publicar trabajo",
+            ["Post a Job"] = "Publicar trabajo",
+            ["Save Draft"] = "Guardar borrador",
+            ["Location &amp; Budget"] = "Ubicación y presupuesto",
+            ["Details"] = "Detalles",
+            ["Review"] = "Revisar",
+            // Catalog trade chips (UI fallback when LabelEs missing)
+            ["Electrical"] = "Eléctrico",
+            ["Plumbing"] = "Plomería",
+            ["HVAC"] = "HVAC",
+            ["Handyman"] = "Manitas",
+            ["Construction Company"] = "Empresa de construcción",
+            ["Bathroom Remodeling"] = "Remodelación de baño",
+            ["Kitchen Remodeling"] = "Remodelación de cocina",
+            ["Roofing"] = "Techado",
+            ["Painting"] = "Pintura",
+            ["Flooring"] = "Pisos",
+            ["Cleaning"] = "Limpieza",
+            ["Landscaping"] = "Paisajismo",
+            ["Pest Control"] = "Control de plagas",
+            ["Appliance Repair"] = "Reparación de electrodomésticos",
+
+            // Bug 12 — Proveedor Upload Report / Create Report wizard ES
+            // Full phrases (no word-swap Spanglish). Breadcrumbs need full keys because
+            // Pressed:/Now:/From: templates do not localize the trailing English arg.
+            ["Upload Report"] = "Subir informe",
+            ["Select Job"] = "Seleccionar trabajo",
+            ["Select Job or Property"] = "Seleccionar trabajo o propiedad",
+            ["Choose the completed or active job this report belongs to."] =
+                "Elige el trabajo completado o activo al que pertenece este informe.",
+            ["Search for a job, then tap"] = "Busca un trabajo y luego toca",
+            ["on the matching card to continue."] = "en la tarjeta correspondiente para continuar.",
+            ["Select"] = "Seleccionar",
+            ["All"] = "Todos",
+            ["Completed"] = "Completados",
+            ["In Progress"] = "En progreso",
+            ["Recent"] = "Recientes",
+            ["You don't have any jobs yet. Create a job first, then return here to upload a report."] =
+                "Aún no tienes trabajos. Crea un trabajo primero y vuelve aquí para subir un informe.",
+            ["You don't have any jobs yet. Create a job first, then return here to add photos."] =
+                "Aún no tienes trabajos. Crea un trabajo primero y vuelve aquí para agregar fotos.",
+            ["No jobs matched"] = "Ningún trabajo coincidió con",
+            ["No jobs match the current filter. Try"] = "Ningún trabajo coincide con el filtro actual. Prueba",
+            ["or another filter."] = "u otro filtro.",
+            ["Try a shorter address, job ID, or customer name, or clear the search to see all jobs."] =
+                "Prueba con una dirección más corta, un ID de trabajo o el nombre del cliente, o limpia la búsqueda para ver todos los trabajos.",
+            ["Clear search"] = "Limpiar búsqueda",
+            ["Show all jobs"] = "Mostrar todos los trabajos",
+            ["Create Job"] = "Crear trabajo",
+            ["Pressed: Upload Report"] = "Pulsado: Subir informe",
+            ["From: Reports"] = "Desde: Reportes",
+            ["Now: Select Job"] = "Ahora: Seleccionar trabajo",
+            ["From: Select Job"] = "Desde: Seleccionar trabajo",
+            ["Now: Report Type"] = "Ahora: Tipo de informe",
+            ["From: Report Type"] = "Desde: Tipo de informe",
+            ["Now: Upload Files"] = "Ahora: Subir archivos",
+            ["From: Upload Files"] = "Desde: Subir archivos",
+            ["Now: Report Details"] = "Ahora: Detalles del informe",
+            ["From: Report Details"] = "Desde: Detalles del informe",
+            ["Pressed: Submit Report"] = "Pulsado: Enviar informe",
+            ["Now: Report Uploaded"] = "Ahora: Informe subido",
+            ["Select Job - INDOR PRO"] = "Seleccionar trabajo - INDOR PRO",
+            ["Report Type - INDOR PRO"] = "Tipo de informe - INDOR PRO",
+            ["Upload Files - INDOR PRO"] = "Subir archivos - INDOR PRO",
+            ["Report Details - INDOR PRO"] = "Detalles del informe - INDOR PRO",
+            ["Report Uploaded - INDOR PRO"] = "Informe subido - INDOR PRO",
+            ["Choose Report Type"] = "Elegir tipo de informe",
+            ["Upload Files &amp; Photos"] = "Subir archivos y fotos",
+            ["Upload Files"] = "Subir archivos",
+            ["Report Details"] = "Detalles del informe",
+            ["Report Uploaded"] = "Informe subido",
+            ["Report Uploaded Successfully!"] = "¡Informe subido correctamente!",
+            ["Your report is saved and ready to share."] = "Tu informe está guardado y listo para compartir.",
+            ["Select a job before submitting the report."] = "Selecciona un trabajo antes de enviar el informe.",
+            ["Please complete the required report fields before submitting."] =
+                "Completa los campos obligatorios del informe antes de enviarlo.",
+            ["We couldn't save your report. Please select the job again and try once more."] =
+                "No pudimos guardar tu informe. Selecciona el trabajo de nuevo e inténtalo otra vez.",
+            ["Report Title"] = "Título del informe",
+            ["Submit Report"] = "Enviar informe",
+            ["Before/After Required"] = "Antes/Después obligatorio",
+            ["Final Result"] = "Resultado final",
+            ["Warranty Document"] = "Documento de garantía",
+            ["Permit / Receipt"] = "Permiso / Recibo",
+            ["Warranty Info"] = "Información de garantía",
+            ["Warranty"] = "Garantía",
+            ["Attach to House Facts"] = "Adjuntar a House Facts",
+            ["Attach this report and files to the property's House Facts."] =
+                "Adjunta este informe y los archivos a los House Facts de la propiedad.",
+            ["Add photos or files"] = "Agregar fotos o archivos",
+            ["JPG, PNG, PDF up to 10MB"] = "JPG, PNG, PDF hasta 10 MB",
+            ["Create House Facts Record"] = "Crear registro de House Facts",
+            ["Add this report to the home's House Facts."] = "Agrega este informe a los House Facts de la vivienda.",
+            ["Request Approval"] = "Solicitar aprobación",
+            ["Require homeowner approval for this report."] =
+                "Requiere la aprobación del propietario para este informe.",
+            ["Share the report with the homeowner via email."] =
+                "Comparte el informe con el propietario por correo electrónico.",
+            ["Brief summary of the report..."] = "Breve resumen del informe...",
+            ["List materials and quantities..."] = "Lista materiales y cantidades...",
+            ["Not visible to homeowner"] = "No visible para el propietario",
+            ["Water Heater Installation Completion Report"] =
+                "Informe de finalización de instalación de calentador de agua",
+            ["Property"] = "Propiedad",
+            ["Status"] = "Estado",
+
+            // Bug 13 — Proveedor report-template forms (after picking a template type).
+            // Only keys not already defined earlier in this file (incl. Bug 12 block).
+            ["Work Completed"] = "Trabajo completado",
+            ["Materials Used"] = "Materiales usados",
+            ["Summary"] = "Resumen",
+            ["Documents"] = "Documentos",
+            ["Required"] = "Obligatorio",
+            ["Optional"] = "Opcional",
+            ["Scope of Work"] = "Alcance del trabajo",
+            ["Report Basics"] = "Datos básicos del informe",
+            ["Select the job and basic info to start your report."] =
+                "Selecciona el trabajo y la información básica para empezar tu informe.",
+            ["Describe the work and findings..."] = "Describe el trabajo y los hallazgos...",
+            ["Upload selected"] = "Subir seleccionados",
+            ["Your name"] = "Tu nombre",
+            ["e.g. Rear slope"] = "ej. Pendiente trasera",
+            ["e.g. Roof Spot Check"] = "ej. Revisión puntual del techo",
+            ["Save Report"] = "Guardar informe",
+            ["Send Report"] = "Enviar informe",
+            ["Review Export Report"] = "Revisar informe de exportación",
+            ["Review the report before saving or sending it."] =
+                "Revisa el informe antes de guardarlo o enviarlo.",
+            ["Camera"] = "Cámara",
+            ["Gallery"] = "Galería",
+            ["Profile menu"] = "Menú de perfil",
+            ["Job Information"] = "Información del trabajo",
         };
 }
