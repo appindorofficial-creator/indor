@@ -365,7 +365,8 @@
      */
     function promotePaFlowActions(root) {
         var scope = root && root.querySelectorAll ? root : document;
-        scope.querySelectorAll('form.pa-emergency-form, form.pa-flow-form, form.pa-preventive-form, .pa-portal-shell--flow > form').forEach(function (container) {
+        // Include .pa-portal-shell--flow so confirmed screens (buttons outside a form) get the same stacked footer.
+        scope.querySelectorAll('form.pa-emergency-form, form.pa-flow-form, form.pa-preventive-form, .pa-portal-shell--flow > form, .pa-portal-shell--flow').forEach(function (container) {
             if (container.dataset.paFlowActionsBound === 'true') {
                 return;
             }

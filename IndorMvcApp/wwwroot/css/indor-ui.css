@@ -35,7 +35,7 @@ body,
 .hf-btn-primary,
 .more-btn-primary,
 .ob-btn-primary,
-.ob-btn,
+.ob-btn:not(.ob-btn-outline):not(.ob-btn-ghost):not(.ob-btn-secondary),
 .rl-btn-primary,
 .pa-btn-primary,
 .prv-btn-primary,
@@ -56,7 +56,7 @@ a.btn-primary:not(.btn-outline) {
 .nr-btn-primary:hover,
 .hf-btn-primary:hover,
 .ob-btn-primary:hover,
-.ob-btn:hover,
+.ob-btn:not(.ob-btn-outline):not(.ob-btn-ghost):not(.ob-btn-secondary):hover,
 .rl-btn-primary:hover,
 .indor-btn-primary:hover {
     filter: brightness(1.03);
@@ -71,19 +71,23 @@ a.btn-primary:not(.btn-outline) {
 .nr-btn-outline,
 .hf-btn,
 .rl-btn-outline,
+.ob-btn-outline,
 .ob-btn-secondary,
 .more-btn-outline,
 .prv-btn-outline {
-    border-radius: 12px !important;
+    border-radius: 14px !important;
     font-weight: 700 !important;
 }
 
 .nr-btn-outline,
 .rl-btn-outline,
+.ob-btn-outline,
+.ob-btn-secondary,
 .hf-btn {
     border: 1.5px solid var(--indor-blue, #0066CC) !important;
     color: var(--indor-blue, #0066CC) !important;
     background: #fff !important;
+    box-shadow: none !important;
 }
 
 /* Primary must win when both .hf-btn and .hf-btn-primary are present —

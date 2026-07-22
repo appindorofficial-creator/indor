@@ -534,13 +534,28 @@ body:has(.prv-pro-bottom-nav) {
 /* Legacy unwrapped CTAs (before JS wrap) — keep usable without floating mid-form */
 .pa-portal-page form:not(:has(.pa-flow-actions)) > .pa-flow-submit,
 .pa-portal-page form:not(:has(.pa-flow-actions)) > a.pa-flow-submit.ob-btn,
+.pa-portal-page form:not(:has(.pa-flow-actions)) > .pa-flow-edit,
+.pa-portal-page form:not(:has(.pa-flow-actions)) > a.pa-flow-edit.ob-btn,
 .pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > .pa-flow-submit,
-.pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > a.pa-flow-submit {
-    position: static;
+.pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > a.pa-flow-submit,
+.pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > .pa-flow-edit,
+.pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > a.pa-flow-edit {
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    top: auto !important;
     width: 100%;
     max-width: 448px;
-    margin: 16px auto 0;
+    margin: 10px auto 0;
     box-sizing: border-box;
+}
+
+.pa-portal-page form:not(:has(.pa-flow-actions)) > .pa-flow-submit,
+.pa-portal-page form:not(:has(.pa-flow-actions)) > a.pa-flow-submit.ob-btn,
+.pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > .pa-flow-submit,
+.pa-portal-page .pa-portal-shell--flow:not(:has(.pa-flow-actions)) > a.pa-flow-submit {
+    margin-top: 16px;
 }
 
 .pa-portal-page form:not(:has(.pa-flow-actions)) > .pa-flow-back-link,

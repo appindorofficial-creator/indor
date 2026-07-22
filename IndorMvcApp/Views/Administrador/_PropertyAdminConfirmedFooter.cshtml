@@ -6,9 +6,11 @@
         ?? PropertyAdministratorFlowServiceSupport.ServicesUrl(Url, confirmedPropertyId);
     var trackIcon = ViewBag.ConfirmedTrackIcon as string ?? "fa-chevron-right";
 }
-<a href="@trackUrl" class="ob-btn ob-btn-primary pa-flow-submit">
-    @L["Track request"] <i class="fas @trackIcon"></i>
-</a>
-<a href="@servicesUrl" class="ob-btn ob-btn-outline pa-flow-edit">
-    @L["Back to services"]
-</a>
+<div class="pa-flow-actions">
+    <a href="@trackUrl" class="ob-btn ob-btn-primary pa-flow-submit">
+        @L["Track request"] <i class="fas @trackIcon"></i>
+    </a>
+    <a href="@servicesUrl" class="ob-btn ob-btn-outline pa-flow-edit">
+        @L["Back to services"]
+    </a>
+</div>

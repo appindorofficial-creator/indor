@@ -738,6 +738,8 @@ a.pa-notify-item:hover{background:#F8FAFC}
 
 .pa-notify-banner{display:flex;align-items:center;gap:10px;padding:12px 14px;background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;margin-bottom:14px;font-size:.78rem;color:#991B1B}
 .pa-notify-banner i{color:#DC2626}
+.pa-flow-actions .pa-flow-submit,
+.pa-flow-actions .pa-flow-edit{margin:0}
 .pa-flow-submit{margin-bottom:10px}
 .pa-flow-edit{margin-bottom:8px}
 
