@@ -46,8 +46,10 @@
         }
 
         function findBackLink() {
+            // Include .pa-profile-back: PA portal uses localized aria-label ("Volver"),
+            // so aria-label="Back" alone misses those screens and Android back exits the app.
             return document.querySelector(
-                'a[data-smart-back][href], a.ob-nav-back[href], a.back-btn[href], a.iw-wizard-nav-btn[href], a.app-back-btn[href], a[aria-label="Back"][href]:not(.nr-wizard-nav-btn):not([data-nr-history-back])'
+                'a[data-smart-back][href], a.ob-nav-back[href], a.back-btn[href], a.iw-wizard-nav-btn[href], a.app-back-btn[href], a.pa-profile-back[href], a[aria-label="Back"][href]:not(.nr-wizard-nav-btn):not([data-nr-history-back])'
             );
         }
 
@@ -74,7 +76,7 @@
         }
 
         function clearNavigationBusyState() {
-            document.querySelectorAll('.nr-wizard-nav-btn.is-busy, .app-back-btn.is-busy, a[data-smart-back].is-busy, a.ob-nav-back.is-busy, a.back-btn.is-busy').forEach(function (el) {
+            document.querySelectorAll('.nr-wizard-nav-btn.is-busy, .app-back-btn.is-busy, a[data-smart-back].is-busy, a.ob-nav-back.is-busy, a.back-btn.is-busy, a.pa-profile-back.is-busy').forEach(function (el) {
                 el.classList.remove('is-busy');
                 el.removeAttribute('aria-busy');
             });
@@ -143,7 +145,7 @@
         document.addEventListener('click', function (e) {
             if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
             if (!e.target || !e.target.closest) return;
-            var el = e.target.closest('a[aria-label="Back"]:not([data-nr-history-back]):not(.nr-wizard-nav-btn), a[data-smart-back], a.ob-nav-back');
+            var el = e.target.closest('a[aria-label="Back"]:not([data-nr-history-back]):not(.nr-wizard-nav-btn), a[data-smart-back], a.ob-nav-back, a.pa-profile-back');
             if (!el) return;
 
             var href = resolveBackHref(el);

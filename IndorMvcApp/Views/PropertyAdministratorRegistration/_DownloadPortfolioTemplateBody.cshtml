@@ -7,9 +7,12 @@
 </div>
 
 <p style="margin-bottom:16px;">
-    <a href="@Model.FileDownloadUrl"
+    @* href stays on this page — never point at the file URL (WebViews replace the UI with raw CSV and leave no Back). *@
+    <a href="#"
        id="paCsvTemplateFileLink"
-       download="@Model.FileName"
+       role="button"
+       data-file-url="@Model.FileDownloadUrl"
+       data-file-name="@Model.FileName"
        data-no-nav-loading
        class="ob-btn ob-btn-outline"
        style="display:inline-flex;align-items:center;justify-content:center;gap:8px;width:100%;">
@@ -23,14 +26,13 @@
         if (!link) return;
 
         link.addEventListener('click', function (e) {
-            const href = link.getAttribute('href');
-            const fileName = link.getAttribute('download') || 'indor-portfolio-template.csv';
-            if (!href || href === '#') return;
-
+            const fileUrl = link.getAttribute('data-file-url');
+            const fileName = link.getAttribute('data-file-name') || 'indor-portfolio-template.csv';
             e.preventDefault();
             e.stopPropagation();
+            if (!fileUrl || fileUrl === '#') return;
 
-            fetch(href, { credentials: 'same-origin' })
+            fetch(fileUrl, { credentials: 'same-origin' })
                 .then(function (res) {
                     if (!res.ok) throw new Error('download failed');
                     return res.blob();
