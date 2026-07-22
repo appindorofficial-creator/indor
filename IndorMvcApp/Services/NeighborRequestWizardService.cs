@@ -94,10 +94,33 @@ public class NeighborRequestWizardService(
         return draft;
     }
 
-    public async Task<Propiedad?> ValidatePropiedadAsync(string userId, int propiedadId, CancellationToken ct) =>
-        await db.Propiedades
+    public async Task<Propiedad?> ValidatePropiedadAsync(string userId, int propiedadId, CancellationToken ct)
+    {
+        var owned = await db.Propiedades
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == propiedadId && p.UserId == userId && p.Activo, ct);
+        if (owned != null)
+        {
+            return owned;
+        }
+
+        // Multipropiedad / property-admin portfolio may link a Propiedad the admin manages.
+        var linkedToPortfolio = await (
+            from pp in db.IndorPropertyAdminPortfolioProperties.AsNoTracking()
+            join admin in db.IndorPropertyAdministrators.AsNoTracking() on pp.AdministratorId equals admin.Id
+            where pp.PropiedadId == propiedadId && admin.UserId == userId
+            select pp.Id
+        ).AnyAsync(ct);
+
+        if (!linkedToPortfolio)
+        {
+            return null;
+        }
+
+        return await db.Propiedades
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == propiedadId && p.Activo, ct);
+    }
 
     public async Task<string> ResolvePortalHomeUrlAsync(
         string userId,
@@ -581,8 +604,14 @@ public class NeighborRequestWizardService(
         NeighborRequestDraftState draft,
         CancellationToken ct)
     {
+        var access = await ValidatePropiedadAsync(userId, draft.PropiedadId, ct);
+        if (access == null)
+        {
+            return null;
+        }
+
         var propiedad = await db.Propiedades
-            .FirstOrDefaultAsync(p => p.Id == draft.PropiedadId && p.UserId == userId && p.Activo, ct);
+            .FirstOrDefaultAsync(p => p.Id == draft.PropiedadId && p.Activo, ct);
 
         if (propiedad == null)
         {

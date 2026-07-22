@@ -22,11 +22,33 @@
                     </div>
                 }
             </div>
-            <label class="nr-photo-add" id="nrPhotoDrop">
-                <i class="fas fa-plus"></i>
-                <span>@L["Add more"]</span>
+            <div class="nr-photo-add-wrap" id="nrPhotoAddWrap">
+                <button type="button"
+                        class="nr-photo-add"
+                        id="nrPhotoAddBtn"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        aria-controls="nrPhotoMenu">
+                    <i class="fas fa-plus"></i>
+                    <span>@L["Add more"]</span>
+                </button>
+                <div class="nr-photo-menu" id="nrPhotoMenu" role="menu" hidden>
+                    <button type="button" class="nr-photo-menu-item" data-nr-photo-source="library" role="menuitem">
+                        <i class="fas fa-images"></i> @L["Photo Library"]
+                    </button>
+                    <button type="button" class="nr-photo-menu-item" data-nr-photo-source="camera" role="menuitem">
+                        <i class="fas fa-camera"></i> @L["Take Photo"]
+                    </button>
+                    <button type="button" class="nr-photo-menu-item" data-nr-photo-source="files" role="menuitem">
+                        <i class="fas fa-folder"></i> @L["Choose Files"]
+                    </button>
+                </div>
+                @* Separate inputs so the in-app menu can open camera / gallery / files without the OS English sheet. *@
+                <input type="file" id="nrPhotoInputCamera" accept="image/jpeg,image/png,image/webp,image/*" capture="environment" multiple hidden />
+                <input type="file" id="nrPhotoInputLibrary" accept="image/jpeg,image/png,image/webp,image/*" multiple hidden />
+                <input type="file" id="nrPhotoInputFiles" accept="image/jpeg,image/png,image/webp,image/*,.pdf,application/pdf" multiple hidden />
                 <input type="file" asp-for="PhotoFiles" id="nrPhotoInput" accept="image/jpeg,image/png,image/webp" multiple hidden />
-            </label>
+            </div>
         </div>
     </section>
 
@@ -205,18 +227,39 @@
                 });
             }
 
-            var input = document.getElementById('nrPhotoInput');
+            var submitInput = document.getElementById('nrPhotoInput');
             var grid = document.getElementById('nrPhotoGrid');
-            if (!input || !grid) return;
+            var addWrap = document.getElementById('nrPhotoAddWrap');
+            var addBtn = document.getElementById('nrPhotoAddBtn');
+            var menu = document.getElementById('nrPhotoMenu');
+            var cameraInput = document.getElementById('nrPhotoInputCamera');
+            var libraryInput = document.getElementById('nrPhotoInputLibrary');
+            var filesInput = document.getElementById('nrPhotoInputFiles');
+            if (!submitInput || !grid || !addBtn || !menu) return;
 
             var selected = [];
             var urls = [];
+
+            function setMenuOpen(open) {
+                menu.hidden = !open;
+                addBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+            }
+
+            function closeMenu() {
+                setMenuOpen(false);
+            }
+
+            function openFileInput(input) {
+                if (!input) return;
+                input.value = '';
+                input.click();
+            }
 
             function syncInput() {
                 if (typeof DataTransfer === 'undefined') return;
                 var dt = new DataTransfer();
                 selected.forEach(function (f) { dt.items.add(f); });
-                input.files = dt.files;
+                submitInput.files = dt.files;
             }
 
             function clearUrls() {
@@ -232,7 +275,10 @@
                     urls.push(url);
                     var item = document.createElement('div');
                     item.className = 'nr-photo-thumb nr-photo-thumb--new';
-                    item.innerHTML = '<img src="' + url + '" alt="" /><button type="button" class="nr-photo-remove" aria-label="@L["Remove"]"><i class="fas fa-xmark"></i></button>';
+                    var isImage = !file.type || file.type.indexOf('image/') === 0;
+                    item.innerHTML = isImage
+                        ? '<img src="' + url + '" alt="" /><button type="button" class="nr-photo-remove" aria-label="@L["Remove"]"><i class="fas fa-xmark"></i></button>'
+                        : '<span class="nr-photo-file"><i class="fas fa-file"></i></span><button type="button" class="nr-photo-remove" aria-label="@L["Remove"]"><i class="fas fa-xmark"></i></button>';
                     item.querySelector('button').addEventListener('click', function () {
                         selected.splice(index, 1);
                         syncInput();
@@ -242,13 +288,55 @@
                 });
             }
 
-            input.addEventListener('change', function () {
-                if (!input.files) return;
-                Array.prototype.forEach.call(input.files, function (file) {
-                    if (file.type && file.type.indexOf('image/') === 0) selected.push(file);
+            function ingestFiles(fileList) {
+                if (!fileList) return;
+                Array.prototype.forEach.call(fileList, function (file) {
+                    if (file.type && file.type.indexOf('image/') === 0) {
+                        selected.push(file);
+                    }
                 });
                 syncInput();
                 renderNew();
+            }
+
+            addBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                setMenuOpen(menu.hidden);
+            });
+
+            menu.querySelectorAll('[data-nr-photo-source]').forEach(function (item) {
+                item.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    var source = item.getAttribute('data-nr-photo-source');
+                    closeMenu();
+                    if (source === 'camera') {
+                        openFileInput(cameraInput);
+                    } else if (source === 'files') {
+                        openFileInput(filesInput);
+                    } else {
+                        openFileInput(libraryInput);
+                    }
+                });
+            });
+
+            document.addEventListener('click', function (e) {
+                if (addWrap && !addWrap.contains(e.target)) {
+                    closeMenu();
+                }
+            });
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') {
+                    closeMenu();
+                }
+            });
+
+            [cameraInput, libraryInput, filesInput].forEach(function (input) {
+                if (!input) return;
+                input.addEventListener('change', function () {
+                    ingestFiles(input.files);
+                });
             });
         })();
     </script>

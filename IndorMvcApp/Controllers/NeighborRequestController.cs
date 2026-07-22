@@ -26,7 +26,7 @@ public class NeighborRequestController(
         var propiedad = await wizardService.ValidatePropiedadAsync(userId, propiedadId, cancellationToken);
         if (propiedad == null)
         {
-            return RedirectToAction("Index", "Home");
+            return await RedirectWhenPropertyUnavailableAsync(userId, cancellationToken);
         }
 
         wizardService.ClearDraft(HttpContext.Session);
@@ -46,7 +46,7 @@ public class NeighborRequestController(
         var propiedad = await wizardService.ValidatePropiedadAsync(userId, propiedadId, cancellationToken);
         if (propiedad == null)
         {
-            return RedirectToAction("Index", "Home");
+            return await RedirectWhenPropertyUnavailableAsync(userId, cancellationToken);
         }
 
         if (fresh == true)
@@ -97,7 +97,7 @@ public class NeighborRequestController(
         var propiedad = await wizardService.ValidatePropiedadAsync(userId, model.PropiedadId, cancellationToken);
         if (propiedad == null)
         {
-            return RedirectToAction("Index", "Home");
+            return await RedirectWhenPropertyUnavailableAsync(userId, cancellationToken);
         }
 
         var categories = await wizardService.LoadCategoriesAsync(cancellationToken);
@@ -427,7 +427,7 @@ public class NeighborRequestController(
         var propiedad = await wizardService.ValidatePropiedadAsync(userId, propiedadId, cancellationToken);
         if (propiedad == null)
         {
-            return RedirectToAction("Index", "Home");
+            return await RedirectWhenPropertyUnavailableAsync(userId, cancellationToken);
         }
 
         return View(await wizardService.BuildMineAsync(userId, propiedadId, tab, Url, cancellationToken));
@@ -577,6 +577,20 @@ public class NeighborRequestController(
 
     private IActionResult RestartWizard(int propiedadId) =>
         RedirectToAction(nameof(Create), new { propiedadId });
+
+    private async Task<IActionResult> RedirectWhenPropertyUnavailableAsync(
+        string userId,
+        CancellationToken cancellationToken)
+    {
+        var portalHome = await wizardService.ResolvePortalHomeUrlAsync(userId, 0, Url, cancellationToken);
+        if (!string.IsNullOrWhiteSpace(portalHome)
+            && portalHome.Contains("/Administrador", StringComparison.OrdinalIgnoreCase))
+        {
+            return Redirect(portalHome);
+        }
+
+        return RedirectToAction("Index", "Home");
+    }
 
     private bool IsNeighborRequestWizardReferrer()
     {
