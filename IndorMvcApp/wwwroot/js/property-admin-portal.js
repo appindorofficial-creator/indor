@@ -359,6 +359,107 @@
     document.querySelectorAll('[data-pa-service-search]').forEach(bindServiceSearch);
 
     /**
+     * Instant feed filter chips (All / Listings / Services / Promotions / Emergency).
+     * Avoids a full reload so switching from Anuncios → Todos updates immediately.
+     */
+    function normalizeFeedFilter(raw) {
+        var value = String(raw || 'All').trim().toLowerCase();
+        if (value === 'homes') {
+            return 'Listings';
+        }
+        if (value === 'providers' || value === 'neighborrequests') {
+            return 'Services';
+        }
+        if (value === 'listings') {
+            return 'Listings';
+        }
+        if (value === 'services') {
+            return 'Services';
+        }
+        if (value === 'promotions') {
+            return 'Promotions';
+        }
+        if (value === 'emergency') {
+            return 'Emergency';
+        }
+        return 'All';
+    }
+
+    function applyPaFeedFilter(root, rawFilter, pushUrl) {
+        var filter = normalizeFeedFilter(rawFilter);
+        root.setAttribute('data-pa-feed-active', filter);
+
+        root.querySelectorAll('[data-pa-feed-chip]').forEach(function (chip) {
+            var value = normalizeFeedFilter(chip.getAttribute('data-pa-feed-chip'));
+            var active = value === filter;
+            chip.classList.toggle('is-active', active);
+            if (active) {
+                chip.setAttribute('aria-current', 'page');
+            } else {
+                chip.removeAttribute('aria-current');
+            }
+        });
+
+        root.querySelectorAll('[data-pa-feed-panel]').forEach(function (panel) {
+            var allowed = String(panel.getAttribute('data-show-filters') || '')
+                .split(',')
+                .map(function (part) { return normalizeFeedFilter(part); })
+                .filter(Boolean);
+            panel.hidden = allowed.indexOf(filter) === -1;
+        });
+
+        var filterInput = root.querySelector('[data-pa-feed-filter-input]');
+        if (filterInput) {
+            filterInput.value = filter;
+        }
+
+        if (pushUrl) {
+            try {
+                var url = new URL(location.href);
+                url.searchParams.set('view', 'feed');
+                url.searchParams.set('filter', filter);
+                history.pushState({ paFeedFilter: filter }, '', url.pathname + url.search + url.hash);
+            } catch (err) {
+                // ignore URL update failures
+            }
+        }
+    }
+
+    function bindPaFeedFilters(root) {
+        if (!root || root.dataset.paFeedBound === 'true') {
+            return;
+        }
+        root.dataset.paFeedBound = 'true';
+
+        root.querySelectorAll('[data-pa-feed-chip]').forEach(function (chip) {
+            chip.addEventListener('click', function (event) {
+                var filter = chip.getAttribute('data-pa-feed-chip');
+                if (!filter) {
+                    return;
+                }
+                event.preventDefault();
+                applyPaFeedFilter(root, filter, true);
+            });
+        });
+
+        applyPaFeedFilter(root, root.getAttribute('data-pa-feed-active') || 'All', false);
+    }
+
+    document.querySelectorAll('[data-pa-feed-root]').forEach(bindPaFeedFilters);
+
+    window.addEventListener('popstate', function () {
+        document.querySelectorAll('[data-pa-feed-root]').forEach(function (root) {
+            var filter = 'All';
+            try {
+                filter = new URL(location.href).searchParams.get('filter') || 'All';
+            } catch (err) {
+                filter = root.getAttribute('data-pa-feed-active') || 'All';
+            }
+            applyPaFeedFilter(root, filter, false);
+        });
+    });
+
+    /**
      * Group Continue / Edit / Back into .pa-flow-actions (document-flow footer).
      * Also pulls orphan Edit/Back links that sit immediately after the form
      * (common on review screens) so they stay with the submit CTA.

@@ -147,12 +147,8 @@
                 || feedFilter.Equals("Services", StringComparison.OrdinalIgnoreCase);
             var showFeedEmergency = feedFilter.Equals("All", StringComparison.OrdinalIgnoreCase)
                 || feedFilter.Equals("Emergency", StringComparison.OrdinalIgnoreCase);
-            var showFeedEmpty = !showFeedActions && !showFeedEmergency;
-            var feedEmptyMessage = feedFilter.Equals("Listings", StringComparison.OrdinalIgnoreCase)
-                ? L["No nearby home listings yet. Check back soon or browse all categories."].ToString()
-                : feedFilter.Equals("Promotions", StringComparison.OrdinalIgnoreCase)
-                    ? L["No promotions in your area yet. Check back soon."].ToString()
-                    : L["No nearby items match your filters yet."].ToString();
+            var showListingsEmpty = feedFilter.Equals("Listings", StringComparison.OrdinalIgnoreCase);
+            var showPromotionsEmpty = feedFilter.Equals("Promotions", StringComparison.OrdinalIgnoreCase);
             var feedChips = new (string Value, string Label, string Icon, bool Danger)[]
             {
                 ("All", L["All"].ToString(), "fa-table-cells-large", false),
@@ -161,9 +157,10 @@
                 ("Promotions", L["Promotions"].ToString(), "fa-tag", false),
                 ("Emergency", L["Emergency"].ToString(), "fa-triangle-exclamation", true)
             };
+            <div class="pa-network-feed" data-pa-feed-root data-pa-feed-active="@feedFilter">
             <form class="pa-network-search" asp-controller="Administrador" asp-action="Index" method="get">
                 <input type="hidden" name="view" value="feed" />
-                <input type="hidden" name="filter" value="@feedFilter" />
+                <input type="hidden" name="filter" value="@feedFilter" data-pa-feed-filter-input />
                 <i class="fas fa-magnifying-glass"></i>
                 <input type="search" name="q" value="@Model.NetworkSearch" placeholder="@L["Search in my portfolio neighborhoods..."]" aria-label="@L["Search neighborhoods"]" />
             </form>
@@ -177,16 +174,20 @@
                        asp-route-view="feed"
                        asp-route-filter="@chip.Value"
                        asp-route-q="@Model.NetworkSearch"
+                       asp-route-propertyId="@(Model.ViewingProperty?.Id)"
                        class="pa-network-chip @(chip.Danger ? "pa-network-chip--danger" : null) @(active ? "is-active" : null)"
+                       data-pa-feed-chip="@chip.Value"
+                       data-no-nav-loading
                        aria-current="@(active ? "page" : null)">
                         <i class="fas @chip.Icon"></i> @chip.Label
                     </a>
                 }
             </div>
 
-            @if (showFeedActions)
-            {
-                <div class="pa-network-actions">
+            <div class="pa-network-actions"
+                 data-pa-feed-panel
+                 data-show-filters="All,Services"
+                 @(showFeedActions ? null : "hidden")>
                     @{
                         var neighborPropiedadId = Model.ViewingProperty?.PropiedadId
                             ?? Model.Properties.FirstOrDefault(p => p.PropiedadId is > 0)?.PropiedadId;
@@ -217,12 +218,14 @@
                             <small>@L["Track &amp; manage your requests and updates"]</small>
                         </a>
                     }
-                </div>
-            }
+            </div>
 
-            @if (showFeedEmergency)
-            {
-                <a asp-controller="Administrador" asp-action="EmergencyPlumbingDetails" class="pa-network-emergency">
+            <a asp-controller="Administrador"
+               asp-action="EmergencyPlumbingDetails"
+               class="pa-network-emergency"
+               data-pa-feed-panel
+               data-show-filters="All,Emergency"
+               @(showFeedEmergency ? null : "hidden")>
                     <span class="pa-network-emergency-badge">@L["EMERGENCY"]</span>
                     <div class="pa-network-emergency-main">
                         <span class="pa-network-emergency-icon"><i class="fas fa-bell"></i></span>
@@ -238,16 +241,24 @@
                         </div>
                         <span class="pa-network-emergency-call">@L["Call now"] <i class="fas fa-chevron-right"></i></span>
                     </div>
-                </a>
-            }
+            </a>
 
-            @if (showFeedEmpty)
-            {
-                <div class="pa-network-empty-feed">
-                    <i class="fas fa-inbox"></i>
-                    <p>@feedEmptyMessage</p>
-                </div>
-            }
+            <div class="pa-network-empty-feed"
+                 data-pa-feed-panel
+                 data-show-filters="Listings"
+                 @(showListingsEmpty ? null : "hidden")>
+                <i class="fas fa-inbox"></i>
+                <p>@L["No nearby home listings yet. Check back soon or browse all categories."]</p>
+            </div>
+
+            <div class="pa-network-empty-feed"
+                 data-pa-feed-panel
+                 data-show-filters="Promotions"
+                 @(showPromotionsEmpty ? null : "hidden")>
+                <i class="fas fa-inbox"></i>
+                <p>@L["No promotions in your area yet. Check back soon."]</p>
+            </div>
+            </div>
         }
     </section>
 </div>
