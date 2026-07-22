@@ -566,11 +566,45 @@ public static class PropertyAdministratorCatalog
             : $"{houseNumber.Trim()} {street}";
     }
 
-    public static string DefaultImageForType(string propertyType) => propertyType switch
+    /// <summary>Residential exterior photos for portfolio cards (not service/inspection assets).</summary>
+    public static string DefaultImageForType(string? propertyType) => propertyType switch
     {
-        "Condo" => "/priority-crawlspace-check.png",
-        "Duplex" => "/servicio1.jpeg",
-        "ShortTermRental" => "/servicio3.jpeg",
-        _ => "/inspeccion2.jpeg"
+        "Condo" => "/listing-home-2.png",
+        "Duplex" => "/listing-home-1.png",
+        "ShortTermRental" => "/openhouse-home.png",
+        "Townhouse" => "/listing-home-1.png",
+        "MultiFamily" => "/listing-home-2.png",
+        "SingleFamily" => "/welcome-house.png",
+        _ => "/welcome-house.png"
     };
+
+    /// <summary>
+    /// Returns a housing image when the stored URL is missing or points at a service/inspection asset.
+    /// </summary>
+    public static string ResolvePortfolioImageUrl(string? imageUrl, string? propertyType)
+    {
+        if (string.IsNullOrWhiteSpace(imageUrl) || IsNonHousingPortfolioImage(imageUrl))
+        {
+            return DefaultImageForType(propertyType);
+        }
+
+        return imageUrl.Trim();
+    }
+
+    private static bool IsNonHousingPortfolioImage(string url)
+    {
+        var normalized = url.Trim().ToLowerInvariant();
+        if (normalized.Contains("listing-home", StringComparison.Ordinal)
+            || normalized.Contains("openhouse-home", StringComparison.Ordinal)
+            || normalized.Contains("welcome-house", StringComparison.Ordinal)
+            || normalized.Contains("welcome-hero-house", StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        return normalized.Contains("/priority-", StringComparison.Ordinal)
+            || normalized.Contains("/servicio", StringComparison.Ordinal)
+            || normalized.Contains("/emergency-", StringComparison.Ordinal)
+            || System.Text.RegularExpressions.Regex.IsMatch(normalized, @"/inspeccion\d+\.jpe?g$");
+    }
 }

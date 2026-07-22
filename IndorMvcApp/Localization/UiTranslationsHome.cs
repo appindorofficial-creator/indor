@@ -531,6 +531,7 @@ public static class UiTranslationsHome
             ["Device type is required."] = "El tipo de dispositivo es obligatorio.",
 
             ["Property saved successfully."] = "Propiedad guardada correctamente.",
+            ["Property removed."] = "Propiedad eliminada.",
 
             ["An error occurred while saving the address. Please try again."] = "Ocurrió un error al guardar la dirección. Inténtalo de nuevo.",
 

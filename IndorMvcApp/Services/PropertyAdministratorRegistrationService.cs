@@ -117,7 +117,7 @@ public class PropertyAdministratorRegistrationService(
                 Location = p.Location,
                 PropertyType = p.PropertyType,
                 PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(p.PropertyType),
-                ImageUrl = p.ImageUrl,
+                ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(p.ImageUrl, p.PropertyType),
                 Status = p.Status
             })
             .ToListAsync(cancellationToken);

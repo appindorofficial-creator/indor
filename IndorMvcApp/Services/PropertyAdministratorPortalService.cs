@@ -73,7 +73,7 @@ public class PropertyAdministratorPortalService(
                 Location = p.Location,
                 PropertyType = p.PropertyType,
                 PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(p.PropertyType),
-                ImageUrl = p.ImageUrl,
+                ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(p.ImageUrl, p.PropertyType),
                 Status = p.Status,
                 OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(p.PropertyType)
             })
@@ -397,7 +397,7 @@ public class PropertyAdministratorPortalService(
             PropertyId = property.Id,
             PropertyName = property.PropertyName,
             Location = property.Location,
-            ImageUrl = property.ImageUrl ?? "/inspeccion2.jpeg",
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             StatusLabel = PropertyAdministratorDisplayLocalization.MapPropertyStatusLabel(property.Status),
             ActiveTab = activeTab,
             BackUrl = url.Action("Properties", "Administrador") ?? "#",
@@ -1090,7 +1090,7 @@ public class PropertyAdministratorPortalService(
             Location = property.Location,
             PropertyType = property.PropertyType,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             Status = property.Status,
             StatusLabel = PropertyAdministratorDisplayLocalization.MapPropertyStatusLabel(property.Status),
             DetailUrl = url.Action("PropertyDetail", "Administrador", new { id = property.Id }) ?? "#",

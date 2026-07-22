@@ -262,7 +262,7 @@ public class PropertyAdministratorRegistrationController(
 
         await SavePortfolioPropertyAsync(draft);
 
-        return RedirectAfterPropertyChange("Property saved successfully.");
+        return RedirectAfterPropertyChange(L["Property saved successfully."]);
     }
 
     [HttpGet]
@@ -477,7 +477,7 @@ public class PropertyAdministratorRegistrationController(
     public async Task<IActionResult> RemoveProperty(int id)
     {
         await registration.RemovePortfolioPropertyAsync(id);
-        return RedirectAfterPropertyChange("Property removed.");
+        return RedirectAfterPropertyChange(L["Property removed."]);
     }
 
     [HttpPost]
