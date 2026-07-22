@@ -8,13 +8,9 @@
         </div>
     </div>
 
-    <div class="pa-portfolio-actions">
+    <div class="pa-portfolio-actions pa-portfolio-actions--single">
         <a asp-controller="PropertyAdministratorRegistration" asp-action="Properties" asp-route-mode="manual" class="pa-portfolio-action">
             <i class="fas fa-plus"></i> @L["Add property"]
-        </a>
-        <span class="pa-portfolio-action-divider" aria-hidden="true"></span>
-        <a asp-controller="Administrador" asp-action="Properties" asp-route-from="manage" class="pa-portfolio-action">
-            <i class="fas fa-gear"></i> @L["Manage properties"]
         </a>
     </div>
 
