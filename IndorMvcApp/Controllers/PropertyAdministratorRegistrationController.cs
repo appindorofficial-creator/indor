@@ -431,7 +431,8 @@ public class PropertyAdministratorRegistrationController(
             return Challenge();
         }
 
-        var folder = Path.Combine(environment.WebRootPath, "uploads", "property-admin-registration", userId);
+        var webRoot = ResolveWebRootPath();
+        var folder = Path.Combine(webRoot, "uploads", "property-admin-registration", userId);
         Directory.CreateDirectory(folder);
 
         var saved = GetUploadedPropertyDocuments();
@@ -727,6 +728,39 @@ public class PropertyAdministratorRegistrationController(
         !string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl)
             ? returnUrl
             : null;
+
+    private string ResolveWebRootPath()
+    {
+        if (!string.IsNullOrWhiteSpace(environment.WebRootPath)
+            && Directory.Exists(environment.WebRootPath))
+        {
+            return environment.WebRootPath;
+        }
+
+        var contentRoot = !string.IsNullOrWhiteSpace(environment.ContentRootPath)
+            ? environment.ContentRootPath
+            : AppContext.BaseDirectory;
+
+        var candidates = new[]
+        {
+            Path.Combine(contentRoot, "wwwroot"),
+            Path.GetFullPath(Path.Combine(contentRoot, "..", "..", "..", "wwwroot")),
+            Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "wwwroot")),
+            Path.Combine(AppContext.BaseDirectory, "wwwroot")
+        };
+
+        foreach (var candidate in candidates)
+        {
+            if (Directory.Exists(candidate))
+            {
+                return candidate;
+            }
+        }
+
+        var fallback = Path.Combine(contentRoot, "wwwroot");
+        Directory.CreateDirectory(fallback);
+        return fallback;
+    }
 
     private async Task<PropertyAdministratorUploadDocumentsViewModel> BuildUploadDocumentsViewModelAsync()
     {

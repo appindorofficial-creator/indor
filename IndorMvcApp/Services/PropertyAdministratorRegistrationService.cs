@@ -242,8 +242,25 @@ public class PropertyAdministratorRegistrationService(
             throw new InvalidOperationException("You do not have access to this property.");
         }
 
+        var webRoot = !string.IsNullOrWhiteSpace(webHostEnvironment.WebRootPath)
+            && Directory.Exists(webHostEnvironment.WebRootPath)
+                ? webHostEnvironment.WebRootPath
+                : Path.Combine(
+                    !string.IsNullOrWhiteSpace(webHostEnvironment.ContentRootPath)
+                        ? webHostEnvironment.ContentRootPath
+                        : AppContext.BaseDirectory,
+                    "wwwroot");
+        if (!Directory.Exists(webRoot))
+        {
+            var projectWwwroot = Path.GetFullPath(Path.Combine(
+                webHostEnvironment.ContentRootPath ?? AppContext.BaseDirectory,
+                "..", "..", "..", "wwwroot"));
+            webRoot = Directory.Exists(projectWwwroot) ? projectWwwroot : webRoot;
+            Directory.CreateDirectory(webRoot);
+        }
+
         var folder = Path.Combine(
-            webHostEnvironment.WebRootPath,
+            webRoot,
             "uploads",
             "my-home",
             userId,
