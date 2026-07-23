@@ -839,6 +839,7 @@ public static class UiTranslationsPropertyAdministratorUi
         ["Property nickname (optional)"] = "Apodo de la propiedad (opcional)",
         ["Property overview"] = "Resumen de la propiedad",
         ["Property removed."] = "Propiedad eliminada.",
+        ["Remove this property? This cannot be undone."] = "¿Eliminar esta propiedad? Esta acción no se puede deshacer.",
         ["Property saved successfully."] = "Propiedad guardada correctamente.",
         ["Property sections"] = "Secciones de la propiedad",
         ["Property type"] = "Tipo de propiedad",

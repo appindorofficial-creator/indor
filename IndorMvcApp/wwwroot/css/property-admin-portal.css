@@ -71,6 +71,7 @@
 .pa-switch input:checked+span::before{transform:translateX(20px)}
 
 .pa-property-card{display:flex;gap:12px;padding:12px;border:1.5px solid #E2E8F0;border-radius:14px;background:#fff;margin-bottom:10px}
+.pa-property-card.is-confirming-remove{border-color:#FECACA;background:#FFF7F7}
 .pa-property-thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;background:#E2E8F0;flex-shrink:0}
 .pa-property-body{flex:1;min-width:0}
 .pa-property-body strong{display:block;font-size:.9rem;color:#0F172A;margin-bottom:2px}
@@ -79,6 +80,14 @@
 .pa-badge{font-size:.68rem;font-weight:700;padding:4px 8px;border-radius:999px;display:inline-flex;align-items:center;gap:4px}
 .pa-badge-type{background:#EFF6FF;color:#0066CC}
 .pa-badge-added{background:#ECFDF5;color:#059669}
+.pa-remove-property-confirm{margin-top:12px;padding-top:12px;border-top:1px solid #FECACA}
+.pa-remove-property-confirm p{margin:0 0 10px;font-size:.82rem;font-weight:600;color:#991B1B;line-height:1.35}
+.pa-remove-property-actions{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.pa-remove-property-actions .pa-reg-action-back,
+.pa-remove-property-actions .ob-btn{
+    flex:0 0 auto;width:auto;max-width:none;margin:0;
+    padding:8px 14px;font-size:.8rem;border-radius:10px;line-height:1.2
+}
 
 .pa-action-row{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border:1.5px solid #E2E8F0;border-radius:14px;background:#fff;margin-bottom:10px;text-decoration:none;color:inherit;font-weight:600;font-size:.88rem}
 .pa-action-row i:first-child{color:#0066CC;margin-right:8px}

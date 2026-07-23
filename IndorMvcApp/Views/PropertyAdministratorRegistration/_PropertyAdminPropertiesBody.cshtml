@@ -53,7 +53,7 @@ else if (TempData["PropertyAdminError"] is string err)
 
 @foreach (var property in Model.Properties)
 {
-    <div class="pa-property-card">
+    <div class="pa-property-card" data-pa-property-card>
         <img src="@(property.ImageUrl ?? "/welcome-house.png")" alt="" class="pa-property-thumb" />
         <div class="pa-property-body">
             <strong>@property.PropertyName</strong>
@@ -62,11 +62,29 @@ else if (TempData["PropertyAdminError"] is string err)
                 <span class="pa-badge pa-badge-type"><i class="fas fa-building"></i> @UiDisplayLocalization.Localize(L, property.PropertyTypeLabel)</span>
                 <span class="pa-badge pa-badge-added"><i class="fas fa-check"></i> @L["Added"]</span>
             </div>
+            <div class="pa-remove-property-confirm" hidden>
+                <p>@L["Remove this property? This cannot be undone."]</p>
+                <div class="pa-remove-property-actions">
+                    <button type="button" class="pa-reg-action-back pa-remove-property-cancel">@L["Cancel"]</button>
+                    <button type="submit" form="pa-remove-property-@property.Id" class="ob-btn ob-btn-primary pa-remove-property-submit">@L["Remove"]</button>
+                </div>
+            </div>
         </div>
-        <form asp-action="RemoveProperty" method="post" style="align-self:flex-start;">
+        <form asp-action="RemoveProperty"
+              method="post"
+              id="pa-remove-property-@property.Id"
+              class="pa-remove-property-form"
+              data-no-nav-loading
+              style="align-self:flex-start;">
             @Html.AntiForgeryToken()
             <input type="hidden" name="id" value="@property.Id" />
-            <button type="submit" class="ob-nav-back" aria-label="@L["Remove"]" style="width:32px;height:32px;font-size:.8rem;"><i class="fas fa-times"></i></button>
+            <button type="button"
+                    class="ob-nav-back pa-remove-property-trigger"
+                    aria-label="@L["Remove"]"
+                    aria-expanded="false"
+                    style="width:32px;height:32px;font-size:.8rem;">
+                <i class="fas fa-times"></i>
+            </button>
         </form>
     </div>
 }
@@ -224,3 +242,44 @@ else if (TempData["PropertyAdminError"] is string err)
         <i class="fas fa-chevron-right"></i>
     </a>
 }
+
+<script>
+(function () {
+    function closeConfirm(card) {
+        if (!card) return;
+        var panel = card.querySelector('.pa-remove-property-confirm');
+        var trigger = card.querySelector('.pa-remove-property-trigger');
+        if (panel) panel.hidden = true;
+        if (trigger) trigger.setAttribute('aria-expanded', 'false');
+        card.classList.remove('is-confirming-remove');
+    }
+
+    function openConfirm(card) {
+        document.querySelectorAll('[data-pa-property-card].is-confirming-remove').forEach(closeConfirm);
+        var panel = card.querySelector('.pa-remove-property-confirm');
+        var trigger = card.querySelector('.pa-remove-property-trigger');
+        if (panel) panel.hidden = false;
+        if (trigger) trigger.setAttribute('aria-expanded', 'true');
+        card.classList.add('is-confirming-remove');
+    }
+
+    document.querySelectorAll('[data-pa-property-card]').forEach(function (card) {
+        var trigger = card.querySelector('.pa-remove-property-trigger');
+        var cancel = card.querySelector('.pa-remove-property-cancel');
+        if (trigger) {
+            trigger.addEventListener('click', function () {
+                if (card.classList.contains('is-confirming-remove')) {
+                    closeConfirm(card);
+                } else {
+                    openConfirm(card);
+                }
+            });
+        }
+        if (cancel) {
+            cancel.addEventListener('click', function () {
+                closeConfirm(card);
+            });
+        }
+    });
+})();
+</script>
