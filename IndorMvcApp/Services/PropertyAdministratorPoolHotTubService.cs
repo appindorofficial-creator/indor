@@ -124,7 +124,7 @@ public class PropertyAdministratorPoolHotTubService(
             IsEmergency = input.Urgency == "Emergency",
             EtaLabel = $"{etaMinutes} min",
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Marco R. • Pool & Spa"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Marco R.",
             TechnicianRating = 4.9m,
@@ -142,7 +142,7 @@ public class PropertyAdministratorPoolHotTubService(
             PropertyName = property.PropertyName,
             VisitDate = visitDate.Date,
             TimeWindow = "ASAP",
-            ImageUrl = property.ImageUrl
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType)
         });
 
         await db.SaveChangesAsync(cancellationToken);
@@ -369,7 +369,7 @@ public class PropertyAdministratorPoolHotTubService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

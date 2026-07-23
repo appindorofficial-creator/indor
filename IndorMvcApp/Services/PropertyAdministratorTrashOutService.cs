@@ -126,7 +126,7 @@ public class PropertyAdministratorTrashOutService(
             IsEmergency = false,
             EtaLabel = PropertyAdministratorDisplayLocalization.L("7:00–9:00 PM"),
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Homecare runner • Trash Out"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Homecare runner",
             TechnicianRating = 4.8m,
@@ -144,7 +144,7 @@ public class PropertyAdministratorTrashOutService(
             PropertyName = property.PropertyName,
             VisitDate = visitDate.Date,
             TimeWindow = "7:00–9:00 PM",
-            ImageUrl = property.ImageUrl
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType)
         });
 
         await db.SaveChangesAsync(cancellationToken);
@@ -386,7 +386,7 @@ public class PropertyAdministratorTrashOutService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

@@ -116,7 +116,7 @@ public class PropertyAdministratorLawnCareService(
             IsEmergency = false,
             EtaLabel = etaLabel,
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Miguel R. • Lawn Care"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Miguel R.",
             TechnicianRating = 4.9m,
@@ -134,7 +134,7 @@ public class PropertyAdministratorLawnCareService(
             PropertyName = property.PropertyName,
             VisitDate = visitDate.Date,
             TimeWindow = arrivalWindow,
-            ImageUrl = property.ImageUrl
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType)
         });
 
         await db.SaveChangesAsync(cancellationToken);
@@ -369,7 +369,7 @@ public class PropertyAdministratorLawnCareService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

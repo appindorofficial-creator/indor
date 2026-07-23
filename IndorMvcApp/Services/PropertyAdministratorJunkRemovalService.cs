@@ -119,7 +119,7 @@ public class PropertyAdministratorJunkRemovalService(
             IsEmergency = input.PickupWhen == "Asap",
             EtaLabel = etaLabel,
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Marcus T. • Junk Removal"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Marcus T.",
             TechnicianRating = 4.9m,
@@ -137,7 +137,7 @@ public class PropertyAdministratorJunkRemovalService(
             PropertyName = property.PropertyName,
             VisitDate = visitDate.Date,
             TimeWindow = LabelTimeWindow(input.TimeWindow),
-            ImageUrl = property.ImageUrl
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType)
         });
 
         await db.SaveChangesAsync(cancellationToken);
@@ -372,7 +372,7 @@ public class PropertyAdministratorJunkRemovalService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

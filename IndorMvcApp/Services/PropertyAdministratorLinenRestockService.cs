@@ -81,7 +81,7 @@ public class PropertyAdministratorLinenRestockService(
             IsEmergency = false,
             EtaLabel = etaLabel,
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Maria R. • Restock"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Maria R.",
             TechnicianRating = 4.9m,
@@ -99,7 +99,7 @@ public class PropertyAdministratorLinenRestockService(
             PropertyName = property.PropertyName,
             VisitDate = visitDate.Date,
             TimeWindow = scheduleTimeWindow,
-            ImageUrl = property.ImageUrl
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType)
         });
 
         await db.SaveChangesAsync(cancellationToken);
@@ -310,7 +310,7 @@ public class PropertyAdministratorLinenRestockService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

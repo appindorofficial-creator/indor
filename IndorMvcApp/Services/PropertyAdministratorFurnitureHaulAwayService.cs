@@ -118,7 +118,7 @@ public class PropertyAdministratorFurnitureHaulAwayService(
             IsEmergency = input.PickupWhen == "Asap",
             EtaLabel = PropertyAdministratorDisplayLocalization.L("38 min"),
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Luis R. • Furniture Haul Away"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Luis R.",
             TechnicianRating = 4.9m,
@@ -136,7 +136,7 @@ public class PropertyAdministratorFurnitureHaulAwayService(
             PropertyName = property.PropertyName,
             VisitDate = visitDate.Date,
             TimeWindow = LabelTimeWindow(input.TimeWindow),
-            ImageUrl = property.ImageUrl
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType)
         });
 
         await db.SaveChangesAsync(cancellationToken);
@@ -379,7 +379,7 @@ public class PropertyAdministratorFurnitureHaulAwayService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

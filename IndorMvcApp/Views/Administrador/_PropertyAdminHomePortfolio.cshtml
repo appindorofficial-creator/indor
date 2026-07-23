@@ -42,8 +42,10 @@
             <a asp-controller="Administrador"
                asp-action="Properties"
                asp-route-from="switch"
+               asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"
                class="pa-viewing-switch"
                aria-label="@L["Switch property"]">
+                <span class="pa-viewing-switch-label">@L["Switch property"]</span>
                 <i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i>
             </a>
         </div>

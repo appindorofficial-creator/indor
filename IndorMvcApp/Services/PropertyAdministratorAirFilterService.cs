@@ -87,7 +87,7 @@ public class PropertyAdministratorAirFilterService(
             IsEmergency = false,
             EtaLabel = PropertyAdministratorDisplayLocalization.L("Tomorrow • 10:00 AM – 12:00 PM"),
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Daniel M. • Homecare"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Daniel M.",
             TechnicianRating = 4.9m,
@@ -105,7 +105,7 @@ public class PropertyAdministratorAirFilterService(
             PropertyName = property.PropertyName,
             VisitDate = tomorrow.Date,
             TimeWindow = "10:00 AM – 12:00 PM",
-            ImageUrl = property.ImageUrl
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType)
         });
 
         await db.SaveChangesAsync(cancellationToken);
@@ -308,7 +308,7 @@ public class PropertyAdministratorAirFilterService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

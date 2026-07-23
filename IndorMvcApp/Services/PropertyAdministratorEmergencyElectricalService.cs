@@ -121,7 +121,7 @@ public class PropertyAdministratorEmergencyElectricalService(
             IsEmergency = true,
             EtaLabel = null,
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Matching a verified electrician"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TimelineStep = 1
         };
@@ -385,7 +385,7 @@ public class PropertyAdministratorEmergencyElectricalService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

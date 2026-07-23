@@ -79,7 +79,7 @@ public class PropertyAdministratorSmokeDetectorService(
             IsEmergency = false,
             EtaLabel = PropertyAdministratorDisplayLocalization.L("Tomorrow • 1:00 PM – 3:00 PM"),
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Daniel M. • Homecare"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Daniel M.",
             TechnicianRating = 4.9m,
@@ -97,7 +97,7 @@ public class PropertyAdministratorSmokeDetectorService(
             PropertyName = property.PropertyName,
             VisitDate = tomorrow.Date,
             TimeWindow = "1:00 PM – 3:00 PM",
-            ImageUrl = property.ImageUrl
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType)
         });
 
         await db.SaveChangesAsync(cancellationToken);
@@ -298,7 +298,7 @@ public class PropertyAdministratorSmokeDetectorService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

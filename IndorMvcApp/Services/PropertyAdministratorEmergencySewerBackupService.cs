@@ -113,7 +113,7 @@ public class PropertyAdministratorEmergencySewerBackupService(
             IsEmergency = true,
             EtaLabel = PropertyAdministratorDisplayLocalization.L("24 min"),
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Carlos M. • Sewer / drain"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Carlos M.",
             TechnicianRating = 4.9m,
@@ -333,7 +333,7 @@ public class PropertyAdministratorEmergencySewerBackupService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

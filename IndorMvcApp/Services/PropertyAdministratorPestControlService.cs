@@ -124,7 +124,7 @@ public class PropertyAdministratorPestControlService(
             IsEmergency = input.Urgency == "Emergency",
             EtaLabel = $"{etaMinutes} min",
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Luis R. • Pest Control"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Luis R.",
             TechnicianRating = 4.9m,
@@ -142,7 +142,7 @@ public class PropertyAdministratorPestControlService(
             PropertyName = property.PropertyName,
             VisitDate = visitDate.Date,
             TimeWindow = LabelArrivalWindow(input.PreferredArrival),
-            ImageUrl = property.ImageUrl
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType)
         });
 
         await db.SaveChangesAsync(cancellationToken);
@@ -369,7 +369,7 @@ public class PropertyAdministratorPestControlService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

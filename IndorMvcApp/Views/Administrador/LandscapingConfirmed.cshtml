@@ -27,15 +27,14 @@
     </div>
 
     @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
-    {
-        <div class="pa-viewing-strip">
+    {        <a href="@(Url.Action("Properties", "Administrador", new { from = "switch", returnUrl = Context.Request.Path + Context.Request.QueryString }))" class="pa-viewing-strip pa-viewing-strip--switchable" aria-label="@L["Switch property"]">
             <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
             <div class="pa-viewing-strip-main">
                 <strong>@Model.ViewingProperty.PropertyName</strong>
                 <small>@propertyLabel</small>
             </div>
-            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="@L["Switch property"]"><i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i></a>
-        </div>
+            <span class="pa-viewing-switch" aria-hidden="true"><span class="pa-viewing-switch-label">@L["Switch property"]</span><i class="fas fa-chevron-down pa-portfolio-chevron"></i></span>
+        </a>
     }
 
     <article class="pa-tech-card">

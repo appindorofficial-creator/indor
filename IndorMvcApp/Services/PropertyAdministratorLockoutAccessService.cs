@@ -110,7 +110,7 @@ public class PropertyAdministratorLockoutAccessService(
             IsEmergency = true,
             EtaLabel = PropertyAdministratorDisplayLocalization.L("18 min"),
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Alex R. • Access"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Alex R.",
             TechnicianRating = 4.9m,
@@ -257,7 +257,7 @@ public class PropertyAdministratorLockoutAccessService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

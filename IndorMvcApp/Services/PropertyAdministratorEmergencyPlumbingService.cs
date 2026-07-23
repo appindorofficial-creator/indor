@@ -111,7 +111,7 @@ public class PropertyAdministratorEmergencyPlumbingService(
             IsEmergency = true,
             EtaLabel = PropertyAdministratorDisplayLocalization.L("22 min"),
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Carlos M. • Plumbing"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Carlos M.",
             TechnicianRating = 4.9m,
@@ -339,7 +339,7 @@ public class PropertyAdministratorEmergencyPlumbingService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

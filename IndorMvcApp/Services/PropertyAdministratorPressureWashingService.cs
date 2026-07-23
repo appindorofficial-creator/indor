@@ -117,7 +117,7 @@ public class PropertyAdministratorPressureWashingService(
             IsEmergency = false,
             EtaLabel = LabelEta(input.ArrivalWindow),
             TeamLabel = PropertyAdministratorDisplayLocalization.L("CleanWash Exterior Crew"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "CleanWash Exterior Crew",
             TechnicianRating = 4.9m,
@@ -135,7 +135,7 @@ public class PropertyAdministratorPressureWashingService(
             PropertyName = property.PropertyName,
             VisitDate = visitDate.Date,
             TimeWindow = LabelTimeWindow(input.ArrivalWindow),
-            ImageUrl = property.ImageUrl
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType)
         });
 
         await db.SaveChangesAsync(cancellationToken);
@@ -370,7 +370,7 @@ public class PropertyAdministratorPressureWashingService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

@@ -116,7 +116,7 @@ public class PropertyAdministratorLandscapingService(
             IsEmergency = false,
             EtaLabel = PropertyAdministratorDisplayLocalization.L("Tomorrow, 10:00 AM"),
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Marco R. • Landscaping"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Marco R.",
             TechnicianRating = 4.9m,
@@ -134,7 +134,7 @@ public class PropertyAdministratorLandscapingService(
             PropertyName = property.PropertyName,
             VisitDate = visitDate.Date,
             TimeWindow = LabelTimeWindow(input.TimeWindow),
-            ImageUrl = property.ImageUrl
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType)
         });
 
         await db.SaveChangesAsync(cancellationToken);
@@ -364,7 +364,7 @@ public class PropertyAdministratorLandscapingService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

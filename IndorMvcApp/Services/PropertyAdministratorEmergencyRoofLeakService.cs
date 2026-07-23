@@ -112,7 +112,7 @@ public class PropertyAdministratorEmergencyRoofLeakService(
             IsEmergency = true,
             EtaLabel = PropertyAdministratorDisplayLocalization.L("26 min"),
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Miguel R. • Roof repair"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Miguel R.",
             TechnicianRating = 4.9m,
@@ -340,7 +340,7 @@ public class PropertyAdministratorEmergencyRoofLeakService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

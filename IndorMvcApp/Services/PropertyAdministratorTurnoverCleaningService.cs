@@ -73,7 +73,7 @@ public class PropertyAdministratorTurnoverCleaningService(
             IsEmergency = false,
             EtaLabel = PropertyAdministratorDisplayLocalization.L("Today • 11:00 AM – 2:00 PM"),
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Maria R. • Turnover"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Maria R.",
             TechnicianRating = 4.9m,
@@ -91,7 +91,7 @@ public class PropertyAdministratorTurnoverCleaningService(
             PropertyName = property.PropertyName,
             VisitDate = todayVisit.Date,
             TimeWindow = "11:00 AM – 2:00 PM",
-            ImageUrl = property.ImageUrl
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType)
         });
 
         await db.SaveChangesAsync(cancellationToken);
@@ -309,7 +309,7 @@ public class PropertyAdministratorTurnoverCleaningService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

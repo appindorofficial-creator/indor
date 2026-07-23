@@ -16,20 +16,10 @@
 
     
 
-    @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
-    {
-        <div class="pa-viewing-strip pa-viewing-strip--card">
-            <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
-            <div class="pa-viewing-strip-main">
-                <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
-                <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
-            </div>
-            @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
-            {
-                <span class="pa-rental-ready-badge"><span class="pa-online-dot"></span> @UiDisplayLocalization.Localize(L, Model.PropertyStatusLabel)</span>
-            }
-        </div>
+    @{
+        ViewBag.BadgeLabel = Model.PropertyStatusLabel;
     }
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
 
     <form asp-action="PreventiveMaintenanceServices" method="post" class="pa-preventive-form">
         @Html.AntiForgeryToken()

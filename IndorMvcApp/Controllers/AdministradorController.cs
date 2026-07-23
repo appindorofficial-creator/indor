@@ -2289,7 +2289,7 @@ public class AdministradorController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> Properties(string? from, string? filter)
+    public async Task<IActionResult> Properties(string? from, string? filter, string? returnUrl)
     {
         if (await EnsureRegisteredAsync() is { } redirect)
         {
@@ -2297,7 +2297,7 @@ public class AdministradorController(
         }
 
         ViewBag.NavActive = "properties";
-        return View(await portal.GetPropertiesAsync(Url, from, filter));
+        return View(await portal.GetPropertiesAsync(Url, from, filter, returnUrl));
     }
 
     [HttpGet]

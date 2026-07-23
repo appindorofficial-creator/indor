@@ -124,7 +124,7 @@ public class PropertyAdministratorEmergencyFloodService(
             IsEmergency = true,
             EtaLabel = PropertyAdministratorDisplayLocalization.L("19 min"),
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Alex M. • Mitigation"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Alex M.",
             TechnicianRating = 4.9m,
@@ -424,7 +424,7 @@ public class PropertyAdministratorEmergencyFloodService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }

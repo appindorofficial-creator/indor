@@ -1,7 +1,10 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorFlowPropertyViewModel
+@using IndorMvcApp.Helpers
 @if (Model != null && Model.Id > 0)
 {
-    <div class="pa-viewing-strip">
+    var switchUrl = PropertyAdministratorPropertySwitch.BuildSwitchListUrl(
+        Url, Context.Request.Path, Context.Request.QueryString);
+    <a href="@switchUrl" class="pa-viewing-strip pa-viewing-strip--switchable" aria-label="@L["Switch property"]">
         <img src="@(Model.ImageUrl ?? "/welcome-house.png")" alt="" class="pa-viewing-strip-thumb" />
         <div class="pa-viewing-strip-main">
             <strong>@L.T("Viewing: {0}", Model.PropertyName)</strong>
@@ -11,8 +14,9 @@
             }
             <small>@UiDisplayLocalization.Localize(L, Model.PropertyTypeLabel) • @Model.Location</small>
         </div>
-        <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="@L["Switch property"]">
-            <i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i>
-        </a>
-    </div>
+        <span class="pa-viewing-switch" aria-hidden="true">
+            <span class="pa-viewing-switch-label">@L["Switch property"]</span>
+            <i class="fas fa-chevron-down pa-portfolio-chevron"></i>
+        </span>
+    </a>
 }

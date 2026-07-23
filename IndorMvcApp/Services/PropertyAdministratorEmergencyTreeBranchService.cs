@@ -119,7 +119,7 @@ public class PropertyAdministratorEmergencyTreeBranchService(
             IsEmergency = true,
             EtaLabel = PropertyAdministratorDisplayLocalization.L("28 min"),
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Miguel R. • Tree service"),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
             TechnicianName = "Miguel R.",
             TechnicianRating = 4.9m,
@@ -395,7 +395,7 @@ public class PropertyAdministratorEmergencyTreeBranchService(
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyTypeLabel = PropertyAdministratorDisplayLocalization.LabelPropertyType(property.PropertyType),
-            ImageUrl = property.ImageUrl,
+            ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             OccupancyLabel = PropertyAdministratorDisplayLocalization.OccupancyLabel(property.PropertyType)
         };
     }
