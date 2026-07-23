@@ -242,6 +242,8 @@
                 </a>
             }
         }
+        @* Create-job CTA lives once on Home under Acciones rápidas ("Nuevo Trabajo").
+           Do not add "+ Nuevo Trabajo" here — QA reported 4 duplicate create-job entry points. *@
         <div class="prv-pro-home-jobs-actions">
             <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="today" class="prv-pro-home-jobs-action prv-pro-home-jobs-action--schedule">
                 @L["View all"] <i class="fas fa-chevron-right"></i>

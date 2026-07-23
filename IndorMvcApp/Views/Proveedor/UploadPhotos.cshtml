@@ -48,7 +48,7 @@
             else if (Model.TotalJobsAvailable == 0)
             {
                 <p>@L["You don't have any jobs yet. Create a job first, then return here to add photos."]</p>
-                <a asp-controller="Proveedor" asp-action="CreateJob" class="upp-btn upp-btn--primary">@L["Create Job"]</a>
+                <a asp-controller="Proveedor" asp-action="Jobs" class="upp-btn upp-btn--outline">@L["Back to Jobs"]</a>
             }
             else
             {

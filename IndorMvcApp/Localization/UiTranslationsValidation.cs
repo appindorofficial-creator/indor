@@ -15,6 +15,8 @@ public static class UiTranslationsValidation
             ["Email address is required."] = "El correo electrónico es obligatorio.",
             ["Enter a valid email address."] = "Ingresa un correo electrónico válido.",
             ["Enter a valid email address with a complete domain (e.g. name@email.com)."] = "Ingresa un correo válido con un dominio completo (ej. nombre@correo.com).",
+            ["Enter a valid guest arrival time (for example, 4:00 PM)."] =
+                "Ingresa una hora válida de llegada del huésped (por ejemplo, 4:00 p. m.).",
             ["Phone number is required."] = "El número de teléfono es obligatorio.",
             ["Enter a valid 10-digit US phone number (e.g. 555 123 4567)."] = "Ingresa un número válido de 10 dígitos (EE. UU.) (ej. 555 123 4567).",
             ["Please select a client role."] = "Selecciona un rol de cliente.",

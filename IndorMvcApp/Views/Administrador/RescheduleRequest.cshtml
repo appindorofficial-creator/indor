@@ -1,0 +1,99 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorRescheduleFormViewModel
+@{
+    ViewData["Title"] = L["Reschedule service"];
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Reschedule service"].ToString();
+    ViewBag.FlowSubtitle = L["Pick a new date and time for this visit."].ToString();
+    ViewBag.FlowSteps = new[] { L["Service"].ToString(), L["Details"].ToString(), L["Done"].ToString() };
+    ViewBag.FlowBackUrl = Url.Action(Model.FromAction, "Administrador", new { id = Model.RequestId })
+        ?? Url.Action("Tasks", "Administrador");
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    @if (Model.ViewingProperty != null)
+    {
+        @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+    }
+
+    <article class="pa-summary-card-block" style="margin-bottom:16px;">
+        <h2><i class="fas fa-clipboard-list"></i> @L["Current schedule"]</h2>
+        <ul class="pa-summary-detail-list">
+            <li>
+                <i class="fas fa-broom"></i>
+                <span>@L["Service"]</span>
+                <strong>@UiDisplayLocalization.Localize(L, Model.ServiceTitle)</strong>
+            </li>
+            <li>
+                <i class="fas fa-house"></i>
+                <span>@L["Property"]</span>
+                <strong>@Model.PropertyName</strong>
+            </li>
+            <li>
+                <i class="fas fa-clock"></i>
+                <span>@L["Scheduled"]</span>
+                <strong>@UiDisplayLocalization.Localize(L, Model.CurrentScheduleLabel)</strong>
+            </li>
+        </ul>
+    </article>
+
+    <form asp-action="RescheduleRequest" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="RequestId" value="@Model.RequestId" />
+        <input type="hidden" name="FromAction" value="@Model.FromAction" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label><i class="fas fa-calendar pa-q-icon"></i> @L["New date"]</label>
+            <div class="pa-field">
+                <i class="fas fa-calendar-day"></i>
+                <input type="date" name="VisitDate" value="@Model.VisitDate" required />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-clock pa-q-icon"></i> @L["New time window"]</label>
+            <div class="pa-field-row pa-field-row--2">
+                <div class="pa-field">
+                    <i class="fas fa-play"></i>
+                    <select name="StartTimeLabel" required>
+                        @foreach (var time in Model.TimeOptions)
+                        {
+                            if (Model.StartTimeLabel == time)
+                            {
+                                <option value="@time" selected>@time</option>
+                            }
+                            else
+                            {
+                                <option value="@time">@time</option>
+                            }
+                        }
+                    </select>
+                </div>
+                <div class="pa-field">
+                    <i class="fas fa-stop"></i>
+                    <select name="EndTimeLabel" required>
+                        @foreach (var time in Model.TimeOptions)
+                        {
+                            if (Model.EndTimeLabel == time)
+                            {
+                                <option value="@time" selected>@time</option>
+                            }
+                            else
+                            {
+                                <option value="@time">@time</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Confirm reschedule"]</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Cancel"]</a>
+    </form>
+</div>

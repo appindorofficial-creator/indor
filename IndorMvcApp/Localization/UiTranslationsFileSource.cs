@@ -9,5 +9,10 @@ public static class UiTranslationsFileSource
             ["Photo Library"] = "Biblioteca de fotos",
             ["Take Photo"] = "Tomar foto",
             ["Choose Files"] = "Elegir archivos",
+            // Stored enrichment / lookup fallbacks shown on confirmation screens
+            ["Address not found on Redfin or Zillow"] = "Dirección no encontrada en Redfin o Zillow",
+            ["Address not found on Redfin or Zillow."] = "Dirección no encontrada en Redfin o Zillow.",
+            ["Address not found."] = "Dirección no encontrada.",
+            ["Address not found"] = "Dirección no encontrada",
         };
 }

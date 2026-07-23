@@ -94,10 +94,14 @@
     </article>
 
     <div class="pa-action-grid">
-        <button type="button" class="pa-action-tile"><i class="fas fa-phone"></i><span>@L["Call crew"]</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>@L["Message guest"]</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-calendar"></i><span>@L["Reschedule"]</span></button>
-        <a asp-controller="Administrador" asp-action="Tasks" class="pa-action-tile">
+        <a href="tel:+18005554636" class="pa-action-tile"><i class="fas fa-phone"></i><span>@L["Call crew"]</span></a>
+        <a href="@PropertyAdministratorFlowServiceSupport.ServiceRequestMessageUrl(Url, Model.RequestId, "guest", Context.Request.Path + Context.Request.QueryString)" class="pa-action-tile">
+            <i class="fas fa-comment"></i><span>@L["Message guest"]</span>
+        </a>
+        <a href="@PropertyAdministratorFlowServiceSupport.RescheduleUrl(Url, Model.RequestId, "PressureWashingConfirmed")" class="pa-action-tile">
+            <i class="fas fa-calendar"></i><span>@L["Reschedule"]</span>
+        </a>
+        <a href="@PropertyAdministratorFlowServiceSupport.ViewDetailsUrl(Url)" class="pa-action-tile">
             <i class="fas fa-file-lines"></i><span>@L["View details"]</span>
         </a>
     </div>

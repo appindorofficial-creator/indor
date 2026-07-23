@@ -16,6 +16,13 @@ public static class PropertyAdministratorFlowServiceSupport
     public static string ServicesUrl(IUrlHelper url, int? propertyId = null) =>
         url.Action("Services", "Administrador", new { propertyId }) ?? "#";
 
+    /// <summary>
+    /// Confirmed-screen "Reschedule" destination. <paramref name="fromAction"/> is the confirmed
+    /// action name to return to after saving (e.g. TurnoverCleaningConfirmed).
+    /// </summary>
+    public static string RescheduleUrl(IUrlHelper url, int requestId, string fromAction) =>
+        url.Action("RescheduleRequest", "Administrador", new { id = requestId, from = fromAction }) ?? "#";
+
     public static PropertyAdministratorPortalShellViewModel BuildShell(IndorPropertyAdministrator admin)
     {
         var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()
@@ -138,4 +145,18 @@ public static class PropertyAdministratorFlowServiceSupport
             }
         ];
     }
+
+    /// <summary>
+    /// Confirmed-screen action destinations shared by PA service wizards
+    /// (message / recurring / details). Reschedule uses <see cref="RescheduleUrl"/>.
+    /// </summary>
+    public static string ServiceRequestMessageUrl(
+        IUrlHelper url, int requestId, string recipient = "cohost", string? returnUrl = null) =>
+        url.Action("ServiceRequestMessage", "Administrador", new { id = requestId, recipient, returnUrl }) ?? "#";
+
+    public static string AddRecurringUrl(IUrlHelper url, int? propertyId) =>
+        url.Action("PreventiveMaintenanceServices", "Administrador", new { propertyId }) ?? "#";
+
+    public static string ViewDetailsUrl(IUrlHelper url, string? filter = "inprogress") =>
+        url.Action("Tasks", "Administrador", new { filter }) ?? "#";
 }

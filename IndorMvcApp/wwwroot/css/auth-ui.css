@@ -1088,6 +1088,23 @@ form .btn-primary[type="submit"] {
     padding: 16px 22px;
 }
 
+/* Delete-account CTA must stay red + clickable (overrides .btn-primary !important blue). */
+.btn-primary--danger-delete,
+form .btn-primary.btn-primary--danger-delete[type="submit"] {
+    background: #DC2626 !important;
+    border-color: #DC2626 !important;
+    box-shadow: 0 8px 22px rgba(220, 38, 38, 0.28);
+    opacity: 1;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.btn-primary--danger-delete:hover:not(:disabled),
+form .btn-primary.btn-primary--danger-delete[type="submit"]:hover:not(:disabled) {
+    background: #B91C1C !important;
+    border-color: #B91C1C !important;
+}
+
 .btn-primary--submit .btn-label,
 form .btn-primary[type="submit"] .btn-label {
     font-weight: 700;

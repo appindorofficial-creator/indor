@@ -173,14 +173,17 @@
         </nav>
 
         <div class="prv-pro-profile-v2-stack">
-            <a asp-controller="Proveedor" asp-action="EditProfile" class="prv-pro-profile-v2-card" aria-label="@L["Edit business information"]">
-                <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--compact">
+            <section class="prv-pro-profile-v2-card" aria-labelledby="prv-biz-info-heading">
+                <a asp-controller="Proveedor"
+                   asp-action="EditProfile"
+                   class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--compact prv-pro-profile-v2-card-head--link"
+                   aria-label="@L["Edit business information"]">
                     <div class="prv-pro-profile-v2-card-head-main">
                         <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-building"></i></span>
-                        <div><h3>@L["Business Information"]</h3></div>
+                        <div><h3 id="prv-biz-info-heading">@L["Business Information"]</h3></div>
                     </div>
                     <i class="fas fa-chevron-right prv-pro-profile-v2-card-chevron"></i>
-                </header>
+                </a>
                 <div class="prv-pro-profile-v2-biz-row">
                     <span class="prv-pro-profile-v2-biz-icon"><i class="fas fa-phone"></i></span>
                     <span>@L["Phone"]</span>
@@ -196,7 +199,7 @@
                     <span>@L["Business Hours"]</span>
                     <strong>@hoursLabel</strong>
                 </div>
-            </a>
+            </section>
 
             <a asp-controller="Proveedor" asp-action="ProfileBusiness" class="prv-pro-profile-v2-card prv-pro-profile-v2-card--areas" aria-label="@L["Edit service areas"]">
                 <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--areas">

@@ -1,3 +1,4 @@
+@using System.Text.Json
 @model IndorMvcApp.ViewModels.MyHomeDocumentFormViewModel
 @{
     ViewData["Title"] = L["Upload Document"];
@@ -77,9 +78,67 @@
 @section Scripts {
 <script>
     (function () {
+        var form = document.getElementById('documentCreateForm');
         var fileInput = document.getElementById('documentFile');
         var fileName = document.getElementById('documentFileName');
         var picker = document.getElementById('documentFilePicker');
+        var msgs = {
+            fill: @Html.Raw(JsonSerializer.Serialize(L["Please fill out this field."].ToString())),
+            select: @Html.Raw(JsonSerializer.Serialize(L["Please select an item in the list."].ToString()))
+        };
+
+        // Override browser-locale HTML5 tooltips (e.g. Spanish OS → "Llena este campo")
+        // so messages follow app UI culture via L[].
+        if (form) {
+            form.noValidate = true;
+            form.setAttribute('novalidate', 'novalidate');
+
+            function validityMessage(field) {
+                if (!field.validity.valueMissing) {
+                    return msgs.fill;
+                }
+                if (field.tagName === 'SELECT') {
+                    return msgs.select;
+                }
+                return msgs.fill;
+            }
+
+            function clearFieldValidity(field) {
+                field.setCustomValidity('');
+            }
+
+            form.addEventListener('submit', function (e) {
+                var fields = form.querySelectorAll('input, select, textarea');
+                var firstInvalid = null;
+
+                fields.forEach(function (field) {
+                    clearFieldValidity(field);
+                });
+
+                fields.forEach(function (field) {
+                    if (!firstInvalid && !field.checkValidity()) {
+                        firstInvalid = field;
+                    }
+                });
+
+                if (!firstInvalid) {
+                    return;
+                }
+
+                e.preventDefault();
+                firstInvalid.setCustomValidity(validityMessage(firstInvalid));
+                firstInvalid.reportValidity();
+                if (typeof firstInvalid.focus === 'function') {
+                    firstInvalid.focus({ preventScroll: true });
+                }
+            });
+
+            form.querySelectorAll('input, select, textarea').forEach(function (field) {
+                field.addEventListener('input', function () { clearFieldValidity(field); });
+                field.addEventListener('change', function () { clearFieldValidity(field); });
+            });
+        }
+
         if (!fileInput || !fileName || !picker) return;
 
         var emptyLabel = fileName.dataset.emptyLabel || 'No file selected';

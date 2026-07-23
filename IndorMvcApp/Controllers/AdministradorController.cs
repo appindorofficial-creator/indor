@@ -26,6 +26,7 @@ public class AdministradorController(
     IPropertyAdministratorAirFilterService airFilter,
     IPropertyAdministratorSmokeDetectorService smokeDetector,
     IPropertyAdministratorTurnoverCleaningService turnoverCleaning,
+    IPropertyAdministratorRescheduleService reschedule,
     IPropertyAdministratorStandardCleaningService standardCleaning,
     IPropertyAdministratorLinenRestockService linenRestock,
     IPropertyAdministratorPetDeepCleanService petDeepClean,
@@ -2058,6 +2059,16 @@ public class AdministradorController(
             return redirect;
         }
 
+        if (!turnoverCleaning.TryNormalizeGuestArrivalTime(input.GuestArrivalTime, out var normalizedTime, out _))
+        {
+            ViewBag.HideBottomNav = true;
+            return View(await turnoverCleaning.GetFormAsync(
+                Url,
+                input,
+                "Enter a valid guest arrival time (for example, 4:00 PM)."));
+        }
+
+        input.GuestArrivalTime = normalizedTime;
         var requestId = await turnoverCleaning.SubmitAsync(input);
         return RedirectToAction(nameof(TurnoverCleaningConfirmed), new { id = requestId });
     }
@@ -2078,6 +2089,47 @@ public class AdministradorController(
 
         ViewBag.HideBottomNav = true;
         return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> RescheduleRequest(int id, string? from)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await reschedule.GetFormAsync(Url, id, from);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Tasks));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RescheduleRequest(PropertyAdministratorRescheduleSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var fromAction = await reschedule.SubmitAsync(input);
+        if (string.IsNullOrWhiteSpace(fromAction))
+        {
+            return RedirectToAction(nameof(RescheduleRequest), new { id = input.RequestId, from = input.FromAction });
+        }
+
+        if (string.Equals(fromAction, nameof(Tasks), StringComparison.OrdinalIgnoreCase))
+        {
+            return RedirectToAction(nameof(Tasks), new { filter = "scheduled" });
+        }
+
+        return RedirectToAction(fromAction, new { id = input.RequestId });
     }
 
     [HttpGet]
@@ -2340,6 +2392,65 @@ public class AdministradorController(
 
         ViewBag.NavActive = "tasks";
         return View(await portal.GetTasksAsync(Url, filter));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ServiceRequestMessage(int id, string? recipient, string? returnUrl)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await portal.GetServiceRequestMessageAsync(Url, id, recipient, returnUrl);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Tasks), new { filter = "inprogress" });
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ServiceRequestMessage(PropertyAdministratorServiceRequestMessageInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (string.IsNullOrWhiteSpace(input.MessageBody))
+        {
+            var retry = await portal.GetServiceRequestMessageAsync(Url, input.RequestId, input.RecipientKey, input.ReturnUrl);
+            if (retry == null)
+            {
+                return RedirectToAction(nameof(Tasks), new { filter = "inprogress" });
+            }
+
+            retry.MessageBody = input.MessageBody ?? "";
+            ViewBag.HideBottomNav = true;
+            ModelState.AddModelError(nameof(input.MessageBody), localizer["Please enter a message."]);
+            return View(retry);
+        }
+
+        var sent = await portal.SendServiceRequestMessageAsync(input);
+        if (!sent)
+        {
+            return RedirectToAction(nameof(Tasks), new { filter = "inprogress" });
+        }
+
+        var confirmation = await portal.GetServiceRequestMessageAsync(Url, input.RequestId, input.RecipientKey, input.ReturnUrl);
+        if (confirmation == null)
+        {
+            return RedirectToAction(nameof(Tasks), new { filter = "inprogress" });
+        }
+
+        confirmation.Sent = true;
+        confirmation.MessageBody = input.MessageBody.Trim();
+        ViewBag.HideBottomNav = true;
+        return View(confirmation);
     }
 
     [HttpGet]

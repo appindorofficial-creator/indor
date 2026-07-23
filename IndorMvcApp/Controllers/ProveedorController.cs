@@ -1250,6 +1250,12 @@ public partial class ProveedorController(
         }
 
         input ??= new ProviderProUploadReportDetailsInput();
+        var entity = proveedor.Entity;
+        if (entity == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
         var draft = GetUploadReportDraft();
         if (!draft.JobId.HasValue)
         {
@@ -1257,6 +1263,7 @@ public partial class ProveedorController(
             return RedirectToAction(nameof(UploadReport));
         }
 
+        // Optional form fields bind as null — never call .Trim() on them directly (QA NRE ~line 1250).
         draft.Title = TrimOrEmpty(input.Title);
         draft.Summary = TrimOrEmpty(input.Summary);
         draft.WorkCompleted = TrimOrEmpty(input.WorkCompleted);
@@ -1277,7 +1284,7 @@ public partial class ProveedorController(
             return RedirectToAction(nameof(UploadReportDetails));
         }
 
-        var reportId = await proData.SaveUploadReportFromDraftAsync(proveedor.Entity!.Id, draft, cancellationToken);
+        var reportId = await proData.SaveUploadReportFromDraftAsync(entity.Id, draft, cancellationToken);
         if (!reportId.HasValue)
         {
             TempData["UploadReportError"] = localizer["We couldn't save your report. Please select the job again and try once more."].ToString();

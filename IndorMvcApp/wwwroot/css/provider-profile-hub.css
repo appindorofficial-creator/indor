@@ -363,6 +363,21 @@ a.prv-pro-profile-v2-card {
     margin-bottom: 8px;
 }
 
+a.prv-pro-profile-v2-card-head--link {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    text-decoration: none;
+    color: inherit;
+    -webkit-tap-highlight-color: transparent;
+}
+
+a.prv-pro-profile-v2-card-head--link:hover .prv-pro-profile-v2-card-chevron,
+a.prv-pro-profile-v2-card-head--link:focus-visible .prv-pro-profile-v2-card-chevron {
+    color: #0066cc;
+}
+
 .prv-pro-profile-v2-card-head-main {
     display: flex;
     gap: 12px;
@@ -412,7 +427,7 @@ a.prv-pro-profile-v2-card {
     z-index: 1;
 }
 
-/* Business information rows (read-only summary; card header owns navigation) */
+/* Business information rows (read-only summary; only the card header links to edit) */
 .prv-pro-profile-v2-biz-row {
     display: grid;
     grid-template-columns: 32px 1fr auto;

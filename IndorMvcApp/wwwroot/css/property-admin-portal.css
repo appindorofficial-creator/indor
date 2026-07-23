@@ -20,13 +20,13 @@
 .pa-field-readonly span{flex:1;font-size:.92rem}
 
 .pa-file-picker{
-    display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid #E2E8F0;border-radius:14px;background:#fff;margin-bottom:14px
+    position:relative;display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid #E2E8F0;border-radius:14px;background:#fff;margin-bottom:14px
 }
 .pa-file-picker:focus-within{border-color:#93C5FD;box-shadow:0 0 0 3px rgba(46,139,255,.15)}
 .pa-file-picker.has-file{border-color:#BFDBFE}
 .pa-file-picker-icon{color:#94A3B8;width:18px;text-align:center;flex-shrink:0}
 .pa-file-picker-input{
-    position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0
+    position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0;opacity:0;pointer-events:none
 }
 .pa-file-picker-btn{
     display:inline-flex;align-items:center;justify-content:center;padding:8px 12px;border-radius:10px;border:1.5px solid #0066CC;background:#fff;color:#0066CC;font-size:.82rem;font-weight:700;cursor:pointer;flex-shrink:0;line-height:1.2
@@ -183,8 +183,8 @@
 .pa-summary-warning{background:#FFFBEB;color:#92400E;border-radius:10px;padding:10px 12px;font-size:.82rem;margin-bottom:14px}
 .pa-summary-warning-list{margin:8px 0 0;padding-left:18px}
 .pa-summary-warning-list li{margin-bottom:4px}
-.pa-file-picker{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border:1.5px solid #E2E8F0;border-radius:14px;background:#fff;margin-bottom:14px}
-.pa-file-picker-input{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.pa-file-picker{position:relative;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border:1.5px solid #E2E8F0;border-radius:14px;background:#fff;margin-bottom:14px}
+.pa-file-picker-input{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0;opacity:0;pointer-events:none}
 .pa-file-picker-btn{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 14px;border:1.5px solid #0066CC;border-radius:10px;background:#fff;color:#0066CC;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap}
 .pa-file-picker-name{font-size:.82rem;color:#64748B;min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pa-file-picker-name.is-selected{color:#0F172A;font-weight:600}
@@ -305,7 +305,7 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-network-chip i{font-size:.72rem;color:#94A3B8}
 .pa-network-chip.is-active{background:#0066CC;border-color:#0066CC;color:#fff}
 .pa-network-chip.is-active i{color:#fff}
-/* Inactive emergency chip: red accent only — solid red fill reserved for .is-active */
+/* Inactive emergency chip: red accent only â€” solid red fill reserved for .is-active */
 .pa-network-chip--danger{color:#475569;border-color:#FECACA}
 .pa-network-chip--danger i{color:#DC2626}
 .pa-network-chip--danger.is-active{background:#DC2626;border-color:#DC2626;color:#fff}
@@ -519,7 +519,7 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-quick-action{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:14px 8px;background:#fff;border:1px solid #E2E8F0;border-radius:14px;text-decoration:none;color:#0F172A;font-size:.72rem;font-weight:700;box-shadow:0 1px 4px rgba(15,23,42,.03)}
 .pa-quick-action-icon{width:36px;height:36px;border-radius:12px;background:#E8F1FB;color:#0066CC;display:flex;align-items:center;justify-content:center;font-size:.95rem}
 
-.pa-profile-nav{margin-bottom:18px}
+.pa-profile-nav{margin-bottom:28px;padding-bottom:12px}
 .pa-profile-nav-item{display:flex;align-items:center;gap:12px;width:100%;background:#fff;border:1px solid #E2E8F0;border-radius:14px;padding:14px;margin-bottom:10px;text-decoration:none;color:#0F172A;box-shadow:0 1px 4px rgba(15,23,42,.03)}
 .pa-profile-nav-icon{width:40px;height:40px;border-radius:12px;background:#E8F1FB;color:#0066CC;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .pa-profile-nav-text{flex:1;min-width:0}
@@ -562,8 +562,9 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-profile-row.pa-profile-row--center{justify-content:center;position:relative}
 .pa-profile-row.pa-profile-row--center>span:first-child{flex:0 1 auto;text-align:center;white-space:nowrap}
 .pa-profile-row.pa-profile-row--center>.fa-chevron-right{position:absolute;right:16px;top:50%;transform:translateY(-50%)}
-.pa-profile-signout-form{margin:0}
+.pa-profile-signout-form{margin:0 0 10px}
 .pa-profile-signout-form .pa-profile-row{width:100%}
+.pa-profile-nav>a.pa-profile-row--danger{margin-top:0;margin-bottom:8px}
 
 .pa-portal-shell--personal{padding-bottom:24px}
 .pa-personal-header{display:flex;flex-direction:column;align-items:flex-start;gap:8px;margin-bottom:20px}
@@ -667,6 +668,25 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-viewing-strip-main{min-width:0}
 .pa-viewing-strip-main strong{display:block;font-size:.84rem;color:#0F172A}
 .pa-viewing-strip-main small{display:block;font-size:.72rem;color:#64748B;margin-top:2px}
+/* In-wizard property picker (Bug 62): open on the card, do not leave the flow */
+.pa-viewing-picker{position:relative;margin-bottom:18px}
+.pa-viewing-picker>.pa-viewing-strip{margin-bottom:0;width:100%;box-sizing:border-box}
+.pa-viewing-strip--switchable{cursor:pointer;list-style:none}
+.pa-viewing-strip--switchable::-webkit-details-marker{display:none}
+.pa-viewing-strip--switchable::marker{content:""}
+.pa-viewing-picker[open]>.pa-viewing-strip{border-color:#0066CC;box-shadow:0 0 0 1px #0066CC}
+.pa-viewing-picker[open] .pa-viewing-switch .pa-portfolio-chevron{transform:rotate(180deg);color:#0066CC}
+.pa-viewing-switch .pa-portfolio-chevron{transition:transform .15s ease,color .15s ease}
+.pa-viewing-picker-menu{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:40;background:#fff;border:1.5px solid #E2E8F0;border-radius:16px;box-shadow:0 16px 40px rgba(15,23,42,.14);padding:8px;max-height:min(320px,50vh);overflow:auto}
+.pa-viewing-picker-hint{margin:4px 10px 8px;font-size:.72rem;color:#64748B;line-height:1.35}
+.pa-viewing-picker-option{display:flex;align-items:center;gap:10px;padding:10px;border-radius:12px;text-decoration:none;color:inherit}
+.pa-viewing-picker-option:hover,.pa-viewing-picker-option:focus-visible{background:#F5F9FF}
+.pa-viewing-picker-option.is-selected{background:#EFF6FF}
+.pa-viewing-picker-thumb{width:40px;height:40px;border-radius:10px;object-fit:cover;flex-shrink:0}
+.pa-viewing-picker-body{min-width:0;flex:1}
+.pa-viewing-picker-body strong{display:block;font-size:.82rem;color:#0F172A;line-height:1.25}
+.pa-viewing-picker-body small{display:block;font-size:.7rem;color:#64748B;margin-top:2px;line-height:1.3}
+.pa-viewing-picker-check{color:#0066CC;font-size:.85rem;flex-shrink:0}
 
 .pa-emergency-form{margin-bottom:24px}
 .pa-flow-question{margin-bottom:18px}
@@ -718,7 +738,7 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-toggle-btn.is-selected{border-color:#0066CC;background:#F0F7FF;color:#0066CC}
 
 .pa-media-capture{position:relative;z-index:5}
-/* Same visually-hidden pattern as .pa-file-picker-input — keeps iOS/WebView .click() working. */
+/* Same visually-hidden pattern as .pa-file-picker-input â€” keeps iOS/WebView .click() working. */
 .pa-media-photo-input{
     position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;
     clip:rect(0,0,0,0);white-space:nowrap;border:0
@@ -1053,6 +1073,10 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-chip-grid--wrap{display:flex;flex-wrap:wrap;gap:8px}
 .pa-field--time{margin-top:10px}
 .pa-field--time .pa-time-select,.pa-field--time select{cursor:pointer;appearance:auto;-webkit-appearance:menulist}
+.pa-field--time input{width:100%;border:none;outline:none;font:inherit;font-size:.84rem;background:transparent}
+.pa-field--time input.pa-time-input{min-height:1.4em;color:inherit}
+.pa-field--time input.is-invalid{color:#B91C1C}
+.pa-field-hint{display:block;margin-top:6px;font-size:.78rem;color:#B91C1C}
 
 .pa-flow-pro-card--turnover{background:#FAF5FF;border:1.5px solid #DDD6FE;border-radius:16px;padding:14px 16px;margin-bottom:18px}
 .pa-flow-pro-icon--purple{width:40px;height:40px;border-radius:12px;background:#EDE9FE;color:#7C3AED;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
@@ -1119,7 +1143,7 @@ a.pa-notify-item:hover{background:#F8FAFC}
 /* Moving Help flow */
 .pa-q-icon--blue{color:#0066CC}
 .pa-prev-service-check--blue{position:absolute;top:8px;right:8px;width:18px;height:18px;border:1.5px solid #CBD5E1;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.5rem;color:transparent}
-/* Empty ring by default — never show fa-check until the card/chip is selected
+/* Empty ring by default â€” never show fa-check until the card/chip is selected
    (descendant i.fas color rules otherwise paint every option as checked). */
 .pa-prev-service-check--blue > i,
 .pa-prev-service-check--blue > i::before{color:transparent!important;opacity:0;visibility:hidden}
@@ -1138,7 +1162,7 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-moving-service-icon{width:32px;height:32px;border-radius:10px;background:#DBEAFE;color:#0066CC;display:flex;align-items:center;justify-content:center;font-size:.9rem}
 .pa-moving-items-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
 .pa-moving-item-card{align-items:center;text-align:center;min-height:84px;padding:10px 6px}
-/* Color content icons only — never the fa-check inside .pa-prev-service-check */
+/* Color content icons only â€” never the fa-check inside .pa-prev-service-check */
 .pa-moving-item-icon{color:#0066CC;font-size:.9rem}
 /* Hide check glyph unless selected (color:transparent alone was overridden / looked pre-selected) */
 .pa-moving-item-card .pa-prev-service-check--blue > i,
@@ -1202,7 +1226,7 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-junk-item-card input{position:absolute;opacity:0;pointer-events:none}
 .pa-junk-item-card.is-selected,.pa-junk-item-card:has(input:checked){border-color:#0066CC;background:#EFF6FF;box-shadow:0 0 0 1px rgba(0,102,204,.12)}
 .pa-junk-item-card.is-selected .pa-prev-service-check--blue,.pa-junk-item-card:has(input:checked) .pa-prev-service-check--blue{border-color:#0066CC;background:#0066CC;color:#fff}
-/* Content icons only — never the fa-check inside the selection ring */
+/* Content icons only â€” never the fa-check inside the selection ring */
 .pa-junk-item-card > i.fas{color:#0066CC;font-size:.9rem}
 .pa-junk-item-card .pa-prev-service-check--blue > i,
 .pa-junk-item-card .pa-prev-service-check--blue > i::before{color:transparent!important;opacity:0;visibility:hidden}
@@ -1534,8 +1558,8 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-notify-info-card p{margin:0;font-size:.72rem;color:#334155;line-height:1.45}
 
 /* ============================================================
-   DESIGN REFRESH v2 — softer, brighter "sky" visual language
-   (Property Administrator portal — reference for app-wide rollout)
+   DESIGN REFRESH v2 â€” softer, brighter "sky" visual language
+   (Property Administrator portal â€” reference for app-wide rollout)
    ============================================================ */
 :root{
     --pa-grad-primary:linear-gradient(135deg,#2E8BFF 0%,#0066CC 100%);
@@ -1578,7 +1602,7 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-portfolio-icon{background:var(--pa-grad-primary);color:#fff;box-shadow:0 8px 16px rgba(0,102,204,.28)}
 .pa-portfolio-panel{box-shadow:0 14px 34px rgba(20,66,124,.10)}
 
-/* Bottom nav: match Realtor — active tab is color only */
+/* Bottom nav: match Realtor â€” active tab is color only */
 .pa-bottom-nav{box-shadow:0 -10px 26px rgba(20,66,124,.08);border-top-color:#EEF3FA}
 
 /* Map / Feed toggle as a floating pill */

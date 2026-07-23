@@ -1,28 +1,37 @@
-@* Shared in-app photo/file source menu — localized; avoids the English iOS OS sheet. *@
+@* Shared in-app photo/file source menu — localized; avoids the English iOS OS sheet.
+   data-label keeps Spanish even if JS falls back before IndorFileSourceLabels loads. *@
+@{
+    var library = IndorFileSourceI18n.Library(L);
+    var camera = IndorFileSourceI18n.Camera(L);
+    var files = IndorFileSourceI18n.Files(L);
+}
 <button type="button"
         class="indor-file-source-item pa-media-photo-menu-item pa-file-source-menu-item nr-photo-menu-item"
         data-pa-file-source="library"
         data-nr-photo-source="library"
         data-indor-file-source="library"
+        data-label="@library"
         role="menuitem">
     <i class="fas fa-images" aria-hidden="true"></i>
-    <span class="indor-file-source-label">@IndorFileSourceI18n.Library(L)</span>
+    <span class="indor-file-source-label">@library</span>
 </button>
 <button type="button"
         class="indor-file-source-item pa-media-photo-menu-item pa-file-source-menu-item nr-photo-menu-item"
         data-pa-file-source="camera"
         data-nr-photo-source="camera"
         data-indor-file-source="camera"
+        data-label="@camera"
         role="menuitem">
     <i class="fas fa-camera" aria-hidden="true"></i>
-    <span class="indor-file-source-label">@IndorFileSourceI18n.Camera(L)</span>
+    <span class="indor-file-source-label">@camera</span>
 </button>
 <button type="button"
         class="indor-file-source-item pa-media-photo-menu-item pa-file-source-menu-item nr-photo-menu-item"
         data-pa-file-source="files"
         data-nr-photo-source="files"
         data-indor-file-source="files"
+        data-label="@files"
         role="menuitem">
     <i class="fas fa-folder" aria-hidden="true"></i>
-    <span class="indor-file-source-label">@IndorFileSourceI18n.Files(L)</span>
+    <span class="indor-file-source-label">@files</span>
 </button>

@@ -5663,11 +5663,7 @@ a.prv-pro-profile-center-action:focus-visible {
     border: 1px solid #BFDBFE;
 }
 .prv-pro-home-jobs-action--schedule .fa-chevron-right { font-size: .58rem; }
-.prv-pro-home-jobs-action--new {
-    background: linear-gradient(145deg, #0066CC, #0056D2);
-    color: #fff;
-    box-shadow: 0 6px 18px rgba(0, 86, 210, 0.22);
-}
+/* --new create-job CTA removed from Home "Today's Jobs"; use Acciones rápidas / Jobs hub instead */
 .prv-pro-home-jobs-action:active { transform: scale(.98); }
 
 .prv-pro-home-job-row {

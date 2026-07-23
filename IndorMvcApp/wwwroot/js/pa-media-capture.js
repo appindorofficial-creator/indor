@@ -21,6 +21,10 @@
         }
         root.setAttribute('data-pa-media-ready', '1');
 
+        if (window.IndorFileSourceChooser && typeof window.IndorFileSourceChooser.applyLabels === 'function') {
+            window.IndorFileSourceChooser.applyLabels(root);
+        }
+
         var form = root.closest('form');
         if (form) {
             form.setAttribute('enctype', 'multipart/form-data');

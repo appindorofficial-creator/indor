@@ -3337,10 +3337,16 @@ public partial class ProviderProDataService(
         ProviderProUploadReportDraft draft,
         CancellationToken cancellationToken = default)
     {
-        if (!draft.JobId.HasValue || string.IsNullOrWhiteSpace(draft.Title))
+        if (draft == null || !draft.JobId.HasValue || string.IsNullOrWhiteSpace(draft.Title))
         {
             return null;
         }
+
+        // Session-deserialized drafts can omit list properties; never NRE on .Count / .Any / Slot.
+        draft.PhotoSlots ??= [];
+        draft.DocumentSlots ??= [];
+        draft.GeneralFiles ??= [];
+        draft.ReportType ??= ProviderReportTypes.Completion;
 
         var job = await db.IndorProveedorJobs
             .Include(j => j.Cliente)
@@ -3369,7 +3375,7 @@ public partial class ProviderProDataService(
             ClienteId = job.ClienteId,
             ReportCode = $"RPT-{DateTime.UtcNow:yyyyMMddHHmm}",
             Title = draft.Title.Trim(),
-            Address = job.Address,
+            Address = job.Address ?? string.Empty,
             CustomerName = job.Cliente?.Name,
             ServiceType = job.ServiceType ?? job.Title,
             ReportType = draft.ReportType,
@@ -3387,7 +3393,10 @@ public partial class ProviderProDataService(
             PhotosCount = photosCount,
             HasDocuments = docsCount > 0,
             HasWarranty = !string.IsNullOrWhiteSpace(draft.WarrantyInfo)
-                || draft.DocumentSlots.Any(d => d.Slot.Contains("Warranty", StringComparison.OrdinalIgnoreCase) && !string.IsNullOrWhiteSpace(d.Url)),
+                || draft.DocumentSlots.Any(d =>
+                    !string.IsNullOrWhiteSpace(d.Slot)
+                    && d.Slot.Contains("Warranty", StringComparison.OrdinalIgnoreCase)
+                    && !string.IsNullOrWhiteSpace(d.Url)),
             HasChecklist = draft.ReportType == ProviderReportTypes.Assessment,
             PhotoUrlsJson = SerializeUploadReportFiles(draft.PhotoSlots, draft.GeneralFiles),
             DocumentsJson = SerializeUploadReportDocuments(draft.DocumentSlots),

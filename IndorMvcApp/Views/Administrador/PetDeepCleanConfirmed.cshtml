@@ -85,20 +85,19 @@
         </article>
     </div>
 
-    <div class="pa-action-grid">
-        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>@L["Message co-host"]</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-calendar"></i><span>@L["Reschedule"]</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-rotate"></i><span>@L["Add recurring"]</span></button>
-        <a asp-controller="Administrador" asp-action="Tasks" class="pa-action-tile">
-            <i class="fas fa-file-lines"></i><span>@L["View details"]</span>
-        </a>
-    </div>
+    @{
+        ViewBag.ConfirmedRequestId = Model.RequestId;
+        ViewBag.ConfirmedPropertyId = Model.ViewingProperty?.Id;
+        ViewBag.ConfirmedMessageLabel = L["Message co-host"].ToString();
+        ViewBag.ConfirmedMessageRecipient = "cohost";
+        ViewBag.ConfirmedFromAction = "PetDeepCleanConfirmed";
+    }
+    @await Html.PartialAsync("_PropertyAdminConfirmedActionGrid")
 
     <div class="pa-info-banner pa-info-banner--pet">
         <i class="fas fa-circle-info"></i>
         <span>@UiDisplayLocalization.Localize(L, Model.InfoBanner)</span>
     </div>
-    @{ ViewBag.ConfirmedPropertyId = Model.ViewingProperty?.Id; }
     @await Html.PartialAsync("_PropertyAdminConfirmedFooter")
 
 </div>

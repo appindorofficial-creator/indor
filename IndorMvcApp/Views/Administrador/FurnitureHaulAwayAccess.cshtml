@@ -13,25 +13,33 @@
 
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+@{
+    ViewData["Title"] = L["Furniture Haul Away"];
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowTitle = L["Furniture Haul Away"].ToString();
+    ViewBag.FlowSubtitle = L["Tell us how the crew can access the property and when to arrive."].ToString();
+    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Access"].ToString(), L["Done"].ToString() };
+    ViewBag.FlowBackUrl = Url.Action("FurnitureHaulAwayDetails", "Administrador", new { propertyId = Model.PropertyId });
+    var locations = Model.ItemLocations.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     
 
-    @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
-    {        <a href="@(Url.Action("Properties", "Administrador", new { from = "switch", returnUrl = Context.Request.Path + Context.Request.QueryString }))" class="pa-viewing-strip pa-viewing-strip--switchable" aria-label="@L["Switch property"]">
-            <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
-            <div class="pa-viewing-strip-main">
-                <strong>@L.T("Viewing: {0}", Model.ViewingProperty.PropertyName)</strong>
-                @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
-                {
-                    <span class="pa-checkout-badge pa-checkout-badge--guest"><i class="fas fa-user"></i> @UiDisplayLocalization.Localize(L, Model.PropertyStatusLabel)</span>
-                }
-                <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
-            </div>
-            <span class="pa-viewing-switch" aria-hidden="true"><span class="pa-viewing-switch-label">@L["Switch property"]</span><i class="fas fa-chevron-down pa-portfolio-chevron"></i></span>
-        </a>
+    @{
+        ViewBag.AllowPropertySwitch = false;
+        if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
+        {
+            ViewBag.BadgeLabel = Model.PropertyStatusLabel;
+        }
     }
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
 
-    <form asp-action="FurnitureHaulAwayAccess" method="post" class="pa-emergency-form">
+<form asp-action="FurnitureHaulAwayAccess" method="post" class="pa-emergency-form">
         @Html.AntiForgeryToken()
         <input type="hidden" name="PropertyId" value="@Model.PropertyId" />
         <input type="hidden" name="ItemCount" value="@Model.ItemCount" />

@@ -1,4 +1,4 @@
-@{
+﻿@{
     ViewData["Title"] = L["Delete account - INDOR"];
     Layout = "_LayoutAuth";
     var email = ViewBag.Email as string;
@@ -34,8 +34,10 @@
             <li>@L["Your membership, payment methods and service history"]</li>
         </ul>
 
+        @* Email confirmation is the safety gate. Do not use window.confirm() — WKWebView /
+           in-app browsers often block/suppress it, which makes the submit button appear unavailable. *@
         <form asp-controller="Account" asp-action="DeleteAccount" method="post"
-              data-no-nav-loading>
+              id="deleteAccountForm" data-no-nav-loading>
             @Html.AntiForgeryToken()
 
             <div class="input-group">
@@ -45,11 +47,13 @@
                 <div class="input-wrapper">
                     <i class="fas fa-envelope input-icon"></i>
                     <input id="confirmEmail" name="confirmEmail" type="email" class="form-input"
-                           placeholder="you@email.com" autocomplete="off" required />
+                           placeholder="you@email.com" autocomplete="off" required
+                           value="" inputmode="email" />
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-primary--submit btn-danger-delete"
+            <button type="submit" class="btn btn-primary btn-primary--submit btn-danger-delete btn-primary--danger-delete"
+                    id="deleteAccountSubmit"
                     style="background:#DC2626 !important;border-color:#DC2626 !important;box-shadow:0 8px 24px rgba(220,38,38,.28);">
                 <span class="btn-label"><i class="fas fa-user-xmark"></i> @L["Permanently delete my account"]</span>
             </button>

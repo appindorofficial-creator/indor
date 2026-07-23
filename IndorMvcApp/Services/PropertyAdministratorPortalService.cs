@@ -33,8 +33,14 @@ public interface IPropertyAdministratorPortalService
     Task<PropertyAdministratorSavedProvidersViewModel> GetSavedProvidersAsync(IUrlHelper url, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorHomecarePlansViewModel> GetHomecarePlansAsync(IUrlHelper url, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorHelpSupportViewModel> GetHelpSupportAsync(IUrlHelper url, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorServiceRequestMessageViewModel?> GetServiceRequestMessageAsync(
+        IUrlHelper url, int requestId, string? recipient, string? returnUrl, CancellationToken cancellationToken = default);
+    Task<bool> SendServiceRequestMessageAsync(
+        PropertyAdministratorServiceRequestMessageInput input, CancellationToken cancellationToken = default);
     Task EnsurePortalDataAsync(CancellationToken cancellationToken = default);
     void MarkNotificationsViewed(int administratorId);
+    /// <summary>Portfolio homes for in-wizard property switching (viewing strip picker).</summary>
+    Task<IReadOnlyList<PropertyAdministratorFlowPropertyViewModel>> ListFlowPropertiesAsync(CancellationToken cancellationToken = default);
 }
 
 public class PropertyAdministratorPortalService(
@@ -914,6 +920,146 @@ public class PropertyAdministratorPortalService(
         };
     }
 
+    public async Task<PropertyAdministratorServiceRequestMessageViewModel?> GetServiceRequestMessageAsync(
+        IUrlHelper url, int requestId, string? recipient, string? returnUrl, CancellationToken cancellationToken = default)
+    {
+        var admin = await LoadAdminAsync(cancellationToken);
+        if (admin == null)
+        {
+            return null;
+        }
+
+        var request = admin.ServiceRequests.FirstOrDefault(r => r.Id == requestId);
+        if (request == null)
+        {
+            return null;
+        }
+
+        var shell = await BuildShellAsync(admin, url, cancellationToken);
+        var recipientKey = NormalizeMessageRecipient(recipient);
+        var safeReturn = SanitizeLocalReturnUrl(url, returnUrl)
+            ?? url.Action("Tasks", "Administrador", new { filter = "inprogress" })
+            ?? "#";
+
+        return new PropertyAdministratorServiceRequestMessageViewModel
+        {
+            DisplayName = shell.DisplayName,
+            PortfolioName = shell.PortfolioName,
+            ActivePropertyCount = shell.ActivePropertyCount,
+            Greeting = shell.Greeting,
+            NotificationCount = shell.NotificationCount,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            RequestId = request.Id,
+            RequestTitle = request.Title,
+            PropertyName = request.PropertyName,
+            RecipientKey = recipientKey,
+            RecipientLabel = LabelMessageRecipient(recipientKey),
+            MessageBody = BuildDefaultServiceMessage(request.PropertyName),
+            ReturnUrl = safeReturn,
+            BackUrl = safeReturn
+        };
+    }
+
+    public async Task<bool> SendServiceRequestMessageAsync(
+        PropertyAdministratorServiceRequestMessageInput input, CancellationToken cancellationToken = default)
+    {
+        if (input.RequestId <= 0 || string.IsNullOrWhiteSpace(input.MessageBody))
+        {
+            return false;
+        }
+
+        var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
+        if (string.IsNullOrEmpty(userId))
+        {
+            return false;
+        }
+
+        var request = await db.IndorPropertyAdminServiceRequests
+            .Include(r => r.Administrator)
+            .FirstOrDefaultAsync(
+                r => r.Id == input.RequestId
+                    && r.Administrator != null
+                    && r.Administrator.UserId == userId,
+                cancellationToken);
+
+        if (request == null)
+        {
+            return false;
+        }
+
+        var recipientKey = NormalizeMessageRecipient(input.RecipientKey);
+        request.DetailsJson = AppendServiceMessage(request.DetailsJson, recipientKey, input.MessageBody.Trim());
+        await db.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    private static string AppendServiceMessage(string? detailsJson, string recipientKey, string body)
+    {
+        System.Text.Json.Nodes.JsonObject root;
+        try
+        {
+            root = string.IsNullOrWhiteSpace(detailsJson)
+                ? new System.Text.Json.Nodes.JsonObject()
+                : System.Text.Json.Nodes.JsonNode.Parse(detailsJson) as System.Text.Json.Nodes.JsonObject
+                    ?? new System.Text.Json.Nodes.JsonObject { ["_payload"] = System.Text.Json.Nodes.JsonNode.Parse(detailsJson) };
+        }
+        catch
+        {
+            root = new System.Text.Json.Nodes.JsonObject { ["_raw"] = detailsJson };
+        }
+
+        var messages = root["_serviceMessages"] as System.Text.Json.Nodes.JsonArray
+            ?? new System.Text.Json.Nodes.JsonArray();
+        messages.Add(new System.Text.Json.Nodes.JsonObject
+        {
+            ["to"] = recipientKey,
+            ["body"] = body,
+            ["sentUtc"] = DateTime.UtcNow.ToString("O", CultureInfo.InvariantCulture)
+        });
+        root["_serviceMessages"] = messages;
+        return root.ToJsonString();
+    }
+
+    private static string NormalizeMessageRecipient(string? recipient)
+    {
+        var key = (recipient ?? "cohost").Trim().ToLowerInvariant();
+        return key switch
+        {
+            "guest" => "guest",
+            "pro" or "provider" or "technician" => "pro",
+            "team" or "crew" => "team",
+            _ => "cohost"
+        };
+    }
+
+    private static string LabelMessageRecipient(string recipientKey) => recipientKey switch
+    {
+        "guest" => PaL("Guest"),
+        "pro" => PaL("Pro"),
+        "team" => PaL("Team"),
+        _ => PaL("Co-host")
+    };
+
+    private static string BuildDefaultServiceMessage(string propertyName) =>
+        PaT(
+            "Hi — quick update about the service at {0}. Please reply here if you need anything. Thanks!",
+            string.IsNullOrWhiteSpace(propertyName) ? PaL("the property") : propertyName);
+
+    private static string? SanitizeLocalReturnUrl(IUrlHelper url, string? returnUrl)
+    {
+        if (string.IsNullOrWhiteSpace(returnUrl))
+        {
+            return null;
+        }
+
+        if (url.IsLocalUrl(returnUrl))
+        {
+            return returnUrl;
+        }
+
+        return null;
+    }
+
     public async Task<PropertyAdministratorNotificationPreferencesViewModel> GetNotificationPreferencesAsync(
         IUrlHelper url, bool saved = false, CancellationToken cancellationToken = default)
     {
@@ -1015,6 +1161,21 @@ public class PropertyAdministratorPortalService(
         shell.HasNotifications = shell.NotificationCount > 0 && !IsNotificationsMarkedViewed(admin.Id);
 
         return shell;
+    }
+
+    public async Task<IReadOnlyList<PropertyAdministratorFlowPropertyViewModel>> ListFlowPropertiesAsync(
+        CancellationToken cancellationToken = default)
+    {
+        var admin = await LoadAdminAsync(cancellationToken);
+        if (admin == null)
+        {
+            return [];
+        }
+
+        return admin.PortfolioProperties
+            .OrderByDescending(p => p.FechaCreacion)
+            .Select(PropertyAdministratorFlowServiceSupport.MapProperty)
+            .ToList();
     }
 
     public void MarkNotificationsViewed(int administratorId)

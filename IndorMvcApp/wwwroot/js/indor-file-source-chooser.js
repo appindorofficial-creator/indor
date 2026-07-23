@@ -51,8 +51,11 @@
             var source = item.getAttribute('data-indor-file-source')
                 || item.getAttribute('data-pa-file-source')
                 || item.getAttribute('data-nr-photo-source');
-            var text = source === 'camera' ? map.camera
-                : (source === 'files' ? map.files : map.library);
+            // Prefer server-rendered data-label (already localized) over JS map.
+            var dataLabel = item.getAttribute('data-label');
+            var text = dataLabel
+                || (source === 'camera' ? map.camera
+                    : (source === 'files' ? map.files : map.library));
             if (!text) {
                 return;
             }

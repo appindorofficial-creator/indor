@@ -1,0 +1,46 @@
+@{
+    var requestId = ViewBag.ConfirmedRequestId as int? ?? 0;
+    var propertyId = ViewBag.ConfirmedPropertyId as int?;
+    var messageLabel = ViewBag.ConfirmedMessageLabel as string ?? L["Message co-host"].ToString();
+    var recipient = ViewBag.ConfirmedMessageRecipient as string ?? "cohost";
+    var fromAction = ViewBag.ConfirmedFromAction as string
+        ?? ViewBag.ConfirmedRescheduleAction as string
+        ?? "";
+    var showReschedule = ViewBag.ConfirmedShowReschedule as bool? ?? requestId > 0;
+    var showRecurring = ViewBag.ConfirmedShowRecurring as bool? ?? true;
+    var showMessage = ViewBag.ConfirmedShowMessage as bool? ?? true;
+    var detailsFilter = ViewBag.ConfirmedDetailsFilter as string ?? "inprogress";
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+
+    var messageUrl = requestId > 0
+        ? PropertyAdministratorFlowServiceSupport.ServiceRequestMessageUrl(Url, requestId, recipient, returnUrl)
+        : PropertyAdministratorFlowServiceSupport.ServicesUrl(Url, propertyId);
+    var rescheduleUrl = showReschedule && requestId > 0
+        ? PropertyAdministratorFlowServiceSupport.RescheduleUrl(Url, requestId, fromAction)
+        : null;
+    var recurringUrl = PropertyAdministratorFlowServiceSupport.AddRecurringUrl(Url, propertyId);
+    var detailsUrl = PropertyAdministratorFlowServiceSupport.ViewDetailsUrl(Url, detailsFilter);
+}
+<div class="pa-action-grid">
+    @if (showMessage)
+    {
+        <a href="@messageUrl" class="pa-action-tile">
+            <i class="fas fa-comment"></i><span>@messageLabel</span>
+        </a>
+    }
+    @if (showReschedule && !string.IsNullOrWhiteSpace(rescheduleUrl))
+    {
+        <a href="@rescheduleUrl" class="pa-action-tile">
+            <i class="fas fa-calendar"></i><span>@L["Reschedule"]</span>
+        </a>
+    }
+    @if (showRecurring)
+    {
+        <a href="@recurringUrl" class="pa-action-tile">
+            <i class="fas fa-rotate"></i><span>@L["Add recurring"]</span>
+        </a>
+    }
+    <a href="@detailsUrl" class="pa-action-tile">
+        <i class="fas fa-file-lines"></i><span>@L["View details"]</span>
+    </a>
+</div>

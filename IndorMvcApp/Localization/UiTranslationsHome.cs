@@ -1382,6 +1382,7 @@ public static class UiTranslationsHome
             ["Ask neighbors for help."] = "Pide ayuda a tus vecinos.",
             ["Please choose one of these options."] = "Elige una de estas opciones.",
             ["Please fill out this field."] = "Completa este campo.",
+            ["Please select an item in the list."] = "Selecciona un elemento de la lista.",
             ["Filter services"] = "Filtrar servicios",
             ["Select what you need today."] = "Selecciona lo que necesitas hoy.",
             ["Select how many filters."] = "Selecciona cuántos filtros.",

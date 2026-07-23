@@ -346,3 +346,24 @@ public class PropertyAdministratorHelpSupportViewModel : PropertyAdministratorPo
     public string SupportPhone { get; set; } = "1-800-555-INDOR";
     public IReadOnlyList<PropertyAdministratorHelpTopicViewModel> Topics { get; set; } = [];
 }
+
+public class PropertyAdministratorServiceRequestMessageViewModel : PropertyAdministratorPortalShellViewModel
+{
+    public int RequestId { get; set; }
+    public string RequestTitle { get; set; } = "";
+    public string PropertyName { get; set; } = "";
+    public string RecipientKey { get; set; } = "cohost";
+    public string RecipientLabel { get; set; } = "Co-host";
+    public string MessageBody { get; set; } = "";
+    public string? ReturnUrl { get; set; }
+    public string BackUrl { get; set; } = "#";
+    public bool Sent { get; set; }
+}
+
+public class PropertyAdministratorServiceRequestMessageInput
+{
+    public int RequestId { get; set; }
+    public string RecipientKey { get; set; } = "cohost";
+    public string MessageBody { get; set; } = "";
+    public string? ReturnUrl { get; set; }
+}

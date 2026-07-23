@@ -54,6 +54,18 @@
     <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">@L["Import properties"]</button>
 </form>
 
+@{
+    // CSV import stays CSV-only; images/PDFs use the separate documents flow (Bug: portal lost this path).
+    var docsReturnUrl = Url.Action("ImportPortfolio", new { returnUrl = Model.BackUrl }) ?? Model.BackUrl;
+}
+<a asp-action="UploadPropertyDocuments"
+   asp-route-returnUrl="@docsReturnUrl"
+   class="pa-action-row pa-action-row--property-option"
+   style="margin-top:14px;">
+    <span><i class="fas fa-file-lines"></i> @L["Scan or upload documents"]</span>
+    <i class="fas fa-chevron-right"></i>
+</a>
+
 <script>
     (function () {
         const input = document.getElementById('csvFile');
@@ -61,6 +73,7 @@
         const picker = document.getElementById('csvFilePicker');
         if (input && nameEl && picker) {
             const emptyLabel = nameEl.dataset.emptyLabel || 'No file selected';
+            const requiredMessage = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Choose a CSV file to import."].ToString()));
 
             function syncFileLabel() {
                 const file = input.files && input.files[0];
@@ -68,14 +81,17 @@
                     nameEl.textContent = file.name;
                     nameEl.classList.add('is-selected');
                     picker.classList.add('has-file');
+                    input.setCustomValidity('');
                 } else {
                     nameEl.textContent = emptyLabel;
                     nameEl.classList.remove('is-selected');
                     picker.classList.remove('has-file');
+                    input.setCustomValidity(requiredMessage);
                 }
             }
 
             input.addEventListener('change', syncFileLabel);
+            input.addEventListener('invalid', syncFileLabel);
             syncFileLabel();
         }
 

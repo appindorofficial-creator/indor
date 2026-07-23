@@ -14,7 +14,8 @@ public class PropertyAdministratorTurnoverCleaningFormViewModel : PropertyAdmini
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string ServiceType { get; set; } = "";
     public string GuestArrival { get; set; } = "";
-    public string GuestArrivalTime { get; set; } = "";
+    /// <summary>HTML time input value in HH:mm (24h).</summary>
+    public string GuestArrivalTime { get; set; } = "16:00";
     public string IncludedTasks { get; set; } = "";
     public string UrgentIssue { get; set; } = "";
     public string EntryAccess { get; set; } = "";
@@ -22,6 +23,7 @@ public class PropertyAdministratorTurnoverCleaningFormViewModel : PropertyAdmini
     public string ContactPhone { get; set; } = "";
     public string Details { get; set; } = "";
     public string? MediaAttachmentsJson { get; set; }
+    public string? FormError { get; set; }
     public string EstimatedPrice { get; set; } = "$149–$249";
     public string ProEtaLabel { get; set; } = "Nearest turnover crew available today {0}";
     public string ProEtaTimeRange { get; set; } = "11 AM–2 PM";
@@ -34,7 +36,8 @@ public class PropertyAdministratorTurnoverCleaningSubmitInput
     public int PropertyId { get; set; }
     public string ServiceType { get; set; } = "";
     public string GuestArrival { get; set; } = "";
-    public string GuestArrivalTime { get; set; } = "4:00 PM";
+    /// <summary>Guest arrival time; accepted as HH:mm or h:mm tt. Normalized on submit.</summary>
+    public string GuestArrivalTime { get; set; } = "16:00";
     public List<string> IncludedTasksList { get; set; } = [];
     public string UrgentIssue { get; set; } = "";
     public string EntryAccess { get; set; } = "";

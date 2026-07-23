@@ -151,8 +151,8 @@
     <p style="font-size:.85rem;color:#6B7280;line-height:1.45;margin:0 0 12px;">
         @L.T("This permanently deletes your INDOR account along with your homes, requests, documents, and service history. This action cannot be undone. To confirm, type your account email ({0}) below.", usr?.Email)
     </p>
-    <form class="pf-form" method="post" asp-controller="Perfil" asp-action="EliminarCuenta"
-          onsubmit="return confirm('@L["This will permanently delete your account and all associated data. Continue?"]');">
+    @* Email confirmation is the safety gate — avoid window.confirm() (blocked in many WebViews). *@
+    <form class="pf-form" method="post" asp-controller="Perfil" asp-action="EliminarCuenta">
         @Html.AntiForgeryToken()
         <input type="email" name="confirmEmail" placeholder="@L["Enter your account email"]" required autocomplete="off" />
         <button type="submit" class="pf-btn danger" style="width:100%;">

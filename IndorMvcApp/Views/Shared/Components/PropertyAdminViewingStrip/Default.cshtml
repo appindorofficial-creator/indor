@@ -1,0 +1,59 @@
+@model IndorMvcApp.ViewModels.PropertyAdminViewingStripViewModel
+@{
+    var badge = ViewBag.BadgeLabel as string ?? Model.BadgeLabel ?? Model.Viewing.OccupancyLabel;
+    var canSwitch = Model.AllowSwitch && Model.Options.Count > 1;
+}
+
+@if (canSwitch)
+{
+    <details class="pa-viewing-picker">
+        <summary class="pa-viewing-strip pa-viewing-strip--switchable" aria-label="@L["Switch property"]">
+            <img src="@(Model.Viewing.ImageUrl ?? "/welcome-house.png")" alt="" class="pa-viewing-strip-thumb" />
+            <div class="pa-viewing-strip-main">
+                <strong>@L.T("Viewing: {0}", Model.Viewing.PropertyName)</strong>
+                @if (!string.IsNullOrWhiteSpace(badge))
+                {
+                    <span class="pa-occupancy-badge">@UiDisplayLocalization.Localize(L, badge)</span>
+                }
+                <small>@UiDisplayLocalization.Localize(L, Model.Viewing.PropertyTypeLabel) • @Model.Viewing.Location</small>
+            </div>
+            <span class="pa-viewing-switch" aria-hidden="true">
+                <i class="fas fa-chevron-down pa-portfolio-chevron"></i>
+            </span>
+        </summary>
+        <div class="pa-viewing-picker-menu" role="listbox" aria-label="@L["Switch property"]">
+            <p class="pa-viewing-picker-hint">@L["Choose which home you want to view and manage."]</p>
+            @foreach (var option in Model.Options)
+            {
+                <a href="@option.SwitchUrl"
+                   class="pa-viewing-picker-option @(option.IsSelected ? "is-selected" : null)"
+                   role="option"
+                   aria-selected="@(option.IsSelected ? "true" : "false")">
+                    <img src="@(option.ImageUrl ?? "/welcome-house.png")" alt="" class="pa-viewing-picker-thumb" />
+                    <span class="pa-viewing-picker-body">
+                        <strong>@option.PropertyName</strong>
+                        <small>@UiDisplayLocalization.Localize(L, option.PropertyTypeLabel) • @option.Location</small>
+                    </span>
+                    @if (option.IsSelected)
+                    {
+                        <i class="fas fa-check pa-viewing-picker-check" aria-hidden="true"></i>
+                    }
+                </a>
+            }
+        </div>
+    </details>
+}
+else
+{
+    <div class="pa-viewing-strip">
+        <img src="@(Model.Viewing.ImageUrl ?? "/welcome-house.png")" alt="" class="pa-viewing-strip-thumb" />
+        <div class="pa-viewing-strip-main">
+            <strong>@L.T("Viewing: {0}", Model.Viewing.PropertyName)</strong>
+            @if (!string.IsNullOrWhiteSpace(badge))
+            {
+                <span class="pa-occupancy-badge">@UiDisplayLocalization.Localize(L, badge)</span>
+            }
+            <small>@UiDisplayLocalization.Localize(L, Model.Viewing.PropertyTypeLabel) • @Model.Viewing.Location</small>
+        </div>
+    </div>
+}

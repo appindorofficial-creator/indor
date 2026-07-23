@@ -17,11 +17,11 @@
     <div class="summary-card">
         <strong style="font-size:0.92rem;display:block;margin-bottom:10px;">@L["Project summary"]</strong>
         <div class="summary-row"><i class="fas fa-screwdriver-wrench"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.NombreServicio)</div></div></div>
-        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Address"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
-        <div class="summary-row"><i class="fas fa-hammer"></i><div><div class="summary-label">@L["Scope"]</div><div class="summary-value">@Model.AlcanceLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Timeline"]</div><div class="summary-value">@Model.VentanaTiempoLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-tags"></i><div><div class="summary-label">@L["Budget"]</div><div class="summary-value">@Model.PresupuestoLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-comment"></i><div><div class="summary-label">@L["Contact"]</div><div class="summary-value">@Model.ContactoPreferidoLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Address"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.DireccionPropiedad)</div></div></div>
+        <div class="summary-row"><i class="fas fa-hammer"></i><div><div class="summary-label">@L["Scope"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.AlcanceLabel)</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Timeline"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.VentanaTiempoLabel)</div></div></div>
+        <div class="summary-row"><i class="fas fa-tags"></i><div><div class="summary-label">@L["Budget"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.PresupuestoLabel)</div></div></div>
+        <div class="summary-row"><i class="fas fa-comment"></i><div><div class="summary-label">@L["Contact"]</div><div class="summary-value">@UiDisplayLocalization.Localize(L, Model.ContactoPreferidoLabel)</div></div></div>
         @if (!string.IsNullOrWhiteSpace(Model.Descripcion))
         {
             <div class="summary-row"><i class="fas fa-note-sticky"></i><div><div class="summary-label">@L["Details"]</div><div class="summary-value">@Model.Descripcion</div></div></div>

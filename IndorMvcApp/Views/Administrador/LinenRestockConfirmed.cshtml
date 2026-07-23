@@ -86,20 +86,19 @@
         </article>
     </div>
 
-    <div class="pa-action-grid">
-        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>@L["Message co-host"]</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-calendar"></i><span>@L["Reschedule"]</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-rotate"></i><span>@L["Add recurring"]</span></button>
-        <a asp-controller="Administrador" asp-action="Tasks" class="pa-action-tile">
-            <i class="fas fa-file-lines"></i><span>@L["View details"]</span>
-        </a>
-    </div>
+    @{
+        ViewBag.ConfirmedRequestId = Model.RequestId;
+        ViewBag.ConfirmedPropertyId = Model.ViewingProperty?.Id;
+        ViewBag.ConfirmedMessageLabel = L["Message co-host"].ToString();
+        ViewBag.ConfirmedMessageRecipient = "cohost";
+        ViewBag.ConfirmedFromAction = "LinenRestockConfirmed";
+    }
+    @await Html.PartialAsync("_PropertyAdminConfirmedActionGrid")
 
     <div class="pa-tip-banner pa-tip-banner--purple">
         <span class="pa-tip-icon"><i class="fas fa-lightbulb"></i></span>
         <p><strong>@L["Tip:"]</strong> @UiDisplayLocalization.Localize(L, Model.Tip)</p>
     </div>
-    @{ ViewBag.ConfirmedPropertyId = Model.ViewingProperty?.Id; }
     @await Html.PartialAsync("_PropertyAdminConfirmedFooter")
 
 </div>

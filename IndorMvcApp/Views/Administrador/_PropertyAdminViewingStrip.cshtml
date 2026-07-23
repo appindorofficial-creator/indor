@@ -1,22 +1,11 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorFlowPropertyViewModel
-@using IndorMvcApp.Helpers
-@if (Model != null && Model.Id > 0)
-{
-    var switchUrl = PropertyAdministratorPropertySwitch.BuildSwitchListUrl(
-        Url, Context.Request.Path, Context.Request.QueryString);
-    <a href="@switchUrl" class="pa-viewing-strip pa-viewing-strip--switchable" aria-label="@L["Switch property"]">
-        <img src="@(Model.ImageUrl ?? "/welcome-house.png")" alt="" class="pa-viewing-strip-thumb" />
-        <div class="pa-viewing-strip-main">
-            <strong>@L.T("Viewing: {0}", Model.PropertyName)</strong>
-            @if (!string.IsNullOrWhiteSpace(ViewBag.BadgeLabel as string ?? Model.OccupancyLabel))
-            {
-                <span class="pa-occupancy-badge">@UiDisplayLocalization.Localize(L, ViewBag.BadgeLabel as string ?? Model.OccupancyLabel)</span>
-            }
-            <small>@UiDisplayLocalization.Localize(L, Model.PropertyTypeLabel) • @Model.Location</small>
-        </div>
-        <span class="pa-viewing-switch" aria-hidden="true">
-            <span class="pa-viewing-switch-label">@L["Switch property"]</span>
-            <i class="fas fa-chevron-down pa-portfolio-chevron"></i>
-        </span>
-    </a>
+@{
+    var allowSwitch = ViewBag.AllowPropertySwitch as bool? ?? true;
+    var badgeLabel = ViewBag.BadgeLabel as string;
 }
+@await Component.InvokeAsync("PropertyAdminViewingStrip", new
+{
+    property = Model,
+    badgeLabel,
+    allowSwitch
+})

@@ -408,20 +408,22 @@ public class PropertyAdministratorRegistrationController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> UploadPropertyDocuments()
+    public async Task<IActionResult> UploadPropertyDocuments(string? returnUrl = null)
     {
         if (!await CanAccessPropertiesStepAsync())
         {
             return RedirectToAction(nameof(Portfolio));
         }
 
-        return View(await BuildUploadDocumentsViewModelAsync());
+        return View(await BuildUploadDocumentsViewModelAsync(returnUrl));
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     [RequestSizeLimit(50_000_000)]
-    public async Task<IActionResult> UploadPropertyDocuments(List<IFormFile>? documentFiles)
+    public async Task<IActionResult> UploadPropertyDocuments(
+        List<IFormFile>? documentFiles,
+        string? returnUrl = null)
     {
         if (!await CanAccessPropertiesStepAsync())
         {
@@ -431,7 +433,7 @@ public class PropertyAdministratorRegistrationController(
         var files = documentFiles?.Where(f => f.Length > 0).ToList() ?? [];
         if (files.Count == 0)
         {
-            var empty = await BuildUploadDocumentsViewModelAsync();
+            var empty = await BuildUploadDocumentsViewModelAsync(returnUrl);
             empty.FormError = "Please choose at least one document to upload.";
             return View(empty);
         }
@@ -486,14 +488,14 @@ public class PropertyAdministratorRegistrationController(
         var batchUploadedCount = files.Count - errors.Count;
         if (batchUploadedCount == 0)
         {
-            var failed = await BuildUploadDocumentsViewModelAsync();
+            var failed = await BuildUploadDocumentsViewModelAsync(returnUrl);
             failed.FormError = errors.Count > 0 ? string.Join(" ", errors.Take(3)) : "Upload failed. Please try again.";
             return View(failed);
         }
 
         // Status must reflect total documents on hand (session), not only this POST batch.
         var totalDocuments = saved.Count;
-        var model = await BuildUploadDocumentsViewModelAsync();
+        var model = await BuildUploadDocumentsViewModelAsync(returnUrl);
         model.FormSuccess = totalDocuments == 1
             ? L["1 document uploaded."].ToString()
             : string.Format(
@@ -510,7 +512,10 @@ public class PropertyAdministratorRegistrationController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> RemoveUploadedPropertyDocument(string? fileId, string? label)
+    public async Task<IActionResult> RemoveUploadedPropertyDocument(
+        string? fileId,
+        string? label,
+        string? returnUrl = null)
     {
         if (!await CanAccessPropertiesStepAsync())
         {
@@ -555,7 +560,7 @@ public class PropertyAdministratorRegistrationController(
             }
         }
 
-        var model = await BuildUploadDocumentsViewModelAsync();
+        var model = await BuildUploadDocumentsViewModelAsync(returnUrl);
         model.FormSuccess = L["Document removed."].ToString();
         return View(nameof(UploadPropertyDocuments), model);
     }
@@ -855,9 +860,18 @@ public class PropertyAdministratorRegistrationController(
         return fallback;
     }
 
-    private async Task<PropertyAdministratorUploadDocumentsViewModel> BuildUploadDocumentsViewModelAsync()
+    private async Task<PropertyAdministratorUploadDocumentsViewModel> BuildUploadDocumentsViewModelAsync(
+        string? returnUrl = null)
     {
         var state = await registration.GetAsync();
+        var isComplete = await IsRegistrationCompleteAsync();
+        // Prefer caller returnUrl (Import portfolio). Fall back to Properties hub during onboarding,
+        // or portal Properties when registration is already complete.
+        var defaultBack = isComplete
+            ? (Url.Action(nameof(ImportPortfolio), new { returnUrl = Url.Action("Properties", "Administrador") })
+               ?? Url.Action("Properties", "Administrador")
+               ?? "#")
+            : (Url.Action(nameof(Properties)) ?? "#");
         return new PropertyAdministratorUploadDocumentsViewModel
         {
             Step = 2,
@@ -865,8 +879,9 @@ public class PropertyAdministratorRegistrationController(
             TotalSteps = 5,
             Title = "Scan or upload documents",
             Subtitle = "Add leases, deeds, or spreadsheets to help INDOR understand your portfolio.",
-            BackUrl = Url.Action(nameof(Properties))!,
+            BackUrl = ResolveLocalReturnUrl(returnUrl) ?? defaultBack,
             State = state,
+            IsRegistrationComplete = isComplete,
             UploadedFiles = GetUploadedPropertyDocumentEntries()
                 .Select(e => new PropertyAdministratorUploadedDocumentItem
                 {
@@ -997,8 +1012,8 @@ public class PropertyAdministratorRegistrationController(
                 ? "import"
                 : null;
 
-        // After registration, portal "Add property" is manual-only; CSV/docs live on ImportPortfolio.
-        // During onboarding, keep the shared hub with all options.
+        // After registration, portal "Add property" is manual-only; CSV + docs are reached via ImportPortfolio
+        // (CSV form + "Scan or upload documents" link). During onboarding, keep the shared hub.
         var showBulkImport = !isComplete
             || string.Equals(normalizedMode, "import", StringComparison.OrdinalIgnoreCase);
         var manualOnly = isComplete && !showBulkImport;

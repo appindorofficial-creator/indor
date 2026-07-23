@@ -1,0 +1,70 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorServiceRequestMessageViewModel
+@{
+    ViewData["Title"] = Model.Sent ? L["Message sent"] : L["Send message"];
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = 1;
+    ViewBag.FlowTotalSteps = 1;
+    ViewBag.FlowTitle = Model.Sent ? L["Message sent"].ToString() : L["Send message"].ToString();
+    ViewBag.FlowSubtitle = Model.PropertyName;
+    ViewBag.FlowShowBack = true;
+    ViewBag.FlowBackUrl = Model.BackUrl;
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    @if (Model.Sent)
+    {
+        <div class="pa-success-banner">
+            <span class="pa-success-icon"><i class="fas fa-check"></i></span>
+            <div>
+                <strong>@L["Message sent"]</strong>
+                <span>@L.T("Your message to the {0} was sent.", UiDisplayLocalization.Localize(L, Model.RecipientLabel))</span>
+            </div>
+        </div>
+
+        <article class="pa-summary-card-block">
+            <h2><i class="fas fa-comment"></i> @L["Message"]</h2>
+            <p class="pa-message-body">@Model.MessageBody</p>
+            <small>@UiDisplayLocalization.Localize(L, Model.RequestTitle)</small>
+        </article>
+
+        <div class="pa-flow-actions">
+            <a href="@Model.BackUrl" class="ob-btn ob-btn-primary pa-flow-submit">
+                @L["Back to request"] <i class="fas fa-chevron-right"></i>
+            </a>
+            <a asp-controller="Administrador" asp-action="Tasks" asp-route-filter="inprogress" class="ob-btn ob-btn-outline pa-flow-edit">
+                @L["View details"]
+            </a>
+        </div>
+    }
+    else
+    {
+        <form asp-action="ServiceRequestMessage" method="post" class="pa-emergency-form" data-pa-flow-validate>
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="RequestId" value="@Model.RequestId" />
+            <input type="hidden" name="RecipientKey" value="@Model.RecipientKey" />
+            <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+
+            <div class="pa-flow-question">
+                <span class="pa-flow-qnum">1</span>
+                <label><i class="fas fa-user pa-q-icon"></i> @L["Recipient"]</label>
+                <strong class="pa-message-recipient">@UiDisplayLocalization.Localize(L, Model.RecipientLabel)</strong>
+                <small>@UiDisplayLocalization.Localize(L, Model.RequestTitle)</small>
+            </div>
+
+            <div class="pa-flow-question">
+                <span class="pa-flow-qnum">2</span>
+                <label for="MessageBody"><i class="fas fa-comment pa-q-icon"></i> @L["Message"]</label>
+                <textarea id="MessageBody" name="MessageBody" rows="5" required maxlength="1000">@Model.MessageBody</textarea>
+                @foreach (var err in ViewData.ModelState[nameof(Model.MessageBody)]?.Errors ?? [])
+                {
+                    <div class="pa-inline-error" role="alert">@err.ErrorMessage</div>
+                }
+            </div>
+
+            <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Send message"]</button>
+            <a href="@Model.BackUrl" class="pa-flow-back-link">@L["Cancel"]</a>
+        </form>
+    }
+</div>
