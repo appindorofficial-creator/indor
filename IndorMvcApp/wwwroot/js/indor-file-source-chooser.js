@@ -1,11 +1,46 @@
 (function () {
     'use strict';
 
-    function labels() {
-        return window.IndorFileSourceLabels || {
+    function isSpanishUi() {
+        var lang = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+        return lang.indexOf('es') === 0;
+    }
+
+    function spanishDefaults() {
+        return {
+            library: 'Biblioteca de fotos',
+            camera: 'Tomar foto',
+            files: 'Elegir archivos'
+        };
+    }
+
+    function englishDefaults() {
+        return {
             library: 'Photo Library',
             camera: 'Take Photo',
             files: 'Choose Files'
+        };
+    }
+
+    function labels() {
+        var fallback = isSpanishUi() ? spanishDefaults() : englishDefaults();
+        var injected = window.IndorFileSourceLabels;
+        if (!injected) {
+            return fallback;
+        }
+
+        // Guard: Spanish UI must never keep English sheet labels (stale inject / race).
+        if (isSpanishUi()
+            && (injected.library === 'Photo Library'
+                || injected.camera === 'Take Photo'
+                || injected.files === 'Choose Files')) {
+            return fallback;
+        }
+
+        return {
+            library: injected.library || fallback.library,
+            camera: injected.camera || fallback.camera,
+            files: injected.files || fallback.files
         };
     }
 

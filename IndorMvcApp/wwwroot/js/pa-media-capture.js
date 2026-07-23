@@ -185,6 +185,9 @@
                 photoBtn.addEventListener('click', function (e) {
                     e.preventDefault();
                     e.stopPropagation();
+                    if (window.IndorFileSourceChooser && typeof window.IndorFileSourceChooser.applyLabels === 'function') {
+                        window.IndorFileSourceChooser.applyLabels(root);
+                    }
                     setMenuOpen(photoMenu.hidden);
                 });
 

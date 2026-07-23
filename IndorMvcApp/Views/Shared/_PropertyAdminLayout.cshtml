@@ -36,6 +36,17 @@
     }
 
     <script src="~/js/phone-input.js" asp-append-version="true"></script>
+    <script>
+        // Re-assert file-source labels after body scripts so PA service photo menus stay localized.
+        window.IndorFileSourceLabels = {
+            library: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(IndorFileSourceI18n.Library(L))),
+            camera: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(IndorFileSourceI18n.Camera(L))),
+            files: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(IndorFileSourceI18n.Files(L)))
+        };
+        if (window.IndorFileSourceChooser && typeof window.IndorFileSourceChooser.applyLabels === 'function') {
+            window.IndorFileSourceChooser.applyLabels(document);
+        }
+    </script>
     <script src="~/js/property-admin-portal.js" asp-append-version="true"></script>
     <script src="~/js/property-admin-notifications.js" asp-append-version="true"></script>
     <script src="~/js/pa-file-source-chooser.js" asp-append-version="true"></script>

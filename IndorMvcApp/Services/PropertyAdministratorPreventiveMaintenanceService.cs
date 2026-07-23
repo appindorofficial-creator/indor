@@ -177,6 +177,7 @@ public class PropertyAdministratorPreventiveMaintenanceService(
             .Where(c => c.Activo).ToListAsync(cancellationToken);
         var selectedKeys = DeserializeServices(plan.SelectedServicesJson);
         var scheduleConfigured = IsScheduleConfigured(plan);
+        var useFilterHints = UsesFilterFrequencyHints(selectedKeys);
 
         return new PropertyAdministratorPreventiveScheduleStepViewModel
         {
@@ -191,6 +192,7 @@ public class PropertyAdministratorPreventiveMaintenanceService(
             SelectedServiceLabels = selectedKeys
                 .Select(k => catalog.FirstOrDefault(c => c.ServiceKey == k)?.ServiceName ?? k)
                 .ToList(),
+            UsesFilterFrequencyHints = useFilterHints,
             Frequency = scheduleConfigured ? plan.Frequency : "",
             PreferredTiming = scheduleConfigured ? plan.PreferredTiming : "",
             PreferredDay = scheduleConfigured ? plan.PreferredDay : "",
@@ -199,7 +201,7 @@ public class PropertyAdministratorPreventiveMaintenanceService(
             // Only show notes the user saved; do not prefill service templates.
             Notes = scheduleConfigured ? (plan.Notes ?? "") : "",
             AutoReminders = scheduleConfigured && plan.AutoReminders,
-            FrequencyHint = scheduleConfigured ? BuildFrequencyHint(plan.Frequency) : "",
+            FrequencyHint = scheduleConfigured ? BuildFrequencyHint(plan.Frequency, useFilterHints) : "",
             EstimatedPrice = $"${plan.BundlePrice:0}–${plan.BundlePrice + 80:0}"
         };
     }
@@ -451,13 +453,25 @@ public class PropertyAdministratorPreventiveMaintenanceService(
             _ => PropertyAdministratorDisplayLocalization.L(svc.DefaultFrequency)
         };
 
-    private static string BuildFrequencyHint(string frequency) => frequency switch
+    private static bool UsesFilterFrequencyHints(IReadOnlyList<string> selectedKeys) =>
+        selectedKeys.Count > 0
+        && selectedKeys.All(k => k.Equals("HvacFilterChange", StringComparison.OrdinalIgnoreCase));
+
+    private static string BuildFrequencyHint(string frequency, bool useFilterHints) => frequency switch
     {
         "" => "",
-        "Monthly" => PropertyAdministratorDisplayLocalization.L("We'll schedule visits every month."),
-        "TwiceAYear" => PropertyAdministratorDisplayLocalization.L("We'll filter change every 3 months. Full service visits twice a year."),
-        "Yearly" => PropertyAdministratorDisplayLocalization.L("We'll schedule annual preventive visits."),
-        "Every3Months" => PropertyAdministratorDisplayLocalization.L("We'll filter change every 3 months. Full service visits twice a year."),
+        "Monthly" => useFilterHints
+            ? PropertyAdministratorDisplayLocalization.L("We'll change the filter every month.")
+            : PropertyAdministratorDisplayLocalization.L("We'll schedule visits every month."),
+        "Every3Months" => useFilterHints
+            ? PropertyAdministratorDisplayLocalization.L("We'll change the filter every 3 months.")
+            : PropertyAdministratorDisplayLocalization.L("We'll schedule visits every 3 months."),
+        "TwiceAYear" => useFilterHints
+            ? PropertyAdministratorDisplayLocalization.L("We'll change the filter every 6 months. Full service visits twice a year.")
+            : PropertyAdministratorDisplayLocalization.L("We'll schedule visits twice a year."),
+        "Yearly" => useFilterHints
+            ? PropertyAdministratorDisplayLocalization.L("We'll change the filter once a year.")
+            : PropertyAdministratorDisplayLocalization.L("We'll schedule annual preventive visits."),
         _ => ""
     };
 

@@ -56,6 +56,8 @@ public class PropertyAdministratorPreventiveScheduleStepViewModel : PropertyAdmi
     public int PlanId { get; set; }
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public IReadOnlyList<string> SelectedServiceLabels { get; set; } = [];
+    /// <summary>True when the plan is only HVAC filter change — frequency hints mention filters.</summary>
+    public bool UsesFilterFrequencyHints { get; set; }
     public string Frequency { get; set; } = "";
     public string PreferredTiming { get; set; } = "";
     public string PreferredDay { get; set; } = "";

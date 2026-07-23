@@ -672,6 +672,17 @@ public static class UiTranslationsPropertyAdministratorUi
         ["Rodents"] = "Roedores",
         ["Schedule cleaning"] = "Programar limpieza",
         ["Schedule filter change"] = "Programar cambio de filtro",
+        ["We'll schedule visits every month."] = "Programaremos visitas cada mes.",
+        ["We'll schedule visits every 3 months."] = "Programaremos visitas cada 3 meses.",
+        ["We'll schedule visits twice a year."] = "Programaremos visitas dos veces al año.",
+        ["We'll schedule annual preventive visits."] = "Programaremos visitas preventivas anuales.",
+        ["We'll change the filter every month."] = "Cambiaremos el filtro cada mes.",
+        ["We'll change the filter every 3 months."] = "Cambiaremos el filtro cada 3 meses.",
+        ["We'll change the filter every 6 months. Full service visits twice a year."] =
+            "Cambiaremos el filtro cada 6 meses. Visitas de servicio completo dos veces al año.",
+        ["We'll change the filter once a year."] = "Cambiaremos el filtro una vez al año.",
+        ["We'll filter change every 3 months. Full service visits twice a year."] =
+            "Cambiaremos el filtro cada 3 meses. Visitas de servicio completo dos veces al año.",
         ["Schedule preventive services"] = "Programar servicios preventivos",
         ["Schedule turnover cleaning"] = "Programar limpieza de rotación",
         ["Scheduled"] = "Programado",

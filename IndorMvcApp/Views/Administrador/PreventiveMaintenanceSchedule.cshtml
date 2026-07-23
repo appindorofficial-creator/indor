@@ -42,7 +42,25 @@
                     </label>
                 }
             </div>
-            <p class="pa-frequency-hint" id="frequencyHint">@UiDisplayLocalization.Localize(L, Model.FrequencyHint)</p>
+            <p class="pa-frequency-hint" id="frequencyHint">@(
+                Model.UsesFilterFrequencyHints
+                    ? Model.Frequency switch
+                    {
+                        "Monthly" => L["We'll change the filter every month."],
+                        "Every3Months" => L["We'll change the filter every 3 months."],
+                        "TwiceAYear" => L["We'll change the filter every 6 months. Full service visits twice a year."],
+                        "Yearly" => L["We'll change the filter once a year."],
+                        _ => ""
+                    }
+                    : Model.Frequency switch
+                    {
+                        "Monthly" => L["We'll schedule visits every month."],
+                        "Every3Months" => L["We'll schedule visits every 3 months."],
+                        "TwiceAYear" => L["We'll schedule visits twice a year."],
+                        "Yearly" => L["We'll schedule annual preventive visits."],
+                        _ => ""
+                    }
+            )</p>
         </div>
 
         <div class="pa-flow-question">
@@ -136,12 +154,22 @@
 
 @section Scripts {
     <script>
-        var hints = {
-            Monthly: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["We'll schedule visits every month."].ToString())),
-            Every3Months: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["We'll filter change every 3 months. Full service visits twice a year."].ToString())),
-            TwiceAYear: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["We'll filter change every 3 months. Full service visits twice a year."].ToString())),
-            Yearly: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["We'll schedule annual preventive visits."].ToString()))
-        };
+        var hints = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
+            Model.UsesFilterFrequencyHints
+                ? new Dictionary<string, string>
+                {
+                    ["Monthly"] = L["We'll change the filter every month."].ToString(),
+                    ["Every3Months"] = L["We'll change the filter every 3 months."].ToString(),
+                    ["TwiceAYear"] = L["We'll change the filter every 6 months. Full service visits twice a year."].ToString(),
+                    ["Yearly"] = L["We'll change the filter once a year."].ToString()
+                }
+                : new Dictionary<string, string>
+                {
+                    ["Monthly"] = L["We'll schedule visits every month."].ToString(),
+                    ["Every3Months"] = L["We'll schedule visits every 3 months."].ToString(),
+                    ["TwiceAYear"] = L["We'll schedule visits twice a year."].ToString(),
+                    ["Yearly"] = L["We'll schedule annual preventive visits."].ToString()
+                }));
         document.querySelectorAll('input[name="Frequency"]').forEach(function (input) {
             input.addEventListener('change', function () {
                 var hint = document.getElementById('frequencyHint');
