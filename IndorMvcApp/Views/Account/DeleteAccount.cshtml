@@ -35,7 +35,7 @@
         </ul>
 
         <form asp-controller="Account" asp-action="DeleteAccount" method="post"
-              onsubmit="return confirm('@L["This will permanently delete your account and all associated data. This cannot be undone. Continue?"]');">
+              data-no-nav-loading>
             @Html.AntiForgeryToken()
 
             <div class="input-group">
@@ -49,8 +49,8 @@
                 </div>
             </div>
 
-            <button type="submit" class="btn btn-primary btn-primary--submit"
-                    style="background:#DC2626;border-color:#DC2626;">
+            <button type="submit" class="btn btn-primary btn-primary--submit btn-danger-delete"
+                    style="background:#DC2626 !important;border-color:#DC2626 !important;box-shadow:0 8px 24px rgba(220,38,38,.28);">
                 <span class="btn-label"><i class="fas fa-user-xmark"></i> @L["Permanently delete my account"]</span>
             </button>
 

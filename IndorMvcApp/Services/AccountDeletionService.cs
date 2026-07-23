@@ -46,6 +46,9 @@ public sealed class AccountDeletionService
         await BestEffortAsync("password reset codes", () =>
             _db.IndorPasswordResetCodes.Where(x => x.UserId == userId).ExecuteDeleteAsync(cancellationToken));
 
+        await BestEffortAsync("app notifications", () =>
+            _db.IndorAppNotifications.Where(x => x.RecipientUserId == userId).ExecuteDeleteAsync(cancellationToken));
+
         // Role profiles reference the user through an optional FK (ON DELETE NO ACTION), which
         // would block the delete. Unlink them so the account can be removed. IndorProveedor is
         // mapped with SetNull and is handled automatically, but we unlink it too for consistency.
