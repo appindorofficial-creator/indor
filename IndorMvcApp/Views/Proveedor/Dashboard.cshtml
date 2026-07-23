@@ -112,6 +112,9 @@
     <section class="prv-pro-quick prv-pro-quick--home">
         <h2>@L["Quick Actions"]</h2>
         <div class="prv-pro-quick-grid prv-pro-quick-grid--home">
+            <a asp-controller="Proveedor" asp-action="AvailableRequests" class="prv-pro-quick-item prv-pro-quick-item--green">
+                <i class="fas fa-bell-concierge"></i><span>@L["Available Requests"]</span>
+            </a>
             <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="home" class="prv-pro-quick-item prv-pro-quick-item--blue">
                 <i class="fas fa-briefcase"></i><span>@L["New Job"]</span>
             </a>

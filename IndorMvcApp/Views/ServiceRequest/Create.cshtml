@@ -1,0 +1,144 @@
+@model IndorMvcApp.ViewModels.ServiceRequestCreateViewModel
+@{
+    ViewData["Title"] = "Request a Service";
+}
+
+<div class="sr-hero">
+    <h2>@L["Request a service"]</h2>
+    <p>@L["Tell us what you need. We'll instantly notify verified INDOR providers in that trade — the first one to accept will contact you."]</p>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="sr-error"><i class="fas fa-circle-exclamation"></i> @Model.ErrorMessage</div>
+}
+
+<form asp-action="Create" method="post" class="sr-form" id="srCreateForm">
+    @Html.AntiForgeryToken()
+
+    <div class="sr-field">
+        <label>@L["What do you need?"] <span class="sr-hint">@L["Pick a category"]</span></label>
+        <div class="sr-cat-grid">
+            @foreach (var cat in Model.Categories)
+            {
+                var selected = Model.CategoryId == cat.Id;
+                <label class="sr-cat @(selected ? "is-selected" : "")">
+                    <input type="radio" name="CategoryId" value="@cat.Id" @(selected ? "checked" : "") required />
+                    <i class="fas @cat.IconClass"></i>
+                    <span>@cat.Label</span>
+                </label>
+            }
+        </div>
+    </div>
+
+    <div class="sr-field">
+        <label>@L["Title"]</label>
+        <input class="sr-input" type="text" name="Title" maxlength="150" value="@Model.Title"
+               placeholder="@L["e.g. Leaking kitchen faucet"]" required />
+    </div>
+
+    <div class="sr-field">
+        <label>@L["Describe the job"] <span class="sr-hint">@L["Optional"]</span></label>
+        <textarea class="sr-textarea" name="Description" maxlength="1000"
+                  placeholder="@L["Add any details that help the provider prepare..."]">@Model.Description</textarea>
+    </div>
+
+    @if (Model.Properties.Count > 0)
+    {
+        <div class="sr-field">
+            <label>@L["Property"] <span class="sr-hint">@L["Optional"]</span></label>
+            <select class="sr-select" name="PropiedadId" id="srPropiedad">
+                <option value="">@L["No specific property"]</option>
+                @foreach (var p in Model.Properties)
+                {
+                    <option value="@p.Id" data-address="@p.Address" selected="@(Model.PropiedadId == p.Id ? "selected" : null)">@p.Address</option>
+                }
+            </select>
+        </div>
+    }
+
+    <div class="sr-field">
+        <label>@L["Service address"]</label>
+        <input class="sr-input" type="text" name="Address" id="srAddress" maxlength="250" value="@Model.Address"
+               placeholder="@L["Where should the provider go?"]" />
+    </div>
+
+    <div class="sr-row">
+        <div class="sr-field">
+            <label>@L["Preferred date"] <span class="sr-hint">@L["Optional"]</span></label>
+            <input class="sr-input" type="date" name="PreferredDate"
+                   value="@(Model.PreferredDate?.ToString("yyyy-MM-dd"))" />
+        </div>
+        <div class="sr-field">
+            <label>@L["Preferred time"] <span class="sr-hint">@L["Optional"]</span></label>
+            <input class="sr-input" type="text" name="PreferredTime" maxlength="40" value="@Model.PreferredTime"
+                   placeholder="@L["e.g. Morning"]" />
+        </div>
+    </div>
+
+    <div class="sr-row">
+        <div class="sr-field">
+            <label>@L["Budget (USD)"] <span class="sr-hint">@L["Optional"]</span></label>
+            <input class="sr-input" type="number" min="0" step="1" name="BudgetAmount"
+                   value="@(Model.BudgetAmount?.ToString("0.##"))" placeholder="@L["e.g. 150"]" />
+        </div>
+        <div class="sr-field">
+            <label>@L["Contact phone"]</label>
+            <input class="sr-input" type="tel" name="ContactPhone" maxlength="30" value="@Model.ContactPhone"
+                   placeholder="@L["Your phone number"]" />
+        </div>
+    </div>
+
+    <div class="sr-field">
+        <label>@L["Urgency"]</label>
+        <div class="sr-seg" id="srUrgency">
+            @foreach (var u in new[] { "Standard", "Urgent", "Emergency" })
+            {
+                var sel = string.Equals(Model.Urgency, u, StringComparison.OrdinalIgnoreCase);
+                <label class="@(sel ? "is-selected" : "")">
+                    <input type="radio" name="Urgency" value="@u" @(sel ? "checked" : "") />
+                    @L[u]
+                </label>
+            }
+        </div>
+    </div>
+
+    <div class="sr-sticky-cta">
+        <div class="sr-inner">
+            <button type="submit" class="sr-btn sr-btn--primary sr-btn--block">
+                <i class="fas fa-paper-plane"></i> @L["Post request"]
+            </button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    (function () {
+        // Category chip highlight
+        document.querySelectorAll('.sr-cat input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                document.querySelectorAll('.sr-cat').forEach(function (c) { c.classList.remove('is-selected'); });
+                if (input.checked) input.closest('.sr-cat').classList.add('is-selected');
+            });
+        });
+        // Urgency segmented highlight
+        document.querySelectorAll('#srUrgency input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                document.querySelectorAll('#srUrgency label').forEach(function (l) { l.classList.remove('is-selected'); });
+                if (input.checked) input.closest('label').classList.add('is-selected');
+            });
+        });
+        // Auto-fill address from selected property
+        var propSel = document.getElementById('srPropiedad');
+        var addr = document.getElementById('srAddress');
+        if (propSel && addr) {
+            propSel.addEventListener('change', function () {
+                var opt = propSel.options[propSel.selectedIndex];
+                var a = opt ? opt.getAttribute('data-address') : '';
+                if (a) addr.value = a;
+            });
+        }
+    })();
+</script>
+}

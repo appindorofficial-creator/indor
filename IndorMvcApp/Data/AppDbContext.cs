@@ -199,6 +199,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<IndorRealtorSharedQuote> IndorRealtorSharedQuotes { get; set; }
     public DbSet<IndorNearbyNetworkSetting> IndorNearbyNetworkSettings { get; set; }
     public DbSet<IndorNearbyNetworkItem> IndorNearbyNetworkItems { get; set; }
+    public DbSet<IndorServiceRequest> IndorServiceRequests { get; set; }
+    public DbSet<IndorAppNotification> IndorAppNotifications { get; set; }
     public DbSet<IndorNeighborRequest> IndorNeighborRequests { get; set; }
     public DbSet<IndorNeighborRequestCategory> IndorNeighborRequestCategories { get; set; }
     public DbSet<IndorNeighborRequestPhoto> IndorNeighborRequestPhotos { get; set; }
@@ -1183,6 +1185,33 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                   .WithMany()
                   .HasForeignKey(e => e.RelatedClientId)
                   .OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<IndorServiceRequest>(entity =>
+        {
+            entity.HasOne(e => e.Category)
+                  .WithMany()
+                  .HasForeignKey(e => e.CategoryId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(e => e.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(e => e.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+            entity.HasOne(e => e.ClaimedByProveedor)
+                  .WithMany()
+                  .HasForeignKey(e => e.ClaimedByProveedorId)
+                  .OnDelete(DeleteBehavior.SetNull);
+            entity.HasOne(e => e.User)
+                  .WithMany()
+                  .HasForeignKey(e => e.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasIndex(e => new { e.UserId, e.Status });
+            entity.HasIndex(e => new { e.CategoryId, e.Status });
+        });
+
+        modelBuilder.Entity<IndorAppNotification>(entity =>
+        {
+            entity.HasIndex(e => new { e.RecipientUserId, e.IsRead, e.FechaCreacion });
         });
 
         modelBuilder.Entity<IndorNeighborRequest>(entity =>

@@ -1,0 +1,27 @@
+@{
+    var pageTitle = ViewData["Title"] as string ?? "Service Requests";
+    var backUrl = ViewData["BackUrl"] as string ?? Url.Action("Index", "Home");
+}
+<!DOCTYPE html>
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <title>@pageTitle - INDOR</title>
+    @await Html.PartialAsync("_AppVersionHead")
+    @await Html.PartialAsync("_IndorDesignHead")
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/service-request.css" asp-append-version="true" />
+    @await Html.PartialAsync("_TabletResponsiveHead")
+</head>
+<body class="sr-page">
+    <div class="sr-topbar">
+        <a class="sr-back" href="@backUrl" aria-label="@L["Back"]"><i class="fas fa-arrow-left"></i></a>
+        <h1>@L[pageTitle]</h1>
+    </div>
+    <main class="sr-shell">
+        @RenderBody()
+    </main>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

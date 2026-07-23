@@ -48,8 +48,9 @@ body {
     visibility: visible;
     pointer-events: auto;
     transition: opacity 0.28s ease, visibility 0.28s ease;
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
+    /* No `transform` on this position:fixed cover: on iOS WKWebView it becomes
+       its own containing block and gets clipped to ~half the viewport. The
+       height/width are pinned to the real viewport in JS (ensure()). */
 }
 #indorBootSplash.is-done {
     opacity: 0;
@@ -133,6 +134,31 @@ body {
         return lang.indexOf("es") === 0 ? "Cargando..." : (TEXT || "Loading...");
     }
 
+    // iOS WKWebView mis-sizes position:fixed covers (100vh/100dvh can be ~half the
+    // screen). Pin the real viewport size in pixels so the splash is full-screen.
+    function sizeSplash() {
+        var el = document.getElementById("indorBootSplash");
+        if (!el) return;
+        var vv = window.visualViewport;
+        var h = Math.max(window.innerHeight || 0,
+            document.documentElement ? document.documentElement.clientHeight : 0,
+            vv ? vv.height : 0);
+        var w = Math.max(window.innerWidth || 0,
+            document.documentElement ? document.documentElement.clientWidth : 0,
+            vv ? vv.width : 0);
+        el.style.height = h + "px";
+        el.style.width = w + "px";
+    }
+
+    if (!window.__indorBootSplashResizeBound) {
+        window.__indorBootSplashResizeBound = true;
+        window.addEventListener("resize", sizeSplash);
+        window.addEventListener("orientationchange", sizeSplash);
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener("resize", sizeSplash);
+        }
+    }
+
     function ensure() {
         var host = document.documentElement;
         if (!host) return null;
@@ -164,6 +190,7 @@ body {
         if (textEl) textEl.textContent = label;
         el.classList.remove("is-done");
         el.removeAttribute("hidden");
+        sizeSplash();
         shownAt = Date.now();
         return el;
     }

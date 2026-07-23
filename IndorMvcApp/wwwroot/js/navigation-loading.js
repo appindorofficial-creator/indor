@@ -10,6 +10,10 @@
     var MAX_VISIBLE_MS = 15000;
     var hideTimer = null;
     var maxVisibleTimer = null;
+    // When the last interaction was on an opted-out element, the beforeunload
+    // catch-all must not force the overlay (respects data-no-nav-loading).
+    var suppressUnloadOverlay = false;
+    var suppressResetTimer = null;
 
     function isPlainLeftClick(e) {
         return e.button === 0
@@ -148,6 +152,58 @@
         }
     }
 
+    // iOS WKWebView mis-sizes position:fixed overlays (100vh/100dvh can resolve
+    // to ~half the screen, leaving the page visible below the backdrop). Pin the
+    // real viewport size in pixels so the cover is always full-screen.
+    function viewportHeight() {
+        var vv = window.visualViewport;
+        return Math.max(
+            window.innerHeight || 0,
+            document.documentElement ? document.documentElement.clientHeight : 0,
+            vv ? vv.height : 0
+        );
+    }
+
+    function viewportWidth() {
+        var vv = window.visualViewport;
+        return Math.max(
+            window.innerWidth || 0,
+            document.documentElement ? document.documentElement.clientWidth : 0,
+            vv ? vv.width : 0
+        );
+    }
+
+    function sizeOverlayToViewport() {
+        var overlay = document.getElementById(OVERLAY_ID);
+        if (!overlay) return;
+        overlay.style.height = viewportHeight() + "px";
+        overlay.style.width = viewportWidth() + "px";
+    }
+
+    function onViewportResize() {
+        var overlay = document.getElementById(OVERLAY_ID);
+        if (overlay && overlay.classList.contains("is-visible")) {
+            sizeOverlayToViewport();
+        }
+    }
+
+    if (!window.__indorNavLoadingResizeBound) {
+        window.__indorNavLoadingResizeBound = true;
+        window.addEventListener("resize", onViewportResize);
+        window.addEventListener("orientationchange", onViewportResize);
+        if (window.visualViewport) {
+            window.visualViewport.addEventListener("resize", onViewportResize);
+        }
+    }
+
+    function markSuppressUnload() {
+        suppressUnloadOverlay = true;
+        if (suppressResetTimer) window.clearTimeout(suppressResetTimer);
+        suppressResetTimer = window.setTimeout(function () {
+            suppressUnloadOverlay = false;
+        }, 2500);
+    }
+
     function clearHideTimer() {
         if (!hideTimer) return;
         window.clearTimeout(hideTimer);
@@ -177,6 +233,7 @@
         clearMaxVisibleTimer();
         updateLoadingText(overlay);
         overlay.removeAttribute("hidden");
+        sizeOverlayToViewport();
         overlay.classList.add("is-visible");
         document.documentElement.classList.add("indor-nav-loading-active");
         document.body.classList.add("indor-nav-loading-active");
@@ -200,6 +257,8 @@
 
         overlay.classList.remove("is-visible");
         overlay.setAttribute("hidden", "hidden");
+        overlay.style.height = "";
+        overlay.style.width = "";
         document.documentElement.classList.remove("indor-nav-loading-active");
         document.body.classList.remove("indor-nav-loading-active");
     }
@@ -210,6 +269,12 @@
     document.addEventListener("click", function (e) {
         if (!isPlainLeftClick(e)) return;
         if (!e.target || !e.target.closest) return;
+
+        // Remember opt-outs so the beforeunload catch-all honours them too.
+        if (e.target.closest("[data-no-nav-loading]")) {
+            markSuppressUnload();
+            return;
+        }
 
         var spaTarget = e.target.closest(BOTTOM_NAV_SPA_TARGET_SELECTOR);
         if (spaTarget) {
@@ -236,10 +301,12 @@
             return;
         }
 
-        if (shouldSkipLink(link)) return;
+        if (shouldSkipLink(link)) { markSuppressUnload(); return; }
 
         var href = link.getAttribute("href") || "";
-        if (!isSameOrigin(href)) return;
+        // Cross-origin / external targets may open outside the WebView and leave
+        // this page mounted — never force a stuck spinner for those.
+        if (!isSameOrigin(href)) { markSuppressUnload(); return; }
 
         showNavigationLoading();
     }, true);
@@ -257,6 +324,19 @@
             showNavigationLoading();
         }, 0);
     }, false);
+
+    // Catch-all: any real navigation that unloads the page shows the cover, even
+    // when triggered by JS (button onclick -> location.href), <button> elements,
+    // programmatic redirects, etc. that the click/submit handlers can't detect.
+    // Skipped links/forms call preventDefault so they never unload -> no false
+    // spinner. The app defines no beforeunload confirm dialogs, so this is safe.
+    window.addEventListener("beforeunload", function () {
+        if (suppressUnloadOverlay) return;
+        var overlay = document.getElementById(OVERLAY_ID);
+        if (!overlay || !overlay.classList.contains("is-visible")) {
+            showNavigationLoading();
+        }
+    });
 
     window.addEventListener("pageshow", hideNavigationLoading);
     document.addEventListener("visibilitychange", function () {

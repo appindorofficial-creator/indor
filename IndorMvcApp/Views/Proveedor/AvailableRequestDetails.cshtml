@@ -1,0 +1,97 @@
+@model IndorMvcApp.ViewModels.ProviderRequestDetailViewModel
+@{
+    ViewData["Title"] = L["Request Details - INDOR PRO"];
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "jobs";
+    ViewData["ProviderProExtraCss"] = "service-request.css";
+    var r = Model.Request;
+}
+
+<div class="prv-pro-shell prv-pro-shell--available-requests">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <header class="prv-pro-new-leads-head">
+        <a asp-controller="Proveedor" asp-action="AvailableRequests" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
+        <div>
+            <h1>@r.Title</h1>
+            <small>@r.CategoryLabel</small>
+        </div>
+        <span style="width:36px;"></span>
+    </header>
+
+    @if (Model.TakenByMe)
+    {
+        <div class="sr-toast"><i class="fas fa-circle-check"></i> @L["You took this request. Contact the homeowner to coordinate."]</div>
+    }
+    else if (Model.AlreadyTaken)
+    {
+        <div class="sr-toast" style="background:#F1F5F9;border-color:#E2E8F0;color:#64748B;">
+            <i class="fas fa-lock" style="color:#94A3B8;"></i> @L["Another provider already took this request."]
+        </div>
+    }
+
+    <div class="sr-detail-card">
+        <h3>@L["Job details"]</h3>
+        <div class="sr-kv"><span class="k">@L["Category"]</span><span class="v">@r.CategoryLabel</span></div>
+        @if (!string.IsNullOrWhiteSpace(r.Location))
+        {
+            <div class="sr-kv"><span class="k">@L["Location"]</span><span class="v">@r.Location</span></div>
+        }
+        @if (!string.IsNullOrWhiteSpace(r.WhenLabel))
+        {
+            <div class="sr-kv"><span class="k">@L["When"]</span><span class="v">@r.WhenLabel</span></div>
+        }
+        @if (!string.IsNullOrWhiteSpace(r.BudgetLabel))
+        {
+            <div class="sr-kv"><span class="k">@L["Budget"]</span><span class="v">@r.BudgetLabel</span></div>
+        }
+        @if (r.Urgency != "Standard")
+        {
+            <div class="sr-kv"><span class="k">@L["Urgency"]</span><span class="v">@L[r.Urgency]</span></div>
+        }
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <div class="sr-detail-card">
+            <h3>@L["Description"]</h3>
+            <div class="sr-desc">@Model.Description</div>
+        </div>
+    }
+
+    @if (Model.TakenByMe)
+    {
+        <div class="sr-provider">
+            <div class="sr-provider-head">
+                <span class="sr-provider-avatar"><i class="fas fa-house-user"></i></span>
+                <div><h3>@L["Homeowner contact"]</h3></div>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.HomeownerName))
+            {
+                <div class="sr-provider-row"><i class="fas fa-user"></i> @Model.HomeownerName</div>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.ContactPhone))
+            {
+                <div class="sr-provider-row"><i class="fas fa-phone"></i> <a href="tel:@Model.ContactPhone">@Model.ContactPhone</a></div>
+            }
+            @if (string.IsNullOrWhiteSpace(Model.HomeownerName) && string.IsNullOrWhiteSpace(Model.ContactPhone))
+            {
+                <div class="sr-provider-row"><i class="fas fa-circle-info"></i> @L["Contact details were not provided."]</div>
+            }
+        </div>
+    }
+
+    @if (Model.CanTake)
+    {
+        <form asp-controller="Proveedor" asp-action="TakeRequest" method="post" style="margin-top:8px;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@r.Id" />
+            <button type="submit" class="sr-btn sr-btn--primary sr-btn--block">
+                <i class="fas fa-hand-pointer"></i> @L["Take this request"]
+            </button>
+        </form>
+        <p style="text-align:center;color:#94A3B8;font-size:12.5px;margin-top:10px;">
+            @L["First provider to take it wins the job."]
+        </p>
+    }
+</div>

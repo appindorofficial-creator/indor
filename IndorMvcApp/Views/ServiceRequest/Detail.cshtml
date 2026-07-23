@@ -1,0 +1,111 @@
+@model IndorMvcApp.ViewModels.HomeownerRequestDetailViewModel
+@{
+    ViewData["Title"] = "Request Details";
+    ViewData["BackUrl"] = Url.Action("Mine");
+    var r = Model.Request;
+    var pill = r.Status switch
+    {
+        "Open" => "sr-pill--open",
+        "Claimed" => "sr-pill--claimed",
+        "Completed" => "sr-pill--completed",
+        _ => "sr-pill--cancelled"
+    };
+    var statusLabel = r.Status switch
+    {
+        "Open" => "Waiting",
+        "Claimed" => "Accepted",
+        "Completed" => "Completed",
+        _ => "Cancelled"
+    };
+    string Initial(string? name) => string.IsNullOrWhiteSpace(name) ? "P" : name.Trim().Substring(0, 1).ToUpperInvariant();
+}
+
+<div style="display:flex;align-items:center;gap:10px;margin:6px 0 14px;">
+    <span class="sr-ico" style="width:52px;height:52px;font-size:22px;"><i class="fas @r.CategoryIcon"></i></span>
+    <div style="flex:1 1 auto;min-width:0;">
+        <h2 style="margin:0;font-size:21px;">@r.Title</h2>
+        <div class="sr-card-cat">@r.CategoryLabel</div>
+    </div>
+    <span class="sr-pill @pill">@L[statusLabel]</span>
+</div>
+
+@if (Model.Provider != null)
+{
+    <div class="sr-provider">
+        <div class="sr-provider-head">
+            <span class="sr-provider-avatar">@Initial(Model.Provider.Name)</span>
+            <div>
+                <h3>@Model.Provider.Name</h3>
+                <div class="sr-badges">
+                    @if (Model.Provider.IsLicensed)
+                    {
+                        <span class="sr-pill sr-pill--claimed"><i class="fas fa-certificate"></i> @L["Licensed"]</span>
+                    }
+                    @if (Model.Provider.IsInsured)
+                    {
+                        <span class="sr-pill sr-pill--claimed"><i class="fas fa-shield-halved"></i> @L["Insured"]</span>
+                    }
+                </div>
+            </div>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.Provider.Contact))
+        {
+            <div class="sr-provider-row"><i class="fas fa-user"></i> @Model.Provider.Contact</div>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Provider.Phone))
+        {
+            <div class="sr-provider-row"><i class="fas fa-phone"></i> <a href="tel:@Model.Provider.Phone">@Model.Provider.Phone</a></div>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Provider.Email))
+        {
+            <div class="sr-provider-row"><i class="fas fa-envelope"></i> <a href="mailto:@Model.Provider.Email">@Model.Provider.Email</a></div>
+        }
+    </div>
+}
+else if (r.Status == "Open")
+{
+    <div class="sr-toast" style="background:#EFF6FF;border-color:#BFDBFE;color:#1D4ED8;">
+        <i class="fas fa-satellite-dish" style="color:#2563EB;"></i>
+        @L["Waiting for a provider to accept. We'll notify you the moment one takes it."]
+    </div>
+}
+
+<div class="sr-detail-card">
+    <h3>@L["Request details"]</h3>
+    <div class="sr-kv"><span class="k">@L["Category"]</span><span class="v">@r.CategoryLabel</span></div>
+    @if (!string.IsNullOrWhiteSpace(r.Location))
+    {
+        <div class="sr-kv"><span class="k">@L["Location"]</span><span class="v">@r.Location</span></div>
+    }
+    @if (!string.IsNullOrWhiteSpace(r.WhenLabel))
+    {
+        <div class="sr-kv"><span class="k">@L["When"]</span><span class="v">@r.WhenLabel</span></div>
+    }
+    @if (!string.IsNullOrWhiteSpace(r.BudgetLabel))
+    {
+        <div class="sr-kv"><span class="k">@L["Budget"]</span><span class="v">@r.BudgetLabel</span></div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.ContactPhone))
+    {
+        <div class="sr-kv"><span class="k">@L["Contact phone"]</span><span class="v">@Model.ContactPhone</span></div>
+    }
+</div>
+
+@if (!string.IsNullOrWhiteSpace(r.Description))
+{
+    <div class="sr-detail-card">
+        <h3>@L["Description"]</h3>
+        <div class="sr-desc">@r.Description</div>
+    </div>
+}
+
+@if (r.Status == "Open")
+{
+    <form asp-action="Cancel" method="post" onsubmit="return confirm('@L["Cancel this request?"]');">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@r.Id" />
+        <button type="submit" class="sr-btn sr-btn--danger sr-btn--block">
+            <i class="fas fa-xmark"></i> @L["Cancel request"]
+        </button>
+    </form>
+}

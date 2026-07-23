@@ -1,0 +1,83 @@
+@model IndorMvcApp.ViewModels.ProviderAvailableRequestsViewModel
+@{
+    ViewData["Title"] = L["Available Requests - INDOR PRO"];
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "jobs";
+    ViewData["ProviderProExtraCss"] = "service-request.css";
+
+    string PillClass(string urgency) => urgency switch
+    {
+        "Emergency" => "sr-pill--emergency",
+        "Urgent" => "sr-pill--urgent",
+        _ => "sr-pill--open"
+    };
+}
+
+<div class="prv-pro-shell prv-pro-shell--available-requests">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <header class="prv-pro-new-leads-head">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
+        <div>
+            <h1>@L["Available Requests"]</h1>
+            <small>@L.T("{0} open request(s) in your trades", Model.Requests.Count)</small>
+        </div>
+        <span style="width:36px;"></span>
+    </header>
+
+    @if (TempData["ServiceRequestProToast"] is string toast && !string.IsNullOrWhiteSpace(toast))
+    {
+        <div class="sr-toast"><i class="fas fa-circle-info"></i> @toast</div>
+    }
+
+    @if (!Model.HasMatchingCategories)
+    {
+        <div class="sr-empty">
+            <div class="sr-empty-ico"><i class="fas fa-screwdriver-wrench"></i></div>
+            <h3>@L["Add your trades first"]</h3>
+            <p>@L["Select the service categories you offer in your profile so we can match you with homeowner requests."]</p>
+            <a class="sr-btn sr-btn--primary" asp-controller="Proveedor" asp-action="Profile"><i class="fas fa-user"></i> @L["Go to profile"]</a>
+        </div>
+    }
+    else if (Model.Requests.Count == 0)
+    {
+        <div class="sr-empty">
+            <div class="sr-empty-ico"><i class="fas fa-inbox"></i></div>
+            <h3>@L["No open requests right now"]</h3>
+            <p>@L["When a homeowner requests a service in one of your trades, it will appear here and we'll notify you by email."]</p>
+        </div>
+    }
+    else
+    {
+        foreach (var r in Model.Requests)
+        {
+            <a class="sr-card" asp-controller="Proveedor" asp-action="AvailableRequestDetails" asp-route-id="@r.Id">
+                <div class="sr-card-head">
+                    <span class="sr-ico"><i class="fas @r.CategoryIcon"></i></span>
+                    <div class="sr-card-body">
+                        <h3>@r.Title</h3>
+                        <div class="sr-card-cat">@r.CategoryLabel</div>
+                        <div class="sr-meta">
+                            @if (!string.IsNullOrWhiteSpace(r.Location))
+                            {
+                                <span><i class="fas fa-location-dot"></i>@r.Location</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(r.WhenLabel))
+                            {
+                                <span><i class="fas fa-clock"></i>@r.WhenLabel</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(r.BudgetLabel))
+                            {
+                                <span><i class="fas fa-dollar-sign"></i>@r.BudgetLabel</span>
+                            }
+                        </div>
+                    </div>
+                    @if (r.Urgency != "Standard")
+                    {
+                        <span class="sr-pill @PillClass(r.Urgency)">@L[r.Urgency]</span>
+                    }
+                </div>
+            </a>
+        }
+    }
+</div>

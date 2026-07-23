@@ -192,6 +192,9 @@ builder.Services.Configure<IndorMvcApp.Models.StripeSettings>(builder.Configurat
 builder.Services.AddScoped<IInvitationEmailSender, SmtpInvitationEmailSender>();
 builder.Services.AddScoped<IPasswordResetEmailSender, SmtpPasswordResetEmailSender>();
 builder.Services.AddScoped<IInsuranceCarrierEmailSender, SmtpInsuranceCarrierEmailSender>();
+builder.Services.AddScoped<ITransactionalEmailSender, SmtpTransactionalEmailSender>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IServiceRequestService, ServiceRequestService>();
 builder.Services.AddScoped<IInsuranceStripeCheckoutService, InsuranceStripeCheckoutService>();
 builder.Services.AddHostedService<StartupWarmupService>();
 builder.Services.AddScoped<IRealtorInviteClientService, RealtorInviteClientService>();

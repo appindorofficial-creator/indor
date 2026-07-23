@@ -24,6 +24,7 @@ public class AccountController : Controller
     private readonly AccountDeletionService _accountDeletion;
     private readonly IUiCultureCookieService _cultureCookie;
     private readonly IIndorLocalizer _localizer;
+    private readonly ILogger<AccountController> _logger;
 
     public AccountController(
         UserManager<ApplicationUser> userManager,
@@ -36,7 +37,8 @@ public class AccountController : Controller
         IPasswordResetEmailSender passwordResetEmail,
         AccountDeletionService accountDeletion,
         IUiCultureCookieService cultureCookie,
-        IIndorLocalizer localizer)
+        IIndorLocalizer localizer,
+        ILogger<AccountController> logger)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -49,6 +51,7 @@ public class AccountController : Controller
         _accountDeletion = accountDeletion;
         _cultureCookie = cultureCookie;
         _localizer = localizer;
+        _logger = logger;
     }
 
     [HttpPost]
@@ -385,6 +388,7 @@ public class AccountController : Controller
         // way so we don't reveal which emails are registered.
         if (user != null && !string.IsNullOrEmpty(user.Email))
         {
+            _logger.LogInformation("ForgotPassword: matching account found for {Email}; sending reset email.", email);
             var now = DateTime.UtcNow;
 
             // Invalidate any previous codes still pending for this user.
@@ -417,6 +421,13 @@ public class AccountController : Controller
 
             await _passwordResetEmail.SendPasswordResetEmailAsync(
                 new PasswordResetEmailModel(user.Email, displayName, code, resetUrl, 24));
+        }
+        else
+        {
+            // No account matched the address entered. By design we still show the same
+            // confirmation screen (anti-enumeration), but log it so support can tell
+            // "wrong/unregistered email" apart from a real delivery failure.
+            _logger.LogInformation("ForgotPassword: no account matched {Email}; no email sent (anti-enumeration).", email);
         }
 
         return RedirectToAction(nameof(ForgotPasswordConfirmation), new { email });

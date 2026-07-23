@@ -23,6 +23,7 @@ public class HomeController : Controller
     private readonly HomeCatalogCache _catalogCache;
     private readonly HomeIndexQueryService _homeIndexQueries;
     private readonly IIndorLocalizer _localizer;
+    private readonly INotificationService _notifications;
 
     public HomeController(
         AppDbContext db,
@@ -33,7 +34,8 @@ public class HomeController : Controller
         HomeownerNearbyNetworkService nearbyNetworkService,
         HomeCatalogCache catalogCache,
         HomeIndexQueryService homeIndexQueries,
-        IIndorLocalizer localizer)
+        IIndorLocalizer localizer,
+        INotificationService notifications)
     {
         _db = db;
         _dbFactory = dbFactory;
@@ -44,6 +46,7 @@ public class HomeController : Controller
         _catalogCache = catalogCache;
         _homeIndexQueries = homeIndexQueries;
         _localizer = localizer;
+        _notifications = notifications;
     }
 
     [Authorize]
@@ -70,6 +73,13 @@ public class HomeController : Controller
             .ToListAsync();
 
         ViewBag.PrimaryPropiedadId = propiedades.FirstOrDefault()?.Id;
+
+        // Persisted in-app notifications (e.g. "a provider took your request").
+        if (!string.IsNullOrEmpty(userId))
+        {
+            ViewBag.PersistedNotifications = await _notifications.GetRecentAsync(userId, _localizer.IsSpanish, 12);
+            ViewBag.PersistedUnreadCount = await _notifications.GetUnreadCountAsync(userId);
+        }
 
         ViewBag.Microservicios = catalog.Microservicios;
         ViewBag.Servicios = catalog.Servicios;

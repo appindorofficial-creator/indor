@@ -543,6 +543,24 @@
         Subtitle = n.Subtitle,
         Date = n.Date
     }).ToList();
+
+    // Prepend persisted in-app notifications (e.g. "a provider took your request").
+    var persistedNotifications = ViewBag.PersistedNotifications as IReadOnlyList<IndorMvcApp.Services.AppNotificationView>;
+    if (persistedNotifications != null && persistedNotifications.Count > 0)
+    {
+        var persistedItems = persistedNotifications.Select(pn => new IndorMvcApp.ViewModels.HomeNotificationItemViewModel
+        {
+            Icon = string.IsNullOrWhiteSpace(pn.IconClass) ? "fa-bell" : pn.IconClass,
+            Severity = pn.IsRead ? "upcoming" : "soon",
+            Title = pn.Title,
+            Subtitle = pn.Body ?? "",
+            Date = pn.FechaCreacion.ToLocalTime(),
+            TimeLabel = pn.FechaCreacion.ToLocalTime().ToString("dd/MM/yyyy"),
+            Url = pn.TargetUrl,
+            IsPreLocalized = true
+        }).ToList();
+        homeNotificationItems = persistedItems.Concat(homeNotificationItems).ToList();
+    }
     var moreProfileShell = (IndorMvcApp.ViewModels.MoreProfileViewModel?)ViewBag.MoreProfile
         ?? new IndorMvcApp.ViewModels.MoreProfileViewModel();
     ViewData["HomeNotificationCount"] = homeNotificationItems.Count;

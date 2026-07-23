@@ -11,6 +11,9 @@ public static class UiTranslations
             UiTranslationsShared.Entries,
             UiTranslationsHome.Entries,
             UiTranslationsProveedor.Entries,
+            // Service request marketplace — placed early so curated later files still win
+            // for any shared short keys; unique long strings/toasts persist.
+            UiTranslationsServiceRequest.Entries,
             UiTranslationsRealtor.Entries,
             UiTranslationsFlows.Entries,
             UiTranslationsPropietarioServices.Entries,

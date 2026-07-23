@@ -5547,6 +5547,44 @@ public partial class ProviderProDataService(
         var cutoff = DateTime.UtcNow.AddDays(-30);
         var candidates = new List<ProviderProNotificationItemViewModel>();
 
+        // Persisted in-app notifications (e.g. "new service request in your trade").
+        var providerUserId = await db.IndorProveedores
+            .AsNoTracking()
+            .Where(p => p.Id == proveedorId)
+            .Select(p => p.UserId)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (!string.IsNullOrEmpty(providerUserId))
+        {
+            var isEs = System.Globalization.CultureInfo.CurrentUICulture
+                .TwoLetterISOLanguageName.Equals("es", StringComparison.OrdinalIgnoreCase);
+
+            var appNotifications = await db.IndorAppNotifications
+                .AsNoTracking()
+                .Where(n => n.RecipientUserId == providerUserId && n.FechaCreacion >= cutoff)
+                .OrderByDescending(n => n.FechaCreacion)
+                .Take(8)
+                .ToListAsync(cancellationToken);
+
+            foreach (var n in appNotifications)
+            {
+                var description = isEs
+                    ? (string.IsNullOrWhiteSpace(n.BodyEs) ? n.TitleEs : n.BodyEs!)
+                    : (string.IsNullOrWhiteSpace(n.BodyEn) ? n.TitleEn : n.BodyEn!);
+                candidates.Add(new ProviderProNotificationItemViewModel
+                {
+                    Id = n.Id,
+                    Description = description,
+                    OccurredLabel = FormatRelativeLeadTime(n.FechaCreacion),
+                    CategoryTag = string.IsNullOrWhiteSpace(n.CategoryTag) ? "Requests" : n.CategoryTag!,
+                    TagCssClass = "prv-pro-notify-tag--leads",
+                    IconClass = string.IsNullOrWhiteSpace(n.IconClass) ? "fa-bell-concierge" : n.IconClass!,
+                    TargetUrl = n.TargetUrl,
+                    OccurredUtc = n.FechaCreacion
+                });
+            }
+        }
+
         var newLeads = await db.IndorProveedorLeads
             .AsNoTracking()
             .Where(l => l.ProveedorId == proveedorId

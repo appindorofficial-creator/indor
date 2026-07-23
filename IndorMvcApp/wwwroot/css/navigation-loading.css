@@ -34,9 +34,11 @@
     visibility: hidden;
     pointer-events: none;
     transition: opacity 0.22s ease, visibility 0.22s ease;
-    /* Escape flex/grid ancestors that break fixed sizing in WebKit. */
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
+    /* NOTE: no `transform` here. On iOS WKWebView a `transform` on a
+       position:fixed element makes it its own containing block and gets
+       clipped to ~half the viewport. The overlay is appended to <html>
+       (no flex ancestor), and navigation-loading.js pins its height/width
+       to the real viewport in pixels, so full coverage is guaranteed. */
 }
 
 .indor-nav-loading[hidden] {

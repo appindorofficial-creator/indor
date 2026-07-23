@@ -49,6 +49,10 @@ public partial class ProveedorController(
 
     IInsuranceStripeCheckoutService insuranceStripeCheckout,
 
+    IServiceRequestService serviceRequests,
+
+    INotificationService notificationService,
+
     IIndorLocalizer localizer) : Controller
 
 {

@@ -1,12 +1,29 @@
 @model IReadOnlyList<IndorMvcApp.ViewModels.HomeNotificationItemViewModel>
 @foreach (var n in Model)
 {
-    <div class="ho-notify-item">
-        <div class="ho-notify-item-icon @n.Severity"><i class="fas @n.Icon"></i></div>
-        <div class="ho-notify-item-body">
-            <div class="ho-notify-item-title">@UiDisplayLocalization.LocalizeNotification(L, n.Title)</div>
-            <div class="ho-notify-item-sub">@UiDisplayLocalization.LocalizeNotification(L, n.Subtitle)</div>
-            <div class="ho-notify-item-time"><i class="far fa-calendar"></i> @n.Date.ToString("dd/MM/yyyy")</div>
+    var title = n.IsPreLocalized ? n.Title : UiDisplayLocalization.LocalizeNotification(L, n.Title);
+    var sub = n.IsPreLocalized ? n.Subtitle : UiDisplayLocalization.LocalizeNotification(L, n.Subtitle);
+    var timeLabel = string.IsNullOrWhiteSpace(n.TimeLabel) ? n.Date.ToString("dd/MM/yyyy") : n.TimeLabel;
+    if (!string.IsNullOrWhiteSpace(n.Url))
+    {
+        <a class="ho-notify-item ho-notify-item--link" href="@n.Url">
+            <div class="ho-notify-item-icon @n.Severity"><i class="fas @n.Icon"></i></div>
+            <div class="ho-notify-item-body">
+                <div class="ho-notify-item-title">@title</div>
+                <div class="ho-notify-item-sub">@sub</div>
+                <div class="ho-notify-item-time"><i class="far fa-calendar"></i> @timeLabel</div>
+            </div>
+        </a>
+    }
+    else
+    {
+        <div class="ho-notify-item">
+            <div class="ho-notify-item-icon @n.Severity"><i class="fas @n.Icon"></i></div>
+            <div class="ho-notify-item-body">
+                <div class="ho-notify-item-title">@title</div>
+                <div class="ho-notify-item-sub">@sub</div>
+                <div class="ho-notify-item-time"><i class="far fa-calendar"></i> @timeLabel</div>
+            </div>
         </div>
-    </div>
+    }
 }

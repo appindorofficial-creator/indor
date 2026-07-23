@@ -48,6 +48,14 @@ else
 
     <h2 class="hd-section-title">@L["Start here"]</h2>
     <div class="hd-start-grid">
+        <a href="@Url.Action("Create", "ServiceRequest", new { propiedadId = Model.PropiedadId })" class="hd-start-item">
+            <i class="fas fa-bell-concierge"></i>
+            @L["Request a service"]
+        </a>
+        <a href="@Url.Action("Mine", "ServiceRequest")" class="hd-start-item">
+            <i class="fas fa-clipboard-list"></i>
+            @L["My requests"]
+        </a>
         @foreach (var action in Model.QuickActions)
         {
             if (!string.IsNullOrWhiteSpace(action.Url))

@@ -34,6 +34,7 @@
         .inv-foot { margin: 22px 0 0; color: #94A3B8; font-size: 12.5px; text-align: center; line-height: 1.5; }
         @@media (max-width: 420px) { .inv-features { grid-template-columns: 1fr; } .inv-title { font-size: 24px; } }
     </style>
+    @await Html.PartialAsync("_NavigationLoadingHead")
 </head>
 <body>
     <div class="inv-wrap">
