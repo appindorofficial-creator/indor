@@ -92,6 +92,17 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
+            <label><i class="fas fa-clock pa-q-icon pa-q-icon--green"></i> @L["Preferred arrival"]</label>
+            @await Html.PartialAsync("_PropertyAdminTimeSlotSelect", new PropertyAdministratorTimeSlotSelectViewModel
+            {
+                FieldName = "ScheduleTimeWindow",
+                SelectedValue = Model.ScheduleTimeWindow,
+                DefaultValue = "11:00 AM"
+            })
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
             <label><i class="fas fa-lock pa-q-icon pa-q-icon--green"></i> @L["Can the technician enter now?"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
                 @foreach (var e in new (string Value, string Label)[] { ("SmartLock", L["Yes, with smart lock"]), ("HostMeet", L["Host will meet"]), ("NeedApproval", L["Need guest approval"]) })
@@ -105,7 +116,7 @@
         </div>
 
         <div class="pa-flow-question">
-            <span class="pa-flow-qnum">6</span>
+            <span class="pa-flow-qnum">7</span>
             <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> @L["Who should receive updates?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
@@ -120,14 +131,14 @@
         </div>
 
         @{
-            ViewData["PaContactQnum"] = "7";
+            ViewData["PaContactQnum"] = "8";
             ViewData["PaContactValue"] = Model.ContactPhone;
             ViewData["PaContactLabelIcon"] = "fa-phone pa-q-icon pa-q-icon--green";
         }
         @await Html.PartialAsync("_PropertyAdminUrgentContactPhone")
 
         <div class="pa-flow-question">
-            <span class="pa-flow-qnum">8</span>
+            <span class="pa-flow-qnum">9</span>
             <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--green"></i> @L["Add details"]</label>
             <textarea class="pa-textarea" name="Details" rows="3" maxlength="250" id="sdDetails">@Model.Details</textarea>
             <small class="pa-char-count"><span id="sdDetailsCount">@Model.Details.Length</span> @L["/ 250 characters"]</small>

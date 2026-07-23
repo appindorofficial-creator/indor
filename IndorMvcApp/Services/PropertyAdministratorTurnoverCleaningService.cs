@@ -1,5 +1,6 @@
 using System.Text.Json;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -197,7 +198,9 @@ public class PropertyAdministratorTurnoverCleaningService(
 
     private static string LabelGuestArrival(string arrival, string time)
     {
-        var localizedTime = string.IsNullOrWhiteSpace(time) ? "" : time.Trim();
+        var localizedTime = PropertyAdministratorTimeSlots.LooksLikeClockTime(time)
+            ? PropertyAdministratorTimeSlots.Resolve(time, "4:00 PM")
+            : (string.IsNullOrWhiteSpace(time) ? "" : time.Trim());
         return arrival switch
         {
             "Tomorrow" => string.IsNullOrWhiteSpace(localizedTime)

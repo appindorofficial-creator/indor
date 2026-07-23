@@ -63,21 +63,11 @@
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
             <label><i class="fas fa-clock pa-q-icon pa-q-icon--blue"></i> @L["What time window works best?"]</label>
-            <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var tw in new (string Value, string Label, string Sub)[] {
-                    ("Morning", L["Morning"].ToString()!, L["8 AM – 12 PM"].ToString()!),
-                    ("Afternoon", L["Afternoon"].ToString()!, L["12 PM – 5 PM"].ToString()!),
-                    ("Evening", L["Evening"].ToString()!, L["5 PM – 9 PM"].ToString()!)
-                })
-                {
-                    <label class="pa-toggle-btn pa-toggle-btn--stack @(Model.TimeWindow == tw.Value ? "is-selected" : null)">
-                        <input type="radio" name="TimeWindow" value="@tw.Value" @(Model.TimeWindow == tw.Value ? "checked" : null) />
-                        <i class="fas fa-sun"></i>
-                        <strong>@tw.Label</strong>
-                        <small>@tw.Sub</small>
-                    </label>
-                }
-            </div>
+            @await Html.PartialAsync("_PropertyAdminTimeSlotSelect", new PropertyAdministratorTimeSlotSelectViewModel
+            {
+                FieldName = "TimeWindow",
+                SelectedValue = Model.TimeWindow
+            })
         </div>
 
         <div class="pa-flow-question">

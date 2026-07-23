@@ -1,5 +1,6 @@
 using System.Text.Json;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -295,19 +296,37 @@ public class PropertyAdministratorPressureWashingService(
         };
     }
 
-    private static string LabelEta(string arrivalWindow) => arrivalWindow switch
+    private static string LabelEta(string arrivalWindow)
     {
-        "Morning" => PropertyAdministratorDisplayLocalization.L("Tomorrow, 8:00 AM – 12:00 PM"),
-        "Afternoon" => PropertyAdministratorDisplayLocalization.L("Tomorrow, 2:00 PM – 5:00 PM"),
-        _ => PropertyAdministratorDisplayLocalization.L("Tomorrow, 11:00 AM – 1:00 PM")
-    };
+        if (PropertyAdministratorTimeSlots.LooksLikeClockTime(arrivalWindow))
+        {
+            return PropertyAdministratorDisplayLocalization.T(
+                "Tomorrow, {0}",
+                PropertyAdministratorTimeSlots.Resolve(arrivalWindow));
+        }
 
-    private static string LabelTimeWindow(string value) => value switch
+        return arrivalWindow switch
+        {
+            "Morning" => PropertyAdministratorDisplayLocalization.L("Tomorrow, 8:00 AM – 12:00 PM"),
+            "Afternoon" => PropertyAdministratorDisplayLocalization.L("Tomorrow, 2:00 PM – 5:00 PM"),
+            _ => PropertyAdministratorDisplayLocalization.L("Tomorrow, 11:00 AM – 1:00 PM")
+        };
+    }
+
+    private static string LabelTimeWindow(string value)
     {
-        "Morning" => PropertyAdministratorDisplayLocalization.L("8 AM – 12 PM"),
-        "Afternoon" => PropertyAdministratorDisplayLocalization.L("2 PM – 5 PM"),
-        _ => PropertyAdministratorDisplayLocalization.L("11 AM – 1 PM")
-    };
+        if (PropertyAdministratorTimeSlots.LooksLikeClockTime(value))
+        {
+            return PropertyAdministratorTimeSlots.Resolve(value);
+        }
+
+        return value switch
+        {
+            "Morning" => PropertyAdministratorDisplayLocalization.L("8 AM – 12 PM"),
+            "Afternoon" => PropertyAdministratorDisplayLocalization.L("2 PM – 5 PM"),
+            _ => PropertyAdministratorDisplayLocalization.L("11 AM – 1 PM")
+        };
+    }
 
     private static string EstimateTotal(string areaSize) => areaSize switch
     {

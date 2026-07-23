@@ -1,5 +1,6 @@
 using System.Text.Json;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -88,9 +89,7 @@ public class PropertyAdministratorMovingHelpService(
         var scheduleWhen = string.IsNullOrWhiteSpace(input.ScheduleWhen)
             ? "Tomorrow"
             : input.ScheduleWhen.Trim();
-        var scheduleTimeWindow = string.IsNullOrWhiteSpace(input.ScheduleTimeWindow)
-            ? "10:00 AM – 1:00 PM"
-            : input.ScheduleTimeWindow.Trim();
+        var scheduleTimeWindow = PropertyAdministratorTimeSlots.Resolve(input.ScheduleTimeWindow);
         input.ScheduleWhen = scheduleWhen;
         input.ScheduleTimeWindow = scheduleTimeWindow;
 

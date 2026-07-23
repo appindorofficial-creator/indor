@@ -50,6 +50,7 @@ public class PropertyAdministratorPoolHotTubStep2ViewModel : PropertyAdministrat
     public string QuickDetails { get; set; } = "";
     public IReadOnlyList<PropertyAdministratorPoolHotTubSummaryChipViewModel> Step1Summary { get; set; } = [];
     public string EquipmentLocation { get; set; } = "";
+    public string PreferredTime { get; set; } = "11:00 AM";
     public string EntryAccess { get; set; } = "";
     public string AccessCode { get; set; } = "";
     public string UpdateRecipients { get; set; } = "";
@@ -62,6 +63,7 @@ public class PropertyAdministratorPoolHotTubStep2ViewModel : PropertyAdministrat
 public class PropertyAdministratorPoolHotTubSubmitInput : PropertyAdministratorPoolHotTubStep1Input
 {
     public string EquipmentLocation { get; set; } = "";
+    public string PreferredTime { get; set; } = "";
     public string EntryAccess { get; set; } = "";
     public string? AccessCode { get; set; }
     public List<string> UpdateRecipientsList { get; set; } = [];

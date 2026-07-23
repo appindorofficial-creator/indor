@@ -24,13 +24,14 @@ public class PropertyAdministratorAirFilterFormViewModel : PropertyAdministrator
     public string GuestsInside { get; set; } = "";
     public string FilterSize { get; set; } = "";
     public string Frequency { get; set; } = "";
+    public string ScheduleTimeWindow { get; set; } = "11:00 AM";
     public string EntryAccess { get; set; } = "";
     public string UpdateRecipients { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string Details { get; set; } = "";
     public string? MediaAttachmentsJson { get; set; }
     public string EstimatedPrice { get; set; } = "$59–$89";
-    public string ProEtaLabel { get; set; } = "Nearest homecare pro available tomorrow 10–12 AM";
+    public string ProEtaLabel { get; set; } = "Nearest homecare pro available tomorrow at 11:00 AM";
 }
 
 public class PropertyAdministratorAirFilterSubmitInput
@@ -41,6 +42,7 @@ public class PropertyAdministratorAirFilterSubmitInput
     public string GuestsInside { get; set; } = "";
     public string FilterSize { get; set; } = "";
     public string Frequency { get; set; } = "";
+    public string ScheduleTimeWindow { get; set; } = "";
     public string EntryAccess { get; set; } = "";
     public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";

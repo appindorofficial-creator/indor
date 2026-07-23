@@ -1,5 +1,6 @@
 using System.Text.Json;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -73,7 +74,8 @@ public class PropertyAdministratorAirFilterService(
             ?? throw new InvalidOperationException("No portfolio property found.");
 
         var detailsJson = JsonSerializer.Serialize(input);
-        var tomorrow = DateTime.Today.AddDays(1).AddHours(10);
+        var scheduleTime = PropertyAdministratorTimeSlots.Resolve(input.ScheduleTimeWindow, "11:00 AM");
+        var tomorrow = DateTime.Today.AddDays(1).AddHours(11);
         var request = new IndorPropertyAdminServiceRequest
         {
             AdministratorId = admin.Id,
@@ -85,7 +87,7 @@ public class PropertyAdministratorAirFilterService(
             Category = "Homecare",
             ScheduledUtc = tomorrow,
             IsEmergency = false,
-            EtaLabel = PropertyAdministratorDisplayLocalization.L("Tomorrow • 10:00 AM – 12:00 PM"),
+            EtaLabel = PropertyAdministratorDisplayLocalization.T("Tomorrow • {0}", scheduleTime),
             TeamLabel = PropertyAdministratorDisplayLocalization.L("Daniel M. • Homecare"),
             ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType),
             DetailsJson = detailsJson,
@@ -104,7 +106,7 @@ public class PropertyAdministratorAirFilterService(
             Title = "Air filter change",
             PropertyName = property.PropertyName,
             VisitDate = tomorrow.Date,
-            TimeWindow = "10:00 AM – 12:00 PM",
+            TimeWindow = scheduleTime,
             ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType)
         });
 
@@ -147,7 +149,7 @@ public class PropertyAdministratorAirFilterService(
             TechnicianName = request.TechnicianName ?? "Daniel M.",
             TechnicianRating = request.TechnicianRating ?? 4.9m,
             TechnicianTitle = request.TechnicianTitle ?? "Licensed Homecare Pro",
-            ScheduleLabel = request.EtaLabel ?? "Tomorrow • 10:00 AM – 12:00 PM",
+            ScheduleLabel = request.EtaLabel ?? "Tomorrow • 11:00 AM",
             VehicleLabel = request.VehicleLabel ?? "White service van",
             Summary = BuildSummary(property, input),
             Timeline = BuildTimeline(request)

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -305,12 +306,20 @@ public class PropertyAdministratorJunkRemovalService(
         _ => PropertyAdministratorDisplayLocalization.L("Today after checkout")
     };
 
-    private static string LabelTimeWindow(string value) => value switch
+    private static string LabelTimeWindow(string value)
     {
-        "Morning" => PropertyAdministratorDisplayLocalization.L("8 AM – 12 PM"),
-        "Evening" => PropertyAdministratorDisplayLocalization.L("5 PM – 9 PM"),
-        _ => PropertyAdministratorDisplayLocalization.L("12 PM – 5 PM")
-    };
+        if (PropertyAdministratorTimeSlots.LooksLikeClockTime(value))
+        {
+            return PropertyAdministratorTimeSlots.Resolve(value);
+        }
+
+        return value switch
+        {
+            "Morning" => PropertyAdministratorDisplayLocalization.L("8 AM – 12 PM"),
+            "Evening" => PropertyAdministratorDisplayLocalization.L("5 PM – 9 PM"),
+            _ => PropertyAdministratorDisplayLocalization.L("12 PM – 5 PM")
+        };
+    }
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(
         bool trackChanges = false, CancellationToken cancellationToken = default)

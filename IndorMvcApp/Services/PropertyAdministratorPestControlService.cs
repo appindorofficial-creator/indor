@@ -1,5 +1,6 @@
 using System.Text.Json;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -141,7 +142,7 @@ public class PropertyAdministratorPestControlService(
             Title = "Pest control treatment",
             PropertyName = property.PropertyName,
             VisitDate = visitDate.Date,
-            TimeWindow = LabelArrivalWindow(input.PreferredArrival),
+            TimeWindow = PropertyAdministratorTimeSlots.Resolve(input.PreferredTime),
             ImageUrl = PropertyAdministratorCatalog.ResolvePortfolioImageUrl(property.ImageUrl, property.PropertyType)
         });
 

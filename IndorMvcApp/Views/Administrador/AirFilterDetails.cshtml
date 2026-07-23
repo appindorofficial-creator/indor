@@ -104,6 +104,17 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">6</span>
+            <label><i class="fas fa-clock pa-q-icon"></i> @L["Preferred arrival"]</label>
+            @await Html.PartialAsync("_PropertyAdminTimeSlotSelect", new PropertyAdministratorTimeSlotSelectViewModel
+            {
+                FieldName = "ScheduleTimeWindow",
+                SelectedValue = Model.ScheduleTimeWindow,
+                DefaultValue = "11:00 AM"
+            })
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
             <label><i class="fas fa-lock pa-q-icon"></i> @L["Can the technician enter now?"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
                 @foreach (var e in new (string Value, string Label)[] { ("SmartLock", L["Yes, with smart lock"]), ("HostMeet", L["Host will meet"]), ("NeedApproval", L["Need guest approval"]) })
@@ -117,7 +128,7 @@
         </div>
 
         <div class="pa-flow-question">
-            <span class="pa-flow-qnum">7</span>
+            <span class="pa-flow-qnum">8</span>
             <label><i class="fas fa-bell pa-q-icon"></i> @L["Who should receive updates?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
@@ -132,14 +143,14 @@
         </div>
 
         @{
-            ViewData["PaContactQnum"] = "8";
+            ViewData["PaContactQnum"] = "9";
             ViewData["PaContactValue"] = Model.ContactPhone;
             ViewData["PaContactLabelIcon"] = "fa-phone pa-q-icon";
         }
         @await Html.PartialAsync("_PropertyAdminUrgentContactPhone")
 
         <div class="pa-flow-question">
-            <span class="pa-flow-qnum">9</span>
+            <span class="pa-flow-qnum">10</span>
             <label><i class="fas fa-note-sticky pa-q-icon"></i> @L["Add details"]</label>
             <textarea class="pa-textarea" name="Details" rows="3" maxlength="250" id="airFilterDetails">@Model.Details</textarea>
             <small class="pa-char-count"><span id="detailsCount">@Model.Details.Length</span> @L["/ 250 characters"]</small>

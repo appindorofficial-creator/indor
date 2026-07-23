@@ -1,5 +1,6 @@
 using System.Text.Json;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -508,12 +509,20 @@ public class PropertyAdministratorPreventiveMaintenanceService(
     }
 
     // Keep English catalog keys so views localize via IIndorLocalizer / UiDisplayLocalization.
-    private static string LabelTiming(string value) => value switch
+    private static string LabelTiming(string value)
     {
-        "Morning" => "Weekdays, 9 AM – 12 PM",
-        "Afternoon" => "Weekdays, 12 PM – 5 PM",
-        _ => "Weekdays, 9 AM – 5 PM"
-    };
+        if (PropertyAdministratorTimeSlots.LooksLikeClockTime(value))
+        {
+            return PropertyAdministratorTimeSlots.Resolve(value);
+        }
+
+        return value switch
+        {
+            "Morning" => "Weekdays, 9 AM – 12 PM",
+            "Afternoon" => "Weekdays, 12 PM – 5 PM",
+            _ => "Weekdays, 9 AM – 5 PM"
+        };
+    }
 
     private static string LabelAccess(string value) => value switch
     {

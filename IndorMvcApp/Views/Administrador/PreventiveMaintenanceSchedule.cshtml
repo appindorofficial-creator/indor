@@ -65,15 +65,11 @@
 
         <div class="pa-flow-question">
             <label>@L["Preferred timing"]</label>
-            <div class="pa-toggle-pair pa-toggle-pair--3">
-                @foreach (var t in new[] { "Morning", "Afternoon", "Flexible" })
-                {
-                    <label class="pa-toggle-btn @(Model.PreferredTiming == t ? "is-selected" : null)">
-                        <input type="radio" name="PreferredTiming" value="@t" @(Model.PreferredTiming == t ? "checked" : null) />
-                        @L[t]
-                    </label>
-                }
-            </div>
+            @await Html.PartialAsync("_PropertyAdminTimeSlotSelect", new PropertyAdministratorTimeSlotSelectViewModel
+            {
+                FieldName = "PreferredTiming",
+                SelectedValue = Model.PreferredTiming
+            })
         </div>
 
         <div class="pa-flow-question">

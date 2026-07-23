@@ -55,6 +55,16 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-clock pa-q-icon pa-q-icon--green"></i> @L["Preferred arrival"]</label>
+            @await Html.PartialAsync("_PropertyAdminTimeSlotSelect", new PropertyAdministratorTimeSlotSelectViewModel
+            {
+                FieldName = "PreferredTime",
+                SelectedValue = Model.PreferredTime
+            })
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
             <label><i class="fas fa-door-open pa-q-icon pa-q-icon--green"></i> @L["Can the pro enter now?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var e in new[] { ("GateCode", L["Yes, gate code"]), ("HostOnSite", L["Host will meet"]), ("GuestApproval", L["Need guest approval"]) })
@@ -68,7 +78,7 @@
         </div>
 
         <div class="pa-flow-question">
-            <span class="pa-flow-qnum">3</span>
+            <span class="pa-flow-qnum">4</span>
             <label><i class="fas fa-key pa-q-icon pa-q-icon--green"></i> @L["Gate / access code"]</label>
             <div class="pa-field">
                 <i class="fas fa-lock"></i>
@@ -77,7 +87,7 @@
         </div>
 
         <div class="pa-flow-question">
-            <span class="pa-flow-qnum">4</span>
+            <span class="pa-flow-qnum">5</span>
             <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> @L["Who should receive updates?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var r in new[] { ("Me", L["Me"]), ("Guest", L["Guest"]), ("CoHost", L["Co-host"]) })
@@ -91,7 +101,7 @@
         </div>
 
         @{
-            ViewData["PaContactQnum"] = "5";
+            ViewData["PaContactQnum"] = "6";
             ViewData["PaContactValue"] = Model.ContactPhone;
             ViewData["PaContactLabelIcon"] = "fa-phone pa-q-icon pa-q-icon--green";
         }

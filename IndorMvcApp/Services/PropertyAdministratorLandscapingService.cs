@@ -1,5 +1,6 @@
 using System.Text.Json;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -285,12 +286,20 @@ public class PropertyAdministratorLandscapingService(
         _ => PropertyAdministratorDisplayLocalization.L("Damaged plants removed")
     };
 
-    private static string LabelTimeWindow(string value) => value switch
+    private static string LabelTimeWindow(string value)
     {
-        "Afternoon" => PropertyAdministratorDisplayLocalization.L("12 PM – 4 PM"),
-        "AnyTime" => PropertyAdministratorDisplayLocalization.L("Any time"),
-        _ => PropertyAdministratorDisplayLocalization.L("8 AM – 12 PM")
-    };
+        if (PropertyAdministratorTimeSlots.LooksLikeClockTime(value))
+        {
+            return PropertyAdministratorTimeSlots.Resolve(value);
+        }
+
+        return value switch
+        {
+            "Afternoon" => PropertyAdministratorDisplayLocalization.L("12 PM – 4 PM"),
+            "AnyTime" => PropertyAdministratorDisplayLocalization.L("Any time"),
+            _ => PropertyAdministratorDisplayLocalization.L("8 AM – 12 PM")
+        };
+    }
 
     private static string LabelUpdates(IReadOnlyList<string> recipients)
     {

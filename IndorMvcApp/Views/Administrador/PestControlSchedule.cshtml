@@ -56,6 +56,11 @@
                     </label>
                 }
             </div>
+            @await Html.PartialAsync("_PropertyAdminTimeSlotSelect", new PropertyAdministratorTimeSlotSelectViewModel
+            {
+                FieldName = "PreferredTime",
+                SelectedValue = Model.PreferredTime
+            })
         </div>
 
         <div class="pa-flow-question">

@@ -46,6 +46,7 @@ public class PropertyAdministratorPestControlStep2ViewModel : PropertyAdministra
     public string QuickDetails { get; set; } = "";
     public string ServiceType { get; set; } = "";
     public string PreferredArrival { get; set; } = "";
+    public string PreferredTime { get; set; } = "11:00 AM";
     public string EntryAccess { get; set; } = "";
     public string HasPets { get; set; } = "";
     public string TreatAreas { get; set; } = "";
@@ -59,6 +60,7 @@ public class PropertyAdministratorPestControlSubmitInput : PropertyAdministrator
 {
     public string ServiceType { get; set; } = "";
     public string PreferredArrival { get; set; } = "";
+    public string PreferredTime { get; set; } = "";
     public string EntryAccess { get; set; } = "";
     public string HasPets { get; set; } = "";
     public List<string> TreatAreasList { get; set; } = [];

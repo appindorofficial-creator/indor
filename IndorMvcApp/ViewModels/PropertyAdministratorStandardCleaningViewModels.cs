@@ -22,7 +22,7 @@ public class PropertyAdministratorStandardCleaningFormViewModel : PropertyAdmini
     public string ContactPhone { get; set; } = "";
     public string Details { get; set; } = "";
     public string EstimatedPrice { get; set; } = "$89–$149";
-    public string ProEtaLabel { get; set; } = "Nearest cleaning crew available tomorrow 11 AM–2 PM";
+    public string ProEtaLabel { get; set; } = "Nearest cleaning crew available tomorrow at 11:00 AM";
 }
 
 public class PropertyAdministratorStandardCleaningSubmitInput

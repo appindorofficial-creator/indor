@@ -16,12 +16,13 @@ public class PropertyAdministratorSmokeDetectorFormViewModel : PropertyAdministr
     public string DetectorCount { get; set; } = "";
     public string UrgentSafetyIssue { get; set; } = "";
     public string DetectorType { get; set; } = "";
+    public string ScheduleTimeWindow { get; set; } = "11:00 AM";
     public string EntryAccess { get; set; } = "";
     public string UpdateRecipients { get; set; } = "";
     public string ContactPhone { get; set; } = "";
     public string Details { get; set; } = "";
     public string EstimatedPrice { get; set; } = "$69–$119";
-    public string ProEtaLabel { get; set; } = "Nearest homecare pro available tomorrow 1–3 PM";
+    public string ProEtaLabel { get; set; } = "Nearest homecare pro available tomorrow at 11:00 AM";
 }
 
 public class PropertyAdministratorSmokeDetectorSubmitInput
@@ -31,6 +32,7 @@ public class PropertyAdministratorSmokeDetectorSubmitInput
     public string DetectorCount { get; set; } = "";
     public string UrgentSafetyIssue { get; set; } = "";
     public string DetectorType { get; set; } = "";
+    public string ScheduleTimeWindow { get; set; } = "";
     public string EntryAccess { get; set; } = "";
     public List<string> UpdateRecipientsList { get; set; } = [];
     public string ContactPhone { get; set; } = "";

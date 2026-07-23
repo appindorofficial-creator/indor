@@ -1,0 +1,23 @@
+@using IndorMvcApp.Helpers
+@using IndorMvcApp.ViewModels
+@model PropertyAdministratorTimeSlotSelectViewModel
+@{
+    var fieldName = string.IsNullOrWhiteSpace(Model.FieldName) ? "ScheduleTimeWindow" : Model.FieldName;
+    var selected = PropertyAdministratorTimeSlots.Resolve(Model.SelectedValue, Model.DefaultValue);
+}
+<div class="pa-field pa-field--time">
+    <i class="fas fa-clock" aria-hidden="true"></i>
+    <select name="@fieldName" class="pa-time-select" aria-label="@L["Preferred time window"]">
+        @foreach (var tw in PropertyAdministratorTimeSlots.Hourly)
+        {
+            if (selected == tw)
+            {
+                <option value="@tw" selected>@tw</option>
+            }
+            else
+            {
+                <option value="@tw">@tw</option>
+            }
+        }
+    </select>
+</div>

@@ -54,18 +54,11 @@
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
             <label><i class="fas fa-clock pa-q-icon pa-q-icon--green"></i> @L["Preferred arrival window"]</label>
-            <div class="pa-chip-grid pa-chip-grid--3">
-                @foreach (var w in new (string Value, string Label)[] {
-                    ("Morning", L["Morning (8:00 AM – 12:00 PM)"]),
-                    ("Midday", L["Midday (11:00 AM – 2:00 PM)"]),
-                    ("Afternoon", L["Afternoon (2:00 PM – 5:00 PM)"]) })
-                {
-                    <label class="pa-chip @(Model.ArrivalWindow == w.Value ? "is-selected" : null)">
-                        <input type="radio" name="ArrivalWindow" value="@w.Value" @(Model.ArrivalWindow == w.Value ? "checked" : null) />
-                        <span>@w.Label</span>
-                    </label>
-                }
-            </div>
+            @await Html.PartialAsync("_PropertyAdminTimeSlotSelect", new PropertyAdministratorTimeSlotSelectViewModel
+            {
+                FieldName = "ArrivalWindow",
+                SelectedValue = Model.ArrivalWindow
+            })
         </div>
 
         <div class="pa-flow-question">

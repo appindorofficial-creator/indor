@@ -53,10 +53,11 @@
                     </label>
                 }
             </div>
-            <div class="pa-field pa-field--time">
-                <i class="fas fa-clock"></i>
-                <input type="text" name="ScheduleTimeWindow" value="@Model.ScheduleTimeWindow" placeholder="@L["10:00 AM – 1:00 PM"]" />
-            </div>
+            @await Html.PartialAsync("_PropertyAdminTimeSlotSelect", new PropertyAdministratorTimeSlotSelectViewModel
+            {
+                FieldName = "ScheduleTimeWindow",
+                SelectedValue = Model.ScheduleTimeWindow
+            })
         </div>
 
         <div class="pa-flow-question">

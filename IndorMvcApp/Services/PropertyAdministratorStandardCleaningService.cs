@@ -1,5 +1,6 @@
 using System.Text.Json;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
@@ -45,6 +46,7 @@ public class PropertyAdministratorStandardCleaningService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
+            ScheduleTimeWindow = "11:00 AM",
             ContactPhone = ""
         };
     }
@@ -61,9 +63,7 @@ public class PropertyAdministratorStandardCleaningService(
         var scheduleWhen = string.IsNullOrWhiteSpace(input.ScheduleWhen)
             ? "Tomorrow"
             : input.ScheduleWhen.Trim();
-        var scheduleTimeWindow = string.IsNullOrWhiteSpace(input.ScheduleTimeWindow)
-            ? "11:00 AM – 2:00 PM"
-            : input.ScheduleTimeWindow.Trim();
+        var scheduleTimeWindow = PropertyAdministratorTimeSlots.Resolve(input.ScheduleTimeWindow);
         input.ScheduleWhen = scheduleWhen;
         input.ScheduleTimeWindow = scheduleTimeWindow;
 
@@ -146,7 +146,7 @@ public class PropertyAdministratorStandardCleaningService(
             TechnicianName = request.TechnicianName ?? "Maria R.",
             TechnicianRating = request.TechnicianRating ?? 4.9m,
             TechnicianTitle = request.TechnicianTitle ?? "Licensed Homecare Pro",
-            ScheduleLabel = request.EtaLabel ?? "Tomorrow • 11:00 AM – 2:00 PM",
+            ScheduleLabel = request.EtaLabel ?? "Tomorrow • 11:00 AM",
             VehicleLabel = request.VehicleLabel ?? "White service van",
             Summary = BuildSummary(property, input),
             Timeline = BuildTimeline(request, input)
