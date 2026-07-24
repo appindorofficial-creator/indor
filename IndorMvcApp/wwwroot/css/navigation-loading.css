@@ -48,7 +48,10 @@
 .indor-nav-loading.is-visible {
     opacity: 1;
     visibility: visible;
-    pointer-events: auto;
+    /* Keep non-interactive: showing a full-screen pointer-events:auto layer in the
+       click capture phase can cancel the link's default navigation in WKWebView,
+       leaving "Cargando..." stuck over the same page. */
+    pointer-events: none;
 }
 
 .indor-nav-loading__backdrop {

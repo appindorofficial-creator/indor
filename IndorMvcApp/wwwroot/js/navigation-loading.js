@@ -7,9 +7,13 @@
     var BOTTOM_NAV_SPA_TARGET_SELECTOR =
         ".bottom-nav [data-target], .prv-pro-bottom-nav [data-target], .rl-bottom-nav [data-target], .pa-bottom-nav [data-target]";
     var SPA_HIDE_DELAY_MS = 650;
-    var MAX_VISIBLE_MS = 15000;
+    var MAX_VISIBLE_MS = 8000;
+    // If the document URL has not changed after showing the overlay, navigation
+    // was cancelled (common in WKWebView when a full-screen cover appears mid-click).
+    var NAV_FAILSAFE_MS = 1600;
     var hideTimer = null;
     var maxVisibleTimer = null;
+    var navFailsafeTimer = null;
     // When the last interaction was on an opted-out element, the beforeunload
     // catch-all must not force the overlay (respects data-no-nav-loading).
     var suppressUnloadOverlay = false;
@@ -216,6 +220,12 @@
         maxVisibleTimer = null;
     }
 
+    function clearNavFailsafeTimer() {
+        if (!navFailsafeTimer) return;
+        window.clearTimeout(navFailsafeTimer);
+        navFailsafeTimer = null;
+    }
+
     function scheduleHideNavigationLoading(delay) {
         clearHideTimer();
         hideTimer = window.setTimeout(function () {
@@ -227,10 +237,12 @@
     function showNavigationLoading(options) {
         var opts = options || {};
         var overlay = ensureOverlay();
+        if (!overlay) return;
         if (!opts.keepScheduledHide) {
             clearHideTimer();
         }
         clearMaxVisibleTimer();
+        clearNavFailsafeTimer();
         updateLoadingText(overlay);
         overlay.removeAttribute("hidden");
         sizeOverlayToViewport();
@@ -246,12 +258,25 @@
                 maxVisibleTimer = null;
                 hideNavigationLoading();
             }, maxMs);
+
+            // Same-document failsafe: if we never left this URL, hide the spinner
+            // so "Volver al inicio" / in-app links can be tapped again.
+            if (opts.failsafeSameUrl !== false) {
+                var hrefAtShow = location.href;
+                navFailsafeTimer = window.setTimeout(function () {
+                    navFailsafeTimer = null;
+                    if (location.href === hrefAtShow) {
+                        hideNavigationLoading();
+                    }
+                }, typeof opts.failsafeMs === "number" ? opts.failsafeMs : NAV_FAILSAFE_MS);
+            }
         }
     }
 
     function hideNavigationLoading() {
         clearHideTimer();
         clearMaxVisibleTimer();
+        clearNavFailsafeTimer();
         var overlay = document.getElementById(OVERLAY_ID);
         if (!overlay) return;
 
@@ -308,7 +333,12 @@
         // this page mounted — never force a stuck spinner for those.
         if (!isSameOrigin(href)) { markSuppressUnload(); return; }
 
-        showNavigationLoading();
+        // Defer the cover until after the browser commits the link's default
+        // navigation. Showing it synchronously in capture can cancel navigation
+        // in mobile WebViews and leave Cargando stuck on the same form.
+        window.setTimeout(function () {
+            showNavigationLoading();
+        }, 0);
     }, true);
 
     document.addEventListener("submit", function (e) {
