@@ -8,10 +8,8 @@
 }
 
 
-<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@Model.PageTitle</h1>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L.Catalog(Model.PageTitle)</h1>
     <p class="page-lead" style="margin-bottom:16px;"><span class="tagline">@L["Tell us about your home"]</span></p>
-
-    <div asp-validation-summary="All" class="validation-summary"></div>
 
     <form id="gc-setup-form" asp-action="GutterCleaningSetup" method="post">
         <input type="hidden" asp-for="SolicitudId" />
@@ -22,7 +20,7 @@
         <input type="hidden" asp-for="UltimaLimpieza" id="UltimaLimpieza" />
         <input type="hidden" asp-for="CantidadBajantes" id="CantidadBajantes" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="NumeroPisos">
             <div class="field-head"><i class="fas fa-building"></i><span>@L["Home size"]</span></div>
             <div class="stories-grid">
                 <button type="button" class="story-card" data-stories="One"><i class="fas fa-house main"></i><span class="label">@L["1 story"]</span></button>
@@ -31,7 +29,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoCanaletas">
             <div class="field-head"><i class="fas fa-water"></i><span>@L["What type of gutters do you have?"]</span></div>
             <div class="gutter-grid">
                 <button type="button" class="gutter-card" data-gutter="Aluminum"><i class="fas fa-grip-lines main"></i><span class="label">@L["Aluminum"]</span></button>
@@ -41,7 +39,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="ProtectorCanaletas">
             <div class="field-head"><i class="fas fa-shield-halved"></i><span>@L["Do you have gutter guards?"]</span></div>
             <div class="choice-grid-3">
                 <button type="button" class="choice-card" data-guard="Yes"><i class="fas fa-shield-halved main"></i><span class="label">@L["Yes"]</span></button>
@@ -50,7 +48,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="UltimaLimpieza">
             <div class="field-head"><i class="fas fa-calendar"></i><span>@L["When were they last cleaned?"]</span></div>
             <div class="gutter-grid" style="grid-template-columns:repeat(4,1fr);">
                 <button type="button" class="gutter-card" data-last="LessThan6Months"><i class="fas fa-calendar main"></i><span class="label">@L["&lt; 6 months"]</span></button>
@@ -93,30 +91,6 @@
         bindSingle('[data-gutter]', 'data-gutter', document.getElementById('TipoCanaletas'));
         bindSingle('[data-guard]', 'data-guard', document.getElementById('ProtectorCanaletas'));
         bindSingle('[data-last]', 'data-last', document.getElementById('UltimaLimpieza'));
-
-        var form = document.getElementById('gc-setup-form');
-        form?.addEventListener('submit', function (e) {
-            if (e.submitter && e.submitter.value === 'back') return;
-
-            var stories = document.getElementById('NumeroPisos');
-            var gutter = document.getElementById('TipoCanaletas');
-            var guard = document.getElementById('ProtectorCanaletas');
-            var last = document.getElementById('UltimaLimpieza');
-            var checks = [
-                { input: stories, message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select your home size."].ToString())) },
-                { input: gutter, message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select your gutter type."].ToString())) },
-                { input: guard, message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select whether you have gutter guards."].ToString())) },
-                { input: last, message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select when gutters were last cleaned."].ToString())) }
-            ];
-
-            for (var i = 0; i < checks.length; i++) {
-                if (!checks[i].input.value || !checks[i].input.value.trim()) {
-                    e.preventDefault();
-                    alert(checks[i].message);
-                    return;
-                }
-            }
-        });
 
         var downInput = document.getElementById('CantidadBajantes');
         var downValue = document.getElementById('downValue');
