@@ -71,8 +71,7 @@
 
 /* Primary actions */
 .prv-pro-btn--primary,
-.prv-pro-activation-link,
-.prv-success-icon {
+.prv-pro-activation-link {
     background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC));
     border: none;
 }

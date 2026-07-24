@@ -1888,9 +1888,9 @@ ul.rl-next-steps li > span:first-child {
 .rl-success-hero p { color: #64748B; margin: 0; }
 .rl-success-icon-wrap { position: relative; display: inline-block; }
 .rl-success-icon {
-    width: 72px; height: 72px; border-radius: 50%; background: #059669;
+    width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #22C55E, #16A34A);
     color: #fff; display: flex; align-items: center; justify-content: center;
-    font-size: 2rem; margin: 0 auto;
+    font-size: 1.75rem; margin: 0 auto;
 }
 .rl-success-card {
     background: #fff; border: 1px solid #E2E8F0; border-radius: 16px;

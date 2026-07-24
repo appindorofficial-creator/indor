@@ -335,7 +335,7 @@
     width: 72px;
     height: 72px;
     border-radius: 50%;
-    background: #1867F2;
+    background: linear-gradient(135deg, #22C55E, #16A34A);
     color: #FFF;
     display: flex;
     align-items: center;
@@ -344,15 +344,8 @@
 }
 
 .whfr-success-icon-wrap .spark {
-    position: absolute;
-    color: #1867F2;
-    font-size: 0.85rem;
-    opacity: 0.7;
+    display: none;
 }
-
-.whfr-success-icon-wrap .spark.a { top: 0; right: 0; }
-.whfr-success-icon-wrap .spark.b { bottom: 4px; left: -2px; }
-.whfr-success-icon-wrap .spark.c { top: 8px; left: -6px; }
 
 .whfr-success-hero h1 {
     margin: 0 0 8px;

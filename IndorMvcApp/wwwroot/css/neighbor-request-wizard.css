@@ -777,17 +777,16 @@
 }
 
 .nr-success-icon {
-    width: 88px;
-    height: 88px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
-    background: #0066CC;
+    background: linear-gradient(135deg, #22C55E, #16A34A);
     color: #fff;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
+    font-size: 1.75rem;
     margin-bottom: 18px;
-    box-shadow: 0 12px 30px rgba(0, 102, 204, 0.28);
 }
 
 .nr-success h1 {
