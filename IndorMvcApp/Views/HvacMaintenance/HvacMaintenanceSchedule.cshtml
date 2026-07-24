@@ -54,10 +54,10 @@
             <div class="field-head"><i class="fas fa-wrench"></i><span>@L["Service type"]</span></div>
             <div class="service-type-row">
                 <button type="button" class="service-type-btn" data-type="OneTime">
-                    <i class="fas fa-check"></i> One-time tune-up
+                    <i class="fas fa-check"></i> @L["One-time tune-up"]
                 </button>
                 <button type="button" class="service-type-btn" data-type="YearlyReminder">
-                    <i class="fas fa-bell"></i> Add yearly reminder
+                    <i class="fas fa-bell"></i> @L["Add yearly reminder"]
                 </button>
             </div>
         </div>
@@ -82,9 +82,9 @@
 
         <div class="sticky-footer">
             <div class="sticky-footer-row">
-                <div>
+                <div class="sticky-footer-price">
                     <div class="price-label"><i class="fas fa-tag"></i> @L["Estimated starting price"]</div>
-                    <div class="price-value">@(Model.PrecioTexto ?? $"from ${Model.PrecioEstimado:0}")</div>
+                    <div class="price-value">@L.T("From ${0}", Model.PrecioEstimado.ToString("0"))</div>
                 </div>
             </div>
             <button type="submit" name="action" value="continue" class="btn-primary">

@@ -471,7 +471,7 @@ public static class UiTranslationsFlows
             ["Estimated hours"] = "Estimated hours",
             ["Estimated range"] = "Estimated range",
             ["Estimated rehab level"] = "Estimated rehab level",
-            ["Estimated starting price"] = "Estimated starting price",
+            ["Estimated starting price"] = "Precio inicial estimado",
             ["Estimated total"] = "Estimated total",
             ["ETA"] = "ETA",
             ["Evening"] = "Evening",

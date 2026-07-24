@@ -46,13 +46,14 @@ public static class HvacMaintenanceDisplayLabels
 
     public static string FormatServiceType(string? code, bool recordatorioAnual) =>
         recordatorioAnual || string.Equals(code, "YearlyReminder", StringComparison.OrdinalIgnoreCase)
-            ? "Yearly reminder enabled"
-            : "One-time tune-up";
+            ? DisplayLabelsLocalization.L("Yearly reminder enabled")
+            : DisplayLabelsLocalization.L("One-time tune-up");
 
     public static string FormatScheduledLabel(DateTime? date, string? window) =>
         date.HasValue
             ? $"{date.Value:MMM d, yyyy} • {FormatTimeWindow(window)}"
             : FormatTimeWindow(window);
 
-    public static string FormatPrice(decimal amount) => $"from ${amount:0}";
+    public static string FormatPrice(decimal amount) =>
+        string.Format(CultureInfo.InvariantCulture, "From ${0}", amount.ToString("0"));
 }
