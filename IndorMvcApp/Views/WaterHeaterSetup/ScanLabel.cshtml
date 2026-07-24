@@ -39,7 +39,7 @@ Model.CurrentStep
             <input type="file" id="uploadFile" class="hvac-sr-only" accept="image/*,.jpg,.jpeg,.png,.webp" />
 
             <button type="button" class="hvac-save-btn hvac-btn-with-icon" id="captureBtn">
-                <i class="fas fa-camera"></i> <span id="captureBtnText">@(hasSavedPreview ? "Use this photo" : "Capture label")</span>
+                <i class="fas fa-camera"></i> <span id="captureBtnText">@(hasSavedPreview ? L["Use this photo"] : L["Capture label"])</span>
             </button>
             <button type="button" class="hvac-text-btn" id="uploadBtn">@L["Upload photo instead"]</button>
             <button type="submit" class="hvac-text-btn">@L["Continue with estimated details"]</button>
