@@ -52,6 +52,7 @@
         '.area-btn',
         '.area-pill',
         '.reason-card',
+        '.reminder-card',
         '.reminder-btn',
         '.freq-card',
         '.freq-chip',

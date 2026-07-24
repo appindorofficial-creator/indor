@@ -69,7 +69,7 @@ public class GutterCleaningController : Controller
             var solicitud = await GetOrCreateSolicitudAsync(userId, model.HomeCarePriorityId, model.SolicitudId);
             solicitud.PropiedadId = propiedadId;
             solicitud.TipoAccionInicial = model.TipoAccionInicial;
-            solicitud.ObjetivoHoy = MapInitialToTodayGoal(model.TipoAccionInicial);
+            solicitud.ObjetivoHoy = null;
             solicitud.FechaActualizacion = DateTime.Now;
 
             if (string.Equals(model.TipoAccionInicial, "AlreadyDone", StringComparison.OrdinalIgnoreCase))
@@ -165,7 +165,13 @@ public class GutterCleaningController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id, includeArchivos: true);
         if (solicitud == null) return NotFound();
 
-        return View(BuildPreferencesViewModel(solicitud));
+        var model = BuildPreferencesViewModel(solicitud);
+        model.ProblemasSeleccionados = string.Empty;
+        model.AreaProblema = string.Empty;
+        model.ObjetivoHoy = string.Empty;
+        model.PreferenciaRecordatorio = string.Empty;
+        model.FechaRecordatorioPersonalizada = null;
+        return View(model);
     }
 
     [HttpPost]
@@ -360,9 +366,9 @@ public class GutterCleaningController : Controller
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = solicitud.HomeCarePriority?.Nombre ?? "Gutter Cleaning",
             ProblemasSeleccionados = solicitud.ProblemasSeleccionados ?? string.Empty,
-            AreaProblema = solicitud.AreaProblema ?? "WholeHouse",
-            ObjetivoHoy = solicitud.ObjetivoHoy ?? MapInitialToTodayGoalStatic(solicitud.TipoAccionInicial),
-            PreferenciaRecordatorio = solicitud.PreferenciaRecordatorio ?? "SpringFall",
+            AreaProblema = solicitud.AreaProblema ?? string.Empty,
+            ObjetivoHoy = solicitud.ObjetivoHoy ?? string.Empty,
+            PreferenciaRecordatorio = solicitud.PreferenciaRecordatorio ?? string.Empty,
             FechaRecordatorioPersonalizada = solicitud.FechaRecordatorioPersonalizada,
             Notas = solicitud.Notas,
             ArchivosExistentes = MapExistingFiles(solicitud)

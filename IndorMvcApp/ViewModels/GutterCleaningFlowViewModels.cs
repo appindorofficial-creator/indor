@@ -64,13 +64,13 @@ public class GutterCleaningPreferencesViewModel
     public string ProblemasSeleccionados { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Select a problem area.")]
-    public string AreaProblema { get; set; } = "WholeHouse";
+    public string AreaProblema { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Select what you want today.")]
-    public string ObjetivoHoy { get; set; } = "ScheduleService";
+    public string ObjetivoHoy { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Select a reminder preference.")]
-    public string PreferenciaRecordatorio { get; set; } = "SpringFall";
+    public string PreferenciaRecordatorio { get; set; } = string.Empty;
 
     public DateTime? FechaRecordatorioPersonalizada { get; set; }
 
