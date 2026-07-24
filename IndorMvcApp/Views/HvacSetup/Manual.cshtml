@@ -6,7 +6,10 @@
     ViewData["WizardBackUrl"] = Model.BackUrl;
     ViewData["WizardStep"] = Model.CurrentStep;
     ViewData["WizardTotalSteps"] = 5;
-
+    if (!string.IsNullOrWhiteSpace(Model.Brand))
+    {
+        Model.Brand = L.Catalog(Model.Brand);
+    }
 }
 
 

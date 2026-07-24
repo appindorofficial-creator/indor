@@ -8,7 +8,10 @@
 Model.CurrentStep
 ;
     ViewData["WizardTotalSteps"] = Model.TotalSteps;
-
+    if (!string.IsNullOrWhiteSpace(Model.Brand))
+    {
+        Model.Brand = L.Catalog(Model.Brand);
+    }
 }
 
 

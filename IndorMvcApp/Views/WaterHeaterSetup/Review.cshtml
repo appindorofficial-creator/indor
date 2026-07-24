@@ -32,7 +32,7 @@ Model.CurrentStep
             <div class="hvac-review-card">
                 <div class="hvac-review-rows">
                     <div class="hvac-review-row"><span>@L["Water heater type"]</span><strong>@Model.HeaterTypeLabel</strong></div>
-                    <div class="hvac-review-row"><span>@L["Brand"]</span><strong>@Model.Brand</strong></div>
+                    <div class="hvac-review-row"><span>@L["Brand"]</span><strong>@L.Catalog(Model.Brand)</strong></div>
                     <div class="hvac-review-row"><span>@L["Model"]</span><strong>@Model.EquipmentModel</strong></div>
                     <div class="hvac-review-row"><span>@L["Serial number"]</span><strong>@Model.SerialNumber</strong></div>
                     <div class="hvac-review-row"><span>@L["Approx. install year"]</span><strong>@Model.InstallYearLabel</strong></div>

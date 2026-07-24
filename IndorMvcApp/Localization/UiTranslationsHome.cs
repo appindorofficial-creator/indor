@@ -1049,6 +1049,8 @@ public static class UiTranslationsHome
             ["Brand"] = "Marca",
             ["Model"] = "Modelo",
             ["Serial number"] = "Número de serie",
+            ["Carrier - 10-year compressor, 5-year parts"] = "Carrier - 10 años de compresor, 5 años de partes",
+            ["Rheem - 6-year tank, 1-year parts"] = "Rheem - 6 años de tanque, 1 año de partes",
             ["Enter brand"] = "Ingresa la marca",
             ["Enter model"] = "Ingresa el modelo",
             ["e.g., M123456789"] = "ej., M123456789",

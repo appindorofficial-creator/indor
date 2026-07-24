@@ -22,7 +22,7 @@
             }
             <div class="hvac-summary-list hvac-summary-list-inline">
                 <div class="hvac-summary-item"><i class="fas fa-droplet icon"></i><span class="k">@L["Type"]</span><span class="v">@Model.HeaterTypeLabel</span></div>
-                <div class="hvac-summary-item"><i class="fas fa-tag icon"></i><span class="k">@L["Brand"]</span><span class="v">@Model.Brand</span></div>
+                <div class="hvac-summary-item"><i class="fas fa-tag icon"></i><span class="k">@L["Brand"]</span><span class="v">@L.Catalog(Model.Brand)</span></div>
                 <div class="hvac-summary-item"><i class="fas fa-cube icon"></i><span class="k">@L["Model"]</span><span class="v">@Model.EquipmentModel</span></div>
                 @if (!string.IsNullOrWhiteSpace(Model.InstallYearLabel) && Model.InstallYearLabel != "—")
                 {
