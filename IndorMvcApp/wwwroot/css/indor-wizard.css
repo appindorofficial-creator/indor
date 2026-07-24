@@ -401,11 +401,24 @@ body:has(.prv-pro-bottom-nav) {
 .iw-wizard-page .sticky-footer > .btn-primary,
 .iw-wizard-page .sticky-footer > .btn-outline,
 .iw-wizard-page .sticky-footer > button,
-.iw-wizard-page .sticky-footer > a {
+.iw-wizard-page .sticky-footer > a,
+.iw-wizard-page .sticky-total > .btn-primary,
+.iw-wizard-page .sticky-total > .btn-outline,
+.iw-wizard-page .sticky-total > button,
+.iw-wizard-page .sticky-total > a,
+.iw-wizard-page .sticky-total > .sticky-total-row {
     width: 100%;
     max-width: 448px;
     margin-left: auto;
     margin-right: auto;
+    box-sizing: border-box;
+}
+
+.iw-wizard-page .sticky-footer > .btn-primary,
+.iw-wizard-page .sticky-footer > .btn-outline,
+.iw-wizard-page .sticky-total > .btn-primary,
+.iw-wizard-page .sticky-total > .btn-outline {
+    min-height: var(--indor-action-h);
 }
 
 /* Legacy .cl-form-actions wrapper (Moving/Cleaning steps before sticky-footer migration) */
