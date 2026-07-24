@@ -262,6 +262,7 @@ public class MyHomeMaintenanceFormViewModel
     [Required, MaxLength(150)]
     public string Title { get; set; } = string.Empty;
 
+    [Required]
     public DateTime? DueDate { get; set; }
 
     [Required, MaxLength(20)]

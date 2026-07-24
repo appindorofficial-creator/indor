@@ -1,3 +1,4 @@
+@using System.Text.Json
 @model IndorMvcApp.ViewModels.MyHomeMaintenanceFormViewModel
 @{
     ViewData["Title"] = L["Add Maintenance"];
@@ -6,20 +7,33 @@
     ViewBag.MyHomeNav = "maintenance";
     ViewBag.MyHomeBackUrl = Url.Action("Maintenance", "MyHome", new { id = Model.PropiedadId, from = Model.NavigationFrom });
 }
+@section Head {
+    <style>
+        .hf-validation-summary { background:#FEF2F2; border:1px solid #FECACA; color:#B91C1C; border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:0.86rem; line-height:1.45; }
+        .hf-validation-summary ul { margin:0; padding-left:18px; }
+        .hf-validation-summary.validation-summary-valid { display:none; }
+        .hf-field-error { display:block; color:#B91C1C; font-size:0.82rem; font-weight:600; margin:-6px 0 12px; }
+        .hf-field-error:empty { display:none; }
+    </style>
+}
 <div class="hf-title-row">
     <h1 class="hf-title">@L["Add maintenance"]</h1>
 </div>
-<form asp-controller="MyHome" asp-action="MaintenanceCreate" asp-route-id="@Model.PropiedadId" method="post" class="hf-maint-form">
+<form asp-controller="MyHome" asp-action="MaintenanceCreate" asp-route-id="@Model.PropiedadId" method="post" class="hf-maint-form" id="maintenanceCreateForm">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="PropiedadId" />
     <input type="hidden" asp-for="NavigationFrom" />
     <input type="hidden" asp-for="Status" value="Upcoming" />
 
+    <div asp-validation-summary="All" class="hf-validation-summary"></div>
+
     <label asp-for="Title" class="hf-label">@L["Task title"]</label>
-    <input asp-for="Title" class="hf-input" placeholder="@L["Check AC system"]" />
+    <input asp-for="Title" class="hf-input" required maxlength="150" placeholder="@L["Check AC system"]" />
+    <span asp-validation-for="Title" class="hf-field-error"></span>
 
     <label asp-for="DueDate" class="hf-label">@L["Due date"]</label>
-    <input asp-for="DueDate" class="hf-input" type="date" />
+    <input asp-for="DueDate" class="hf-input" type="date" required />
+    <span asp-validation-for="DueDate" class="hf-field-error"></span>
 
     <p class="hf-label" style="margin-top:16px;">@L["How would you like to handle this?"]</p>
     <div class="hf-help-mode">
@@ -76,6 +90,7 @@
     .hf-help-mode-card strong { grid-column: 2; font-size: 0.95rem; }
     .hf-help-mode-card small { grid-column: 2; color: #64748B; line-height: 1.4; }
     .hf-maint-actions { display: grid; gap: 10px; margin-top: 8px; }
+    .hf-maint-actions .hf-btn { width: 100%; justify-content: center; }
     .hf-maint-hint { font-size: 0.82rem; color: #64748B; margin-top: 12px; line-height: 1.4; }
     .hf-maint-hint i { color: #0066CC; margin-right: 4px; }
 </style>
@@ -83,13 +98,63 @@
 @section Scripts {
 <script>
     (function () {
-        var form = document.querySelector('.hf-maint-form');
+        var form = document.getElementById('maintenanceCreateForm');
         if (!form) { return; }
-        form.addEventListener('submit', function () {
-            form.querySelectorAll('button[type="submit"]').forEach(function (btn) {
-                btn.disabled = true;
-                btn.style.opacity = '0.7';
+
+        var msgs = {
+            fill: @Html.Raw(JsonSerializer.Serialize(L["Please fill out this field."].ToString())),
+            select: @Html.Raw(JsonSerializer.Serialize(L["Please select an item in the list."].ToString()))
+        };
+
+        // Override browser-locale HTML5 tooltips so messages follow the app UI culture via L[].
+        form.noValidate = true;
+        form.setAttribute('novalidate', 'novalidate');
+
+        function validityMessage(field) {
+            if (field.validity.valueMissing && field.tagName === 'SELECT') {
+                return msgs.select;
+            }
+            return msgs.fill;
+        }
+
+        function clearFieldValidity(field) {
+            field.setCustomValidity('');
+        }
+
+        form.addEventListener('submit', function (e) {
+            var fields = form.querySelectorAll('input, select, textarea');
+            var firstInvalid = null;
+
+            fields.forEach(clearFieldValidity);
+            fields.forEach(function (field) {
+                if (!firstInvalid && !field.checkValidity()) {
+                    firstInvalid = field;
+                }
             });
+
+            if (firstInvalid) {
+                e.preventDefault();
+                firstInvalid.setCustomValidity(validityMessage(firstInvalid));
+                firstInvalid.reportValidity();
+                if (typeof firstInvalid.focus === 'function') {
+                    firstInvalid.focus({ preventScroll: true });
+                }
+                return;
+            }
+
+            // Valid submit: prevent double-submit. Defer disabling so the clicked
+            // button's SaveMode value is still serialized into the POST.
+            setTimeout(function () {
+                form.querySelectorAll('button[type="submit"]').forEach(function (btn) {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.7';
+                });
+            }, 0);
+        });
+
+        form.querySelectorAll('input, select, textarea').forEach(function (field) {
+            field.addEventListener('input', function () { clearFieldValidity(field); });
+            field.addEventListener('change', function () { clearFieldValidity(field); });
         });
     })();
 </script>
