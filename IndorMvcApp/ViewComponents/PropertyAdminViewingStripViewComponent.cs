@@ -18,10 +18,11 @@ public class PropertyAdminViewingStripViewComponent(IPropertyAdministratorPortal
         }
 
         // Mid-flow steps (Review/Access/Schedule/…) keep a read-only strip.
-        // Property switching is for entry *Details* wizards (e.g. AirFilterDetails).
+        // Property switching is for entry wizards (Details + PreventiveMaintenanceServices).
         var action = (ViewContext.RouteData.Values["action"] as string) ?? "";
-        var isEntryDetailsStep = action.EndsWith("Details", StringComparison.OrdinalIgnoreCase);
-        allowSwitch = allowSwitch && isEntryDetailsStep;
+        var isEntryStep = action.EndsWith("Details", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(action, "PreventiveMaintenanceServices", StringComparison.OrdinalIgnoreCase);
+        allowSwitch = allowSwitch && isEntryStep;
 
         var portfolio = allowSwitch
             ? await portal.ListFlowPropertiesAsync(HttpContext.RequestAborted)
@@ -77,8 +78,11 @@ public class PropertyAdminViewingStripViewComponent(IPropertyAdministratorPortal
             }
 
             // Normalize to a single propertyId query key for wizard actions.
+            // Drop planId so a draft plan from another property is not reused.
             if (string.Equals(key, "propertyId", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(key, "PropertyId", StringComparison.OrdinalIgnoreCase))
+                || string.Equals(key, "PropertyId", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(key, "planId", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(key, "PlanId", StringComparison.OrdinalIgnoreCase))
             {
                 continue;
             }
