@@ -47,17 +47,28 @@
     function applyLabels(root) {
         var map = labels();
         var scope = root || document;
+        var es = isSpanishUi();
+        var englishSheet = englishDefaults();
         scope.querySelectorAll('[data-indor-file-source], [data-pa-file-source], [data-nr-photo-source]').forEach(function (item) {
             var source = item.getAttribute('data-indor-file-source')
                 || item.getAttribute('data-pa-file-source')
                 || item.getAttribute('data-nr-photo-source');
+            var mapped = source === 'camera' ? map.camera
+                : (source === 'files' ? map.files : map.library);
+            var english = source === 'camera' ? englishSheet.camera
+                : (source === 'files' ? englishSheet.files : englishSheet.library);
             // Prefer server-rendered data-label (already localized) over JS map.
             var dataLabel = item.getAttribute('data-label');
-            var text = dataLabel
-                || (source === 'camera' ? map.camera
-                    : (source === 'files' ? map.files : map.library));
+            var text = dataLabel || mapped;
+            // Spanish UI must never keep English sheet copy (stale data-label / old HTML).
+            if (es && (!text || text === english)) {
+                text = mapped;
+            }
             if (!text) {
                 return;
+            }
+            if (es) {
+                item.setAttribute('data-label', text);
             }
             var labelEl = item.querySelector('.indor-file-source-label');
             if (labelEl) {
