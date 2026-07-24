@@ -13,20 +13,6 @@
 
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
-@{
-    ViewData["Title"] = L["Landscaping"];
-    Layout = "_PropertyAdminLayout";
-    ViewBag.FlowStep = Model.FlowStep;
-    ViewBag.FlowTotalSteps = Model.TotalSteps;
-    ViewBag.FlowTitle = L["Landscaping"].ToString();
-    ViewBag.FlowSubtitle = L["Tell us what your yard needs so we can match the right landscaping pro."].ToString();
-    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Scope"].ToString(), L["Done"].ToString() };
-    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
-    var propertyId = Model.ViewingProperty?.Id ?? 0;
-}
-
-<div class="pa-portal-shell pa-portal-shell--flow">
-    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     
 

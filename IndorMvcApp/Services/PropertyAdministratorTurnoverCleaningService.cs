@@ -13,6 +13,12 @@ public interface IPropertyAdministratorTurnoverCleaningService
 {
     PropertyAdministratorTurnoverCleaningFeaturedViewModel BuildFeaturedCta(IUrlHelper url, int? propertyId);
     Task<PropertyAdministratorTurnoverCleaningFormViewModel> GetFormAsync(IUrlHelper url, int? propertyId, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorTurnoverCleaningFormViewModel> GetFormAsync(
+        IUrlHelper url,
+        PropertyAdministratorTurnoverCleaningSubmitInput input,
+        string? formError,
+        CancellationToken cancellationToken = default);
+    bool TryNormalizeGuestArrivalTime(string? value, out string normalized, out string? error);
     Task<int> SubmitAsync(PropertyAdministratorTurnoverCleaningSubmitInput input, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorTurnoverCleaningConfirmedViewModel?> GetConfirmedAsync(IUrlHelper url, int requestId, CancellationToken cancellationToken = default);
 }
@@ -46,8 +52,90 @@ public class PropertyAdministratorTurnoverCleaningService(
             NotificationCount = shell.NotificationCount,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ViewingProperty = mapped,
-            ContactPhone = ""
+            ContactPhone = "",
+            GuestArrivalTime = PropertyAdministratorTimeSlots.Default
         };
+    }
+
+    public async Task<PropertyAdministratorTurnoverCleaningFormViewModel> GetFormAsync(
+        IUrlHelper url,
+        PropertyAdministratorTurnoverCleaningSubmitInput input,
+        string? formError,
+        CancellationToken cancellationToken = default)
+    {
+        var model = await GetFormAsync(url, input.PropertyId, cancellationToken);
+        model.ServiceType = input.ServiceType ?? "";
+        model.GuestArrival = input.GuestArrival ?? "";
+        model.GuestArrivalTime = string.IsNullOrWhiteSpace(input.GuestArrivalTime)
+            ? PropertyAdministratorTimeSlots.Default
+            : input.GuestArrivalTime.Trim();
+        model.IncludedTasks = string.Join(",", input.IncludedTasksList ?? []);
+        model.UrgentIssue = input.UrgentIssue ?? "";
+        model.EntryAccess = input.EntryAccess ?? "";
+        model.UpdateRecipients = string.Join(",", input.UpdateRecipientsList ?? []);
+        model.ContactPhone = input.ContactPhone ?? "";
+        model.Details = input.Details ?? "";
+        model.MediaAttachmentsJson = input.MediaAttachmentsJson;
+        model.FormError = formError;
+        return model;
+    }
+
+    public bool TryNormalizeGuestArrivalTime(string? value, out string normalized, out string? error)
+    {
+        normalized = "";
+        error = null;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            error = "Enter a valid guest arrival time (for example, 4:00 PM).";
+            return false;
+        }
+
+        var candidate = value.Trim();
+        if (PropertyAdministratorTimeSlots.Hourly.Contains(candidate, StringComparer.OrdinalIgnoreCase))
+        {
+            normalized = PropertyAdministratorTimeSlots.Resolve(candidate);
+            return true;
+        }
+
+        if (DateTime.TryParseExact(
+                candidate,
+                ["h:mm tt", "hh:mm tt", "H:mm", "HH:mm", "h:mm", "hh:mm"],
+                System.Globalization.CultureInfo.InvariantCulture,
+                System.Globalization.DateTimeStyles.None,
+                out var dt))
+        {
+            var minutes = dt.Hour * 60 + dt.Minute;
+            string? best = null;
+            var bestDelta = int.MaxValue;
+            foreach (var slot in PropertyAdministratorTimeSlots.Hourly)
+            {
+                if (!DateTime.TryParseExact(
+                        slot,
+                        ["h:mm tt", "hh:mm tt"],
+                        System.Globalization.CultureInfo.InvariantCulture,
+                        System.Globalization.DateTimeStyles.None,
+                        out var slotDt))
+                {
+                    continue;
+                }
+
+                var delta = Math.Abs((slotDt.Hour * 60 + slotDt.Minute) - minutes);
+                if (delta < bestDelta)
+                {
+                    bestDelta = delta;
+                    best = slot;
+                }
+            }
+
+            if (best != null)
+            {
+                normalized = best;
+                return true;
+            }
+        }
+
+        error = "Enter a valid guest arrival time (for example, 4:00 PM).";
+        return false;
     }
 
     public async Task<int> SubmitAsync(

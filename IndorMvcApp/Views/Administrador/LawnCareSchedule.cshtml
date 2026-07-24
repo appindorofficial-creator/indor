@@ -14,21 +14,6 @@
 
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
-@{
-    ViewData["Title"] = L["Lawn Care / Grass Cutting"];
-    Layout = "_PropertyAdminLayout";
-    ViewBag.FlowStep = Model.FlowStep;
-    ViewBag.FlowTotalSteps = Model.TotalSteps;
-    ViewBag.FlowTitle = L["Lawn Care / Grass Cutting"].ToString();
-    ViewBag.FlowSubtitle = L["Choose schedule, add-ons, and access details."].ToString();
-    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Schedule"].ToString(), L["Done"].ToString() };
-    ViewBag.FlowBackUrl = Url.Action("LawnCareDetails", "Administrador", new { propertyId = Model.PropertyId });
-    var addOns = Model.AddOns.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
-    var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
-}
-
-<div class="pa-portal-shell pa-portal-shell--flow">
-    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     
 

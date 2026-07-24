@@ -13,20 +13,6 @@
 
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
-@{
-    ViewData["Title"] = L["Trash Out Service"];
-    Layout = "_PropertyAdminLayout";
-    ViewBag.FlowStep = Model.FlowStep;
-    ViewBag.FlowTotalSteps = Model.TotalSteps;
-    ViewBag.FlowTitle = L["Trash Out Service"].ToString();
-    ViewBag.FlowSubtitle = L["Set timing, access, and updates for your bin service."].ToString();
-    ViewBag.FlowSteps = new[] { L["Details"].ToString(), L["Access"].ToString(), L["Done"].ToString() };
-    ViewBag.FlowBackUrl = Url.Action("TrashOutDetails", "Administrador", new { propertyId = Model.PropertyId });
-    var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
-}
-
-<div class="pa-portal-shell pa-portal-shell--flow">
-    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     
 

@@ -14,8 +14,8 @@ public class PropertyAdministratorTurnoverCleaningFormViewModel : PropertyAdmini
     public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
     public string ServiceType { get; set; } = "";
     public string GuestArrival { get; set; } = "";
-    /// <summary>HTML time input value in HH:mm (24h).</summary>
-    public string GuestArrivalTime { get; set; } = "16:00";
+    /// <summary>Labeled hourly slot (e.g. 4:00 PM) or legacy HH:mm.</summary>
+    public string GuestArrivalTime { get; set; } = "4:00 PM";
     public string IncludedTasks { get; set; } = "";
     public string UrgentIssue { get; set; } = "";
     public string EntryAccess { get; set; } = "";
@@ -36,8 +36,8 @@ public class PropertyAdministratorTurnoverCleaningSubmitInput
     public int PropertyId { get; set; }
     public string ServiceType { get; set; } = "";
     public string GuestArrival { get; set; } = "";
-    /// <summary>Guest arrival time; accepted as HH:mm or h:mm tt. Normalized on submit.</summary>
-    public string GuestArrivalTime { get; set; } = "16:00";
+    /// <summary>Guest arrival time; accepted as labeled slot or HH:mm. Normalized on submit.</summary>
+    public string GuestArrivalTime { get; set; } = "4:00 PM";
     public List<string> IncludedTasksList { get; set; } = [];
     public string UrgentIssue { get; set; } = "";
     public string EntryAccess { get; set; } = "";

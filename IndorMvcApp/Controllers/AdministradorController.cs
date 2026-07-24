@@ -2059,13 +2059,13 @@ public class AdministradorController(
             return redirect;
         }
 
-        if (!turnoverCleaning.TryNormalizeGuestArrivalTime(input.GuestArrivalTime, out var normalizedTime, out _))
+        if (!turnoverCleaning.TryNormalizeGuestArrivalTime(input.GuestArrivalTime, out var normalizedTime, out var timeError))
         {
             ViewBag.HideBottomNav = true;
             return View(await turnoverCleaning.GetFormAsync(
                 Url,
                 input,
-                "Enter a valid guest arrival time (for example, 4:00 PM)."));
+                timeError ?? "Enter a valid guest arrival time (for example, 4:00 PM)."));
         }
 
         input.GuestArrivalTime = normalizedTime;
