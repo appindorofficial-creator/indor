@@ -11,7 +11,9 @@
     <style>
         .hf-validation-summary { background:#FEF2F2; border:1px solid #FECACA; color:#B91C1C; border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:0.86rem; line-height:1.45; }
         .hf-validation-summary ul { margin:0; padding-left:18px; }
+        .hf-validation-summary.validation-summary-valid { display:none; }
         .hf-field-error { display:block; color:#B91C1C; font-size:0.82rem; font-weight:600; margin:-6px 0 12px; }
+        .hf-field-error:empty { display:none; }
         .hf-document-form { padding-bottom:calc(var(--homeowner-bottom-nav-h, 80px) + 88px + env(safe-area-inset-bottom, 0px)); }
         .hf-file-picker { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 14px; border:1.5px solid #E5E7EB; border-radius:12px; background:#FFF; margin-bottom:12px; }
         .hf-file-picker:focus-within { border-color:#93C5FD; box-shadow:0 0 0 3px rgba(0,102,204,.15); }
