@@ -285,13 +285,11 @@ public class GutterCleaningController : Controller
             GutterGuardsLabel = GutterCleaningDisplayLabels.FormatYesNoNotSure(solicitud.ProtectorCanaletas),
             LastCleanedLabel = GutterCleaningDisplayLabels.FormatLastCleaned(solicitud.UltimaLimpieza),
             NeedLabel = alreadyDone
-                ? "Already done"
+                ? GutterCleaningDisplayLabels.FormatInitialAction("AlreadyDone")
                 : GutterCleaningDisplayLabels.FormatTodayGoal(solicitud.ObjetivoHoy ?? solicitud.TipoAccionInicial),
             ReminderLabel = GutterCleaningDisplayLabels.FormatReminderPreference(solicitud.PreferenciaRecordatorio, springFall),
-            NextReminderLabel = nextReminder.HasValue ? $"Next reminder: {nextReminder.Value:MMMM d, yyyy}" : null,
-            PreferredVisitLabel = solicitud.FechaVisitaPreferida.HasValue
-                ? $"Preferred visit: {solicitud.FechaVisitaPreferida.Value:MMMM d, yyyy}"
-                : null,
+            NextReminderLabel = nextReminder?.ToString("MMMM d, yyyy"),
+            PreferredVisitLabel = solicitud.FechaVisitaPreferida?.ToString("MMMM d, yyyy"),
             ShowServiceRequested = showService,
             NextStepsItems = SplitTimingPairs(landing?.NextStepsItems, landing?.NextStepsIconos),
             RecommendedTimingItems = SplitTimingPairs(landing?.RecommendedTimingItems, landing?.RecommendedTimingIconos),

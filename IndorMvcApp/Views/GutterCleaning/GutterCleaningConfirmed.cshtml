@@ -1,12 +1,12 @@
 @model IndorMvcApp.ViewModels.GutterCleaningConfirmedViewModel
 @{
     ViewData["Title"] = L["Gutter Cleaning - All set - INDOR"];
-    ViewData["WizardTitle"] = Model.NombreServicio;
+    ViewData["WizardTitle"] = L.Catalog(Model.NombreServicio);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
-    var heading = Model.AlreadyCompleted ? "Task marked complete" : "All set!";
+    var heading = Model.AlreadyCompleted ? L["Task marked complete"] : L["All set!"];
     var subheading = Model.AlreadyCompleted
-        ? "Thanks for keeping your gutters on track."
-        : "Your gutter plan is ready. We'll help keep your home protected.";
+        ? L["Thanks for keeping your gutters on track."]
+        : L["Your gutter plan is ready. We'll help keep your home protected."];
 }
 
 
@@ -37,14 +37,14 @@
             <div class="status-card">
                 <div class="head"><i class="fas fa-calendar-check"></i><div><div class="title">@L["Reminder set"]</div><div class="value">@Model.FrequencyLabel</div></div></div>
                 <div class="desc">@L["We'll remind you before spring and fall cleaning."]</div>
-                <div class="status-badge"><i class="fas fa-calendar"></i> @Model.NextReminderLabel</div>
+                <div class="status-badge"><i class="fas fa-calendar"></i> @L.T("Next reminder: {0}", Model.NextReminderLabel)</div>
             </div>
         }
 
         @if (Model.ShowServiceRequested && !string.IsNullOrWhiteSpace(Model.PreferredVisitLabel))
         {
             <div class="status-card">
-                <div class="head"><i class="fas fa-water"></i><div><div class="title">@L["Service requested"]</div><div class="value">@Model.PreferredVisitLabel</div></div></div>
+                <div class="head"><i class="fas fa-water"></i><div><div class="title">@L["Service requested"]</div><div class="value">@L.T("Preferred visit: {0}", Model.PreferredVisitLabel)</div></div></div>
                 <div class="desc">@L["We received your request. A pro will confirm soon."]</div>
                 <div class="status-badge success"><i class="fas fa-check"></i> @L["Request received"]</div>
             </div>
@@ -86,7 +86,7 @@
     {
         <div class="info-box-blue">
             <i class="fas fa-shield-halved"></i>
-            <span>@L.Catalog(Model.InfoConfirmacionTexto)</span>
+            <span>@L["Tip:"] @L.Catalog(Model.InfoConfirmacionTexto)</span>
         </div>
     }
 

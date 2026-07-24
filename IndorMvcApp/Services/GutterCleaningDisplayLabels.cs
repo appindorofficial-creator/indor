@@ -8,14 +8,14 @@ public static class GutterCleaningDisplayLabels
     {
         "ScheduleService" => DisplayLabelsLocalization.L("Schedule service"),
         "AlreadyDone" => DisplayLabelsLocalization.L("Already done"),
-        _ => "Reminder"
+        _ => DisplayLabelsLocalization.L("Reminder")
     };
 
     public static string FormatStories(string? code) => code switch
     {
         "One" => DisplayLabelsLocalization.L("1 story"),
         "ThreePlus" => DisplayLabelsLocalization.L("3+ stories"),
-        _ => "2 stories"
+        _ => DisplayLabelsLocalization.L("2 stories")
     };
 
     public static string FormatGutterType(string? code) => code switch
@@ -23,14 +23,14 @@ public static class GutterCleaningDisplayLabels
         "Vinyl" => DisplayLabelsLocalization.L("Vinyl"),
         "Copper" => DisplayLabelsLocalization.L("Copper"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => "Aluminum"
+        _ => DisplayLabelsLocalization.L("Aluminum")
     };
 
     public static string FormatYesNoNotSure(string? code) => code switch
     {
         "Yes" => DisplayLabelsLocalization.L("Yes"),
         "No" => DisplayLabelsLocalization.L("No"),
-        _ => "Not sure"
+        _ => DisplayLabelsLocalization.L("Not sure")
     };
 
     public static string FormatLastCleaned(string? code) => code switch
@@ -38,7 +38,7 @@ public static class GutterCleaningDisplayLabels
         "LessThan6Months" => DisplayLabelsLocalization.L("< 6 months"),
         "SixToTwelveMonths" => DisplayLabelsLocalization.L("6–12 months"),
         "OnePlusYear" => DisplayLabelsLocalization.L("1+ year"),
-        _ => "Not sure"
+        _ => DisplayLabelsLocalization.L("Not sure")
     };
 
     public static string FormatIssue(string code) => code switch
@@ -58,27 +58,29 @@ public static class GutterCleaningDisplayLabels
         "BackOnly" => DisplayLabelsLocalization.L("Back only"),
         "OneSideOnly" => DisplayLabelsLocalization.L("One side only"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => "Whole house"
+        _ => DisplayLabelsLocalization.L("Whole house")
     };
 
     public static string FormatTodayGoal(string? code) => code switch
     {
         "ReminderOnly" => DisplayLabelsLocalization.L("Reminder only"),
         "CleaningEstimate" => DisplayLabelsLocalization.L("Cleaning estimate"),
-        _ => "Schedule service"
+        _ => DisplayLabelsLocalization.L("Schedule service")
     };
 
     public static string FormatReminderPreference(string? code, bool springFall) =>
         springFall || string.Equals(code, "SpringFall", StringComparison.OrdinalIgnoreCase)
-            ? "Spring & Fall"
-            : "Custom date";
+            ? DisplayLabelsLocalization.L("Spring & Fall")
+            : DisplayLabelsLocalization.L("Custom date");
 
     public static string FormatFrequency(bool springFall) =>
-        springFall ? "Twice a year" : "Custom";
+        springFall
+            ? DisplayLabelsLocalization.L("Twice a year")
+            : DisplayLabelsLocalization.L("Custom");
 
     public static string FormatPipeList(string? pipe, Func<string, string> formatter) =>
         string.IsNullOrWhiteSpace(pipe)
-            ? "General check"
+            ? DisplayLabelsLocalization.L("General check")
             : string.Join(", ", pipe.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .Select(formatter));
 
