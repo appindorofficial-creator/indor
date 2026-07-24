@@ -823,8 +823,9 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-timeline-body span{display:block;font-size:.72rem;color:#64748B;margin-top:2px}
 
 .pa-action-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:16px}
-.pa-action-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;background:#fff;border:1.5px solid #E2E8F0;border-radius:12px;text-decoration:none;color:#334155;font:inherit;font-size:.62rem;font-weight:600;cursor:pointer}
+.pa-action-tile{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 6px;background:#fff;border:1.5px solid #E2E8F0;border-radius:12px;text-decoration:none;color:#334155;font:inherit;font-size:.62rem;font-weight:600;cursor:pointer;text-align:center}
 .pa-action-tile i{font-size:1rem;color:#0066CC}
+.pa-action-tile span{display:block;width:100%;text-align:center;line-height:1.25}
 
 .pa-tip-banner{display:flex;align-items:flex-start;gap:10px;padding:14px;background:#EFF6FF;border-radius:14px;margin-bottom:16px}
 .pa-tip-icon{width:36px;height:36px;border-radius:50%;background:#DBEAFE;color:#0066CC;display:flex;align-items:center;justify-content:center;flex-shrink:0}
