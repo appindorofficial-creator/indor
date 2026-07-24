@@ -75,7 +75,6 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
                    max="@maxMaintenanceDate"
                    aria-label="@L["Last maintenance date"]" />
             <span class="field-hint">@L["Select the date of your last tune-up, if you know it."]</span>
-            <span asp-validation-for="FechaUltimoMantenimiento" class="text-danger"></span>
             <div class="toggle-row" style="margin-top:12px;">
                 <span>@L["Not sure"]</span>
                 <label class="toggle-switch">
@@ -120,19 +119,19 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
         function serialErrorMessage(value) {
             var serial = String(value || '').trim();
             if (!serial) {
-                return 'Enter the AC serial number or toggle "I don\'t know".';
+                return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Enter the AC serial number or toggle \"I don't know\"."]));
             }
             if (serial.length < @EquipmentSerialNumberAttribute.MinLength) {
-                return 'Serial number must be at least @EquipmentSerialNumberAttribute.MinLength characters.';
+                return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L.T("Serial number must be at least {0} characters.", EquipmentSerialNumberAttribute.MinLength)));
             }
             if (serial.length > @EquipmentSerialNumberAttribute.MaxLength) {
-                return 'Serial number cannot exceed @EquipmentSerialNumberAttribute.MaxLength characters.';
+                return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L.T("Serial number cannot exceed {0} characters.", EquipmentSerialNumberAttribute.MaxLength)));
             }
             if (!/^[A-Za-z0-9\-]+$/.test(serial)) {
-                return 'Use only letters, numbers, and hyphens.';
+                return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Use only letters, numbers, and hyphens."]));
             }
             if (!/\p{L}/u.test(serial) || !/\d/.test(serial)) {
-                return 'Serial number must include at least one letter and one number.';
+                return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Serial number must include at least one letter and one number."]));
             }
             return '';
         }
@@ -154,28 +153,52 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
             if (e.submitter && e.submitter.value === 'back') {
                 return;
             }
-            if (!validateSerialField()) {
+            var serialOk = validateSerialField();
+            var maintenanceOk = validateMaintenanceField();
+            if (!serialOk) {
                 e.preventDefault();
                 serialInput.reportValidity();
+                return;
+            }
+            if (!maintenanceOk) {
+                e.preventDefault();
+                maintenanceInput.reportValidity();
             }
         });
 
+        function validateMaintenanceField() {
+            if (!maintenanceInput) return true;
+            if (maintenanceToggle.checked) {
+                maintenanceInput.setCustomValidity('');
+                return true;
+            }
+            if (!maintenanceInput.value) {
+                maintenanceInput.setCustomValidity(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select the last maintenance date or toggle \"Not sure\"."])));
+                return false;
+            }
+            if (maintenanceInput.validity.rangeOverflow) {
+                maintenanceInput.setCustomValidity(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select a date on or before today."].ToString())));
+                return false;
+            }
+            maintenanceInput.setCustomValidity('');
+            return true;
+        }
+
         function syncMaintenanceValidity() {
             if (!maintenanceInput) return;
-            // Browsers show the native range message localized to the device locale
-            // (e.g. Spanish). Override it with our own English message instead.
-            if (!maintenanceInput.disabled && maintenanceInput.validity.rangeOverflow) {
-                maintenanceInput.setCustomValidity(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select a date on or before today."].ToString())));
-            } else {
+            // Required check only runs on Continuar (same UX as serial number).
+            if (maintenanceToggle.checked || !maintenanceInput.value || !maintenanceInput.validity.rangeOverflow) {
                 maintenanceInput.setCustomValidity('');
+                return;
             }
+            maintenanceInput.setCustomValidity(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select a date on or before today."].ToString())));
         }
 
         function syncMaintenance() {
             var disabled = maintenanceToggle.checked;
             maintenanceInput.disabled = disabled;
             if (disabled) maintenanceInput.value = '';
-            syncMaintenanceValidity();
+            maintenanceInput.setCustomValidity('');
         }
 
         serialToggle.addEventListener('change', function () {
@@ -188,7 +211,7 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
 
         syncSerial();
         syncMaintenance();
-
+        validateSerialField();
         var photoInput = document.getElementById('photoInput');
         var photoDropzone = document.getElementById('photoDropzone');
         var photoSelectedList = document.getElementById('photoSelectedList');

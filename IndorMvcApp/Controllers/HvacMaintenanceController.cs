@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -16,6 +17,7 @@ public class HvacMaintenanceController : Controller
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
+    private readonly IIndorLocalizer _localizer;
 
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"];
     private const long MaxFileSize = 10_000_000;
@@ -24,11 +26,13 @@ public class HvacMaintenanceController : Controller
     public HvacMaintenanceController(
         AppDbContext db,
         UserManager<ApplicationUser> userManager,
-        IWebHostEnvironment env)
+        IWebHostEnvironment env,
+        IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
         _env = env;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -122,7 +126,8 @@ public class HvacMaintenanceController : Controller
         }
         else if (string.IsNullOrWhiteSpace(model.NumeroSerieAc))
         {
-            ModelState.AddModelError(nameof(model.NumeroSerieAc), "Enter the AC serial number or toggle \"I don't know\".");
+            ModelState.AddModelError(nameof(model.NumeroSerieAc),
+                _localizer["Enter the AC serial number or toggle \"I don't know\"."]);
         }
 
         if (model.UltimoMantenimientoDesconocido)
@@ -130,15 +135,20 @@ public class HvacMaintenanceController : Controller
             model.FechaUltimoMantenimiento = null;
             ModelState.Remove(nameof(model.FechaUltimoMantenimiento));
         }
-        else if (model.FechaUltimoMantenimiento.HasValue
-                 && model.FechaUltimoMantenimiento.Value.Date > DateTime.Today)
+        else if (!model.FechaUltimoMantenimiento.HasValue)
         {
             ModelState.AddModelError(nameof(model.FechaUltimoMantenimiento),
-                "Last maintenance date cannot be in the future.");
+                _localizer["Select the last maintenance date or toggle \"Not sure\"."]);
+        }
+        else if (model.FechaUltimoMantenimiento.Value.Date > DateTime.Today)
+        {
+            ModelState.AddModelError(nameof(model.FechaUltimoMantenimiento),
+                _localizer["Last maintenance date cannot be in the future."]);
         }
 
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             model.ArchivosExistentes = MapExistingFiles(solicitud);
             return View(model);
         }
