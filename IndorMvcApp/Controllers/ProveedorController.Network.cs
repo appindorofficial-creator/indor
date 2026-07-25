@@ -186,7 +186,7 @@ public partial class ProveedorController
             model.Photos.Clear();
             model.Photos.AddRange((input.ExistingPhotos ?? []).Where(u => !string.IsNullOrWhiteSpace(u)));
             model.Photos.AddRange(newPhotos);
-            model.ErrorMessage = "Please choose a trade and add a job title.";
+            model.ErrorMessage = localizer["Please choose a trade and add a job title."];
             return View("PostNetworkJob", model);
         }
 

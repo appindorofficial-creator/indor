@@ -695,6 +695,7 @@ public static class UiTranslationsProveedor
             ["Photos help pros understand the job"] = "Las fotos ayudan a los profesionales a entender el trabajo",
             ["Photos of completed handyman work"] = "Fotos of completed handyman work",
             ["Please agree to INDOR's Terms &amp; Conditions."] = "Please agree to INDOR's Terms &amp; Conditions.",
+            ["Please choose a trade and add a job title."] = "Elige un oficio y agrega un título de trabajo.",
             ["Please write a message before sending."] = "Escribe un mensaje antes de enviar.",
             ["Plumbing company"] = "Plumbing company",
             ["Plumbing license"] = "Plumbing license",
