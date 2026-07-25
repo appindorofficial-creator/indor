@@ -435,8 +435,13 @@ public partial class ProviderProDataService
         && !string.IsNullOrWhiteSpace(p.Phone)
         && !string.IsNullOrWhiteSpace(p.Email);
 
+    // Complete with either an uploaded doc or a typed license number, matching insurance/W-9 rules,
+    // so providers aren't stuck below 100% when they only have one of the two.
     private static bool IsLicenseComplete(IndorProveedor p, ProviderProfileDocumentMeta m, bool hasDoc) =>
-        m.LicenseNotApplicable || (hasDoc && (!string.IsNullOrWhiteSpace(m.LicenseNumber) || !string.IsNullOrWhiteSpace(p.LicenseNumber)));
+        m.LicenseNotApplicable
+        || hasDoc
+        || !string.IsNullOrWhiteSpace(m.LicenseNumber)
+        || !string.IsNullOrWhiteSpace(p.LicenseNumber);
 
     private static bool IsInsuranceComplete(IndorProveedor p, ProviderProfileDocumentMeta m, bool hasDoc) =>
         m.InsuranceNotApplicable || hasDoc;
