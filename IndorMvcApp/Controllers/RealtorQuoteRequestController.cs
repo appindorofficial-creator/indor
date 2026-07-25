@@ -116,7 +116,7 @@ public class RealtorQuoteRequestController(
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, ex.Message);
+            ModelState.AddModelError(string.Empty, localizer[ex.Message]);
             var vm = await quoteRequest.BuildPropertyAsync(null);
             vm.SelectedPropertyFileId = propertyFileId > 0 ? propertyFileId : null;
             return View(vm);

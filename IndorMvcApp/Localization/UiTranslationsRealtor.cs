@@ -627,6 +627,7 @@ public static class UiTranslationsRealtor
             ["Please enter the property address."] = "Ingresa the propiedad address.",
             ["Please fix the following before continuing:"] = "Corrige lo siguiente antes de continuar:",
             ["Please fix the following to continue:"] = "Corrige lo siguiente para continuar:",
+            ["Please select a property or enter an address."] = "Selecciona una propiedad o ingresa una dirección.",
             ["Please select a property subtype."] = "Selecciona a propiedad subtype.",
             ["Pool & Hot Tub Repair"] = "Pool & Hot Tub Repair",
             ["Pool & Hot Tub repair request sent"] = "Pool & Hot Tub repair request sent",
