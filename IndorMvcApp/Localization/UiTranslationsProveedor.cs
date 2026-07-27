@@ -1447,6 +1447,7 @@ public static class UiTranslationsProveedor
             ["Permit / Receipt"] = "Permiso / Recibo",
             ["Pressed: Upload Report"] = "Pulsado: Subir informe",
             ["From: Reports"] = "Desde: Reportes",
+            ["From: Report Templates"] = "Desde: Plantillas de informe",
             ["Now: Select Job"] = "Ahora: Seleccionar trabajo",
             ["From: Select Job"] = "Desde: Seleccionar trabajo",
             ["Now: Report Type"] = "Ahora: Tipo de informe",

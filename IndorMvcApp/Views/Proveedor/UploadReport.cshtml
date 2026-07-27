@@ -10,7 +10,7 @@
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
-        <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
+        <a asp-controller="Proveedor" asp-action="ReportTemplates" class="prv-pro-lead-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["Select Job or Property"]</h1>
             <small>@L["Choose the completed or active job this report belongs to."]</small>
@@ -99,6 +99,6 @@
     </div>
 
     <div class="prv-pro-upload-report-actions">
-        <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-btn prv-pro-btn--outline">@L["Cancel"]</a>
+        <a asp-controller="Proveedor" asp-action="ReportTemplates" class="prv-pro-btn prv-pro-btn--outline">@L["Cancel"]</a>
     </div>
 </div>

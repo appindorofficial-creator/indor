@@ -2766,7 +2766,7 @@ public partial class ProviderProDataService(
 
     private static List<ProviderProFlowStepViewModel> UploadReportSelectJobFlowSteps() =>
     [
-        new() { Label = "From: Reports", IconClass = "fa-file-lines", IsLink = true, Url = "/Proveedor/Reports" },
+        new() { Label = "From: Report Templates", IconClass = "fa-file-lines", IsLink = true, Url = "/Proveedor/ReportTemplates" },
         new() { Label = "Pressed: Upload Report", IconClass = "fa-cloud-arrow-up" },
         new() { Label = "Now: Select Job", IconClass = "fa-briefcase", IsCurrent = true }
     ];
