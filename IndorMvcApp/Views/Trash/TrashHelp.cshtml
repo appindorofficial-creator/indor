@@ -7,18 +7,17 @@
     ViewData["WizardTotalSteps"] = 3;
 }
 
+
 <h2 class="page-heading" style="font-size:1.05rem;">@L["How should INDOR help?"]</h2>
 
-    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
-
-    <form asp-action="TrashHelp" method="post">
+    <form asp-action="TrashHelp" method="post" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MicroservicioId" />
         <input type="hidden" asp-for="TipoAyuda" id="TipoAyuda" />
         <input type="hidden" asp-for="RecordatorioCuando" id="RecordatorioCuando" />
         <input type="hidden" asp-for="VentanaRecoleccion" id="VentanaRecoleccion" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoAyuda">
             <div class="help-list" id="helpGroup">
                 <button type="button" class="help-row" data-value="ReminderOnly">
                     <i class="fas fa-bell main"></i>
@@ -38,7 +37,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="RecordatorioCuando">
             <span class="field-label">@L["Reminder settings"]</span>
             <div class="reminder-row" id="reminderGroup">
                 <button type="button" class="reminder-btn" data-value="OneDayBefore"><i class="fas fa-bell"></i> @L["1 day before"]</button>
@@ -47,12 +46,13 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="VentanaRecoleccion">
             <span class="field-label">@L["Pickup time window"]</span>
             <div class="picker-row">
                 <div class="left">
                     <i class="fas fa-clock" style="color:#0066CC;"></i>
-                    <select id="VentanaRecoleccionSelect" aria-label="@L["Pickup time window"]">
+                    <select id="VentanaRecoleccionSelect" required aria-label="@L["Pickup time window"]">
+                        <option value="">@L["Select a time window"]</option>
                         <option value="Morning7_12">@L["07:00 – 12:00"]</option>
                         <option value="Afternoon12_5">@L["12:00 – 17:00"]</option>
                         <option value="Flexible">@L["Flexible window"]</option>
@@ -72,23 +72,29 @@
         <button type="submit" name="action" value="continue" class="btn-primary">
             <i class="fas fa-calendar-plus"></i> @L["Review request"]
         </button>
-        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline" formnovalidate>@L["Back"]</button>
     </form>
 
 @section Scripts {
 <script>
     (function () {
-        function initSingle(groupId, selector, hiddenId, initial, onChange) {
+        function initSingle(groupId, selector, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
+            if (!hidden) return;
+            const seed = (initial && String(initial).trim()) || '';
+            if (!seed) {
+                hidden.value = '';
+            }
+
             document.querySelectorAll('#' + groupId + ' ' + selector).forEach(btn => {
-                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                if (seed && btn.dataset.value === seed) btn.classList.add('active');
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('#' + groupId + ' ' + selector).forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     hidden.value = btn.dataset.value;
-                    if (onChange) onChange(btn);
                 });
             });
+            if (seed) hidden.value = seed;
         }
 
         initSingle('helpGroup', '.help-row', 'TipoAyuda', '@Model.TipoAyuda');
@@ -97,7 +103,11 @@
         const windowHidden = document.getElementById('VentanaRecoleccion');
         const windowSelect = document.getElementById('VentanaRecoleccionSelect');
         if (windowHidden && windowSelect) {
-            windowSelect.value = windowHidden.value || 'Morning7_12';
+            const seed = (windowHidden.value || '').trim();
+            windowSelect.value = seed;
+            if (!seed) {
+                windowHidden.value = '';
+            }
             windowSelect.addEventListener('change', () => { windowHidden.value = windowSelect.value; });
         }
     })();

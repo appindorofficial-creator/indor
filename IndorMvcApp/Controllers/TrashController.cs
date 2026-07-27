@@ -142,9 +142,9 @@ public class TrashController : Controller
                 solicitud.Microservicio?.Nombre ?? "Stress-Free Trash",
                 solicitud.Microservicio?.NombreEs,
                 _localizer.IsSpanish),
-            TipoAyuda = solicitud.TipoAyuda ?? "TakeOutReturn",
-            RecordatorioCuando = solicitud.RecordatorioCuando ?? "OneDayBefore",
-            VentanaRecoleccion = solicitud.VentanaRecoleccion ?? "Morning7_12",
+            TipoAyuda = string.Empty,
+            RecordatorioCuando = string.Empty,
+            VentanaRecoleccion = string.Empty,
             NotasEspeciales = solicitud.NotasEspeciales
         });
     }
@@ -325,11 +325,11 @@ public class TrashController : Controller
                 solicitud.Microservicio?.Nombre ?? "Stress-Free Trash",
                 solicitud.Microservicio?.NombreEs,
                 _localizer.IsSpanish),
-            BinsSeleccionados = posted?.BinsSeleccionados ?? solicitud.BinsSeleccionados ?? "Trash",
-            CantidadBins = posted?.CantidadBins ?? solicitud.CantidadBins ?? "One",
-            Frecuencia = posted?.Frecuencia ?? solicitud.Frecuencia ?? "OneTime",
-            DiaRecoleccion = posted?.DiaRecoleccion ?? solicitud.DiaRecoleccion ?? "Tue",
-            PrecioMensual = TrashPricingService.GetMonthlyPrice(posted?.CantidadBins ?? solicitud.CantidadBins)
+            BinsSeleccionados = posted?.BinsSeleccionados ?? string.Empty,
+            CantidadBins = posted?.CantidadBins ?? string.Empty,
+            Frecuencia = posted?.Frecuencia ?? string.Empty,
+            DiaRecoleccion = posted?.DiaRecoleccion ?? string.Empty,
+            PrecioMensual = TrashPricingService.GetMonthlyPrice(posted?.CantidadBins)
         };
 
     private TrashReviewViewModel BuildReviewViewModel(SolicitudTrash solicitud, string? infoBox) =>
@@ -413,14 +413,14 @@ public class TrashController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                BinsSeleccionados = "Trash",
-                CantidadBins = "One",
-                Frecuencia = "OneTime",
-                DiaRecoleccion = "Tue",
-                TipoAyuda = "TakeOutReturn",
-                RecordatorioCuando = "OneDayBefore",
-                VentanaRecoleccion = "Morning7_12",
-                PrecioMensual = 20
+                BinsSeleccionados = string.Empty,
+                CantidadBins = string.Empty,
+                Frecuencia = string.Empty,
+                DiaRecoleccion = string.Empty,
+                TipoAyuda = string.Empty,
+                RecordatorioCuando = string.Empty,
+                VentanaRecoleccion = string.Empty,
+                PrecioMensual = 0
             };
             _db.SolicitudesTrash.Add(solicitud);
             await _db.SaveChangesAsync();

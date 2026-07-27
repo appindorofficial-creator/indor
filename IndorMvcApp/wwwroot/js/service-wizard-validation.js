@@ -32,6 +32,7 @@
         '.chip-option',
         '.help-tile',
         '.help-btn',
+        '.help-row',
         '.plan-tier-card',
         '.timing-card',
         '.timing-chip',

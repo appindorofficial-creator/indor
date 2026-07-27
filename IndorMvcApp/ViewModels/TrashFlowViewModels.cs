@@ -31,16 +31,16 @@ public class TrashSetupViewModel
     public string PageTitle { get; set; } = "Trash Day Assistant";
 
     [Required]
-    public string BinsSeleccionados { get; set; } = "Trash";
+    public string BinsSeleccionados { get; set; } = string.Empty;
 
     [Required]
-    public string CantidadBins { get; set; } = "One";
+    public string CantidadBins { get; set; } = string.Empty;
 
     [Required]
-    public string Frecuencia { get; set; } = "OneTime";
+    public string Frecuencia { get; set; } = string.Empty;
 
     [Required]
-    public string DiaRecoleccion { get; set; } = "Tue";
+    public string DiaRecoleccion { get; set; } = string.Empty;
 
     public decimal PrecioMensual { get; set; }
 }
@@ -52,13 +52,13 @@ public class TrashHelpViewModel
     public string PageTitle { get; set; } = "Trash Day Assistant";
 
     [Required]
-    public string TipoAyuda { get; set; } = "TakeOutReturn";
+    public string TipoAyuda { get; set; } = string.Empty;
 
     [Required]
-    public string RecordatorioCuando { get; set; } = "OneDayBefore";
+    public string RecordatorioCuando { get; set; } = string.Empty;
 
     [Required]
-    public string VentanaRecoleccion { get; set; } = "Morning7_12";
+    public string VentanaRecoleccion { get; set; } = string.Empty;
 
     [MaxLength(500)]
     public string? NotasEspeciales { get; set; }

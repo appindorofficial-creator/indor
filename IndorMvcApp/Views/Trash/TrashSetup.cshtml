@@ -6,12 +6,11 @@
     ViewData["WizardBackUrl"] = Url.Action("TrashService", "Trash", new { id = Model.MicroservicioId });
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 3;
-    var selectedBins = (Model.BinsSeleccionados ?? "Trash").Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+    var selectedBins = (Model.BinsSeleccionados ?? string.Empty).Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
 }
 
-<div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form asp-action="TrashSetup" method="post" id="setupForm">
+    <form asp-action="TrashSetup" method="post" id="setupForm" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MicroservicioId" />
         <input type="hidden" asp-for="BinsSeleccionados" id="BinsSeleccionados" />
@@ -20,7 +19,7 @@
         <input type="hidden" asp-for="DiaRecoleccion" id="DiaRecoleccion" />
         <input type="hidden" asp-for="PrecioMensual" id="PrecioMensual" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="BinsSeleccionados">
             <span class="field-label">@L["What bins should we manage?"]</span>
             <p class="page-lead" style="margin-top:-6px;margin-bottom:10px;">@L["Select all that apply."]</p>
             <div class="bin-grid" id="binGroup">
@@ -44,7 +43,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="CantidadBins">
             <span class="field-label">@L["How many bins?"]</span>
             <div class="count-grid" id="countGroup">
                 <button type="button" class="count-card" data-value="One" data-price="20"><span class="check"><i class="fas fa-check"></i></span><strong>@L["1 bin"]</strong><span>@L["$20 /mo"]</span></button>
@@ -53,7 +52,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="Frecuencia">
             <span class="field-label">@L["How often?"]</span>
             <div class="freq-grid" id="freqGroup">
                 <button type="button" class="freq-card" data-value="OneTime">
@@ -74,7 +73,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="DiaRecoleccion">
             <span class="field-label">@L["Your pickup day"]</span>
             <p class="page-lead" style="margin-top:-6px;margin-bottom:10px;">@L["You can update this anytime."]</p>
             <div class="day-row" id="dayGroup">
@@ -91,14 +90,14 @@
                 <span class="value" id="totalDisplay">$@Model.PrecioMensual.ToString("0")</span>
             </div>
             <button type="submit" name="action" value="continue" class="btn-primary">@L["Continue"] <i class="fas fa-chevron-right"></i></button>
-            <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
+            <button type="submit" name="action" value="back" class="btn-outline" formnovalidate>@L["Back"]</button>
         </div>
     </form>
 
 @section Scripts {
 <script>
     (function () {
-        const selectedBins = new Set((document.getElementById('BinsSeleccionados').value || 'Trash').split('|').map(s => s.trim()).filter(Boolean));
+        const selectedBins = new Set((document.getElementById('BinsSeleccionados').value || '').split('|').map(s => s.trim()).filter(Boolean));
 
         function syncBins() {
             document.getElementById('BinsSeleccionados').value = Array.from(selectedBins).join('|');
@@ -108,10 +107,8 @@
             card.addEventListener('click', () => {
                 const code = card.dataset.code;
                 if (selectedBins.has(code)) {
-                    if (selectedBins.size > 1) {
-                        selectedBins.delete(code);
-                        card.classList.remove('active');
-                    }
+                    selectedBins.delete(code);
+                    card.classList.remove('active');
                 } else {
                     selectedBins.add(code);
                     card.classList.add('active');
@@ -122,8 +119,14 @@
 
         function initSingle(groupId, selector, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
+            if (!hidden) return;
+            const seed = (initial && String(initial).trim()) || '';
+            if (!seed) {
+                hidden.value = '';
+            }
+
             document.querySelectorAll('#' + groupId + ' ' + selector).forEach(btn => {
-                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                if (seed && btn.dataset.value === seed) btn.classList.add('active');
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('#' + groupId + ' ' + selector).forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
@@ -131,10 +134,11 @@
                     if (hiddenId === 'CantidadBins') updateTotal(btn.dataset.price);
                 });
             });
+            if (seed) hidden.value = seed;
         }
 
         function updateTotal(price) {
-            const p = price || document.querySelector('#countGroup .count-card.active')?.dataset.price || '20';
+            const p = price || document.querySelector('#countGroup .count-card.active')?.dataset.price || '0';
             document.getElementById('PrecioMensual').value = p;
             document.getElementById('totalDisplay').textContent = '$' + p;
         }
