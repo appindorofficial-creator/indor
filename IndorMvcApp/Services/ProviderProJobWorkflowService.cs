@@ -522,12 +522,10 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
             CustomerName = draft.CustomerName,
             CustomerInitials = DeriveCustomerInitials(draft.CustomerName),
             CustomerTone = DeriveAvatarTone(draft.ClienteId ?? draft.CustomerName.GetHashCode()),
-            AiCustomerNeeds = UiDisplayLocalization.Localize(localizer, draft.AiCustomerNeeds),
-            AiRecommendedScope = draft.AiRecommendedScope
-                .Select(item => UiDisplayLocalization.Localize(localizer, item))
-                .ToList(),
+            AiCustomerNeeds = draft.AiCustomerNeeds,
+            AiRecommendedScope = draft.AiRecommendedScope.ToList(),
             EstimateLines = draft.EstimateLines
-                .Select(l => Line(localizer.T(l.Label), l.Amount))
+                .Select(l => Line(l.Label, l.Amount))
                 .ToList(),
             EstimateTotalLabel = FormatCurrency(draft.EstimateTotal),
             StepSubtitle = "AI estimate assistant",
@@ -555,16 +553,16 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
         }
 
         var (icon, tone) = ResolveWizardTypeVisuals(draft.ServiceCategoryId);
-        var message = string.IsNullOrWhiteSpace(draft.CustomerMessage)
-            ? BuildDefaultCustomerMessage(draft)
-            : draft.CustomerMessage;
+        if (NeedsDefaultQuoteMessage(draft.CustomerMessage))
+        {
+            // Always store the English template + English title key; localize at render time.
+            draft.CustomerMessage = BuildDefaultCustomerMessage(draft);
+        }
 
-        // Localize preview fields for the active UI culture (EN keys stay in draft storage).
+        // Keep English catalog keys in the VM so the view Localize/L[] path is reliable.
         var estimateLines = draft.EstimateLines
-            .Select(l => Line(localizer.T(l.Label), l.Amount))
+            .Select(l => Line(l.Label, l.Amount))
             .ToList();
-        var scopeSummary = UiDisplayLocalization.Localize(localizer, draft.ScopeSummary);
-        var localizedMessage = UiDisplayLocalization.Localize(localizer, message);
 
         return Task.FromResult<ProviderProCreateJobSendViewModel?>(new ProviderProCreateJobSendViewModel
         {
@@ -577,9 +575,9 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
             Address = draft.Address,
             EstimateLines = estimateLines,
             EstimateTotalLabel = draft.SendQuote ? FormatCurrency(draft.EstimateTotal) : "",
-            ScopeSummary = scopeSummary,
+            ScopeSummary = draft.ScopeSummary,
             DeliveryMethod = draft.DeliveryMethod,
-            CustomerMessage = localizedMessage,
+            CustomerMessage = draft.CustomerMessage,
             IncludeAiSummary = draft.IncludeAiSummary,
             IncludeVoiceTranscript = draft.HasVoiceRecording && draft.IncludeVoiceTranscript,
             SendQuote = draft.SendQuote,
@@ -1382,16 +1380,34 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
             ? string.Join(" ", draft.AiRecommendedScope.Take(3)) + "."
             : $"Complete the requested {draft.ServiceCategoryLabel.ToLowerInvariant()} work and provide a detailed summary.";
 
-    private string BuildDefaultCustomerMessage(ProviderProCreateJobDraft draft)
+    private static bool NeedsDefaultQuoteMessage(string? message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return true;
+        }
+
+        // Classic Spanglish bug: English template with a non-ASCII (already-translated) title.
+        return message.StartsWith("Hi ", StringComparison.OrdinalIgnoreCase)
+            && message.Contains("here's your quote for the", StringComparison.OrdinalIgnoreCase)
+            && message.Any(static c => c > 127);
+    }
+
+    private static string BuildDefaultCustomerMessage(ProviderProCreateJobDraft draft)
     {
         var firstName = draft.CustomerName.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? draft.CustomerName;
-        // Persist English catalog title so the message template localizes as a whole unit.
+        // English template + English catalog title key. Localize the full string in the view.
         var titleKey = UiDisplayLocalization.ToCatalogKey(draft.Title);
-        var title = localizer.T(titleKey).ToLowerInvariant();
-        return localizer.T(
+        if (string.IsNullOrWhiteSpace(titleKey))
+        {
+            titleKey = "job";
+        }
+
+        return string.Format(
+            CultureInfo.InvariantCulture,
             "Hi {0}, here's your quote for the {1}. Let us know if you have any questions!",
             firstName,
-            title);
+            titleKey.ToLowerInvariant());
     }
 
     private static ProviderProCreateJobEstimateLineViewModel Line(string label, decimal amount) =>

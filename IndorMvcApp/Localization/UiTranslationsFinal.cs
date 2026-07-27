@@ -1404,7 +1404,7 @@ public static class UiTranslationsFinal
             ["Microphone is not available in this browser."] =
                 "El micrófono no está disponible en este navegador.",
             ["Hi {0}, here's your quote for the {1}. Let us know if you have any questions!"] =
-                "Hola {0}, aquí está tu cotización para la {1}. ¡Avísanos si tienes alguna pregunta!",
+                "Hola {0}, aquí está tu cotización para {1}. ¡Avísanos si tienes alguna pregunta!",
             ["Hi {0}, thanks again for having us out! Attached is your estimate for the {1}. Let me know if you have any questions—I'm here to help!"] =
                 "Hola {0}, ¡gracias otra vez por recibirnos! Adjunto está tu cotización para {1}. Avísame si tienes preguntas—¡estoy para ayudarte!",
             ["Assess the requested {0} work"] = "Evaluar el trabajo de {0} solicitado",

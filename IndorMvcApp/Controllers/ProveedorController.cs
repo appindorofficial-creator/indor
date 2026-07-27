@@ -3102,8 +3102,12 @@ public partial class ProveedorController(
             return RedirectToAction(nameof(CreateJob));
         }
 
-        draft.CustomerMessage = model.CustomerMessage;
         draft.DeliveryMethod = model.DeliveryMethod;
+        // Do not write the display-localized CustomerMessage back into the draft.
+        if (string.IsNullOrWhiteSpace(draft.CustomerMessage))
+        {
+            draft.CustomerMessage = model.CustomerMessage;
+        }
         SaveCreateJobDraft(draft);
         ApplyCreateJobNavigation(draft);
         return View(model);

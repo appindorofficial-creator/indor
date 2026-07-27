@@ -249,7 +249,7 @@ public static class UiDisplayLocalization
 
         var quoteMessageMatch = Regex.Match(
             text,
-            @"^Hi\s+(.+),\s+here's your quote for the\s+(.+)\.\s+Let us know if you have any questions!$",
+            @"^Hi\s+(.+?),\s+here['\u2019]s your quote for the\s+(.+)\.\s+Let us know if you have any questions!$",
             RegexOptions.IgnoreCase);
         if (quoteMessageMatch.Success)
         {
@@ -257,6 +257,16 @@ public static class UiDisplayLocalization
                 "Hi {0}, here's your quote for the {1}. Let us know if you have any questions!",
                 quoteMessageMatch.Groups[1].Value.Trim(),
                 Localize(localizer, quoteMessageMatch.Groups[2].Value.Trim()));
+        }
+
+        // Already-localized Spanish quote message (keep as-is when UI is Spanish).
+        var quoteMessageEsMatch = Regex.Match(
+            text,
+            @"^Hola\s+(.+?),\s+aqu[ií] est[aá] tu cotizaci[oó]n para(?:\s+la)?\s+(.+)\.\s+¡?Av[ií]sanos si tienes alguna pregunta!?$",
+            RegexOptions.IgnoreCase);
+        if (quoteMessageEsMatch.Success && localizer.IsSpanish)
+        {
+            return text;
         }
 
         var completeRequestedMatch = Regex.Match(
