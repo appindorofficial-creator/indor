@@ -72,7 +72,7 @@ public static class TrashDisplayLabels
     {
         "Morning7_12" => DisplayLabelsLocalization.L("07:00 – 12:00"),
         "Afternoon12_5" => DisplayLabelsLocalization.L("12:00 – 17:00"),
-        "Flexible" => DisplayLabelsLocalization.L("Flexible"),
+        "Flexible" => DisplayLabelsLocalization.L("Flexible window"),
         _ => value ?? "07:00 – 12:00"
     };
 }

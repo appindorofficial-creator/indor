@@ -38,6 +38,8 @@ public static class UiTranslationsServiceWizards
             ["5-7 years"] = "5-7 años",
             ["6-12 months"] = "6-12 meses",
             ["7+ years"] = "Más de 7 años",
+            ["07:00 – 12:00"] = "07:00 – 12:00",
+            ["12:00 – 17:00"] = "12:00 – 17:00",
             ["A few details help us bring the right maintenance plan."] = "Unos detalles nos ayudan a preparar el plan de mantenimiento adecuado.",
             ["A few details help us prepare the right tune-up."] = "Unos detalles nos ayudan a preparar el ajuste adecuado.",
             ["A photo helps us identify the right unit if you don't know the serial number."] = "Una foto nos ayuda a identificar la unidad correcta si no conoces el número de serie.",

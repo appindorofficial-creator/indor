@@ -51,6 +51,8 @@ public static class UiTranslationsFinal
             // Remaining real UI keys
             ["07:00 &ndash; 12:00"] = "07:00 – 12:00",
             ["12:00 &ndash; 17:00"] = "12:00 – 17:00",
+            ["07:00 – 12:00"] = "07:00 – 12:00",
+            ["12:00 – 17:00"] = "12:00 – 17:00",
             ["Add a note about this contractor…"] = "Agrega una nota sobre este contratista…",
             ["Date &amp; Time"] = "Fecha y hora",
             ["Date & Time"] = "Fecha y hora",
