@@ -157,7 +157,11 @@ public class LawnController(
             return RedirectToAction(nameof(LawnSetup), new { id = solicitud.Id });
         }
 
-        if (model.FechaPreferida.Date < DateTime.Today)
+        if (model.FechaPreferida is null)
+        {
+            ModelState.AddModelError(nameof(model.FechaPreferida), "Please select a date.");
+        }
+        else if (model.FechaPreferida.Value.Date < DateTime.Today)
         {
             ModelState.AddModelError(nameof(model.FechaPreferida), "Please select today or a future date.");
         }
@@ -169,13 +173,14 @@ public class LawnController(
 
         try
         {
-            solicitud.FechaPreferida = model.FechaPreferida.Date;
+            var fechaPreferida = model.FechaPreferida!.Value.Date;
+            solicitud.FechaPreferida = fechaPreferida;
             solicitud.VentanaHorario = model.VentanaHorario;
             solicitud.RecordatorioActivo = model.RecordatorioActivo;
             solicitud.RecordatorioAvisoDias = model.RecordatorioAvisoDias;
             solicitud.RecordatorioCanales = NormalizeChannels(model.RecordatorioCanales);
             solicitud.ProximoRecordatorioUtc = model.RecordatorioActivo
-                ? LawnCatalogService.ComputeNextReminderUtc(model.FechaPreferida, solicitud.Frecuencia)
+                ? LawnCatalogService.ComputeNextReminderUtc(fechaPreferida, solicitud.Frecuencia)
                 : null;
             solicitud.Estado = "ScheduleCompleted";
             solicitud.FechaActualizacion = DateTime.Now;
@@ -333,9 +338,9 @@ public class LawnController(
         var areaOptions = await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.Area, ct);
         var addonOptions = await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.Addon, ct);
 
-        var frequency = posted?.Frecuencia ?? solicitud.Frecuencia ?? "Every15Days";
-        var area = posted?.AreaServicio ?? solicitud.AreaServicio ?? "FrontBack";
-        var addonsPipe = posted?.AddonsSeleccionados ?? solicitud.AddonsSeleccionados ?? string.Empty;
+        var frequency = posted?.Frecuencia ?? string.Empty;
+        var area = posted?.AreaServicio ?? string.Empty;
+        var addonsPipe = posted?.AddonsSeleccionados ?? string.Empty;
         var selectedAddons = addonsPipe.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
@@ -347,8 +352,10 @@ public class LawnController(
             Frecuencia = frequency,
             AreaServicio = area,
             AddonsSeleccionados = addonsPipe,
-            EstimatedTotal = await catalog.CalculateTotalAsync(
-                solicitud.MicroservicioId, frequency, area, addonsPipe, ct),
+            EstimatedTotal = string.IsNullOrWhiteSpace(frequency) || string.IsNullOrWhiteSpace(area)
+                ? 0m
+                : await catalog.CalculateTotalAsync(
+                    solicitud.MicroservicioId, frequency, area, addonsPipe, ct),
             FrequencyOptions = freqOptions.Select(o => new LawnOptionCardViewModel
             {
                 Code = o.Code,
@@ -382,7 +389,7 @@ public class LawnController(
         var landing = await db.LawnServicioLanding.AsNoTracking()
             .FirstOrDefaultAsync(l => l.MicroservicioId == solicitud.MicroservicioId, ct);
 
-        var fecha = posted?.FechaPreferida ?? solicitud.FechaPreferida ?? GetNextSaturday();
+        var fecha = posted?.FechaPreferida;
         var timeWindows = await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.TimeWindow, ct);
         var reminderLeads = await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.ReminderLead, ct);
         var reminderChannels = await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.ReminderChannel, ct);
@@ -401,7 +408,7 @@ public class LawnController(
             PrecioTotal = solicitud.PrecioTotal ?? await catalog.CalculateTotalAsync(
                 solicitud.MicroservicioId, solicitud.Frecuencia, solicitud.AreaServicio, solicitud.AddonsSeleccionados, ct),
             FechaPreferida = fecha,
-            VentanaHorario = posted?.VentanaHorario ?? solicitud.VentanaHorario ?? "Morning8_11",
+            VentanaHorario = posted?.VentanaHorario ?? string.Empty,
             RecordatorioActivo = posted?.RecordatorioActivo ?? solicitud.RecordatorioActivo,
             Frecuencia = solicitud.Frecuencia ?? "Every15Days",
             RecordatorioAvisoDias = posted?.RecordatorioAvisoDias ?? solicitud.RecordatorioAvisoDias,
@@ -506,7 +513,7 @@ public class LawnController(
         };
     }
 
-    private static List<LawnDateOptionViewModel> BuildDateOptions(DateTime selected)
+    private static List<LawnDateOptionViewModel> BuildDateOptions(DateTime? selected)
     {
         var start = DateTime.Today.AddDays(1);
         return Enumerable.Range(0, 10)
@@ -519,7 +526,7 @@ public class LawnController(
                     DayLabel = date.ToString("ddd").ToUpperInvariant(),
                     DateLabel = date.Day.ToString(),
                     MonthLabel = date.ToString("MMM").ToUpperInvariant(),
-                    Selected = date.Date == selected.Date
+                    Selected = selected.HasValue && date.Date == selected.Value.Date
                 };
             })
             .ToList();

@@ -5,14 +5,14 @@
     ViewData["WizardBackUrl"] = Url.Action("LawnSetup", "Lawn", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;
+    var fechaPreferidaValue = Model.FechaPreferida?.ToString("yyyy-MM-dd") ?? string.Empty;
 }
 
-<div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form asp-action="LawnSchedule" method="post">
+    <form asp-action="LawnSchedule" method="post" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MicroservicioId" />
-        <input type="hidden" asp-for="FechaPreferida" id="FechaPreferida" />
+        <input type="hidden" asp-for="FechaPreferida" id="FechaPreferida" value="@fechaPreferidaValue" />
         <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
         <input type="hidden" asp-for="RecordatorioActivo" id="RecordatorioActivo" value="@(Model.RecordatorioActivo ? "true" : "false")" />
         <input type="hidden" asp-for="RecordatorioAvisoDias" id="RecordatorioAvisoDias" />
@@ -30,7 +30,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="FechaPreferida">
             <span class="field-label">@L["Choose the first date"]</span>
             <div class="date-scroll" id="dateGroup">
                 @foreach (var date in Model.DateOptions)
@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="VentanaHorario">
             <span class="field-label">@L["Time window"]</span>
             <div class="time-grid" id="timeGroup">
                 @foreach (var slot in Model.TimeWindowOptions)
@@ -75,7 +75,7 @@
                     <span>@L["Repeat reminder"]</span>
                     <strong id="repeatLabel">@Model.FrequencyLabel</strong>
                 </div>
-                <div class="field-card" style="margin:10px 0 0;padding:10px 0 0;border:none;box-shadow:none;">
+                <div class="field-card" data-svc-optional style="margin:10px 0 0;padding:10px 0 0;border:none;box-shadow:none;">
                     <span class="field-label" style="font-size:.78rem;">@L["Notify me"]</span>
                     <div class="segment-group" id="leadGroup">
                         @foreach (var lead in Model.ReminderLeadOptions)
@@ -84,7 +84,7 @@
                         }
                     </div>
                 </div>
-                <div class="field-card" style="margin:0;padding:10px 0 0;border:none;box-shadow:none;">
+                <div class="field-card" data-svc-optional style="margin:0;padding:10px 0 0;border:none;box-shadow:none;">
                     <span class="field-label" style="font-size:.78rem;">@L["Reminder channel"]</span>
                     <div class="segment-group" id="channelGroup">
                         @foreach (var channel in Model.ReminderChannelOptions)
@@ -98,7 +98,7 @@
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">@L["Continue"]</button>
-        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline" formnovalidate>@L["Back"]</button>
     </form>
 
 @section Scripts {
@@ -108,18 +108,25 @@
 
         function initSingle(groupId, selector, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
+            if (!hidden) return;
+            const seed = (initial && String(initial).trim()) || '';
+            if (!seed) {
+                hidden.value = '';
+            }
+
             document.querySelectorAll('#' + groupId + ' ' + selector).forEach(btn => {
                 const val = btn.dataset.value || btn.dataset.date;
-                if (val === (initial || hidden.value)) btn.classList.add('active');
+                if (seed && val === seed) btn.classList.add('active');
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('#' + groupId + ' ' + selector).forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     hidden.value = btn.dataset.value || btn.dataset.date;
                 });
             });
+            if (seed) hidden.value = seed;
         }
 
-        initSingle('dateGroup', '.date-chip', 'FechaPreferida', '@Model.FechaPreferida.ToString("yyyy-MM-dd")');
+        initSingle('dateGroup', '.date-chip', 'FechaPreferida', '@fechaPreferidaValue');
         initSingle('timeGroup', '.time-btn', 'VentanaHorario', '@Model.VentanaHorario');
         initSingle('leadGroup', '.segment-btn', 'RecordatorioAvisoDias', '@Model.RecordatorioAvisoDias');
 

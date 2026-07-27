@@ -7,6 +7,7 @@
     ViewData["WizardTotalSteps"] = 4;
 }
 
+
 @if (Model.IsReminderOnly)
     {
         <div class="info-box-blue" style="margin-bottom:12px;">
@@ -15,9 +16,7 @@
         </div>
     }
 
-    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
-
-    <form asp-action="LawnSetup" method="post" id="setupForm">
+    <form asp-action="LawnSetup" method="post" id="setupForm" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MicroservicioId" />
         <input type="hidden" asp-for="Frecuencia" id="Frecuencia" />
@@ -25,7 +24,7 @@
         <input type="hidden" asp-for="AddonsSeleccionados" id="AddonsSeleccionados" value="@Model.AddonsSeleccionados" />
         <input type="hidden" asp-for="EstimatedTotal" id="EstimatedTotal" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="Frecuencia">
             <span class="field-label"><i class="fas fa-calendar-day" style="color:#0066CC;margin-right:6px;"></i> @L["How do you want it?"]</span>
             <div class="segment-group" id="freqGroup">
                 @foreach (var freq in Model.FrequencyOptions)
@@ -36,7 +35,7 @@
             <p class="field-hint">@L["You can activate it as a recurring service or just as a reminder."]</p>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="AreaServicio">
             <span class="field-label"><i class="fas fa-seedling" style="color:#0066CC;margin-right:6px;"></i> @L["Area to service"]</span>
             <div class="area-grid" id="areaGroup">
                 @foreach (var area in Model.AreaOptions)
@@ -69,7 +68,7 @@
                 <span class="value" id="totalDisplay">$@Model.EstimatedTotal.ToString("0")</span>
             </div>
             <button type="submit" name="action" value="continue" class="btn-primary">@L["Continue"]</button>
-            <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
+            <button type="submit" name="action" value="back" class="btn-outline" formnovalidate>@L["Back"]</button>
         </div>
     </form>
 
@@ -82,8 +81,14 @@
 
         function initSingle(groupId, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
+            if (!hidden) return;
+            const seed = (initial && String(initial).trim()) || '';
+            if (!seed) {
+                hidden.value = '';
+            }
+
             document.querySelectorAll('#' + groupId + ' .segment-btn:not(.addon-pill), #' + groupId + ' .area-card').forEach(btn => {
-                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                if (seed && btn.dataset.value === seed) btn.classList.add('active');
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('#' + groupId + ' .segment-btn:not(.addon-pill), #' + groupId + ' .area-card').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
@@ -91,6 +96,7 @@
                     updateTotal();
                 });
             });
+            if (seed) hidden.value = seed;
         }
 
         document.querySelectorAll('#addonGroup .addon-pill').forEach(btn => {
@@ -123,14 +129,14 @@
         function updateTotal() {
             const freq = document.getElementById('Frecuencia').value;
             const activeArea = document.querySelector('#areaGroup .area-card.active');
-            const base = activeArea ? parseFloat(activeArea.dataset.price || '45') : 45;
+            const base = activeArea ? parseFloat(activeArea.dataset.price || '45') : 0;
             let addons = 0;
             selectedAddons.forEach(code => {
                 if (code === 'NoThanks') return;
                 const btn = document.querySelector('#addonGroup .addon-pill[data-code="' + code + '"]');
                 addons += btn ? parseFloat(btn.dataset.price || '0') : 0;
             });
-            const recurring = freq !== 'Once';
+            const recurring = freq && freq !== 'Once';
             const total = Math.max(0, base + addons - (recurring ? discount : 0));
             document.getElementById('EstimatedTotal').value = total;
             document.getElementById('totalDisplay').textContent = '$' + total;

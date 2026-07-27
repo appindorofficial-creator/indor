@@ -65,6 +65,7 @@
         '.action-btn',
         '.bin-card',
         '.day-btn',
+        '.date-chip',
         '.material-card',
         '.story-pill',
         '.spigot-card',

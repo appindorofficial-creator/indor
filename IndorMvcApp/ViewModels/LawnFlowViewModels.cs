@@ -36,10 +36,10 @@ public class LawnSetupViewModel
     public bool IsReminderOnly { get; set; }
 
     [Required]
-    public string Frecuencia { get; set; } = "Every15Days";
+    public string Frecuencia { get; set; } = string.Empty;
 
     [Required]
-    public string AreaServicio { get; set; } = "FrontBack";
+    public string AreaServicio { get; set; } = string.Empty;
 
     public string AddonsSeleccionados { get; set; } = string.Empty;
     public decimal EstimatedTotal { get; set; }
@@ -86,10 +86,10 @@ public class LawnScheduleViewModel
     public decimal PrecioTotal { get; set; }
 
     [Required]
-    public DateTime FechaPreferida { get; set; }
+    public DateTime? FechaPreferida { get; set; }
 
     [Required]
-    public string VentanaHorario { get; set; } = "Morning8_11";
+    public string VentanaHorario { get; set; } = string.Empty;
 
     public bool RecordatorioActivo { get; set; } = true;
     public string Frecuencia { get; set; } = "Every15Days";
