@@ -58,7 +58,8 @@ public class CleaningProCustomizeViewModel
     [Required]
     public decimal HorasEstimadas { get; set; } = 3m;
 
-    public string AddonsSeleccionados { get; set; } = string.Empty;
+    // Optional add-ons; must stay nullable so an empty selection is not treated as Required.
+    public string? AddonsSeleccionados { get; set; }
     public string SummaryLine { get; set; } = string.Empty;
     public decimal FromTotal { get; set; }
 }
