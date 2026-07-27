@@ -13,14 +13,14 @@
         <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@Model.JobId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["Active Job"]</h1>
-            <small>@Model.Title</small>
+            <small>@UiDisplayLocalization.Localize(L, Model.Title)</small>
         </div>
     </header>
 
     <section class="prv-pro-active-summary">
         <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Job" />
         <div>
-            <strong>@Model.Title</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.Title)</strong>
             <small>@Model.Address</small>
             <div class="prv-pro-active-badges">
                 <span class="prv-pro-pill prv-pro-pill--progress">@L["In Progress"]</span>

@@ -1493,20 +1493,21 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
     private static string FormatJobScheduleLabel(DateTime? start, DateTime? end)
     {
+        // Keep English catalog keys/phrases so views can Localize at render time.
         if (!start.HasValue)
         {
-            return ProviderProDisplayLocalization.L("Not scheduled");
+            return "Not scheduled";
         }
 
-        var culture = CultureInfo.CurrentCulture;
-        var localStart = start.Value.ToLocalTime();
+        var culture = CultureInfo.CurrentUICulture;
+        var localStart = start.Value.Kind == DateTimeKind.Utc ? start.Value.ToLocalTime() : start.Value;
         var dateLabel = localStart.ToString("MMM d, yyyy", culture);
-        var timeLabel = localStart.ToString("h:mm tt", culture);
+        var timeLabel = localStart.ToString("t", culture);
 
         if (end.HasValue)
         {
-            var localEnd = end.Value.ToLocalTime();
-            timeLabel = $"{timeLabel} – {localEnd.ToString("h:mm tt", culture)}";
+            var localEnd = end.Value.Kind == DateTimeKind.Utc ? end.Value.ToLocalTime() : end.Value;
+            timeLabel = $"{timeLabel} – {localEnd.ToString("t", culture)}";
         }
 
         return $"{dateLabel}, {timeLabel}";
@@ -1717,31 +1718,20 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
 
     private static string FormatAppointment(DateTime? when)
-
     {
-
+        // English keys/phrases — localize in the view via UiDisplayLocalization.Localize.
         if (!when.HasValue)
-
         {
-
-            return ProviderProDisplayLocalization.L("Not scheduled");
-
+            return "Not scheduled";
         }
 
-
-
-        var culture = CultureInfo.CurrentCulture;
-
+        var culture = CultureInfo.CurrentUICulture;
         var local = when.Value.Kind == DateTimeKind.Utc ? when.Value.ToLocalTime() : when.Value;
-
-        var day = local.Date == DateTime.Today ? ProviderProDisplayLocalization.L("Today")
-
-            : local.Date == DateTime.Today.AddDays(1) ? ProviderProDisplayLocalization.L("Tomorrow")
-
+        var day = local.Date == DateTime.Today ? "Today"
+            : local.Date == DateTime.Today.AddDays(1) ? "Tomorrow"
             : local.ToString("MMM d", culture);
 
-        return $"{day}, {local.ToString("h:mm tt", culture)}";
-
+        return $"{day}, {local.ToString("t", culture)}";
     }
 
 

@@ -34,7 +34,7 @@
         <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Job" class="prv-pro-lead-summary-img" />
         <div class="prv-pro-lead-summary-body">
             <div class="prv-pro-lead-summary-top">
-                <h2>@Model.Title</h2>
+                <h2>@UiDisplayLocalization.Localize(L, Model.Title)</h2>
             </div>
             <small class="prv-pro-job-card-address">@Model.Address</small>
             <div class="prv-pro-lead-badges">

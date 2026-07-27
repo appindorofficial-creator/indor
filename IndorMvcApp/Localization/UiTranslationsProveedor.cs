@@ -1446,6 +1446,7 @@ public static class UiTranslationsProveedor
             ["Warranty Document"] = "Documento de garantía",
             ["Permit / Receipt"] = "Permiso / Recibo",
             ["Pressed: Upload Report"] = "Pulsado: Subir informe",
+            ["Not scheduled"] = "No programado",
             ["From: Reports"] = "Desde: Reportes",
             ["From: Report Templates"] = "Desde: Plantillas de informe",
             ["Now: Select Job"] = "Ahora: Seleccionar trabajo",

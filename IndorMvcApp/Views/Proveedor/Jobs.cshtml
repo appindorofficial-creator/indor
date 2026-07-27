@@ -154,7 +154,7 @@
                         </span>
                         <div class="prv-pro-job-card-body">
                             <div class="prv-pro-job-card-title-row">
-                                <strong>@item.Title</strong>
+                                <strong>@UiDisplayLocalization.Localize(L, item.Title)</strong>
                                 <span class="prv-pro-pill prv-pro-pill--@item.StatusClass">@UiDisplayLocalization.Localize(L, item.StatusLabel)</span>
                                 @if (!string.IsNullOrWhiteSpace(item.SecondaryBadge))
                                 {

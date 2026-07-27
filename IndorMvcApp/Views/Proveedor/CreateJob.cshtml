@@ -51,7 +51,9 @@
             <h2>@L["Job naming"]</h2>
             <label class="prv-pro-form-label">
                 @L["Job name"]
-                <input type="text" name="Title" id="createJobTitle" value="@UiDisplayLocalization.Localize(L, jobTitle)" placeholder="@L["Water Damage Inspection"]" required />
+                @* Persist the English catalog key; show the localized label in the visible field. *@
+                <input type="hidden" name="Title" id="createJobTitleKey" value="@jobTitle" />
+                <input type="text" id="createJobTitle" value="@UiDisplayLocalization.Localize(L, jobTitle)" placeholder="@L["Water Damage Inspection"]" required />
             </label>
             <small class="prv-pro-wizard-hint">@L["This will help classify the job in your list."]</small>
         </section>
@@ -68,6 +70,16 @@
         (function () {
             var tiles = document.querySelectorAll('.prv-pro-type-tile');
             var titleInput = document.getElementById('createJobTitle');
+            var titleKey = document.getElementById('createJobTitleKey');
+
+            function syncTitleKeyFromDisplay() {
+                if (!titleInput || !titleKey) return;
+                // If the user typed a custom name, keep that text as the stored title.
+                // Catalog picks always write the English key into the hidden field below.
+                titleKey.value = titleInput.value;
+            }
+
+            titleInput?.addEventListener('input', syncTitleKeyFromDisplay);
 
             tiles.forEach(function (tile) {
                 tile.addEventListener('click', function () {
@@ -83,9 +95,13 @@
                     tile.appendChild(checkEl);
                     var radio = tile.querySelector('input[type="radio"]');
                     if (radio) radio.checked = true;
-                    var suggested = tile.dataset.suggestedDisplay || tile.dataset.suggested;
-                    if (suggested && titleInput) {
-                        titleInput.value = suggested;
+                    var suggestedKey = tile.dataset.suggested || '';
+                    var suggestedDisplay = tile.dataset.suggestedDisplay || suggestedKey;
+                    if (titleInput) {
+                        titleInput.value = suggestedDisplay;
+                    }
+                    if (titleKey) {
+                        titleKey.value = suggestedKey;
                     }
                 });
             });
