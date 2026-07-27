@@ -95,8 +95,8 @@ public class CleaningProController : Controller
                 solicitud.Microservicio?.Nombre ?? "Cleaning Pro",
                 solicitud.Microservicio?.NombreEs,
                 _localizer.IsSpanish),
-            Frecuencia = solicitud.Frecuencia ?? "OneTime",
-            CantidadLimpiadores = solicitud.CantidadLimpiadores ?? "One",
+            Frecuencia = string.Empty,
+            CantidadLimpiadores = string.Empty,
             DireccionPropiedad = defaultAddress ?? string.Empty
         });
     }
@@ -165,14 +165,29 @@ public class CleaningProController : Controller
 
         if (string.IsNullOrWhiteSpace(model.AreasLimpieza))
         {
-            ModelState.AddModelError(nameof(model.AreasLimpieza), "Select at least one area to clean.");
+            ModelState.AddModelError(nameof(model.AreasLimpieza), _localizer["Select at least one area to clean."]);
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Frecuencia))
+        {
+            ModelState.AddModelError(nameof(model.Frecuencia), _localizer["Select how often you need cleaning."]);
+        }
+
+        if (string.IsNullOrWhiteSpace(model.CantidadLimpiadores))
+        {
+            ModelState.AddModelError(nameof(model.CantidadLimpiadores), _localizer["Select a crew size."]);
+        }
+
+        if (model.HorasEstimadas is null or <= 0)
+        {
+            ModelState.AddModelError(nameof(model.HorasEstimadas), _localizer["Select estimated hours."]);
         }
 
         if (!ModelState.IsValid)
         {
             model.SummaryLine = CleaningProDisplayLabels.FormatSummaryLine(
                 model.Frecuencia, model.CantidadLimpiadores, model.HorasEstimadas,
-                CleaningProPricingService.Calculate(model.CantidadLimpiadores, model.HorasEstimadas, model.AddonsSeleccionados).Subtotal);
+                CleaningProPricingService.Calculate(model.CantidadLimpiadores, model.HorasEstimadas ?? 0m, model.AddonsSeleccionados).Subtotal);
             return View(model);
         }
 
@@ -383,12 +398,16 @@ public class CleaningProController : Controller
         SolicitudCleaningPro solicitud,
         CleaningProCustomizeViewModel? posted = null)
     {
-        var frequency = posted?.Frecuencia ?? solicitud.Frecuencia ?? "OneTime";
-        var crew = CleaningProPricingService.NormalizeCrewCode(
-            posted?.CantidadLimpiadores ?? solicitud.CantidadLimpiadores);
-        var hours = posted?.HorasEstimadas ?? solicitud.HorasEstimadas ?? 3m;
-        var addons = posted?.AddonsSeleccionados ?? solicitud.AddonsSeleccionados ?? string.Empty;
-        var breakdown = CleaningProPricingService.Calculate(crew, hours, addons);
+        // Only keep values after a failed POST; otherwise open with nothing preselected.
+        var frequency = posted?.Frecuencia ?? string.Empty;
+        var crewRaw = posted?.CantidadLimpiadores ?? string.Empty;
+        var crew = string.IsNullOrWhiteSpace(crewRaw)
+            ? string.Empty
+            : CleaningProPricingService.NormalizeCrewCode(crewRaw);
+        var hours = posted?.HorasEstimadas;
+        var areas = posted?.AreasLimpieza ?? string.Empty;
+        var addons = posted?.AddonsSeleccionados ?? string.Empty;
+        var breakdown = CleaningProPricingService.Calculate(crew, hours ?? 0m, addons);
 
         return new CleaningProCustomizeViewModel
         {
@@ -401,7 +420,7 @@ public class CleaningProController : Controller
                 _localizer.IsSpanish),
             Frecuencia = frequency,
             CantidadLimpiadores = crew,
-            AreasLimpieza = posted?.AreasLimpieza ?? solicitud.AreasLimpieza ?? "Bathrooms|Kitchen|LivingRoom|Baseboards|Floors|InsideFridge|Windows|Dusting",
+            AreasLimpieza = areas,
             HorasEstimadas = hours,
             AddonsSeleccionados = addons,
             FromTotal = breakdown.Subtotal,
@@ -534,10 +553,6 @@ public class CleaningProController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                Frecuencia = "OneTime",
-                CantidadLimpiadores = "One",
-                AreasLimpieza = "Bathrooms|Kitchen|LivingRoom|Baseboards|Floors|InsideFridge|Windows|Dusting",
-                HorasEstimadas = 3m,
                 VentanaHorario = "Morning10"
             };
             _db.SolicitudesCleaningPro.Add(solicitud);

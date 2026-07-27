@@ -2,22 +2,18 @@
 @using IndorMvcApp.Services
 @{
     ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
-var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+    var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
     var selectedAddons = (Model.AddonsSeleccionados ?? string.Empty).Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
     ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("CleaningProSetup", "CleaningPro", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;
-
 }
 
 
 <p class="page-lead" style="margin-top:-8px;">@L["Tell us what you need so we can match you with the right cleaner."]</p>
 
-    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
-    <span asp-validation-for="AreasLimpieza" class="text-danger" style="font-size:0.75rem;display:block;margin-bottom:8px;"></span>
-
-    <form asp-action="CleaningProCustomize" method="post" id="customizeForm">
+    <form asp-action="CleaningProCustomize" method="post" id="customizeForm" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MicroservicioId" />
         <input type="hidden" asp-for="Frecuencia" id="Frecuencia" />
@@ -26,7 +22,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
         <input type="hidden" asp-for="HorasEstimadas" id="HorasEstimadas" />
         <input type="hidden" asp-for="AddonsSeleccionados" id="AddonsSeleccionados" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="AreasLimpieza">
             <div class="section-num">@L["What do you want cleaned?"]</div>
             <div class="section-hint">@L["You can select as many as you need."]</div>
             <div class="area-grid" id="areaGroup">
@@ -41,7 +37,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="Frecuencia">
             <div class="section-num">@L["How often?"]</div>
             <div class="freq-row" id="freqGroup">
                 <button type="button" class="freq-chip" data-value="OneTime"><i class="fas fa-calendar-day"></i>@L["One-time"]</button>
@@ -51,7 +47,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="CantidadLimpiadores">
             <div class="section-num">@L["Crew size"]</div>
             <div class="section-hint">@L["More cleaners = faster service."]</div>
             <div class="crew-grid" id="crewGroup">
@@ -76,7 +72,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="HorasEstimadas">
             <div class="section-num">@L["Estimated hours"]</div>
             <div class="section-hint">@L["Not sure? You can adjust later."]</div>
             <div class="hours-row" id="hoursGroup">
@@ -87,7 +83,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <div class="section-num">@L["Optional add-ons"]</div>
             <div class="section-hint">@L["Deep-clean extras you can add now."]</div>
             <div class="addon-grid" id="addonGroup">
@@ -105,10 +101,10 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
 
         <div class="sticky-footer">
             <div class="summary-bar" id="summaryBar">@Model.SummaryLine</div>
-            <button type="submit" name="action" value="continue" class="btn-primary">
+            <button type="submit" name="action" value="continue" class="btn-primary" id="customizeContinue">
                 @L["Next: Review"] <i class="fas fa-chevron-right"></i>
             </button>
-            <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
+            <button type="submit" name="action" value="back" class="btn-outline" formnovalidate>@L["Back"]</button>
         </div>
     </form>
 </div>
@@ -131,10 +127,8 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
             chip.addEventListener('click', () => {
                 const code = chip.dataset.code;
                 if (selectedAreas.has(code)) {
-                    if (selectedAreas.size > 1) {
-                        selectedAreas.delete(code);
-                        chip.classList.remove('active');
-                    }
+                    selectedAreas.delete(code);
+                    chip.classList.remove('active');
                 } else {
                     selectedAreas.add(code);
                     chip.classList.add('active');
@@ -161,14 +155,17 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
 
         function normalizeCrewCode(value) {
             const map = { '1': 'One', '2': 'Two', '3': 'Three', One: 'One', Two: 'Two', Three: 'Three' };
-            return map[value] || value || 'Two';
+            return map[value] || value || '';
         }
 
         function getSelectedHours() {
             const activeHour = document.querySelector('#hoursGroup .hour-btn.active');
             if (activeHour?.dataset.value) return parseFloat(activeHour.dataset.value);
             const hiddenHours = document.getElementById('HorasEstimadas');
-            return parseFloat(hiddenHours?.value || '3') || 3;
+            const raw = (hiddenHours?.value || '').trim();
+            if (!raw) return null;
+            const parsed = parseFloat(raw);
+            return Number.isFinite(parsed) ? parsed : null;
         }
 
         function getAddonsTotal() {
@@ -208,19 +205,13 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
                 updateSummary();
             }
 
-            let matched = false;
             buttons.forEach(btn => {
-                if (btn.dataset.value === initialValue) {
+                if (initialValue && btn.dataset.value === initialValue) {
                     btn.classList.add('active');
                     hidden.value = btn.dataset.value;
-                    matched = true;
                 }
                 btn.addEventListener('click', () => activate(btn));
             });
-
-            if (!matched && buttons.length > 0) {
-                activate(buttons[0]);
-            }
         }
 
         const i18n = {
@@ -236,7 +227,8 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
                 Three: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["3 cleaners"].ToString()))
             },
             estHours: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Est. {0} hr"].ToString())),
-            fromPrice: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["From ${0}"].ToString()))
+            fromPrice: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["From ${0}"].ToString())),
+            pickPrefs: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select your cleaning preferences"].ToString()))
         };
 
         function formatFreq(v) {
@@ -255,26 +247,36 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
         function updateSummary() {
             const crewHidden = document.getElementById('CantidadLimpiadores');
             const activeCrew = getActiveCrewCard();
-            const crew = normalizeCrewCode(activeCrew?.dataset.value || crewHidden?.value || 'Two');
+            const crew = normalizeCrewCode(activeCrew?.dataset.value || crewHidden?.value || '');
             if (crewHidden) crewHidden.value = crew;
 
             const hours = getSelectedHours();
-            const hourlyRate = getHourlyRateForCrew(crew);
-            const subtotal = (hourlyRate * hours) + getAddonsTotal();
-            const freq = document.getElementById('Frecuencia')?.value || 'OneTime';
+            const hoursHidden = document.getElementById('HorasEstimadas');
+            if (hoursHidden) hoursHidden.value = hours == null ? '' : String(hours);
+
+            const hourlyRate = crew ? getHourlyRateForCrew(crew) : 0;
+            const subtotal = ((hourlyRate * (hours || 0)) + getAddonsTotal());
+            const freq = document.getElementById('Frecuencia')?.value || '';
 
             const summary = document.getElementById('summaryBar');
-            if (summary) {
-                summary.textContent =
-                    formatFreq(freq) + ' • ' + formatCrew(crew) + ' • ' +
-                    formatTemplate(i18n.estHours, hours) + ' • ' +
-                    formatTemplate(i18n.fromPrice, Math.round(subtotal));
+            if (!summary) return;
+
+            if (!freq && !crew && hours == null && selectedAddons.size === 0) {
+                summary.textContent = i18n.pickPrefs;
+                return;
             }
+
+            const parts = [];
+            if (freq) parts.push(formatFreq(freq));
+            if (crew) parts.push(formatCrew(crew));
+            if (hours != null) parts.push(formatTemplate(i18n.estHours, hours));
+            if (crew && hours != null) parts.push(formatTemplate(i18n.fromPrice, Math.round(subtotal)));
+            summary.textContent = parts.join(' • ');
         }
 
         initSingle('freqGroup', '.freq-chip', 'Frecuencia', '@Model.Frecuencia');
         initSingle('crewGroup', '.crew-card', 'CantidadLimpiadores', '@Model.CantidadLimpiadores');
-        initSingle('hoursGroup', '.hour-btn', 'HorasEstimadas', '@Model.HorasEstimadas.ToString(System.Globalization.CultureInfo.InvariantCulture)');
+        initSingle('hoursGroup', '.hour-btn', 'HorasEstimadas', '@(Model.HorasEstimadas?.ToString(System.Globalization.CultureInfo.InvariantCulture) ?? "")');
         syncAreas();
         syncAddons();
         updateSummary();

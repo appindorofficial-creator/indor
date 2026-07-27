@@ -31,10 +31,10 @@ public class CleaningProSetupViewModel
     public string PageTitle { get; set; } = "Cleaning Pro";
 
     [Required]
-    public string Frecuencia { get; set; } = "OneTime";
+    public string Frecuencia { get; set; } = string.Empty;
 
     [Required]
-    public string CantidadLimpiadores { get; set; } = "One";
+    public string CantidadLimpiadores { get; set; } = string.Empty;
 
     [Required, MaxLength(300)]
     public string DireccionPropiedad { get; set; } = string.Empty;
@@ -46,17 +46,17 @@ public class CleaningProCustomizeViewModel
     public int MicroservicioId { get; set; }
     public string PageTitle { get; set; } = "Customize your cleaning";
 
-    [Required]
-    public string Frecuencia { get; set; } = "OneTime";
+    [Required(ErrorMessage = "Select how often you need cleaning.")]
+    public string Frecuencia { get; set; } = string.Empty;
 
-    [Required]
-    public string CantidadLimpiadores { get; set; } = "Two";
+    [Required(ErrorMessage = "Select a crew size.")]
+    public string CantidadLimpiadores { get; set; } = string.Empty;
 
-    [Required]
-    public string AreasLimpieza { get; set; } = "Bathrooms|Kitchen|LivingRoom|Baseboards|Floors|InsideFridge|Windows|Dusting";
+    [Required(ErrorMessage = "Select at least one area to clean.")]
+    public string AreasLimpieza { get; set; } = string.Empty;
 
-    [Required]
-    public decimal HorasEstimadas { get; set; } = 3m;
+    [Required(ErrorMessage = "Select estimated hours.")]
+    public decimal? HorasEstimadas { get; set; }
 
     // Optional add-ons; must stay nullable so an empty selection is not treated as Required.
     public string? AddonsSeleccionados { get; set; }

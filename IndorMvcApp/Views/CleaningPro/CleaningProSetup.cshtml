@@ -9,15 +9,13 @@
 }
 
 
-<div asp-validation-summary="ModelOnly" class="validation-summary"></div>
-
-    <form asp-action="CleaningProSetup" method="post" id="setupForm">
+<form asp-action="CleaningProSetup" method="post" id="setupForm" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MicroservicioId" />
         <input type="hidden" asp-for="Frecuencia" id="Frecuencia" />
         <input type="hidden" asp-for="CantidadLimpiadores" id="CantidadLimpiadores" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="Frecuencia">
             <div class="section-num">@L["1. How often do you need cleaning?"]</div>
             <div class="section-hint">@L["Choose a frequency that works for you."]</div>
             <div class="freq-row" id="freqGroup">
@@ -28,7 +26,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="CantidadLimpiadores">
             <div class="section-num">@L["2. How many cleaners would you like?"]</div>
             <div class="section-hint">@L["More cleaners = faster, deeper cleaning."]</div>
             <div class="crew-grid" id="crewGroup">
@@ -62,18 +60,17 @@
             <div class="address-card">
                 <div class="left">
                     <i class="fas fa-location-dot" style="color:#0066CC;"></i>
-                    <input asp-for="DireccionPropiedad" placeholder="@L["Enter your full address"]" autocomplete="street-address" />
+                    <input asp-for="DireccionPropiedad" required placeholder="@L["Enter your full address"]" autocomplete="street-address" />
                 </div>
                 <i class="fas fa-chevron-right" style="color:#94A3B8;font-size:0.8rem;"></i>
             </div>
-            <span asp-validation-for="DireccionPropiedad" class="text-danger" style="font-size:0.75rem;"></span>
         </div>
 
         <div class="sticky-footer">
             <button type="submit" name="action" value="continue" class="btn-primary">
-                Customize cleaning <i class="fas fa-chevron-right"></i>
+                @L["Customize cleaning"] <i class="fas fa-chevron-right"></i>
             </button>
-            <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
+            <button type="submit" name="action" value="back" class="btn-outline" formnovalidate>@L["Back"]</button>
         </div>
     </form>
 </div>
@@ -82,14 +79,21 @@
     (function () {
         function initSingle(groupId, selector, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
+            if (!hidden) return;
+            const seed = (initial && String(initial).trim()) || '';
+            if (!seed) {
+                hidden.value = '';
+            }
+
             document.querySelectorAll('#' + groupId + ' ' + selector).forEach(btn => {
-                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                if (seed && btn.dataset.value === seed) btn.classList.add('active');
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('#' + groupId + ' ' + selector).forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     hidden.value = btn.dataset.value;
                 });
             });
+            if (seed) hidden.value = seed;
         }
         initSingle('freqGroup', '.freq-chip', 'Frecuencia', '@Model.Frecuencia');
         initSingle('crewGroup', '.crew-card', 'CantidadLimpiadores', '@Model.CantidadLimpiadores');
