@@ -68,13 +68,16 @@ public class CleaningProReviewViewModel
 {
     public int SolicitudId { get; set; }
     public int MicroservicioId { get; set; }
-    public string PageTitle { get; set; } = "Review and pricing summary";
-    public string NombreServicio { get; set; } = "Cleaning Pro";
-    public string FrequencyLabel { get; set; } = string.Empty;
-    public string AreasLabel { get; set; } = string.Empty;
-    public string CrewLabel { get; set; } = string.Empty;
-    public string HoursLabel { get; set; } = string.Empty;
-    public string DireccionPropiedad { get; set; } = string.Empty;
+
+    // Display-only fields are not posted; keep them nullable so empty defaults
+    // are not treated as Required and silently block Confirm.
+    public string? PageTitle { get; set; } = "Review and pricing summary";
+    public string? NombreServicio { get; set; } = "Cleaning Pro";
+    public string? FrequencyLabel { get; set; }
+    public string? AreasLabel { get; set; }
+    public string? CrewLabel { get; set; }
+    public string? HoursLabel { get; set; }
+    public string? DireccionPropiedad { get; set; }
 
     [Required]
     public DateTime FechaServicio { get; set; }
@@ -85,7 +88,7 @@ public class CleaningProReviewViewModel
     [MaxLength(500)]
     public string? NotasLimpiador { get; set; }
 
-    public string AddonsSeleccionados { get; set; } = string.Empty;
+    public string? AddonsSeleccionados { get; set; }
     public decimal TarifaHoraria { get; set; }
     public decimal HorasEstimadas { get; set; }
     public decimal ServiceSubtotal { get; set; }
