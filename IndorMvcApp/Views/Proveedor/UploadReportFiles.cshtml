@@ -3,15 +3,24 @@
     ViewData["Title"] = L["Upload Files - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
+    var chooseFile = L["Choose file"].ToString();
+    var noFileSelected = L["No file selected"].ToString();
 }
 
 <div class="prv-pro-shell prv-pro-shell--upload-report">
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
-        <a asp-controller="Proveedor" asp-action="UploadReportType" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
+        @if (!string.IsNullOrWhiteSpace(Model.TemplateKey))
+        {
+            <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-template="@Model.TemplateKey" class="prv-pro-lead-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
+        }
+        else
+        {
+            <a asp-controller="Proveedor" asp-action="UploadReportType" class="prv-pro-lead-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
+        }
         <div>
-            <h1>@L["Upload Files &amp; Photos"]</h1>
+            <h1>@L["Upload Files & Photos"]</h1>
             <small>@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</small>
         </div>
         <span class="prv-pro-step-badge">@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</span>
@@ -25,26 +34,31 @@
         <section class="prv-pro-upload-report-section">
             <h3>@L["Photos"]</h3>
             <div class="prv-pro-upload-photo-grid">
-                <label class="prv-pro-upload-slot">
-                    <span>@L["Before"]</span>
-                    <input type="file" name="photoBefore" accept=".jpg,.jpeg,.png" />
-                    @if (!string.IsNullOrWhiteSpace(Model.PhotoSlots.FirstOrDefault(s => s.Slot == "Before")?.FileName))
+                @{
+                    var photoSlots = new (string Name, string Label, string? Existing)[]
                     {
-                        <small class="is-uploaded"><i class="fas fa-check"></i> @Model.PhotoSlots.First(s => s.Slot == "Before").FileName</small>
-                    }
-                </label>
-                <label class="prv-pro-upload-slot">
-                    <span>@L["During"]</span>
-                    <input type="file" name="photoDuring" accept=".jpg,.jpeg,.png" />
-                </label>
-                <label class="prv-pro-upload-slot">
-                    <span>@L["After"]</span>
-                    <input type="file" name="photoAfter" accept=".jpg,.jpeg,.png" />
-                </label>
-                <label class="prv-pro-upload-slot">
-                    <span>@L["Final Result"]</span>
-                    <input type="file" name="photoFinal" accept=".jpg,.jpeg,.png" />
-                </label>
+                        ("photoBefore", "Before", Model.PhotoSlots.FirstOrDefault(s => s.Slot == "Before")?.FileName),
+                        ("photoDuring", "During", Model.PhotoSlots.FirstOrDefault(s => s.Slot == "During")?.FileName),
+                        ("photoAfter", "After", Model.PhotoSlots.FirstOrDefault(s => s.Slot == "After")?.FileName),
+                        ("photoFinal", "Final Result", Model.PhotoSlots.FirstOrDefault(s => s.Slot == "Final Result")?.FileName)
+                    };
+                }
+                @foreach (var slot in photoSlots)
+                {
+                    var hasFile = !string.IsNullOrWhiteSpace(slot.Existing);
+                    <label class="prv-pro-upload-slot">
+                        <span>@L[slot.Label]</span>
+                        <span class="prv-pro-file-picker @(hasFile ? "has-file" : null)">
+                            <input type="file" name="@slot.Name" accept=".jpg,.jpeg,.png" class="prv-pro-file-picker-input" />
+                            <span class="prv-pro-file-picker-btn">@chooseFile</span>
+                            <span class="prv-pro-file-picker-name" data-empty-label="@noFileSelected">@(hasFile ? slot.Existing : noFileSelected)</span>
+                        </span>
+                        @if (hasFile)
+                        {
+                            <small class="is-uploaded"><i class="fas fa-check"></i> @slot.Existing</small>
+                        }
+                    </label>
+                }
             </div>
             <span class="prv-pro-upload-badge">@L["Before/After Required"]</span>
         </section>
@@ -59,13 +73,18 @@
                     "Warranty Document" => "docWarranty",
                     _ => "docPermit"
                 };
+                var hasDoc = !string.IsNullOrWhiteSpace(doc.FileName);
                 <div class="prv-pro-upload-doc-row">
                     <div>
-                        <strong>@L[doc.Slot] @(doc.Required ? "(PDF)" : "")</strong>
+                        <strong>@L[doc.Slot]@(doc.Required ? " (PDF)" : "")</strong>
                         <span>@(doc.Required ? L["Required"] : L["Optional"])</span>
                     </div>
-                    <input type="file" name="@inputName" accept=".pdf,.jpg,.jpeg,.png" />
-                    @if (!string.IsNullOrWhiteSpace(doc.FileName))
+                    <label class="prv-pro-file-picker prv-pro-file-picker--compact @(hasDoc ? "has-file" : null)">
+                        <input type="file" name="@inputName" accept=".pdf,.jpg,.jpeg,.png" class="prv-pro-file-picker-input" />
+                        <span class="prv-pro-file-picker-btn">@chooseFile</span>
+                        <span class="prv-pro-file-picker-name" data-empty-label="@noFileSelected">@(hasDoc ? doc.FileName : noFileSelected)</span>
+                    </label>
+                    @if (hasDoc)
                     {
                         <small class="is-uploaded"><i class="fas fa-check"></i> @doc.FileName</small>
                     }
@@ -73,12 +92,16 @@
             }
         </section>
 
-        <section class="prv-pro-upload-dropzone">
+        <div class="prv-pro-upload-dropzone">
             <i class="fas fa-cloud-arrow-up"></i>
             <strong>@L["Add photos or files"]</strong>
             <small>@L["JPG, PNG, PDF up to 10MB"]</small>
-            <input type="file" name="generalFiles" multiple accept=".pdf,.jpg,.jpeg,.png" class="prv-pro-upload-dropzone-input" />
-        </section>
+            <label class="prv-pro-file-picker prv-pro-file-picker--drop">
+                <input type="file" name="generalFiles" multiple accept=".pdf,.jpg,.jpeg,.png" class="prv-pro-file-picker-input" />
+                <span class="prv-pro-file-picker-btn">@chooseFile</span>
+                <span class="prv-pro-file-picker-name" data-empty-label="@noFileSelected">@noFileSelected</span>
+            </label>
+        </div>
 
         <label class="prv-pro-create-toggle">
             <div><i class="fas fa-house"></i><div><strong>@L["Attach to House Facts"]</strong><small>@L["Attach this report and files to the property's House Facts."]</small></div></div>
@@ -86,8 +109,40 @@
         </label>
 
         <div class="prv-pro-upload-report-actions">
-            <a asp-controller="Proveedor" asp-action="UploadReportType" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
+            @if (!string.IsNullOrWhiteSpace(Model.TemplateKey))
+            {
+                <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-template="@Model.TemplateKey" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
+            }
+            else
+            {
+                <a asp-controller="Proveedor" asp-action="UploadReportType" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
+            }
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@L["Next"]</button>
         </div>
     </form>
 </div>
+
+@section Scripts {
+    <script>
+        (function () {
+            document.querySelectorAll('.prv-pro-file-picker').forEach(function (picker) {
+                var input = picker.querySelector('.prv-pro-file-picker-input');
+                var nameEl = picker.querySelector('.prv-pro-file-picker-name');
+                if (!input || !nameEl) return;
+                input.addEventListener('change', function () {
+                    var files = input.files;
+                    if (files && files.length > 1) {
+                        nameEl.textContent = files.length + ' ' + (nameEl.getAttribute('data-files-label') || 'files');
+                        picker.classList.add('has-file');
+                    } else if (files && files.length === 1) {
+                        nameEl.textContent = files[0].name;
+                        picker.classList.add('has-file');
+                    } else {
+                        nameEl.textContent = nameEl.getAttribute('data-empty-label') || '';
+                        picker.classList.remove('has-file');
+                    }
+                });
+            });
+        })();
+    </script>
+}

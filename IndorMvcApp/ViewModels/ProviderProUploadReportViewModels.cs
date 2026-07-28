@@ -5,6 +5,8 @@ namespace IndorMvcApp.ViewModels;
 public class ProviderProUploadReportDraft
 {
     public int? JobId { get; set; }
+    /// <summary>Key from Report Templates picker (e.g. completion). When set, type step is skipped.</summary>
+    public string? TemplateKey { get; set; }
     public string ReportType { get; set; } = ProviderReportTypes.Completion;
     public bool AttachToHouseFacts { get; set; } = true;
     public string Title { get; set; } = "";
@@ -94,6 +96,8 @@ public class ProviderProUploadReportFilesViewModel : ProviderProPageBaseViewMode
     public int StepNumber { get; set; } = 3;
     public int TotalSteps { get; set; } = 5;
     public ProviderProUploadReportJobSummaryViewModel Job { get; set; } = new();
+    /// <summary>When set, Back returns to Select Job (type was chosen on Report Templates).</summary>
+    public string? TemplateKey { get; set; }
     public bool AttachToHouseFacts { get; set; } = true;
     public List<ProviderProUploadReportFileSlot> PhotoSlots { get; set; } = [];
     public List<ProviderProUploadReportFileSlot> DocumentSlots { get; set; } = [];

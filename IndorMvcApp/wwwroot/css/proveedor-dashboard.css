@@ -5015,10 +5015,67 @@ a.prv-pro-profile-center-action:focus-visible {
     display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 8px;
 }
 .prv-pro-upload-slot {
-    display: flex; flex-direction: column; gap: 6px; border: 2px dashed #CBD5E1;
+    display: flex; flex-direction: column; gap: 8px; border: 2px dashed #CBD5E1;
     border-radius: 12px; padding: 14px; font-size: .76rem; font-weight: 600; text-align: center;
 }
-.prv-pro-upload-slot input { font-size: .7rem; }
+.prv-pro-upload-slot > span:first-child { color: #0F172A; }
+.prv-pro-file-picker {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 8px 10px;
+    background: #fff;
+    cursor: pointer;
+    margin: 0;
+    text-align: left;
+    font-weight: 500;
+}
+.prv-pro-file-picker--compact {
+    min-width: 0;
+    max-width: 220px;
+}
+.prv-pro-file-picker--drop {
+    margin-top: 8px;
+    width: min(100%, 280px);
+}
+.prv-pro-file-picker-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+.prv-pro-file-picker-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    background: #F1F5F9;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    font-size: .72rem;
+    font-weight: 700;
+    color: #334155;
+    flex-shrink: 0;
+    pointer-events: none;
+    white-space: nowrap;
+}
+.prv-pro-file-picker-name {
+    font-size: .72rem;
+    color: #64748B;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    pointer-events: none;
+    min-width: 0;
+}
+.prv-pro-file-picker.has-file .prv-pro-file-picker-name {
+    color: #0F172A;
+    font-weight: 600;
+}
 .prv-pro-upload-badge {
     display: inline-flex; padding: 4px 10px; border-radius: 999px;
     background: #F0FDFA; color: #0F766E; font-size: .72rem; font-weight: 600;
@@ -5032,10 +5089,9 @@ a.prv-pro-profile-center-action:focus-visible {
 .prv-pro-upload-dropzone {
     display: flex; flex-direction: column; align-items: center; gap: 6px;
     border: 2px dashed #CBD5E1; border-radius: 14px; padding: 24px; text-align: center;
-    margin: 14px 0; position: relative;
+    margin: 14px 0; position: relative; cursor: pointer;
 }
 .prv-pro-upload-dropzone i { font-size: 1.5rem; color: #0066CC; }
-.prv-pro-upload-dropzone-input { margin-top: 8px; font-size: .76rem; }
 .prv-pro-upload-report-details-form,
 .prv-pro-upload-report-files-form,
 .prv-pro-upload-report-type-form { display: flex; flex-direction: column; gap: 12px; }

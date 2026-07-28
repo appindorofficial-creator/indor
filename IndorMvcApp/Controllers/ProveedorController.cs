@@ -1060,7 +1060,7 @@ public partial class ProveedorController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> UploadReport(string? q, string? filter, bool? fresh, CancellationToken cancellationToken)
+    public async Task<IActionResult> UploadReport(string? q, string? filter, bool? fresh, string? template, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -1068,9 +1068,25 @@ public partial class ProveedorController(
             return proveedor.Result;
         }
 
-        if (fresh == true || (string.IsNullOrWhiteSpace(q) && string.IsNullOrWhiteSpace(filter)))
+        // Only wipe on explicit fresh starts (Create Report / Add Custom).
+        // Search, filters, and Back must keep the chosen template in session.
+        if (fresh == true)
         {
             ClearUploadReportDraft();
+        }
+
+        if (ProviderReportTypes.TryMapTemplateKey(template, out var reportType))
+        {
+            var draft = GetUploadReportDraft();
+            draft.TemplateKey = template!.Trim().ToLowerInvariant();
+            draft.ReportType = reportType;
+            if (string.IsNullOrWhiteSpace(draft.Title) || fresh == true)
+            {
+                draft.Title = reportType;
+            }
+
+            SaveUploadReportDraft(draft);
+            await HttpContext.Session.CommitAsync(cancellationToken);
         }
 
         var model = await proData.GetUploadReportSelectJobAsync(proveedor.Entity!, null, q, filter, cancellationToken);
@@ -1096,6 +1112,13 @@ public partial class ProveedorController(
         draft.JobId = input.JobId;
         SaveUploadReportDraft(draft);
         await HttpContext.Session.CommitAsync(cancellationToken);
+
+        // Template already chosen on Report Templates — skip the type picker.
+        if (!string.IsNullOrWhiteSpace(draft.TemplateKey) && !string.IsNullOrWhiteSpace(draft.ReportType))
+        {
+            return RedirectToAction(nameof(UploadReportFiles));
+        }
+
         return RedirectToAction(nameof(UploadReportType));
     }
 

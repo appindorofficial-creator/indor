@@ -3819,6 +3819,7 @@ public static class UiTranslationsFinal
             ["Report Details - INDOR PRO"] = "Detalles del informe - INDOR PRO",
             ["Report Uploaded - INDOR PRO"] = "Informe subido - INDOR PRO",
             ["Choose Report Type"] = "Elegir tipo de informe",
+            ["Upload Files & Photos"] = "Subir archivos y fotos",
             ["Upload Files &amp; Photos"] = "Subir archivos y fotos",
             ["Upload Files"] = "Subir archivos",
             ["Report Details"] = "Detalles del informe",

@@ -197,7 +197,7 @@
                         }
                         @if (item.ShowPhotosLink && item.ItemKind == "Job" && item.ItemId.HasValue)
                         {
-                            <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-filter="inprogress" class="prv-pro-job-quick-link prv-pro-job-quick-link--green">
+                            <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-fresh="true" asp-route-filter="inprogress" class="prv-pro-job-quick-link prv-pro-job-quick-link--green">
                                 <i class="fas fa-camera"></i><span>@L["Photos"]</span>
                             </a>
                         }
@@ -259,7 +259,7 @@
                             {
                                 @if (item.SecondaryAction == ProviderProDisplayLocalization.L("Upload Photos"))
                                 {
-                                    <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-btn prv-pro-btn--ghost">@UiDisplayLocalization.Localize(L, item.SecondaryAction)</a>
+                                    <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-fresh="true" class="prv-pro-btn prv-pro-btn--ghost">@UiDisplayLocalization.Localize(L, item.SecondaryAction)</a>
                                 }
                                 else
                                 {

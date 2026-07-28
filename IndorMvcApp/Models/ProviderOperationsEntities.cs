@@ -804,10 +804,38 @@ public class IndorProveedorReportTemplateSection
 public static class ProviderReportTypes
 {
     public const string Completion = "Completion Report";
+    public const string Inspection = "Inspection Report";
+    public const string Daily = "Daily Report";
+    public const string Progress = "Progress Report";
     public const string Photo = "Photo Report";
+    public const string Maintenance = "Maintenance Report";
+    public const string Safety = "Safety / Incident Report";
+    public const string ChangeOrder = "Change Order Report";
+    public const string PunchList = "Punch List Report";
+    public const string MaterialDelivery = "Material Delivery Report";
     public const string Assessment = "Assessment / Inspection";
     public const string Warranty = "Warranty / Materials";
     public const string BeforeAfter = "Before & After";
+
+    /// <summary>Maps Report Templates picker keys (e.g. completion) to persisted report type labels.</summary>
+    public static bool TryMapTemplateKey(string? templateKey, out string reportType)
+    {
+        reportType = templateKey?.Trim().ToLowerInvariant() switch
+        {
+            "completion" => Completion,
+            "inspection" => Inspection,
+            "daily" => Daily,
+            "progress" => Progress,
+            "photo" => Photo,
+            "maintenance" => Maintenance,
+            "safety" => Safety,
+            "changeorder" => ChangeOrder,
+            "punchlist" => PunchList,
+            "materialdelivery" => MaterialDelivery,
+            _ => ""
+        };
+        return !string.IsNullOrEmpty(reportType);
+    }
 }
 
 [Table("IndorProveedorConversations")]

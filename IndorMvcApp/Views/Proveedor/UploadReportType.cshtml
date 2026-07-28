@@ -5,9 +5,16 @@
     ViewBag.NavActive = "reports";
     var types = new[]
     {
-        (IndorMvcApp.Models.ProviderReportTypes.Completion, "fa-clipboard-list", "Document the work completed, materials used, and final results."),
-        (IndorMvcApp.Models.ProviderReportTypes.Photo, "fa-camera", "Upload and organize photos related to the completed work."),
-        (IndorMvcApp.Models.ProviderReportTypes.Assessment, "fa-magnifying-glass", "Report on the condition, findings, and recommendations."),
+        (IndorMvcApp.Models.ProviderReportTypes.Completion, "fa-clipboard-list", "Document finished work, photos, notes, and signatures."),
+        (IndorMvcApp.Models.ProviderReportTypes.Inspection, "fa-magnifying-glass", "Record findings, issues, and recommendations."),
+        (IndorMvcApp.Models.ProviderReportTypes.Daily, "fa-calendar-days", "Track daily work completed, crew, and site notes."),
+        (IndorMvcApp.Models.ProviderReportTypes.Progress, "fa-chart-column", "Show project progress, milestones, and updates."),
+        (IndorMvcApp.Models.ProviderReportTypes.Photo, "fa-camera", "Organize before-and-after photos with captions."),
+        (IndorMvcApp.Models.ProviderReportTypes.Maintenance, "fa-wrench", "Log service work, maintenance tasks, and materials."),
+        (IndorMvcApp.Models.ProviderReportTypes.Safety, "fa-shield-halved", "Record accidents, hazards, or safety concerns."),
+        (IndorMvcApp.Models.ProviderReportTypes.ChangeOrder, "fa-file-pen", "Document scope changes, approvals, and costs."),
+        (IndorMvcApp.Models.ProviderReportTypes.PunchList, "fa-list-check", "List pending fixes, touch-ups, and incomplete items."),
+        (IndorMvcApp.Models.ProviderReportTypes.MaterialDelivery, "fa-truck", "Track delivered materials, quantities, and dates."),
         (IndorMvcApp.Models.ProviderReportTypes.Warranty, "fa-shield-halved", "Document warranties, registrations, and materials provided."),
         (IndorMvcApp.Models.ProviderReportTypes.BeforeAfter, "fa-images", "Showcase before and after photos and document the transformation.")
     };

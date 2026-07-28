@@ -3291,6 +3291,7 @@ public partial class ProviderProDataService(
         {
             CompanyName = ResolveCompanyName(proveedor),
             Job = job,
+            TemplateKey = draft.TemplateKey,
             AttachToHouseFacts = draft.AttachToHouseFacts,
             PhotoSlots = draft.PhotoSlots,
             DocumentSlots = draft.DocumentSlots,
@@ -3398,7 +3399,7 @@ public partial class ProviderProDataService(
                     !string.IsNullOrWhiteSpace(d.Slot)
                     && d.Slot.Contains("Warranty", StringComparison.OrdinalIgnoreCase)
                     && !string.IsNullOrWhiteSpace(d.Url)),
-            HasChecklist = draft.ReportType == ProviderReportTypes.Assessment,
+            HasChecklist = draft.ReportType is ProviderReportTypes.Assessment or ProviderReportTypes.Inspection,
             PhotoUrlsJson = SerializeUploadReportFiles(draft.PhotoSlots, draft.GeneralFiles),
             DocumentsJson = SerializeUploadReportDocuments(draft.DocumentSlots),
             FilesCount = filesCount,

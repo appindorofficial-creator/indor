@@ -42,7 +42,7 @@
     </div>
 
     <div class="tpl-actions">
-        <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-fresh="true" class="tpl-btn tpl-btn--primary"><i class="fas fa-file-circle-plus"></i> @L["Create Report"]</a>
+        <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-fresh="true" asp-route-template="@Model.Key" class="tpl-btn tpl-btn--primary"><i class="fas fa-file-circle-plus"></i> @L["Create Report"]</a>
         <a asp-controller="Proveedor" asp-action="TemplateDetails" asp-route-key="@Model.Key" class="tpl-btn tpl-btn--outline"><i class="fas fa-pen"></i> @L["Edit Template"]</a>
         <a asp-controller="Proveedor" asp-action="Templates" class="tpl-btn-text">@L["Back to Templates"]</a>
     </div>
