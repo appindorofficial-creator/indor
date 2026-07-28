@@ -1,5 +1,25 @@
+@using System.Text.Json
+@{
+    var paValidationMsgs = new
+    {
+        agree = L["Please agree to {0} to continue."].ToString(),
+        enter = L["Please enter {0}."].ToString(),
+        select = L["Please select {0}."].ToString(),
+        email = L["Enter a valid email address (e.g. name@email.com)."].ToString()
+    };
+}
 <script>
     (function () {
+        window.IndorPaValidationMsgs = @Html.Raw(JsonSerializer.Serialize(paValidationMsgs));
+
+        function msgs() {
+            return window.IndorPaValidationMsgs || {};
+        }
+
+        function formatMsg(template, label) {
+            return String(template || '').replace('{0}', label || '');
+        }
+
         function isRequired(field) {
             return field.hasAttribute('required') || field.getAttribute('data-pa-required') === 'true';
         }
@@ -21,16 +41,17 @@
 
         function messageFor(field) {
             var label = labelFor(field);
+            var m = msgs();
             if (field.type === 'checkbox') {
-                return 'Please agree to ' + label + ' to continue.';
+                return formatMsg(m.agree || 'Please agree to {0} to continue.', label);
             }
             if (isEmailField(field)) {
-                return 'Enter a valid email address (e.g. name@@email.com).';
+                return m.email || 'Enter a valid email address (e.g. name@email.com).';
             }
             if (field.type === 'radio' || field.tagName === 'SELECT') {
-                return 'Please select ' + label + '.';
+                return formatMsg(m.select || 'Please select {0}.', label);
             }
-            return 'Please enter ' + label + '.';
+            return formatMsg(m.enter || 'Please enter {0}.', label);
         }
 
         var emailFormatRegex = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;

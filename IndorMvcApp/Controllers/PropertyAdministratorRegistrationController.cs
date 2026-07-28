@@ -103,7 +103,7 @@ public class PropertyAdministratorRegistrationController(
 
         if (!termsAccepted)
         {
-            ModelState.AddModelError(nameof(termsAccepted), "Please agree to the Terms to continue.");
+            ModelState.AddModelError(nameof(termsAccepted), L["Please agree to the Terms to continue."]);
         }
 
         if (!ModelState.IsValid)

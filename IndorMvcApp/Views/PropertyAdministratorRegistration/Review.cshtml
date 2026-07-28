@@ -89,7 +89,7 @@
                name="platformTermsAccepted"
                value="true"
                data-pa-required="true"
-               data-field-label="INDOR's platform terms" />
+               data-field-label="@L["INDOR's platform terms"]" />
         <span>@L["I agree to"] <a asp-controller="Account" asp-action="Terms">@L["INDOR's platform terms"]</a></span>
     </label>
     @if (ViewData.ModelState.TryGetValue("platformTermsAccepted", out var platformTermsState) && platformTermsState.Errors.Count > 0)
