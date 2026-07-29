@@ -1,7 +1,9 @@
 using System.Collections.Concurrent;
+using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.EntityFrameworkCore;
@@ -255,7 +257,8 @@ public class HomeownerPropertyService(
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             cts.CancelAfter(MaintenanceTimeout);
 
-            var plan = await maintenanceRecommendationService.GenerateAsync(propertyInfo, cts.Token);
+            var useSpanish = UiCulture.IsSpanish(CultureInfo.CurrentUICulture.Name);
+            var plan = await maintenanceRecommendationService.GenerateAsync(propertyInfo, cts.Token, useSpanish);
             if (PropertyMaintenanceDisplayService.IsRealAiPlan(plan))
             {
                 logger.LogInformation(
@@ -376,6 +379,8 @@ public class HomeownerPropertyService(
             return;
         }
 
+        var useSpanish = UiCulture.IsSpanish(CultureInfo.CurrentUICulture.Name);
+
         _ = Task.Run(async () =>
         {
             try
@@ -398,7 +403,7 @@ public class HomeownerPropertyService(
                 }
 
                 using var cts = new CancellationTokenSource(MaintenanceTimeout);
-                var plan = await scopedMaintenance.GenerateAsync(propertyInfo, cts.Token);
+                var plan = await scopedMaintenance.GenerateAsync(propertyInfo, cts.Token, useSpanish);
                 if (!PropertyMaintenanceDisplayService.IsRealAiPlan(plan))
                 {
                     scopedLogger.LogWarning(

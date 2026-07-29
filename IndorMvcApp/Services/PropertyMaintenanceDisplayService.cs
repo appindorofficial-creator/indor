@@ -191,9 +191,47 @@ public static class PropertyMaintenanceDisplayService
             Description = item.Description,
             Category = item.Category,
             Priority = item.Priority,
-            Frequency = item.Frequency,
+            Frequency = NormalizeFrequencyKey(item.Frequency),
             Icon = PropertyMaintenanceIconResolver.ToCssClass(item.Icon, item.Category, item.Title),
             Reason = item.Reason,
             SortOrder = item.SortOrder
         };
+
+    /// <summary>Map common AI frequency variants onto catalog keys that have Spanish translations.</summary>
+    private static string NormalizeFrequencyKey(string? frequency)
+    {
+        var f = (frequency ?? "").Trim();
+        if (f.Length == 0)
+        {
+            return f;
+        }
+
+        if (f.Equals("Annually", StringComparison.OrdinalIgnoreCase)
+            || f.Equals("Annual", StringComparison.OrdinalIgnoreCase)
+            || f.Equals("Once a year", StringComparison.OrdinalIgnoreCase)
+            || f.Equals("Yearly", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Every year";
+        }
+
+        if (f.Equals("Semi-annually", StringComparison.OrdinalIgnoreCase)
+            || f.Equals("Semiannually", StringComparison.OrdinalIgnoreCase)
+            || f.Equals("Twice a year", StringComparison.OrdinalIgnoreCase)
+            || f.Equals("Every six months", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Every 6 months";
+        }
+
+        if (f.Equals("Quarterly", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Every 3 months";
+        }
+
+        if (f.Equals("Monthly", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Every month";
+        }
+
+        return f;
+    }
 }

@@ -39,39 +39,23 @@ public class OpenAiMaintenanceRecommendationService(
 
 
     public async Task<PropertyMaintenancePlanViewModel> GenerateAsync(
-
         PropertyInfoViewModel propertyInfo,
-
-        CancellationToken cancellationToken = default)
-
+        CancellationToken cancellationToken = default,
+        bool useSpanish = false)
     {
-
         var openAi = options.Value;
-
         if (!openAi.Enabled || string.IsNullOrWhiteSpace(openAi.ApiKey))
-
         {
-
             logger.LogWarning("Maintenance AI skipped — OpenAI not configured for {Address}", propertyInfo.FormattedAddress);
-
             return Unavailable("AI maintenance suggestions are not configured. Add your OpenAI API key in application settings.");
-
         }
 
-
-
         try
-
         {
-
             var userPrompt = MaintenanceRecommendationPrompt.BuildUserPrompt(propertyInfo);
-
             var (json, apiError) = await CallChatJsonAsync(
-
-                MaintenanceRecommendationPrompt.SystemMessage,
-
+                MaintenanceRecommendationPrompt.BuildSystemMessage(useSpanish),
                 userPrompt,
-
                 cancellationToken);
 
 

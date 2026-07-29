@@ -1444,6 +1444,45 @@ public static class UiTranslationsHome
             ["Recommended for your home"] = "Recomendado para tu hogar",
             ["{0} alerts"] = "{0} alertas",
             ["Browse all maintenance services"] = "Explorar todos los servicios de mantenimiento",
+            ["View services"] = "Ver servicios",
+            ["Annually"] = "Cada año",
+            ["Annual"] = "Cada año",
+            ["Yearly"] = "Cada año",
+            ["Once a year"] = "Una vez al año",
+            ["Every year"] = "Cada año",
+            ["Every month"] = "Cada mes",
+            ["Every 3 months"] = "Cada 3 meses",
+            ["Every 6 months"] = "Cada 6 meses",
+            ["Before winter"] = "Antes del invierno",
+            ["As needed"] = "Según se necesite",
+            ["Given the location in {0}, {1}"] = "Dada la ubicación en {0}, {1}",
+            ["maintenance tasks should focus on seasonal preparations and ensuring systems are functioning efficiently due to the area's climate."] =
+                "las tareas de mantenimiento deben centrarse en preparaciones de temporada y en asegurar que los sistemas funcionen con eficiencia según el clima de la zona.",
+            ["Test Smoke and Carbon Monoxide Detectors"] = "Probar detectores de humo y monóxido de carbono",
+            ["Check and replace batteries in smoke and carbon monoxide detectors to ensure they are functioning properly."] =
+                "Revisa y reemplaza las baterías de los detectores de humo y monóxido de carbono para asegurar que funcionen correctamente.",
+            ["Inspect Roof for Damage"] = "Inspeccionar el techo en busca de daños",
+            ["Check the roof for any damage after the monsoon season to prevent leaks and further deterioration."] =
+                "Revisa el techo en busca de daños después de la temporada de monzones para prevenir filtraciones y un mayor deterioro.",
+            ["Check the roof for any signs of wear or damage, especially after the monsoon season, to prevent leaks and water damage."] =
+                "Revisa el techo en busca de desgaste o daños, especialmente después de la temporada de monzones, para prevenir filtraciones y daños por agua.",
+            ["Service HVAC System"] = "Dar servicio al sistema HVAC",
+            ["Schedule a professional HVAC service to ensure efficient cooling during the hot months."] =
+                "Programa un servicio profesional de HVAC para asegurar una refrigeración eficiente durante los meses de calor.",
+            ["Service your heating and cooling systems to ensure they are operating efficiently and to extend their lifespan."] =
+                "Da servicio a tus sistemas de calefacción y refrigeración para asegurar que operen con eficiencia y prolongar su vida útil.",
+            ["Inspect and Seal Windows and Doors"] = "Inspeccionar y sellar ventanas y puertas",
+            ["Check for gaps or cracks around windows and doors and apply weather stripping or caulk to improve energy efficiency."] =
+                "Busca rendijas o grietas alrededor de ventanas y puertas y aplica burletes o sellador para mejorar la eficiencia energética.",
+            ["Clean Gutters"] = "Limpiar canaletas",
+            ["Clean Gutters and Downspouts"] = "Limpiar canaletas y bajantes",
+            ["Clear debris from gutters to prevent water damage during seasonal storms."] =
+                "Retira residuos de las canaletas para prevenir daños por agua durante tormentas de temporada.",
+            ["Remove debris from gutters and downspouts to ensure proper drainage and prevent water damage to the home's foundation."] =
+                "Retira residuos de canaletas y bajantes para asegurar un drenaje adecuado y prevenir daños por agua en los cimientos.",
+            ["Landscape Maintenance"] = "Mantenimiento del paisaje",
+            ["Trim trees and shrubs, and check irrigation systems to keep landscaping healthy and prevent damage near the home."] =
+                "Poda árboles y arbustos, y revisa los sistemas de riego para mantener el paisaje saludable y prevenir daños cerca del hogar.",
             ["Use this page to detail your site's privacy policy."] = "Usa esta página para detallar la política de privacidad de tu sitio.",
             ["Good morning"] = "Buenos días",
             ["Good afternoon"] = "Buenas tardes",

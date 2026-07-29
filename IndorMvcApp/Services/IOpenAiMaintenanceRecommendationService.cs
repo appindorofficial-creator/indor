@@ -6,5 +6,6 @@ public interface IOpenAiMaintenanceRecommendationService
 {
     Task<PropertyMaintenancePlanViewModel> GenerateAsync(
         PropertyInfoViewModel propertyInfo,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default,
+        bool useSpanish = false);
 }

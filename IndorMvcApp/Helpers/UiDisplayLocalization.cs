@@ -148,6 +148,20 @@ public static class UiDisplayLocalization
             {
                 return ignoreCaseHit;
             }
+
+            // AI maintenance summary: "Given the location in Parks, AZ, …"
+            // Location may include a comma (City, ST); the sentence after starts lowercase.
+            var givenLocationMatch = Regex.Match(
+                text,
+                @"^Given the location in (.+),\s+([a-z].+)$",
+                RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            if (givenLocationMatch.Success)
+            {
+                return localizer.T(
+                    "Given the location in {0}, {1}",
+                    givenLocationMatch.Groups[1].Value.Trim(),
+                    Localize(localizer, givenLocationMatch.Groups[2].Value.Trim()));
+            }
         }
 
         var activeRiskMatch = Regex.Match(
@@ -1129,25 +1143,27 @@ public static class UiDisplayLocalization
                 nearestProMatch.Groups[2].Value);
         }
 
-        // Match "Name at Address" style labels (also Spanglish "Lawn Care en …" / "… in …").
-        // Never rewrite phrases that contain "at least" (e.g. validation: "select at least one…"),
-        // or "{0} at {1}" becomes "{0} en {1}" and yields "… en least …".
-        // Skip realtor notification bodies — they have dedicated templates above; this matcher
-        // would otherwise turn "You expressed interest in …" into Spanglish "… interest en …".
+        // Match short "Name at Address" labels only (e.g. "Lawn Care at Oak St").
+        // Do NOT rewrite descriptive English prose containing "in" — that yields Spanglish
+        // like "location en Parks" / "batteries en smoke" via "{0} at {1}" → "{0} en {1}".
         if (!text.Contains(" at least ", StringComparison.OrdinalIgnoreCase)
             && !text.Contains(" at least.", StringComparison.OrdinalIgnoreCase)
             && !text.StartsWith("You expressed interest ", StringComparison.OrdinalIgnoreCase)
             && !text.StartsWith("Created property ", StringComparison.OrdinalIgnoreCase)
             && !text.Contains(" is interested ", StringComparison.OrdinalIgnoreCase)
             && !text.Contains(" interested in your listing ", StringComparison.OrdinalIgnoreCase)
-            && !text.Contains(" interested en your listing ", StringComparison.OrdinalIgnoreCase))
+            && !text.Contains(" interested en your listing ", StringComparison.OrdinalIgnoreCase)
+            && text.Length <= 80
+            && !text.Contains('.', StringComparison.Ordinal)
+            && !AppearsPrimarilyEnglishSentence(text))
         {
             var atPropertyMatch = Regex.Match(
                 text,
                 @"^(.+?)\s+(?:at|in|en)\s+(.+)$",
                 RegexOptions.IgnoreCase);
             if (atPropertyMatch.Success
-                && !atPropertyMatch.Groups[2].Value.StartsWith("least", StringComparison.OrdinalIgnoreCase))
+                && !atPropertyMatch.Groups[2].Value.StartsWith("least", StringComparison.OrdinalIgnoreCase)
+                && LooksLikePlaceOrAddressLabel(atPropertyMatch.Groups[2].Value))
             {
                 return localizer.T(
                     "{0} at {1}",
@@ -1299,6 +1315,48 @@ public static class UiDisplayLocalization
             text,
             @"\b(the|are|is|was|were|and|with|from|this|that|than|of|on|in|to|for|not|a|an)\b",
             RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+    }
+
+    /// <summary>
+    /// True when the text looks like a full English sentence (many function words),
+    /// not a short "Service at Place" label.
+    /// </summary>
+    private static bool AppearsPrimarilyEnglishSentence(string text)
+    {
+        if (!AppearsPrimarilyEnglish(text))
+        {
+            return false;
+        }
+
+        var functionWordHits = Regex.Matches(
+            text,
+            @"\b(the|are|is|was|were|and|with|from|this|that|than|of|on|in|to|for|not|a|an|should|ensure|check|replace|remove|apply|due|focus)\b",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant).Count;
+        return functionWordHits >= 3;
+    }
+
+    private static bool LooksLikePlaceOrAddressLabel(string place)
+    {
+        var trimmed = place.Trim();
+        if (trimmed.Length == 0 || trimmed.Length > 60)
+        {
+            return false;
+        }
+
+        // Street / city style: has a digit, or a US state-ish comma, or few words.
+        if (trimmed.Any(char.IsDigit))
+        {
+            return true;
+        }
+
+        if (trimmed.Contains(',', StringComparison.Ordinal))
+        {
+            return true;
+        }
+
+        var words = trimmed.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return words.Length is >= 1 and <= 5
+            && !AppearsPrimarilyEnglishSentence(trimmed);
     }
 
     private static string LocalizeRelativeTimestamp(IIndorLocalizer localizer, string value)

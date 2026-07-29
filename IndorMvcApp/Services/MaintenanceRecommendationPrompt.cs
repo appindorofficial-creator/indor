@@ -18,7 +18,7 @@ public static class MaintenanceRecommendationPrompt
               "description": "what to do and why (1-2 sentences)",
               "category": "HVAC" | "Plumbing" | "Electrical" | "Roof" | "Exterior" | "Safety" | "Landscaping" | "General",
               "priority": "Urgent" | "High" | "Routine",
-              "frequency": "e.g. Every 3 months, Annually, Before winter",
+              "frequency": "e.g. Every 3 months, Every 6 months, Every year, Before winter, As needed",
               "icon": "fontawesome 6 FREE icon without fa- prefix e.g. fan, faucet-drip, bolt, fire-extinguisher, house-crack, shield-halved, triangle-exclamation, temperature-half",
               "reason": "brief why this matters for this specific home"
             }
@@ -30,10 +30,23 @@ public static class MaintenanceRecommendationPrompt
         - Tailor EVERY item to the specific property: year built, climate/region, home size, systems, and enrichment data
         - Reference concrete property traits in each "reason" field (e.g. age of home, HVAC type, lot size, region)
         - Urgent = safety or prevents major damage; High = important seasonal/preventive; Routine = regular upkeep
+        - Prefer frequency values from: Every month, Every 3 months, Every 6 months, Every year, Before winter, As needed
         - Use realistic US homeowner maintenance only — never generic copy-paste lists
         - Do not invent specific dollar amounts or claim inspections were performed
         - If property data is sparse, still personalize using address region and typical risks for that area
         """;
+
+    public static string BuildSystemMessage(bool useSpanish) =>
+        useSpanish
+            ? SystemMessage + """
+
+        Language:
+        - Write summary, title, description, and reason in Spanish (es-US), natural for US Hispanic homeowners.
+        - Keep category and priority enum values exactly in English as specified in the schema.
+        - Keep frequency values in English from the preferred list (Every month, Every 3 months, Every 6 months, Every year, Before winter, As needed).
+        - CRITICAL: Never leave summary, title, description, or reason in English when Language is Spanish.
+        """
+            : SystemMessage;
 
     public static string BuildUserPrompt(PropertyInfoViewModel info)
     {

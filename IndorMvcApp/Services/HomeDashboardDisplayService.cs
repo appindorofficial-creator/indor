@@ -22,8 +22,7 @@ public static class HomeDashboardDisplayService
         IReadOnlyList<HomeCarePriority>? homeCarePriorities = null)
     {
         var d = info?.PropertyDetails;
-        var maintenancePlan = info?.MaintenanceRecommendations
-            ?? PropertyMaintenanceDisplayService.ParseFromPropiedad(propiedad);
+        var maintenancePlan = PreferRealMaintenancePlan(info, propiedad);
         var maintenanceSection = PropertyMaintenanceDisplayService.BuildSection(
             maintenancePlan,
             maxItems: 6,
@@ -93,8 +92,7 @@ public static class HomeDashboardDisplayService
         IReadOnlyList<HomeCarePriority>? homeCarePriorities = null)
     {
         var d = info?.PropertyDetails;
-        var maintenancePlan = info?.MaintenanceRecommendations
-            ?? PropertyMaintenanceDisplayService.ParseFromPropiedad(propiedad);
+        var maintenancePlan = PreferRealMaintenancePlan(info, propiedad);
         var maintenanceSection = PropertyMaintenanceDisplayService.BuildSection(
             maintenancePlan,
             maxItems: 6,
@@ -133,6 +131,19 @@ public static class HomeDashboardDisplayService
                 includeAiTasks: !(maintenanceSection.IsAiGenerated && maintenanceSection.Items.Count > 0)),
             MaintenanceSection = maintenanceSection
         };
+    }
+
+    private static PropertyMaintenancePlanViewModel? PreferRealMaintenancePlan(
+        PropertyInfoViewModel? info,
+        Propiedad propiedad)
+    {
+        var fromPropiedad = PropertyMaintenanceDisplayService.ParseFromPropiedad(propiedad);
+        if (PropertyMaintenanceDisplayService.IsRealAiPlan(fromPropiedad))
+        {
+            return fromPropiedad;
+        }
+
+        return info?.MaintenanceRecommendations ?? fromPropiedad;
     }
 
     private static List<HomeTodayTaskViewModel> MergeTodayTasks(
