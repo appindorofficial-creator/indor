@@ -24,7 +24,9 @@ public static class ExteriorPaintDisplayLabels
     };
 
     public static string FormatYesNo(string? code) =>
-        string.Equals(code, "Yes", StringComparison.OrdinalIgnoreCase) ? "Yes" : "No";
+        string.Equals(code, "Yes", StringComparison.OrdinalIgnoreCase)
+            ? DisplayLabelsLocalization.L("Yes")
+            : DisplayLabelsLocalization.L("No");
 
     public static string FormatYesNoNotSure(string? code) => code switch
     {
@@ -57,7 +59,7 @@ public static class ExteriorPaintDisplayLabels
 
     public static string FormatPipeList(string? pipe, Func<string, string> formatter) =>
         string.IsNullOrWhiteSpace(pipe)
-            ? "General review"
+            ? DisplayLabelsLocalization.L("General review")
             : string.Join(", ", pipe.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
                 .Select(formatter));
 

@@ -1112,7 +1112,7 @@ public static class UiTranslationsFlows
             ["Review - INDOR"] = "Revisar - INDOR",
             ["Review & confirm your service"] = "Revisa y confirma tu servicio",
             ["Review and confirm"] = "Revisar y confirmar",
-            ["Review so far"] = "Revisar so far",
+            ["Review so far"] = "Resumen hasta ahora",
             ["Review your emergency request"] = "Revisa tu solicitud de emergencia",
             ["Review your inspection request"] = "Revisa tu solicitud de inspección",
             ["Review your moving request"] = "Revisa tu solicitud de mudanza",

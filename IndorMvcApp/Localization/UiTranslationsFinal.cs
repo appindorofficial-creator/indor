@@ -2430,6 +2430,12 @@ public static class UiTranslationsFinal
             ["Recommended every 1–2 years"] = "Recomendado cada 1–2 años",
             ["Start exterior check"] = "Iniciar revisión exterior",
             ["Exterior Paint Review"] = "Revisión de pintura exterior",
+            ["Help us understand your exterior so we can schedule the right paint review."] =
+                "Ayúdanos a entender tu exterior para programar la revisión de pintura adecuada.",
+            ["Help us understand the current condition."] =
+                "Ayúdanos a entender el estado actual.",
+            ["Add a few details before we schedule your review."] =
+                "Agrega algunos detalles antes de programar tu revisión.",
             ["Recommended every 5 years"] = "Recomendado cada 5 años",
             ["Paint sooner if you see peeling, fading, or damaged caulk."] =
                 "Pinta antes si ves desprendimiento, decoloración o calafateo dañado.",

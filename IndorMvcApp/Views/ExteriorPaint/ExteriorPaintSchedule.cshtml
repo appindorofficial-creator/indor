@@ -15,28 +15,28 @@
 
 
 <div class="ep-title-row">
-        <div class="left">
-            <h1 class="page-heading" style="margin-bottom:4px;font-size:1.05rem;">@Model.PageTitle</h1>
-            @if (!string.IsNullOrWhiteSpace(Model.LandingSubtitulo))
-            {
-                <p class="page-lead" style="margin-bottom:0;">@L.Catalog(Model.LandingSubtitulo)</p>
-            }
-        </div>
-        @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+    <div class="left">
+        <h1 class="page-heading" style="margin-bottom:4px;font-size:1.05rem;">@L.Catalog(Model.PageTitle)</h1>
+        @if (!string.IsNullOrWhiteSpace(Model.LandingSubtitulo))
         {
-            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@Model.PageTitle" class="ep-thumb" />
+            <p class="page-lead" style="margin-bottom:0;">@L.Catalog(Model.LandingSubtitulo)</p>
         }
     </div>
+    @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+    {
+        <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@L.Catalog(Model.PageTitle)" class="ep-thumb" />
+    }
+</div>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
-    <form id="ep-schedule-form" asp-action="ExteriorPaintSchedule" method="post" enctype="multipart/form-data">
+    <form id="ep-schedule-form" asp-action="ExteriorPaintSchedule" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="NumeroPisos" id="NumeroPisos" />
         <input type="hidden" asp-for="TimingPreferido" id="TimingPreferido" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="NumeroPisos">
             <div class="question-num">1</div>
             <div class="field-head"><i class="fas fa-building"></i><span>@L["How many stories is the home?"]</span></div>
             <div class="stories-grid">
@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <div class="question-num">2</div>
             <div class="field-head"><i class="fas fa-camera"></i><span>@L["Add photos"]</span></div>
             <p style="font-size:0.74rem;color:#64748B;margin-bottom:12px;">@L["Add a few photos to help our pros prepare."]</p>
@@ -96,7 +96,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TimingPreferido">
             <div class="question-num">3</div>
             <div class="field-head"><i class="fas fa-clock"></i><span>@L["When would you like help?"]</span></div>
             <div class="timing-row">
@@ -134,7 +134,6 @@
             <i class="fas fa-paint-roller"></i> @L["Request paint review"] <i class="fas fa-chevron-right"></i>
         </button>
     </form>
-</div>
 @section Scripts {
 <script>
     (function () {
