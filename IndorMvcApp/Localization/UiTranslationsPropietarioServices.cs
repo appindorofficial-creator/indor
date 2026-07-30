@@ -301,6 +301,8 @@ public static class UiTranslationsPropietarioServices
             ["1 bin"] = "1 contenedor",
             ["2 bins"] = "2 contenedores",
             ["3 bins"] = "3 contenedores",
+            ["bin"] = "bote",
+            ["bins"] = "botes",
             ["Sunday"] = "Domingo",
             ["Monday"] = "Lunes",
             ["Tuesday"] = "Martes",

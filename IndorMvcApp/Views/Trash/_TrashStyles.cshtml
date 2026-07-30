@@ -6,6 +6,8 @@
         border-radius: 14px;
         padding: 14px;
         margin-bottom: 12px;
+        overflow: visible;
+        min-width: 0;
     }
     .page-container { padding-bottom: 140px; }
     .tr-stepper { display: flex; align-items: center; gap: 0; margin-bottom: 18px; }
@@ -50,24 +52,38 @@
     }
     .bin-card .thumb i { color: #0066CC; font-size: 1.4rem; }
     .bin-card .label { font-size: 0.72rem; font-weight: 700; line-height: 1.2; color: #0A2540; word-break: break-word; }
-    .count-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .count-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        width: 100%;
+    }
     .count-card {
-        border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px; padding: 14px 8px 12px;
+        border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px;
+        padding: 12px 6px 10px;
         cursor: pointer; text-align: center; position: relative;
-        box-sizing: border-box; min-width: 0; overflow: hidden;
+        box-sizing: border-box; width: 100%; max-width: 100%; min-width: 0;
+        overflow: visible;
     }
     .count-card.active { border-color: #0066CC; background: rgba(0,102,204,0.08); }
     .count-card .check {
-        position: absolute; top: 6px; right: 6px; width: 18px; height: 18px; border-radius: 50%;
+        position: absolute; top: 6px; right: 6px; width: 16px; height: 16px; border-radius: 50%;
         border: 1.5px solid #CBD5E1; display: flex; align-items: center; justify-content: center;
-        font-size: 0.5rem; color: transparent; background: #FFF; box-sizing: border-box; pointer-events: none;
+        font-size: 0.45rem; color: transparent; background: #FFF; box-sizing: border-box; pointer-events: none;
+        z-index: 1;
     }
     .count-card.active .check { border-color: #0066CC; background: #0066CC; color: #FFF; }
     .count-card strong {
-        display: block; font-size: 0.78rem; margin-bottom: 4px; line-height: 1.2;
-        word-break: break-word; padding: 0 2px;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        gap: 2px; margin: 0 0 6px; padding: 0 8px;
+        line-height: 1.2; font-weight: 800; color: #0A2540;
     }
-    .count-card span { display: block; font-size: 0.68rem; color: #0066CC; font-weight: 700; line-height: 1.2; }
+    .count-card .count-num { display: block; font-size: 1.05rem; font-weight: 800; line-height: 1.1; }
+    .count-card .count-unit {
+        display: block; font-size: 0.7rem; font-weight: 700; line-height: 1.2;
+        white-space: nowrap;
+    }
+    .count-card > span { display: block; font-size: 0.66rem; color: #0066CC; font-weight: 700; line-height: 1.2; }
     .freq-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
     .freq-card {
         border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px; padding: 8px 8px 12px;
