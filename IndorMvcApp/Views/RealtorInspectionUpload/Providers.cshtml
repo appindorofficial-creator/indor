@@ -70,7 +70,7 @@
 
                         {
 
-                            <span class="rl-provider-badge">@provider.BadgeLabel</span>
+                            <span class="rl-provider-badge">@UiDisplayLocalization.Localize(L, provider.BadgeLabel)</span>
 
                         }
 
@@ -128,8 +128,9 @@
 <div class="rl-invite-actions">
 
     <a asp-controller="RealtorInspectionUpload"
-       asp-action="BackToPriorities"
-       class="rl-invite-cancel">@L["Back"]</a>
+       asp-action="Priorities"
+       class="rl-invite-cancel"
+       data-no-nav-loading="1">@L["Back"]</a>
 
     <button type="submit" form="providersForm" class="ob-btn ob-btn-primary">@L["Continue"]</button>
 

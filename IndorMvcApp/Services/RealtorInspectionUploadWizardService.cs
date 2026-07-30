@@ -764,6 +764,7 @@ public class RealtorInspectionUploadWizardService(
             Title = "Recommended Providers",
             Subtitle = "INDOR groups findings by trade and recommends trusted providers for each.",
             ActiveTradeFilter = activeFilter,
+            TradeFilters = new[] { "All" }.Concat(trades).ToList(),
             TradeGroups = groups,
             TradesReadyCount = groups.Count,
             ProvidersSelectedCount = groups.SelectMany(g => g.Providers).Count(p => p.Selected)
@@ -877,7 +878,7 @@ public class RealtorInspectionUploadWizardService(
             PhotoUrl = draft.PhotoUrl ?? "/welcome-house.png",
             FindingsSelected = selectedFindings.Count,
             UrgentItems = selectedFindings.Count(f => f.Priority == RealtorInspectionFindingPriorities.Urgent),
-            TradesIncluded = string.Join(", ", trades.Select(LocalizeTradeShortName)),
+            TradesIncluded = string.Join(", ", trades.Select(LocalizeTradeDisplayName)),
             ProvidersSelected = draft.TradeProviders.Count,
             ResponseDeadlineHours = draft.ResponseDeadlineHours,
             RequestsToCreate = requests

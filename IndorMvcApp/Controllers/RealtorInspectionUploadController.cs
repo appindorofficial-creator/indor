@@ -128,6 +128,11 @@ public class RealtorInspectionUploadController(
         }
 
         // Allow revisiting Analyze when going Back from later steps.
+        if (draft.CurrentStep > 2)
+        {
+            await wizard.PrepareBackToAnalyzeAsync();
+        }
+
         return View(await wizard.BuildAnalyzeAsync());
     }
 
@@ -228,6 +233,11 @@ public class RealtorInspectionUploadController(
         }
 
         // Allow revisiting Findings when going Back from Providers/Review.
+        if (draft.CurrentStep > 3)
+        {
+            await wizard.PrepareBackToPrioritiesAsync();
+        }
+
         return View(await wizard.BuildPrioritiesAsync(filter, sort));
     }
 
@@ -248,7 +258,12 @@ public class RealtorInspectionUploadController(
             return RedirectToAction(nameof(Priorities));
         }
 
-        // Allow revisiting Providers when going Back from Review.
+        // Allow revisiting Providers when going Back from Review (Volver → Providers).
+        if (draft.CurrentStep > 4)
+        {
+            await wizard.PrepareBackToProvidersAsync();
+        }
+
         return View(await wizard.BuildProvidersAsync(trade));
     }
 

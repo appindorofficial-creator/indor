@@ -48,7 +48,7 @@
 
     <div class="rl-review-row"><span class="rl-review-label">@L["Urgent items"]</span><strong>@Model.UrgentItems</strong></div>
 
-    <div class="rl-review-row"><span class="rl-review-label">@L["Trades included"]</span><span>@Model.TradesIncluded</span></div>
+    <div class="rl-review-row"><span class="rl-review-label">@L["Trades included"]</span><span>@string.Join(", ", (Model.TradesIncluded ?? "").Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries).Select(t => UiDisplayLocalization.Localize(L, t)))</span></div>
 
     <div class="rl-review-row"><span class="rl-review-label">@L["Providers selected"]</span><strong>@Model.ProvidersSelected</strong></div>
 
@@ -117,8 +117,9 @@
 <div class="rl-invite-actions">
 
     <a asp-controller="RealtorInspectionUpload"
-       asp-action="BackToProviders"
-       class="rl-invite-cancel">@L["Back"]</a>
+       asp-action="Providers"
+       class="rl-invite-cancel"
+       data-no-nav-loading="1">@L["Back"]</a>
 
     <button type="submit" form="reviewForm" class="ob-btn ob-btn-primary">@L["Create Quote Requests"]</button>
 

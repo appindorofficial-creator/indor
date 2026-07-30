@@ -499,6 +499,19 @@ public static class UiDisplayLocalization
                     .Select(part => Localize(localizer, part)));
         }
 
+        // Trade lists on Review: "Electrician, Handyman, HVAC, Plumber"
+        if (text.Contains(", ", StringComparison.Ordinal)
+            && text.Length <= 120
+            && !text.Contains('.', StringComparison.Ordinal))
+        {
+            var parts = text.Split(", ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length is >= 2 and <= 8
+                && parts.All(p => p.Length <= 40 && p.All(c => char.IsLetter(c) || c is ' ' or '/' or '-' or '®')))
+            {
+                return string.Join(", ", parts.Select(part => Localize(localizer, part)));
+            }
+        }
+
         if (text.StartsWith("Uploaded ", StringComparison.OrdinalIgnoreCase))
         {
             var datePart = text["Uploaded ".Length..].Trim();
