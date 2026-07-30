@@ -69,7 +69,12 @@
             <span class="rl-quick-action-icon"><i class="fas fa-globe"></i></span>
             <span>@L["Public Profile"]</span>
         </a>
-        <button type="button" class="rl-quick-action" id="rlShareBtn">
+        <button type="button"
+                class="rl-quick-action"
+                id="rlShareBtn"
+                data-share-text="@L["View my realtor profile on INDOR"]"
+                data-share-copied="@L["Profile link copied to clipboard."]"
+                data-share-prompt="@L["Copy profile link:"]">
             <span class="rl-quick-action-icon"><i class="fas fa-share-from-square"></i></span>
             <span>@L["Share"]</span>
         </button>
@@ -272,9 +277,18 @@
         if (shareBtn) {
             var shareUrl = window.location.origin + '@Url.Action("PublicProfile", "Realtor")';
             shareBtn.addEventListener('click', async function () {
+                var shareText = shareBtn.getAttribute('data-share-text')
+                    || i18n['View my realtor profile on INDOR']
+                    || 'View my realtor profile on INDOR';
+                var copiedText = shareBtn.getAttribute('data-share-copied')
+                    || i18n['Profile link copied to clipboard.']
+                    || 'Profile link copied to clipboard.';
+                var promptText = shareBtn.getAttribute('data-share-prompt')
+                    || i18n['Copy profile link:']
+                    || 'Copy profile link:';
                 var payload = {
                     title: '@Model.FullName - INDOR',
-                    text: i18n['View my realtor profile on INDOR'] || 'View my realtor profile on INDOR',
+                    text: shareText,
                     url: shareUrl
                 };
                 if (navigator.share) {
@@ -282,9 +296,9 @@
                 }
                 try {
                     await navigator.clipboard.writeText(shareUrl);
-                    showToast(i18n['Profile link copied to clipboard.'] || 'Profile link copied to clipboard.');
+                    showToast(copiedText);
                 } catch (_) {
-                    window.prompt(i18n['Copy profile link:'] || 'Copy profile link:', shareUrl);
+                    window.prompt(promptText, shareUrl);
                 }
             });
         }

@@ -76,7 +76,13 @@
                     <small>@L["Update photo, license, and bio"]</small>
                 </span>
             </a>
-            <button type="button" class="rl-public-action-card rl-public-action-card--secondary" id="rlPublicShareBtn">
+            <button type="button"
+                    class="rl-public-action-card rl-public-action-card--secondary"
+                    id="rlPublicShareBtn"
+                    data-share-text="@L["View my realtor profile on INDOR"]"
+                    data-share-prompt="@L["Copy profile link:"]"
+                    data-share-copied="@L["Link copied"]"
+                    data-share-label="@L["Share Profile"]">
                 <span class="rl-public-action-icon"><i class="fas fa-share-from-square"></i></span>
                 <span class="rl-public-action-copy">
                     <strong>@L["Share Profile"]</strong>
@@ -268,9 +274,21 @@
             var shareUrl = window.location.origin + '@Model.ShareUrl';
             var shareLabel = btn.querySelector('strong');
             btn.addEventListener('click', async function () {
+                var shareText = btn.getAttribute('data-share-text')
+                    || i18n['View my realtor profile on INDOR']
+                    || 'View my realtor profile on INDOR';
+                var promptText = btn.getAttribute('data-share-prompt')
+                    || i18n['Copy profile link:']
+                    || 'Copy profile link:';
+                var copiedLabel = btn.getAttribute('data-share-copied')
+                    || i18n['Link copied']
+                    || 'Link copied';
+                var shareLabelText = btn.getAttribute('data-share-label')
+                    || i18n['Share Profile']
+                    || 'Share Profile';
                 var payload = {
                     title: '@Model.FullName - INDOR',
-                    text: i18n['View my realtor profile on INDOR'] || 'View my realtor profile on INDOR',
+                    text: shareText,
                     url: shareUrl
                 };
                 if (navigator.share) {
@@ -279,13 +297,13 @@
                 try {
                     await navigator.clipboard.writeText(shareUrl);
                     if (shareLabel) {
-                        shareLabel.textContent = i18n['Link copied'] || 'Link copied';
+                        shareLabel.textContent = copiedLabel;
                         setTimeout(function () {
-                            shareLabel.textContent = i18n['Share Profile'] || 'Share Profile';
+                            shareLabel.textContent = shareLabelText;
                         }, 2000);
                     }
                 } catch (_) {
-                    window.prompt(i18n['Copy profile link:'] || 'Copy profile link:', shareUrl);
+                    window.prompt(promptText, shareUrl);
                 }
             });
         })();
