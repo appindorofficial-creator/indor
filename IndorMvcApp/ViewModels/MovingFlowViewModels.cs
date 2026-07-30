@@ -83,15 +83,17 @@ public class MovingItemsViewModel
     public string NombreServicio { get; set; } = string.Empty;
     public string PageTitle { get; set; } = "Move Items & Access";
 
+    [Required]
     public string ItemsMover { get; set; } = string.Empty;
 
     [Required]
-    public string TamanoMovimiento { get; set; } = "OneTwoBedroom";
+    public string TamanoMovimiento { get; set; } = string.Empty;
 
+    [Required]
     public string CondicionesAcceso { get; set; } = string.Empty;
 
     [Required]
-    public string RequiereMontaje { get; set; } = "No";
+    public string RequiereMontaje { get; set; } = string.Empty;
 
     [MaxLength(500)]
     public string? NotaCorta { get; set; }
@@ -129,6 +131,7 @@ public class MovingReviewViewModel
     public decimal PrecioEstimadoMax { get; set; }
     public int DuracionEstimadaMinHoras { get; set; }
     public int DuracionEstimadaMaxHoras { get; set; }
+    public string DuracionEstimadaLabel { get; set; } = string.Empty;
     public string? DisclaimerTexto { get; set; }
 }
 

@@ -127,9 +127,10 @@ public class MovingController : Controller
             SolicitudId = solicitud.Id,
             MovingSetupServicioId = solicitud.MovingSetupServicioId,
             NombreServicio = solicitud.MovingSetupServicio!.Nombre,
-            TipoMovimiento = string.IsNullOrWhiteSpace(solicitud.TipoMovimiento)
-                ? string.Empty
-                : MapLandingToDetailsMoveType(solicitud.TipoMovimiento),
+            // Do not carry Service-step move type into Details — user must choose here.
+            TipoMovimiento = detailsEntered && !string.IsNullOrWhiteSpace(solicitud.TipoMovimiento)
+                ? MapLandingToDetailsMoveType(solicitud.TipoMovimiento)
+                : string.Empty,
             TipoPropiedad = detailsEntered ? (solicitud.TipoPropiedad ?? "") : "",
             TamanoHogar = detailsEntered ? (solicitud.TamanoHogar ?? "") : "",
             DireccionOrigen = solicitud.DireccionOrigen ?? defaultAddress,
@@ -150,6 +151,11 @@ public class MovingController : Controller
         if (string.Equals(action, "back", StringComparison.OrdinalIgnoreCase))
         {
             return RedirectToAction(nameof(MovingService), new { id = solicitud.MovingSetupServicioId });
+        }
+
+        if (model.FechaMovimiento.HasValue && model.FechaMovimiento.Value.Date < DateTime.Today)
+        {
+            ModelState.AddModelError(nameof(model.FechaMovimiento), "Please select today or a future date.");
         }
 
         if (!ModelState.IsValid)
@@ -192,15 +198,18 @@ public class MovingController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id, includeArchivos: true);
         if (solicitud == null) return NotFound();
 
+        var itemsEntered = string.Equals(solicitud.Estado, "ItemsCompleted", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "Confirmed", StringComparison.OrdinalIgnoreCase);
+
         return View(new MovingItemsViewModel
         {
             SolicitudId = solicitud.Id,
             MovingSetupServicioId = solicitud.MovingSetupServicioId,
             NombreServicio = solicitud.MovingSetupServicio!.Nombre,
-            ItemsMover = solicitud.ItemsMover ?? string.Empty,
-            TamanoMovimiento = solicitud.TamanoMovimiento ?? "OneTwoBedroom",
-            CondicionesAcceso = solicitud.CondicionesAcceso ?? string.Empty,
-            RequiereMontaje = solicitud.RequiereMontaje ?? "No",
+            ItemsMover = itemsEntered ? (solicitud.ItemsMover ?? string.Empty) : string.Empty,
+            TamanoMovimiento = itemsEntered ? (solicitud.TamanoMovimiento ?? string.Empty) : string.Empty,
+            CondicionesAcceso = itemsEntered ? (solicitud.CondicionesAcceso ?? string.Empty) : string.Empty,
+            RequiereMontaje = itemsEntered ? (solicitud.RequiereMontaje ?? string.Empty) : string.Empty,
             NotaCorta = solicitud.NotaCorta,
             ArchivosExistentes = solicitud.Archivos
                 .OrderByDescending(a => a.FechaSubida)
@@ -230,6 +239,42 @@ public class MovingController : Controller
             return RedirectToAction(nameof(MovingDetails), new { id = solicitud.Id });
         }
 
+        if (string.IsNullOrWhiteSpace(model.ItemsMover))
+        {
+            ModelState.AddModelError(nameof(model.ItemsMover), "Select at least one item to move.");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.TamanoMovimiento))
+        {
+            ModelState.AddModelError(nameof(model.TamanoMovimiento), "Select the size of your move.");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.CondicionesAcceso))
+        {
+            ModelState.AddModelError(nameof(model.CondicionesAcceso), "Select at least one access condition.");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.RequiereMontaje))
+        {
+            ModelState.AddModelError(nameof(model.RequiereMontaje), "Select whether assembly or disassembly is needed.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            ModelState.LocalizeModelState(_localizer);
+            model.NombreServicio = solicitud.MovingSetupServicio!.Nombre;
+            model.ArchivosExistentes = solicitud.Archivos
+                .OrderByDescending(a => a.FechaSubida)
+                .Select(a => new ExistingMovingFileViewModel
+                {
+                    Id = a.Id,
+                    NombreArchivo = a.NombreArchivo,
+                    RutaArchivo = a.RutaArchivo
+                })
+                .ToList();
+            return View(model);
+        }
+
         solicitud.ItemsMover = model.ItemsMover?.Trim();
         solicitud.TamanoMovimiento = model.TamanoMovimiento;
         solicitud.CondicionesAcceso = model.CondicionesAcceso?.Trim();
@@ -241,6 +286,7 @@ public class MovingController : Controller
             await SaveFilesAsync(solicitud, RequireUserId()!, files);
             if (!ModelState.IsValid)
             {
+                ModelState.LocalizeModelState(_localizer);
                 model.NombreServicio = solicitud.MovingSetupServicio!.Nombre;
                 model.ArchivosExistentes = solicitud.Archivos
                     .Select(a => new ExistingMovingFileViewModel
@@ -413,7 +459,7 @@ public class MovingController : Controller
             included.Add(new MovingIncludedItemViewModel
             {
                 Text = texts[i],
-                Icon = i < icons.Length && !string.IsNullOrWhiteSpace(icons[i]) ? icons[i] : "fa-check"
+                Icon = NormalizeIncludedIcon(i < icons.Length ? icons[i] : null)
             });
         }
 
@@ -483,6 +529,9 @@ public class MovingController : Controller
             PrecioEstimadoMax = solicitud.PrecioEstimadoMax ?? 620,
             DuracionEstimadaMinHoras = solicitud.DuracionEstimadaMinHoras ?? 2,
             DuracionEstimadaMaxHoras = solicitud.DuracionEstimadaMaxHoras ?? 6,
+            DuracionEstimadaLabel = MovingDisplayLabels.FormatDurationRange(
+                solicitud.DuracionEstimadaMinHoras ?? 2,
+                solicitud.DuracionEstimadaMaxHoras ?? 6),
             DisclaimerTexto = disclaimer
         };
     }
@@ -640,6 +689,16 @@ public class MovingController : Controller
             });
         }
     }
+
+    /// <summary>
+    /// Seed data used fa-shield-check (Font Awesome Pro). Map to Free equivalents so icons render.
+    /// </summary>
+    private static string NormalizeIncludedIcon(string? icon) =>
+        string.IsNullOrWhiteSpace(icon)
+            ? "fa-check"
+            : string.Equals(icon, "fa-shield-check", StringComparison.OrdinalIgnoreCase)
+                ? "fa-shield-halved"
+                : icon;
 
     private static string[] SplitPipe(string? value) =>
         string.IsNullOrWhiteSpace(value)

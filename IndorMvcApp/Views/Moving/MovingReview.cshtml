@@ -13,7 +13,7 @@
 
 <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-truck-ramp-box"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-truck-ramp-box"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.NombreServicio)</div></div></div>
         <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Move type"]</div><div class="summary-value">@Model.TipoMovimientoLabel</div></div></div>
         <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">@L["From"]</div><div class="summary-value">@Model.DireccionOrigen</div></div></div>
         <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">@L["To"]</div><div class="summary-value">@Model.DireccionDestino</div></div></div>
@@ -34,16 +34,16 @@
         <div class="summary-label">@L["Estimated range"]</div>
         <div class="range">$@Model.PrecioEstimadoMin.ToString("0") – $@Model.PrecioEstimadoMax.ToString("0")</div>
         <div class="summary-label">@L["Estimated duration"]</div>
-        <div class="summary-value">@Model.DuracionEstimadaMinHoras – @Model.DuracionEstimadaMaxHoras hours</div>
+        <div class="summary-value">@Model.DuracionEstimadaLabel</div>
         <div class="estimate-badges">
-            <span class="estimate-badge">@Model.DuracionEstimadaMinHoras – @Model.DuracionEstimadaMaxHoras hours Estimated time</span>
+            <span class="estimate-badge">@Model.DuracionEstimadaLabel @L["Estimated time"]</span>
             <span class="estimate-badge">@L["Licensed & insured Trusted pros"]</span>
         </div>
     </div>
 
     @if (!string.IsNullOrWhiteSpace(Model.DisclaimerTexto))
     {
-        <p class="disclaimer">@Model.DisclaimerTexto</p>
+        <p class="disclaimer">@L.Catalog(Model.DisclaimerTexto)</p>
     }
 
 <form asp-action="MovingReview" method="post" class="cl-form-actions">

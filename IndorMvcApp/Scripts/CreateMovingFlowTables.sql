@@ -166,7 +166,7 @@ BEGIN
             N'Book moving help for move-in, move-out, or full relocation.',
             N'/inspeccion2.jpeg',
             N'Loading & unloading|Room-to-room moving|Furniture protection & wrapping|Optional disassembly & reassembly',
-            N'fa-box-open|fa-dolly|fa-shield-check|fa-screwdriver-wrench',
+            N'fa-box-open|fa-dolly|fa-shield-halved|fa-screwdriver-wrench',
             N'Estimated time', N'2-6 hours', N'Based on home size',
             N'Best for', N'Apartment & House Moves', N'Small to large homes',
             N'Move-In|Move-Out|Local Move',
@@ -180,7 +180,8 @@ BEGIN
     END
 
     UPDATE dbo.MovingServicioLanding
-    SET ImagenUrl = N'/inspeccion2.jpeg'
+    SET ImagenUrl = N'/inspeccion2.jpeg',
+        IncluyeIconos = REPLACE(IncluyeIconos, N'fa-shield-check', N'fa-shield-halved')
     WHERE MovingSetupServicioId = @MovingServicioId;
 END
 GO

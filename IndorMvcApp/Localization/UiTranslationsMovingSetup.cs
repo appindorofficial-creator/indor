@@ -15,6 +15,8 @@ public static class UiTranslationsMovingSetup
             ["Moving Service"] = "Servicio de mudanza",
             ["Moving Help"] = "Ayuda con mudanza",
             ["Moving Details"] = "Detalles de mudanza",
+            ["Move Items & Access"] = "Artículos y acceso",
+            ["Review & Confirm"] = "Revisar y confirmar",
             ["Book moving help for move-in, move-out, or full relocation."] =
                 "Reserva ayuda de mudanza para entrada, salida o reubicación completa.",
             ["Loading & unloading"] = "Carga y descarga",
@@ -33,9 +35,15 @@ public static class UiTranslationsMovingSetup
             ["Full Move"] = "Mudanza completa",
             ["Get estimate"] = "Obtener estimado",
             ["Select a move type."] = "Selecciona un tipo de mudanza.",
+            ["Select the size of your move."] = "Selecciona el tamaño de tu mudanza.",
+            ["Select at least one item to move."] = "Selecciona al menos un artículo a mover.",
+            ["Select at least one access condition."] = "Selecciona al menos una condición de acceso.",
+            ["Select whether assembly or disassembly is needed."] =
+                "Indica si necesitas montaje o desmontaje.",
             ["Please enter the pick-up address."] = "Ingresa la dirección de recogida.",
             ["Please enter the drop-off address."] = "Ingresa la dirección de entrega.",
             ["Please select a move date."] = "Selecciona una fecha de mudanza.",
+            ["Please select today or a future date."] = "Selecciona hoy o una fecha futura.",
             ["Please enter a valid street address (e.g. 123 Main St, Charlotte, NC)."] =
                 "Ingresa una dirección completa (ej. 123 Main St, Charlotte, NC).",
             ["Enter a complete address with city and state (e.g. 123 Main St, Charlotte, NC)."] =

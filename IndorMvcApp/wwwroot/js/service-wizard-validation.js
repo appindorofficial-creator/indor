@@ -141,6 +141,34 @@
         return card.hasAttribute('data-svc-optional');
     }
 
+    function isTextLikeRequiredTarget(card) {
+        var id = card.getAttribute('data-svc-required') || card.getAttribute('data-whf-required');
+        if (!id) return false;
+        var input = document.getElementById(id);
+        if (!input) return false;
+
+        var tag = (input.tagName || '').toUpperCase();
+        if (tag === 'TEXTAREA' || tag === 'SELECT') return true;
+        if (tag === 'INPUT') {
+            var type = String(input.type || 'text').toLowerCase();
+            if (type !== 'hidden' && type !== 'checkbox' && type !== 'radio' && type !== 'button' && type !== 'submit') {
+                return true;
+            }
+            // Hidden value synced from a visible text/date/select control in the same card
+            if (type === 'hidden' && card.querySelector('input:not([type="hidden"]), select, textarea')) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function incompleteCardMessage(card) {
+        if (card.hasAttribute('data-svc-or-unknown') || isTextLikeRequiredTarget(card)) {
+            return enterMessage();
+        }
+        return selectMessage();
+    }
+
     function isCardVisible(card) {
         if (!card || card.hasAttribute('hidden')) return false;
         if (card.getAttribute('aria-hidden') === 'true') return false;
@@ -208,7 +236,7 @@
             if (!isCardVisible(card)) return;
             if (isOptionalCard(card)) return;
             if (isChoiceComplete(card)) return;
-            var msg = card.hasAttribute('data-svc-or-unknown') ? enterMessage() : selectMessage();
+            var msg = incompleteCardMessage(card);
             showCardError(card, msg);
             if (!firstInvalid) firstInvalid = card;
         });

@@ -9,103 +9,104 @@
 
 <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-<form asp-action="MovingItems" method="post" enctype="multipart/form-data" class="iw-step-form">        <input type="hidden" asp-for="SolicitudId" />
-        <input type="hidden" asp-for="MovingSetupServicioId" />
-        <input type="hidden" asp-for="NombreServicio" />
-        <input type="hidden" asp-for="ItemsMover" id="ItemsMover" />
-        <input type="hidden" asp-for="TamanoMovimiento" id="TamanoMovimiento" />
-        <input type="hidden" asp-for="CondicionesAcceso" id="CondicionesAcceso" />
-        <input type="hidden" asp-for="RequiereMontaje" id="RequiereMontaje" />
+<form asp-action="MovingItems" method="post" enctype="multipart/form-data" class="iw-step-form" novalidate id="movingItemsForm">
+    <input type="hidden" asp-for="SolicitudId" />
+    <input type="hidden" asp-for="MovingSetupServicioId" />
+    <input type="hidden" asp-for="NombreServicio" />
+    <input type="hidden" asp-for="ItemsMover" id="ItemsMover" />
+    <input type="hidden" asp-for="TamanoMovimiento" id="TamanoMovimiento" />
+    <input type="hidden" asp-for="CondicionesAcceso" id="CondicionesAcceso" />
+    <input type="hidden" asp-for="RequiereMontaje" id="RequiereMontaje" />
 
-        <div class="field-card" data-svc-optional>
-            <span class="field-label">@L["What needs to be moved?"]</span>
-            <div class="tile-grid" id="itemsGroup">
-                <button type="button" class="tile-btn" data-value="Sofa"><i class="fas fa-couch"></i>@L["Sofa"]</button>
-                <button type="button" class="tile-btn" data-value="Bed"><i class="fas fa-bed"></i>@L["Bed"]</button>
-                <button type="button" class="tile-btn" data-value="Mattress"><i class="fas fa-mattress-pillow"></i>@L["Mattress"]</button>
-                <button type="button" class="tile-btn" data-value="DiningTable"><i class="fas fa-utensils"></i>@L["Dining table"]</button>
-                <button type="button" class="tile-btn" data-value="Appliances"><i class="fas fa-blender"></i>@L["Appliances"]</button>
-                <button type="button" class="tile-btn" data-value="Boxes"><i class="fas fa-box"></i>@L["Boxes"]</button>
-                <button type="button" class="tile-btn" data-value="OfficeDesk"><i class="fas fa-desktop"></i>@L["Office desk"]</button>
-                <button type="button" class="tile-btn" data-value="Other"><i class="fas fa-ellipsis"></i>@L["Other"]</button>
-            </div>
+    <div class="field-card" data-svc-required="ItemsMover">
+        <span class="field-label">@L["What needs to be moved?"]</span>
+        <div class="tile-grid" id="itemsGroup">
+            <button type="button" class="tile-btn" data-value="Sofa"><i class="fas fa-couch"></i>@L["Sofa"]</button>
+            <button type="button" class="tile-btn" data-value="Bed"><i class="fas fa-bed"></i>@L["Bed"]</button>
+            <button type="button" class="tile-btn" data-value="Mattress"><i class="fas fa-mattress-pillow"></i>@L["Mattress"]</button>
+            <button type="button" class="tile-btn" data-value="DiningTable"><i class="fas fa-utensils"></i>@L["Dining table"]</button>
+            <button type="button" class="tile-btn" data-value="Appliances"><i class="fas fa-blender"></i>@L["Appliances"]</button>
+            <button type="button" class="tile-btn" data-value="Boxes"><i class="fas fa-box"></i>@L["Boxes"]</button>
+            <button type="button" class="tile-btn" data-value="OfficeDesk"><i class="fas fa-desktop"></i>@L["Office desk"]</button>
+            <button type="button" class="tile-btn" data-value="Other"><i class="fas fa-ellipsis"></i>@L["Other"]</button>
         </div>
+    </div>
 
-        <div class="field-card">
-            <span class="field-label">@L["What's the size of your move?"]</span>
-            <div class="tile-grid" data-target="TamanoMovimiento">
-                <button type="button" class="tile-btn" data-value="FewItems"><i class="fas fa-box"></i>@L["Few items"]<span class="sub">@L["Just a few"]</span></button>
-                <button type="button" class="tile-btn" data-value="Studio"><i class="fas fa-bed"></i>@L["Studio"]<span class="sub">@L["Small space"]</span></button>
-                <button type="button" class="tile-btn" data-value="OneTwoBedroom"><i class="fas fa-door-open"></i>@L["1-2 Bedroom"]<span class="sub">@L["Medium home"]</span></button>
-                <button type="button" class="tile-btn" data-value="ThreePlusBedroom"><i class="fas fa-house-user"></i>@L["3+ Bedroom"]<span class="sub">@L["Large home"]</span></button>
-            </div>
+    <div class="field-card" data-svc-required="TamanoMovimiento">
+        <span class="field-label">@L["What's the size of your move?"]</span>
+        <div class="tile-grid" data-target="TamanoMovimiento">
+            <button type="button" class="tile-btn" data-value="FewItems"><i class="fas fa-box"></i>@L["Few items"]<span class="sub">@L["Just a few"]</span></button>
+            <button type="button" class="tile-btn" data-value="Studio"><i class="fas fa-bed"></i>@L["Studio"]<span class="sub">@L["Small space"]</span></button>
+            <button type="button" class="tile-btn" data-value="OneTwoBedroom"><i class="fas fa-door-open"></i>@L["1-2 Bedroom"]<span class="sub">@L["Medium home"]</span></button>
+            <button type="button" class="tile-btn" data-value="ThreePlusBedroom"><i class="fas fa-house-user"></i>@L["3+ Bedroom"]<span class="sub">@L["Large home"]</span></button>
         </div>
+    </div>
 
-        <div class="field-card" data-svc-optional>
-            <span class="field-label">@L["What are the access conditions?"]</span>
-            <div class="chip-row" id="accessGroup" style="flex-wrap:wrap;">
-                <button type="button" class="chip-btn" data-value="Stairs"><i class="fas fa-stairs"></i> @L["Stairs"]</button>
-                <button type="button" class="chip-btn" data-value="Elevator"><i class="fas fa-elevator"></i> @L["Elevator"]</button>
-                <button type="button" class="chip-btn" data-value="LongWalk"><i class="fas fa-person-walking"></i> @L["Long walk"]</button>
-                <button type="button" class="chip-btn" data-value="TightHallway"><i class="fas fa-arrows-left-right"></i> @L["Tight hallway"]</button>
-                <button type="button" class="chip-btn" data-value="ParkingIssue"><i class="fas fa-square-parking"></i> @L["Parking issue"]</button>
-            </div>
+    <div class="field-card" data-svc-required="CondicionesAcceso">
+        <span class="field-label">@L["What are the access conditions?"]</span>
+        <div class="chip-row" id="accessGroup" style="flex-wrap:wrap;">
+            <button type="button" class="chip-btn" data-value="Stairs"><i class="fas fa-stairs"></i> @L["Stairs"]</button>
+            <button type="button" class="chip-btn" data-value="Elevator"><i class="fas fa-elevator"></i> @L["Elevator"]</button>
+            <button type="button" class="chip-btn" data-value="LongWalk"><i class="fas fa-person-walking"></i> @L["Long walk"]</button>
+            <button type="button" class="chip-btn" data-value="TightHallway"><i class="fas fa-arrows-left-right"></i> @L["Tight hallway"]</button>
+            <button type="button" class="chip-btn" data-value="ParkingIssue"><i class="fas fa-square-parking"></i> @L["Parking issue"]</button>
         </div>
+    </div>
 
-        <div class="field-card">
-            <span class="field-label">@L["Need assembly or disassembly?"]</span>
-            <div class="tile-grid" style="grid-template-columns:1fr 1fr;" data-target="RequiereMontaje">
-                <button type="button" class="tile-btn" data-value="Yes"><i class="fas fa-screwdriver-wrench"></i>@L["Yes"]</button>
-                <button type="button" class="tile-btn" data-value="No"><i class="fas fa-ban"></i>@L["No"]</button>
-            </div>
+    <div class="field-card" data-svc-required="RequiereMontaje">
+        <span class="field-label">@L["Need assembly or disassembly?"]</span>
+        <div class="tile-grid" style="grid-template-columns:1fr 1fr;" data-target="RequiereMontaje">
+            <button type="button" class="tile-btn" data-value="Yes"><i class="fas fa-screwdriver-wrench"></i>@L["Yes"]</button>
+            <button type="button" class="tile-btn" data-value="No"><i class="fas fa-ban"></i>@L["No"]</button>
         </div>
+    </div>
 
-        <div class="field-card" data-svc-optional>
-            <span class="field-label">@L["Add photos or notes (optional)"]</span>
-            <p class="photo-hint">@L["Add up to 5 photos. Tap to add more — each photo stays until you remove it."]</p>
-            <div class="photo-upload-slot">
-                <input type="file" name="files" id="movingPhotos" class="photo-input-hidden" multiple
-                       accept="image/*,.jpg,.jpeg,.png" />
-                <label class="photo-upload" id="movingPhotoDropzone" for="movingPhotos">
-                    <i class="fas fa-camera"></i>
-                    <p><strong>@L["Upload photos"]</strong></p>
-                    <p>@L["JPG or PNG, up to 10 MB each"]</p>
-                </label>
-                <div class="photo-selected-list" id="movingPhotoList" hidden></div>
-            </div>
-            @if (Model.ArchivosExistentes.Count > 0)
-            {
-                <div class="photo-attached-list" id="movingSavedPhotos">
-                    @foreach (var file in Model.ArchivosExistentes)
-                    {
-                        <div class="photo-selected-item">
-                            @if (!string.IsNullOrWhiteSpace(file.RutaArchivo))
-                            {
-                                <img class="photo-preview-thumb" src="@Url.Content($"~{file.RutaArchivo}")" alt="" loading="lazy" />
-                            }
-                            else
-                            {
-                                <i class="fas fa-image"></i>
-                            }
-                            <span>@file.NombreArchivo</span>
-                            <button type="submit" form="removeMovingPhoto@(file.Id)" class="photo-remove-btn" aria-label="@L["Remove @file.NombreArchivo"]">
-                                <i class="fas fa-xmark"></i>
-                            </button>
-                        </div>
-                    }
-                </div>
-            }
-            <div class="input-wrap" style="margin-top:10px;">
-                <i class="fas fa-note-sticky"></i>
-                <textarea asp-for="NotaCorta" rows="3" placeholder="@L["Add notes"]"></textarea>
-            </div>
+    <div class="field-card" data-svc-optional>
+        <span class="field-label">@L["Add photos or notes (optional)"]</span>
+        <p class="photo-hint">@L["Add up to 5 photos. Tap to add more — each photo stays until you remove it."]</p>
+        <div class="photo-upload-slot">
+            <input type="file" name="files" id="movingPhotos" class="photo-input-hidden" multiple
+                   accept="image/*,.jpg,.jpeg,.png" />
+            <label class="photo-upload" id="movingPhotoDropzone" for="movingPhotos">
+                <i class="fas fa-camera"></i>
+                <p><strong>@L["Upload photos"]</strong></p>
+                <p>@L["JPG or PNG, up to 10 MB each"]</p>
+            </label>
+            <div class="photo-selected-list" id="movingPhotoList" hidden></div>
         </div>
+        @if (Model.ArchivosExistentes.Count > 0)
+        {
+            <div class="photo-attached-list" id="movingSavedPhotos">
+                @foreach (var file in Model.ArchivosExistentes)
+                {
+                    <div class="photo-selected-item">
+                        @if (!string.IsNullOrWhiteSpace(file.RutaArchivo))
+                        {
+                            <img class="photo-preview-thumb" src="@Url.Content($"~{file.RutaArchivo}")" alt="" loading="lazy" />
+                        }
+                        else
+                        {
+                            <i class="fas fa-image"></i>
+                        }
+                        <span>@file.NombreArchivo</span>
+                        <button type="submit" form="removeMovingPhoto@(file.Id)" class="photo-remove-btn" aria-label="@L["Remove @file.NombreArchivo"]">
+                            <i class="fas fa-xmark"></i>
+                        </button>
+                    </div>
+                }
+            </div>
+        }
+        <div class="input-wrap" style="margin-top:10px;">
+            <i class="fas fa-note-sticky"></i>
+            <textarea asp-for="NotaCorta" rows="3" placeholder="@L["Add notes"]"></textarea>
+        </div>
+    </div>
 
-        <div class="cl-form-actions">
-            <button type="submit" class="btn-primary">@L["Continue"] <i class="fas fa-chevron-right"></i></button>
-            <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
-        </div>
-    </form>
+    <div class="cl-form-actions">
+        <button type="submit" class="btn-primary">@L["Continue"] <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" name="action" value="back" class="btn-outline" formnovalidate>@L["Back"]</button>
+    </div>
+</form>
 
 @foreach (var file in Model.ArchivosExistentes)
 {
@@ -117,18 +118,20 @@
 }
 
 @section Scripts {
-<script>    (function () {
+<script>
+    (function () {
         function initSingleTiles(containerSelector, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
             const container = document.querySelector(containerSelector);
             if (!container || !hidden) return;
             const buttons = container.querySelectorAll('.tile-btn');
+            const seed = (initial && String(initial).trim()) || (hidden.value || '').trim();
             function setActive(value) {
-                hidden.value = value;
-                buttons.forEach(b => b.classList.toggle('active', b.dataset.value === value));
+                hidden.value = value || '';
+                buttons.forEach(b => b.classList.toggle('active', !!value && b.dataset.value === value));
             }
             buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
-            setActive(initial || hidden.value || buttons[0]?.dataset.value);
+            setActive(seed);
         }
 
         initSingleTiles('[data-target="TamanoMovimiento"]', 'TamanoMovimiento', '@Model.TamanoMovimiento');
