@@ -5,157 +5,137 @@
     ViewData["WizardBackUrl"] = Url.Action("HvacMaintenanceDetails", "HvacMaintenance", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;
-
+    var fechaValue = Model.FechaVisita?.ToString("yyyy-MM-dd") ?? string.Empty;
 }
 
-
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Choose your visit"]</h1>
-    <p class="page-lead" style="margin-bottom:16px;">@L["Pick the best time for your yearly tune-up."]</p>
+<p class="page-lead" style="margin-bottom:16px;">@L["Pick the best time for your yearly tune-up."]</p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+<div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="hvac-schedule-form" asp-action="HvacMaintenanceSchedule" method="post">
-        <input type="hidden" asp-for="SolicitudId" />
-        <input type="hidden" asp-for="HomeCarePriorityId" />
-        <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
-        <input type="hidden" asp-for="TipoServicio" id="TipoServicio" />
+<form id="hvac-schedule-form" asp-action="HvacMaintenanceSchedule" method="post" novalidate class="iw-step-form">
+    <input type="hidden" asp-for="SolicitudId" />
+    <input type="hidden" asp-for="HomeCarePriorityId" />
+    <input type="hidden" asp-for="FechaVisita" id="FechaVisita" value="@fechaValue" />
+    <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
+    <input type="hidden" asp-for="TipoServicio" id="TipoServicio" />
+    <input type="hidden" asp-for="DireccionPropiedad" />
+    <input type="hidden" asp-for="TelefonoContacto" />
 
-        <div class="field-card">
-            <div class="field-head"><i class="fas fa-calendar"></i><span>@L["Preferred date"]</span></div>
-            <input asp-for="FechaVisita" type="date" id="visitDateInput" data-min-date="@Model.MinVisitDateIso" />
-            <span asp-validation-for="FechaVisita" class="text-danger"></span>
-        </div>
+    <div class="field-card" data-svc-required="FechaVisita">
+        <div class="field-head"><i class="fas fa-calendar"></i><span>@L["Preferred date"]</span></div>
+        <input type="date" id="visitDateInput" value="@fechaValue" min="@Model.MinVisitDateIso" />
+    </div>
 
-        <div class="field-card">
-            <div class="field-head"><i class="fas fa-clock"></i><span>@L["Preferred time window"]</span></div>
-            <div class="time-grid-3">
-                <button type="button" class="time-card" data-window="Morning">
-                    <span class="radio"></span>
-                    <i class="fas fa-sun main"></i>
-                    <span class="label">@L["Morning"]</span>
-                    <span class="sub">@L["8–11 AM"]</span>
-                </button>
-                <button type="button" class="time-card" data-window="Midday">
-                    <span class="radio"></span>
-                    <i class="fas fa-sun main"></i>
-                    <span class="label">@L["Midday"]</span>
-                    <span class="sub">@L["11 AM–2 PM"]</span>
-                </button>
-                <button type="button" class="time-card" data-window="Afternoon">
-                    <span class="radio"></span>
-                    <i class="fas fa-cloud-sun main"></i>
-                    <span class="label">@L["Afternoon"]</span>
-                    <span class="sub">@L["2–5 PM"]</span>
-                </button>
-            </div>
-        </div>
-
-        <div class="field-card">
-            <div class="field-head"><i class="fas fa-wrench"></i><span>@L["Service type"]</span></div>
-            <div class="service-type-row">
-                <button type="button" class="service-type-btn" data-type="OneTime">
-                    <i class="fas fa-check"></i> @L["One-time tune-up"]
-                </button>
-                <button type="button" class="service-type-btn" data-type="YearlyReminder">
-                    <i class="fas fa-bell"></i> @L["Add yearly reminder"]
-                </button>
-            </div>
-        </div>
-
-        <div class="field-card">
-            <div class="field-head"><i class="fas fa-house"></i><span>@L["Your contact"]</span></div>
-            <div class="contact-card">
-                <div class="row"><i class="fas fa-location-dot"></i><span>@Model.DireccionPropiedad</span></div>
-                <div class="row"><i class="fas fa-phone"></i><span>@Model.TelefonoContacto</span></div>
-            </div>
-            <input type="hidden" asp-for="DireccionPropiedad" />
-            <input type="hidden" asp-for="TelefonoContacto" />
-        </div>
-
-        @if (!string.IsNullOrWhiteSpace(Model.InfoBoxTexto))
-        {
-            <div class="info-box-blue">
-                <i class="fas fa-shield-halved"></i>
-                <span>@L.Catalog(Model.InfoBoxTexto)</span>
-            </div>
-        }
-
-        <div class="sticky-footer">
-            <div class="sticky-footer-row">
-                <div class="sticky-footer-price">
-                    <div class="price-label"><i class="fas fa-tag"></i> @L["Estimated starting price"]</div>
-                    <div class="price-value">@L.T("From ${0}", Model.PrecioEstimado.ToString("0"))</div>
-                </div>
-            </div>
-            <button type="submit" name="action" value="continue" class="btn-primary">
-                @L["Review request"] <i class="fas fa-chevron-right"></i>
+    <div class="field-card" data-svc-required="VentanaHorario">
+        <div class="field-head"><i class="fas fa-clock"></i><span>@L["Preferred time window"]</span></div>
+        <div class="time-grid-3">
+            <button type="button" class="time-card" data-window="Morning">
+                <span class="radio"></span>
+                <i class="fas fa-sun main"></i>
+                <span class="label">@L["Morning"]</span>
+                <span class="sub">@L["8–11 AM"]</span>
+            </button>
+            <button type="button" class="time-card" data-window="Midday">
+                <span class="radio"></span>
+                <i class="fas fa-sun main"></i>
+                <span class="label">@L["Midday"]</span>
+                <span class="sub">@L["11 AM–2 PM"]</span>
+            </button>
+            <button type="button" class="time-card" data-window="Afternoon">
+                <span class="radio"></span>
+                <i class="fas fa-cloud-sun main"></i>
+                <span class="label">@L["Afternoon"]</span>
+                <span class="sub">@L["2–5 PM"]</span>
             </button>
         </div>
-    </form>
-</div>
+    </div>
+
+    <div class="field-card" data-svc-required="TipoServicio">
+        <div class="field-head"><i class="fas fa-wrench"></i><span>@L["Service type"]</span></div>
+        <div class="service-type-row">
+            <button type="button" class="service-type-btn" data-type="OneTime">
+                <i class="fas fa-check"></i> @L["One-time tune-up"]
+            </button>
+            <button type="button" class="service-type-btn" data-type="YearlyReminder">
+                <i class="fas fa-bell"></i> @L["Add yearly reminder"]
+            </button>
+        </div>
+    </div>
+
+    <div class="field-card" data-svc-optional>
+        <div class="field-head"><i class="fas fa-house"></i><span>@L["Your contact"]</span></div>
+        <div class="contact-card">
+            <div class="row"><i class="fas fa-location-dot"></i><span>@Model.DireccionPropiedad</span></div>
+            <div class="row"><i class="fas fa-phone"></i><span>@Model.TelefonoContacto</span></div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.InfoBoxTexto))
+    {
+        <div class="info-box-blue">
+            <i class="fas fa-shield-halved"></i>
+            <span>@L.Catalog(Model.InfoBoxTexto)</span>
+        </div>
+    }
+
+    <div class="sticky-footer">
+        <div class="sticky-footer-row">
+            <div class="sticky-footer-price">
+                <div class="price-label"><i class="fas fa-tag"></i> @L["Estimated starting price"]</div>
+                <div class="price-value">@L.T("From ${0}", Model.PrecioEstimado.ToString("0"))</div>
+            </div>
+        </div>
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            @L["Review request"] <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+</form>
+
 @section Scripts {
 <script>
     (function () {
         var windowInput = document.getElementById('VentanaHorario');
         var typeInput = document.getElementById('TipoServicio');
-
-        function setActive(collection, activeEl, attr) {
-            collection.forEach(function (el) {
-                el.classList.toggle('active', el === activeEl);
-            });
-            if (activeEl) windowInput.value = activeEl.getAttribute(attr);
-        }
+        var fechaHidden = document.getElementById('FechaVisita');
+        var visitDateInput = document.getElementById('visitDateInput');
+        var minVisitDate = '@Model.MinVisitDateIso';
 
         document.querySelectorAll('.time-card').forEach(function (card) {
+            if (windowInput && windowInput.value && card.getAttribute('data-window') === windowInput.value) {
+                card.classList.add('active');
+            }
             card.addEventListener('click', function () {
                 document.querySelectorAll('.time-card').forEach(function (c) { c.classList.remove('active'); });
                 card.classList.add('active');
-                windowInput.value = card.getAttribute('data-window');
+                if (windowInput) windowInput.value = card.getAttribute('data-window') || '';
             });
-            if (card.getAttribute('data-window') === windowInput.value) card.classList.add('active');
         });
 
         document.querySelectorAll('.service-type-btn').forEach(function (btn) {
+            if (typeInput && typeInput.value && btn.getAttribute('data-type') === typeInput.value) {
+                btn.classList.add('active');
+            }
             btn.addEventListener('click', function () {
                 document.querySelectorAll('.service-type-btn').forEach(function (b) { b.classList.remove('active'); });
                 btn.classList.add('active');
-                typeInput.value = btn.getAttribute('data-type');
+                if (typeInput) typeInput.value = btn.getAttribute('data-type') || '';
             });
-            if (btn.getAttribute('data-type') === typeInput.value) btn.classList.add('active');
         });
 
-        var visitDateInput = document.getElementById('visitDateInput');
-        var scheduleForm = document.getElementById('hvac-schedule-form');
-        var minVisitDate = visitDateInput?.getAttribute('data-min-date') || '@Model.MinVisitDateIso';
-
-        function visitDateErrorMessage() {
-            if (!visitDateInput || !visitDateInput.value) {
-                return 'Please select a preferred date.';
+        function syncVisitDate() {
+            if (!visitDateInput || !fechaHidden) return;
+            var value = visitDateInput.value || '';
+            if (value && minVisitDate && value < minVisitDate) {
+                visitDateInput.value = '';
+                value = '';
             }
-            if (visitDateInput.value < minVisitDate) {
-                return 'Please select today or a future date.';
-            }
-            return '';
+            fechaHidden.value = value;
         }
 
-        function syncVisitDateValidity() {
-            if (!visitDateInput) return true;
-            var message = visitDateErrorMessage();
-            visitDateInput.setCustomValidity(message);
-            return !message;
-        }
-
-        visitDateInput?.addEventListener('input', syncVisitDateValidity);
-        visitDateInput?.addEventListener('change', syncVisitDateValidity);
-        visitDateInput?.addEventListener('blur', syncVisitDateValidity);
-
-        scheduleForm?.addEventListener('submit', function (e) {
-            if (!syncVisitDateValidity()) {
-                e.preventDefault();
-                visitDateInput.reportValidity();
-            }
-        });
+        visitDateInput?.addEventListener('input', syncVisitDate);
+        visitDateInput?.addEventListener('change', syncVisitDate);
+        syncVisitDate();
     })();
-
 </script>
 }

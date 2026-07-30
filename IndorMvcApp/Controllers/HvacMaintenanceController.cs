@@ -209,17 +209,22 @@ public class HvacMaintenanceController : Controller
 
         await EnsureContactDefaultsAsync(model);
 
-        if (model.FechaVisita.Date < DateTime.Today)
+        if (!model.FechaVisita.HasValue)
+        {
+            ModelState.AddModelError(nameof(model.FechaVisita), "Select a preferred date.");
+        }
+        else if (model.FechaVisita.Value.Date < DateTime.Today)
         {
             ModelState.AddModelError(nameof(model.FechaVisita), "Please select today or a future date.");
         }
 
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             var schedule = await BuildScheduleViewModelAsync(solicitud);
             schedule.FechaVisita = model.FechaVisita;
-            schedule.VentanaHorario = model.VentanaHorario;
-            schedule.TipoServicio = model.TipoServicio;
+            schedule.VentanaHorario = model.VentanaHorario ?? string.Empty;
+            schedule.TipoServicio = model.TipoServicio ?? string.Empty;
             schedule.DireccionPropiedad = model.DireccionPropiedad;
             schedule.TelefonoContacto = model.TelefonoContacto;
             schedule.MinVisitDateIso = DateTime.Today.ToString("yyyy-MM-dd");
@@ -228,7 +233,7 @@ public class HvacMaintenanceController : Controller
 
         try
         {
-            solicitud.FechaVisita = model.FechaVisita.Date;
+            solicitud.FechaVisita = model.FechaVisita!.Value.Date;
             solicitud.VentanaHorario = model.VentanaHorario;
             solicitud.TipoServicio = model.TipoServicio;
             solicitud.RecordatorioAnual = string.Equals(model.TipoServicio, "YearlyReminder", StringComparison.OrdinalIgnoreCase);
@@ -369,20 +374,22 @@ public class HvacMaintenanceController : Controller
             phone = user?.Telefono;
         }
 
-        var tipoServicio = solicitud.TipoServicio ?? "OneTime";
+        // First visit to Schedule: leave date/window/service empty so nothing is pre-selected.
+        // Re-posts keep values via the invalid-model path above.
+        var scheduleEntered = string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
 
         return new HvacMaintenanceScheduleViewModel
         {
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = landing?.LandingTitulo ?? "HVAC Tune-Up",
-            FechaVisita = NormalizeVisitDate(solicitud.FechaVisita),
-            VentanaHorario = solicitud.VentanaHorario ?? "Morning",
-            TipoServicio = tipoServicio,
+            FechaVisita = scheduleEntered ? NormalizeVisitDate(solicitud.FechaVisita) : null,
+            VentanaHorario = scheduleEntered ? (solicitud.VentanaHorario ?? string.Empty) : string.Empty,
+            TipoServicio = scheduleEntered ? (solicitud.TipoServicio ?? string.Empty) : string.Empty,
             DireccionPropiedad = address ?? string.Empty,
             TelefonoContacto = phone ?? string.Empty,
             MinVisitDateIso = DateTime.Today.ToString("yyyy-MM-dd"),
-            PrecioEstimado = HvacMaintenancePricingService.GetEstimatedPrice(tipoServicio),
+            PrecioEstimado = HvacMaintenancePricingService.GetEstimatedPrice(solicitud.TipoServicio),
             PrecioTexto = landing?.PrecioTexto ?? HvacMaintenanceDisplayLabels.FormatPrice(HvacMaintenancePricingService.StartingPrice),
             InfoBoxTexto = landing?.InfoBoxTexto
         };
@@ -499,9 +506,7 @@ public class HvacMaintenanceController : Controller
                 HomeCarePriorityId = priorityId,
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
-                FechaCreacion = DateTime.Now,
-                VentanaHorario = "Morning",
-                TipoServicio = "OneTime"
+                FechaCreacion = DateTime.Now
             };
             _db.SolicitudesHvacMaintenance.Add(solicitud);
             await _db.SaveChangesAsync();
