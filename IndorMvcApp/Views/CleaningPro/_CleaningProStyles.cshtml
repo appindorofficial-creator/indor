@@ -63,23 +63,78 @@
     .crew-card .hint { font-size: 0.62rem; color: #94A3B8; margin-top: 4px; line-height: 1.2; }
     .trust-badge { display: flex; align-items: center; gap: 8px; font-size: 0.72rem; color: #64748B; margin-top: 10px; }
     .trust-badge i { color: #0066CC; }
-    .area-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-    .area-chip {
-        border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 10px;
-        cursor: pointer; position: relative; font-size: 16px; font-weight: 700; color: #64748B;
-        text-align: left; display: flex; align-items: center; gap: 8px; min-width: 0;
-        box-sizing: border-box; overflow: hidden; width: 100%;
+    .field-card {
+        background: #FFF;
+        border: 1.5px solid #E5E7EB;
+        border-radius: 14px;
+        padding: 14px;
+        margin-bottom: 12px;
+        overflow: visible;
+        min-width: 0;
     }
-    .area-chip > i { color: #94A3B8; width: 16px; text-align: center; flex-shrink: 0; font-size: 0.95rem; }
+    .area-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        width: 100%;
+    }
+    .area-chip {
+        border: 1.5px solid #E5E7EB;
+        background: #F9FAFB;
+        border-radius: 12px;
+        /* Reserve right gutter so the absolute check never leaves the card. */
+        padding: 10px 30px 10px 10px;
+        cursor: pointer;
+        position: relative;
+        /* 16px+ on the control avoids iOS Safari zoom (Bug #24). */
+        font-size: 16px;
+        font-weight: 700;
+        color: #64748B;
+        text-align: left;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        box-sizing: border-box;
+        overflow: hidden;
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+    .area-chip > i {
+        color: #94A3B8;
+        width: 16px;
+        flex: 0 0 16px;
+        text-align: center;
+        font-size: 0.9rem;
+        line-height: 1;
+    }
     .area-chip > span:not(.check) {
-        flex: 1 1 auto; min-width: 0; line-height: 1.25; word-break: break-word;
+        flex: 1 1 auto;
+        min-width: 0;
+        max-width: 100%;
+        line-height: 1.25;
+        font-size: 0.78rem;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
     .area-chip.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
     .area-chip.active > i { color: #0066CC; }
     .area-chip .check {
-        margin-left: auto; width: 18px; height: 18px; border-radius: 50%; border: 1.5px solid #CBD5E1;
-        display: flex; align-items: center; justify-content: center; flex: 0 0 18px;
-        background: #FFF; box-sizing: border-box; pointer-events: none;
+        position: absolute;
+        top: 50%;
+        right: 8px;
+        transform: translateY(-50%);
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 1.5px solid #CBD5E1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #FFF;
+        box-sizing: border-box;
+        pointer-events: none;
+        flex: none;
     }
     .area-chip .check i { font-size: 0.5rem; margin: 0; line-height: 1; color: transparent; width: auto; }
     .area-chip.active .check { border-color: #0066CC; background: #0066CC; }
@@ -90,13 +145,6 @@
         font-weight: 700; font-size: 16px; color: #64748B; cursor: pointer; text-align: center;
     }
     .hour-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
-    .field-card {
-        background: #FFF;
-        border: 1.5px solid #E5E7EB;
-        border-radius: 14px;
-        padding: 14px;
-        margin-bottom: 12px;
-    }
     .summary-bar { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-size: 0.78rem; font-weight: 600; color: #0A2540; text-align: center; }
     .addon-grid { display: flex; flex-direction: column; gap: 8px; }
     .addon-row {
