@@ -54,11 +54,11 @@ public class CrawlspaceCheckScheduleViewModel
 
     public string PreocupacionesSeleccionadas { get; set; } = string.Empty;
 
-    [Required]
-    public string TimingPreferido { get; set; } = "AsSoonAsPossible";
+    [Required(ErrorMessage = "Please select your preferred timing.")]
+    public string TimingPreferido { get; set; } = string.Empty;
 
-    [Required]
-    public DateTime FechaPreferida { get; set; }
+    [Required(ErrorMessage = "Please select a preferred date.")]
+    public DateTime? FechaPreferida { get; set; }
 
     [MaxLength(300)]
     public string? Notas { get; set; }

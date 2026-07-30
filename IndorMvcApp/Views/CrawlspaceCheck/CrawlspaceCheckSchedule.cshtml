@@ -1,21 +1,19 @@
 @model IndorMvcApp.ViewModels.CrawlspaceCheckScheduleViewModel
 @{
     ViewData["Title"] = L["Schedule crawlspace check - INDOR"];
-var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks", "PestSigns", "Cracks", "PipeLeaks", "DamagedDucts" };
+    var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks", "PestSigns", "Cracks", "PipeLeaks", "DamagedDucts" };
     ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("CrawlspaceCheckSetup", "CrawlspaceCheck", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;
-
 }
-
 
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["What should we look for?"]</h1>
     <p class="page-lead" style="margin-bottom:16px;">@L["Select any concerns and tell us when you'd like the check."]</p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="csc-schedule-form" asp-action="CrawlspaceCheckSchedule" method="post">
+    <form id="csc-schedule-form" asp-action="CrawlspaceCheckSchedule" method="post" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="PreocupacionesSeleccionadas" id="PreocupacionesSeleccionadas" />
@@ -23,7 +21,7 @@ var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks
 
         @if (Model.ConcernOptions.Count > 0)
         {
-            <div class="field-card">
+            <div class="field-card" data-svc-required="PreocupacionesSeleccionadas">
                 <div class="field-head"><i class="fas fa-magnifying-glass"></i><span>@L["What should we look for?"]</span></div>
                 <div class="concern-grid">
                     @for (var i = 0; i < Model.ConcernOptions.Count; i++)
@@ -37,11 +35,10 @@ var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks
                         </button>
                     }
                 </div>
-                <span asp-validation-for="PreocupacionesSeleccionadas" class="text-danger"></span>
             </div>
         }
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TimingPreferido">
             <div class="field-head"><i class="fas fa-clock"></i><span>@L["Preferred timing"]</span></div>
             <div class="timing-row">
                 <button type="button" class="timing-card" data-timing="AsSoonAsPossible">
@@ -62,10 +59,8 @@ var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks
         <div class="field-card">
             <div class="field-head"><i class="fas fa-calendar"></i><span>@L["Preferred date"]</span></div>
             <div class="date-picker-card">
-                <div class="field-head" style="margin-bottom:8px;"><i class="fas fa-calendar-day"></i><span>@L["Preferred date"]</span></div>
                 <p class="sub">@L["Tell us when it works best for you."]</p>
-                <input asp-for="FechaPreferida" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" style="margin-top:10px;" />
-                <span asp-validation-for="FechaPreferida" class="text-danger"></span>
+                <input asp-for="FechaPreferida" id="FechaPreferida" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" required style="margin-top:10px;" />
             </div>
         </div>
 
@@ -86,7 +81,7 @@ var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks
             @L["Review request"] <i class="fas fa-chevron-right"></i>
         </button>
     </form>
-</div>
+
 @section Scripts {
 <script>
     (function () {
@@ -126,6 +121,5 @@ var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks
             if (btn.getAttribute('data-timing') === timingInput.value) btn.classList.add('active');
         });
     })();
-
 </script>
 }

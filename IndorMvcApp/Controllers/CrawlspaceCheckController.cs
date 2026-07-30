@@ -165,7 +165,7 @@ public class CrawlspaceCheckController : Controller
             ModelState.AddModelError(nameof(model.PreocupacionesSeleccionadas), "Select at least one concern to look for.");
         }
 
-        if (model.FechaPreferida.Date < DateTime.Today)
+        if (!model.FechaPreferida.HasValue || model.FechaPreferida.Value.Date < DateTime.Today)
         {
             ModelState.AddModelError(nameof(model.FechaPreferida), "Please select today or a future date.");
         }
@@ -187,7 +187,7 @@ public class CrawlspaceCheckController : Controller
             solicitud.PreocupacionesSeleccionadas = model.PreocupacionesSeleccionadas;
             solicitud.TimingPreferido = model.TimingPreferido;
             solicitud.RecordatorioAnual = string.Equals(model.TimingPreferido, "YearlyReminder", StringComparison.OrdinalIgnoreCase);
-            solicitud.FechaPreferida = model.FechaPreferida.Date;
+            solicitud.FechaPreferida = model.FechaPreferida!.Value.Date;
             solicitud.Notas = model.Notas?.Trim();
             solicitud.PrecioEstimado = CrawlspaceCheckPricingService.GetEstimatedPrice();
             solicitud.Estado = "Submitted";
@@ -305,14 +305,47 @@ public class CrawlspaceCheckController : Controller
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = landing?.LandingTitulo ?? "Crawlspace Check",
-            PreocupacionesSeleccionadas = solicitud.PreocupacionesSeleccionadas ?? string.Empty,
-            TimingPreferido = solicitud.TimingPreferido ?? "AsSoonAsPossible",
-            FechaPreferida = solicitud.FechaPreferida ?? GetDefaultDate(),
+            PreocupacionesSeleccionadas = ResolveScheduleConcerns(solicitud),
+            TimingPreferido = solicitud.TimingPreferido ?? string.Empty,
+            FechaPreferida = solicitud.FechaPreferida,
             Notas = solicitud.Notas,
             ConcernOptions = SplitPipePairs(landing?.PreocupacionItems, landing?.PreocupacionIconos),
             TipTexto = "Tip: check crawlspaces yearly and after heavy rain or flooding.",
             ResumenServicioTexto = landing?.ResumenServicioTexto
         };
+    }
+
+    /// <summary>
+    /// Service stores check-area codes in PreocupacionesSeleccionadas; Schedule uses different concern codes.
+    /// Only restore concern selections after the schedule step has been submitted.
+    /// </summary>
+    private static string ResolveScheduleConcerns(SolicitudCrawlspaceCheck solicitud)
+    {
+        if (!string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase))
+        {
+            return string.Empty;
+        }
+
+        return FilterToConcernCodes(solicitud.PreocupacionesSeleccionadas);
+    }
+
+    private static readonly HashSet<string> ScheduleConcernCodes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks", "PestSigns", "Cracks", "PipeLeaks", "DamagedDucts"
+    };
+
+    private static string FilterToConcernCodes(string? raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return string.Empty;
+        }
+
+        var kept = raw.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(ScheduleConcernCodes.Contains)
+            .Distinct(StringComparer.OrdinalIgnoreCase);
+
+        return string.Join("|", kept);
     }
 
     private async Task EnsureAddressAsync(SolicitudCrawlspaceCheck solicitud)
@@ -341,17 +374,6 @@ public class CrawlspaceCheckController : Controller
                 .Select(p => p.Direccion)
                 .FirstOrDefaultAsync();
         }
-    }
-
-    private static DateTime GetDefaultDate()
-    {
-        var date = DateTime.Today.AddDays(7);
-        while (date.DayOfWeek is DayOfWeek.Saturday or DayOfWeek.Sunday)
-        {
-            date = date.AddDays(1);
-        }
-
-        return date;
     }
 
     private static List<CrawlspaceCheckFeatureItemViewModel> SplitPipePairs(string? texts, string? icons)

@@ -92,6 +92,7 @@
         '.area-chip',
         '.symptom-pill',
         '.concern-chip',
+        '.concern-card',
         '.check-tile',
         '.check-card',
         '.csc-check-item',
