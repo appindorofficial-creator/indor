@@ -180,11 +180,6 @@ public class WaterHeaterFlushController : Controller
             return RedirectToAction(nameof(WaterHeaterFlushSetup), new { id = solicitud.Id });
         }
 
-        if (string.IsNullOrWhiteSpace(model.SintomasSeleccionados))
-        {
-            model.SintomasSeleccionados = "NoIssues";
-        }
-
         if (string.Equals(model.PreferenciaTiempo, "ChooseDate", StringComparison.OrdinalIgnoreCase)
             && (!model.FechaVisita.HasValue || model.FechaVisita.Value.Date < DateTime.Today))
         {

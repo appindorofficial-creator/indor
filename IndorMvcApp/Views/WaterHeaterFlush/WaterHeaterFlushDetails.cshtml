@@ -11,9 +11,9 @@
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Maintenance details"]</h1>
     <p class="page-lead" style="margin-bottom:16px;">@L["Help us understand the condition of your water heater."]</p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="whf-details-form" asp-action="WaterHeaterFlushDetails" method="post">
+    <form id="whf-details-form" asp-action="WaterHeaterFlushDetails" method="post" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="UltimoFlush" id="UltimoFlush" />
@@ -21,7 +21,7 @@
         <input type="hidden" asp-for="TipoServicio" id="TipoServicio" />
         <input type="hidden" asp-for="PreferenciaTiempo" id="PreferenciaTiempo" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="UltimoFlush">
             <div class="field-head"><i class="fas fa-clock-rotate-left"></i><span>@L["When was the last flush?"]</span></div>
             <div class="segment-row">
                 <button type="button" class="segment-btn" data-flush="Within1Year">@L["Within 1 year"]</button>
@@ -31,7 +31,7 @@
             </div>
         </div>
 
-        <div class="field-card" data-svc-optional>
+        <div class="field-card" data-svc-required="SintomasSeleccionados">
             <div class="field-head"><i class="fas fa-ear-listen"></i><span>@L["What have you noticed?"]</span></div>
             <div class="symptom-grid">
                 <button type="button" class="symptom-pill" data-symptom="RumblingNoise"><i class="fas fa-volume-high"></i>@L["Rumbling noise"]</button>
@@ -42,7 +42,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoServicio">
             <div class="field-head"><i class="fas fa-wrench"></i><span>@L["Service preference"]</span></div>
             <button type="button" class="service-card" data-service="OneTime">
                 <span class="radio"></span>
@@ -56,7 +56,7 @@
             </button>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="PreferenciaTiempo">
             <div class="field-head"><i class="fas fa-calendar"></i><span>@L["When works best for you?"]</span></div>
             <div class="timing-grid">
                 <button type="button" class="service-card" data-timing="NextAvailable">
@@ -139,7 +139,13 @@
                     current.push(code);
                     btn.classList.add('active');
                 }
-                if (current.length === 0) current = ['NoIssues'];
+                if (current.length === 0) {
+                    setSymptoms([]);
+                    document.querySelectorAll('[data-symptom="NoIssues"]').forEach(function (b) {
+                        b.classList.remove('active');
+                    });
+                    return;
+                }
                 setSymptoms(current);
                 document.querySelectorAll('[data-symptom="NoIssues"]').forEach(function (b) {
                     b.classList.toggle('active', current.indexOf('NoIssues') >= 0);
@@ -157,8 +163,18 @@
             if (btn.getAttribute('data-service') === serviceInput.value) btn.classList.add('active');
         });
 
+        var dateInput = dateWrap ? dateWrap.querySelector('input[type="date"]') : null;
+
         function syncDatePicker() {
-            dateWrap.style.display = timingInput.value === 'ChooseDate' ? 'block' : 'none';
+            var isChoose = timingInput.value === 'ChooseDate';
+            dateWrap.style.display = isChoose ? 'block' : 'none';
+            if (dateInput) {
+                if (isChoose) {
+                    dateInput.setAttribute('required', 'required');
+                } else {
+                    dateInput.removeAttribute('required');
+                }
+            }
         }
 
         document.querySelectorAll('[data-timing]').forEach(function (btn) {

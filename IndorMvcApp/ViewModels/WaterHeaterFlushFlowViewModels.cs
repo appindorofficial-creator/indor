@@ -69,6 +69,7 @@ public class WaterHeaterFlushDetailsViewModel
     [Required(ErrorMessage = "Select when the last flush was.")]
     public string UltimoFlush { get; set; } = "";
 
+    [Required(ErrorMessage = "Select what you have noticed.")]
     public string SintomasSeleccionados { get; set; } = "";
 
     [Required(ErrorMessage = "Select a service preference.")]

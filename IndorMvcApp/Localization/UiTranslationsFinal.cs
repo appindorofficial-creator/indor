@@ -3168,6 +3168,7 @@ public static class UiTranslationsFinal
             ["Last maintenance"] = "Último mantenimiento",
             ["Preferred date"] = "Fecha preferida",
             ["Serial number"] = "Número de serie",
+            ["Annual flush + basic visual check"] = "Lavado anual + revisión visual básica",
             ["6–80 characters. Use letters and numbers (e.g. M123456789)."] = "6–80 caracteres. Usa letras y números (ej. M123456789).",
             ["Use only letters, numbers, and hyphens."] = "Usa solo letras, números y guiones.",
             ["Serial number cannot exceed {0} characters."] = "El número de serie no puede superar {0} caracteres.",
