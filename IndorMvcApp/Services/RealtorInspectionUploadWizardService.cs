@@ -408,7 +408,7 @@ public class RealtorInspectionUploadWizardService(
             AnalysisStatus = status,
             AnalysisSummary = string.IsNullOrWhiteSpace(draft.AnalysisSummary)
                 ? draft.AnalysisSummary
-                : UiDisplayLocalization.Localize(localizer, draft.AnalysisSummary),
+                : localizer[NormalizeAnalysisMessage(draft.AnalysisSummary)],
             AnalysisIntroMessage = FormatAnalysisIntroMessage(uploadMethod),
             AnalysisRunningMessage = FormatAnalysisRunningMessage(uploadMethod),
             Tasks = BuildAnalysisTasks(progress, status, pageCount, findingCount, uploadMethod),
@@ -1416,6 +1416,12 @@ public class RealtorInspectionUploadWizardService(
         "Photos" => localizer.T("OpenAI is reading your report photos and extracting repair issues by trade and urgency…"),
         _ => localizer.T("OpenAI is reading your PDF and extracting repair issues by trade and urgency…")
     };
+
+    private static string NormalizeAnalysisMessage(string message)
+    {
+        var normalized = message.Trim().Replace('\u00A0', ' ');
+        return System.Text.RegularExpressions.Regex.Replace(normalized, @"\s+", " ");
+    }
 
     private async Task<List<RealtorInspectionCategoryChipViewModel>> BuildDetectedCategoriesAsync(
         int progress, int draftId, CancellationToken cancellationToken)

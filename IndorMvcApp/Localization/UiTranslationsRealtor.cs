@@ -237,7 +237,8 @@ public static class UiTranslationsRealtor
             ["Copy File ID"] = "Copy File ID",
             ["Copy Link"] = "Copy Link",
             ["Copy Share Link"] = "Copy Share Link",
-            ["Could not restart analysis. Please try again."] = "Could not restart analysis. Please try again.",
+            ["Could not restart analysis. Please try again."] =
+                "No se pudo reiniciar el análisis. Inténtalo de nuevo.",
             ["Create and collect payments"] = "Create and collect payments",
             ["Create File"] = "Create File",
             ["Create one organized property file so clients, reports, quotes, and documents stay connected in one place."] = "Crea un expediente organizado para que clientes, informes, cotizaciones y documentos queden conectados en un solo lugar.",

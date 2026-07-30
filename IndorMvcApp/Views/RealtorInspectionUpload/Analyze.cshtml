@@ -6,7 +6,7 @@
 {
     <div class="rl-info-box rl-info-box--warn">
         <i class="fas fa-triangle-exclamation"></i>
-        <p>@L[analysisError]</p>
+        <p>@UiDisplayLocalization.Localize(L, analysisError)</p>
     </div>
 }
 
@@ -119,7 +119,9 @@
     {
         <div class="rl-info-box rl-info-box--warn" id="analyzeErrorBox">
             <i class="fas fa-triangle-exclamation"></i>
-            <p>@(string.IsNullOrWhiteSpace(Model.AnalysisSummary) ? L["Analysis could not be completed."] : L[Model.AnalysisSummary])</p>
+            <p>@(string.IsNullOrWhiteSpace(Model.AnalysisSummary)
+                ? L["Analysis could not be completed."]
+                : UiDisplayLocalization.Localize(L, Model.AnalysisSummary))</p>
         </div>
         <button type="button" id="analyzeRetryBtn" class="ob-btn ob-btn-primary rl-analyze-btn rl-analyze-btn--full">
             <strong><i class="fas fa-rotate-right"></i> @L["Retry analysis"]</strong>
