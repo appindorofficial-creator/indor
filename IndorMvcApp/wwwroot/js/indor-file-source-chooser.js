@@ -396,17 +396,32 @@
         if (!globalMenu || !anchor) {
             return;
         }
+        // Use fixed + viewport coords so nested wizard scroll containers don't
+        // push the sheet thousands of px below the visible dropzone.
         var rect = anchor.getBoundingClientRect();
-        var menuWidth = Math.max(210, rect.width);
-        var left = rect.left + window.scrollX;
-        var top = rect.bottom + window.scrollY + 8;
-        var maxLeft = window.scrollX + document.documentElement.clientWidth - menuWidth - 8;
+        var menuWidth = Math.max(210, Math.min(rect.width || 210, document.documentElement.clientWidth - 16));
+        var left = rect.left;
+        var top = rect.bottom + 8;
+        var maxLeft = document.documentElement.clientWidth - menuWidth - 8;
         if (left > maxLeft) {
-            left = Math.max(8 + window.scrollX, maxLeft);
+            left = Math.max(8, maxLeft);
         }
+        if (left < 8) {
+            left = 8;
+        }
+
+        globalMenu.style.position = 'fixed';
         globalMenu.style.width = menuWidth + 'px';
         globalMenu.style.left = left + 'px';
         globalMenu.style.top = top + 'px';
+        globalMenu.style.right = 'auto';
+        globalMenu.style.bottom = 'auto';
+
+        // If the sheet would hang below the viewport, flip it above the anchor.
+        var menuHeight = globalMenu.offsetHeight || 130;
+        if (top + menuHeight > window.innerHeight - 8 && rect.top - menuHeight - 8 > 8) {
+            globalMenu.style.top = Math.max(8, rect.top - menuHeight - 8) + 'px';
+        }
     }
 
     function openGlobalMenuFor(input, anchor) {

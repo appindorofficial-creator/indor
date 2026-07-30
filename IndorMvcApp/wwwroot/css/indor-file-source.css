@@ -86,7 +86,7 @@
 
 /* Floating sheet used when upgrading plain <input type="file"> (avoids English iOS OS sheet). */
 .indor-global-file-source-menu {
-    position: absolute;
+    position: fixed;
     z-index: 10050;
     min-width: 210px;
     padding: 6px;
