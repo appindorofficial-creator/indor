@@ -275,9 +275,10 @@ public static class UiDisplayLocalization
             return localizer.T("Tomorrow, {0}", Localize(localizer, text["Tomorrow, ".Length..].Trim()));
         }
 
+        // Moving-setup + My Home maintenance note snippets: "Serial: Not provided | Timing: …"
         var summaryLabelMatch = Regex.Match(
             text,
-            @"^(Bring|Pets|Stairs|Parking|Gate code|Helpers|Duration|Pay):\s*(.+)$",
+            @"^(Bring|Pets|Stairs|Parking|Gate code|Helpers|Duration|Pay|Serial|Window|Reminder|Type|Power|Symptoms|Timing|Surface|Issues|Scope|Encapsulation|Insulation|Concerns|Stories|Gutters|Need|Reason|Roof|Frequency|Service|Area|Material|Condition|Alarms|Locations|Help|Pets/children|Areas):\s*(.+)$",
             RegexOptions.IgnoreCase);
         if (summaryLabelMatch.Success)
         {
@@ -291,15 +292,57 @@ public static class UiDisplayLocalization
                 var p when p.Equals("Helpers", StringComparison.OrdinalIgnoreCase) => "Helpers:",
                 var p when p.Equals("Duration", StringComparison.OrdinalIgnoreCase) => "Duration:",
                 var p when p.Equals("Pay", StringComparison.OrdinalIgnoreCase) => "Pay:",
+                var p when p.Equals("Serial", StringComparison.OrdinalIgnoreCase) => "Serial:",
+                var p when p.Equals("Window", StringComparison.OrdinalIgnoreCase) => "Window:",
+                var p when p.Equals("Reminder", StringComparison.OrdinalIgnoreCase) => "Reminder:",
+                var p when p.Equals("Type", StringComparison.OrdinalIgnoreCase) => "Type:",
+                var p when p.Equals("Power", StringComparison.OrdinalIgnoreCase) => "Power:",
+                var p when p.Equals("Symptoms", StringComparison.OrdinalIgnoreCase) => "Symptoms:",
+                var p when p.Equals("Timing", StringComparison.OrdinalIgnoreCase) => "Timing:",
+                var p when p.Equals("Surface", StringComparison.OrdinalIgnoreCase) => "Surface:",
+                var p when p.Equals("Issues", StringComparison.OrdinalIgnoreCase) => "Issues:",
+                var p when p.Equals("Scope", StringComparison.OrdinalIgnoreCase) => "Scope:",
+                var p when p.Equals("Encapsulation", StringComparison.OrdinalIgnoreCase) => "Encapsulation:",
+                var p when p.Equals("Insulation", StringComparison.OrdinalIgnoreCase) => "Insulation:",
+                var p when p.Equals("Concerns", StringComparison.OrdinalIgnoreCase) => "Concerns:",
+                var p when p.Equals("Stories", StringComparison.OrdinalIgnoreCase) => "Stories:",
+                var p when p.Equals("Gutters", StringComparison.OrdinalIgnoreCase) => "Gutters:",
+                var p when p.Equals("Need", StringComparison.OrdinalIgnoreCase) => "Need:",
+                var p when p.Equals("Reason", StringComparison.OrdinalIgnoreCase) => "Reason:",
+                var p when p.Equals("Roof", StringComparison.OrdinalIgnoreCase) => "Roof:",
+                var p when p.Equals("Frequency", StringComparison.OrdinalIgnoreCase) => "Frequency:",
+                var p when p.Equals("Service", StringComparison.OrdinalIgnoreCase) => "Service:",
+                var p when p.Equals("Area", StringComparison.OrdinalIgnoreCase) => "Area:",
+                var p when p.Equals("Material", StringComparison.OrdinalIgnoreCase) => "Material:",
+                var p when p.Equals("Condition", StringComparison.OrdinalIgnoreCase) => "Condition:",
+                var p when p.Equals("Alarms", StringComparison.OrdinalIgnoreCase) => "Alarms:",
+                var p when p.Equals("Locations", StringComparison.OrdinalIgnoreCase) => "Locations:",
+                var p when p.Equals("Help", StringComparison.OrdinalIgnoreCase) => "Help:",
+                var p when p.Equals("Pets/children", StringComparison.OrdinalIgnoreCase) => "Pets/children:",
+                var p when p.Equals("Areas", StringComparison.OrdinalIgnoreCase) => "Areas:",
                 _ => summaryLabelMatch.Groups[1].Value.Trim() + ":"
             };
             var rawValue = summaryLabelMatch.Groups[2].Value.Trim();
-            var localizedValue = rawValue.Contains(',', StringComparison.Ordinal)
-                ? string.Join(", ",
-                    rawValue.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
-                        .Select(v => Localize(localizer, v)))
-                : Localize(localizer, rawValue);
-            return $"{localizer.T(prefixKey)} {localizedValue}";
+            string LocalizeSummaryValue(string value)
+            {
+                if (value.Contains(" / ", StringComparison.Ordinal))
+                {
+                    return string.Join(" / ",
+                        value.Split(" / ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                            .Select(LocalizeSummaryValue));
+                }
+
+                if (value.Contains(',', StringComparison.Ordinal))
+                {
+                    return string.Join(", ",
+                        value.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                            .Select(v => Localize(localizer, v)));
+                }
+
+                return Localize(localizer, value);
+            }
+
+            return $"{localizer.T(prefixKey)} {LocalizeSummaryValue(rawValue)}";
         }
 
         // Trade chips like "Plumber needed" — do not match phrases such as "No tools needed"
