@@ -43,7 +43,7 @@
                 <div class="rl-home-badge-row">
                     <span class="rl-dash-badge @(Model.IsVerified ? "is-verified" : null)">
                         <i class="fas @(Model.IsVerified ? "fa-circle-check" : "fa-star")"></i>
-                        @UiDisplayLocalization.Localize(L, Model.BadgeLabel)
+                        @UiDisplayLocalization.Localize(L, Model.TitleLabel)
                     </span>
                     @if (!Model.IsVerified)
                     {

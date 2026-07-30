@@ -500,6 +500,8 @@ public class RealtorBusinessInfoRowViewModel
 public class RealtorProfileViewModel : RealtorPortalShellViewModel
 {
     public string FullName { get; set; } = "";
+    /// <summary>Same experience/title label shown on the public profile.</summary>
+    public string TitleLabel { get; set; } = "Realtor";
     public string Email { get; set; } = "";
     public string Phone { get; set; } = "";
     public string BrokerageName { get; set; } = "";

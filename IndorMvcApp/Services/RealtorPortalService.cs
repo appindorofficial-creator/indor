@@ -865,6 +865,11 @@ public class RealtorPortalService(
             Optional = false
         });
 
+        var hasLicenseDoc = docs.Any(d =>
+            d.DocumentType.Equals(RealtorDocumentTypes.LicensePhoto, StringComparison.OrdinalIgnoreCase)
+            && !string.IsNullOrWhiteSpace(d.FileUrl));
+        var titleLabel = ResolvePublicTitleLabel(realtor, shell.IsVerified, hasLicenseDoc);
+
         var homeStats = await BuildHomeStatsAsync(realtor.Id, ct);
         var clientCount = await db.IndorRealtorClients.AsNoTracking()
             .CountAsync(c => c.RealtorId == realtor.Id, ct);
@@ -891,6 +896,7 @@ public class RealtorPortalService(
             FullName = realtor.DisplayName ?? shell.FullDisplayName,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             BadgeLabel = shell.BadgeLabel,
+            TitleLabel = titleLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
             RecentNotifications = shell.RecentNotifications,
