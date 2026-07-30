@@ -14,7 +14,8 @@ public class RealtorPortalService(
     AppDbContext db,
     IHttpContextAccessor httpContextAccessor,
     IIndorLocalizer localizer,
-    RealtorPropertyFileInspectionBackfillService inspectionBackfill)
+    RealtorPropertyFileInspectionBackfillService inspectionBackfill,
+    IRealtorProviderBridgeService providerBridge)
 {
     private const string NotificationSessionKeyPrefix = "realtor-notify-";
     private const string NotificationsViewedSessionKeyPrefix = "realtor-notify-viewed-";
@@ -441,6 +442,7 @@ public class RealtorPortalService(
                 : $"{responsesSoFar} response{(responsesSoFar == 1 ? "" : "s")} so far",
             RequestedServices = requestedServices,
             InviteProvidersUrl = BuildInviteProvidersUrl(quote),
+            EditRequestUrl = $"/Realtor/QuoteDetail/{quote.Id}",
             Bids = bids.Select(b => new RealtorQuoteDetailBidViewModel
             {
                 Id = b.Id,
@@ -666,7 +668,7 @@ public class RealtorPortalService(
             PriceLines = details.PriceLines,
             TotalAmountLabel = bid.Amount.ToString("C2"),
             CompareQuotesUrl = bids.Count > 1 ? $"/Realtor/CompareQuotes/{quote.Id}" : "#",
-            RequestAnotherUrl = BuildInviteProvidersUrl(quote),
+            RequestAnotherUrl = BuildNewQuoteRequestUrl(quote),
             EditSharedQuoteUrl = $"/Realtor/EditSharedQuote?quoteId={quote.Id}&bidId={bid.Id}"
         };
     }
@@ -924,10 +926,13 @@ public class RealtorPortalService(
         RealtorNotificationPreferencesInput input,
         CancellationToken ct = default)
     {
+        await RealtorNotificationSchemaInitializer.EnsureColumnsAsync(db, ct);
+
         SaveNotificationPreferencesToSession(realtor.Id, input);
 
         if (!await TrySaveNotificationPreferencesToDatabaseAsync(realtor.Id, input, ct))
         {
+            // Session still holds the latest choice when the DB schema is mid-upgrade.
             return;
         }
     }
@@ -936,6 +941,8 @@ public class RealtorPortalService(
         int realtorId,
         CancellationToken ct)
     {
+        await RealtorNotificationSchemaInitializer.EnsureColumnsAsync(db, ct);
+
         var fromDatabase = await TryLoadNotificationPreferencesFromDatabaseAsync(realtorId, ct);
         if (fromDatabase != null)
         {
@@ -1383,6 +1390,14 @@ public class RealtorPortalService(
         entity.SpecialtiesJson = SerializeStringList(input.SelectedSpecialties.Take(3).ToList());
         entity.TeamName = input.TeamName?.Trim() ?? "";
         entity.BrokerInCharge = input.BrokerInCharge?.Trim() ?? "";
+
+        if (IsDefaultRealtorTitle(entity.RealtorTitle))
+        {
+            entity.RealtorTitle = ResolveTitleFromExperience(
+                entity.YearsOfExperience,
+                entity.RegistrationStatus == RealtorRegistrationStatuses.Verified);
+        }
+
         entity.FechaActualizacion = DateTime.UtcNow;
 
         await db.SaveChangesAsync(ct);
@@ -1508,13 +1523,22 @@ public class RealtorPortalService(
             d.DocumentType == RealtorDocumentTypes.GovernmentId &&
             !string.IsNullOrWhiteSpace(d.FileUrl));
 
-        if (!entity.VerificationSkipped && hasLicensePhoto && hasGovId)
+        if (hasLicensePhoto && hasGovId)
         {
+            entity.VerificationSkipped = false;
             entity.RegistrationStatus = RealtorRegistrationStatuses.Verified;
         }
         else if (entity.RegistrationStatus == RealtorRegistrationStatuses.Draft)
         {
             entity.RegistrationStatus = RealtorRegistrationStatuses.Basic;
+        }
+
+        // Keep public title in sync with experience when the realtor left the default title.
+        if (IsDefaultRealtorTitle(entity.RealtorTitle))
+        {
+            entity.RealtorTitle = ResolveTitleFromExperience(
+                entity.YearsOfExperience,
+                entity.RegistrationStatus == RealtorRegistrationStatuses.Verified);
         }
 
         entity.FechaActualizacion = DateTime.UtcNow;
@@ -1611,9 +1635,7 @@ public class RealtorPortalService(
             FullName = !string.IsNullOrWhiteSpace(realtor.PublicDisplayName)
                 ? realtor.PublicDisplayName.Trim()
                 : realtor.DisplayName ?? shell.FullDisplayName,
-            TitleLabel = !string.IsNullOrWhiteSpace(realtor.RealtorTitle)
-                ? realtor.RealtorTitle.Trim()
-                : shell.IsVerified ? "Realtor®" : "Realtor",
+            TitleLabel = ResolvePublicTitleLabel(realtor, shell.IsVerified),
             Tagline = string.IsNullOrWhiteSpace(realtor.PublicTagline) ? null : realtor.PublicTagline.Trim(),
             Bio = string.IsNullOrWhiteSpace(realtor.PublicBio) ? null : realtor.PublicBio.Trim(),
             CoverImageUrl = coverImage,
@@ -1822,9 +1844,7 @@ public class RealtorPortalService(
             ProfilePhotoUrl = string.IsNullOrWhiteSpace(realtor.ProfilePhotoUrl)
                 ? null
                 : realtor.ProfilePhotoUrl,
-            BadgeLabel = realtor.RegistrationStatus == RealtorRegistrationStatuses.Verified
-                ? "Verified Realtor"
-                : "Realtor Basic",
+            BadgeLabel = ResolveBadgeLabel(realtor),
             IsVerified = realtor.RegistrationStatus == RealtorRegistrationStatuses.Verified,
             HasNotifications = hasUnreadNotifications,
             RecentNotifications = mappedNotifications
@@ -2415,7 +2435,7 @@ public class RealtorPortalService(
         {
             actionLabel = localizer.T("View Quote");
             secondaryLabel = localizer.T("Request Another Quote");
-            secondaryUrl = BuildInviteProvidersUrl(quote);
+            secondaryUrl = BuildNewQuoteRequestUrl(quote);
         }
         else if (isUrgent)
         {
@@ -2604,9 +2624,191 @@ public class RealtorPortalService(
     }
 
     private static string BuildInviteProvidersUrl(IndorRealtorQuote quote) =>
+        $"/Realtor/InviteProviders/{quote.Id}";
+
+    private static string BuildNewQuoteRequestUrl(IndorRealtorQuote quote) =>
         quote.PropertyFileId is > 0
             ? $"/RealtorQuoteRequest/Start?propertyFileId={quote.PropertyFileId}"
             : "/RealtorQuoteRequest/Property";
+
+    public async Task<RealtorInviteProvidersViewModel?> BuildInviteProvidersAsync(
+        IndorRealtor realtor,
+        int quoteId,
+        string? search,
+        CancellationToken ct = default)
+    {
+        var quote = await db.IndorRealtorQuotes.AsNoTracking()
+            .Include(q => q.SentProviders)
+            .FirstOrDefaultAsync(q => q.Id == quoteId && q.RealtorId == realtor.Id, ct);
+        if (quote == null)
+        {
+            return null;
+        }
+
+        var shell = await BuildShellCoreAsync(realtor, ct);
+        var alreadyInvited = quote.SentProviders
+            .Select(sp => sp.ProveedorId is > 0 ? sp.ProveedorId.Value : sp.ProviderId)
+            .Where(id => id > 0)
+            .ToHashSet();
+
+        var matched = await providerBridge.MatchProveedoresForTradeAsync(
+            MapQuoteServiceTypeToTrade(quote.ServiceType),
+            ct);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim();
+            matched = matched
+                .Where(p =>
+                    (!string.IsNullOrWhiteSpace(p.BusinessName) && p.BusinessName.Contains(term, StringComparison.OrdinalIgnoreCase))
+                    || (!string.IsNullOrWhiteSpace(p.DbaName) && p.DbaName.Contains(term, StringComparison.OrdinalIgnoreCase)))
+                .ToList();
+        }
+
+        if (matched.Count == 0)
+        {
+            var activeStatuses = new[]
+            {
+                ProviderRegistrationStatuses.Approved,
+                ProviderRegistrationStatuses.IndorProActive,
+                ProviderRegistrationStatuses.PendingReview,
+                ProviderRegistrationStatuses.Submitted
+            };
+            matched = await db.IndorProveedores.AsNoTracking()
+                .Where(p => activeStatuses.Contains(p.RegistrationStatus))
+                .OrderByDescending(p => p.FechaCreacion)
+                .Take(20)
+                .ToListAsync(ct);
+        }
+
+        return new RealtorInviteProvidersViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
+            QuoteId = quote.Id,
+            QuoteCode = FormatQuoteCode(quote.QuoteCode),
+            Address = quote.Address,
+            ServiceType = quote.ServiceType,
+            SearchQuery = search,
+            AlreadyInvitedCount = quote.SentProviders.Count,
+            Providers = matched.Select(p =>
+            {
+                var name = !string.IsNullOrWhiteSpace(p.DbaName) ? p.DbaName!
+                    : !string.IsNullOrWhiteSpace(p.BusinessName) ? p.BusinessName!
+                    : localizer.T("INDOR Provider");
+                var verified = p.RegistrationStatus is ProviderRegistrationStatuses.Approved
+                    or ProviderRegistrationStatuses.IndorProActive;
+                return new RealtorInviteProviderCardViewModel
+                {
+                    Id = p.Id,
+                    CompanyName = name,
+                    Categories = quote.ServiceType,
+                    IsVerified = verified,
+                    BadgeLabel = verified ? "Verified" : null,
+                    AlreadyInvited = alreadyInvited.Contains(p.Id),
+                    Selected = alreadyInvited.Contains(p.Id)
+                };
+            }).ToList()
+        };
+    }
+
+    public async Task InviteProvidersToQuoteAsync(
+        IndorRealtor realtor,
+        int quoteId,
+        int[]? proveedorIds,
+        CancellationToken ct = default)
+    {
+        var quote = await db.IndorRealtorQuotes
+            .Include(q => q.SentProviders)
+            .FirstOrDefaultAsync(q => q.Id == quoteId && q.RealtorId == realtor.Id, ct)
+            ?? throw new InvalidOperationException("Quote request not found.");
+
+        var selectedIds = (proveedorIds ?? [])
+            .Where(id => id > 0)
+            .Distinct()
+            .Take(10)
+            .ToList();
+
+        if (selectedIds.Count == 0)
+        {
+            throw new InvalidOperationException("Please select at least one provider.");
+        }
+
+        var alreadyInvited = quote.SentProviders
+            .Select(sp => sp.ProveedorId is > 0 ? sp.ProveedorId.Value : sp.ProviderId)
+            .Where(id => id > 0)
+            .ToHashSet();
+
+        var newIds = selectedIds.Where(id => !alreadyInvited.Contains(id)).ToList();
+        if (newIds.Count == 0)
+        {
+            throw new InvalidOperationException("Those providers were already invited to this request.");
+        }
+
+        var proveedores = await db.IndorProveedores
+            .Where(p => newIds.Contains(p.Id))
+            .ToListAsync(ct);
+
+        if (proveedores.Count == 0)
+        {
+            throw new InvalidOperationException("No matching providers found.");
+        }
+
+        foreach (var proveedor in proveedores)
+        {
+            var lead = await providerBridge.CreateLeadFromRealtorQuoteAsync(
+                quote,
+                proveedor,
+                [],
+                null,
+                ct);
+
+            var name = !string.IsNullOrWhiteSpace(proveedor.DbaName) ? proveedor.DbaName!
+                : !string.IsNullOrWhiteSpace(proveedor.BusinessName) ? proveedor.BusinessName!
+                : "INDOR Provider";
+
+            db.IndorRealtorQuoteSentProviders.Add(new IndorRealtorQuoteSentProvider
+            {
+                QuoteId = quote.Id,
+                ProviderId = proveedor.Id,
+                ProveedorId = proveedor.Id,
+                LeadId = lead.Id,
+                ProviderName = name.Length > 120 ? name[..120] : name
+            });
+        }
+
+        var totalInvited = alreadyInvited.Count + proveedores.Count;
+        quote.FooterNote = $"Waiting on {totalInvited} provider{(totalInvited == 1 ? "" : "s")}";
+        quote.UpdatedUtc = DateTime.UtcNow;
+
+        db.IndorRealtorActivities.Add(new IndorRealtorActivity
+        {
+            RealtorId = realtor.Id,
+            ActivityType = "quote",
+            Description = $"Providers invited to quote request {FormatQuoteCode(quote.QuoteCode)} for {quote.Address}",
+            CategoryTag = "Quotes",
+            OccurredUtc = DateTime.UtcNow
+        });
+
+        await db.SaveChangesAsync(ct);
+    }
+
+    private static string MapQuoteServiceTypeToTrade(string? serviceType) =>
+        (serviceType ?? "").Trim() switch
+        {
+            "HVAC Repair" => RealtorInspectionTrades.Hvac,
+            "Roofing" => RealtorInspectionTrades.Roof,
+            "Plumbing" => RealtorInspectionTrades.Plumbing,
+            "Electrical" => RealtorInspectionTrades.Electrical,
+            "Home Inspection" => RealtorInspectionTrades.Handyman,
+            "Handyman" or "Manitas" => RealtorInspectionTrades.Handyman,
+            _ => RealtorInspectionTrades.Handyman
+        };
 
     private static string DeriveInitialsFromName(string name)
     {
@@ -2801,6 +3003,64 @@ public class RealtorPortalService(
         }
 
         return ("Incomplete", "is-incomplete");
+    }
+
+    private static string ResolveBadgeLabel(IndorRealtor realtor)
+    {
+        if (realtor.RegistrationStatus == RealtorRegistrationStatuses.Verified)
+        {
+            return "Verified Realtor";
+        }
+
+        var hasLicense = !string.IsNullOrWhiteSpace(realtor.LicenseNumber)
+                         && !string.IsNullOrWhiteSpace(realtor.LicenseState);
+        return hasLicense ? "Licensed Realtor" : "Realtor Basic";
+    }
+
+    private static string ResolvePublicTitleLabel(IndorRealtor realtor, bool isVerified)
+    {
+        if (!IsDefaultRealtorTitle(realtor.RealtorTitle))
+        {
+            return realtor.RealtorTitle!.Trim();
+        }
+
+        return ResolveTitleFromExperience(realtor.YearsOfExperience, isVerified);
+    }
+
+    private static bool IsDefaultRealtorTitle(string? title)
+    {
+        if (string.IsNullOrWhiteSpace(title))
+        {
+            return true;
+        }
+
+        var normalized = title.Trim();
+        return normalized.Equals("Realtor", StringComparison.OrdinalIgnoreCase)
+               || normalized.Equals("Realtor®", StringComparison.OrdinalIgnoreCase)
+               || normalized.Equals("Basic real estate agent", StringComparison.OrdinalIgnoreCase)
+               || normalized.Equals("Experienced real estate agent", StringComparison.OrdinalIgnoreCase)
+               || normalized.Equals("Licensed Realtor", StringComparison.OrdinalIgnoreCase)
+               || normalized.Equals("Licensed Realtor®", StringComparison.OrdinalIgnoreCase)
+               || normalized.Equals("Realtor Basic", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string ResolveTitleFromExperience(string? yearsOfExperience, bool isVerified)
+    {
+        var years = yearsOfExperience?.Trim() ?? "";
+        if (years.Equals("Less than 1 year", StringComparison.OrdinalIgnoreCase)
+            || years.Equals("1-2 years", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Basic real estate agent";
+        }
+
+        if (years.Equals("7+ years", StringComparison.OrdinalIgnoreCase)
+            || years.Equals("10+ years", StringComparison.OrdinalIgnoreCase)
+            || years.Equals("15+ years", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Experienced real estate agent";
+        }
+
+        return isVerified ? "Realtor®" : "Realtor";
     }
 
     private static string FormatLanguagesLabel(string? languagesJson) =>

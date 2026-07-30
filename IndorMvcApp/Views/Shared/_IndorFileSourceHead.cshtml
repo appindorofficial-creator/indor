@@ -1,9 +1,14 @@
 @* Injects localized Photo Library / Take Photo / Choose Files for any upload UI. *@
+@{
+    var fsLibrary = L.IsSpanish ? "Biblioteca de fotos" : IndorFileSourceI18n.Library(L);
+    var fsCamera = L.IsSpanish ? "Tomar foto" : IndorFileSourceI18n.Camera(L);
+    var fsFiles = L.IsSpanish ? "Elegir archivos" : IndorFileSourceI18n.Files(L);
+}
 <script>
     window.IndorFileSourceLabels = {
-        library: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(IndorFileSourceI18n.Library(L))),
-        camera: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(IndorFileSourceI18n.Camera(L))),
-        files: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(IndorFileSourceI18n.Files(L)))
+        library: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(fsLibrary)),
+        camera: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(fsCamera)),
+        files: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(fsFiles))
     };
 </script>
 <link rel="stylesheet" href="~/css/indor-file-source.css" asp-append-version="true" />

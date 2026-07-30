@@ -1060,7 +1060,13 @@ public partial class ProveedorController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> UploadReport(string? q, string? filter, bool? fresh, string? template, CancellationToken cancellationToken)
+    public async Task<IActionResult> UploadReport(
+        string? q,
+        string? filter,
+        bool? fresh,
+        string? template,
+        int? jobId,
+        CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -1088,8 +1094,42 @@ public partial class ProveedorController(
             SaveUploadReportDraft(draft);
             await HttpContext.Session.CommitAsync(cancellationToken);
         }
+        else if (!string.IsNullOrWhiteSpace(template))
+        {
+            // Unknown / custom template keys still start the wizard with a usable type.
+            var draft = GetUploadReportDraft();
+            draft.TemplateKey = template.Trim().ToLowerInvariant();
+            draft.ReportType = string.IsNullOrWhiteSpace(draft.ReportType)
+                ? ProviderReportTypes.Completion
+                : draft.ReportType;
+            if (string.IsNullOrWhiteSpace(draft.Title) || fresh == true)
+            {
+                draft.Title = draft.ReportType;
+            }
+
+            SaveUploadReportDraft(draft);
+            await HttpContext.Session.CommitAsync(cancellationToken);
+        }
+
+        // Deep-link from a job card: bind job + continue (survives flaky session on mobile).
+        if (jobId is > 0)
+        {
+            var draft = GetUploadReportDraft();
+            draft.JobId = jobId.Value;
+            SaveUploadReportDraft(draft);
+            await HttpContext.Session.CommitAsync(cancellationToken);
+
+            if (!string.IsNullOrWhiteSpace(draft.TemplateKey) && !string.IsNullOrWhiteSpace(draft.ReportType))
+            {
+                return RedirectToAction(nameof(UploadReportFiles), new { jobId = jobId.Value });
+            }
+
+            return RedirectToAction(nameof(UploadReportType), new { jobId = jobId.Value });
+        }
 
         var model = await proData.GetUploadReportSelectJobAsync(proveedor.Entity!, null, q, filter, cancellationToken);
+        // Keep template in the page model so search/filter links don't drop it if session falters.
+        model.TemplateKey = GetUploadReportDraft().TemplateKey;
         return View(model);
     }
 
@@ -1103,12 +1143,17 @@ public partial class ProveedorController(
             return proveedor.Result;
         }
 
+        var draft = GetUploadReportDraft();
         if (input.JobId <= 0)
         {
-            return RedirectToAction(nameof(UploadReport), new { q = input.Search, filter = input.Filter });
+            return RedirectToAction(nameof(UploadReport), new
+            {
+                q = input.Search,
+                filter = input.Filter,
+                template = draft.TemplateKey
+            });
         }
 
-        var draft = GetUploadReportDraft();
         draft.JobId = input.JobId;
         SaveUploadReportDraft(draft);
         await HttpContext.Session.CommitAsync(cancellationToken);
@@ -1116,14 +1161,14 @@ public partial class ProveedorController(
         // Template already chosen on Report Templates — skip the type picker.
         if (!string.IsNullOrWhiteSpace(draft.TemplateKey) && !string.IsNullOrWhiteSpace(draft.ReportType))
         {
-            return RedirectToAction(nameof(UploadReportFiles));
+            return RedirectToAction(nameof(UploadReportFiles), new { jobId = input.JobId });
         }
 
-        return RedirectToAction(nameof(UploadReportType));
+        return RedirectToAction(nameof(UploadReportType), new { jobId = input.JobId });
     }
 
     [HttpGet]
-    public async Task<IActionResult> UploadReportType(CancellationToken cancellationToken)
+    public async Task<IActionResult> UploadReportType(int? jobId, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -1131,16 +1176,16 @@ public partial class ProveedorController(
             return proveedor.Result;
         }
 
-        var draft = GetUploadReportDraft();
-        if (!draft.JobId.HasValue)
+        var draft = await EnsureUploadReportJobAsync(proveedor.Entity!.Id, jobId, cancellationToken);
+        if (draft == null || !draft.JobId.HasValue)
         {
-            return RedirectToAction(nameof(UploadReport));
+            return RedirectToAction(nameof(UploadReport), new { template = GetUploadReportDraft().TemplateKey });
         }
 
         var model = await proData.GetUploadReportTypeAsync(proveedor.Entity!, draft, cancellationToken);
         if (model == null)
         {
-            return RedirectToAction(nameof(UploadReport));
+            return RedirectToAction(nameof(UploadReport), new { template = draft.TemplateKey });
         }
 
         return View(model);
@@ -1148,7 +1193,7 @@ public partial class ProveedorController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UploadReportType(ProviderProUploadReportTypeInput input, CancellationToken cancellationToken)
+    public async Task<IActionResult> UploadReportType(ProviderProUploadReportTypeInput input, int? jobId, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -1156,14 +1201,23 @@ public partial class ProveedorController(
             return proveedor.Result;
         }
 
-        var draft = GetUploadReportDraft();
-        draft.ReportType = input.ReportType;
+        var draft = await EnsureUploadReportJobAsync(proveedor.Entity!.Id, jobId, cancellationToken)
+            ?? GetUploadReportDraft();
+        draft.ReportType = string.IsNullOrWhiteSpace(input.ReportType)
+            ? draft.ReportType
+            : input.ReportType.Trim();
+        if (string.IsNullOrWhiteSpace(draft.ReportType))
+        {
+            draft.ReportType = ProviderReportTypes.Completion;
+        }
+
         SaveUploadReportDraft(draft);
-        return RedirectToAction(nameof(UploadReportFiles));
+        await HttpContext.Session.CommitAsync(cancellationToken);
+        return RedirectToAction(nameof(UploadReportFiles), new { jobId = draft.JobId });
     }
 
     [HttpGet]
-    public async Task<IActionResult> UploadReportFiles(CancellationToken cancellationToken)
+    public async Task<IActionResult> UploadReportFiles(int? jobId, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -1171,16 +1225,16 @@ public partial class ProveedorController(
             return proveedor.Result;
         }
 
-        var draft = GetUploadReportDraft();
-        if (!draft.JobId.HasValue || string.IsNullOrWhiteSpace(draft.ReportType))
+        var draft = await EnsureUploadReportJobAsync(proveedor.Entity!.Id, jobId, cancellationToken);
+        if (draft == null || !draft.JobId.HasValue || string.IsNullOrWhiteSpace(draft.ReportType))
         {
-            return RedirectToAction(nameof(UploadReport));
+            return RedirectToAction(nameof(UploadReport), new { template = GetUploadReportDraft().TemplateKey });
         }
 
         var model = await proData.GetUploadReportFilesAsync(proveedor.Entity!, draft, cancellationToken);
         if (model == null)
         {
-            return RedirectToAction(nameof(UploadReport));
+            return RedirectToAction(nameof(UploadReport), new { template = draft.TemplateKey });
         }
 
         return View(model);
@@ -1198,6 +1252,7 @@ public partial class ProveedorController(
         IFormFile? docWarranty,
         IFormFile? docPermit,
         List<IFormFile>? generalFiles,
+        int? jobId,
         CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
@@ -1206,7 +1261,8 @@ public partial class ProveedorController(
             return proveedor.Result;
         }
 
-        var draft = GetUploadReportDraft();
+        var draft = await EnsureUploadReportJobAsync(proveedor.Entity!.Id, jobId, cancellationToken)
+            ?? GetUploadReportDraft();
         draft.AttachToHouseFacts = input.AttachToHouseFacts;
 
         await ApplyReportFileToSlotAsync(proveedor.Entity!.Id, draft.PhotoSlots, "Before", photoBefore);
@@ -1235,11 +1291,12 @@ public partial class ProveedorController(
         }
 
         SaveUploadReportDraft(draft);
-        return RedirectToAction(nameof(UploadReportDetails));
+        await HttpContext.Session.CommitAsync(cancellationToken);
+        return RedirectToAction(nameof(UploadReportDetails), new { jobId = draft.JobId });
     }
 
     [HttpGet]
-    public async Task<IActionResult> UploadReportDetails(CancellationToken cancellationToken)
+    public async Task<IActionResult> UploadReportDetails(int? jobId, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -1247,16 +1304,16 @@ public partial class ProveedorController(
             return proveedor.Result;
         }
 
-        var draft = GetUploadReportDraft();
-        if (!draft.JobId.HasValue)
+        var draft = await EnsureUploadReportJobAsync(proveedor.Entity!.Id, jobId, cancellationToken);
+        if (draft == null || !draft.JobId.HasValue)
         {
-            return RedirectToAction(nameof(UploadReport));
+            return RedirectToAction(nameof(UploadReport), new { template = GetUploadReportDraft().TemplateKey });
         }
 
         var model = await proData.GetUploadReportDetailsAsync(proveedor.Entity!, draft, cancellationToken);
         if (model == null)
         {
-            return RedirectToAction(nameof(UploadReport));
+            return RedirectToAction(nameof(UploadReport), new { template = draft.TemplateKey });
         }
 
         return View(model);
@@ -1264,7 +1321,7 @@ public partial class ProveedorController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> UploadReportDetails(ProviderProUploadReportDetailsInput? input, CancellationToken cancellationToken)
+    public async Task<IActionResult> UploadReportDetails(ProviderProUploadReportDetailsInput? input, int? jobId, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -1279,11 +1336,11 @@ public partial class ProveedorController(
             return RedirectToAction("Index", "Home");
         }
 
-        var draft = GetUploadReportDraft();
+        var draft = await EnsureUploadReportJobAsync(entity.Id, jobId, cancellationToken) ?? GetUploadReportDraft();
         if (!draft.JobId.HasValue)
         {
             TempData["UploadReportError"] = localizer["Select a job before submitting the report."].ToString();
-            return RedirectToAction(nameof(UploadReport));
+            return RedirectToAction(nameof(UploadReport), new { template = draft.TemplateKey });
         }
 
         // Optional form fields bind as null — never call .Trim() on them directly (QA NRE ~line 1250).
@@ -1298,23 +1355,25 @@ public partial class ProveedorController(
         draft.RequestApproval = input.RequestApproval;
         draft.CreateHouseFactsRecord = input.CreateHouseFactsRecord;
         SaveUploadReportDraft(draft);
+        await HttpContext.Session.CommitAsync(cancellationToken);
 
         if (string.IsNullOrWhiteSpace(draft.Title)
             || string.IsNullOrWhiteSpace(draft.Summary)
             || string.IsNullOrWhiteSpace(draft.WorkCompleted))
         {
             TempData["UploadReportError"] = localizer["Please complete the required report fields before submitting."].ToString();
-            return RedirectToAction(nameof(UploadReportDetails));
+            return RedirectToAction(nameof(UploadReportDetails), new { jobId = draft.JobId });
         }
 
         var reportId = await proData.SaveUploadReportFromDraftAsync(entity.Id, draft, cancellationToken);
         if (!reportId.HasValue)
         {
             TempData["UploadReportError"] = localizer["We couldn't save your report. Please select the job again and try once more."].ToString();
-            return RedirectToAction(nameof(UploadReport));
+            return RedirectToAction(nameof(UploadReport), new { template = draft.TemplateKey });
         }
 
         ClearUploadReportDraft();
+        await HttpContext.Session.CommitAsync(cancellationToken);
         return RedirectToAction(nameof(UploadReportSuccess), new { id = reportId.Value });
     }
 
@@ -3498,10 +3557,18 @@ public partial class ProveedorController(
         ];
         draft.DocumentSlots ??=
         [
-            new() { Slot = "Invoice", Required = true },
+            new() { Slot = "Invoice", Required = false },
             new() { Slot = "Warranty Document", Required = false },
             new() { Slot = "Permit / Receipt", Required = false }
         ];
+        foreach (var doc in draft.DocumentSlots)
+        {
+            // Invoice used to be required and blocked the wizard UX; keep optional.
+            if (string.Equals(doc.Slot, "Invoice", StringComparison.OrdinalIgnoreCase))
+            {
+                doc.Required = false;
+            }
+        }
         draft.GeneralFiles ??= [];
     }
 
@@ -3512,6 +3579,32 @@ public partial class ProveedorController(
 
     private void ClearUploadReportDraft() =>
         HttpContext.Session.Remove(UploadReportDraftSessionKey);
+
+    /// <summary>
+    /// Re-attach JobId from the URL when session draft was dropped (common on mobile WebViews).
+    /// </summary>
+    private async Task<ProviderProUploadReportDraft?> EnsureUploadReportJobAsync(
+        int proveedorId,
+        int? jobId,
+        CancellationToken cancellationToken)
+    {
+        _ = proveedorId;
+        var draft = GetUploadReportDraft();
+        var resolvedJobId = jobId is > 0 ? jobId : draft.JobId;
+        if (resolvedJobId is not > 0)
+        {
+            return draft.JobId.HasValue ? draft : null;
+        }
+
+        if (draft.JobId != resolvedJobId.Value)
+        {
+            draft.JobId = resolvedJobId.Value;
+            SaveUploadReportDraft(draft);
+            await HttpContext.Session.CommitAsync(cancellationToken);
+        }
+
+        return draft;
+    }
 
     private const string UploadPhotosDraftSessionKey = "ProviderProUploadPhotosDraft";
 

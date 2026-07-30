@@ -2959,17 +2959,18 @@ public partial class ProviderProDataService(
 
     private static string FormatTimeLabel(DateTime? when)
     {
-        // English keys/phrases — localize in the view via UiDisplayLocalization.Localize.
         if (!when.HasValue)
         {
-            return "Not scheduled";
+            return ProviderProDisplayLocalization.L("Not scheduled");
         }
 
         var local = when.Value.Kind == DateTimeKind.Utc ? when.Value.ToLocalTime() : when.Value;
         var culture = CultureInfo.CurrentUICulture;
-        var day = local.Date == DateTime.Today ? "Today"
-            : local.Date == DateTime.Today.AddDays(1) ? "Tomorrow"
-            : local.ToString("MMM d", culture);
+        var day = local.Date == DateTime.Today
+            ? ProviderProDisplayLocalization.L("Today")
+            : local.Date == DateTime.Today.AddDays(1)
+                ? ProviderProDisplayLocalization.L("Tomorrow")
+                : local.ToString(DisplayLabelsLocalization.IsSpanishUi ? "d MMM" : "MMM d", culture);
 
         return $"{day} • {local.ToString("t", culture)}";
     }

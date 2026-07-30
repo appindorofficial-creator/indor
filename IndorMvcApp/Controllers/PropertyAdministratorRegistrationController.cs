@@ -760,7 +760,7 @@ public class PropertyAdministratorRegistrationController(
 
         if (!platformTermsAccepted)
         {
-            ModelState.AddModelError(nameof(platformTermsAccepted), "Please agree to INDOR's platform terms.");
+            ModelState.AddModelError(nameof(platformTermsAccepted), L["Please agree to INDOR's platform terms."]);
             var model = await registration.GetReviewViewModelAsync();
             model.BackUrl = Url.Action(nameof(Tools))!;
             model.PendingTeamInviteCount = GetPendingTeamInvites().Count;

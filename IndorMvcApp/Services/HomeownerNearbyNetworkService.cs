@@ -135,8 +135,7 @@ public class HomeownerNearbyNetworkService(
                 mapItems,
                 propiedad.Id,
                 url,
-                url.Action("Index", "Home") + "#section-services",
-                url.Action("Index", "Home") + "#section-more");
+                url.Action("Index", "Home") + "#section-services");
         }
 
         var propertyAddress = !string.IsNullOrWhiteSpace(propertyInfo?.FormattedAddress)
@@ -185,7 +184,6 @@ public class HomeownerNearbyNetworkService(
         string? filter,
         IUrlHelper url,
         string servicesUrl,
-        string messageUrl,
         CancellationToken ct = default)
     {
         var activeFilter = NormalizeFilter(filter);
@@ -212,8 +210,7 @@ public class HomeownerNearbyNetworkService(
             mapItems,
             0,
             url,
-            servicesUrl,
-            messageUrl);
+            servicesUrl);
 
         return new HomeownerNearbyNetworkViewModel
         {
@@ -702,7 +699,7 @@ public class HomeownerNearbyNetworkService(
                     StatusBadge = provider.IsVerified ? "Verified Provider" : "",
                     StatusCss = "active",
                     PrimaryActionLabel = "Message in INDOR",
-                    PrimaryActionUrl = url.Action("Index", "Home") + "#section-more",
+                    PrimaryActionUrl = HomeownerProviderMessageService.BuildProviderMessageUrl(url, provider.ProviderId),
                     SecondaryActionLabel = "Request Service",
                     SecondaryActionUrl = url.Action("Index", "Home") + "#section-services"
                 }
@@ -851,7 +848,8 @@ public class HomeownerNearbyNetworkService(
         {
             if (string.IsNullOrWhiteSpace(item.PrimaryActionUrl) || item.PrimaryActionUrl == "#")
             {
-                primaryUrl = url.Action("Index", "Home") + "#section-more";
+                primaryUrl = (url.Action("Index", "Home", new { filter = NearbyNetworkHomeownerFilters.Providers }) ?? "/")
+                    + "#section-home";
             }
 
             if (string.IsNullOrWhiteSpace(item.SecondaryActionUrl) || item.SecondaryActionUrl == "#")
@@ -974,7 +972,7 @@ public class HomeownerNearbyNetworkService(
             PrimaryActionLabel = "See Providers",
             PrimaryActionUrl = url.Action("Index", "Home") + "#section-services",
             SecondaryActionLabel = "Message in INDOR",
-            SecondaryActionUrl = url.Action("Index", "Home") + "#section-more"
+            SecondaryActionUrl = url.Action("Detail", "NeighborRequest", new { id = request.Id }) ?? "#"
         };
 
     private async Task<List<RealtorNetworkMapProviderViewModel>> LoadNearbyProvidersAsync(
@@ -1431,8 +1429,7 @@ public class HomeownerNearbyNetworkService(
         IReadOnlyList<IndorNearbyNetworkItem> mapItems,
         int propiedadId,
         IUrlHelper url,
-        string servicesUrl,
-        string messageUrl)
+        string servicesUrl)
     {
         var items = new List<HomeownerMapCarouselItemViewModel>();
 
@@ -1454,7 +1451,7 @@ public class HomeownerNearbyNetworkService(
                     : [],
                 IsVerified = provider.IsVerified,
                 PrimaryActionLabel = "Message in INDOR",
-                PrimaryActionUrl = messageUrl,
+                PrimaryActionUrl = HomeownerProviderMessageService.BuildProviderMessageUrl(url, provider.ProviderId),
                 SecondaryActionLabel = "Request Service",
                 SecondaryActionUrl = servicesUrl
             });

@@ -40,6 +40,10 @@
         }
 
         function messageFor(field) {
+            var custom = field.getAttribute('data-pa-error-message');
+            if (custom) {
+                return custom;
+            }
             var label = labelFor(field);
             var m = msgs();
             if (field.type === 'checkbox') {

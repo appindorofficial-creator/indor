@@ -32,9 +32,13 @@ public sealed class IndorLocalizer : IIndorLocalizer
             return key;
         }
 
-        return UiTranslations.Spanish.TryGetValue(key, out var translated)
-            ? translated
-            : key;
+        // Skip identity "translations" (EN=EN) so incomplete Flows entries don't block Spanish UI.
+        if (CatalogText.TryResolveUiSpanish(key, out var translated))
+        {
+            return translated;
+        }
+
+        return key;
     }
 
     public string T(string key, params object[] args)

@@ -1,0 +1,15 @@
+@model IndorMvcApp.ViewModels.HomeownerMessageSentViewModel
+@{
+    ViewData["Title"] = L["Message sent"];
+    ViewData["BackUrl"] = Model.BackUrl;
+}
+
+<div class="sr-hero">
+    <h2>@L["Message sent"]</h2>
+    <p>@(string.Format(L["Your message was sent to {0}."], Model.ProviderName))</p>
+</div>
+
+<section class="sr-card" style="padding:18px;display:grid;gap:10px;">
+    <a href="@Model.BackUrl" class="sr-btn sr-btn--primary sr-btn--block">@L["Back to nearby services"]</a>
+    <a href="@Model.ServicesUrl" class="sr-btn sr-btn--ghost sr-btn--block">@L["Browse services"]</a>
+</section>

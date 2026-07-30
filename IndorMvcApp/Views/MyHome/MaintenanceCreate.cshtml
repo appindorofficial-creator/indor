@@ -6,6 +6,7 @@
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "maintenance";
     ViewBag.MyHomeBackUrl = Url.Action("Maintenance", "MyHome", new { id = Model.PropiedadId, from = Model.NavigationFrom });
+    var hasServerErrors = !ViewData.ModelState.IsValid;
 }
 @section Head {
     <style>
@@ -14,51 +15,56 @@
         .hf-validation-summary.validation-summary-valid { display:none; }
         .hf-field-error { display:block; color:#B91C1C; font-size:0.82rem; font-weight:600; margin:-6px 0 12px; }
         .hf-field-error:empty { display:none; }
+        .hf-input.is-invalid,
+        .hf-textarea.is-invalid { border-color:#DC2626 !important; box-shadow:0 0 0 3px rgba(220,38,38,0.12); }
+        .hf-label.is-invalid-label { color:#B91C1C; }
     </style>
 }
 <div class="hf-title-row">
     <h1 class="hf-title">@L["Add maintenance"]</h1>
 </div>
-<form asp-controller="MyHome" asp-action="MaintenanceCreate" asp-route-id="@Model.PropiedadId" method="post" class="hf-maint-form" id="maintenanceCreateForm">
+<form asp-controller="MyHome" asp-action="MaintenanceCreate" asp-route-id="@Model.PropiedadId" method="post" class="hf-maint-form" id="maintenanceCreateForm" novalidate>
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="PropiedadId" />
     <input type="hidden" asp-for="NavigationFrom" />
     <input type="hidden" asp-for="Status" value="Upcoming" />
 
-    <div asp-validation-summary="All" class="hf-validation-summary"></div>
+    <div asp-validation-summary="All" class="hf-validation-summary" id="maintServerErrors"></div>
+    <div class="hf-validation-summary" id="maintClientErrors" hidden role="alert"></div>
 
-    <label asp-for="Title" class="hf-label">@L["Task title"]</label>
-    <input asp-for="Title" class="hf-input" required maxlength="150" placeholder="@L["Check AC system"]" />
-    <span asp-validation-for="Title" class="hf-field-error"></span>
+    <label asp-for="Title" class="hf-label" id="titleLabel">@L["Task title"]</label>
+    <input asp-for="Title" class="hf-input" id="Title" required maxlength="150" placeholder="@L["Check AC system"]" aria-describedby="titleError" />
+    <span asp-validation-for="Title" class="hf-field-error" id="titleError"></span>
 
-    <label asp-for="DueDate" class="hf-label">@L["Due date"]</label>
-    <input asp-for="DueDate" class="hf-input" type="date" required />
-    <span asp-validation-for="DueDate" class="hf-field-error"></span>
+    <label asp-for="DueDate" class="hf-label" id="dueDateLabel">@L["Due date"]</label>
+    <input asp-for="DueDate" class="hf-input" id="DueDate" type="date" required aria-describedby="dueDateError" />
+    <span asp-validation-for="DueDate" class="hf-field-error" id="dueDateError"></span>
 
     <p class="hf-label" style="margin-top:16px;">@L["How would you like to handle this?"]</p>
     <div class="hf-help-mode">
         <label class="hf-help-mode-card">
-            <input type="radio" name="SaveMode" value="Agenda" checked />
+            <input type="radio" name="SaveModeChoice" value="Agenda" checked data-save-mode />
             <span class="hf-help-mode-icon"><i class="fas fa-calendar-check"></i></span>
             <strong>@L["Save to my agenda"]</strong>
             <small>@L["Add a reminder with your message. INDOR will not search for a contractor."]</small>
         </label>
         <label class="hf-help-mode-card">
-            <input type="radio" name="SaveMode" value="IndorSpecialist" />
+            <input type="radio" name="SaveModeChoice" value="IndorSpecialist" data-save-mode />
             <span class="hf-help-mode-icon hf-help-mode-icon--indor"><i class="fas fa-user-shield"></i></span>
             <strong>@L["Request Indor specialist"]</strong>
             <small>@L["INDOR will receive your request and find a verified contractor for you."]</small>
         </label>
     </div>
+    <input type="hidden" name="SaveMode" id="SaveMode" value="Agenda" />
 
     <label asp-for="Notes" class="hf-label">@L["Leave a message"]</label>
     <textarea asp-for="Notes" class="hf-textarea" rows="3" placeholder="@L["Optional notes about this task..."]"></textarea>
 
     <div class="hf-maint-actions">
-        <button type="submit" name="SaveMode" value="Agenda" class="hf-btn hf-btn-outline">
+        <button type="submit" class="hf-btn hf-btn-outline" data-submit-mode="Agenda">
             <i class="fas fa-calendar-plus"></i> @L["Save to agenda"]
         </button>
-        <button type="submit" name="SaveMode" value="IndorSpecialist" class="hf-btn hf-btn-primary">
+        <button type="submit" class="hf-btn hf-btn-primary" data-submit-mode="IndorSpecialist">
             <i class="fas fa-user-shield"></i> @L["Request Indor specialist"]
         </button>
     </div>
@@ -102,48 +108,108 @@
         if (!form) { return; }
 
         var msgs = {
-            fill: @Html.Raw(JsonSerializer.Serialize(L["Please fill out this field."].ToString())),
-            select: @Html.Raw(JsonSerializer.Serialize(L["Please select an item in the list."].ToString()))
+            summary: @Html.Raw(JsonSerializer.Serialize(L["Please complete the highlighted fields to continue."].ToString())),
+            title: @Html.Raw(JsonSerializer.Serialize(L["Please enter a task title."].ToString())),
+            dueDate: @Html.Raw(JsonSerializer.Serialize(L["Please select a due date."].ToString()))
         };
 
-        // Override browser-locale HTML5 tooltips so messages follow the app UI culture via L[].
-        form.noValidate = true;
-        form.setAttribute('novalidate', 'novalidate');
+        var titleInput = document.getElementById('Title');
+        var dueDateInput = document.getElementById('DueDate');
+        var titleError = document.getElementById('titleError');
+        var dueDateError = document.getElementById('dueDateError');
+        var titleLabel = document.getElementById('titleLabel');
+        var dueDateLabel = document.getElementById('dueDateLabel');
+        var clientErrors = document.getElementById('maintClientErrors');
+        var saveModeInput = document.getElementById('SaveMode');
+        var pendingMode = null;
 
-        function validityMessage(field) {
-            if (field.validity.valueMissing && field.tagName === 'SELECT') {
-                return msgs.select;
-            }
-            return msgs.fill;
+        function setSaveMode(mode) {
+            if (!saveModeInput) { return; }
+            saveModeInput.value = mode;
+            form.querySelectorAll('[data-save-mode]').forEach(function (radio) {
+                radio.checked = radio.value === mode;
+            });
         }
 
-        function clearFieldValidity(field) {
-            field.setCustomValidity('');
+        form.querySelectorAll('[data-save-mode]').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                if (radio.checked) {
+                    setSaveMode(radio.value);
+                }
+            });
+        });
+
+        form.querySelectorAll('[data-submit-mode]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                pendingMode = btn.getAttribute('data-submit-mode') || 'Agenda';
+                setSaveMode(pendingMode);
+            });
+        });
+
+        function clearField(input, errorEl, label) {
+            if (input) { input.classList.remove('is-invalid'); }
+            if (label) { label.classList.remove('is-invalid-label'); }
+            if (errorEl && !errorEl.getAttribute('data-server')) {
+                errorEl.textContent = '';
+            }
+        }
+
+        function markField(input, errorEl, label, message) {
+            if (input) { input.classList.add('is-invalid'); }
+            if (label) { label.classList.add('is-invalid-label'); }
+            if (errorEl) { errorEl.textContent = message; }
+        }
+
+        function validate() {
+            var missing = [];
+            clearField(titleInput, titleError, titleLabel);
+            clearField(dueDateInput, dueDateError, dueDateLabel);
+
+            var titleOk = titleInput && titleInput.value.trim().length > 0;
+            var dueOk = dueDateInput && dueDateInput.value.trim().length > 0;
+
+            if (!titleOk) {
+                markField(titleInput, titleError, titleLabel, msgs.title);
+                missing.push(msgs.title);
+            }
+            if (!dueOk) {
+                markField(dueDateInput, dueDateError, dueDateLabel, msgs.dueDate);
+                missing.push(msgs.dueDate);
+            }
+
+            if (clientErrors) {
+                if (missing.length) {
+                    clientErrors.hidden = false;
+                    clientErrors.innerHTML = '<strong>' + msgs.summary + '</strong><ul>' +
+                        missing.map(function (m) { return '<li>' + m + '</li>'; }).join('') +
+                        '</ul>';
+                } else {
+                    clientErrors.hidden = true;
+                    clientErrors.innerHTML = '';
+                }
+            }
+
+            return missing.length === 0;
         }
 
         form.addEventListener('submit', function (e) {
-            var fields = form.querySelectorAll('input, select, textarea');
-            var firstInvalid = null;
+            if (pendingMode) {
+                setSaveMode(pendingMode);
+            }
 
-            fields.forEach(clearFieldValidity);
-            fields.forEach(function (field) {
-                if (!firstInvalid && !field.checkValidity()) {
-                    firstInvalid = field;
-                }
-            });
-
-            if (firstInvalid) {
+            if (!validate()) {
                 e.preventDefault();
-                firstInvalid.setCustomValidity(validityMessage(firstInvalid));
-                firstInvalid.reportValidity();
-                if (typeof firstInvalid.focus === 'function') {
-                    firstInvalid.focus({ preventScroll: true });
+                var firstInvalid = form.querySelector('.hf-input.is-invalid');
+                if (firstInvalid && typeof firstInvalid.focus === 'function') {
+                    firstInvalid.focus({ preventScroll: false });
+                    firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                if (clientErrors) {
+                    clientErrors.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 }
                 return;
             }
 
-            // Valid submit: prevent double-submit. Defer disabling so the clicked
-            // button's SaveMode value is still serialized into the POST.
             setTimeout(function () {
                 form.querySelectorAll('button[type="submit"]').forEach(function (btn) {
                     btn.disabled = true;
@@ -152,10 +218,25 @@
             }, 0);
         });
 
-        form.querySelectorAll('input, select, textarea').forEach(function (field) {
-            field.addEventListener('input', function () { clearFieldValidity(field); });
-            field.addEventListener('change', function () { clearFieldValidity(field); });
+        [titleInput, dueDateInput].forEach(function (field) {
+            if (!field) { return; }
+            field.addEventListener('input', function () { validate(); });
+            field.addEventListener('change', function () { validate(); });
         });
+
+        @if (hasServerErrors)
+        {
+            <text>
+            if (titleInput && !titleInput.value.trim()) {
+                titleInput.classList.add('is-invalid');
+                if (titleLabel) titleLabel.classList.add('is-invalid-label');
+            }
+            if (dueDateInput && !dueDateInput.value.trim()) {
+                dueDateInput.classList.add('is-invalid');
+                if (dueDateLabel) dueDateLabel.classList.add('is-invalid-label');
+            }
+            </text>
+        }
     })();
 </script>
 }

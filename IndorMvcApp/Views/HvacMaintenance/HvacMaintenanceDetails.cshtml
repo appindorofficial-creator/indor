@@ -29,7 +29,8 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
                    maxlength="@EquipmentSerialNumberAttribute.MaxLength"
                    autocomplete="off"
                    spellcheck="false" />
-            <span class="field-hint">@EquipmentSerialNumberAttribute.HintText</span>
+            <span class="field-hint">@L[EquipmentSerialNumberAttribute.HintText]</span>
+            <span class="text-danger" id="serialInlineError" hidden role="alert" style="display:block;margin-top:8px;font-size:0.82rem;font-weight:600;"></span>
             <span asp-validation-for="NumeroSerieAc" class="text-danger"></span>
             <div class="toggle-row" style="margin-top:12px;">
                 <span><i class="fas fa-circle-question"></i> @L["I don't know the serial number"]</span>
@@ -137,12 +138,28 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
         }
 
         function validateSerialField() {
+            var inlineError = document.getElementById('serialInlineError');
             if (serialToggle.checked) {
                 serialInput.setCustomValidity('');
+                if (inlineError) {
+                    inlineError.hidden = true;
+                    inlineError.textContent = '';
+                }
                 return true;
             }
             var message = serialErrorMessage(serialInput.value);
             serialInput.setCustomValidity(message);
+            if (inlineError) {
+                if (message) {
+                    inlineError.hidden = false;
+                    inlineError.style.display = 'block';
+                    inlineError.textContent = message;
+                } else {
+                    inlineError.hidden = true;
+                    inlineError.style.display = 'none';
+                    inlineError.textContent = '';
+                }
+            }
             return !message;
         }
 
@@ -157,7 +174,12 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
             var maintenanceOk = validateMaintenanceField();
             if (!serialOk) {
                 e.preventDefault();
-                serialInput.reportValidity();
+                serialInput.focus({ preventScroll: false });
+                serialInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Prefer visible inline error — iOS often hides native validity bubbles.
+                if (!document.getElementById('serialInlineError')?.textContent) {
+                    serialInput.reportValidity();
+                }
                 return;
             }
             if (!maintenanceOk) {

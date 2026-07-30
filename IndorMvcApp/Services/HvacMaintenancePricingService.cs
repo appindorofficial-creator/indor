@@ -13,13 +13,15 @@ public static class HvacMaintenancePricingService
 public static class HvacMaintenanceDisplayLabels
 {
     public static string FormatSerial(string? serial, bool desconocido) =>
-        desconocido || string.IsNullOrWhiteSpace(serial) ? "Not provided" : serial.Trim();
+        desconocido || string.IsNullOrWhiteSpace(serial)
+            ? DisplayLabelsLocalization.L("Not provided")
+            : serial.Trim();
 
     public static string FormatLastMaintenance(string? value, bool desconocido)
     {
         if (desconocido || string.IsNullOrWhiteSpace(value))
         {
-            return "Not sure";
+            return DisplayLabelsLocalization.L("Not sure");
         }
 
         if (DateTime.TryParseExact(value.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture,
@@ -36,13 +38,21 @@ public static class HvacMaintenanceDisplayLabels
         return value.Trim();
     }
 
-    public static string FormatTimeWindow(string? code) => code switch
+    public static string FormatTimeWindow(string? code)
     {
-        "Morning" => DisplayLabelsLocalization.L("Morning 8–11"),
-        "Midday" => DisplayLabelsLocalization.L("Midday 11–2"),
-        "Afternoon" => DisplayLabelsLocalization.L("Afternoon 2–5"),
-        _ => code ?? "—"
-    };
+        var key = (code ?? string.Empty).Trim();
+        // Normalize ASCII hyphen so DB/catalog variants still resolve.
+        key = key.Replace('-', '–');
+
+        return key switch
+        {
+            "Morning" or "Morning 8–11" => DisplayLabelsLocalization.L("Morning 8–11"),
+            "Midday" or "Midday 11–2" => DisplayLabelsLocalization.L("Midday 11–2"),
+            "Afternoon" or "Afternoon 2–5" => DisplayLabelsLocalization.L("Afternoon 2–5"),
+            "Evening" or "Evening 5–8" => DisplayLabelsLocalization.L("Evening 5–8"),
+            _ => string.IsNullOrWhiteSpace(code) ? "—" : DisplayLabelsLocalization.L(code)
+        };
+    }
 
     public static string FormatServiceType(string? code, bool recordatorioAnual) =>
         recordatorioAnual || string.Equals(code, "YearlyReminder", StringComparison.OrdinalIgnoreCase)
@@ -51,9 +61,12 @@ public static class HvacMaintenanceDisplayLabels
 
     public static string FormatScheduledLabel(DateTime? date, string? window) =>
         date.HasValue
-            ? $"{date.Value:MMM d, yyyy} • {FormatTimeWindow(window)}"
+            ? $"{date.Value.ToString(DisplayLabelsLocalization.IsSpanishUi ? "d MMM yyyy" : "MMM d, yyyy", CultureInfo.CurrentUICulture)} • {FormatTimeWindow(window)}"
             : FormatTimeWindow(window);
 
     public static string FormatPrice(decimal amount) =>
-        string.Format(CultureInfo.InvariantCulture, "From ${0}", amount.ToString("0"));
+        string.Format(
+            CultureInfo.CurrentCulture,
+            DisplayLabelsLocalization.L("From ${0}"),
+            amount.ToString("0", CultureInfo.InvariantCulture));
 }

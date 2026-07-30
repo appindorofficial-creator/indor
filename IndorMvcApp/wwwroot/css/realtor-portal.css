@@ -2227,6 +2227,37 @@ ul.rl-next-steps li > span:first-child {
     box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12);
 }
 
+.rl-file-drop-trigger {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    font: inherit;
+    color: inherit;
+    text-align: center;
+    cursor: pointer;
+}
+
+.rl-file-source-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 12px;
+    right: 12px;
+    z-index: 80;
+    min-width: 200px;
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.14);
+    padding: 6px;
+}
+
+.rl-file-source-menu[hidden] {
+    display: none !important;
+}
+
 .rl-file-drop-input {
     position: absolute;
     width: 1px;
@@ -2481,6 +2512,127 @@ ul.rl-next-steps li > span:first-child {
     border: 1px solid #E2E8F0;
     border-radius: 14px;
     background: #fff;
+}
+
+.rl-insp-report-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 0 10px;
+}
+
+.rl-insp-report-nav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid #E2E8F0;
+    background: #fff;
+    color: #0066CC;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.rl-insp-report-nav-btn:disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+.rl-insp-report-page-indicator {
+    font-size: .82rem;
+    font-weight: 700;
+    color: #0F172A;
+    min-width: 7rem;
+    text-align: center;
+}
+
+.rl-insp-report-viewer {
+    flex: 1;
+    width: 100%;
+    min-height: 60dvh;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    background: #F8FAFC;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.rl-insp-report-canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    background: #fff;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, .08);
+    border-radius: 4px;
+}
+
+.rl-insp-report-loading,
+.rl-insp-report-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 40dvh;
+    color: #64748B;
+    font-size: .9rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 24px;
+}
+
+.rl-insp-report-error {
+    color: #B91C1C;
+}
+
+.rl-insp-report-open-native {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 12px auto 8px;
+    padding: 10px 14px;
+    color: #0066CC;
+    font-size: .82rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.rl-file-doc-image-wrap {
+    flex: 1;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    min-height: 50dvh;
+    padding: 8px;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    background: #F8FAFC;
+    overflow: auto;
+}
+
+.rl-file-doc-image {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+}
+
+.rl-file-doc-fallback {
+    margin: 10px 0 0;
+    font-size: .8rem;
+    color: #64748B;
+    line-height: 1.4;
+}
+
+.rl-file-doc-fallback a {
+    color: #0066CC;
+    font-weight: 600;
+    text-decoration: none;
 }
 
 .rl-insp-findings-hero {
@@ -7689,7 +7841,8 @@ a.rl-profile-nav-item {
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 60;
+    /* Above .rl-bottom-nav (z-index 100) so Volver / Continuar remain tappable. */
+    z-index: 110;
     max-width: 480px;
     margin: 0 auto;
     padding: 12px 16px calc(12px + 56px + env(safe-area-inset-bottom));
@@ -7697,6 +7850,13 @@ a.rl-profile-nav-item {
     backdrop-filter: blur(8px);
     border-top: 1px solid #EEF3FA;
     box-shadow: 0 -10px 26px rgba(20, 66, 124, .08);
+}
+.rl-dash-page .rl-invite-actions .rl-invite-cancel,
+.rl-dash-page .rl-invite-actions .ob-btn-primary {
+    position: relative;
+    z-index: 1;
+    pointer-events: auto;
+    touch-action: manipulation;
 }
 .rl-invite-shell { padding-bottom: 156px; }
 

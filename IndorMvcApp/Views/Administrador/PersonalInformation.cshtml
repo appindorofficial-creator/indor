@@ -45,15 +45,17 @@
                     <i class="fas fa-camera"></i>
                 </button>
                 <div class="pa-personal-photo-menu" id="paPersonalPhotoMenu" role="menu" hidden>
-                    <button type="button" class="pa-personal-photo-menu-item" id="paPersonalPhotoTake" role="menuitem">
-                        <i class="fas fa-camera"></i> @L["Take photo"]
+                    <button type="button" class="pa-personal-photo-menu-item" id="paPersonalPhotoTake" role="menuitem"
+                            data-indor-file-source="camera" data-label="@IndorFileSourceI18n.Camera(L)">
+                        <i class="fas fa-camera"></i> <span class="indor-file-source-label">@IndorFileSourceI18n.Camera(L)</span>
                     </button>
-                    <button type="button" class="pa-personal-photo-menu-item" id="paPersonalPhotoChoose" role="menuitem">
-                        <i class="fas fa-image"></i> @L["Choose from library"]
+                    <button type="button" class="pa-personal-photo-menu-item" id="paPersonalPhotoChoose" role="menuitem"
+                            data-indor-file-source="library" data-label="@IndorFileSourceI18n.Library(L)">
+                        <i class="fas fa-image"></i> <span class="indor-file-source-label">@IndorFileSourceI18n.Library(L)</span>
                     </button>
                 </div>
-                <input type="file" id="paPersonalPhotoCamera" name="photo" accept="image/*" capture="environment" hidden />
-                <input type="file" id="paPersonalPhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" hidden />
+                <input type="file" id="paPersonalPhotoCamera" name="photo" accept="image/*" capture="environment" hidden data-indor-skip-source-upgrade="1" />
+                <input type="file" id="paPersonalPhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" hidden data-indor-skip-source-upgrade="1" />
             </div>
         </form>
         <strong>@Model.FullName</strong>

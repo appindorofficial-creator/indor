@@ -16,6 +16,8 @@ public static class UiTranslationsPropietarioServices
             ["Nearby promotions"] = "Promociones cercanas",
             ["Request a Service"] = "Solicitar un servicio",
             ["My Requests"] = "Mis solicitudes",
+            ["Deals"] = "Ofertas",
+            ["Explore"] = "Explorar",
 
             // Safe Air 365 — landing
             ["Change it yourself or let INDOR handle it."] = "Cámbialo tú mismo o deja que INDOR lo haga.",
@@ -180,7 +182,10 @@ public static class UiTranslationsPropietarioServices
             ["From ${0} /mo"] = "Desde ${0} /mes",
 
             // Cleaning Pro — common
+            ["Customize cleaning"] = "Personalizar limpieza",
             ["Customize your cleaning"] = "Personaliza tu limpieza",
+            ["Customized cleaning, your way."] = "Limpieza personalizada, a tu manera.",
+            ["From $35/hr per cleaner"] = "Desde $35/h por limpiador",
             ["How many hours?"] = "¿Cuántas horas?",
             ["Select add-ons"] = "Selecciona extras",
             ["Review your cleaning"] = "Revisa tu limpieza",

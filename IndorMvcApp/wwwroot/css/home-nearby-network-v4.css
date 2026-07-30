@@ -563,19 +563,28 @@ body.rl-dash-page.hn-landing-active {
 }
 
 #section-home.hn-v4 .hn-v4-tile-go {
-    position: absolute;
-    left: 8px;
-    bottom: 8px;
+    position: absolute !important;
+    left: 8px !important;
+    bottom: 8px !important;
     width: var(--hn-v4-go-size);
     height: var(--hn-v4-go-size);
     border-radius: 50%;
-    display: flex;
+    display: flex !important;
     align-items: center;
     justify-content: center;
     font-size: 0.72rem;
-    color: #FFFFFF;
-    z-index: 3;
-    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.14);
+    color: #FFFFFF !important;
+    background: #2563EB !important;
+    z-index: 5 !important;
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
+    pointer-events: none;
+}
+
+#section-home.hn-v4 .hn-v4-tile-go svg {
+    display: block;
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
 }
 
 /* Landing: tight natural stack — no flex stretch / no middle gap */
@@ -824,10 +833,66 @@ body.rl-dash-page:has(#section-home.hn-v4-landing.active) {
     display: none !important;
 }
 
-#section-home.hn-v4 .hn-v4-tile-go--certified-providers { background: #2563EB; }
-#section-home.hn-v4 .hn-v4-tile-go--house-facts { background: #7C3AED; }
-#section-home.hn-v4 .hn-v4-tile-go--post-request { background: #EA580C; }
-#section-home.hn-v4 .hn-v4-tile-go--my-requests { background: #0D9488; }
+#section-home.hn-v4 .hn-v4-tile-go--certified-providers { background: #2563EB !important; }
+#section-home.hn-v4 .hn-v4-tile-go--house-facts { background: #7C3AED !important; }
+#section-home.hn-v4 .hn-v4-tile-go--post-request { background: #EA580C !important; }
+#section-home.hn-v4 .hn-v4-tile-go--my-requests { background: #0D9488 !important; }
+#section-home.hn-v4 .hn-v4-tile-go--request-service { background: #0066CC !important; }
+#section-home.hn-v4 .hn-v4-tile-go--view-all-nearby { background: #475569 !important; }
+#section-home.hn-v4 .hn-v4-tile-go--homes-for-sale { background: #059669 !important; }
+#section-home.hn-v4 .hn-v4-tile-go--nearby-promotions { background: #D97706 !important; }
+#section-home.hn-v4 .hn-v4-tile-go--emergency-help { background: #DC2626 !important; }
+#section-home.hn-v4 .hn-v4-tile-go--default { background: #2563EB !important; }
+
+#section-home.hn-v4 .hn-quick-action--homes-for-sale.hn-v4-tile {
+    background: linear-gradient(180deg, #ECFDF5 0%, #FFFFFF 72%) !important;
+    border-color: #A7F3D0 !important;
+}
+
+#section-home.hn-v4 .hn-quick-action--homes-for-sale .hn-quick-action-icon {
+    background: linear-gradient(135deg, #34D399, #059669) !important;
+    color: #fff !important;
+}
+
+#section-home.hn-v4 .hn-quick-action--nearby-promotions.hn-v4-tile {
+    background: linear-gradient(180deg, #FFFBEB 0%, #FFFFFF 72%) !important;
+    border-color: #FDE68A !important;
+}
+
+#section-home.hn-v4 .hn-quick-action--nearby-promotions .hn-v4-tile-badge {
+    background: #FEF3C7;
+    color: #B45309;
+}
+
+#section-home.hn-v4 .hn-quick-action--nearby-promotions .hn-quick-action-icon {
+    background: linear-gradient(135deg, #FBBF24, #D97706) !important;
+    color: #fff !important;
+}
+
+#section-home.hn-v4 .hn-quick-action--view-all-nearby.hn-v4-tile {
+    background: linear-gradient(180deg, #F8FAFC 0%, #FFFFFF 72%) !important;
+    border-color: #CBD5E1 !important;
+}
+
+#section-home.hn-v4 .hn-quick-action--view-all-nearby .hn-v4-tile-badge {
+    background: #E2E8F0;
+    color: #334155;
+}
+
+#section-home.hn-v4 .hn-quick-action--view-all-nearby .hn-quick-action-icon {
+    background: linear-gradient(135deg, #64748B, #475569) !important;
+    color: #fff !important;
+}
+
+#section-home.hn-v4 .hn-quick-action--request-service.hn-v4-tile {
+    background: linear-gradient(180deg, #EFF6FF 0%, #FFFFFF 72%) !important;
+    border-color: #BFDBFE !important;
+}
+
+#section-home.hn-v4 .hn-quick-action--request-service .hn-quick-action-icon {
+    background: linear-gradient(135deg, #3B82F6, #0066CC) !important;
+    color: #fff !important;
+}
 
 #section-home.hn-v4 .hn-quick-action--certified-providers.hn-v4-tile {
     background: linear-gradient(180deg, #EFF6FF 0%, #FFFFFF 72%) !important;

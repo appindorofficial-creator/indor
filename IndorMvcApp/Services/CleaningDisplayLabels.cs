@@ -1,4 +1,6 @@
-﻿namespace IndorMvcApp.Services;
+﻿using System.Globalization;
+
+namespace IndorMvcApp.Services;
 
 // Localized via DisplayLabelsLocalization.L
 
@@ -55,11 +57,14 @@ public static class CleaningDisplayLabels
         "MidMorning" => DisplayLabelsLocalization.L("12:00 PM - 2:00 PM"),
         "Afternoon" => DisplayLabelsLocalization.L("2:00 PM - 4:00 PM"),
         "Evening" => DisplayLabelsLocalization.L("4:00 PM - 6:00 PM"),
-        _ => string.IsNullOrWhiteSpace(value) ? "To be scheduled" : value
+        _ => string.IsNullOrWhiteSpace(value) ? DisplayLabelsLocalization.L("To be scheduled") : value
     };
 
     public static string FormatDate(DateTime? date) =>
-        date?.ToString("MMM d, yyyy") ?? "To be scheduled";
+        date?.ToString(
+            DisplayLabelsLocalization.IsSpanishUi ? "d MMM yyyy" : "MMM d, yyyy",
+            CultureInfo.CurrentUICulture)
+        ?? DisplayLabelsLocalization.L("To be scheduled");
 
     public static string FormatSupplies(string? value) => value switch
     {

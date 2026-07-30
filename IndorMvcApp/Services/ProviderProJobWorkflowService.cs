@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text.Json;
+using System.Text.RegularExpressions;
 
 using IndorMvcApp.Data;
 
@@ -522,13 +523,15 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
             CustomerName = draft.CustomerName,
             CustomerInitials = DeriveCustomerInitials(draft.CustomerName),
             CustomerTone = DeriveAvatarTone(draft.ClienteId ?? draft.CustomerName.GetHashCode()),
-            AiCustomerNeeds = draft.AiCustomerNeeds,
-            AiRecommendedScope = draft.AiRecommendedScope.ToList(),
+            AiCustomerNeeds = ProviderProDisplayLocalization.L(draft.AiCustomerNeeds),
+            AiRecommendedScope = draft.AiRecommendedScope
+                .Select(ProviderProDisplayLocalization.L)
+                .ToList(),
             EstimateLines = draft.EstimateLines
-                .Select(l => Line(l.Label, l.Amount))
+                .Select(l => Line(ProviderProDisplayLocalization.L(l.Label), l.Amount))
                 .ToList(),
             EstimateTotalLabel = FormatCurrency(draft.EstimateTotal),
-            StepSubtitle = "AI estimate assistant",
+            StepSubtitle = ProviderProDisplayLocalization.L("AI estimate assistant"),
             WizardSteps = BuildCreateJobWizardSteps(4)
         });
     }
@@ -555,14 +558,15 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
         var (icon, tone) = ResolveWizardTypeVisuals(draft.ServiceCategoryId);
         if (NeedsDefaultQuoteMessage(draft.CustomerMessage))
         {
-            // Always store the English template + English title key; localize at render time.
             draft.CustomerMessage = BuildDefaultCustomerMessage(draft);
         }
 
-        // Keep English catalog keys in the VM so the view Localize/L[] path is reliable.
+        // Localize catalog keys for the send screen (keeps draft English; VM shows UI language).
         var estimateLines = draft.EstimateLines
-            .Select(l => Line(l.Label, l.Amount))
+            .Select(l => Line(ProviderProDisplayLocalization.L(l.Label), l.Amount))
             .ToList();
+
+        var scopeSummary = LocalizeScopeSummary(draft.ScopeSummary, draft.AiRecommendedScope);
 
         return Task.FromResult<ProviderProCreateJobSendViewModel?>(new ProviderProCreateJobSendViewModel
         {
@@ -575,13 +579,13 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
             Address = draft.Address,
             EstimateLines = estimateLines,
             EstimateTotalLabel = draft.SendQuote ? FormatCurrency(draft.EstimateTotal) : "",
-            ScopeSummary = draft.ScopeSummary,
+            ScopeSummary = scopeSummary,
             DeliveryMethod = draft.DeliveryMethod,
-            CustomerMessage = draft.CustomerMessage,
+            CustomerMessage = LocalizeQuoteCustomerMessage(draft.CustomerMessage),
             IncludeAiSummary = draft.IncludeAiSummary,
             IncludeVoiceTranscript = draft.HasVoiceRecording && draft.IncludeVoiceTranscript,
             SendQuote = draft.SendQuote,
-            StepSubtitle = "Finalize the job and quote",
+            StepSubtitle = ProviderProDisplayLocalization.L("Finalize the job and quote"),
             WizardSteps = BuildCreateJobWizardSteps(5)
         });
     }
@@ -678,14 +682,23 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
         if (!string.IsNullOrWhiteSpace(input.EstimateScopeSummary))
         {
-            job.ScopeOfWork = input.EstimateScopeSummary;
+            job.ScopeOfWork = ProviderProDisplayLocalization.L(input.EstimateScopeSummary);
         }
 
         if (!string.IsNullOrWhiteSpace(input.CustomerMessage))
         {
+            // Prefer a Spanish default when the UI is Spanish but the draft still has the English template.
+            var customerMessage = input.CustomerMessage;
+            if (DisplayLabelsLocalization.IsSpanishUi
+                && customerMessage.StartsWith("Hi ", StringComparison.OrdinalIgnoreCase)
+                && customerMessage.Contains("here's your quote for the", StringComparison.OrdinalIgnoreCase))
+            {
+                customerMessage = LocalizeQuoteCustomerMessage(customerMessage);
+            }
+
             job.JobNotes = string.IsNullOrWhiteSpace(job.JobNotes)
-                ? input.CustomerMessage
-                : $"{job.JobNotes}\n\n{input.CustomerMessage}";
+                ? customerMessage
+                : $"{job.JobNotes}\n\n{customerMessage}";
         }
 
         db.IndorProveedorJobs.Add(job);
@@ -749,7 +762,9 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
             StatusClass = MapJobStatusClass(job.Status),
 
-            DistanceLabel = job.DistanceMiles.HasValue ? $"{job.DistanceMiles:0.#} miles away" : null,
+            DistanceLabel = job.DistanceMiles.HasValue
+                ? ProviderProDisplayLocalization.T("{0} miles away", job.DistanceMiles.Value.ToString("0.#"))
+                : null,
 
             ImageUrl = string.IsNullOrWhiteSpace(job.ImageUrl) ? "/welcome-house.png" : job.ImageUrl,
 
@@ -873,7 +888,9 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
             ServiceType = job.ServiceType ?? job.Title,
 
-            DistanceLabel = job.DistanceMiles.HasValue ? $"{job.DistanceMiles:0.#} miles away" : null,
+            DistanceLabel = job.DistanceMiles.HasValue
+                ? ProviderProDisplayLocalization.T("{0} miles away", job.DistanceMiles.Value.ToString("0.#"))
+                : null,
 
             ImageUrl = string.IsNullOrWhiteSpace(job.ImageUrl) ? "/welcome-house.png" : job.ImageUrl,
 
@@ -1375,10 +1392,46 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
         }
     }
 
+    private static string LocalizeScopeSummary(string? scopeSummary, IReadOnlyList<string> bullets)
+    {
+        if (string.IsNullOrWhiteSpace(scopeSummary))
+        {
+            return string.Empty;
+        }
+
+        var direct = ProviderProDisplayLocalization.L(scopeSummary);
+        if (!string.Equals(direct, scopeSummary, StringComparison.Ordinal))
+        {
+            return direct;
+        }
+
+        // Joined AI bullets won't match a single catalog key — localize each known bullet.
+        if (bullets.Count > 0 && DisplayLabelsLocalization.IsSpanishUi)
+        {
+            var parts = bullets
+                .Take(3)
+                .Select(ProviderProDisplayLocalization.L)
+                .Where(p => !string.IsNullOrWhiteSpace(p));
+            var joined = string.Join(" ", parts);
+            if (string.IsNullOrWhiteSpace(joined))
+            {
+                return direct;
+            }
+
+            return scopeSummary.TrimEnd().EndsWith('.') ? joined + "." : joined;
+        }
+
+        return direct;
+    }
+
     private static string BuildScopeSummary(ProviderProCreateJobDraft draft) =>
         draft.AiRecommendedScope.Count > 0
             ? string.Join(" ", draft.AiRecommendedScope.Take(3)) + "."
-            : $"Complete the requested {draft.ServiceCategoryLabel.ToLowerInvariant()} work and provide a detailed summary.";
+            : string.Format(
+                CultureInfo.InvariantCulture,
+                "Complete the requested {0} work and provide a detailed summary.",
+                draft.ServiceCategoryLabel.ToLowerInvariant());
+
 
     private static bool NeedsDefaultQuoteMessage(string? message)
     {
@@ -1387,27 +1440,70 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
             return true;
         }
 
-        // Classic Spanglish bug: English template with a non-ASCII (already-translated) title.
-        return message.StartsWith("Hi ", StringComparison.OrdinalIgnoreCase)
-            && message.Contains("here's your quote for the", StringComparison.OrdinalIgnoreCase)
-            && message.Any(static c => c > 127);
+        // English template (including Spanglish with a Spanish title in the middle).
+        if (message.StartsWith("Hi ", StringComparison.OrdinalIgnoreCase)
+            && message.Contains("here's your quote for the", StringComparison.OrdinalIgnoreCase))
+        {
+            return DisplayLabelsLocalization.IsSpanishUi;
+        }
+
+        return false;
     }
 
     private static string BuildDefaultCustomerMessage(ProviderProCreateJobDraft draft)
     {
-        var firstName = draft.CustomerName.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? draft.CustomerName;
-        // English template + English catalog title key. Localize the full string in the view.
+        var firstName = draft.CustomerName.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()
+            ?? draft.CustomerName;
         var titleKey = UiDisplayLocalization.ToCatalogKey(draft.Title);
         if (string.IsNullOrWhiteSpace(titleKey))
         {
             titleKey = "job";
         }
 
+        var titleForMessage = ProviderProDisplayLocalization.L(titleKey);
+        if (string.IsNullOrWhiteSpace(titleForMessage))
+        {
+            titleForMessage = titleKey;
+        }
+
         return string.Format(
-            CultureInfo.InvariantCulture,
-            "Hi {0}, here's your quote for the {1}. Let us know if you have any questions!",
+            CultureInfo.CurrentCulture,
+            ProviderProDisplayLocalization.L(
+                "Hi {0}, here's your quote for the {1}. Let us know if you have any questions!"),
             firstName,
-            titleKey.ToLowerInvariant());
+            titleForMessage.ToLowerInvariant());
+    }
+
+    private static string LocalizeQuoteCustomerMessage(string? message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return string.Empty;
+        }
+
+        if (!DisplayLabelsLocalization.IsSpanishUi)
+        {
+            return message;
+        }
+
+        // Prefer structured localization for the English quote template (incl. Spanglish titles).
+        var match = Regex.Match(
+            message,
+            @"^Hi\s+(.+?),\s+here['\u2018\u2019\u00B4`]s your quote for the\s+(.+?)\.\s+Let us know if you have any questions!?\s*$",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+        if (match.Success)
+        {
+            var titlePart = match.Groups[2].Value.Trim();
+            var titleKey = UiDisplayLocalization.ToCatalogKey(titlePart);
+            return string.Format(
+                CultureInfo.CurrentCulture,
+                ProviderProDisplayLocalization.L(
+                    "Hi {0}, here's your quote for the {1}. Let us know if you have any questions!"),
+                match.Groups[1].Value.Trim(),
+                ProviderProDisplayLocalization.L(titleKey));
+        }
+
+        return ProviderProDisplayLocalization.L(message);
     }
 
     private static ProviderProCreateJobEstimateLineViewModel Line(string label, decimal amount) =>
@@ -1509,15 +1605,14 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
     private static string FormatJobScheduleLabel(DateTime? start, DateTime? end)
     {
-        // Keep English catalog keys/phrases so views can Localize at render time.
         if (!start.HasValue)
         {
-            return "Not scheduled";
+            return ProviderProDisplayLocalization.L("Not scheduled");
         }
 
         var culture = CultureInfo.CurrentUICulture;
         var localStart = start.Value.Kind == DateTimeKind.Utc ? start.Value.ToLocalTime() : start.Value;
-        var dateLabel = localStart.ToString("MMM d, yyyy", culture);
+        var dateLabel = localStart.ToString(DisplayLabelsLocalization.IsSpanishUi ? "d MMM yyyy" : "MMM d, yyyy", culture);
         var timeLabel = localStart.ToString("t", culture);
 
         if (end.HasValue)
@@ -1735,17 +1830,18 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
     private static string FormatAppointment(DateTime? when)
     {
-        // English keys/phrases — localize in the view via UiDisplayLocalization.Localize.
         if (!when.HasValue)
         {
-            return "Not scheduled";
+            return ProviderProDisplayLocalization.L("Not scheduled");
         }
 
         var culture = CultureInfo.CurrentUICulture;
         var local = when.Value.Kind == DateTimeKind.Utc ? when.Value.ToLocalTime() : when.Value;
-        var day = local.Date == DateTime.Today ? "Today"
-            : local.Date == DateTime.Today.AddDays(1) ? "Tomorrow"
-            : local.ToString("MMM d", culture);
+        var day = local.Date == DateTime.Today
+            ? ProviderProDisplayLocalization.L("Today")
+            : local.Date == DateTime.Today.AddDays(1)
+                ? ProviderProDisplayLocalization.L("Tomorrow")
+                : local.ToString(DisplayLabelsLocalization.IsSpanishUi ? "d MMM" : "MMM d", culture);
 
         return $"{day}, {local.ToString("t", culture)}";
     }

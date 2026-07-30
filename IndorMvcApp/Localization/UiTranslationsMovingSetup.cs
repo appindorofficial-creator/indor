@@ -560,6 +560,7 @@ public static class UiTranslationsMovingSetup
             ["Activate service"] = "Activar servicio",
 
             // Cleaning Pro / Lawn / Trash leftover UI (overrides Spanglish in Flows)
+            ["Customize cleaning"] = "Personalizar limpieza",
             ["Next"] = "Siguiente",
             ["Next: Review"] = "Siguiente: Revisar",
             ["View schedule"] = "Ver agenda",
@@ -674,6 +675,7 @@ public static class UiTranslationsMovingSetup
             ["Enter the INDOR ecosystem"] = "Entrar al ecosistema INDOR",
             ["Complete profile later"] = "Completar perfil después",
             ["Basic real estate agent"] = "Agente inmobiliario básico",
+            ["Experienced real estate agent"] = "Agente inmobiliario con experiencia",
             ["Brokerage / Company Name"] = "Nombre de la correduría / empresa",
             ["Brokerage / Company Name is required."] = "El nombre de la correduría / empresa es obligatorio.",
             ["Realtor Verification"] = "Verificación de agente inmobiliario",
@@ -739,6 +741,8 @@ public static class UiTranslationsMovingSetup
             ["Professional cleaning for homes, apartments, and condos before move-in or after move-out."] =
                 "Limpieza profesional para casas, apartamentos y condominios antes de mudarte o después de salir.",
             ["Occupied home"] = "Hogar ocupado",
+            ["Empty property"] = "Propiedad vacía",
+            ["Closets"] = "Armarios",
             ["Tell us a few details"] = "Cuéntanos algunos detalles",
             ["Choose the cleaning type, property size, and any extra tasks so we can send the right crew."] =
                 "Elige el tipo de limpieza, el tamaño de la propiedad y tareas extras para enviar al equipo adecuado.",
@@ -748,16 +752,23 @@ public static class UiTranslationsMovingSetup
             ["Our pros help you organize, box, label, and protect your belongings so everything arrives safely and stress-free."] =
                 "Nuestros profesionales te ayudan a organizar, empacar, etiquetar y proteger tus pertenencias para que todo llegue seguro y sin estrés.",
             ["Busy families"] = "Familias ocupadas",
+            ["Apartments"] = "Apartamentos",
             ["Large homes"] = "Casas grandes",
+            ["Large home"] = "Hogar grande",
+            ["Medium home"] = "Hogar mediano",
+            ["Homes"] = "Casas",
             ["2-5 hrs"] = "2-5 h",
             ["1-3 days before moving"] = "1-3 días antes de la mudanza",
             ["Upload photos or list"] = "Subir fotos o lista",
+            ["Packing materials can be requested during booking. Final pricing may vary based on scope and materials."] =
+                "Los materiales de empaque se pueden solicitar al reservar. El precio final puede variar según el alcance y los materiales.",
             ["A provider may contact you to confirm supplies and timing."] =
                 "Un proveedor puede contactarte para confirmar suministros y horarios.",
             ["1-3 hours"] = "1-3 horas",
             ["Depending on items"] = "Según los artículos",
             ["Move-in, Setup, Reorganization"] = "Entrada, configuración, reorganización",
             ["New home or refresh"] = "Hogar nuevo o renovación",
+            ["Needs re-assembly"] = "Necesita reensamblaje",
             ["Upload photos or manuals"] = "Subir fotos o manuales",
             ["Photos of the boxes, the room, and manuals help your provider speed up the service."] =
                 "Fotos de las cajas, la habitación y los manuales ayudan a agilizar el servicio.",
@@ -779,6 +790,7 @@ public static class UiTranslationsMovingSetup
             ["Room-by-room packing"] = "Empaque habitación por habitación",
             ["Fragile item protection"] = "Protección de artículos frágiles",
             ["Labeling support"] = "Ayuda con etiquetado",
+            ["Move-out"] = "Salida",
             ["Bed frames"] = "Estructuras de cama",
             ["Desks"] = "Escritorios",
             ["Dining tables"] = "Mesas de comedor",
@@ -792,5 +804,14 @@ public static class UiTranslationsMovingSetup
             ["Transparent pricing"] = "Precios transparentes",
             ["Assembly help for move-in and home setup."] =
                 "Ayuda de ensamblaje para mudanzas y configuración del hogar.",
+            ["Offices"] = "Oficinas",
+            ["Move-ins"] = "Entradas",
+            ["60-90 min"] = "60-90 min",
+            ["Best recommendation"] = "Mejor recomendación",
+            ["Great for new homes, re-mounting, or setting up entertainment spaces. Final pricing may vary based on wall type and cable concealment."] =
+                "Ideal para hogares nuevos, remontaje o preparar espacios de entretenimiento. El precio final puede variar según el tipo de pared y el ocultamiento de cables.",
+            ["Change address >"] = "Cambiar dirección >",
+            ["{0} ({1} items)"] = "{0} ({1} artículos)",
+            ["Confirmed"] = "Confirmado",
         };
 }

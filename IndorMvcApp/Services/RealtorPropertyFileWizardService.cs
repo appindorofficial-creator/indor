@@ -569,6 +569,7 @@ public class RealtorPropertyFileWizardService(
                         .Select(itemGroup => itemGroup.First())
                         .Select(i => new RealtorPropertyFileViewItemViewModel
                         {
+                            Id = i.Id,
                             ItemLabel = i.ItemLabel,
                             FileUrl = i.FileUrl,
                             NoteText = i.NoteText,
@@ -589,7 +590,9 @@ public class RealtorPropertyFileWizardService(
             ProfilePhotoUrl = string.IsNullOrWhiteSpace(realtor.ProfilePhotoUrl) ? null : realtor.ProfilePhotoUrl,
             BadgeLabel = realtor.RegistrationStatus == RealtorRegistrationStatuses.Verified
                 ? localizer.T("Verified Realtor")
-                : localizer.T("Realtor Basic"),
+                : !string.IsNullOrWhiteSpace(realtor.LicenseNumber) && !string.IsNullOrWhiteSpace(realtor.LicenseState)
+                    ? localizer.T("Licensed Realtor")
+                    : localizer.T("Realtor Basic"),
             IsVerified = realtor.RegistrationStatus == RealtorRegistrationStatuses.Verified,
             PropertyFileId = file.Id,
             FileCode = $"PF-{file.Id}",
@@ -613,12 +616,73 @@ public class RealtorPropertyFileWizardService(
                 Icon = section.Icon,
                 Items = section.Items.Select(item => new RealtorPropertyFileViewItemViewModel
                 {
+                    Id = item.Id,
                     ItemLabel = item.ItemLabel,
                     FileUrl = item.FileUrl,
                     NoteText = item.NoteText,
                     MetaLabel = item.MetaLabel
                 }).ToList()
             }).ToList()
+        };
+    }
+
+    public async Task<RealtorPropertyFileDocumentViewModel> BuildOpenDocumentAsync(
+        int propertyFileId,
+        int itemId,
+        CancellationToken cancellationToken = default)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Realtor profile not found.");
+
+        var file = await db.IndorRealtorPropertyFiles
+            .AsNoTracking()
+            .Include(f => f.Items)
+            .FirstOrDefaultAsync(f => f.Id == propertyFileId && f.RealtorId == realtor.Id, cancellationToken)
+            ?? throw new InvalidOperationException("Property file not found.");
+
+        var item = file.Items.FirstOrDefault(i => i.Id == itemId)
+            ?? throw new InvalidOperationException("Document not found.");
+
+        if (string.IsNullOrWhiteSpace(item.FileUrl))
+        {
+            throw new InvalidOperationException("This item has no file to open.");
+        }
+
+        var url = item.FileUrl.Trim();
+        var firstName = (realtor.DisplayName ?? "Realtor").Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()
+                        ?? "Realtor";
+        var isImage = url.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                      || url.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                      || url.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+                      || url.EndsWith(".webp", StringComparison.OrdinalIgnoreCase)
+                      || url.EndsWith(".gif", StringComparison.OrdinalIgnoreCase)
+                      || url.EndsWith(".heic", StringComparison.OrdinalIgnoreCase);
+        var isPdf = url.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase)
+                    || url.Contains(".pdf?", StringComparison.OrdinalIgnoreCase);
+        var isVideo = url.EndsWith(".mp4", StringComparison.OrdinalIgnoreCase)
+                      || url.EndsWith(".mov", StringComparison.OrdinalIgnoreCase)
+                      || url.EndsWith(".webm", StringComparison.OrdinalIgnoreCase)
+                      || url.Contains(".mp4?", StringComparison.OrdinalIgnoreCase)
+                      || url.Contains(".mov?", StringComparison.OrdinalIgnoreCase);
+
+        return new RealtorPropertyFileDocumentViewModel
+        {
+            DisplayName = firstName,
+            FullDisplayName = realtor.DisplayName ?? firstName,
+            ProfilePhotoUrl = string.IsNullOrWhiteSpace(realtor.ProfilePhotoUrl) ? null : realtor.ProfilePhotoUrl,
+            BadgeLabel = realtor.RegistrationStatus == RealtorRegistrationStatuses.Verified
+                ? localizer.T("Verified Realtor")
+                : !string.IsNullOrWhiteSpace(realtor.LicenseNumber) && !string.IsNullOrWhiteSpace(realtor.LicenseState)
+                    ? localizer.T("Licensed Realtor")
+                    : localizer.T("Realtor Basic"),
+            IsVerified = realtor.RegistrationStatus == RealtorRegistrationStatuses.Verified,
+            PropertyFileId = file.Id,
+            FileName = string.IsNullOrWhiteSpace(item.ItemLabel) ? localizer.T("Document") : item.ItemLabel,
+            FileUrl = url,
+            BackUrl = $"/RealtorPropertyFile/View?id={file.Id}",
+            IsImage = isImage,
+            IsPdf = isPdf,
+            IsVideo = isVideo
         };
     }
 

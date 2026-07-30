@@ -8,15 +8,8 @@ namespace IndorMvcApp.Services;
 /// <summary>
 /// Permanently deletes a user account and its associated data (App Store Guideline 5.1.1(v)).
 ///
-/// Most user data is removed automatically by database cascade rules: <c>Propiedad</c>, every
-/// <c>Solicitud*</c> service/inspection/emergency request (and their file rows), scheduled
-/// reminders, memberships, payment methods, payments, service history and support messages all
-/// have a required <c>UserId</c> foreign key that cascades from <c>AspNetUsers</c>.
-///
-/// A few role-profile tables reference the user through an OPTIONAL foreign key that was mapped
-/// with <c>NO ACTION</c> (EF Core default for optional relationships). Those would otherwise
-/// block the delete, so they are unlinked (UserId set to null) first. Tables keyed only by a
-/// plain <c>UserId</c> string (neighbor requests, password reset codes) are removed explicitly.
+/// Cleanup runs inside a single DB transaction so a mid-flight FK failure cannot leave homes
+/// deleted while the AspNetUsers row (and Multipropietario portal) still exists.
 /// </summary>
 public sealed class AccountDeletionService
 {
@@ -38,57 +31,178 @@ public sealed class AccountDeletionService
     {
         var userId = user.Id;
 
-        // Remove data that is NOT cascade-deleted from AspNetUsers. Each step is isolated so a
-        // single failure never leaves an account that cannot be deleted.
-        await BestEffortAsync("neighbor requests", () =>
-            _db.IndorNeighborRequests.Where(x => x.UserId == userId).ExecuteDeleteAsync(cancellationToken));
-
-        await BestEffortAsync("password reset codes", () =>
-            _db.IndorPasswordResetCodes.Where(x => x.UserId == userId).ExecuteDeleteAsync(cancellationToken));
-
-        await BestEffortAsync("app notifications", () =>
-            _db.IndorAppNotifications.Where(x => x.RecipientUserId == userId).ExecuteDeleteAsync(cancellationToken));
-
-        // Role profiles reference the user through an optional FK (ON DELETE NO ACTION), which
-        // would block the delete. Unlink them so the account can be removed. IndorProveedor is
-        // mapped with SetNull and is handled automatically, but we unlink it too for consistency.
-        await BestEffortAsync("provider profile unlink", () =>
-            _db.IndorProveedores.Where(x => x.UserId == userId)
-               .ExecuteUpdateAsync(s => s.SetProperty(x => x.UserId, (string?)null), cancellationToken));
-
-        await BestEffortAsync("realtor profile unlink", () =>
-            _db.IndorRealtors.Where(x => x.UserId == userId)
-               .ExecuteUpdateAsync(s => s.SetProperty(x => x.UserId, (string?)null), cancellationToken));
-
-        await BestEffortAsync("property administrator profile unlink", () =>
-            _db.IndorPropertyAdministrators.Where(x => x.UserId == userId)
-               .ExecuteUpdateAsync(s => s.SetProperty(x => x.UserId, (string?)null), cancellationToken));
-
-        // Deletes the Identity user. Database cascades remove homes, service requests, files,
-        // memberships, payments, history, support messages and the Identity rows (roles, logins,
-        // tokens, claims).
-        var result = await _userManager.DeleteAsync(user);
-        if (!result.Succeeded)
-        {
-            _logger.LogError(
-                "Account deletion failed for {UserId}: {Errors}",
-                userId,
-                string.Join("; ", result.Errors.Select(e => e.Description)));
-            return false;
-        }
-
-        return true;
-    }
-
-    private async Task BestEffortAsync(string step, Func<Task> action)
-    {
+        await using var transaction = await _db.Database.BeginTransactionAsync(cancellationToken);
         try
         {
-            await action();
+            await CleanupDependentDataAsync(userId, cancellationToken);
+
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                _logger.LogError(
+                    "Account deletion failed for {UserId}: {Errors}",
+                    userId,
+                    string.Join("; ", result.Errors.Select(e => e.Description)));
+                await transaction.RollbackAsync(cancellationToken);
+                return false;
+            }
+
+            await transaction.CommitAsync(cancellationToken);
+            return true;
         }
         catch (Exception ex)
         {
-            _logger.LogWarning(ex, "Account deletion: step '{Step}' failed but continuing.", step);
+            _logger.LogError(ex, "Account deletion threw while deleting user {UserId}. Rolling back.", userId);
+            try
+            {
+                await transaction.RollbackAsync(cancellationToken);
+            }
+            catch (Exception rollbackEx)
+            {
+                _logger.LogWarning(rollbackEx, "Account deletion rollback failed for {UserId}.", userId);
+            }
+
+            return false;
         }
+    }
+
+    private async Task CleanupDependentDataAsync(string userId, CancellationToken cancellationToken)
+    {
+        var propertyIds = await _db.Propiedades
+            .AsNoTracking()
+            .Where(p => p.UserId == userId)
+            .Select(p => p.Id)
+            .ToListAsync(cancellationToken);
+
+        // Multipropietario: remove the admin profile entirely (cascades portfolio, requests, visits).
+        // Unlinking UserId alone left an empty "Jacobo home" portal while AspNetUsers survived FK failures.
+        var adminIds = await _db.IndorPropertyAdministrators
+            .AsNoTracking()
+            .Where(a => a.UserId == userId)
+            .Select(a => a.Id)
+            .ToListAsync(cancellationToken);
+
+        if (adminIds.Count > 0)
+        {
+            // Preventive plans reference portfolio properties; delete them before portfolio/admin rows.
+            await _db.IndorPropertyAdminPreventivePlans
+                .Where(p => adminIds.Contains(p.AdministratorId))
+                .ExecuteDeleteAsync(cancellationToken);
+
+            await _db.IndorPropertyAdminServiceRequests
+                .Where(r => adminIds.Contains(r.AdministratorId))
+                .ExecuteDeleteAsync(cancellationToken);
+
+            await _db.IndorPropertyAdminScheduledVisits
+                .Where(v => adminIds.Contains(v.AdministratorId))
+                .ExecuteDeleteAsync(cancellationToken);
+
+            await _db.IndorPropertyAdminHomecarePlans
+                .Where(h => adminIds.Contains(h.AdministratorId))
+                .ExecuteDeleteAsync(cancellationToken);
+
+            await _db.IndorPropertyAdminPortfolioProperties
+                .Where(p => adminIds.Contains(p.AdministratorId))
+                .ExecuteDeleteAsync(cancellationToken);
+
+            await _db.IndorPropertyAdministrators
+                .Where(a => adminIds.Contains(a.Id))
+                .ExecuteDeleteAsync(cancellationToken);
+        }
+
+        // Other admins may still reference this user's homes — clear before Propiedades cascade.
+        if (propertyIds.Count > 0)
+        {
+            await _db.IndorPropertyAdminPortfolioProperties
+                .Where(pp => pp.PropiedadId != null && propertyIds.Contains(pp.PropiedadId.Value))
+                .ExecuteUpdateAsync(s => s.SetProperty(x => x.PropiedadId, (int?)null), cancellationToken);
+        }
+
+        // NO ACTION FKs to AspNetUsers that block Identity delete.
+        await _db.SolicitudesRealtor
+            .Where(x => x.UserId == userId)
+            .ExecuteDeleteAsync(cancellationToken);
+
+        await _db.PropiedadHvacSistemas
+            .Where(x => x.UserId == userId)
+            .ExecuteDeleteAsync(cancellationToken);
+
+        await _db.PropiedadWaterHeaterSistemas
+            .Where(x => x.UserId == userId)
+            .ExecuteDeleteAsync(cancellationToken);
+
+        // Neighborhood feed (UserId string, typically no cascade from AspNetUsers).
+        var postIds = await _db.IndorNeighborhoodPosts
+            .AsNoTracking()
+            .Where(p => p.UserId == userId)
+            .Select(p => p.Id)
+            .ToListAsync(cancellationToken);
+
+        if (postIds.Count > 0)
+        {
+            var commentIds = await _db.IndorNeighborhoodComments
+                .AsNoTracking()
+                .Where(c => postIds.Contains(c.PostId))
+                .Select(c => c.Id)
+                .ToListAsync(cancellationToken);
+
+            await _db.IndorNeighborhoodPostLikes
+                .Where(x => postIds.Contains(x.PostId))
+                .ExecuteDeleteAsync(cancellationToken);
+            await _db.IndorNeighborhoodPostSaves
+                .Where(x => postIds.Contains(x.PostId))
+                .ExecuteDeleteAsync(cancellationToken);
+            if (commentIds.Count > 0)
+            {
+                await _db.IndorNeighborhoodCommentSaves
+                    .Where(x => commentIds.Contains(x.CommentId))
+                    .ExecuteDeleteAsync(cancellationToken);
+            }
+
+            await _db.IndorNeighborhoodComments
+                .Where(c => postIds.Contains(c.PostId))
+                .ExecuteDeleteAsync(cancellationToken);
+            await _db.IndorNeighborhoodPostMedia
+                .Where(m => postIds.Contains(m.PostId))
+                .ExecuteDeleteAsync(cancellationToken);
+            await _db.IndorNeighborhoodPosts
+                .Where(p => postIds.Contains(p.Id))
+                .ExecuteDeleteAsync(cancellationToken);
+        }
+
+        await _db.IndorNeighborhoodPostLikes
+            .Where(x => x.UserId == userId)
+            .ExecuteDeleteAsync(cancellationToken);
+        await _db.IndorNeighborhoodPostSaves
+            .Where(x => x.UserId == userId)
+            .ExecuteDeleteAsync(cancellationToken);
+        await _db.IndorNeighborhoodCommentSaves
+            .Where(x => x.UserId == userId)
+            .ExecuteDeleteAsync(cancellationToken);
+
+        await _db.IndorNeighborRequests
+            .Where(x => x.UserId == userId)
+            .ExecuteDeleteAsync(cancellationToken);
+
+        await _db.IndorPasswordResetCodes
+            .Where(x => x.UserId == userId)
+            .ExecuteDeleteAsync(cancellationToken);
+
+        await _db.IndorAppNotifications
+            .Where(x => x.RecipientUserId == userId)
+            .ExecuteDeleteAsync(cancellationToken);
+
+        await _db.IndorServiceRequests
+            .Where(x => x.UserId == userId)
+            .ExecuteDeleteAsync(cancellationToken);
+
+        // Optional role profiles (NO ACTION on UserId).
+        await _db.IndorProveedores
+            .Where(x => x.UserId == userId)
+            .ExecuteUpdateAsync(s => s.SetProperty(x => x.UserId, (string?)null), cancellationToken);
+
+        await _db.IndorRealtors
+            .Where(x => x.UserId == userId)
+            .ExecuteUpdateAsync(s => s.SetProperty(x => x.UserId, (string?)null), cancellationToken);
     }
 }

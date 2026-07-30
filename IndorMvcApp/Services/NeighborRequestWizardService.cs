@@ -122,6 +122,85 @@ public class NeighborRequestWizardService(
             .FirstOrDefaultAsync(p => p.Id == propiedadId && p.Activo, ct);
     }
 
+    /// <summary>
+    /// All homes the user can post a quick job for (owned + property-admin portfolio).
+    /// Ordered newest-first so the default matches prior "latest property" behavior.
+    /// </summary>
+    public async Task<List<NeighborRequestPropertyOptionViewModel>> ListAccessiblePropertiesAsync(
+        string userId,
+        CancellationToken ct)
+    {
+        var owned = await db.Propiedades
+            .AsNoTracking()
+            .Where(p => p.UserId == userId && p.Activo)
+            .OrderByDescending(p => p.FechaCreacion)
+            .ToListAsync(ct);
+
+        List<Propiedad> portfolioLinked = [];
+        try
+        {
+            var portfolioPropiedadIds = await (
+                from pp in db.IndorPropertyAdminPortfolioProperties.AsNoTracking()
+                join admin in db.IndorPropertyAdministrators.AsNoTracking() on pp.AdministratorId equals admin.Id
+                where admin.UserId == userId && pp.PropiedadId != null
+                select pp.PropiedadId!.Value
+            ).Distinct().ToListAsync(ct);
+
+            if (portfolioPropiedadIds.Count > 0)
+            {
+                var ownedIds = owned.Select(p => p.Id).ToHashSet();
+                var missingIds = portfolioPropiedadIds.Where(id => !ownedIds.Contains(id)).ToList();
+                if (missingIds.Count > 0)
+                {
+                    portfolioLinked = await db.Propiedades
+                        .AsNoTracking()
+                        .Where(p => missingIds.Contains(p.Id) && p.Activo)
+                        .OrderByDescending(p => p.FechaCreacion)
+                        .ToListAsync(ct);
+                }
+            }
+        }
+        catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
+        {
+            // Portfolio tables may be absent in older DBs.
+        }
+
+        var combined = owned.Concat(portfolioLinked)
+            .GroupBy(p => p.Id)
+            .Select(g => g.First())
+            .OrderByDescending(p => p.FechaCreacion)
+            .ToList();
+
+        var options = new List<NeighborRequestPropertyOptionViewModel>(combined.Count);
+        var index = 0;
+        foreach (var prop in combined)
+        {
+            var address = await ResolveDefaultAddressAsync(prop, ct);
+            index++;
+            options.Add(new NeighborRequestPropertyOptionViewModel
+            {
+                PropiedadId = prop.Id,
+                Address = address,
+                Label = !string.IsNullOrWhiteSpace(address)
+                    ? address
+                    : $"Home {index}"
+            });
+        }
+
+        return options;
+    }
+
+    public async Task<Propiedad?> ResolveDefaultPropiedadAsync(string userId, CancellationToken ct)
+    {
+        var options = await ListAccessiblePropertiesAsync(userId, ct);
+        if (options.Count == 0)
+        {
+            return null;
+        }
+
+        return await ValidatePropiedadAsync(userId, options[0].PropiedadId, ct);
+    }
+
     public async Task<string> ResolvePortalHomeUrlAsync(
         string userId,
         int propiedadId,
@@ -193,8 +272,9 @@ public class NeighborRequestWizardService(
         NeighborRequestDraftState? draft,
         IUrlHelper url,
         CancellationToken ct,
-        bool useDraftFieldValues = true) =>
-        BuildCategoryStepAsync(null, propiedadId, draft, url, ct, useDraftFieldValues);
+        bool useDraftFieldValues = true,
+        string? userId = null) =>
+        BuildCategoryStepAsync(null, propiedadId, draft, url, ct, useDraftFieldValues, userId);
 
     public async Task<NeighborRequestCategoryStepViewModel> BuildCategoryStepAsync(
         Propiedad? propiedad,
@@ -202,7 +282,8 @@ public class NeighborRequestWizardService(
         NeighborRequestDraftState? draft,
         IUrlHelper url,
         CancellationToken ct,
-        bool useDraftFieldValues = true)
+        bool useDraftFieldValues = true,
+        string? userId = null)
     {
         var categories = await LoadCategoriesAsync(ct);
         var defaultAddress = draft?.LocationAddress;
@@ -217,6 +298,31 @@ public class NeighborRequestWizardService(
         }
 
         var fieldDraft = useDraftFieldValues ? draft : null;
+
+        var availableProperties = string.IsNullOrWhiteSpace(userId)
+            ? []
+            : await ListAccessiblePropertiesAsync(userId, ct);
+
+        // Ensure the current property appears even if list filtering missed it.
+        if (availableProperties.All(p => p.PropiedadId != propiedadId))
+        {
+            propiedad ??= await db.Propiedades.AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == propiedadId, ct);
+            var address = !string.IsNullOrWhiteSpace(defaultAddress)
+                ? defaultAddress!
+                : propiedad != null
+                    ? await ResolveDefaultAddressAsync(propiedad, ct)
+                    : string.Empty;
+            if (!string.IsNullOrWhiteSpace(address) || propiedad != null)
+            {
+                availableProperties.Insert(0, new NeighborRequestPropertyOptionViewModel
+                {
+                    PropiedadId = propiedadId,
+                    Address = address,
+                    Label = !string.IsNullOrWhiteSpace(address) ? address : $"Home #{propiedadId}"
+                });
+            }
+        }
 
         return new NeighborRequestCategoryStepViewModel
         {
@@ -234,6 +340,7 @@ public class NeighborRequestWizardService(
             LocationAddress = defaultAddress ?? string.Empty,
             UseHomeAddress = fieldDraft?.UseHomeAddress ?? true,
             ResumeDraft = useDraftFieldValues && draft is { CategoryId: > 0, EditingRequestId: null },
+            AvailableProperties = availableProperties,
             Categories = categories.Select(c => new NeighborRequestCategoryOptionViewModel
             {
                 Id = c.Id,
@@ -1129,7 +1236,9 @@ public class NeighborRequestWizardService(
             IsProviderOffer = isProvider,
             DetailUrl = url.Action("Detail", "NeighborRequest", new { id = request.Id }) ?? "#",
             ViewUrl = url.Action("Offers", "NeighborRequest", new { id = request.Id }) ?? "#",
-            MessageUrl = url.Action("Index", "Home") + "#section-more"
+            MessageUrl = offer.ProviderId is > 0
+                ? HomeownerProviderMessageService.BuildProviderMessageUrl(url, offer.ProviderId.Value)
+                : (url.Action("Detail", "NeighborRequest", new { id = request.Id }) ?? "#")
         };
     }
 
@@ -1707,7 +1816,7 @@ public class NeighborRequestWizardService(
                     + "#nr-detail-providers",
                 ViewUrl = (url.Action("Detail", "NeighborRequest", new { id = request.Id }) ?? "#")
                     + "#nr-detail-providers",
-                MessageUrl = url.Action("Index", "Home") + "#section-more"
+                MessageUrl = HomeownerProviderMessageService.BuildProviderMessageUrl(url, provider.Id)
             });
         }
 
@@ -1829,6 +1938,9 @@ public class NeighborRequestWizardService(
             ? info!.FormattedAddress
             : (propiedad.Direccion ?? string.Empty);
     }
+
+    public Task<string> GetPropiedadAddressAsync(Propiedad propiedad, CancellationToken ct) =>
+        ResolveDefaultAddressAsync(propiedad, ct);
 
     private async Task<(decimal? Lat, decimal? Lng)> ResolveCoordinatesAsync(
         Propiedad propiedad,
@@ -2453,7 +2565,6 @@ public class NeighborRequestWizardService(
         }
 
         var icons = new[] { "fa-house", "fa-leaf", "fa-broom", "fa-wrench" };
-        var messageUrl = url.Action("Index", "Home") + "#section-more";
         var results = new List<(NeighborRequestHelperCardViewModel Card, double Distance)>();
         var geocodeBudget = 6;
 
@@ -2514,7 +2625,7 @@ public class NeighborRequestWizardService(
                 MinHoursLabel = "Min. 2 hrs",
                 SkillTags = BuildProviderSkillTags(categoryLabel),
                 IsVerified = isVerified,
-                MessageUrl = messageUrl,
+                MessageUrl = HomeownerProviderMessageService.BuildProviderMessageUrl(url, provider.Id),
                 Latitude = lat,
                 Longitude = lng
             }, (double)distance));

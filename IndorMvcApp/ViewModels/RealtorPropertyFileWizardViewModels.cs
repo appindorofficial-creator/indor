@@ -128,8 +128,20 @@ public class RealtorPropertyFileViewSectionViewModel
 
 public class RealtorPropertyFileViewItemViewModel
 {
+    public int Id { get; set; }
     public string ItemLabel { get; set; } = "";
     public string? FileUrl { get; set; }
     public string? NoteText { get; set; }
     public string? MetaLabel { get; set; }
+}
+
+public class RealtorPropertyFileDocumentViewModel : RealtorPortalShellViewModel
+{
+    public int PropertyFileId { get; set; }
+    public string FileName { get; set; } = "";
+    public string FileUrl { get; set; } = "";
+    public string BackUrl { get; set; } = "";
+    public bool IsImage { get; set; }
+    public bool IsPdf { get; set; }
+    public bool IsVideo { get; set; }
 }

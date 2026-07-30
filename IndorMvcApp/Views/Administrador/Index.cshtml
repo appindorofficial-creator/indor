@@ -158,12 +158,22 @@
                 ("Emergency", L["Emergency"].ToString(), "fa-triangle-exclamation", true)
             };
             <div class="pa-network-feed" data-pa-feed-root data-pa-feed-active="@feedFilter">
-            <form class="pa-network-search" asp-controller="Administrador" asp-action="Index" method="get">
+            <form class="pa-network-search" data-pa-feed-search asp-controller="Administrador" asp-action="Index" method="get">
                 <input type="hidden" name="view" value="feed" />
                 <input type="hidden" name="filter" value="@feedFilter" data-pa-feed-filter-input />
+                @if (Model.ViewingProperty?.Id is > 0)
+                {
+                    <input type="hidden" name="propertyId" value="@Model.ViewingProperty.Id" />
+                }
                 <i class="fas fa-magnifying-glass"></i>
-                <input type="search" name="q" value="@Model.NetworkSearch" placeholder="@L["Search in my portfolio neighborhoods..."]" aria-label="@L["Search neighborhoods"]" />
+                <input type="search" name="q" value="@Model.NetworkSearch"
+                       placeholder="@L["Search services, requests, or emergency help..."]"
+                       aria-label="@L["Search portfolio network"]"
+                       autocomplete="off"
+                       enterkeyhint="search" />
             </form>
+
+            <p class="pa-network-search-empty" data-pa-feed-search-empty hidden>@L["No nearby items match your search."]</p>
 
             <div class="pa-network-chips" role="navigation" aria-label="@L["Filter feed"]">
                 @foreach (var chip in feedChips)
@@ -192,14 +202,28 @@
                         var neighborPropiedadId = Model.ViewingProperty?.PropiedadId
                             ?? Model.Properties.FirstOrDefault(p => p.PropiedadId is > 0)?.PropiedadId;
                     }
+                    <a asp-controller="Administrador" asp-action="Services"
+                       class="pa-network-action"
+                       data-pa-feed-item
+                       data-search="Browse services Explorar servicios service services servicio servicios catalog outdoor cleaning homecare emergency maintenance">
+                        <span class="pa-network-action-icon"><i class="fas fa-screwdriver-wrench"></i></span>
+                        <strong>@L["Browse services"]</strong>
+                        <small>@L["Find cleaning, outdoor, emergency and home care"]</small>
+                    </a>
                     @if (neighborPropiedadId is > 0)
                     {
-                        <a asp-controller="NeighborRequest" asp-action="Create" asp-route-propiedadId="@neighborPropiedadId" class="pa-network-action">
+                        <a asp-controller="NeighborRequest" asp-action="Create" asp-route-propiedadId="@neighborPropiedadId"
+                           class="pa-network-action"
+                           data-pa-feed-item
+                           data-search="Post a Request Publicar solicitud Ask your network for help or recommendations ayuda recomendaciones vecindario neighborhood">
                             <span class="pa-network-action-icon"><i class="fas fa-plus"></i></span>
                             <strong>@L["Post a Request"]</strong>
                             <small>@L["Ask your network for help or recommendations"]</small>
                         </a>
-                        <a asp-controller="NeighborRequest" asp-action="Mine" asp-route-propiedadId="@neighborPropiedadId" class="pa-network-action">
+                        <a asp-controller="NeighborRequest" asp-action="Mine" asp-route-propiedadId="@neighborPropiedadId"
+                           class="pa-network-action"
+                           data-pa-feed-item
+                           data-search="My Requests Mis solicitudes Track manage requests updates seguimiento">
                             <span class="pa-network-action-icon pa-network-action-icon--chat"><i class="fas fa-comment-dots"></i></span>
                             <strong>@L["My Requests"]</strong>
                             <small>@L["Track &amp; manage your requests and updates"]</small>
@@ -207,12 +231,18 @@
                     }
                     else
                     {
-                        <a asp-controller="PropertyAdministratorRegistration" asp-action="Properties" class="pa-network-action">
+                        <a asp-controller="PropertyAdministratorRegistration" asp-action="Properties"
+                           class="pa-network-action"
+                           data-pa-feed-item
+                           data-search="Post a Request Publicar solicitud Add a property first neighborhood request">
                             <span class="pa-network-action-icon"><i class="fas fa-plus"></i></span>
                             <strong>@L["Post a Request"]</strong>
                             <small>@L["Add a property first to post a neighborhood request"]</small>
                         </a>
-                        <a asp-controller="Administrador" asp-action="Tasks" class="pa-network-action">
+                        <a asp-controller="Administrador" asp-action="Tasks"
+                           class="pa-network-action"
+                           data-pa-feed-item
+                           data-search="My Requests Mis solicitudes Track manage requests updates tasks">
                             <span class="pa-network-action-icon pa-network-action-icon--chat"><i class="fas fa-comment-dots"></i></span>
                             <strong>@L["My Requests"]</strong>
                             <small>@L["Track &amp; manage your requests and updates"]</small>
@@ -220,32 +250,80 @@
                     }
             </div>
 
-            <a asp-controller="Administrador"
-               asp-action="EmergencyPlumbingDetails"
-               class="pa-network-emergency"
-               data-pa-feed-panel
-               data-show-filters="All,Emergency"
-               hidden="@(!showFeedEmergency)">
+            <div class="pa-network-emergency-list"
+                 data-pa-feed-panel
+                 data-show-filters="All,Emergency"
+                 @(showFeedEmergency ? null : "hidden")>
+                <div class="pa-network-emergency-list-head">
                     <span class="pa-network-emergency-badge">@L["EMERGENCY"]</span>
-                    <div class="pa-network-emergency-main">
-                        <span class="pa-network-emergency-icon"><i class="fas fa-bell"></i></span>
-                        <div class="pa-network-emergency-text">
-                            <strong>@L["Emergency Help Nearby"]</strong>
-                            <p>@L["Licensed plumber available near your Airbnb property"]</p>
+                    <strong>@L["Emergency Help Nearby"]</strong>
+                    <a asp-controller="Administrador" asp-action="Services" asp-route-filter="emergency" class="pa-network-emergency-viewall">
+                        @L["View all"] <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+
+                @if (Model.EmergencyNearbyServices.Count == 0)
+                {
+                    <div class="pa-network-emergency"
+                         data-pa-feed-item
+                         data-search="Emergency Services Servicios de emergencia Fast help urgent property problems emergencia plomeria electricista call llamar">
+                        <div class="pa-network-emergency-main" style="margin-top:0">
+                            <span class="pa-network-emergency-icon"><i class="fas fa-bell"></i></span>
+                            <div class="pa-network-emergency-text">
+                                <strong>@L["Emergency Services"]</strong>
+                                <p>@L["Fast help for urgent property problems."]</p>
+                            </div>
+                        </div>
+                        <div class="pa-network-emergency-foot">
+                            <a href="tel:+18005554636" class="pa-network-emergency-call">
+                                <i class="fas fa-phone"></i> @L["Call now"]
+                            </a>
+                            <a asp-controller="Administrador" asp-action="Services" asp-route-filter="emergency" class="pa-network-emergency-request">
+                                @L["Request help"] <i class="fas fa-chevron-right"></i>
+                            </a>
                         </div>
                     </div>
-                    <div class="pa-network-emergency-foot">
-                        <div class="pa-network-emergency-meta">
-                            <span><i class="far fa-clock"></i> @L["Average arrival time: 28 mins"]</span>
-                            <span><i class="fas fa-location-dot"></i> @L["2.6 mi away"]</span>
+                }
+                else
+                {
+                    @foreach (var emergency in Model.EmergencyNearbyServices)
+                    {
+                        var emergencyName = UiDisplayLocalization.Localize(L, emergency.ServiceName);
+                        var emergencySub = UiDisplayLocalization.Localize(L, emergency.Subtitle);
+                        var callHref = string.IsNullOrWhiteSpace(emergency.CallUrl) ? "tel:+18005554636" : emergency.CallUrl;
+                        <div class="pa-network-emergency"
+                             data-pa-feed-item
+                             data-search="@emergency.ServiceName @emergencyName @emergency.Subtitle @emergencySub emergency emergencia service servicio call llamar">
+                            <div class="pa-network-emergency-main" style="margin-top:0">
+                                <span class="pa-network-emergency-icon"><i class="fas @emergency.IconClass"></i></span>
+                                <div class="pa-network-emergency-text">
+                                    <strong>@emergencyName</strong>
+                                    <p>@emergencySub</p>
+                                </div>
+                            </div>
+                            <div class="pa-network-emergency-foot">
+                                <div class="pa-network-emergency-meta">
+                                    <span><i class="far fa-clock"></i> @UiDisplayLocalization.Localize(L, emergency.EtaLabel)</span>
+                                    <span><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, emergency.DistanceLabel)</span>
+                                </div>
+                                <div class="pa-network-emergency-ctas">
+                                    <a href="@callHref" class="pa-network-emergency-call">
+                                        <i class="fas fa-phone"></i> @L["Call now"]
+                                    </a>
+                                    <a href="@emergency.Url" class="pa-network-emergency-request">
+                                        @L["Request help"] <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                        <span class="pa-network-emergency-call">@L["Call now"] <i class="fas fa-chevron-right"></i></span>
-                    </div>
-            </a>
+                    }
+                }
+            </div>
 
             <div class="pa-network-empty-feed"
                  data-pa-feed-panel
                  data-show-filters="Listings"
+                 data-search="listings anuncios home homes properties propiedades"
                  hidden="@(!showListingsEmpty)">
                 <i class="fas fa-inbox"></i>
                 <p>@L["No nearby home listings yet. Check back soon or browse all categories."]</p>
@@ -254,6 +332,7 @@
             <div class="pa-network-empty-feed"
                  data-pa-feed-panel
                  data-show-filters="Promotions"
+                 data-search="promotions promociones offers ofertas deals"
                  hidden="@(!showPromotionsEmpty)">
                 <i class="fas fa-inbox"></i>
                 <p>@L["No promotions in your area yet. Check back soon."]</p>

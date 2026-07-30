@@ -1,8 +1,14 @@
 @model IndorMvcApp.ViewModels.RealtorInspectionUploadViewModel
 @using IndorMvcApp.Services
+@using IndorMvcApp.Localization
 @{
     var maxFileBytes = RealtorInspectionUploadLimits.MaxFileBytes;
     var maxFileLabel = RealtorInspectionUploadLimits.MaxFileSizeLabel;
+    // Hard Spanish fallbacks so the photo source sheet never shows iOS English
+    // even if a stale IndorFileSourceLabels inject races the UI culture.
+    var fileLibraryLabel = L.IsSpanish ? "Biblioteca de fotos" : IndorFileSourceI18n.Library(L);
+    var fileCameraLabel = L.IsSpanish ? "Tomar foto" : IndorFileSourceI18n.Camera(L);
+    var fileFilesLabel = L.IsSpanish ? "Elegir archivos" : IndorFileSourceI18n.Files(L);
 }
 
 <div class="rl-info-box">
@@ -99,16 +105,78 @@
         </label>
     </div>
 
-    <div class="rl-file-drop-wrap">
-        <label class="rl-file-drop" id="rlFileDrop" for="reportFileInput">
-            <input type="file" id="reportFileInput" name="reportFile" class="rl-file-drop-input" />
-            <div class="rl-file-drop-body">
-                <i class="fas fa-cloud-arrow-up" id="rlFileDropIcon"></i>
-                <strong id="rlFileDropTitle">@L["Tap to choose your inspection report"]</strong>
-                <span id="rlFileDropHint">@L.T("PDF recommended • Up to {0}", maxFileLabel)</span>
-                <span id="rlFileDropName" class="rl-file-drop-name" hidden></span>
+    @* Photos uses the in-app localized source menu (Biblioteca / Tomar / Elegir) so iOS
+       does not show the English OS action sheet. Pdf opens the file picker; Scan opens camera. *@
+    <div class="rl-file-drop-wrap" id="rlFileSourceRoot">
+        <div class="rl-file-drop" id="rlFileDrop">
+            <button type="button"
+                    class="rl-file-drop-trigger indor-file-source-btn"
+                    id="rlFileDropBtn"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    aria-controls="rlFileSourceMenu">
+                <div class="rl-file-drop-body">
+                    <i class="fas fa-cloud-arrow-up" id="rlFileDropIcon"></i>
+                    <strong id="rlFileDropTitle">@L["Tap to choose your inspection report"]</strong>
+                    <span id="rlFileDropHint">@L.T("PDF recommended • Up to {0}", maxFileLabel)</span>
+                    <span id="rlFileDropName" class="rl-file-drop-name" hidden></span>
+                </div>
+            </button>
+            <div class="rl-file-source-menu pa-media-photo-menu indor-file-source-menu"
+                 id="rlFileSourceMenu"
+                 role="menu"
+                 hidden
+                 data-label-library="@fileLibraryLabel"
+                 data-label-camera="@fileCameraLabel"
+                 data-label-files="@fileFilesLabel">
+                <button type="button"
+                        class="indor-file-source-item pa-media-photo-menu-item"
+                        data-indor-file-source="library"
+                        data-label="@fileLibraryLabel"
+                        role="menuitem">
+                    <i class="fas fa-images" aria-hidden="true"></i>
+                    <span class="indor-file-source-label">@fileLibraryLabel</span>
+                </button>
+                <button type="button"
+                        class="indor-file-source-item pa-media-photo-menu-item"
+                        data-indor-file-source="camera"
+                        data-label="@fileCameraLabel"
+                        role="menuitem">
+                    <i class="fas fa-camera" aria-hidden="true"></i>
+                    <span class="indor-file-source-label">@fileCameraLabel</span>
+                </button>
+                <button type="button"
+                        class="indor-file-source-item pa-media-photo-menu-item"
+                        data-indor-file-source="files"
+                        data-label="@fileFilesLabel"
+                        role="menuitem">
+                    <i class="fas fa-folder" aria-hidden="true"></i>
+                    <span class="indor-file-source-label">@fileFilesLabel</span>
+                </button>
             </div>
-        </label>
+            <input type="file"
+                   id="rlFileInputCamera"
+                   class="rl-file-drop-input indor-file-source-input--camera"
+                   accept="image/*"
+                   capture="environment"
+                   aria-hidden="true"
+                   tabindex="-1" />
+            <input type="file"
+                   id="rlFileInputLibrary"
+                   class="rl-file-drop-input indor-file-source-input--library"
+                   accept="image/jpeg,image/png,image/webp,image/*"
+                   multiple
+                   aria-hidden="true"
+                   tabindex="-1" />
+            <input type="file"
+                   id="reportFileInput"
+                   name="reportFile"
+                   class="rl-file-drop-input indor-file-source-input--files"
+                   data-indor-file-target
+                   accept=".pdf,application/pdf"
+                   aria-hidden="true"
+                   tabindex="-1" />
+        </div>
         <button type="button" id="rlFileRemove" class="rl-file-drop-remove" hidden aria-label="@L["Remove selected file"]">
             <i class="fas fa-xmark"></i>
         </button>
@@ -145,11 +213,19 @@
      data-error-file="@L["Add an inspection report PDF or image to continue."]"
      data-error-size="@L["The file is too large. Maximum size is {0}."]"
      data-uploading="@L["Uploading..."]"
-     data-continue="@L["Continue"]"></div>
+     data-continue="@L["Continue"]"
+     data-file-library="@fileLibraryLabel"
+     data-file-camera="@fileCameraLabel"
+     data-file-files="@fileFilesLabel"></div>
 <script>
     (function () {
         const form = document.getElementById('inspUploadForm');
         const fileInput = document.getElementById('reportFileInput');
+        const cameraInput = document.getElementById('rlFileInputCamera');
+        const libraryInput = document.getElementById('rlFileInputLibrary');
+        const dropBtn = document.getElementById('rlFileDropBtn');
+        const sourceMenu = document.getElementById('rlFileSourceMenu');
+        const sourceRoot = document.getElementById('rlFileSourceRoot');
         const fileNameEl = document.getElementById('rlFileDropName');
         const fileTitleEl = document.getElementById('rlFileDropTitle');
         const fileHintEl = document.getElementById('rlFileDropHint');
@@ -188,6 +264,79 @@
             return form.querySelector('input[name="uploadMethod"]:checked')?.value || 'Pdf';
         }
 
+        function applyLocalFileSourceLabels() {
+            if (!sourceMenu) return;
+            const map = {
+                library: i18n.fileLibrary
+                    || sourceMenu.getAttribute('data-label-library')
+                    || 'Biblioteca de fotos',
+                camera: i18n.fileCamera
+                    || sourceMenu.getAttribute('data-label-camera')
+                    || 'Tomar foto',
+                files: i18n.fileFiles
+                    || sourceMenu.getAttribute('data-label-files')
+                    || 'Elegir archivos'
+            };
+            // Keep global chooser in sync so applyLabels cannot wipe Spanish.
+            window.IndorFileSourceLabels = {
+                library: map.library,
+                camera: map.camera,
+                files: map.files
+            };
+            sourceMenu.querySelectorAll('[data-indor-file-source]').forEach((item) => {
+                const source = item.getAttribute('data-indor-file-source');
+                const text = source === 'camera' ? map.camera
+                    : (source === 'files' ? map.files : map.library);
+                item.setAttribute('data-label', text);
+                const labelEl = item.querySelector('.indor-file-source-label');
+                if (labelEl) labelEl.textContent = text;
+            });
+        }
+
+        function setMenuOpen(open) {
+            if (!sourceMenu || !dropBtn) return;
+            if (open) {
+                applyLocalFileSourceLabels();
+                if (window.IndorFileSourceChooser?.applyLabels) {
+                    window.IndorFileSourceChooser.applyLabels(sourceRoot || document);
+                }
+                // Re-assert page labels after shared applyLabels (guards stale EN inject).
+                applyLocalFileSourceLabels();
+            }
+            sourceMenu.hidden = !open;
+            dropBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+
+        function closeMenu() {
+            setMenuOpen(false);
+        }
+
+        function openFileInput(input) {
+            if (!input) return;
+            const prev = input.style.pointerEvents;
+            input.style.pointerEvents = 'auto';
+            try {
+                input.value = '';
+                input.click();
+            } finally {
+                input.style.pointerEvents = prev || '';
+            }
+        }
+
+        function replaceTarget(fileList) {
+            if (!fileInput || !fileList || !fileList.length) {
+                return;
+            }
+            if (typeof DataTransfer === 'undefined') {
+                updateFileLabelFromList(fileList);
+                return;
+            }
+            const dt = new DataTransfer();
+            Array.prototype.forEach.call(fileList, function (f) { dt.items.add(f); });
+            fileInput.files = dt.files;
+            fileInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
         function updateMethodCopy() {
             const copy = methodCopy[getUploadMethod()] || methodCopy.Pdf;
             if (fileTitleEl) fileTitleEl.textContent = copy.title;
@@ -210,26 +359,24 @@
 
         function updateFileAccept() {
             const method = getUploadMethod();
+            closeMenu();
             if (method === 'Pdf') {
                 fileInput.accept = '.pdf,application/pdf';
                 fileInput.removeAttribute('multiple');
                 fileInput.removeAttribute('capture');
             } else if (method === 'Scan') {
-                // Open the device camera directly so the user can scan report pages.
                 fileInput.accept = 'image/*';
                 fileInput.removeAttribute('multiple');
-                fileInput.setAttribute('capture', 'environment');
+                fileInput.removeAttribute('capture');
             } else {
-                // Photos: let the user pick one or more images from the gallery/camera.
-                fileInput.accept = 'image/*';
+                fileInput.accept = 'image/jpeg,image/png,image/webp,image/*';
                 fileInput.setAttribute('multiple', 'multiple');
                 fileInput.removeAttribute('capture');
             }
             updateMethodCopy();
         }
 
-        function updateFileLabel() {
-            const files = fileInput.files;
+        function updateFileLabelFromList(files) {
             const file = files?.[0];
             if (file) {
                 if (files.length > 1) {
@@ -251,8 +398,14 @@
             }
         }
 
+        function updateFileLabel() {
+            updateFileLabelFromList(fileInput.files);
+        }
+
         function clearSelectedFile() {
             fileInput.value = '';
+            if (cameraInput) cameraInput.value = '';
+            if (libraryInput) libraryInput.value = '';
             if (fileNameEl) {
                 fileNameEl.textContent = '';
             }
@@ -285,12 +438,68 @@
                 r.closest('.rl-upload-method')?.classList.add('is-selected');
                 clearSelectedFile();
                 updateFileAccept();
+                // Opening Photos should surface the localized source sheet immediately
+                // (same moment users previously saw the English iOS action sheet).
+                if (r.value === 'Photos') {
+                    setMenuOpen(true);
+                }
             });
+        });
+
+        dropBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const method = getUploadMethod();
+            if (method === 'Photos') {
+                setMenuOpen(sourceMenu.hidden);
+                return;
+            }
+            closeMenu();
+            if (method === 'Scan') {
+                openFileInput(cameraInput);
+                return;
+            }
+            openFileInput(fileInput);
+        });
+
+        sourceMenu?.querySelectorAll('[data-indor-file-source]').forEach((item) => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const source = item.getAttribute('data-indor-file-source');
+                closeMenu();
+                if (source === 'camera') {
+                    openFileInput(cameraInput);
+                } else if (source === 'library') {
+                    if (libraryInput) libraryInput.removeAttribute('capture');
+                    openFileInput(libraryInput);
+                } else {
+                    openFileInput(fileInput);
+                }
+            });
+        });
+
+        document.addEventListener('click', (e) => {
+            if (sourceRoot && !sourceRoot.contains(e.target)) {
+                closeMenu();
+            }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeMenu();
         });
 
         fileInput.addEventListener('change', () => {
             updateFileLabel();
             clearClientError();
+        });
+
+        [cameraInput, libraryInput].forEach((input) => {
+            input?.addEventListener('change', () => {
+                if (!input.files?.length) return;
+                // Scan / Photos: replace previous selection with the new pick.
+                replaceTarget(input.files);
+                clearClientError();
+            });
         });
 
         fileRemoveBtn?.addEventListener('mousedown', (e) => {
@@ -346,6 +555,7 @@
         updateFileAccept();
         updateFileLabel();
         updateMethodCopy();
+        applyLocalFileSourceLabels();
     })();
 </script>
 }

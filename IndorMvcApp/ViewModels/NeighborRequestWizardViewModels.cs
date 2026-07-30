@@ -38,7 +38,17 @@ public class NeighborRequestCategoryStepViewModel : NeighborRequestWizardShellVi
 
     public bool UseHomeAddress { get; set; } = true;
 
+    /// <summary>Homes the user can attach this quick job to (multi-property owners).</summary>
+    public List<NeighborRequestPropertyOptionViewModel> AvailableProperties { get; set; } = [];
+
     public List<NeighborRequestCategoryOptionViewModel> Categories { get; set; } = [];
+}
+
+public class NeighborRequestPropertyOptionViewModel
+{
+    public int PropiedadId { get; set; }
+    public string Label { get; set; } = string.Empty;
+    public string Address { get; set; } = string.Empty;
 }
 
 public class NeighborRequestCategoryOptionViewModel

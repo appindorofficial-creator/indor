@@ -228,13 +228,16 @@ public class SmokeDetectorController : Controller
             NombreServicio = landing?.PageTitle ?? "Smoke / CO Check",
             NextMonthlyTestLabel = solicitud.RecordatorioMensual
                 ? SmokeDetectorDisplayLabels.FormatDate(SmokeDetectorDisplayLabels.GetNextMonthlyTest(reference, confirmDate))
-                : "Off",
+                : DisplayLabelsLocalization.L("Off"),
             NextBatteryLabel = solicitud.RecordatorioBateriaAnual
                 ? SmokeDetectorDisplayLabels.FormatDate(SmokeDetectorDisplayLabels.GetNextBatteryReminder(reference))
-                : "Off",
+                : DisplayLabelsLocalization.L("Off"),
             ReplacementLabel = solicitud.RecordatorioReemplazo10Anos
-                ? $"Replace by {SmokeDetectorDisplayLabels.FormatDate(SmokeDetectorDisplayLabels.GetReplacementDate(reference))}"
-                : "Off",
+                ? string.Format(
+                    System.Globalization.CultureInfo.CurrentCulture,
+                    DisplayLabelsLocalization.L("Replace by {0}"),
+                    SmokeDetectorDisplayLabels.FormatDate(SmokeDetectorDisplayLabels.GetReplacementDate(reference)))
+                : DisplayLabelsLocalization.L("Off"),
             ShowSafetyVisit = string.Equals(solicitud.TipoAccionAyuda, "ScheduleSafetyCheck", StringComparison.OrdinalIgnoreCase)
         });
     }
@@ -303,7 +306,10 @@ public class SmokeDetectorController : Controller
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = solicitud.HomeCarePriority?.Nombre ?? "Smoke / CO Check",
-            AlarmCountLabel = SmokeDetectorDisplayLabels.FormatAlarmCountShort(solicitud.CantidadAlarmas) + " alarms",
+            AlarmCountLabel = string.Format(
+                System.Globalization.CultureInfo.CurrentCulture,
+                DisplayLabelsLocalization.L("{0} alarms"),
+                SmokeDetectorDisplayLabels.FormatAlarmCountShort(solicitud.CantidadAlarmas)),
             AlarmTypeLabel = SmokeDetectorDisplayLabels.FormatPrimaryAlarmType(solicitud.TiposAlarmas),
             LocationsLabel = SmokeDetectorDisplayLabels.FormatPipeList(solicitud.UbicacionesSeleccionadas, SmokeDetectorDisplayLabels.FormatLocation),
             InstalledLabel = SmokeDetectorDisplayLabels.FormatInstalledDate(solicitud.AnioInstalacion, solicitud.AnioInstalacionDesconocido, reference),

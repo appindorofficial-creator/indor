@@ -52,7 +52,7 @@
             @foreach (var chip in Model.TradeChips)
             {
                 <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-trade="@chip.Id" class="prv-net-chip">
-                    <i class="fas @chip.IconClass"></i> @ProviderProDisplayLocalization.CatalogLabel(chip.Label, chip.LabelEs)
+                    <i class="fas @chip.IconClass"></i> @UiDisplayLocalization.Localize(L, ProviderProDisplayLocalization.CatalogLabel(chip.Label, chip.LabelEs))
                 </a>
             }
         </div>

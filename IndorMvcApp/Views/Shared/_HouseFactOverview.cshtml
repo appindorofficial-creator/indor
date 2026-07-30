@@ -7,6 +7,18 @@
     var isPreview = ViewData["HouseFactPreview"] as bool? == true;
     var hasFlowLinks = isPreview || propiedadId.HasValue;
     var propertyImage = string.IsNullOrWhiteSpace(Model.PropertyImageUrl) ? "/welcome-house.png" : Model.PropertyImageUrl;
+
+    string JumpLabel(string key, string fallback) => key switch
+    {
+        "snapshot" => L["Snapshot"].ToString(),
+        "systems" => L["Systems"].ToString(),
+        "roof" => L["Roof & Exterior"].ToString(),
+        "permits" => L["Permits"].ToString(),
+        "hoa" => L["HOA & Community"].ToString(),
+        "schools" => L["Schools"].ToString(),
+        "more" => L["More"].ToString(),
+        _ => UiDisplayLocalization.Localize(L, fallback)
+    };
 }
 
 <section class="hf-overview">
@@ -81,14 +93,14 @@
                 {
                     <a class="hf-jump-chip" asp-controller="HouseFactPreview" asp-action="Schools">
                         <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
-                        <span class="hf-jump-text">@UiDisplayLocalization.Localize(L, jump.Label)</span>
+                        <span class="hf-jump-text">@JumpLabel(jump.Key, jump.Label)</span>
                     </a>
                 }
                 else
                 {
                     <a class="hf-jump-chip" asp-controller="Schools" asp-action="Index" asp-route-id="@propiedadId!.Value">
                         <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
-                        <span class="hf-jump-text">@UiDisplayLocalization.Localize(L, jump.Label)</span>
+                        <span class="hf-jump-text">@JumpLabel(jump.Key, jump.Label)</span>
                     </a>
                 }
             }
@@ -98,14 +110,14 @@
                 {
                     <a class="hf-jump-chip" asp-controller="HouseFactPreview" asp-action="PropertySnapshot">
                         <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
-                        <span class="hf-jump-text">@UiDisplayLocalization.Localize(L, jump.Label)</span>
+                        <span class="hf-jump-text">@JumpLabel(jump.Key, jump.Label)</span>
                     </a>
                 }
                 else
                 {
                     <a class="hf-jump-chip" asp-controller="PropertySnapshot" asp-action="Index" asp-route-id="@propiedadId!.Value">
                         <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
-                        <span class="hf-jump-text">@UiDisplayLocalization.Localize(L, jump.Label)</span>
+                        <span class="hf-jump-text">@JumpLabel(jump.Key, jump.Label)</span>
                     </a>
                 }
             }
@@ -115,14 +127,14 @@
                 {
                     <a class="hf-jump-chip" asp-controller="HouseFactPreview" asp-action="SystemsProfile">
                         <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
-                        <span class="hf-jump-text">@UiDisplayLocalization.Localize(L, jump.Label)</span>
+                        <span class="hf-jump-text">@JumpLabel(jump.Key, jump.Label)</span>
                     </a>
                 }
                 else
                 {
                     <a class="hf-jump-chip" asp-controller="SystemsProfile" asp-action="Index" asp-route-id="@propiedadId!.Value">
                         <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
-                        <span class="hf-jump-text">@UiDisplayLocalization.Localize(L, jump.Label)</span>
+                        <span class="hf-jump-text">@JumpLabel(jump.Key, jump.Label)</span>
                     </a>
                 }
             }
@@ -132,14 +144,14 @@
                 {
                     <a class="hf-jump-chip" asp-controller="HouseFactPreview" asp-action="RoofExterior">
                         <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
-                        <span class="hf-jump-text">@UiDisplayLocalization.Localize(L, jump.Label)</span>
+                        <span class="hf-jump-text">@JumpLabel(jump.Key, jump.Label)</span>
                     </a>
                 }
                 else
                 {
                     <a class="hf-jump-chip" asp-controller="RoofExterior" asp-action="Index" asp-route-id="@propiedadId!.Value">
                         <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
-                        <span class="hf-jump-text">@UiDisplayLocalization.Localize(L, jump.Label)</span>
+                        <span class="hf-jump-text">@JumpLabel(jump.Key, jump.Label)</span>
                     </a>
                 }
             }
@@ -149,14 +161,14 @@
                 {
                     <a class="hf-jump-chip" asp-controller="HouseFactPreview" asp-action="PermitsImprovements">
                         <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
-                        <span class="hf-jump-text">@UiDisplayLocalization.Localize(L, jump.Label)</span>
+                        <span class="hf-jump-text">@JumpLabel(jump.Key, jump.Label)</span>
                     </a>
                 }
                 else
                 {
                     <a class="hf-jump-chip" asp-controller="PermitsImprovements" asp-action="Index" asp-route-id="@propiedadId!.Value">
                         <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
-                        <span class="hf-jump-text">@UiDisplayLocalization.Localize(L, jump.Label)</span>
+                        <span class="hf-jump-text">@JumpLabel(jump.Key, jump.Label)</span>
                     </a>
                 }
             }
@@ -166,22 +178,22 @@
                 {
                     <a class="hf-jump-chip" asp-controller="HouseFactPreview" asp-action="HoaCommunity">
                         <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
-                        <span class="hf-jump-text">@UiDisplayLocalization.Localize(L, jump.Label)</span>
+                        <span class="hf-jump-text">@JumpLabel(jump.Key, jump.Label)</span>
                     </a>
                 }
                 else
                 {
                     <a class="hf-jump-chip" asp-controller="HoaCommunity" asp-action="Index" asp-route-id="@propiedadId!.Value">
                         <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
-                        <span class="hf-jump-text">@UiDisplayLocalization.Localize(L, jump.Label)</span>
+                        <span class="hf-jump-text">@JumpLabel(jump.Key, jump.Label)</span>
                     </a>
                 }
             }
             else
             {
-                <button type="button" class="hf-jump-chip" data-hf-open-category="@jump.Key" data-hf-title="@UiDisplayLocalization.Localize(L, jump.Label)">
+                <button type="button" class="hf-jump-chip" data-hf-open-category="@jump.Key" data-hf-title="@JumpLabel(jump.Key, jump.Label)">
                     <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
-                    <span class="hf-jump-text">@UiDisplayLocalization.Localize(L, jump.Label)</span>
+                    <span class="hf-jump-text">@JumpLabel(jump.Key, jump.Label)</span>
                 </button>
             }
         }
@@ -425,7 +437,7 @@
         }
     </div>
 
-    <button type="button" class="hf-explore-more" data-hf-expand-all>
+    <button type="button" class="hf-explore-more" data-hf-scroll-categories>
         <span class="hf-explore-more-icon"><i class="fas fa-layer-group"></i></span>
         <span class="hf-explore-more-copy">
             <strong>@L["Explore more sections"]</strong>

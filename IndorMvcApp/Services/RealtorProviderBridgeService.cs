@@ -110,20 +110,24 @@ public class RealtorProviderBridgeService(AppDbContext db) : IRealtorProviderBri
             TimelineNote = quote.ResponseDeadlineHours.HasValue
                 ? $"Respond within {quote.ResponseDeadlineHours} hours"
                 : "Realtor inspection quote request",
-            LeadCode = $"RQ-{quote.QuoteCode}",
+            LeadCode = TruncateText($"RQ-{quote.QuoteCode}", 20) ?? $"RQ-{quote.Id}",
             RealtorQuoteId = quote.Id,
             LeadSource = "RealtorInspection",
-            InspectionReportUrl = inspectionReportUrl,
+            InspectionReportUrl = TruncateText(inspectionReportUrl, 500),
             FindingsJson = JsonSerializer.Serialize(findingsPayload),
             SuggestedScopeItemsJson = JsonSerializer.Serialize(tradeFindings.Select(f => new ProviderProEstimateLineItemViewModel
             {
-                Label = f.Title,
-                Description = f.Description ?? "",
+                Label = TruncateText(f.Title, 150) ?? "Item",
+                Description = TruncateText(f.Description, 500) ?? "",
                 Amount = 0,
                 Qty = 1
             })),
-            SuggestedHomeownerNotes = $"Quote request {quote.QuoteCode} from INDOR Realtor portal.",
-            AnalysisSummary = $"INDOR found {tradeFindings.Count} {quote.ServiceType.ToLowerInvariant()} repair item{(tradeFindings.Count == 1 ? "" : "s")} from the uploaded inspection report.",
+            SuggestedHomeownerNotes = TruncateText(
+                $"Quote request {quote.QuoteCode} from INDOR Realtor portal.",
+                2000),
+            AnalysisSummary = TruncateText(
+                $"INDOR found {tradeFindings.Count} {quote.ServiceType.ToLowerInvariant()} repair item{(tradeFindings.Count == 1 ? "" : "s")} from the uploaded inspection report.",
+                2000),
             FechaCreacion = DateTime.UtcNow
         };
 

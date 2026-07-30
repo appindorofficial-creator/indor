@@ -1,0 +1,50 @@
+@model IndorMvcApp.ViewModels.HomeownerMessageProviderViewModel
+@{
+    ViewData["Title"] = L["Message in INDOR"];
+    ViewData["BackUrl"] = Model.BackUrl;
+}
+
+<div class="sr-hero">
+    <h2>@L["Message in INDOR"]</h2>
+    <p>@L["All communication happens in INDOR. No phone numbers shared."]</p>
+</div>
+
+<section class="sr-card" style="margin-bottom:16px;padding:16px;">
+    <div style="display:flex;align-items:center;gap:12px;">
+        <span style="width:52px;height:52px;border-radius:14px;background:#E8F1FB;color:#0066CC;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="fas @Model.IconClass"></i>
+        </span>
+        <div style="min-width:0;">
+            <strong style="display:block;font-size:1.05rem;">@Model.ProviderName</strong>
+            @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
+            {
+                <span style="color:#64748B;font-size:.9rem;">@UiDisplayLocalization.Localize(L, Model.TradeLabel)</span>
+            }
+        </div>
+    </div>
+</section>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="sr-error"><i class="fas fa-circle-exclamation"></i> @L[Model.ErrorMessage]</div>
+}
+
+<form asp-action="Provider" method="post" class="sr-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="ProviderId" value="@Model.ProviderId" />
+
+    <div class="sr-field">
+        <label for="messageBody">@L["Message"]</label>
+        <textarea id="messageBody"
+                  class="sr-textarea"
+                  name="Body"
+                  rows="5"
+                  maxlength="600"
+                  required
+                  placeholder="@L["Write a message..."]">@Model.Body</textarea>
+    </div>
+
+    <button type="submit" class="sr-btn sr-btn--primary sr-btn--block">
+        <i class="fas fa-paper-plane"></i> @L["Send Message"]
+    </button>
+</form>

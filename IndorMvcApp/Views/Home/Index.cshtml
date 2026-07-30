@@ -1180,20 +1180,41 @@
             if (params.has('filter') || params.has('view') || params.has('q')) {
                 activateSection('section-home');
                 const base = window.location.pathname + window.location.search;
-                if (window.location.hash !== '#section-home') {
-                    history.replaceState(null, '', base + '#section-home');
-                }
-                const isLanding = document.getElementById('section-home')?.classList.contains('hn-v4-landing');
-                const feed = document.getElementById('hn-network-feed');
-                if (feed && !isLanding && getComputedStyle(feed).display !== 'none') {
-                    window.setTimeout(() => feed.scrollIntoView({ behavior: 'smooth', block: 'start' }), 120);
+                const filter = (params.get('filter') || '').toLowerCase();
+                const isQuickHelp = filter === 'neighborrequests'
+                    || filter === 'neighbor-requests'
+                    || filter === 'quickhelp'
+                    || filter === 'quick-help';
+                const quickHelpHero = document.getElementById('hn-quick-help-hero');
+
+                // Ayuda rápida → anclar al bloque "Ayuda rápida cercana" (no al feed).
+                if (isQuickHelp && quickHelpHero) {
+                    if (window.location.hash !== '#hn-quick-help-hero') {
+                        history.replaceState(null, '', base + '#hn-quick-help-hero');
+                    }
+                    window.setTimeout(() => {
+                        quickHelpHero.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 80);
                 } else {
+                    if (window.location.hash !== '#section-home') {
+                        history.replaceState(null, '', base + '#section-home');
+                    }
                     window.scrollTo({ top: 0, behavior: 'auto' });
                 }
                 return;
             }
 
             const hash = window.location.hash.replace('#', '');
+            if (hash === 'hn-quick-help-hero') {
+                activateSection('section-home');
+                const quickHelpHero = document.getElementById('hn-quick-help-hero');
+                if (quickHelpHero) {
+                    window.setTimeout(() => {
+                        quickHelpHero.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }, 80);
+                }
+                return;
+            }
             const servicesScrollTargets = ['emergency-services', 'home-care-essentials', 'home-care-priorities', 'inspections', 'services'];
             if (servicesScrollTargets.includes(hash) && document.getElementById(hash)) {
                 activateSection('section-services', hash);

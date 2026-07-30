@@ -39,7 +39,7 @@
 
     <label class="pa-terms">
         <input type="hidden" name="termsAccepted" value="false" />
-        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) data-pa-required="true" data-field-label="@L["the Terms"]" />
+        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) data-pa-required="true" data-field-label="@L["the Terms"]" data-pa-error-message="@L["Please agree to the Terms to continue."]" />
         <span>@L["I agree to the"] <a asp-controller="Account" asp-action="Terms">@L["Terms"]</a></span>
     </label>
     @if (ViewData.ModelState.TryGetValue("termsAccepted", out var termsState) && termsState.Errors.Count > 0)
@@ -59,6 +59,7 @@
     ViewData["StepFormId"] = "paProfileForm";
     ViewData["StepBackUrl"] = Model.BackUrl;
     ViewData["StepSubmitLabel"] = "Enter INDOR";
+    ViewData["StepSubmitFormNoValidate"] = false;
 }
 @await Html.PartialAsync("_PropertyAdminStepActions")
 

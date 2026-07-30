@@ -8,9 +8,13 @@
 
 <div class="prv-pro-shell prv-pro-shell--upload-report">
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
 
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
-        <a asp-controller="Proveedor" asp-action="ReportTemplates" class="prv-pro-lead-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
+        <a asp-controller="Proveedor"
+           asp-action="ReportTemplates"
+           class="prv-pro-lead-back"
+           aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["Select Job or Property"]</h1>
             <small>@L["Choose the completed or active job this report belongs to."]</small>
@@ -31,13 +35,20 @@
             <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search by address, service, or job ID..."]" />
         </div>
         <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+        @if (!string.IsNullOrWhiteSpace(Model.TemplateKey))
+        {
+            <input type="hidden" name="template" value="@Model.TemplateKey" />
+        }
         <button type="submit" class="prv-pro-btn prv-pro-btn--primary prv-pro-upload-report-search-btn">@L["Search"]</button>
     </form>
 
     <div class="prv-pro-upload-report-filters">
         @foreach (var (key, label, icon) in filters)
         {
-            <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-filter="@key" asp-route-q="@Model.SearchQuery"
+            <a asp-controller="Proveedor" asp-action="UploadReport"
+               asp-route-filter="@key"
+               asp-route-q="@Model.SearchQuery"
+               asp-route-template="@Model.TemplateKey"
                class="prv-pro-upload-report-filter @(Model.ActiveFilter == key ? "is-active" : "")">
                 @if (!string.IsNullOrEmpty(icon)) { <i class="fas @icon"></i> }
                 @L[label]
@@ -53,17 +64,18 @@
                 {
                     <p>@L["No jobs matched"] <strong>@Model.SearchQuery</strong>.</p>
                     <p>@L["Try a shorter address, job ID, or customer name, or clear the search to see all jobs."]</p>
-                    <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-filter="@Model.ActiveFilter" class="prv-pro-btn prv-pro-btn--outline">@L["Clear search"]</a>
+                    <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-filter="@Model.ActiveFilter" asp-route-template="@Model.TemplateKey" class="prv-pro-btn prv-pro-btn--outline">@L["Clear search"]</a>
                 }
                 else if (Model.TotalJobsAvailable == 0)
                 {
                     <p>@L["You don't have any jobs yet. Create a job first, then return here to upload a report."]</p>
+                    <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="reports" class="prv-pro-btn prv-pro-btn--primary">@L["Create Job"]</a>
                     <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-btn prv-pro-btn--outline">@L["Back to Reports"]</a>
                 }
                 else
                 {
                     <p>@L["No jobs match the current filter. Try"] <strong>@L["All"]</strong> @L["or another filter."]</p>
-                    <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-q="@Model.SearchQuery" class="prv-pro-btn prv-pro-btn--outline">@L["Show all jobs"]</a>
+                    <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-q="@Model.SearchQuery" asp-route-template="@Model.TemplateKey" class="prv-pro-btn prv-pro-btn--outline">@L["Show all jobs"]</a>
                 }
             </div>
         }

@@ -1,4 +1,5 @@
 using IndorMvcApp.Helpers;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -116,7 +117,9 @@ public class RealtorQuoteRequestController(
         }
         catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, localizer[ex.Message]);
+            // Keep English catalog keys in ModelState; the view localizes for display.
+            ModelState.AddModelError(string.Empty, ex.Message);
+            ModelState.LocalizeModelState(localizer);
             var vm = await quoteRequest.BuildPropertyAsync(null);
             vm.SelectedPropertyFileId = propertyFileId > 0 ? propertyFileId : null;
             return View(vm);

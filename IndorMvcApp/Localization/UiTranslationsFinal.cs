@@ -302,8 +302,8 @@ public static class UiTranslationsFinal
             // Realtor portal — Clients page and profile gaps
             ["Manage buyers, sellers, homeowners, and invitations."] =
                 "Administra compradores, vendedores, propietarios e invitaciones.",
-            ["Add Client"] = "Agregar cliente",
-            ["Add client — start invite wizard"] = "Agregar cliente — iniciar asistente de invitación",
+            ["Add Client"] = "Invitar cliente",
+            ["Add client — start invite wizard"] = "Invitar cliente — iniciar asistente de invitación",
             ["Search clients by name, email or phone"] = "Buscar clientes por nombre, correo o teléfono",
             ["Buyers"] = "Compradores",
             ["Sellers"] = "Vendedores",
@@ -547,6 +547,11 @@ public static class UiTranslationsFinal
             ["Message"] = "Mensaje",
             ["Draft"] = "Borrador",
             ["Not scheduled"] = "No programado",
+            ["Job #{0}"] = "Trabajo #{0}",
+            ["{0} miles away"] = "A {0} millas",
+            ["Today"] = "Hoy",
+            ["Tomorrow"] = "Mañana",
+            // Bug 18 — Create Job success / job list schedule labels
             ["TBD"] = "Por definir",
             ["Pending homeowner approval"] = "Aprobación del propietario pendiente",
             ["Before photos missing"] = "Faltan fotos previas",
@@ -960,6 +965,26 @@ public static class UiTranslationsFinal
             ["Partnership"] = "Sociedad",
             ["LLC"] = "LLC",
             ["About"] = "Acerca de",
+            ["{0} realtor serving local buyers and sellers through INDOR."] =
+                "{0}, agente inmobiliario que atiende a compradores y vendedores locales a través de INDOR.",
+            ["Back to property file"] = "Volver al expediente",
+            ["Property file document"] = "Documento del expediente",
+            ["Document"] = "Documento",
+            ["If the document does not appear, open it with your device viewer."] =
+                "Si el documento no aparece, ábrelo con el visor de tu dispositivo.",
+            ["Open externally"] = "Abrir externamente",
+            ["Your browser cannot play this video."] = "Tu navegador no puede reproducir este video.",
+            ["This file type cannot be previewed here. Open it with your device viewer."] =
+                "Este tipo de archivo no se puede previsualizar aquí. Ábrelo con el visor de tu dispositivo.",
+            ["Could not start your project request. Run Scripts/CreateRemodelingServicioFlowTables.sql on the database and try again."] =
+                "No se pudo iniciar la solicitud del proyecto. Ejecuta Scripts/CreateRemodelingServicioFlowTables.sql en la base de datos e inténtalo de nuevo.",
+            ["Could not save your project details. Please ensure the remodeling flow tables exist in the database and try again."] =
+                "No se pudieron guardar los detalles del proyecto. Asegúrate de que existan las tablas del flujo de remodelación e inténtalo de nuevo.",
+            ["Address not found on Redfin or Zillow"] = "Dirección no encontrada en Redfin o Zillow",
+            ["Address not found on Redfin or Zillow."] = "Dirección no encontrada en Redfin o Zillow.",
+            ["Address not found."] = "Dirección no encontrada.",
+            ["Address not found"] = "Dirección no encontrada",
+            ["Submit for quote"] = "Enviar para cotización",
             ["Reputation"] = "Reputación",
             ["Profile link copied to clipboard."] = "Enlace del perfil copiado al portapapeles.",
             ["Copy profile link:"] = "Copiar enlace del perfil:",
@@ -1390,26 +1415,11 @@ public static class UiTranslationsFinal
             ["Photos & AI analysis"] = "Fotos y análisis con IA",
             ["Report & recommendations"] = "Informe y recomendaciones",
             ["Inspect affected areas, identify moisture sources, document damage, and provide a detailed report with recommendations."] =
-                "Inspeccionar las áreas afectadas, identificar fuentes de humedad, documentar daños y entregar un informe detallado con recomendaciones.",
+                "Inspecciona las áreas afectadas, identifica fuentes de humedad, documenta daños y entrega un informe detallado con recomendaciones.",
             ["Inspect affected areas, identify moisture sources, document damage, and provide a detailed report with recommendations"] =
-                "Inspeccionar las áreas afectadas, identificar fuentes de humedad, documentar daños y entregar un informe detallado con recomendaciones",
-            ["Please review the requested {0} work at {1}. Document findings and provide a repair estimate with recommended next steps."] =
-                "Por favor revise el trabajo de {0} solicitado en {1}. Documente los hallazgos y proporcione una cotización de reparación con los siguientes pasos recomendados.",
-            ["Please inspect the water damage in the kitchen ceiling and adjacent living room. Identify the source, document affected areas, and provide a repair estimate. Include minor drywall repair and repaint as needed."] =
-                "Por favor inspeccione el daño por agua en el techo de la cocina y la sala contigua. Identifique la fuente, documente las áreas afectadas y proporcione una cotización de reparación. Incluya reparación menor de drywall y repintado según sea necesario.",
-            ["Stop recording"] = "Detener grabación",
-            ["Audio recorded"] = "Audio grabado",
-            ["Microphone permission is required to record audio."] =
-                "Se necesita permiso del micrófono para grabar audio.",
-            ["Microphone is not available in this browser."] =
-                "El micrófono no está disponible en este navegador.",
+                "Inspecciona las áreas afectadas, identifica fuentes de humedad, documenta daños y entrega un informe detallado con recomendaciones",
             ["Hi {0}, here's your quote for the {1}. Let us know if you have any questions!"] =
                 "Hola {0}, aquí está tu cotización para {1}. ¡Avísanos si tienes alguna pregunta!",
-            ["Hi {0}, thanks again for having us out! Attached is your estimate for the {1}. Let me know if you have any questions—I'm here to help!"] =
-                "Hola {0}, ¡gracias otra vez por recibirnos! Adjunto está tu cotización para {1}. Avísame si tienes preguntas—¡estoy para ayudarte!",
-            ["Assess the requested {0} work"] = "Evaluar el trabajo de {0} solicitado",
-            ["Complete the requested {0} work and provide a detailed summary."] =
-                "Completar el trabajo de {0} solicitado y entregar un resumen detallado.",
             ["Service call"] = "Visita de servicio",
             ["Inspection & moisture assessment"] = "Inspección y evaluación de humedad",
             ["Minor drywall repair allowance"] = "Tolerancia para reparación menor de drywall",
@@ -1418,15 +1428,31 @@ public static class UiTranslationsFinal
             ["Labor allowance"] = "Tolerancia de mano de obra",
             ["Inspect water-damaged area"] = "Inspeccionar el área dañada por agua",
             ["Document moisture readings and affected materials"] = "Documentar lecturas de humedad y materiales afectados",
-            ["Identify likely source of water intrusion"] = "Identificar la probable fuente de filtración de agua",
-            ["Recommend minor drywall repair (if needed)"] = "Recomendar reparación menor de drywall (si es necesario)",
-            ["Provide homeowner summary and next steps"] = "Entregar resumen al propietario y próximos pasos",
+            ["Identify likely source of water intrusion"] = "Identificar la posible fuente de infiltración de agua",
+            ["Recommend minor drywall repair (if needed)"] = "Recomendar reparación menor de drywall (si hace falta)",
+            ["Provide homeowner summary and next steps"] = "Entregar resumen al propietario y siguientes pasos",
             ["Document findings and affected areas"] = "Documentar hallazgos y áreas afectadas",
             ["Identify materials and labor needed"] = "Identificar materiales y mano de obra necesarios",
+            ["Assess the requested {0} work"] = "Evaluar el trabajo de {0} solicitado",
+            ["Complete the requested {0} work and provide a detailed summary."] =
+                "Completar el trabajo de {0} solicitado y entregar un resumen detallado.",
             ["Customer reports water coming through the ceiling after heavy rain. They'd like an inspection to find the cause and get a repair recommendation and estimate."] =
-                "El cliente reporta agua filtrando por el techo después de lluvia intensa. Quiere una inspección para encontrar la causa y obtener una recomendación y cotización de reparación.",
-            ["Water damage inspection"] = "Inspección de daños por agua",
+                "El cliente reporta agua filtrándose por el techo después de lluvia intensa. Quiere una inspección para encontrar la causa y obtener una recomendación y cotización de reparación.",
+            ["Finalize the job and quote"] = "Finalizar el trabajo y la cotización",
+            ["AI estimate assistant"] = "Asistente de cotización con IA",
+            ["Quote preview"] = "Vista previa de cotización",
+            ["Total estimate"] = "Total cotización",
+            ["Total Cotización"] = "Total cotización",
+            ["Send in INDOR"] = "Enviar INDOR",
+            ["Text message"] = "Mensaje de texto",
+            ["Message to customer"] = "Mensaje al cliente",
+            ["AI summary attached"] = "Resumen de IA adjunto",
+            ["Voice transcript attached"] = "Transcripción de voz adjunta",
             ["Save draft"] = "Guardar borrador",
+            ["Create job only"] = "Solo crear trabajo",
+            ["Create job &amp; send quote"] = "Crear trabajo y enviar cotización",
+            ["Create job & send quote"] = "Crear trabajo y enviar cotización",
+            ["Water damage inspection"] = "Inspección de daños por agua",
             ["Schedule for tomorrow"] = "Programar para mañana",
             ["Send to Homeowner"] = "Enviar al propietario",
             ["Service Type"] = "Tipo de servicio",
@@ -1576,6 +1602,7 @@ public static class UiTranslationsFinal
             ["Edit photo"] = "Editar foto",
             ["Share Profile"] = "Compartir perfil",
             ["Share your profile link"] = "Comparte el enlace de tu perfil",
+            ["View my realtor profile on INDOR"] = "Mira mi perfil de agente inmobiliario en INDOR",
             ["Edit profile progress"] = "Progreso de edición del perfil",
             ["Set up your business details and professional identity."] =
                 "Configura los detalles de tu negocio e identidad profesional.",
@@ -1658,7 +1685,12 @@ public static class UiTranslationsFinal
             ["No quotes match your filters."] = "Ninguna cotización coincide con tus filtros.",
             ["Invitation sent to {0} for {1}"] = "Invitación enviada a {0} para {1}",
             ["{0} accepted the invitation for {1}"] = "{0} aceptó la invitación para {1}",
+            ["Share Profile"] = "Compartir perfil",
+            ["Share your profile link"] = "Comparte el enlace de tu perfil",
+            ["View my realtor profile on INDOR"] = "Mira mi perfil de agente inmobiliario en INDOR",
             ["Licensed Realtor"] = "Agente inmobiliario licenciado",
+            ["Basic real estate agent"] = "Agente inmobiliario básico",
+            ["Experienced real estate agent"] = "Agente inmobiliario con experiencia",
             ["Background Verified"] = "Antecedentes verificados",
             ["INDOR Verified"] = "Verificado por INDOR",
             ["Open Houses"] = "Casas abiertas",
@@ -2252,6 +2284,10 @@ public static class UiTranslationsFinal
                 "INDOR enviará la solicitud a los proveedores con mejor coincidencia según tu configuración.",
             ["{0} provider selected"] = "{0} proveedor seleccionado",
             ["{0} providers selected"] = "{0} proveedores seleccionados",
+            ["No providers match these filters yet. Try turning off Verified only, increasing coverage, or switch to manual selection."] =
+                "Ningún proveedor coincide con estos filtros. Desactiva Solo verificados, amplía la cobertura o elige proveedores manualmente.",
+            ["No matching providers found for INDOR Recommended. Turn off Verified only, increase coverage, or choose providers manually."] =
+                "No hay proveedores coincidentes para Recomendado por INDOR. Desactiva Solo verificados, amplía la cobertura o elige proveedores manualmente.",
             ["HVAC Repair"] = "Reparación HVAC",
             ["Home Inspection"] = "Inspección de vivienda",
             ["Request Type"] = "Tipo de solicitud",
@@ -2264,6 +2300,11 @@ public static class UiTranslationsFinal
             ["Schedule for Later"] = "Programar para después",
             ["Choose a date and time to send this request."] = "Elige una fecha y hora para enviar esta solicitud.",
             ["Response preferences"] = "Preferencias de respuesta",
+            ["24 hours"] = "24 horas",
+            ["48 hours"] = "48 horas",
+            ["72 hours"] = "72 horas",
+            ["Please review the attached repairs and send your best quote."] =
+                "Revisa las reparaciones adjuntas y envía tu mejor cotización.",
             ["Allow provider questions"] = "Permitir preguntas de proveedores",
             ["Allow full project quote"] = "Permitir cotización de proyecto completo",
             ["Allow itemized quote"] = "Permitir cotización detallada",
@@ -3049,7 +3090,23 @@ public static class UiTranslationsFinal
             ["In {0} days"] = "En {0} días",
             ["custom quote"] = "cotización personalizada",
             ["1 day before"] = "1 día antes",
+            ["2 days before"] = "2 días antes",
+            ["3 days before"] = "3 días antes",
             ["Next"] = "Siguiente",
+            ["Continue"] = "Continuar",
+            ["Invite Client"] = "Invitar cliente",
+            ["Invite client"] = "Invitar cliente",
+            ["FullService"] = "Servicio completo",
+            ["ReminderOnly"] = "Solo recordatorio",
+            ["Morning 8–11"] = "Mañana 8–11",
+            ["Midday 11–2"] = "Mediodía 11–2",
+            ["Afternoon 2–5"] = "Tarde 2–5",
+            ["Evening 5–8"] = "Noche 5–8",
+            ["Morning"] = "Mañana",
+            ["Tune-up visit"] = "Visita de mantenimiento",
+            ["Next visit"] = "Próxima visita",
+            ["Roof & Exterior"] = "Techo y exterior",
+            ["HOA & Community"] = "HOA y comunidad",
             ["View appointment"] = "Ver cita",
             // SmokeDetector + Investor inspection leftovers
             ["Chirping"] = "Pitido",
@@ -3172,12 +3229,60 @@ public static class UiTranslationsFinal
             ["Serial number"] = "Número de serie",
             ["Annual flush + basic visual check"] = "Lavado anual + revisión visual básica",
             ["6–80 characters. Use letters and numbers (e.g. M123456789)."] = "6–80 caracteres. Usa letras y números (ej. M123456789).",
+            ["e.g. M123456789"] = "ej. M123456789",
             ["Use only letters, numbers, and hyphens."] = "Usa solo letras, números y guiones.",
             ["Serial number cannot exceed {0} characters."] = "El número de serie no puede superar {0} caracteres.",
             // WaterHeaterFlush setup leftovers
             ["Closet"] = "Armario",
             ["JPG or PNG, up to 10 MB"] = "JPG o PNG, hasta 10 MB",
             ["JPG or PNG, up to 10 MB each"] = "JPG o PNG, hasta 10 MB cada uno",
+            ["These items were identified in the inspection report."] =
+                "Estos elementos se identificaron en el informe de inspección.",
+            ["No repair items linked to this request yet."] =
+                "Aún no hay elementos de reparación vinculados a esta solicitud.",
+            ["Closet Door"] = "Puerta de clóset",
+            ["Closet Door Repair"] = "Reparación de puerta de clóset",
+            ["Closet Door Repair Needed"] = "Se necesita reparación de la puerta del clóset",
+            ["Window"] = "Ventana",
+            ["Window Repair"] = "Reparación de ventana",
+            ["Window Repair Needed"] = "Se necesita reparación de ventana",
+            ["Dryer Vent Cleaning"] = "Limpieza del ducto de la secadora",
+            ["Dryer Vent Cleaning Recommended"] = "Se recomienda limpieza del ducto de la secadora",
+            ["Loose Foundation Vents"] = "Rejillas de ventilación de la cimentación sueltas",
+            ["Elevated Moisture in Crawlspace"] = "Humedad elevada en el espacio de arrastre",
+            ["Drain Leak in Crawlspace"] = "Fuga de drenaje en el espacio de arrastre",
+            ["Hot Water Temperature Fluctuations"] = "Fluctuaciones de temperatura del agua caliente",
+            ["Shower Head Nozzles Clogged"] = "Boquillas de la regadera obstruidas",
+            ["{0} Repair Needed"] = "Se necesita reparación de {0}",
+            ["{0} Recommended"] = "Se recomienda {0}",
+            ["{0} needed"] = "Se necesita {0}",
+            ["Handyman"] = "Manitas",
+            ["What happens next?"] = "¿Qué sigue?",
+            ["Providers need to be invited to this request before they can review the details and submit quotes."] =
+                "Hay que invitar proveedores a esta solicitud antes de que puedan revisar los detalles y enviar cotizaciones.",
+            ["Invite Providers"] = "Invitar proveedores",
+            ["Edit Request"] = "Editar solicitud",
+            ["Cancel Request"] = "Cancelar solicitud",
+            ["Back to request"] = "Volver a la solicitud",
+            ["Send Invites"] = "Enviar invitaciones",
+            ["Already invited"] = "Ya invitado",
+            ["{0} already invited"] = "{0} ya invitados",
+            ["Providers invited successfully."] = "Proveedores invitados correctamente.",
+            ["Those providers were already invited to this request."] =
+                "Esos proveedores ya fueron invitados a esta solicitud.",
+            ["No matching providers found."] = "No se encontraron proveedores coincidentes.",
+            ["Quote request not found."] = "No se encontró la solicitud de cotización.",
+            ["No providers match these filters yet. Try a different search."] =
+                "Ningún proveedor coincide con estos filtros. Prueba otra búsqueda.",
+            ["Quote Request Details"] = "Detalles de la solicitud de cotización",
+            ["Quote Request Sent"] = "Solicitud de cotización enviada",
+            ["Quote Requests Created"] = "Solicitudes de cotización creadas",
+            ["Requested Services"] = "Servicios solicitados",
+            ["Requested by"] = "Solicitado por",
+            ["Requested providers"] = "Proveedores solicitados",
+            ["Requested"] = "Solicitado",
+            ["Request, compare, and select service quotes."] = "Solicita, compara y selecciona cotizaciones de servicio.",
+            ["Realtor (Buyer)"] = "Agente inmobiliario (comprador)",
             // Realtor inspection report upload leftovers
             ["Electrician"] = "Electricista",
             ["Plumber"] = "Plomero",
@@ -3222,6 +3327,15 @@ public static class UiTranslationsFinal
             ["Upload Inspection Report - INDOR"] = "Subir informe de inspección - INDOR",
             ["This PDF has no readable text (it may be scanned images only). Upload a text-based PDF or OCR version."] = "Este PDF no tiene texto legible (puede ser solo imágenes escaneadas). Sube un PDF con texto o una versión OCR.",
             ["Could not extract text from the inspection report."] = "No se pudo extraer texto del informe de inspección.",
+            ["No repair findings were detected in this report. Try a more detailed inspection PDF."] = "No se detectaron hallazgos de reparación en este informe. Prueba con un PDF de inspección más detallado.",
+            ["OpenAI took too long analyzing this report. Please retry — large PDFs are processed in sections."] = "OpenAI tardó demasiado analizando este informe. Reinténtalo: los PDF grandes se procesan por secciones.",
+            ["OpenAI returned no analysis. Check your API key, billing, and try again."] = "OpenAI no devolvió un análisis. Revisa tu clave de API, la facturación e inténtalo de nuevo.",
+            ["Could not split the inspection report for analysis."] = "No se pudo dividir el informe de inspección para analizarlo.",
+            ["OpenAI could not extract repair findings from this report. Please retry."] = "OpenAI no pudo extraer hallazgos de reparación de este informe. Reinténtalo.",
+            ["AI response could not be parsed. Please try again."] = "No se pudo interpretar la respuesta de la IA. Inténtalo de nuevo.",
+            ["OpenAI returned an empty analysis response."] = "OpenAI devolvió una respuesta de análisis vacía.",
+            ["No findings in this section."] = "No hay hallazgos en esta sección.",
+            ["Unable to save the report. Please try again."] = "No se pudo guardar el informe. Inténtalo de nuevo.",
             // Inspection emergency tips & validation (views)
             ["Photos of the panel, outlet, or affected area can help us prepare."] =
                 "Las fotos del panel, enchufe o área afectada nos ayudan a prepararnos.",
@@ -3738,10 +3852,14 @@ public static class UiTranslationsFinal
             // Bug 9 — Proveedor Post a Job wizard (Publicar trabajo) ES
             // Override any leftover word-swap Spanglish in UiTranslationsProveedor.
             ["Tell us what you need and get matched fast."] = "Cuéntanos qué necesitas y te conectamos rápido.",
+            ["Tell us what you need y get matched fast."] = "Cuéntanos qué necesitas y te conectamos rápido.",
             ["e.g. Fix leak under kitchen sink"] = "ej. Reparar fuga bajo el fregadero de la cocina",
             ["Tell us more about the issue, what needs to be done, and any important details."] =
                 "Cuéntanos más sobre el problema, qué hay que hacer y cualquier detalle importante.",
+            ["Tell us more about the issue, what needs to be done, y any important details."] =
+                "Cuéntanos más sobre el problema, qué hay que hacer y cualquier detalle importante.",
             ["Photos help pros understand the job"] = "Las fotos ayudan a los profesionales a entender el trabajo",
+            ["Fotos help pros understand the job"] = "Las fotos ayudan a los profesionales a entender el trabajo",
             ["What do you need help with?"] = "¿Con qué necesitas ayuda?",
             ["Job title"] = "Título del trabajo",
             ["Describe the job"] = "Describe el trabajo",
@@ -3750,6 +3868,8 @@ public static class UiTranslationsFinal
             ["(Optional)"] = "(Opcional)",
             ["When do you need it?"] = "¿Cuándo lo necesitas?",
             ["This Week"] = "Esta semana",
+            ["ASAP"] = "Lo antes posible",
+            ["Flexible"] = "Flexible",
             ["Add location and budget."] = "Agrega ubicación y presupuesto.",
             ["Job Location"] = "Ubicación del trabajo",
             ["Enter address or neighborhood"] = "Ingresa dirección o vecindario",
@@ -3792,6 +3912,33 @@ public static class UiTranslationsFinal
             ["Landscaping"] = "Paisajismo",
             ["Pest Control"] = "Control de plagas",
             ["Appliance Repair"] = "Reparación de electrodomésticos",
+
+            // Bug 10 — Proveedor Mis solicitudes (reinforce late so Spanglish / identity cannot win)
+            ["Track posted jobs, quotes, and hiring progress."] =
+                "Sigue trabajos publicados, cotizaciones y progreso de contratación.",
+            ["Track posted jobs, quotes, y hiring progress."] =
+                "Sigue trabajos publicados, cotizaciones y progreso de contratación.",
+            ["Search my requests..."] = "Buscar mis solicitudes...",
+            ["Buscar my requests..."] = "Buscar mis solicitudes...",
+            ["No requests yet"] = "Aún no hay solicitudes",
+            ["Post a job to start receiving quotes from verified subcontractors."] =
+                "Publica un trabajo para empezar a recibir cotizaciones de subcontratistas verificados.",
+            ["View Request"] = "Ver solicitud",
+            ["{0} Quotes Received"] = "{0} cotizaciones recibidas",
+            ["Quotes Received"] = "Cotizaciones recibidas",
+            ["Waiting for Quotes"] = "Esperando cotizaciones",
+
+            // Network job success — avoid Spanglish "Trabajo posted!" from partial ["Job"] swap.
+            ["Job posted!"] = "¡Trabajo publicado!",
+            ["Job Posted"] = "Trabajo publicado",
+            ["Your job is now shared with verified subcontractors."] =
+                "Tu trabajo ahora está compartido con subcontratistas verificados.",
+            ["Your {0} job is now shared with verified subcontractors."] =
+                "Tu trabajo de {0} ahora está compartido con subcontratistas verificados.",
+            ["{0} qualified match(es)"] = "{0} coincidencia(s) calificada(s)",
+            ["Matching in progress"] = "Emparejando en progreso",
+            ["We'll notify you as verified subcontractors respond to your job."] =
+                "Te avisaremos cuando subcontratistas verificados respondan a tu trabajo.",
 
             // Bug 12 — Proveedor Upload Report / Create Report wizard ES
             // Full phrases (no word-swap Spanglish). Breadcrumbs need full keys because
@@ -3880,7 +4027,7 @@ public static class UiTranslationsFinal
             ["Status"] = "Estado",
 
             // Bug 13 — Proveedor report-template forms (after picking a template type).
-            // Only keys not already defined earlier in this file (incl. Bug 12 block).
+            // Reinforce late so Spanglish / identity in UiTranslationsProveedor cannot win.
             ["Work Completed"] = "Trabajo completado",
             ["Materials Used"] = "Materiales usados",
             ["Summary"] = "Resumen",
@@ -3899,11 +4046,120 @@ public static class UiTranslationsFinal
             ["Save Report"] = "Guardar informe",
             ["Send Report"] = "Enviar informe",
             ["Review Export Report"] = "Revisar informe de exportación",
+            ["Review Export Report - INDOR PRO"] = "Revisar informe de exportación - INDOR PRO",
+            ["Export Report - INDOR PRO"] = "Exportar informe - INDOR PRO",
             ["Review the report before saving or sending it."] =
                 "Revisa el informe antes de guardarlo o enviarlo.",
             ["Camera"] = "Cámara",
             ["Gallery"] = "Galería",
             ["Profile menu"] = "Menú de perfil",
+            ["Not scheduled"] = "No programado",
+            ["Job #{0}"] = "Trabajo #{0}",
+            ["{0} miles away"] = "{0} millas de distancia",
+            ["Job Number"] = "Número de trabajo",
+            ["Job Summary"] = "Resumen del trabajo",
+            ["Job Created Successfully!"] = "¡Trabajo creado correctamente!",
+            ["Your job has been scheduled and is ready to go."] = "Tu trabajo quedó programado y listo.",
+            ["View Job Details"] = "Ver detalles del trabajo",
+            ["Create Another Job"] = "Crear otro trabajo",
+            ["Scheduled"] = "Programado",
+            ["Confirmed"] = "Confirmado",
+            ["On Site"] = "En sitio",
+            ["Completed"] = "Completado",
+            ["Waiting"] = "En espera",
+            // Bug 18 reinforce — schedule / job codes (late merge wins)
             ["Job Information"] = "Información del trabajo",
+            ["Job Completion Report"] = "Informe de finalización del trabajo",
+            ["Job Completion Report - INDOR PRO"] = "Informe de finalización del trabajo - INDOR PRO",
+            ["Add photos for this report"] = "Agrega fotos para este informe",
+            ["Attach to House Facts"] = "Adjuntar a Datos del hogar",
+            ["Attach this report and files to the property's House Facts."] =
+                "Adjunta este informe y los archivos a los Datos del hogar de la propiedad.",
+            ["Create House Facts Record"] = "Crear registro de Datos del hogar",
+            ["Add this report to the home's House Facts."] =
+                "Agrega este informe a los Datos del hogar de la vivienda.",
+            ["Add to House Facts"] = "Agregar a Datos del hogar",
+            ["Reports can be shared with the homeowner and saved to House Facts."] =
+                "Los informes se pueden compartir con el propietario y guardarse en Datos del hogar.",
+            ["House Facts"] = "Datos del hogar",
+            ["Added to House Facts"] = "Agregado a Datos del hogar",
+            ["Search jobs or properties"] = "Buscar trabajos o propiedades",
+            ["No jobs found. Create a job first, then come back to build a report."] =
+                "No se encontraron trabajos. Crea un trabajo primero y vuelve para armar un informe.",
+            ["Completion Report"] = "Informe de finalización",
+            ["Document finished work, photos, notes, and signatures."] =
+                "Documenta el trabajo terminado, fotos, notas y firmas.",
+            ["Inspection Report"] = "Informe de inspección",
+            ["Record findings, issues, and recommendations."] =
+                "Registra hallazgos, problemas y recomendaciones.",
+            ["Daily Report"] = "Informe diario",
+            ["Track daily work completed, crew, and site notes."] =
+                "Registra el trabajo diario, el equipo y notas del sitio.",
+            ["Progress Report"] = "Informe de progreso",
+            ["Show project progress, milestones, and updates."] =
+                "Muestra el progreso del proyecto, hitos y actualizaciones.",
+            ["Photo Report"] = "Informe fotográfico",
+            ["Organize before-and-after photos with captions."] =
+                "Organiza fotos de antes y después con descripciones.",
+            ["Maintenance Report"] = "Informe de mantenimiento",
+            ["Log service work, maintenance tasks, and materials."] =
+                "Registra trabajo de servicio, tareas de mantenimiento y materiales.",
+            ["Safety / Incident Report"] = "Informe de seguridad / incidente",
+            ["Record accidents, hazards, or safety concerns."] =
+                "Registra accidentes, riesgos o problemas de seguridad.",
+            ["Change Order Report"] = "Informe de orden de cambio",
+            ["Document scope changes, approvals, and costs."] =
+                "Documenta cambios de alcance, aprobaciones y costos.",
+            ["Punch List Report"] = "Informe de lista de pendientes",
+            ["List pending fixes, touch-ups, and incomplete items."] =
+                "Lista reparaciones pendientes, retoques e ítems incompletos.",
+            ["Material Delivery Report"] = "Informe de entrega de materiales",
+            ["Track delivered materials, quantities, and dates."] =
+                "Registra materiales entregados, cantidades y fechas.",
+            ["Warranty / Materials"] = "Garantía / Materiales",
+            ["Document warranties, registrations, and materials provided."] =
+                "Documenta garantías, registros y materiales proporcionados.",
+            ["Before & After"] = "Antes y después",
+            ["Showcase before and after photos and document the transformation."] =
+                "Muestra fotos de antes y después y documenta la transformación.",
+            ["Assessment / Inspection"] = "Evaluación / Inspección",
+            ["Report Title"] = "Título del informe",
+            ["Submit Report"] = "Enviar informe",
+            ["Send to Homeowner"] = "Enviar al propietario",
+            ["Recommendations"] = "Recomendaciones",
+            ["Internal Notes"] = "Notas internas",
+            ["Before"] = "Antes",
+            ["During"] = "Durante",
+            ["After"] = "Después",
+            ["Final Result"] = "Resultado final",
+            ["Invoice"] = "Factura",
+            ["Warranty Document"] = "Documento de garantía",
+            ["Permit / Receipt"] = "Permiso / Recibo",
+            ["Choose file"] = "Elegir archivo",
+            ["No file selected"] = "Ningún archivo seleccionado",
+            ["files"] = "archivos",
+            ["Report Name"] = "Nombre del informe",
+            ["Prepared By"] = "Preparado por",
+            ["Photos Added"] = "Fotos agregadas",
+            ["Report Type"] = "Tipo de informe",
+            ["Category"] = "Categoría",
+            ["Priority"] = "Prioridad",
+            ["Weather"] = "Clima",
+            ["Location"] = "Ubicación",
+            ["Description"] = "Descripción",
+            ["Notes"] = "Notas",
+            ["Date"] = "Fecha",
+            ["Job"] = "Trabajo",
+            ["Low"] = "Baja",
+            ["Medium"] = "Media",
+            ["High"] = "Alta",
+            ["Clear"] = "Despejado",
+            ["Cloudy"] = "Nublado",
+            ["Rain"] = "Lluvia",
+            ["Snow"] = "Nieve",
+            ["Windy"] = "Ventoso",
+            ["Damage"] = "Daño",
+            ["Roof"] = "Techo",
+            ["General"] = "General",
         };
 }

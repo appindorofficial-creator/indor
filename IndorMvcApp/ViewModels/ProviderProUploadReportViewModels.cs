@@ -28,7 +28,7 @@ public class ProviderProUploadReportDraft
     ];
     public List<ProviderProUploadReportFileSlot> DocumentSlots { get; set; } =
     [
-        new() { Slot = "Invoice", Required = true },
+        new() { Slot = "Invoice", Required = false },
         new() { Slot = "Warranty Document", Required = false },
         new() { Slot = "Permit / Receipt", Required = false }
     ];
@@ -63,6 +63,7 @@ public class ProviderProUploadReportSelectJobViewModel : ProviderProPageBaseView
     public int TotalSteps { get; set; } = 5;
     public string? SearchQuery { get; set; }
     public string ActiveFilter { get; set; } = "all";
+    public string? TemplateKey { get; set; }
     public int TotalJobsAvailable { get; set; }
     public bool HasSearchWithNoResults { get; set; }
     public List<ProviderProUploadReportJobOptionViewModel> Jobs { get; set; } = [];

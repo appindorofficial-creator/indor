@@ -1,4 +1,6 @@
-﻿namespace IndorMvcApp.Services;
+﻿using System.Globalization;
+
+namespace IndorMvcApp.Services;
 
 // Localized via DisplayLabelsLocalization.L
 
@@ -85,11 +87,14 @@ public static class FurnitureAssemblyDisplayLabels
         "Morning" => DisplayLabelsLocalization.L("10:00 AM"),
         "Afternoon" => DisplayLabelsLocalization.L("2:00 PM"),
         "Evening" => DisplayLabelsLocalization.L("6:00 PM"),
-        _ => "2:00 PM"
+        _ => DisplayLabelsLocalization.L("2:00 PM")
     };
 
     public static string FormatDate(DateTime? date) =>
-        date?.ToString("MMM d, yyyy") ?? "To be scheduled";
+        date?.ToString(
+            DisplayLabelsLocalization.IsSpanishUi ? "d MMM yyyy" : "MMM d, yyyy",
+            CultureInfo.CurrentUICulture)
+        ?? DisplayLabelsLocalization.L("To be scheduled");
 
     public static string FormatSchedule(DateTime? date, string? window) =>
         $"{FormatDate(date)} - {FormatTimeWindow(window).Split('-')[0].Trim()}";
@@ -115,7 +120,13 @@ public static class FurnitureAssemblyDisplayLabels
         }
 
         var qty = FormatItemCount(count);
-        return qty == "—" ? list : $"{list} ({qty} items)";
+        return qty == "—"
+            ? list
+            : string.Format(
+                CultureInfo.CurrentCulture,
+                DisplayLabelsLocalization.L("{0} ({1} items)"),
+                list,
+                qty);
     }
 
     public static decimal CalculateEstimate(

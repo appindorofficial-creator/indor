@@ -43,6 +43,17 @@ public class NeighborRequestController(
             return RedirectToAction("Login", "Account");
         }
 
+        if (propiedadId <= 0)
+        {
+            var defaultProp = await wizardService.ResolveDefaultPropiedadAsync(userId, cancellationToken);
+            if (defaultProp == null)
+            {
+                return await RedirectWhenPropertyUnavailableAsync(userId, cancellationToken);
+            }
+
+            return RedirectToAction(nameof(Category), new { propiedadId = defaultProp.Id, fresh });
+        }
+
         var propiedad = await wizardService.ValidatePropiedadAsync(userId, propiedadId, cancellationToken);
         if (propiedad == null)
         {
@@ -81,7 +92,8 @@ public class NeighborRequestController(
             draft,
             Url,
             cancellationToken,
-            useDraftFieldValues: resumeDraft);
+            useDraftFieldValues: resumeDraft,
+            userId: userId);
         await wizardService.ApplyPortalHomeUrlsAsync(model, userId, Url, cancellationToken);
         return View(model);
     }
@@ -102,6 +114,17 @@ public class NeighborRequestController(
             return await RedirectWhenPropertyUnavailableAsync(userId, cancellationToken);
         }
 
+        if (model.UseHomeAddress)
+        {
+            // Keep location aligned with the selected home when the checkbox is on.
+            var homeAddress = await wizardService.GetPropiedadAddressAsync(propiedad, cancellationToken);
+            if (!string.IsNullOrWhiteSpace(homeAddress))
+            {
+                model.LocationAddress = homeAddress;
+                ModelState.Remove(nameof(model.LocationAddress));
+            }
+        }
+
         var categories = await wizardService.LoadCategoriesAsync(cancellationToken);
         if (model.CategoryId <= 0 || categories.All(c => c.Id != model.CategoryId))
         {
@@ -111,7 +134,12 @@ public class NeighborRequestController(
         if (!ModelState.IsValid)
         {
             LocalizeNeighborRequestModelState();
-            var invalidVm = await wizardService.BuildCategoryStepAsync(model.PropiedadId, null, Url, cancellationToken);
+            var invalidVm = await wizardService.BuildCategoryStepAsync(
+                model.PropiedadId,
+                null,
+                Url,
+                cancellationToken,
+                userId: userId);
             invalidVm.CategoryId = model.CategoryId;
             invalidVm.SelectedCategoryId = model.CategoryId;
             invalidVm.Title = model.Title;
@@ -119,6 +147,7 @@ public class NeighborRequestController(
             invalidVm.LocationAddress = model.LocationAddress;
             invalidVm.UseHomeAddress = model.UseHomeAddress;
             invalidVm.ResumeDraft = model.ResumeDraft;
+            invalidVm.PropiedadId = model.PropiedadId;
             await wizardService.ApplyPortalHomeUrlsAsync(invalidVm, userId, Url, cancellationToken);
             return View(invalidVm);
         }
@@ -130,7 +159,10 @@ public class NeighborRequestController(
             draft.PropiedadId = model.PropiedadId;
             draft.CategoryId = model.CategoryId;
         }
-        else if (model.ResumeDraft && draft is { CategoryId: > 0, EditingRequestId: null } && draft.CategoryId == model.CategoryId)
+        else if (model.ResumeDraft
+            && draft is { CategoryId: > 0, EditingRequestId: null }
+            && draft.CategoryId == model.CategoryId
+            && draft.PropiedadId == model.PropiedadId)
         {
             // Keep in-progress draft when returning from a later wizard step.
         }
@@ -139,7 +171,8 @@ public class NeighborRequestController(
             draft = await wizardService.CreateNewDraftAsync(HttpContext.Session, propiedad, model.CategoryId, cancellationToken);
         }
 
-        draft!.CategoryId = model.CategoryId;
+        draft!.PropiedadId = model.PropiedadId;
+        draft.CategoryId = model.CategoryId;
         draft.Title = model.Title.Trim();
         draft.Description = model.Description?.Trim() ?? string.Empty;
         draft.LocationAddress = model.LocationAddress.Trim();

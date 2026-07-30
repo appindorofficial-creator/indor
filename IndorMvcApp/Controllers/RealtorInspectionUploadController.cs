@@ -1,3 +1,4 @@
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -14,6 +15,7 @@ public class RealtorInspectionUploadController(
     IRealtorInspectionUploadWizardService wizard,
     IRealtorRegistrationService registration,
     UserManager<ApplicationUser> userManager,
+    IIndorLocalizer localizer,
     ILogger<RealtorInspectionUploadController> logger) : Controller
 {
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -125,11 +127,7 @@ public class RealtorInspectionUploadController(
             return RedirectToAction(nameof(Upload));
         }
 
-        if (draft.CurrentStep > 2 && draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.Complete)
-        {
-            return RedirectToAction(wizard.ResolveResumeAction(draft.CurrentStep));
-        }
-
+        // Allow revisiting Analyze when going Back from later steps.
         return View(await wizard.BuildAnalyzeAsync());
     }
 
@@ -158,7 +156,9 @@ public class RealtorInspectionUploadController(
             status = vm.AnalysisStatus,
             complete = vm.AnalysisStatus == RealtorInspectionAnalysisStatuses.Complete,
             failed = vm.AnalysisStatus == RealtorInspectionAnalysisStatuses.Failed,
-            error = vm.AnalysisStatus == RealtorInspectionAnalysisStatuses.Failed ? vm.AnalysisSummary : null,
+            error = vm.AnalysisStatus == RealtorInspectionAnalysisStatuses.Failed
+                ? (vm.AnalysisSummary ?? string.Empty)
+                : null,
             findingCount = vm.Tasks.FirstOrDefault(t => t.Label.Contains("findings"))?.Detail ?? ""
         };
     }
@@ -186,7 +186,7 @@ public class RealtorInspectionUploadController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> ViewReport(int? page, string? filter, string? sort)
+    public async Task<IActionResult> ViewReport(int? reportPage, string? filter, string? sort)
     {
         var draft = await wizard.GetDraftAsync();
         if (draft == null || string.IsNullOrWhiteSpace(draft.ReportFileUrl))
@@ -194,11 +194,10 @@ public class RealtorInspectionUploadController(
             return RedirectToAction(nameof(Upload));
         }
 
-        var reportUrl = Url.Content($"~{draft.ReportFileUrl}");
-        if (page is > 0)
-        {
-            reportUrl += $"#page={page.Value}";
-        }
+        // Do not rely on #page=N — iOS/WebView PDF viewers ignore hash fragments.
+        // Pass reportPage into the view and open it with PDF.js instead.
+        // ("page" is also an ASP.NET reserved route value and will not bind/link-generate.)
+        var reportUrl = Url.Content($"~{draft.ReportFileUrl}")!;
 
         var backUrl = draft.CurrentStep >= 3
                       && draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.Complete
@@ -209,7 +208,7 @@ public class RealtorInspectionUploadController(
         {
             ReportFileName = draft.ReportFileName ?? "Inspection Report",
             ReportUrl = reportUrl,
-            SourcePage = page,
+            SourcePage = reportPage is > 0 ? reportPage : null,
             BackUrl = backUrl
         });
     }
@@ -228,11 +227,7 @@ public class RealtorInspectionUploadController(
             return RedirectToAction(nameof(Analyze));
         }
 
-        if (draft.CurrentStep > 3)
-        {
-            return RedirectToAction(wizard.ResolveResumeAction(draft.CurrentStep));
-        }
-
+        // Allow revisiting Findings when going Back from Providers/Review.
         return View(await wizard.BuildPrioritiesAsync(filter, sort));
     }
 
@@ -253,12 +248,29 @@ public class RealtorInspectionUploadController(
             return RedirectToAction(nameof(Priorities));
         }
 
-        if (draft.CurrentStep > 4)
-        {
-            return RedirectToAction(wizard.ResolveResumeAction(draft.CurrentStep));
-        }
-
+        // Allow revisiting Providers when going Back from Review.
         return View(await wizard.BuildProvidersAsync(trade));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> BackToProviders()
+    {
+        await wizard.PrepareBackToProvidersAsync();
+        return RedirectToAction(nameof(Providers));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> BackToPriorities()
+    {
+        await wizard.PrepareBackToPrioritiesAsync();
+        return RedirectToAction(nameof(Priorities));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> BackToAnalyze()
+    {
+        await wizard.PrepareBackToAnalyzeAsync();
+        return RedirectToAction(nameof(Analyze));
     }
 
     [HttpPost]
@@ -300,7 +312,7 @@ public class RealtorInspectionUploadController(
                 DbUpdateException => "Could not save quote requests. Verify database scripts are up to date and try again.",
                 _ => "Unable to create quote requests. Please try again."
             };
-            ModelState.AddModelError(string.Empty, message);
+            ModelState.AddModelError(string.Empty, localizer[message]);
             return View("Review", await wizard.BuildReviewAsync());
         }
     }

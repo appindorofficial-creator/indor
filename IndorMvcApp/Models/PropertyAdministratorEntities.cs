@@ -591,6 +591,45 @@ public static class PropertyAdministratorCatalog
         return imageUrl.Trim();
     }
 
+    /// <summary>
+    /// Photo for Property Admin Services grid (same visual language as homeowner offering cards).
+    /// </summary>
+    public static string ResolveServiceCatalogImageUrl(string? serviceSlug, string? categoryKey = null) =>
+        (serviceSlug ?? string.Empty).Trim().ToLowerInvariant() switch
+        {
+            "emergency-ac" => "/emergency-hvac.png",
+            "emergency-plumbing" => "/emergency-plumbing.png",
+            "emergency-electrical" => "/emergency-electrical.png",
+            "emergency-flood" => "/emergency-flood.png",
+            "emergency-roof-leak" => "/emergency-roof-leak.png",
+            "emergency-tree-branch" => "/emergency-tree-damage.png",
+            "emergency-water-heater" => "/emergency-water-heater.png",
+            "lockout-access" => "/priority-smoke-detector.png",
+            "broken-window-board-up" => "/priority-exterior-paint.png",
+            "sewer-backup" => "/emergency-plumbing.png",
+            "preventive-maintenance" => "/priority-hvac-maintenance.png",
+            "hvac-filter" => "/images/schedule/schedule-filter.png",
+            "smoke-detector" => "/priority-smoke-detector.png",
+            "turnover-cleaning" or "standard-cleaning" or "pet-deep-clean" => "/images/quickjob/qj-cleaning-help.png",
+            "linen-restock" => "/images/quickjob/qj-cleaning-help.png",
+            "trashout" => "/images/schedule/schedule-trash.png",
+            "lawn-care" => "/images/schedule/schedule-lawn.png",
+            "landscaping" => "/images/quickjob/qj-outdoor-cleanup.png",
+            "pressure-washing" => "/priority-power-wash-exterior.png",
+            "pest-control" => "/priority-pest-control.png",
+            "pool-hot-tub" => "/emergency-flood.png",
+            "moving-help" or "furniture-haul-away" => "/images/quickjob/qj-moving-furniture.png",
+            "junk-removal" => "/images/quickjob/qj-junk-removal.png",
+            _ => (categoryKey ?? string.Empty).Trim().ToLowerInvariant() switch
+            {
+                "emergency" => "/emergency-plumbing.png",
+                "cleaning" => "/images/quickjob/qj-cleaning-help.png",
+                "outdoor" => "/images/quickjob/qj-outdoor-cleanup.png",
+                "moving" => "/images/quickjob/qj-moving-furniture.png",
+                _ => "/priority-hvac-maintenance.png"
+            }
+        };
+
     private static bool IsNonHousingPortfolioImage(string url)
     {
         var normalized = url.Trim().ToLowerInvariant();

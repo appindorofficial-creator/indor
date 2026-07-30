@@ -36,6 +36,7 @@
 
     <form asp-controller="Proveedor" asp-action="UploadReportType" method="post" class="prv-pro-upload-report-type-form">
         @Html.AntiForgeryToken()
+        <input type="hidden" name="jobId" value="@Model.Job.JobId" />
         <div class="prv-pro-report-type-list">
             @foreach (var (type, icon, desc) in types)
             {

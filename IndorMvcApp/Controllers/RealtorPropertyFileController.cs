@@ -305,6 +305,19 @@ public class RealtorPropertyFileController(
         }
     }
 
+    [HttpGet]
+    public async Task<IActionResult> OpenDocument(int id, int itemId)
+    {
+        try
+        {
+            return View(await wizard.BuildOpenDocumentAsync(id, itemId));
+        }
+        catch (InvalidOperationException)
+        {
+            return RedirectToAction(nameof(View), new { id });
+        }
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Cancel()

@@ -13,6 +13,14 @@
         <h1 class="rl-page-title">@L["Quote Request Details"]</h1>
     </div>
 
+    @if (TempData["InviteProvidersOk"] is string inviteOk && !string.IsNullOrWhiteSpace(inviteOk))
+    {
+        <div class="rl-info-box" role="status">
+            <i class="fas fa-circle-check"></i>
+            <p>@inviteOk</p>
+        </div>
+    }
+
     <div class="rl-qreq-hero">
         <img src="@Model.PhotoUrl" alt="" />
         <div>
@@ -45,7 +53,7 @@
                 {
                     <li>
                         <span class="rl-qreq-service-icon"><i class="fas @service.Icon"></i></span>
-                        <span>@service.Title</span>
+                        <span>@UiDisplayLocalization.Localize(L, service.Title)</span>
                         <em>@service.SortOrder</em>
                     </li>
                 }
@@ -65,7 +73,7 @@
         <a href="@Model.InviteProvidersUrl" class="ob-btn ob-btn-primary rl-qreq-btn">
             <i class="fas fa-user-plus"></i> @L["Invite Providers"]
         </a>
-        <a href="@Model.InviteProvidersUrl" class="rl-btn-outline rl-qreq-btn">
+        <a href="@Model.EditRequestUrl" class="rl-btn-outline rl-qreq-btn">
             <i class="fas fa-pen"></i> @L["Edit Request"]
         </a>
         <a asp-controller="Realtor" asp-action="Quotes" class="rl-qreq-cancel">@L["Cancel Request"]</a>

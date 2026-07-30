@@ -1,0 +1,57 @@
+@* In-app localized Photo Library / Take Photo / Choose Files — avoids English iOS OS sheet.
+   Usage: @await Html.PartialAsync("_IndorFileSourcePicker", new ViewDataDictionary(ViewData) {
+     ["InputId"] = "documentFile", ["InputName"] = "file", ["Accept"] = "...", ...
+   })
+   Or rely on ViewData keys below (defaults shown). *@
+@{
+    var inputId = ViewData["InputId"] as string ?? "indorFile";
+    var inputName = ViewData["InputName"] as string ?? "file";
+    var accept = ViewData["Accept"] as string ?? "image/*,.pdf,.jpg,.jpeg,.png,.webp,.heic,.heif,application/pdf";
+    var imageAccept = ViewData["ImageAccept"] as string ?? "image/jpeg,image/png,image/webp,image/*,.heic,.heif";
+    var buttonLabel = ViewData["ButtonLabel"] as string ?? L["Choose file"].ToString();
+    var emptyLabel = ViewData["EmptyLabel"] as string ?? L["No file selected"].ToString();
+    var required = ViewData["Required"] as bool? == true;
+    var multiple = ViewData["Multiple"] as bool? == true;
+    var pickerClass = ViewData["PickerClass"] as string ?? "hf-file-picker";
+    var nameClass = ViewData["NameClass"] as string ?? "hf-file-picker-name";
+    var nameId = ViewData["NameId"] as string ?? inputId + "Name";
+}
+<div class="@pickerClass indor-file-source-picker"
+     id="@(inputId)Picker"
+     data-indor-file-source-chooser>
+    <div class="pa-file-source-wrap indor-file-source-wrap">
+        <button type="button"
+                class="hf-file-picker-btn pa-file-source-btn indor-file-source-btn"
+                aria-haspopup="true"
+                aria-expanded="false">
+            @buttonLabel
+        </button>
+        <div class="pa-file-source-menu pa-media-photo-menu indor-file-source-menu" role="menu" hidden>
+            @await Html.PartialAsync("_IndorFileSourceMenu")
+        </div>
+    </div>
+    <input type="file"
+           class="hf-file-picker-input indor-file-source-input--camera"
+           accept="@imageAccept"
+           capture="environment"
+           @(multiple ? "multiple" : null)
+           aria-hidden="true"
+           tabindex="-1" />
+    <input type="file"
+           class="hf-file-picker-input indor-file-source-input--library"
+           accept="@imageAccept"
+           @(multiple ? "multiple" : null)
+           aria-hidden="true"
+           tabindex="-1" />
+    <input type="file"
+           name="@inputName"
+           id="@inputId"
+           class="hf-file-picker-input indor-file-source-input--files"
+           data-indor-file-target
+           accept="@accept"
+           @(multiple ? "multiple" : null)
+           @(required ? "required" : null)
+           aria-hidden="true"
+           tabindex="-1" />
+    <span class="@nameClass" id="@nameId" data-empty-label="@emptyLabel">@emptyLabel</span>
+</div>

@@ -249,7 +249,9 @@ public class RealtorRegistrationService(
             TotalSteps = 4,
             BadgeLabel = entity.RegistrationStatus == RealtorRegistrationStatuses.Verified
                 ? "Verified Realtor"
-                : "Realtor Basic",
+                : !string.IsNullOrWhiteSpace(entity.LicenseNumber) && !string.IsNullOrWhiteSpace(entity.LicenseState)
+                    ? "Licensed Realtor"
+                    : "Realtor Basic",
             LicenseNumberSaved = !string.IsNullOrWhiteSpace(entity.LicenseNumber),
             ProfileCreated = entity.ProfileCompletedUtc.HasValue,
             LicensePhotoUploaded = licensePhoto,

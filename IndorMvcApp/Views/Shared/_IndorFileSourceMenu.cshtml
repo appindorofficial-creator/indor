@@ -1,9 +1,9 @@
 @* Shared in-app photo/file source menu — localized; avoids the English iOS OS sheet.
    data-label keeps Spanish even if JS falls back before IndorFileSourceLabels loads. *@
 @{
-    var library = IndorFileSourceI18n.Library(L);
-    var camera = IndorFileSourceI18n.Camera(L);
-    var files = IndorFileSourceI18n.Files(L);
+    var library = L.IsSpanish ? "Biblioteca de fotos" : IndorFileSourceI18n.Library(L);
+    var camera = L.IsSpanish ? "Tomar foto" : IndorFileSourceI18n.Camera(L);
+    var files = L.IsSpanish ? "Elegir archivos" : IndorFileSourceI18n.Files(L);
 }
 <button type="button"
         class="indor-file-source-item pa-media-photo-menu-item pa-file-source-menu-item nr-photo-menu-item"

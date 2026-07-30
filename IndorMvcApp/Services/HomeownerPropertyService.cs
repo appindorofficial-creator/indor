@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
@@ -141,7 +142,10 @@ public class HomeownerPropertyService(
             db.Propiedades.Add(propiedad);
         }
 
-        propiedad.Direccion = FormatAddressWithUnit(propertyInfo.FormattedAddress, propertyInfo.Unit);
+        var savedAddress = FormatAddressWithUnit(propertyInfo.FormattedAddress, propertyInfo.Unit);
+        propiedad.Direccion = UiDisplayLocalization.IsAddressLookupFailureMessage(savedAddress)
+            ? string.Empty
+            : savedAddress;
         propiedad.DatosJson = jsonRaw;
         propiedad.AttomPropertyId = propertyInfo.AttomPropertyId;
         propiedad.AttomRawJson = attomRawJson;

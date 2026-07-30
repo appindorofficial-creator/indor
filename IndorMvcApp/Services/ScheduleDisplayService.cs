@@ -378,7 +378,7 @@ public static class ScheduleDisplayService
         {
             SourceKey = $"hvac-sol-{item.Id}",
             Title = "HVAC Tune-Up",
-            Subtitle = $"{HvacMaintenanceDisplayLabels.FormatTimeWindow(item.VentanaHorario)} · Tune-up visit",
+            Subtitle = $"{HvacMaintenanceDisplayLabels.FormatTimeWindow(item.VentanaHorario)} · {DisplayLabelsLocalization.L("Tune-up visit")}",
             DateLabel = FormatDateLabel(dueDate),
             SortDate = dueDate,
             IconClass = "fa-fan",
@@ -445,13 +445,21 @@ public static class ScheduleDisplayService
 
         if (lawnMicro != null && item.MicroservicioId == lawnMicro.Id)
         {
-            var frequency = notes.Values.FirstOrDefault(v =>
+            var rawFrequency = notes.Values.FirstOrDefault(v =>
                 v.Contains("subscription", StringComparison.OrdinalIgnoreCase)
                 || v.Contains("Weekly", StringComparison.OrdinalIgnoreCase)
-                || v.Contains("Biweekly", StringComparison.OrdinalIgnoreCase))
-                ?? notes.Values.FirstOrDefault() ?? "Scheduled service";
+                || v.Contains("Biweekly", StringComparison.OrdinalIgnoreCase)
+                || v.Contains("FullService", StringComparison.OrdinalIgnoreCase)
+                || v.Contains("ReminderOnly", StringComparison.OrdinalIgnoreCase))
+                ?? notes.Values.FirstOrDefault()
+                ?? "Scheduled service";
 
-            return ("Mow lawn", $"{frequency} · Next visit");
+            var frequency = string.Equals(rawFrequency, "FullService", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(rawFrequency, "ReminderOnly", StringComparison.OrdinalIgnoreCase)
+                ? LawnDisplayLabels.FormatServiceMode(rawFrequency)
+                : DisplayLabelsLocalization.L(rawFrequency);
+
+            return ("Mow lawn", $"{frequency} · {DisplayLabelsLocalization.L("Next visit")}");
         }
 
         if (safeAirMicro != null && item.MicroservicioId == safeAirMicro.Id)

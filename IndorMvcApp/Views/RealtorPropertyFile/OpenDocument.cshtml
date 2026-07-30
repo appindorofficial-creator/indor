@@ -1,0 +1,213 @@
+@model IndorMvcApp.ViewModels.RealtorPropertyFileDocumentViewModel
+@{
+    Layout = "_RealtorLayout";
+    ViewData["Title"] = Model.FileName;
+    ViewBag.NavActive = "files";
+    var contentUrl = Model.FileUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+        ? Model.FileUrl
+        : Url.Content("~" + Model.FileUrl);
+}
+
+<div class="rl-dash-shell rl-insp-report-view-page">
+    <header class="rl-listing-detail-head">
+        <a href="@Model.BackUrl" class="rl-listing-detail-back" aria-label="@L["Back to property file"]">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <div class="rl-listing-detail-head-copy">
+            <h1>@Model.FileName</h1>
+            <p id="rlReportPageLabel">@L["Property file document"]</p>
+        </div>
+    </header>
+
+    @if (Model.IsImage)
+    {
+        <div class="rl-file-doc-image-wrap">
+            <img src="@contentUrl" alt="@Model.FileName" class="rl-file-doc-image" />
+        </div>
+    }
+    else if (Model.IsVideo)
+    {
+        <div class="rl-file-doc-image-wrap">
+            <video class="rl-file-doc-image" controls playsinline preload="metadata" src="@contentUrl">
+                @L["Your browser cannot play this video."]
+            </video>
+        </div>
+        <p class="rl-file-doc-fallback">
+            <a href="@contentUrl" target="_blank" rel="noopener noreferrer">@L["Open externally"]</a>
+        </p>
+    }
+    else if (Model.IsPdf)
+    {
+        @* PDF.js — iOS/WebView shows a blank screen when PDFs are embedded in iframes. *@
+        <div class="rl-insp-report-toolbar" id="rlReportToolbar" hidden>
+            <button type="button" class="rl-insp-report-nav-btn" id="rlReportPrev" aria-label="@L["Previous page"]">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <span class="rl-insp-report-page-indicator" id="rlReportPageIndicator"></span>
+            <button type="button" class="rl-insp-report-nav-btn" id="rlReportNext" aria-label="@L["Next page"]">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+
+        <div class="rl-insp-report-viewer"
+             id="rlReportViewer"
+             data-pdf-url="@contentUrl"
+             data-start-page="1">
+            <div class="rl-insp-report-loading" id="rlReportLoading">
+                <i class="fas fa-spinner fa-spin"></i>
+                <span>@L["Loading report page…"]</span>
+            </div>
+            <canvas id="rlReportCanvas" class="rl-insp-report-canvas" hidden></canvas>
+            <p class="rl-insp-report-error" id="rlReportError" hidden>@L["Could not open this report page. Try again."]</p>
+        </div>
+
+        <a href="@contentUrl" target="_blank" rel="noopener" class="rl-insp-report-open-native">
+            <i class="fas fa-up-right-from-square"></i> @L["Open full PDF"]
+        </a>
+    }
+    else
+    {
+        <div class="rl-info-box rl-info-box--muted">
+            <i class="fas fa-circle-info"></i>
+            <p>@L["This file type cannot be previewed here. Open it with your device viewer."]</p>
+        </div>
+        <p class="rl-file-doc-fallback">
+            <a href="@contentUrl" target="_blank" rel="noopener noreferrer" class="ob-btn ob-btn-primary">@L["Open externally"]</a>
+        </p>
+    }
+</div>
+
+@section Scripts {
+@if (Model.IsPdf)
+{
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    (function () {
+        var viewer = document.getElementById('rlReportViewer');
+        var pdfUrl = (viewer && viewer.getAttribute('data-pdf-url'))
+            || @Html.Raw(System.Text.Json.JsonSerializer.Serialize(contentUrl));
+        var startPage = 1;
+
+        var pageLabelTemplate = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Page {0}"].ToString()));
+        var ofTemplate = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Page {0} of {1}"].ToString()));
+
+        var canvas = document.getElementById('rlReportCanvas');
+        var loading = document.getElementById('rlReportLoading');
+        var errorEl = document.getElementById('rlReportError');
+        var toolbar = document.getElementById('rlReportToolbar');
+        var prevBtn = document.getElementById('rlReportPrev');
+        var nextBtn = document.getElementById('rlReportNext');
+        var indicator = document.getElementById('rlReportPageIndicator');
+        var titleLabel = document.getElementById('rlReportPageLabel');
+        var pdfDoc = null;
+        var currentPage = startPage;
+        var renderToken = 0;
+        var resizeTimer = null;
+
+        function format(template, a, b) {
+            return String(template || '')
+                .replace('{0}', a)
+                .replace('{1}', b == null ? '' : b);
+        }
+
+        function showError() {
+            if (loading) loading.hidden = true;
+            if (canvas) canvas.hidden = true;
+            if (errorEl) errorEl.hidden = false;
+        }
+
+        function updateChrome(pageNum, pageCount) {
+            if (indicator) {
+                indicator.textContent = format(ofTemplate, pageNum, pageCount);
+            }
+            if (titleLabel) {
+                titleLabel.textContent = format(pageLabelTemplate, pageNum);
+            }
+            if (prevBtn) prevBtn.disabled = pageNum <= 1;
+            if (nextBtn) nextBtn.disabled = pageNum >= pageCount;
+            if (toolbar) toolbar.hidden = false;
+        }
+
+        function renderPage(pageNum) {
+            if (!pdfDoc || !canvas) return;
+            var pageCount = pdfDoc.numPages || 1;
+            pageNum = parseInt(pageNum, 10);
+            if (!Number.isFinite(pageNum) || pageNum < 1) pageNum = 1;
+            if (pageNum > pageCount) pageNum = pageCount;
+            currentPage = pageNum;
+            var token = ++renderToken;
+
+            if (loading) loading.hidden = false;
+            if (errorEl) errorEl.hidden = true;
+
+            pdfDoc.getPage(pageNum).then(function (page) {
+                if (token !== renderToken) return;
+
+                var maxWidth = Math.max(280, ((viewer && viewer.clientWidth) || window.innerWidth) - 8);
+                var unscaled = page.getViewport({ scale: 1 });
+                var scale = Math.min(2.5, maxWidth / unscaled.width);
+                var viewport = page.getViewport({ scale: scale });
+
+                var outputScale = window.devicePixelRatio || 1;
+                canvas.width = Math.floor(viewport.width * outputScale);
+                canvas.height = Math.floor(viewport.height * outputScale);
+                canvas.style.width = Math.floor(viewport.width) + 'px';
+                canvas.style.height = Math.floor(viewport.height) + 'px';
+
+                var context = canvas.getContext('2d');
+                var transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
+
+                return page.render({
+                    canvasContext: context,
+                    viewport: viewport,
+                    transform: transform
+                }).promise.then(function () {
+                    if (token !== renderToken) return;
+                    if (loading) loading.hidden = true;
+                    canvas.hidden = false;
+                    updateChrome(pageNum, pageCount);
+                });
+            }).catch(function () {
+                if (token === renderToken) showError();
+            });
+        }
+
+        function bootPdfJs() {
+            if (!window.pdfjsLib) {
+                showError();
+                return;
+            }
+
+            pdfjsLib.GlobalWorkerOptions.workerSrc =
+                'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+            pdfjsLib.getDocument({ url: pdfUrl, withCredentials: true }).promise
+                .then(function (doc) {
+                    pdfDoc = doc;
+                    renderPage(startPage);
+                })
+                .catch(function () {
+                    showError();
+                });
+        }
+
+        bootPdfJs();
+
+        prevBtn && prevBtn.addEventListener('click', function () {
+            if (currentPage > 1) renderPage(currentPage - 1);
+        });
+        nextBtn && nextBtn.addEventListener('click', function () {
+            if (pdfDoc && currentPage < pdfDoc.numPages) renderPage(currentPage + 1);
+        });
+
+        window.addEventListener('resize', function () {
+            if (!pdfDoc) return;
+            window.clearTimeout(resizeTimer);
+            resizeTimer = window.setTimeout(function () {
+                renderPage(currentPage);
+            }, 150);
+        });
+    })();
+</script>
+}
+}

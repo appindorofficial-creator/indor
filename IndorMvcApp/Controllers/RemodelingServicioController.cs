@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -15,6 +16,7 @@ public class RemodelingServicioController : Controller
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
+    private readonly IIndorLocalizer _localizer;
 
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png"];
     private const long MaxFileSize = 10_000_000;
@@ -23,11 +25,13 @@ public class RemodelingServicioController : Controller
     public RemodelingServicioController(
         AppDbContext db,
         UserManager<ApplicationUser> userManager,
-        IWebHostEnvironment env)
+        IWebHostEnvironment env,
+        IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
         _env = env;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -75,7 +79,7 @@ public class RemodelingServicioController : Controller
             var propiedad = await GetLatestPropertyAsync(userId);
             if (propiedad != null)
             {
-                solicitud.DireccionPropiedad ??= propiedad.Direccion;
+                solicitud.DireccionPropiedad ??= SanitizePropertyAddress(propiedad.Direccion);
             }
 
             var resumeCompleted = string.Equals(solicitud.Estado, "DetailsCompleted", StringComparison.OrdinalIgnoreCase)
@@ -94,7 +98,7 @@ public class RemodelingServicioController : Controller
         catch (Exception)
         {
             ModelState.AddModelError("",
-                "Could not start your project request. Run Scripts/CreateRemodelingServicioFlowTables.sql on the database and try again.");
+                _localizer["Could not start your project request. Run Scripts/CreateRemodelingServicioFlowTables.sql on the database and try again."]);
             return View(BuildServiceViewModel(servicio, null));
         }
     }
@@ -113,7 +117,7 @@ public class RemodelingServicioController : Controller
             SolicitudId = solicitud.Id,
             ServicioId = solicitud.ServicioId,
             PageTitle = solicitud.Servicio?.Nombre ?? "Project details",
-            DireccionPropiedad = solicitud.DireccionPropiedad ?? string.Empty,
+            DireccionPropiedad = SanitizePropertyAddress(solicitud.DireccionPropiedad) ?? string.Empty,
             AlcanceProyecto = detailsEntered ? (solicitud.AlcanceProyecto ?? string.Empty) : string.Empty,
             VentanaTiempo = detailsEntered ? (solicitud.VentanaTiempo ?? string.Empty) : string.Empty,
             PresupuestoEstimado = detailsEntered ? (solicitud.PresupuestoEstimado ?? string.Empty) : string.Empty,
@@ -177,7 +181,7 @@ public class RemodelingServicioController : Controller
         catch (Exception)
         {
             ModelState.AddModelError("",
-                "Could not save your project details. Please ensure the remodeling flow tables exist in the database and try again.");
+                _localizer["Could not save your project details. Please ensure the remodeling flow tables exist in the database and try again."]);
             model.ArchivosExistentes = MapExistingFiles(solicitud);
             return View(model);
         }
@@ -263,19 +267,36 @@ public class RemodelingServicioController : Controller
 
     private async Task EnsureAddressFromPropertyAsync(string userId, RemodelingDetailsViewModel model)
     {
+        model.DireccionPropiedad = SanitizePropertyAddress(model.DireccionPropiedad) ?? string.Empty;
         if (!string.IsNullOrWhiteSpace(model.DireccionPropiedad))
         {
             return;
         }
 
         var propiedad = await GetLatestPropertyAsync(userId);
-        if (string.IsNullOrWhiteSpace(propiedad?.Direccion))
+        var address = SanitizePropertyAddress(propiedad?.Direccion);
+        if (string.IsNullOrWhiteSpace(address))
         {
             return;
         }
 
-        model.DireccionPropiedad = propiedad.Direccion;
+        model.DireccionPropiedad = address;
         ModelState.Remove(nameof(model.DireccionPropiedad));
+    }
+
+    /// <summary>
+    /// Enrichment sometimes stores English lookup failures as the street address.
+    /// </summary>
+    private static string? SanitizePropertyAddress(string? address)
+    {
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            return null;
+        }
+
+        return UiDisplayLocalization.IsAddressLookupFailureMessage(address)
+            ? null
+            : address.Trim();
     }
 
     private async Task<SolicitudRemodelingServicio?> GetActiveSolicitudAsync(string userId, int servicioId) =>

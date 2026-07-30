@@ -284,7 +284,7 @@
                     await navigator.clipboard.writeText(shareUrl);
                     showToast(i18n['Profile link copied to clipboard.'] || 'Profile link copied to clipboard.');
                 } catch (_) {
-                    window.prompt('Copy profile link:', shareUrl);
+                    window.prompt(i18n['Copy profile link:'] || 'Copy profile link:', shareUrl);
                 }
             });
         }
@@ -347,12 +347,23 @@
         }
 
         function saveNotifyPreferences() {
-            // Save in the background so the page doesn't reload and jump to the top.
+            // Explicit true/false (avoid hidden+checkbox dual values) and keepalive so
+            // navigating away mid-request still persists the choice.
+            var tokenInput = notifyForm.querySelector('input[name="__RequestVerificationToken"]');
+            var body = new FormData();
+            if (tokenInput && tokenInput.value) {
+                body.append('__RequestVerificationToken', tokenInput.value);
+            }
+            notifyForm.querySelectorAll('.rl-notify-checkbox').forEach(function (checkbox) {
+                body.append(checkbox.name, checkbox.checked ? 'true' : 'false');
+            });
+
             fetch(notifyForm.action, {
                 method: 'POST',
-                body: new FormData(notifyForm),
+                body: body,
                 headers: { 'X-Requested-With': 'XMLHttpRequest' },
-                credentials: 'same-origin'
+                credentials: 'same-origin',
+                keepalive: true
             }).then(function (res) {
                 if (res.ok) {
                     showNotifySaved();

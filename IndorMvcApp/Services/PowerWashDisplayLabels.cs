@@ -18,7 +18,7 @@ public static class PowerWashDisplayLabels
         "Driveway" => DisplayLabelsLocalization.L("Driveway"),
         "PatioDeck" => DisplayLabelsLocalization.L("Patio / deck"),
         "Fence" => DisplayLabelsLocalization.L("Fence"),
-        _ => "Full exterior"
+        _ => DisplayLabelsLocalization.L("Full exterior")
     };
 
     public static string FormatMaterial(string? code) => code switch
@@ -28,14 +28,14 @@ public static class PowerWashDisplayLabels
         "FiberCement" => DisplayLabelsLocalization.L("Fiber cement"),
         "PaintedWood" => DisplayLabelsLocalization.L("Painted wood"),
         "NotSure" => DisplayLabelsLocalization.L("Not sure"),
-        _ => "Vinyl siding"
+        _ => DisplayLabelsLocalization.L("Vinyl siding")
     };
 
     public static string FormatStories(string? code) => code switch
     {
         "One" => DisplayLabelsLocalization.L("1"),
         "ThreePlus" => DisplayLabelsLocalization.L("3+"),
-        _ => "2"
+        _ => DisplayLabelsLocalization.L("2")
     };
 
     public static string FormatIssue(string code) => code switch

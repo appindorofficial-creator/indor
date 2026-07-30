@@ -30,6 +30,8 @@ public sealed class StartupWarmupService(
                     .FirstOrDefaultAsync(cancellationToken);
 
                 await ProviderDatabaseSchemaInitializer.EnsureEditProfileColumnsAsync(db, logger, cancellationToken);
+                await RealtorInspectionSchemaInitializer.EnsureBridgeColumnsAsync(db, logger, cancellationToken);
+                await RealtorNotificationSchemaInitializer.EnsureColumnsAsync(db, logger, cancellationToken);
 
                 logger.LogInformation("Startup warmup completed: EF model built and DB connection ready.");
             }

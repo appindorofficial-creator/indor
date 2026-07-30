@@ -41,6 +41,11 @@ public static class UiTranslationsValidation
             ["Please enter a job title."] = "El título del trabajo es obligatorio.",
             ["Please enter a location."] = "La ubicación es obligatoria.",
             ["The Title field is required."] = "El título del trabajo es obligatorio.",
+            ["Task title is required."] = "El título de la tarea es obligatorio.",
+            ["Due date is required."] = "La fecha de vencimiento es obligatoria.",
+            ["The DueDate field is required."] = "La fecha de vencimiento es obligatoria.",
+            ["Please complete the highlighted fields to continue."] =
+                "Completa los campos marcados para continuar.",
             ["The LocationAddress field is required."] = "La ubicación es obligatoria.",
             ["License number is required."] = "El número de licencia es obligatorio.",
             ["License number must be at least 4 characters."] = "El número de licencia debe tener al menos 4 caracteres.",
@@ -80,6 +85,8 @@ public static class UiTranslationsValidation
             ["Select an urgency level."] = "Selecciona un nivel de urgencia.",
 
             // Bug 21 — homeowner offered-service confirm/status chips (shared across remodeling + siblings)
+            ["Please select a property or enter an address."] = "Selecciona una propiedad o ingresa una dirección.",
+            ["Please fix the following to continue:"] = "Corrige lo siguiente para continuar:",
             ["Pending quote"] = "Cotización pendiente",
             ["Pending confirmation"] = "Confirmación pendiente",
             ["Text"] = "Mensaje de texto",

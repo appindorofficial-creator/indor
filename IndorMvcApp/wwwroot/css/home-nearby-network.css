@@ -954,6 +954,7 @@ button.hn-quick-action { width: 100%; font: inherit; }
     border: 1px solid #BBD7F5;
     box-shadow: 0 8px 22px rgba(0, 102, 204, .08);
     overflow: hidden;
+    scroll-margin-top: 12px;
 }
 
 .hn-quick-help-badge {

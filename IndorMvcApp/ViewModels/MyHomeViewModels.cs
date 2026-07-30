@@ -259,10 +259,10 @@ public class MyHomeMaintenanceFormViewModel
     public int PropiedadId { get; set; }
     public string? NavigationFrom { get; set; }
 
-    [Required, MaxLength(150)]
+    [Required(ErrorMessage = "Task title is required."), MaxLength(150)]
     public string Title { get; set; } = string.Empty;
 
-    [Required]
+    [Required(ErrorMessage = "Due date is required.")]
     public DateTime? DueDate { get; set; }
 
     [Required, MaxLength(20)]

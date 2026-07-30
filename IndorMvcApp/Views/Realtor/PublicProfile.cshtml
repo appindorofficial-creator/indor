@@ -4,10 +4,10 @@
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "profile";
     var aboutText = !string.IsNullOrWhiteSpace(Model.Bio)
-        ? Model.Bio
+        ? UiDisplayLocalization.Localize(L, Model.Bio)
         : !string.IsNullOrWhiteSpace(Model.BrokerageName)
-            ? $"{Model.BrokerageName} realtor serving local buyers and sellers through INDOR."
-            : $"{Model.FullName} realtor serving local buyers and sellers through INDOR.";
+            ? L.T("{0} realtor serving local buyers and sellers through INDOR.", Model.BrokerageName)
+            : L.T("{0} realtor serving local buyers and sellers through INDOR.", Model.FullName);
 }
 
 <div class="rl-dash-shell rl-public-profile rl-public-profile--v2">
@@ -259,15 +259,18 @@
 </div>
 
 @section Scripts {
+    @await Html.PartialAsync("_RealtorProfileI18n")
     <script>
         (function () {
             var btn = document.getElementById('rlPublicShareBtn');
             if (!btn) return;
+            var i18n = window.IndorRealtorProfileI18n || {};
             var shareUrl = window.location.origin + '@Model.ShareUrl';
+            var shareLabel = btn.querySelector('strong');
             btn.addEventListener('click', async function () {
                 var payload = {
                     title: '@Model.FullName - INDOR',
-                    text: 'View my realtor profile on INDOR',
+                    text: i18n['View my realtor profile on INDOR'] || 'View my realtor profile on INDOR',
                     url: shareUrl
                 };
                 if (navigator.share) {
@@ -275,12 +278,14 @@
                 }
                 try {
                     await navigator.clipboard.writeText(shareUrl);
-                    btn.querySelector('strong').textContent = 'Link copied';
-                    setTimeout(function () {
-                        btn.querySelector('strong').textContent = 'Share Profile';
-                    }, 2000);
+                    if (shareLabel) {
+                        shareLabel.textContent = i18n['Link copied'] || 'Link copied';
+                        setTimeout(function () {
+                            shareLabel.textContent = i18n['Share Profile'] || 'Share Profile';
+                        }, 2000);
+                    }
                 } catch (_) {
-                    window.prompt('Copy profile link:', shareUrl);
+                    window.prompt(i18n['Copy profile link:'] || 'Copy profile link:', shareUrl);
                 }
             });
         })();

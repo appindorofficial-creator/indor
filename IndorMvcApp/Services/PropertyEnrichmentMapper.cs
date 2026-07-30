@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.ViewModels;
 
 namespace IndorMvcApp.Services;
@@ -68,7 +69,8 @@ public static partial class PropertyEnrichmentMapper
         }
 
         var formatted = ReadString(root["formattedAddress"] ?? root["FormattedAddress"]);
-        if (!string.IsNullOrWhiteSpace(formatted))
+        if (!string.IsNullOrWhiteSpace(formatted)
+            && !UiDisplayLocalization.IsAddressLookupFailureMessage(formatted))
         {
             info.FormattedAddress = formatted!;
         }

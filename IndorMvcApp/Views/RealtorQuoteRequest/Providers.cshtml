@@ -115,23 +115,40 @@
     </div>
 
     <h2 class="rl-invite-section-title">@(isIndorMode ? L["Recommended Matches"] : L["Select Providers"])</h2>
-    @foreach (var provider in Model.Providers)
+    @if (Model.Providers.Count == 0)
     {
-        <label class="rl-provider-card @(provider.Selected ? "is-selected" : "")">
-            <input type="checkbox" name="providerIds" value="@provider.Id"
-                   @(provider.Selected ? "checked" : null)
-                   @(isIndorMode ? "disabled" : null) />
-            <span class="rl-provider-logo"><i class="fas fa-building"></i></span>
-            <span class="rl-provider-body">
-                <strong>@provider.CompanyName</strong>
-                @if (!string.IsNullOrWhiteSpace(provider.BadgeLabel))
+        <div class="rl-info-box rl-info-box--muted">
+            <i class="fas fa-circle-info"></i>
+            <p>@L["No providers match these filters yet. Try turning off Verified only, increasing coverage, or switch to manual selection."]</p>
+        </div>
+    }
+    else
+    {
+        @foreach (var provider in Model.Providers)
+        {
+            <label class="rl-provider-card @(provider.Selected ? "is-selected" : "")">
+                <input type="checkbox"
+                       name="providerIds"
+                       value="@provider.Id"
+                       @(provider.Selected ? "checked" : null)
+                       @(isIndorMode ? "disabled" : null) />
+                @* Disabled checkboxes are not posted; INDOR mode re-resolves on save. *@
+                @if (isIndorMode && provider.Selected)
                 {
-                    <span class="rl-provider-badge">@UiDisplayLocalization.Localize(L, provider.BadgeLabel)</span>
+                    <input type="hidden" name="providerIds" value="@provider.Id" />
                 }
-                <span><i class="fas fa-star"></i> @provider.Rating.ToString("0.0") · @UiDisplayLocalization.LocalizeCommaList(L, provider.Categories)</span>
-                <span>@UiDisplayLocalization.Localize(L, $"{provider.DistanceMiles:0.0} mi")</span>
-            </span>
-        </label>
+                <span class="rl-provider-logo"><i class="fas fa-building"></i></span>
+                <span class="rl-provider-body">
+                    <strong>@provider.CompanyName</strong>
+                    @if (!string.IsNullOrWhiteSpace(provider.BadgeLabel))
+                    {
+                        <span class="rl-provider-badge">@UiDisplayLocalization.Localize(L, provider.BadgeLabel)</span>
+                    }
+                    <span><i class="fas fa-star"></i> @provider.Rating.ToString("0.0") · @UiDisplayLocalization.LocalizeCommaList(L, provider.Categories)</span>
+                    <span>@UiDisplayLocalization.Localize(L, $"{provider.DistanceMiles:0.0} mi")</span>
+                </span>
+            </label>
+        }
     }
 
     @if (isIndorMode)

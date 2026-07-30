@@ -324,6 +324,8 @@ public class RealtorQuoteRequestService(
         var draft = await GetDraftAsync(cancellationToken)
             ?? throw new InvalidOperationException("Complete previous steps first.");
 
+        await EnsureQuoteProviderCatalogAsync(cancellationToken);
+
         var activeFilter = string.IsNullOrWhiteSpace(filter) ? "Recommended" : filter.Trim();
         var providersQuery = db.IndorRealtorQuoteProviders.AsNoTracking()
             .Where(p => p.IsActive);
@@ -343,13 +345,22 @@ public class RealtorQuoteRequestService(
         };
 
         var allProviders = await providersQuery.Take(20).ToListAsync(cancellationToken);
+        if (allProviders.Count == 0)
+        {
+            allProviders = await db.IndorRealtorQuoteProviders.AsNoTracking()
+                .Where(p => p.IsActive)
+                .OrderByDescending(p => p.Rating)
+                .Take(20)
+                .ToListAsync(cancellationToken);
+        }
+
         var selectedIds = draft.SelectedProviders.Select(p => p.ProviderId).ToHashSet();
 
         if (draft.ProviderSelectionMode == RealtorQuoteProviderSelectionModes.IndorRecommended &&
             selectedIds.Count == 0)
         {
-            var recommended = GetRecommendedProviders(allProviders, draft);
-            selectedIds = recommended.Select(p => p.Id).ToHashSet();
+            var recommended = await ResolveIndorRecommendedProviderIdsAsync(draft, cancellationToken);
+            selectedIds = recommended.ToHashSet();
         }
 
         return new RealtorQuoteRequestProvidersViewModel
@@ -413,6 +424,8 @@ public class RealtorQuoteRequestService(
             : RealtorQuotePriorities.FastResponse;
         draft.CoverageMiles = coverageMiles is < 5 or > 50 ? 10 : coverageMiles;
 
+        await EnsureQuoteProviderCatalogAsync(cancellationToken);
+
         var existingSelections = await db.IndorRealtorQuoteRequestDraftProviders
             .Where(p => p.DraftId == draft.Id)
             .ToListAsync(cancellationToken);
@@ -421,10 +434,12 @@ public class RealtorQuoteRequestService(
         List<int> finalProviderIds;
         if (providerSelectionMode == RealtorQuoteProviderSelectionModes.IndorRecommended)
         {
-            var pool = await db.IndorRealtorQuoteProviders.AsNoTracking()
-                .Where(p => p.IsActive && (!verifiedOnly || p.IsVerified) && p.DistanceMiles <= draft.CoverageMiles)
-                .ToListAsync(cancellationToken);
-            finalProviderIds = GetRecommendedProviders(pool, draft).Select(p => p.Id).ToList();
+            finalProviderIds = await ResolveIndorRecommendedProviderIdsAsync(draft, cancellationToken);
+            if (finalProviderIds.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "No matching providers found for INDOR Recommended. Turn off Verified only, increase coverage, or choose providers manually.");
+            }
         }
         else
         {
@@ -508,6 +523,29 @@ public class RealtorQuoteRequestService(
         if (draft.PropertyFileId is not > 0)
         {
             throw new InvalidOperationException("Please select a property before sending the quote request.");
+        }
+
+        if (draft.SelectedProviders.Count == 0
+            && draft.ProviderSelectionMode == RealtorQuoteProviderSelectionModes.IndorRecommended)
+        {
+            await EnsureQuoteProviderCatalogAsync(cancellationToken);
+            var autoIds = await ResolveIndorRecommendedProviderIdsAsync(draft, cancellationToken);
+            foreach (var providerId in autoIds)
+            {
+                db.IndorRealtorQuoteRequestDraftProviders.Add(new IndorRealtorQuoteRequestDraftProvider
+                {
+                    DraftId = draft.Id,
+                    ProviderId = providerId
+                });
+            }
+
+            if (autoIds.Count > 0)
+            {
+                await db.SaveChangesAsync(cancellationToken);
+                await db.Entry(draft).Collection(d => d.SelectedProviders).Query()
+                    .Include(p => p.Provider)
+                    .LoadAsync(cancellationToken);
+            }
         }
 
         if (draft.SelectedProviders.Count == 0)
@@ -679,23 +717,187 @@ public class RealtorQuoteRequestService(
         };
     }
 
+    private async Task EnsureQuoteProviderCatalogAsync(CancellationToken cancellationToken)
+    {
+        var activeStatuses = new[]
+        {
+            ProviderRegistrationStatuses.Approved,
+            ProviderRegistrationStatuses.IndorProActive,
+            ProviderRegistrationStatuses.PendingReview,
+            ProviderRegistrationStatuses.Submitted
+        };
+
+        var proveedores = await db.IndorProveedores.AsNoTracking()
+            .Where(p => activeStatuses.Contains(p.RegistrationStatus))
+            .OrderByDescending(p => p.FechaCreacion)
+            .Take(50)
+            .ToListAsync(cancellationToken);
+
+        if (proveedores.Count == 0)
+        {
+            return;
+        }
+
+        var proveedorIds = proveedores.Select(p => p.Id).ToList();
+        var categoryRows = await db.IndorProveedorCategoriasSel.AsNoTracking()
+            .Where(s => proveedorIds.Contains(s.ProveedorId))
+            .ToListAsync(cancellationToken);
+        var categoriesByProveedor = categoryRows
+            .GroupBy(s => s.ProveedorId)
+            .ToDictionary(
+                g => g.Key,
+                g => string.Join(", ", g.Select(x => FormatCategoryLabel(x.CategoriaId)).Distinct()));
+
+        var existing = await db.IndorRealtorQuoteProviders.ToListAsync(cancellationToken);
+        var byName = existing
+            .GroupBy(p => p.CompanyName.Trim(), StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
+
+        var changed = false;
+        foreach (var proveedor in proveedores)
+        {
+            var name = ResolveProveedorName(proveedor);
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                continue;
+            }
+
+            name = name.Length > 120 ? name[..120] : name;
+            var verified = proveedor.RegistrationStatus is ProviderRegistrationStatuses.Approved
+                or ProviderRegistrationStatuses.IndorProActive;
+            var categories = categoriesByProveedor.GetValueOrDefault(proveedor.Id) ?? "General Repair";
+            if (categories.Length > 200)
+            {
+                categories = categories[..200];
+            }
+
+            if (byName.TryGetValue(name, out var row))
+            {
+                if (!row.IsActive || row.IsVerified != verified || row.Categories != categories)
+                {
+                    row.IsActive = true;
+                    row.IsVerified = verified;
+                    row.IsRecommended = true;
+                    row.Categories = categories;
+                    row.BadgeLabel = verified ? "Verified" : row.BadgeLabel;
+                    changed = true;
+                }
+            }
+            else
+            {
+                db.IndorRealtorQuoteProviders.Add(new IndorRealtorQuoteProvider
+                {
+                    CompanyName = name,
+                    Categories = categories,
+                    Rating = 4.5m,
+                    DistanceMiles = 5.0m,
+                    IsVerified = verified,
+                    IsRecommended = true,
+                    IsActive = true,
+                    BadgeLabel = verified ? "Verified" : null
+                });
+                changed = true;
+            }
+        }
+
+        if (changed)
+        {
+            await db.SaveChangesAsync(cancellationToken);
+        }
+    }
+
+    private async Task<List<int>> ResolveIndorRecommendedProviderIdsAsync(
+        IndorRealtorQuoteRequestDraft draft,
+        CancellationToken cancellationToken)
+    {
+        var serviceType = draft.ServiceType ?? "HVAC Repair";
+        var matched = await providerBridge.MatchProveedoresForTradeAsync(
+            MapServiceTypeToTrade(serviceType),
+            cancellationToken);
+        if (draft.VerifiedOnly)
+        {
+            matched = matched
+                .Where(p => p.RegistrationStatus is ProviderRegistrationStatuses.Approved
+                    or ProviderRegistrationStatuses.IndorProActive)
+                .ToList();
+        }
+
+        matched = matched.Take(Math.Max(1, draft.ProviderCountTarget)).ToList();
+
+        var catalog = await db.IndorRealtorQuoteProviders
+            .Where(p => p.IsActive)
+            .ToListAsync(cancellationToken);
+
+        var ids = new List<int>();
+        foreach (var proveedor in matched)
+        {
+            var name = ResolveProveedorName(proveedor);
+            var row = catalog.FirstOrDefault(c =>
+                string.Equals(c.CompanyName.Trim(), name.Trim(), StringComparison.OrdinalIgnoreCase));
+            if (row != null && !ids.Contains(row.Id))
+            {
+                ids.Add(row.Id);
+            }
+        }
+
+        if (ids.Count > 0)
+        {
+            return ids.Take(draft.ProviderCountTarget).ToList();
+        }
+
+        return GetRecommendedProviders(catalog, draft).Select(p => p.Id).ToList();
+    }
+
     private static List<IndorRealtorQuoteProvider> GetRecommendedProviders(
         IEnumerable<IndorRealtorQuoteProvider> pool,
         IndorRealtorQuoteRequestDraft draft)
     {
-        var filtered = pool
+        var source = pool.Where(p => p.IsActive).ToList();
+        var filtered = source
             .Where(p => p.DistanceMiles <= draft.CoverageMiles)
-            .Where(p => !draft.VerifiedOnly || p.IsVerified);
+            .Where(p => !draft.VerifiedOnly || p.IsVerified)
+            .ToList();
 
-        filtered = draft.Priority switch
+        if (filtered.Count == 0)
+        {
+            filtered = source.Where(p => !draft.VerifiedOnly || p.IsVerified).ToList();
+        }
+
+        if (filtered.Count == 0)
+        {
+            filtered = source;
+        }
+
+        IEnumerable<IndorRealtorQuoteProvider> ordered = draft.Priority switch
         {
             RealtorQuotePriorities.Price => filtered.OrderBy(p => p.Rating).ThenBy(p => p.DistanceMiles),
             RealtorQuotePriorities.TopRated => filtered.OrderByDescending(p => p.Rating).ThenBy(p => p.DistanceMiles),
             _ => filtered.OrderBy(p => p.DistanceMiles).ThenByDescending(p => p.Rating)
         };
 
-        return filtered.Take(draft.ProviderCountTarget).ToList();
+        return ordered.Take(Math.Max(1, draft.ProviderCountTarget)).ToList();
     }
+
+    private static string FormatCategoryLabel(string? categoryId) => categoryId?.Trim().ToLowerInvariant() switch
+    {
+        "hvac" => "HVAC Repair",
+        "roofing" or "roof" => "Roofing",
+        "plumbing" => "Plumbing",
+        "electrical" => "Electrical",
+        "painting" or "paint" => "Painting",
+        "handyman" => "Handyman",
+        _ => string.IsNullOrWhiteSpace(categoryId) ? "General Repair" : categoryId
+    };
+
+    private static string MapServiceTypeToTrade(string serviceType) => serviceType.Trim() switch
+    {
+        "HVAC Repair" => RealtorInspectionTrades.Hvac,
+        "Roofing" => RealtorInspectionTrades.Roof,
+        "Plumbing" => RealtorInspectionTrades.Plumbing,
+        "Electrical" => RealtorInspectionTrades.Electrical,
+        "Home Inspection" => RealtorInspectionTrades.Handyman,
+        _ => RealtorInspectionTrades.Handyman
+    };
 
     private async Task<string> GenerateQuoteCodeAsync(int realtorId, CancellationToken cancellationToken)
     {

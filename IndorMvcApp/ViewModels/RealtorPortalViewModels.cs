@@ -222,8 +222,31 @@ public class RealtorQuoteDetailViewModel : RealtorPortalShellViewModel
     public string ProvidersResponseLabel { get; set; } = "";
     public List<RealtorQuoteRequestedServiceViewModel> RequestedServices { get; set; } = [];
     public string InviteProvidersUrl { get; set; } = "#";
+    public string EditRequestUrl { get; set; } = "#";
     public List<RealtorQuoteDetailBidViewModel> Bids { get; set; } = [];
     public List<RealtorQuoteDetailProviderViewModel> SentProviders { get; set; } = [];
+}
+
+public class RealtorInviteProvidersViewModel : RealtorPortalShellViewModel
+{
+    public int QuoteId { get; set; }
+    public string QuoteCode { get; set; } = "";
+    public string Address { get; set; } = "";
+    public string ServiceType { get; set; } = "";
+    public string? SearchQuery { get; set; }
+    public int AlreadyInvitedCount { get; set; }
+    public List<RealtorInviteProviderCardViewModel> Providers { get; set; } = [];
+}
+
+public class RealtorInviteProviderCardViewModel
+{
+    public int Id { get; set; }
+    public string CompanyName { get; set; } = "";
+    public string Categories { get; set; } = "";
+    public bool IsVerified { get; set; }
+    public string? BadgeLabel { get; set; }
+    public bool AlreadyInvited { get; set; }
+    public bool Selected { get; set; }
 }
 
 public class RealtorQuoteRequestedServiceViewModel

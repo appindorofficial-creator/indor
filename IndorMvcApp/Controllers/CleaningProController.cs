@@ -390,7 +390,7 @@ public class CleaningProController : Controller
             PrecioTexto = landing.PrecioTexto ?? "From $35/hr per cleaner",
             IncludedItems = items,
             InfoBoxTexto = landing.InfoBoxTexto,
-            CtaTexto = landing.CtaTexto
+            CtaTexto = string.IsNullOrWhiteSpace(landing.CtaTexto) ? "Customize cleaning" : landing.CtaTexto
         };
     }
 

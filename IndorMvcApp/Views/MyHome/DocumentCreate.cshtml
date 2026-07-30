@@ -15,12 +15,15 @@
         .hf-field-error { display:block; color:#B91C1C; font-size:0.82rem; font-weight:600; margin:-6px 0 12px; }
         .hf-field-error:empty { display:none; }
         .hf-document-form { padding-bottom:calc(var(--homeowner-bottom-nav-h, 80px) + 88px + env(safe-area-inset-bottom, 0px)); }
-        .hf-file-picker { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 14px; border:1.5px solid #E5E7EB; border-radius:12px; background:#FFF; margin-bottom:12px; }
+        .hf-file-picker { display:flex; align-items:center; gap:10px; flex-wrap:wrap; padding:12px 14px; border:1.5px solid #E5E7EB; border-radius:12px; background:#FFF; margin-bottom:12px; position:relative; }
         .hf-file-picker:focus-within { border-color:#93C5FD; box-shadow:0 0 0 3px rgba(0,102,204,.15); }
         .hf-file-picker.has-file { border-color:#BFDBFE; }
         .hf-file-picker-input { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
-        .hf-file-picker-btn { display:inline-flex; align-items:center; justify-content:center; min-height:36px; padding:0 14px; border:1.5px solid #0066CC; border-radius:10px; background:#FFF; color:#0066CC; font-size:0.82rem; font-weight:600; cursor:pointer; white-space:nowrap; }
+        .hf-file-picker-btn { display:inline-flex; align-items:center; justify-content:center; min-height:36px; padding:0 14px; border:1.5px solid #0066CC; border-radius:10px; background:#FFF; color:#0066CC; font-size:0.82rem; font-weight:600; cursor:pointer; white-space:nowrap; font-family:inherit; }
         .hf-file-picker-btn:hover, .hf-file-picker-btn:focus-visible { background:rgba(0,102,204,0.08); }
+        .hf-file-picker .indor-file-source-wrap { position:relative; flex-shrink:0; z-index:40; }
+        .hf-file-picker .indor-file-source-menu { position:absolute; top:calc(100% + 8px); left:0; z-index:80; min-width:210px; background:#fff; border:1px solid #E2E8F0; border-radius:12px; box-shadow:0 12px 28px rgba(15,23,42,.14); padding:6px; }
+        .hf-file-picker .indor-file-source-menu[hidden] { display:none !important; }
         .hf-file-picker-name { font-size:0.82rem; color:#64748B; min-width:0; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
         .hf-file-picker-name.is-selected { color:#0A2540; font-weight:600; }
         .hf-form-actions {
@@ -57,14 +60,40 @@
     <input asp-for="Title" class="hf-input" required maxlength="200" placeholder="@L["Document title"]" />
     <span asp-validation-for="Title" class="hf-field-error"></span>
     <label for="documentFile" class="hf-label">@L["File"]</label>
-    <div class="hf-file-picker" id="documentFilePicker">
+    <div class="hf-file-picker indor-file-source-picker"
+         id="documentFilePicker"
+         data-indor-file-source-chooser>
+        <div class="pa-file-source-wrap indor-file-source-wrap">
+            <button type="button"
+                    class="hf-file-picker-btn pa-file-source-btn indor-file-source-btn"
+                    aria-haspopup="true"
+                    aria-expanded="false">
+                @L["Choose file"]
+            </button>
+            <div class="pa-file-source-menu pa-media-photo-menu indor-file-source-menu" role="menu" hidden>
+                @await Html.PartialAsync("_IndorFileSourceMenu")
+            </div>
+        </div>
+        <input type="file"
+               class="hf-file-picker-input indor-file-source-input--camera"
+               accept="image/jpeg,image/png,image/webp,image/*,.heic,.heif"
+               capture="environment"
+               aria-hidden="true"
+               tabindex="-1" />
+        <input type="file"
+               class="hf-file-picker-input indor-file-source-input--library"
+               accept="image/jpeg,image/png,image/webp,image/*,.heic,.heif"
+               aria-hidden="true"
+               tabindex="-1" />
         <input type="file"
                name="file"
                id="documentFile"
-               class="hf-file-picker-input"
-               accept="image/*,.pdf,.doc,.docx,.heic,.heif"
-               required />
-        <label for="documentFile" class="hf-file-picker-btn">@L["Choose file"]</label>
+               class="hf-file-picker-input indor-file-source-input--files"
+               data-indor-file-target
+               accept="image/*,.pdf,.doc,.docx,.heic,.heif,application/pdf"
+               required
+               aria-hidden="true"
+               tabindex="-1" />
         <span class="hf-file-picker-name" id="documentFileName" data-empty-label="@L["No file selected"]">@L["No file selected"]</span>
     </div>
     @if (ViewData.ModelState["file"]?.Errors.Count > 0)

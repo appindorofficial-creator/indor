@@ -628,6 +628,9 @@ public class MyHomeController : Controller
         model.Id = null;
 
         if (!await UserOwnsPropertyAsync(model.PropiedadId)) return NotFound();
+
+        ModelState.LocalizeModelState(_localizer);
+
         if (!ModelState.IsValid)
         {
             ConfigureMyHomeView(model.PropiedadId, model.NavigationFrom);

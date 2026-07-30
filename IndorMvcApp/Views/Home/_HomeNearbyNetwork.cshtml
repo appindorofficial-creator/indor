@@ -4,8 +4,17 @@
 @using IndorMvcApp.ViewModels
 @{
     var isMapView = Model.ActiveView == "map";
-    string BuildFilterUrl(string filter) =>
-        (Url.Action("Index", "Home", new { filter, view = Model.ActiveView, q = Model.SearchQuery }) ?? "/") + "#section-home";
+    string BuildFilterUrl(string filter)
+    {
+        var path = Url.Action("Index", "Home", new { filter, view = Model.ActiveView, q = Model.SearchQuery }) ?? "/";
+        // Ayuda rápida: anclar al hero "Ayuda rápida cercana".
+        if (string.Equals(filter, NearbyNetworkHomeownerFilters.NeighborRequests, StringComparison.OrdinalIgnoreCase))
+        {
+            return path + "#hn-quick-help-hero";
+        }
+
+        return path + "#section-home";
+    }
     var showQuickHelpHero = Model.ActiveFilter is NearbyNetworkHomeownerFilters.NeighborRequests;
     var showMgmtCards = Model.ActiveFilter is NearbyNetworkHomeownerFilters.NeighborRequests;
     var isLandingFeed = Model.ActiveFilter == NearbyNetworkHomeownerFilters.All && string.IsNullOrWhiteSpace(Model.SearchQuery);
@@ -15,6 +24,11 @@
         "House Facts" => "house-facts",
         "Post a Request" => "post-request",
         "My Requests" => "my-requests",
+        "Request a Service" => "request-service",
+        "View all nearby" => "view-all-nearby",
+        "Homes for sale" => "homes-for-sale",
+        "Nearby promotions" => "nearby-promotions",
+        "Emergency Help" => "emergency-help",
         _ => "default"
     };
     string QuickActionBadge(string slug) => slug switch
@@ -23,6 +37,8 @@
         "house-facts" => L["Home Info"],
         "post-request" => L["Get Help"],
         "my-requests" => L["Track"],
+        "nearby-promotions" => L["Deals"],
+        "view-all-nearby" => L["Explore"],
         _ => ""
     };
     string QuickActionArt(string slug) => slug switch
@@ -31,6 +47,11 @@
         "house-facts" => "~/images/hn-v4-tile-housefacts.png",
         "post-request" => "~/images/hn-v4-tile-post.png",
         "my-requests" => "~/images/hn-v4-tile-requests.png",
+        "nearby-promotions" => "~/images/hn-v4-tile-promotions.svg",
+        "view-all-nearby" => "~/images/hn-v4-tile-explore.svg",
+        "homes-for-sale" => "~/images/hn-v4-tile-homes.svg",
+        "request-service" => "~/images/hn-v4-tile-services.svg",
+        "emergency-help" => "~/images/hn-v4-tile-services.svg",
         _ => ""
     };
     var landingQuickActions = isLandingFeed ? new List<RealtorQuickActionViewModel>
@@ -209,7 +230,7 @@
 
         @if (showQuickHelpHero)
         {
-        <section class="hn-quick-help-hero" aria-label="@L["Quick Help Nearby"]">
+        <section class="hn-quick-help-hero" id="hn-quick-help-hero" aria-label="@L["Quick Help Nearby"]">
             <span class="hn-quick-help-badge">@L["NEW"]</span>
             <div class="hn-quick-help-copy">
                 <h2 class="hn-quick-help-title">@L["Quick Help Nearby"]</h2>

@@ -9,7 +9,7 @@
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
-        <a asp-controller="Proveedor" asp-action="UploadReportFiles" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
+        <a asp-controller="Proveedor" asp-action="UploadReportFiles" asp-route-jobId="@Model.Job.JobId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>@L["Report Details"]</h1>
             <small>@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</small>
@@ -26,6 +26,7 @@
 
     <form asp-controller="Proveedor" asp-action="UploadReportDetails" method="post" class="prv-pro-upload-report-details-form">
         @Html.AntiForgeryToken()
+        <input type="hidden" name="jobId" value="@Model.Job.JobId" />
 
         <label class="prv-pro-form-label">@L["Report Title"]<span class="prv-pro-required">*</span>
             <input type="text" name="Title" value="@Model.Title" required placeholder="@L["Water Heater Installation Completion Report"]" />
@@ -59,7 +60,7 @@
         </label>
 
         <div class="prv-pro-upload-report-actions">
-            <a asp-controller="Proveedor" asp-action="UploadReportFiles" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
+            <a asp-controller="Proveedor" asp-action="UploadReportFiles" asp-route-jobId="@Model.Job.JobId" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@L["Submit Report"]</button>
         </div>
     </form>

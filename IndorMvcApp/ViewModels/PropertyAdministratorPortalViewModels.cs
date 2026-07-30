@@ -67,6 +67,8 @@ public class PropertyAdministratorHomeViewModel : PropertyAdministratorPortalShe
     public PropertyAdministratorAirFilterFeaturedViewModel? FeaturedAirFilter { get; set; }
     public PropertyAdministratorPreventiveFeaturedViewModel? FeaturedPreventive { get; set; }
     public PropertyAdministratorEmergencyFeaturedViewModel? FeaturedEmergency { get; set; }
+    /// <summary>All emergency catalog services shown on Portfolio Network feed.</summary>
+    public IReadOnlyList<PropertyAdministratorEmergencyNearbyItemViewModel> EmergencyNearbyServices { get; set; } = [];
     public PropertyAdministratorNearestProViewModel? NearestPro { get; set; }
     public IReadOnlyList<PropertyAdministratorRecentRequestViewModel> RecentRequests { get; set; } = [];
     public IReadOnlyList<PropertyAdministratorPropertyItemViewModel> Properties { get; set; } = [];
@@ -169,6 +171,21 @@ public class PropertyAdministratorServiceCatalogItemViewModel
     public string IconClass { get; set; } = "";
     public string ToneClass { get; set; } = "";
     public string Url { get; set; } = "#";
+    public string? ImageUrl { get; set; }
+}
+
+public class PropertyAdministratorEmergencyNearbyItemViewModel
+{
+    public string ServiceName { get; set; } = "";
+    public string Subtitle { get; set; } = "";
+    public string IconClass { get; set; } = "fa-truck-medical";
+    /// <summary>Deep-link into the emergency request flow (optional secondary CTA).</summary>
+    public string Url { get; set; } = "#";
+    /// <summary>E.164 / tel: target for the "Call now" CTA (must dial, not open a form).</summary>
+    public string CallUrl { get; set; } = "tel:+18005554636";
+    public string PhoneDisplay { get; set; } = "1-800-555-INDOR";
+    public string EtaLabel { get; set; } = "Average arrival time: 28 mins";
+    public string DistanceLabel { get; set; } = "Nearby";
 }
 
 public class PropertyAdministratorServicesViewModel : PropertyAdministratorPortalShellViewModel

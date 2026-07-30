@@ -1042,6 +1042,18 @@
     color: #CBD5E1;
 }
 
+.hf-jump-row.hf-sections-spotlight,
+.hf-category-grid.hf-sections-spotlight {
+    animation: hf-sections-pulse 1.4s ease;
+    border-radius: 16px;
+}
+
+@keyframes hf-sections-pulse {
+    0% { box-shadow: 0 0 0 0 rgba(0, 102, 204, 0.35); }
+    40% { box-shadow: 0 0 0 6px rgba(0, 102, 204, 0.18); }
+    100% { box-shadow: 0 0 0 0 rgba(0, 102, 204, 0); }
+}
+
 .hf-property-management {
     margin-top: 6px;
     width: 100%;

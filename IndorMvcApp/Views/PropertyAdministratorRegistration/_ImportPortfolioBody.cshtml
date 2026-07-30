@@ -39,17 +39,20 @@
     @Html.AntiForgeryToken()
     <input type="hidden" name="returnUrl" value="@Model.BackUrl" />
 
-    <div class="pa-file-picker" id="csvFilePicker">
+    @* Custom picker: hide browser-locale native chrome ("Seleccionar archivo") and use app L[] labels. *@
+    <label class="pa-file-picker pa-file-picker--single" id="csvFilePicker" for="csvFile">
         <i class="fas fa-file-csv pa-file-picker-icon" aria-hidden="true"></i>
         <input type="file"
                id="csvFile"
                name="csvFile"
                class="pa-file-picker-input"
                accept=".csv,text/csv,.txt"
-               required />
-        <label for="csvFile" class="pa-file-picker-btn">@L["Choose CSV file"]</label>
+               data-indor-skip-source-upgrade="1"
+               aria-label="@L["Choose CSV file"]" />
+        <span class="pa-file-picker-btn" aria-hidden="true">@L["Choose CSV file"]</span>
         <span class="pa-file-picker-name" id="csvFileName" data-empty-label="@L["No file selected"]">@L["No file selected"]</span>
-    </div>
+    </label>
+    <p class="pa-summary-error" id="csvFileError" hidden style="margin-top:-6px;"></p>
 
     <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">@L["Import properties"]</button>
 </form>
@@ -68,9 +71,11 @@
 
 <script>
     (function () {
+        const form = document.getElementById('importPortfolioForm');
         const input = document.getElementById('csvFile');
         const nameEl = document.getElementById('csvFileName');
         const picker = document.getElementById('csvFilePicker');
+        const errorEl = document.getElementById('csvFileError');
         if (input && nameEl && picker) {
             const emptyLabel = nameEl.dataset.emptyLabel || 'No file selected';
             const requiredMessage = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Choose a CSV file to import."].ToString()));
@@ -81,18 +86,35 @@
                     nameEl.textContent = file.name;
                     nameEl.classList.add('is-selected');
                     picker.classList.add('has-file');
-                    input.setCustomValidity('');
+                    picker.classList.remove('pa-invalid');
+                    if (errorEl) {
+                        errorEl.hidden = true;
+                        errorEl.textContent = '';
+                    }
                 } else {
                     nameEl.textContent = emptyLabel;
                     nameEl.classList.remove('is-selected');
                     picker.classList.remove('has-file');
-                    input.setCustomValidity(requiredMessage);
                 }
             }
 
             input.addEventListener('change', syncFileLabel);
-            input.addEventListener('invalid', syncFileLabel);
             syncFileLabel();
+
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    if (input.files && input.files.length > 0) {
+                        return;
+                    }
+                    e.preventDefault();
+                    if (errorEl) {
+                        errorEl.hidden = false;
+                        errorEl.textContent = requiredMessage;
+                    }
+                    picker.classList.add('pa-invalid');
+                    input.focus();
+                });
+            }
         }
 
         // Download CSV without leaving Import Portfolio (avoids blank/stuck WebView pages).

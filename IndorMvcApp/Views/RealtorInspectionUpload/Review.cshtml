@@ -106,7 +106,9 @@
 
 <div class="rl-invite-actions">
 
-    <a asp-action="Providers" class="rl-invite-cancel">@L["Back"]</a>
+    <a asp-controller="RealtorInspectionUpload"
+       asp-action="BackToProviders"
+       class="rl-invite-cancel">@L["Back"]</a>
 
     <button type="submit" form="reviewForm" class="ob-btn ob-btn-primary">@L["Create Quote Requests"]</button>
 

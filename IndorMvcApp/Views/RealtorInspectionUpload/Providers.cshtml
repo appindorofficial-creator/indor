@@ -127,7 +127,9 @@
 
 <div class="rl-invite-actions">
 
-    <a asp-action="Priorities" class="rl-invite-cancel">@L["Back"]</a>
+    <a asp-controller="RealtorInspectionUpload"
+       asp-action="BackToPriorities"
+       class="rl-invite-cancel">@L["Back"]</a>
 
     <button type="submit" form="providersForm" class="ob-btn ob-btn-primary">@L["Continue"]</button>
 

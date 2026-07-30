@@ -28,6 +28,10 @@
         }
 
         function messageFor(field) {
+            var custom = field.getAttribute('data-pa-error-message');
+            if (custom) {
+                return custom;
+            }
             var label = labelFor(field);
             if (field.type === 'checkbox') {
                 return indorPaMsgs.agreeTo.replace('{0}', label);

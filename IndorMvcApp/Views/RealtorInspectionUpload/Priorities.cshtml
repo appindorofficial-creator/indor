@@ -205,10 +205,11 @@ else
                             @if (finding.SourcePage is > 0 && !string.IsNullOrWhiteSpace(Model.ReportPdfUrl))
                             {
                                 <a asp-action="ViewReport"
-                                   asp-route-page="@finding.SourcePage"
+                                   asp-route-reportPage="@finding.SourcePage"
                                    asp-route-filter="@Model.ActiveFilter"
                                    asp-route-sort="@Model.SortBy"
-                                   class="rl-insp-open-page-btn">
+                                   class="rl-insp-open-page-btn"
+                                   onclick="event.stopPropagation();">
                                     <i class="fas fa-file-pdf"></i>
                                     @L.T("Open report page {0}", finding.SourcePage)
                                     <i class="fas fa-chevron-right"></i>
@@ -234,7 +235,7 @@ else
         </div>
 
         <div class="rl-insp-sticky-actions">
-            <a asp-action="Analyze" class="rl-invite-cancel"><i class="fas fa-chevron-left"></i> @L["Back"]</a>
+            <a asp-controller="RealtorInspectionUpload" asp-action="BackToAnalyze" class="rl-invite-cancel"><i class="fas fa-chevron-left"></i> @L["Back"]</a>
             <button type="submit" id="inspSendProvidersBtn" class="ob-btn ob-btn-primary rl-insp-send-btn">
                 <i class="fas fa-paper-plane"></i> @L["Send to providers"]
             </button>
@@ -245,7 +246,7 @@ else
 @if (Model.Findings.Count == 0)
 {
     <div class="rl-invite-actions">
-        <a asp-action="Analyze" class="rl-invite-cancel"><i class="fas fa-chevron-left"></i> @L["Back"]</a>
+        <a asp-controller="RealtorInspectionUpload" asp-action="BackToAnalyze" class="rl-invite-cancel"><i class="fas fa-chevron-left"></i> @L["Back"]</a>
     </div>
 }
 

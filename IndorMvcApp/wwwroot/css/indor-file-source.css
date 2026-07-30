@@ -16,7 +16,19 @@
 .pa-media-photo-menu-item,
 .pa-file-source-menu-item,
 .nr-photo-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
     background: transparent !important;
+    border-radius: 8px;
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
     text-shadow: none !important;
     filter: none !important;
     -webkit-font-smoothing: antialiased;
@@ -56,4 +68,44 @@
     width: 18px;
     text-align: center;
     flex-shrink: 0;
+}
+
+.indor-file-source-wrap {
+    position: relative;
+    flex-shrink: 0;
+    z-index: 40;
+}
+
+.indor-file-source-menu[hidden],
+.pa-media-photo-menu[hidden],
+.pa-file-source-menu[hidden],
+.nr-photo-menu[hidden],
+.indor-global-file-source-menu[hidden] {
+    display: none !important;
+}
+
+/* Floating sheet used when upgrading plain <input type="file"> (avoids English iOS OS sheet). */
+.indor-global-file-source-menu {
+    position: absolute;
+    z-index: 10050;
+    min-width: 210px;
+    padding: 6px;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, 0.18);
+    background: #fff !important;
+}
+
+#indorGlobalFileSourceHost .indor-file-source-input--camera,
+#indorGlobalFileSourceHost .indor-file-source-input--library,
+#indorGlobalFileSourceHost .indor-file-source-input--files {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }

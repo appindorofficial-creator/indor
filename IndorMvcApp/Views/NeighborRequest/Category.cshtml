@@ -5,7 +5,10 @@
 
 <form asp-action="Category" method="post" class="nr-step-form" id="nrStep1Form" autocomplete="off">
     @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="PropiedadId" />
+    @if (Model.AvailableProperties.Count <= 1)
+    {
+        <input type="hidden" asp-for="PropiedadId" />
+    }
     <input type="hidden" asp-for="ResumeDraft" />
 
     <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
@@ -99,14 +102,52 @@
             <span class="nr-card-icon"><i class="fas fa-location-dot"></i></span>
             <h2>@L["Location"]</h2>
         </header>
-        <label class="nr-location-picker">
-            <span class="nr-location-picker-icon"><i class="fas fa-house"></i></span>
-            <input asp-for="LocationAddress"
-                   class="nr-location-picker-input"
-                   readonly="@Model.UseHomeAddress"
-                   tabindex="@(Model.UseHomeAddress ? "-1" : null)" />
-        </label>
+
+        @if (Model.AvailableProperties.Count > 1)
+        {
+            <p class="nr-property-picker-hint">@L["Choose which home this job is for."]</p>
+            <div class="nr-property-picker" role="radiogroup" aria-label="@L["Your homes"]">
+                @foreach (var home in Model.AvailableProperties)
+                {
+                    var isHomeSelected = home.PropiedadId == Model.PropiedadId;
+                    <label class="nr-property-option @(isHomeSelected ? "is-selected" : null)">
+                        <input type="radio"
+                               name="PropiedadId"
+                               value="@home.PropiedadId"
+                               data-address="@home.Address"
+                               @(isHomeSelected ? "checked" : null)
+                               required />
+                        <span class="nr-property-option-icon"><i class="fas fa-house"></i></span>
+                        <span class="nr-property-option-body">
+                            <strong>@home.Label</strong>
+                            @if (!string.Equals(home.Label, home.Address, StringComparison.OrdinalIgnoreCase)
+                                 && !string.IsNullOrWhiteSpace(home.Address))
+                            {
+                                <small>@home.Address</small>
+                            }
+                        </span>
+                        @if (isHomeSelected)
+                        {
+                            <span class="nr-property-option-check"><i class="fas fa-check"></i></span>
+                        }
+                    </label>
+                }
+            </div>
+            <input type="hidden" name="LocationAddress" id="nrLocationAddress" value="@Model.LocationAddress" />
+        }
+        else
+        {
+            <label class="nr-location-picker">
+                <span class="nr-location-picker-icon"><i class="fas fa-house"></i></span>
+                <input asp-for="LocationAddress"
+                       id="nrLocationAddress"
+                       class="nr-location-picker-input"
+                       readonly="@Model.UseHomeAddress"
+                       tabindex="@(Model.UseHomeAddress ? "-1" : null)" />
+            </label>
+        }
         <span asp-validation-for="LocationAddress" class="field-validation-error"></span>
+        <span asp-validation-for="PropiedadId" class="field-validation-error"></span>
 
         <label class="nr-home-toggle">
             <input type="checkbox" asp-for="UseHomeAddress" />
@@ -115,6 +156,20 @@
                 <small>@L["Helpers will see your approximate location."]</small>
             </span>
         </label>
+
+        @if (Model.AvailableProperties.Count > 1)
+        {
+            <label class="nr-location-picker nr-location-picker--custom" id="nrCustomLocationWrap" @(Model.UseHomeAddress ? "hidden" : null)>
+                <span class="nr-location-picker-icon"><i class="fas fa-pen"></i></span>
+                <input type="text"
+                       id="nrCustomLocationInput"
+                       class="nr-location-picker-input"
+                       maxlength="500"
+                       placeholder="@L["Enter a different address"]"
+                       value="@(Model.UseHomeAddress ? "" : Model.LocationAddress)"
+                       tabindex="@(Model.UseHomeAddress ? "-1" : null)" />
+            </label>
+        }
     </section>
 </form>
 
@@ -157,20 +212,77 @@
             });
 
             var homeToggle = document.querySelector('[name="UseHomeAddress"]');
-            var addressInput = document.querySelector('[name="LocationAddress"]');
-            if (homeToggle && addressInput) {
-                var syncHomeAddressState = function () {
-                    var useHome = homeToggle.checked;
+            var addressInput = document.getElementById('nrLocationAddress');
+            var customWrap = document.getElementById('nrCustomLocationWrap');
+            var customInput = document.getElementById('nrCustomLocationInput');
+            var propertyRadios = document.querySelectorAll('.nr-property-option input[name="PropiedadId"]');
+
+            function selectedHomeAddress() {
+                var selected = document.querySelector('.nr-property-option input[name="PropiedadId"]:checked');
+                return selected ? (selected.getAttribute('data-address') || '') : '';
+            }
+
+            function syncPropertySelection() {
+                document.querySelectorAll('.nr-property-option').forEach(function (opt) {
+                    opt.classList.toggle('is-selected', !!opt.querySelector('input')?.checked);
+                });
+            }
+
+            function syncHomeAddressState() {
+                var useHome = !homeToggle || homeToggle.checked;
+                if (propertyRadios.length) {
+                    if (customWrap) {
+                        customWrap.hidden = useHome;
+                    }
+                    if (addressInput) {
+                        if (useHome) {
+                            addressInput.value = selectedHomeAddress();
+                        } else if (customInput) {
+                            addressInput.value = customInput.value.trim();
+                        }
+                    }
+                    if (customInput) {
+                        if (useHome) {
+                            customInput.setAttribute('tabindex', '-1');
+                        } else {
+                            customInput.removeAttribute('tabindex');
+                            customInput.focus();
+                        }
+                    }
+                } else if (addressInput) {
                     addressInput.readOnly = useHome;
                     if (useHome) {
                         addressInput.setAttribute('tabindex', '-1');
                     } else {
                         addressInput.removeAttribute('tabindex');
                     }
-                };
-                homeToggle.addEventListener('change', syncHomeAddressState);
-                syncHomeAddressState();
+                }
             }
+
+            propertyRadios.forEach(function (input) {
+                input.addEventListener('change', function () {
+                    syncPropertySelection();
+                    if (!homeToggle || homeToggle.checked) {
+                        if (addressInput) {
+                            addressInput.value = input.getAttribute('data-address') || '';
+                        }
+                    }
+                });
+            });
+
+            if (customInput && addressInput) {
+                customInput.addEventListener('input', function () {
+                    if (homeToggle && !homeToggle.checked) {
+                        addressInput.value = customInput.value;
+                    }
+                });
+            }
+
+            if (homeToggle) {
+                homeToggle.addEventListener('change', syncHomeAddressState);
+            }
+            syncPropertySelection();
+            syncHomeAddressState();
         })();
     </script>
 }

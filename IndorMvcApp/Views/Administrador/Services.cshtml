@@ -3,13 +3,14 @@
     ViewData["Title"] = L["Services"];
     Layout = "_PropertyAdminLayout";
     ViewBag.NavActive = "services";
+    // Emergency last — matches homeowner Services filter order preference for multi-prop.
     var filters = new[] {
         ("all", L["All services"], "fa-grid-2"),
-        ("emergency", L["Emergency"], "fa-truck-medical"),
         ("homecare", L["Homecare"], "fa-house-chimney"),
         ("cleaning", L["Cleaning"], "fa-broom"),
         ("outdoor", L["Outdoor"], "fa-seedling"),
-        ("moving", L["Moving"], "fa-truck")
+        ("moving", L["Moving"], "fa-truck"),
+        ("emergency", L["Emergency"], "fa-truck-medical")
     };
 }
 
@@ -42,31 +43,54 @@
             <strong><i class="fas fa-phone"></i> @L["Help is available 24/7"]</strong>
             <p>@L["Call now to connect with an emergency service pro."]</p>
         </div>
-        <a asp-controller="Administrador" asp-action="Services" asp-route-filter="emergency" class="pa-emergency-btn">@L["View emergency services"]</a>
+        @if (string.Equals(Model.ActiveFilter, "emergency", StringComparison.OrdinalIgnoreCase))
+        {
+            <a href="#pa-emergency-services" class="pa-emergency-btn">@L["View emergency services"]</a>
+        }
+        else
+        {
+            <a asp-controller="Administrador" asp-action="Services" asp-route-filter="emergency" class="pa-emergency-btn">@L["View emergency services"]</a>
+        }
     </div>
 
     <p class="pa-service-search-empty" data-pa-service-search-empty hidden>@L["No services match your search."]</p>
 
     @foreach (var category in Model.Categories)
     {
-        <section class="pa-section" data-pa-service-section>
+        var isEmergency = string.Equals(category.CategoryKey, "emergency", StringComparison.OrdinalIgnoreCase);
+        var alreadyOnCategory = string.Equals(Model.ActiveFilter, category.CategoryKey, StringComparison.OrdinalIgnoreCase);
+        <section id="@(isEmergency ? "pa-emergency-services" : null)"
+                 class="pa-section @(isEmergency ? "pa-section--emergency" : null)"
+                 data-pa-service-section>
             <div class="pa-section-head">
                 <h2>@UiDisplayLocalization.Localize(L, category.CategoryTitle)</h2>
-                @if (category.HasMoreItems)
+                @if (category.HasMoreItems && !alreadyOnCategory)
                 {
                     <a asp-controller="Administrador" asp-action="Services" asp-route-filter="@category.CategoryKey">
                         @L["View all"] <i class="fas fa-chevron-right"></i>
                     </a>
                 }
             </div>
-            <div class="pa-service-grid">
+            <div class="pa-service-grid pa-service-grid--photos">
                 @foreach (var item in category.Items)
                 {
                     var localizedName = UiDisplayLocalization.Localize(L, item.ServiceName);
-                    <a href="@item.Url" class="pa-service-grid-item" data-pa-service-item
+                    var imgSrc = !string.IsNullOrWhiteSpace(item.ImageUrl)
+                        ? Url.Content("~" + (item.ImageUrl.StartsWith("/") ? item.ImageUrl : "/" + item.ImageUrl))
+                        : null;
+                    <a href="@item.Url" class="pa-service-photo-card" data-pa-service-item
                        data-search="@item.ServiceName @localizedName">
-                        <span class="pa-service-hub-icon @item.ToneClass"><i class="fas @item.IconClass"></i></span>
-                        <span>@localizedName</span>
+                        <span class="pa-service-photo-media">
+                            @if (!string.IsNullOrWhiteSpace(imgSrc))
+                            {
+                                <img src="@imgSrc" alt="" loading="lazy" decoding="async" asp-append-version="true" />
+                            }
+                            else
+                            {
+                                <span class="pa-service-photo-fallback @item.ToneClass"><i class="fas @item.IconClass"></i></span>
+                            }
+                        </span>
+                        <span class="pa-service-photo-label">@localizedName</span>
                     </a>
                 }
             </div>

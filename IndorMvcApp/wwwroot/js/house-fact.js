@@ -1,6 +1,4 @@
 (function () {
-    var primaryCategories = ["snapshot", "systems", "roof", "permits", "hoa"];
-
     function initHouseFact(root) {
         if (!root || root.dataset.hfBound === "true") return;
         root.dataset.hfBound = "true";
@@ -30,10 +28,6 @@
                 return sectionIds.indexOf(section.dataset.hfSectionId) >= 0;
             }
 
-            if (categoryKey === "more") {
-                return primaryCategories.indexOf(section.dataset.hfCategory) < 0;
-            }
-
             return section.dataset.hfCategory === categoryKey;
         }
 
@@ -52,6 +46,26 @@
 
             var scrollTarget = detailScreen.querySelector("[data-hf-back-overview]") || detailScreen;
             scrollTarget.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+
+        function scrollToSectionCards() {
+            if (!overviewScreen) return;
+
+            // Stay on overview — guide the user to dedicated section cards (not the raw details dump).
+            setLayoutBackVisible(true);
+            if (detailScreen) {
+                detailScreen.hidden = true;
+            }
+            overviewScreen.hidden = false;
+
+            var target = overviewScreen.querySelector(".hf-jump-row")
+                || overviewScreen.querySelector(".hf-category-grid")
+                || overviewScreen;
+            target.classList.add("hf-sections-spotlight");
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+            window.setTimeout(function () {
+                target.classList.remove("hf-sections-spotlight");
+            }, 1600);
         }
 
         function openCategory(categoryKey, title, sectionIds) {
@@ -106,6 +120,10 @@
 
         root.querySelectorAll("[data-hf-expand-all]").forEach(function (expandAllBtn) {
             expandAllBtn.addEventListener("click", expandAllSections);
+        });
+
+        root.querySelectorAll("[data-hf-scroll-categories]").forEach(function (scrollBtn) {
+            scrollBtn.addEventListener("click", scrollToSectionCards);
         });
     }
 

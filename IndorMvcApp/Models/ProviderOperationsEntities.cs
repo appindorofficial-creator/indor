@@ -832,6 +832,9 @@ public static class ProviderReportTypes
             "changeorder" => ChangeOrder,
             "punchlist" => PunchList,
             "materialdelivery" => MaterialDelivery,
+            "warranty" => Warranty,
+            "beforeafter" or "before-after" => BeforeAfter,
+            "assessment" => Assessment,
             _ => ""
         };
         return !string.IsNullOrEmpty(reportType);

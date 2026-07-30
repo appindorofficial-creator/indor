@@ -1,4 +1,6 @@
-﻿namespace IndorMvcApp.Services;
+﻿using System.Globalization;
+
+namespace IndorMvcApp.Services;
 
 // Localized via DisplayLabelsLocalization.L
 
@@ -102,7 +104,10 @@ public static class TvWallMountingDisplayLabels
     };
 
     public static string FormatDate(DateTime? date) =>
-        date?.ToString("MMM d, yyyy") ?? "To be scheduled";
+        date?.ToString(
+            DisplayLabelsLocalization.IsSpanishUi ? "d MMM yyyy" : "MMM d, yyyy",
+            CultureInfo.CurrentUICulture)
+        ?? DisplayLabelsLocalization.L("To be scheduled");
 
     public static decimal CalculateEstimate(
         decimal basePrice,

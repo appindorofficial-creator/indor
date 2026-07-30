@@ -74,9 +74,8 @@ public class SafeAirController : Controller
             var solicitud = await GetOrCreateSolicitudAsync(userId, model.MicroservicioId, model.SolicitudId);
 
             solicitud.PropiedadId = propiedadId;
-            solicitud.TipoNecesidad = string.Equals(action, "changed", StringComparison.OrdinalIgnoreCase)
-                ? "ChangedMyself"
-                : "IndorReplaces";
+            // Need type is chosen on SafeAirDetails — do not soft-seed from the landing CTA.
+            solicitud.TipoNecesidad = string.Empty;
             solicitud.Estado = "InProgress";
             solicitud.FechaActualizacion = DateTime.Now;
 
@@ -108,8 +107,8 @@ public class SafeAirController : Controller
                 solicitud.Microservicio?.Nombre ?? "Safe Air 365",
                 solicitud.Microservicio?.NombreEs,
                 _localizer.IsSpanish),
-            // Need type may come from the service CTA; other choices stay blank until saved.
-            TipoNecesidad = solicitud.TipoNecesidad ?? string.Empty,
+            // Only restore prior picks after the user saved this step (same as other fields).
+            TipoNecesidad = detailsSaved ? (solicitud.TipoNecesidad ?? string.Empty) : string.Empty,
             CantidadFiltros = detailsSaved ? (solicitud.CantidadFiltros ?? string.Empty) : string.Empty,
             FiltroAncho = detailsSaved ? solicitud.FiltroAncho : null,
             FiltroAlto = detailsSaved ? solicitud.FiltroAlto : null,

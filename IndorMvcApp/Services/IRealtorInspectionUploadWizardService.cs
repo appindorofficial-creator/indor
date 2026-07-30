@@ -34,6 +34,9 @@ public interface IRealtorInspectionUploadWizardService
 
     Task<RealtorInspectionProvidersViewModel> BuildProvidersAsync(string? tradeFilter, CancellationToken cancellationToken = default);
     Task SaveProvidersAsync(Dictionary<string, int[]>? providersByTrade, CancellationToken cancellationToken = default);
+    Task PrepareBackToProvidersAsync(CancellationToken cancellationToken = default);
+    Task PrepareBackToPrioritiesAsync(CancellationToken cancellationToken = default);
+    Task PrepareBackToAnalyzeAsync(CancellationToken cancellationToken = default);
 
     Task<RealtorInspectionReviewViewModel> BuildReviewAsync(CancellationToken cancellationToken = default);
     Task<RealtorInspectionSuccessViewModel> CreateQuoteRequestsAsync(CancellationToken cancellationToken = default);

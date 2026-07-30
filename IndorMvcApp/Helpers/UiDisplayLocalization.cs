@@ -126,10 +126,35 @@ public static class UiDisplayLocalization
 
         if (localizer.IsSpanish)
         {
+            // Already-Spanish UI copy (e.g. ModelState pre-localized) — do not reverse to English.
+            var trimmedForCatalog = text.Trim();
+            // Normalize ASCII hyphen in time-window labels so "Morning 8-11" matches "Morning 8–11".
+            var normalizedWindow = trimmedForCatalog.Replace('-', '–');
+            if (!string.Equals(normalizedWindow, trimmedForCatalog, StringComparison.Ordinal))
+            {
+                var windowHit = localizer[normalizedWindow];
+                if (!string.Equals(windowHit, normalizedWindow, StringComparison.Ordinal))
+                {
+                    return windowHit;
+                }
+            }
+
+            if (SpanishToEnglishKey.Value.ContainsKey(trimmedForCatalog))
+            {
+                return trimmedForCatalog;
+            }
+
             var direct = localizer[text];
-            if (!string.Equals(direct, text, StringComparison.Ordinal))
+            if (!string.Equals(direct, text, StringComparison.Ordinal)
+                && !string.Equals(direct, text.Trim(), StringComparison.Ordinal))
             {
                 return direct;
+            }
+
+            // AI / lookup sometimes stores this English sentinel as the property address.
+            if (IsAddressLookupFailureMessage(text))
+            {
+                return localizer.T("Address not found on Redfin or Zillow");
             }
 
             if (text.EndsWith(".", StringComparison.Ordinal) && text.Length > 1)
@@ -261,16 +286,39 @@ public static class UiDisplayLocalization
             return localizer.T("{0} needed", localizer[tradeNeeded.Groups[1].Value.Trim()]);
         }
 
+        var repairNeeded = Regex.Match(
+            text,
+            @"^(.+?)\s+Repair Needed$",
+            RegexOptions.IgnoreCase);
+        if (repairNeeded.Success)
+        {
+            return localizer.T(
+                "{0} Repair Needed",
+                Localize(localizer, repairNeeded.Groups[1].Value.Trim()));
+        }
+
+        var recommendedMatch = Regex.Match(
+            text,
+            @"^(.+?)\s+Recommended$",
+            RegexOptions.IgnoreCase);
+        if (recommendedMatch.Success
+            && !text.Contains(':', StringComparison.Ordinal))
+        {
+            return localizer.T(
+                "{0} Recommended",
+                Localize(localizer, recommendedMatch.Groups[1].Value.Trim()));
+        }
+
         var quoteMessageMatch = Regex.Match(
             text,
-            @"^Hi\s+(.+?),\s+here['\u2019]s your quote for the\s+(.+)\.\s+Let us know if you have any questions!$",
-            RegexOptions.IgnoreCase);
+            @"^Hi\s+(.+?),\s+here['\u2018\u2019\u00B4`]s your quote for the\s+(.+?)\.\s+Let us know if you have any questions!?\s*$",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
         if (quoteMessageMatch.Success)
         {
             return localizer.T(
                 "Hi {0}, here's your quote for the {1}. Let us know if you have any questions!",
                 quoteMessageMatch.Groups[1].Value.Trim(),
-                Localize(localizer, quoteMessageMatch.Groups[2].Value.Trim()));
+                Localize(localizer, ToCatalogKey(quoteMessageMatch.Groups[2].Value.Trim())));
         }
 
         // Already-localized Spanish quote message (keep as-is when UI is Spanish).
@@ -685,6 +733,17 @@ public static class UiDisplayLocalization
         if (licenseMatch.Success)
         {
             return localizer.T("License #{0}", licenseMatch.Groups[1].Value);
+        }
+
+        var realtorDefaultBioMatch = Regex.Match(
+            text,
+            @"^(.+?)\s+realtor serving local buyers and sellers through INDOR\.$",
+            RegexOptions.IgnoreCase);
+        if (realtorDefaultBioMatch.Success)
+        {
+            return localizer.T(
+                "{0} realtor serving local buyers and sellers through INDOR.",
+                realtorDefaultBioMatch.Groups[1].Value.Trim());
         }
 
         if (text.StartsWith("Serving ", StringComparison.OrdinalIgnoreCase)
@@ -1297,6 +1356,28 @@ public static class UiDisplayLocalization
         }
 
         return sourceExcerpt ?? string.Empty;
+    }
+
+    /// <summary>
+    /// OpenAI / enrichment sometimes writes this English failure text into FormattedAddress / Direccion.
+    /// </summary>
+    public static bool IsAddressLookupFailureMessage(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return false;
+        }
+
+        var t = text.Trim().TrimEnd('.');
+        if (t.Equals("Address not found", StringComparison.OrdinalIgnoreCase)
+            || t.Equals("Address not found on Redfin or Zillow", StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        return t.Contains("not found", StringComparison.OrdinalIgnoreCase)
+            && (t.Contains("Redfin", StringComparison.OrdinalIgnoreCase)
+                || t.Contains("Zillow", StringComparison.OrdinalIgnoreCase));
     }
 
     public static bool AppearsPrimarilyEnglish(string? text)

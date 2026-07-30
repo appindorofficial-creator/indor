@@ -29,10 +29,12 @@ public static class UiTranslations
             UiTranslationsMovingSetup.Entries,
             // Additive Property Snapshot (Resumen) keys — keep after shared merges.
             UiTranslationsPropertySnapshot.Entries,
-            // Additive House Facts section chips + section pages (Datos del hogar).
-            UiTranslationsHouseFact.Entries,
             // Provider profile / onboarding service catalog labels (must win over incomplete Drywall etc.).
             UiTranslationsProviderCatalog.Entries,
-            // Global photo/file source sheet — last so every persona inherits Biblioteca/Tomar/Elegir.
-            UiTranslationsFileSource.Entries);
+            // Bug 14 — Home Care Guide (9 priority flows); keep after catalog, before FileSource.
+            UiTranslationsHomeCare.Entries,
+            // Global photo/file source sheet — keep near end so every persona inherits Biblioteca/Tomar/Elegir.
+            UiTranslationsFileSource.Entries,
+            // Datos del hogar chips last so Roof & Exterior / HOA & Community always win.
+            UiTranslationsHouseFact.Entries);
 }

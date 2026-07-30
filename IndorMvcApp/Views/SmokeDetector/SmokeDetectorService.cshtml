@@ -14,7 +14,7 @@
     @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
     {
         <div class="sd-hero-wrap">
-            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@Model.PageTitle" class="hero-img" />
+            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@L.Catalog(Model.PageTitle)" class="hero-img" />
             <span class="sd-hero-icon"><i class="fas fa-bell"></i></span>
         </div>
     }

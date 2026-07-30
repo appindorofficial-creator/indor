@@ -99,14 +99,12 @@ public class AdministradorController(
         {
             var centerAddress = model.ViewingProperty?.Location;
             var servicesUrl = Url.Action(nameof(Services), "Administrador") ?? "#";
-            var messageUrl = Url.Action(nameof(Services), "Administrador") ?? "#";
             model.NearbyMap = await nearbyNetwork.BuildMapForAddressAsync(
                 centerAddress,
                 "Your portfolio",
                 filter,
                 Url,
-                servicesUrl,
-                messageUrl);
+                servicesUrl);
         }
 
         model.FeaturedPoolHotTub = poolHotTub.BuildFeaturedCta(Url, activePropertyId);

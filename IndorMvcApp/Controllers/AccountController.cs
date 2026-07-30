@@ -266,29 +266,44 @@ public class AccountController : Controller
 
         if (ModelState.IsValid)
         {
-            // Always persist the auth cookie on mobile/WebView — a session cookie is
-            // dropped when Android kills the process, which dumps users back at
-            // Welcome/SelectRole/Entry after briefly leaving the app.
-            var result = await _signInManager.PasswordSignInAsync(
-                model.Email,
-                model.Password,
-                isPersistent: true,
-                lockoutOnFailure: false);
+            var email = (model.Email ?? string.Empty).Trim();
+            model.Email = email;
 
-            if (result.Succeeded)
+            // Prefer email lookup; fall back to username for older accounts.
+            var user = await _userManager.FindByEmailAsync(email)
+                       ?? await _userManager.FindByNameAsync(email);
+
+            if (user == null)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                if (user != null)
+                // Account was deleted or never registered — invite them to sign up
+                // instead of the generic "invalid login" message.
+                ViewBag.ShowCreateAccountCta = true;
+                ModelState.AddModelError(
+                    string.Empty,
+                    _localizer["User not registered. Create an account to continue."]);
+            }
+            else
+            {
+                // Always persist the auth cookie on mobile/WebView — a session cookie is
+                // dropped when Android kills the process, which dumps users back at
+                // Welcome/SelectRole/Entry after briefly leaving the app.
+                var result = await _signInManager.PasswordSignInAsync(
+                    user.UserName!,
+                    model.Password,
+                    isPersistent: true,
+                    lockoutOnFailure: false);
+
+                if (result.Succeeded)
                 {
                     await ApplyUserCultureAfterLoginAsync(user);
+
+                    // Splash HTML (with auth cookie) instead of a bare 302 so the WebView
+                    // shows INDOR loading while role/dashboard routing runs.
+                    return EntryLoadingResult(returnUrl);
                 }
 
-                // Splash HTML (with auth cookie) instead of a bare 302 so the WebView
-                // shows INDOR loading while role/dashboard routing runs.
-                return EntryLoadingResult(returnUrl);
+                ModelState.AddModelError(string.Empty, _localizer["Invalid login attempt."]);
             }
-
-            ModelState.AddModelError(string.Empty, _localizer["Invalid login attempt."]);
         }
 
         ModelState.LocalizeModelState(_localizer);
@@ -342,8 +357,19 @@ public class AccountController : Controller
             return View("DeleteAccount");
         }
 
-        var deleted = await _accountDeletion.DeleteAccountAsync(user);
-        if (!deleted)
+        try
+        {
+            var deleted = await _accountDeletion.DeleteAccountAsync(user);
+            if (!deleted)
+            {
+                ViewBag.OnboardingTitle = _localizer["Delete account"];
+                ViewBag.OnboardingShowBack = true;
+                ViewBag.Email = user.Email;
+                ModelState.AddModelError(string.Empty, _localizer["We could not delete your account right now. Please contact support."]);
+                return View("DeleteAccount");
+            }
+        }
+        catch (Exception)
         {
             ViewBag.OnboardingTitle = _localizer["Delete account"];
             ViewBag.OnboardingShowBack = true;

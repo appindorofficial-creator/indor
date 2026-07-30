@@ -425,6 +425,100 @@
         }
     }
 
+    function applyPaFeedSearch(root) {
+        var form = root.querySelector('[data-pa-feed-search]');
+        var input = form && form.querySelector('input[type="search"]');
+        var empty = root.querySelector('[data-pa-feed-search-empty]');
+        if (!input) {
+            return;
+        }
+
+        var query = foldText(input.value);
+        var items = root.querySelectorAll('[data-pa-feed-item]');
+        var matchCount = 0;
+
+        if (!query) {
+            items.forEach(function (item) {
+                item.hidden = false;
+            });
+            if (empty) {
+                empty.hidden = true;
+            }
+            applyPaFeedFilter(root, root.getAttribute('data-pa-feed-active') || 'All', false);
+            return;
+        }
+
+        items.forEach(function (item) {
+            var haystack = foldText(item.getAttribute('data-search') || item.textContent);
+            var match = haystack.indexOf(query) !== -1;
+            item.hidden = !match;
+            if (match) {
+                matchCount += 1;
+            }
+        });
+
+        root.querySelectorAll('[data-pa-feed-panel]').forEach(function (panel) {
+            var panelItems = panel.querySelectorAll('[data-pa-feed-item]');
+            if (panelItems.length === 0) {
+                var panelHaystack = foldText(panel.getAttribute('data-search') || panel.textContent);
+                var panelMatch = panelHaystack.indexOf(query) !== -1;
+                panel.hidden = !panelMatch;
+                if (panelMatch) {
+                    matchCount += 1;
+                }
+                return;
+            }
+
+            var hasVisible = false;
+            panelItems.forEach(function (item) {
+                if (!item.hidden) {
+                    hasVisible = true;
+                }
+            });
+            panel.hidden = !hasVisible;
+        });
+
+        if (empty) {
+            empty.hidden = matchCount > 0;
+        }
+    }
+
+    function bindPaFeedSearch(root) {
+        var form = root.querySelector('[data-pa-feed-search]');
+        var input = form && form.querySelector('input[type="search"]');
+        if (!input || root.dataset.paFeedSearchBound === 'true') {
+            return;
+        }
+        root.dataset.paFeedSearchBound = 'true';
+
+        function runSearch() {
+            applyPaFeedSearch(root);
+        }
+
+        input.addEventListener('input', runSearch);
+        input.addEventListener('search', runSearch);
+        form.addEventListener('submit', function (event) {
+            event.preventDefault();
+            runSearch();
+            try {
+                var url = new URL(location.href);
+                var q = input.value.trim();
+                if (q) {
+                    url.searchParams.set('q', q);
+                } else {
+                    url.searchParams.delete('q');
+                }
+                url.searchParams.set('view', 'feed');
+                history.replaceState({ paFeedSearch: q }, '', url.pathname + url.search + url.hash);
+            } catch (err) {
+                // ignore URL update failures
+            }
+        });
+
+        root._paApplyFeedSearch = runSearch;
+        runSearch();
+    }
+
     function bindPaFeedFilters(root) {
         if (!root || root.dataset.paFeedBound === 'true') {
             return;
@@ -439,23 +533,39 @@
                 }
                 event.preventDefault();
                 applyPaFeedFilter(root, filter, true);
+                if (typeof root._paApplyFeedSearch === 'function') {
+                    root._paApplyFeedSearch();
+                }
             });
         });
 
         applyPaFeedFilter(root, root.getAttribute('data-pa-feed-active') || 'All', false);
     }
 
-    document.querySelectorAll('[data-pa-feed-root]').forEach(bindPaFeedFilters);
+    document.querySelectorAll('[data-pa-feed-root]').forEach(function (root) {
+        bindPaFeedFilters(root);
+        bindPaFeedSearch(root);
+    });
 
     window.addEventListener('popstate', function () {
         document.querySelectorAll('[data-pa-feed-root]').forEach(function (root) {
             var filter = 'All';
+            var q = '';
             try {
-                filter = new URL(location.href).searchParams.get('filter') || 'All';
+                var params = new URL(location.href).searchParams;
+                filter = params.get('filter') || 'All';
+                q = params.get('q') || '';
             } catch (err) {
                 filter = root.getAttribute('data-pa-feed-active') || 'All';
             }
             applyPaFeedFilter(root, filter, false);
+            var input = root.querySelector('[data-pa-feed-search] input[type="search"]');
+            if (input) {
+                input.value = q;
+            }
+            if (typeof root._paApplyFeedSearch === 'function') {
+                root._paApplyFeedSearch();
+            }
         });
     });
 

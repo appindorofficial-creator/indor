@@ -108,6 +108,47 @@ public class RealtorController(
     }
 
     [HttpGet]
+    public async Task<IActionResult> InviteProviders(int id, string? q, CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await portalService.BuildInviteProvidersAsync(realtor, id, q, cancellationToken);
+        if (model == null)
+        {
+            return NotFound();
+        }
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> InviteProviders(int id, int[]? providerIds, CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        try
+        {
+            await portalService.InviteProvidersToQuoteAsync(realtor, id, providerIds, cancellationToken);
+            TempData["InviteProvidersOk"] = localizer["Providers invited successfully."];
+            return RedirectToAction(nameof(QuoteDetail), new { id });
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["InviteProvidersError"] = localizer[ex.Message];
+            return RedirectToAction(nameof(InviteProviders), new { id });
+        }
+    }
+
+    [HttpGet]
     public async Task<IActionResult> ViewQuote(int id, int? bidId, CancellationToken cancellationToken)
     {
         var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
@@ -635,9 +676,7 @@ public class RealtorController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ProfileNotificationPreferences(
-        RealtorNotificationPreferencesInput input,
-        CancellationToken cancellationToken)
+    public async Task<IActionResult> ProfileNotificationPreferences(CancellationToken cancellationToken)
     {
         var isAjax = string.Equals(Request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
 
@@ -652,6 +691,7 @@ public class RealtorController(
             return isAjax ? Unauthorized() : RedirectToAction("Profile", "RealtorRegistration");
         }
 
+        var input = BindNotificationPreferences(Request);
         await portalService.SaveNotificationPreferencesAsync(realtor, input, cancellationToken);
 
         // For toggle clicks we save in the background (fetch) so the page doesn't
@@ -662,6 +702,34 @@ public class RealtorController(
         }
 
         return RedirectToAction(nameof(Profile), new { saved = true });
+    }
+
+    private static RealtorNotificationPreferencesInput BindNotificationPreferences(HttpRequest request) =>
+        new()
+        {
+            EmailAlertsEnabled = IsToggleOn(request, "EmailAlertsEnabled"),
+            QuoteUpdatesEnabled = IsToggleOn(request, "QuoteUpdatesEnabled"),
+            ReportNotificationsEnabled = IsToggleOn(request, "ReportNotificationsEnabled"),
+            PackageViewAlertsEnabled = IsToggleOn(request, "PackageViewAlertsEnabled")
+        };
+
+    /// <summary>
+    /// Checkbox + hidden "false" posts both values; treat as on if any value is true.
+    /// </summary>
+    private static bool IsToggleOn(HttpRequest request, string key)
+    {
+        var values = request.Form[key];
+        foreach (var value in values)
+        {
+            if (string.Equals(value, "true", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(value, "on", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(value, "1", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     [HttpPost]

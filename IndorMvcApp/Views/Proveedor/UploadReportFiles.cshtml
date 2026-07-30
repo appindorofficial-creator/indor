@@ -17,7 +17,7 @@
         }
         else
         {
-            <a asp-controller="Proveedor" asp-action="UploadReportType" class="prv-pro-lead-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
+            <a asp-controller="Proveedor" asp-action="UploadReportType" asp-route-jobId="@Model.Job.JobId" class="prv-pro-lead-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
         }
         <div>
             <h1>@L["Upload Files & Photos"]</h1>
@@ -30,6 +30,7 @@
 
     <form asp-controller="Proveedor" asp-action="UploadReportFiles" method="post" enctype="multipart/form-data" class="prv-pro-upload-report-files-form">
         @Html.AntiForgeryToken()
+        <input type="hidden" name="jobId" value="@Model.Job.JobId" />
 
         <section class="prv-pro-upload-report-section">
             <h3>@L["Photos"]</h3>
@@ -115,7 +116,7 @@
             }
             else
             {
-                <a asp-controller="Proveedor" asp-action="UploadReportType" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
+                <a asp-controller="Proveedor" asp-action="UploadReportType" asp-route-jobId="@Model.Job.JobId" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
             }
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@L["Next"]</button>
         </div>
@@ -132,7 +133,7 @@
                 input.addEventListener('change', function () {
                     var files = input.files;
                     if (files && files.length > 1) {
-                        nameEl.textContent = files.length + ' ' + (nameEl.getAttribute('data-files-label') || 'files');
+                        nameEl.textContent = files.length + ' ' + (nameEl.getAttribute('data-files-label') || '@L["files"]');
                         picker.classList.add('has-file');
                     } else if (files && files.length === 1) {
                         nameEl.textContent = files[0].name;

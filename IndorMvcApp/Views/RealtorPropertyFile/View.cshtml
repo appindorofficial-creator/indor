@@ -91,17 +91,15 @@
                                     <span class="rl-file-code">@item.MetaLabel</span>
                                 }
                             </div>
-                            @if (!string.IsNullOrWhiteSpace(item.FileUrl))
+                            @if (!string.IsNullOrWhiteSpace(item.FileUrl) && item.Id > 0)
                             {
-                                var fileOpenUrl = item.FileUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
-                                    ? item.FileUrl
-                                    : Url.Content("~" + item.FileUrl);
-                                <button type="button"
-                                        class="rl-btn-outline rl-btn-outline--sm rl-file-open-btn"
-                                        data-file-url="@fileOpenUrl"
-                                        aria-label="@L.T("Open {0}", item.ItemLabel)">
+                                <a asp-action="OpenDocument"
+                                   asp-route-id="@Model.PropertyFileId"
+                                   asp-route-itemId="@item.Id"
+                                   class="rl-btn-outline rl-btn-outline--sm"
+                                   aria-label="@L.T("Open {0}", item.ItemLabel)">
                                     @L["Open"] <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
-                                </button>
+                                </a>
                             }
                         </li>
                     }
@@ -110,7 +108,3 @@
         }
     }
 </div>
-
-@section Scripts {
-    <script src="~/js/realtor-property-file-open.js" asp-append-version="true"></script>
-}

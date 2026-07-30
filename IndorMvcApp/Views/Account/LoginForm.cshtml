@@ -5,6 +5,7 @@
     Layout = "_LayoutAuth";
     var returnUrl = ViewData["ReturnUrl"] as string;
     ViewData["LanguageSelectorVariant"] = "compact";
+    var showCreateAccountCta = ViewBag.ShowCreateAccountCta as bool? == true;
 }
 
 <div class="login-container login-container--signin">
@@ -26,7 +27,21 @@
 
         <div class="form-card">
             <form asp-controller="Account" asp-action="Login" asp-route-returnUrl="@returnUrl" method="post">
-                <div asp-validation-summary="ModelOnly" class="validation-error"></div>
+                @if (showCreateAccountCta)
+                {
+                    <div class="validation-error" role="alert">
+                        <div>@L["User not registered."]</div>
+                    </div>
+                    <div class="login-register-cta" style="margin-bottom:16px;">
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-primary btn-primary--submit" style="text-decoration:none;text-align:center;display:block;">
+                            @L["Create account"]
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div asp-validation-summary="ModelOnly" class="validation-error"></div>
+                }
 
                 <div class="input-group">
                     <label asp-for="Email" class="input-label">@L["Email"]</label>

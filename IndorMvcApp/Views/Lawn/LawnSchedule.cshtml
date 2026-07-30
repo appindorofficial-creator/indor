@@ -80,7 +80,7 @@
                     <div class="segment-group" id="leadGroup">
                         @foreach (var lead in Model.ReminderLeadOptions)
                         {
-                            <button type="button" class="segment-btn" data-value="@lead.Code">@lead.Label</button>
+                            <button type="button" class="segment-btn" data-value="@lead.Code">@UiDisplayLocalization.Localize(L, lead.Label)</button>
                         }
                     </div>
                 </div>
@@ -90,7 +90,7 @@
                         @foreach (var channel in Model.ReminderChannelOptions)
                         {
                             var selected = Model.RecordatorioCanales.Contains(channel.Code, StringComparison.OrdinalIgnoreCase);
-                            <button type="button" class="segment-btn @(selected ? "active" : "")" data-value="@channel.Code">@channel.Label</button>
+                            <button type="button" class="segment-btn @(selected ? "active" : "")" data-value="@channel.Code">@UiDisplayLocalization.Localize(L, channel.Label)</button>
                         }
                     </div>
                 </div>
