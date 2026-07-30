@@ -1693,6 +1693,8 @@ public static class UiTranslationsRealtor
             ["Licensed Realtor"] = "Agente inmobiliario licenciado",
             ["Basic real estate agent"] = "Agente inmobiliario básico",
             ["Experienced real estate agent"] = "Agente inmobiliario con experiencia",
+            ["Experienced title appears on your public profile only after license details are on file."] =
+                "El título de agente con experiencia aparece en tu perfil público solo cuando hay datos de licencia registrados.",
             // Quote detail / compare / share flow
             ["Requested {0}"] = "Solicitado {0}",
             ["Due {0}"] = "Vence {0}",

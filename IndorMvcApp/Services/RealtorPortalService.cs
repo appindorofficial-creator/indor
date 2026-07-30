@@ -1393,9 +1393,12 @@ public class RealtorPortalService(
 
         if (IsDefaultRealtorTitle(entity.RealtorTitle))
         {
+            var hasLicenseCredentials = !string.IsNullOrWhiteSpace(entity.LicenseNumber)
+                                        && !string.IsNullOrWhiteSpace(entity.LicenseState);
             entity.RealtorTitle = ResolveTitleFromExperience(
                 entity.YearsOfExperience,
-                entity.RegistrationStatus == RealtorRegistrationStatuses.Verified);
+                entity.RegistrationStatus == RealtorRegistrationStatuses.Verified,
+                hasLicenseCredentials);
         }
 
         entity.FechaActualizacion = DateTime.UtcNow;
@@ -1534,11 +1537,17 @@ public class RealtorPortalService(
         }
 
         // Keep public title in sync with experience when the realtor left the default title.
+        // "Experienced" requires verified status or license credentials — not years alone.
         if (IsDefaultRealtorTitle(entity.RealtorTitle))
         {
+            var hasLicenseCredentials =
+                (!string.IsNullOrWhiteSpace(entity.LicenseNumber)
+                 && !string.IsNullOrWhiteSpace(entity.LicenseState))
+                || hasLicensePhoto;
             entity.RealtorTitle = ResolveTitleFromExperience(
                 entity.YearsOfExperience,
-                entity.RegistrationStatus == RealtorRegistrationStatuses.Verified);
+                entity.RegistrationStatus == RealtorRegistrationStatuses.Verified,
+                hasLicenseCredentials);
         }
 
         entity.FechaActualizacion = DateTime.UtcNow;
@@ -1635,7 +1644,7 @@ public class RealtorPortalService(
             FullName = !string.IsNullOrWhiteSpace(realtor.PublicDisplayName)
                 ? realtor.PublicDisplayName.Trim()
                 : realtor.DisplayName ?? shell.FullDisplayName,
-            TitleLabel = ResolvePublicTitleLabel(realtor, shell.IsVerified),
+            TitleLabel = ResolvePublicTitleLabel(realtor, shell.IsVerified, hasLicenseDoc),
             Tagline = string.IsNullOrWhiteSpace(realtor.PublicTagline) ? null : realtor.PublicTagline.Trim(),
             Bio = string.IsNullOrWhiteSpace(realtor.PublicBio) ? null : realtor.PublicBio.Trim(),
             CoverImageUrl = coverImage,
@@ -3017,14 +3026,19 @@ public class RealtorPortalService(
         return hasLicense ? "Licensed Realtor" : "Realtor Basic";
     }
 
-    private static string ResolvePublicTitleLabel(IndorRealtor realtor, bool isVerified)
+    private static string ResolvePublicTitleLabel(IndorRealtor realtor, bool isVerified, bool hasLicenseDoc = false)
     {
         if (!IsDefaultRealtorTitle(realtor.RealtorTitle))
         {
             return realtor.RealtorTitle!.Trim();
         }
 
-        return ResolveTitleFromExperience(realtor.YearsOfExperience, isVerified);
+        var hasLicenseCredentials =
+            (!string.IsNullOrWhiteSpace(realtor.LicenseNumber)
+             && !string.IsNullOrWhiteSpace(realtor.LicenseState))
+            || hasLicenseDoc;
+
+        return ResolveTitleFromExperience(realtor.YearsOfExperience, isVerified, hasLicenseCredentials);
     }
 
     private static bool IsDefaultRealtorTitle(string? title)
@@ -3044,9 +3058,19 @@ public class RealtorPortalService(
                || normalized.Equals("Realtor Basic", StringComparison.OrdinalIgnoreCase);
     }
 
-    private static string ResolveTitleFromExperience(string? yearsOfExperience, bool isVerified)
+    /// <summary>
+    /// Maps years of experience to a public title. The "Experienced" tier only applies when the
+    /// realtor is verified or has license credentials on file — years alone are not enough.
+    /// </summary>
+    private static string ResolveTitleFromExperience(
+        string? yearsOfExperience,
+        bool isVerified,
+        bool hasLicenseCredentials = false)
     {
         var years = yearsOfExperience?.Trim() ?? "";
+        var neutralTitle = isVerified ? "Realtor®" : "Realtor";
+        var canClaimExperience = isVerified || hasLicenseCredentials;
+
         if (years.Equals("Less than 1 year", StringComparison.OrdinalIgnoreCase)
             || years.Equals("1-2 years", StringComparison.OrdinalIgnoreCase))
         {
@@ -3057,10 +3081,10 @@ public class RealtorPortalService(
             || years.Equals("10+ years", StringComparison.OrdinalIgnoreCase)
             || years.Equals("15+ years", StringComparison.OrdinalIgnoreCase))
         {
-            return "Experienced real estate agent";
+            return canClaimExperience ? "Experienced real estate agent" : neutralTitle;
         }
 
-        return isVerified ? "Realtor®" : "Realtor";
+        return neutralTitle;
     }
 
     private static string FormatLanguagesLabel(string? languagesJson) =>
