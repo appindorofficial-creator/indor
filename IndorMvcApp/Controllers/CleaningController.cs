@@ -141,6 +141,23 @@ public class CleaningController : Controller
 
         var skipDate = string.Equals(action, "skip", StringComparison.OrdinalIgnoreCase);
 
+        if (!skipDate)
+        {
+            if (!model.FechaServicio.HasValue)
+            {
+                ModelState.AddModelError(nameof(model.FechaServicio), "Please select a service date.");
+            }
+            else if (model.FechaServicio.Value.Date < DateTime.Today)
+            {
+                ModelState.AddModelError(nameof(model.FechaServicio), "Please select today or a future date.");
+            }
+
+            if (string.IsNullOrWhiteSpace(model.VentanaHorario))
+            {
+                ModelState.AddModelError(nameof(model.VentanaHorario), "Please select a preferred arrival time.");
+            }
+        }
+
         // "Skip date for now" only omits the date/time window; the address and the
         // remaining required selections must still be valid.
         if (!ModelState.IsValid)

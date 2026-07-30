@@ -5,7 +5,8 @@
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 4;
-
+    var fechaMin = DateTime.Today.ToString("yyyy-MM-dd");
+    var fechaValue = Model.FechaServicio?.ToString("yyyy-MM-dd") ?? string.Empty;
 }
 
 
@@ -45,7 +46,7 @@
             <span class="field-label">@L["When do you need service?"]</span>
             <div class="input-wrap">
                 <i class="fas fa-calendar"></i>
-                <input asp-for="FechaServicio" id="FechaServicio" type="date" required />
+                <input asp-for="FechaServicio" id="FechaServicio" type="date" value="@fechaValue" min="@fechaMin" required />
             </div>
         </div>
 
@@ -95,6 +96,41 @@
 
         initMulti('servicesGroup', 'ServiciosConectar', '@Model.ServiciosConectar');
         initSingle('prefGroup', 'PreferenciaContacto', '@Model.PreferenciaContacto');
+
+        const fechaInput = document.getElementById('FechaServicio');
+        const pastDateMessage = @Json.Serialize(L["Please select today or a future date."]);
+        if (fechaInput) {
+            fechaInput.min = '@fechaMin';
+            if (fechaInput.value && fechaInput.value < fechaInput.min) {
+                fechaInput.value = '';
+            }
+        }
+
+        document.querySelector('form')?.addEventListener('submit', function (e) {
+            if (e.submitter && (e.submitter.value === 'skip' || e.submitter.getAttribute('formnovalidate') != null)) {
+                return;
+            }
+            if (!fechaInput) return;
+            if (fechaInput.value && fechaInput.min && fechaInput.value < fechaInput.min) {
+                e.preventDefault();
+                e.stopPropagation();
+                fechaInput.value = '';
+                const card = fechaInput.closest('.field-card');
+                if (card) {
+                    card.classList.add('is-invalid');
+                    let msg = card.querySelector('[data-svc-error="true"]');
+                    if (!msg) {
+                        msg = document.createElement('div');
+                        msg.className = 'field-inline-error';
+                        msg.setAttribute('data-svc-error', 'true');
+                        msg.setAttribute('role', 'alert');
+                        card.appendChild(msg);
+                    }
+                    msg.textContent = pastDateMessage;
+                    card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }, true);
     })();
 
 </script>

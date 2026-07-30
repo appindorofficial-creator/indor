@@ -65,8 +65,11 @@ public class CleaningDetailsViewModel
     [Required(ErrorMessage = "Select the current condition.")]
     public string CondicionActual { get; set; } = "";
 
+    [Required(ErrorMessage = "Please select a service date.")]
+    [DataType(DataType.Date)]
     public DateTime? FechaServicio { get; set; }
 
+    [Required(ErrorMessage = "Please select a preferred arrival time.")]
     public string? VentanaHorario { get; set; }
 }
 

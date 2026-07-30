@@ -44,6 +44,8 @@ public static class UiTranslationsMovingSetup
             ["Please enter the drop-off address."] = "Ingresa la dirección de entrega.",
             ["Please select a move date."] = "Selecciona una fecha de mudanza.",
             ["Please select today or a future date."] = "Selecciona hoy o una fecha futura.",
+            ["Please select a service date."] = "Selecciona una fecha de servicio.",
+            ["Please select a preferred arrival time."] = "Selecciona una hora de llegada preferida.",
             ["Please enter a valid street address (e.g. 123 Main St, Charlotte, NC)."] =
                 "Ingresa una dirección completa (ej. 123 Main St, Charlotte, NC).",
             ["Enter a complete address with city and state (e.g. 123 Main St, Charlotte, NC)."] =

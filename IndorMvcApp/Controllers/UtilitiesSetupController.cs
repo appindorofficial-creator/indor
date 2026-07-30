@@ -76,6 +76,15 @@ public class UtilitiesSetupController : Controller
 
         await EnsureAddressFromPropertyAsync(userId!, model);
 
+        if (!model.FechaServicio.HasValue)
+        {
+            ModelState.AddModelError(nameof(model.FechaServicio), "Please select a service date.");
+        }
+        else if (model.FechaServicio.Value.Date < DateTime.Today)
+        {
+            ModelState.AddModelError(nameof(model.FechaServicio), "Please select today or a future date.");
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);

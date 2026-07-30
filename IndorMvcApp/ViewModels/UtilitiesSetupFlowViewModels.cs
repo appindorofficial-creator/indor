@@ -22,6 +22,8 @@ public class UtilitiesSetupAddressViewModel
     [Required]
     public string ServiciosConectar { get; set; } = string.Empty;
 
+    [Required(ErrorMessage = "Please select a service date.")]
+    [DataType(DataType.Date)]
     public DateTime? FechaServicio { get; set; }
 
     [Required]

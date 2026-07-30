@@ -7,6 +7,8 @@
     ViewData["WizardBackUrl"] = Url.Action("CleaningService", "Cleaning", new { id = Model.MovingSetupServicioId });
     var addressHint = L["Enter a complete address with city and state (e.g. 123 Main St, Charlotte, NC)."].ToString();
     var addressEmptyMessage = L["Please enter the property address."].ToString();
+    var fechaMin = DateTime.Today.ToString("yyyy-MM-dd");
+    var fechaValue = Model.FechaServicio?.ToString("yyyy-MM-dd") ?? string.Empty;
 }
 
 <div class="cl-wizard-heading">
@@ -86,11 +88,11 @@
         </div>
     </div>
 
-    <div class="field-card" data-svc-optional>
+    <div class="field-card" data-svc-required="FechaServicio">
         <span class="field-label">@L["Date"]</span>
         <div class="input-wrap">
             <i class="fas fa-calendar"></i>
-            <input asp-for="FechaServicio" type="date" />
+            <input asp-for="FechaServicio" id="FechaServicio" type="date" value="@fechaValue" min="@fechaMin" required />
         </div>
     </div>
 
@@ -110,7 +112,6 @@
 
     <div class="sticky-footer">
         <button type="submit" class="btn-primary">@L["Continue"] <i class="fas fa-chevron-right"></i></button>
-        <button type="submit" name="action" value="skip" class="btn-outline" formnovalidate>@L["Skip date for now"]</button>
     </div>
 </form>
 
@@ -177,6 +178,14 @@
 
         const addressMessage = @Json.Serialize(addressHint);
         const addressEmptyMessage = @Json.Serialize(addressEmptyMessage);
+        const pastDateMessage = @Json.Serialize(L["Please select today or a future date."]);
+        const fechaInput = document.getElementById('FechaServicio');
+        if (fechaInput) {
+            fechaInput.min = '@fechaMin';
+            if (fechaInput.value && fechaInput.value < fechaInput.min) {
+                fechaInput.value = '';
+            }
+        }
 
         function isValidStreetAddress(value) {
             const address = String(value || '').trim();
@@ -209,10 +218,6 @@
         }
 
         document.getElementById('cleaningDetailsForm')?.addEventListener('submit', function (e) {
-            if (e.submitter && (e.submitter.value === 'skip' || e.submitter.getAttribute('formnovalidate') != null)) {
-                return;
-            }
-
             let firstInvalid = null;
             const input = document.getElementById('DireccionPropiedad');
             const card = input?.closest('.field-card');
@@ -224,6 +229,15 @@
                 } else if (!isValidStreetAddress(value)) {
                     showInline(card, addressMessage);
                     if (!firstInvalid) firstInvalid = card;
+                }
+            }
+
+            if (fechaInput) {
+                const dateCard = fechaInput.closest('.field-card');
+                if (fechaInput.value && fechaInput.min && fechaInput.value < fechaInput.min) {
+                    fechaInput.value = '';
+                    showInline(dateCard, pastDateMessage);
+                    if (!firstInvalid) firstInvalid = dateCard;
                 }
             }
 
