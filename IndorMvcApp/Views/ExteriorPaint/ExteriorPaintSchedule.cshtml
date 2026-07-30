@@ -10,9 +10,7 @@
     ViewData["WizardBackUrl"] = Url.Action("ExteriorPaintCondition", "ExteriorPaint", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;
-
 }
-
 
 <div class="ep-title-row">
     <div class="left">
@@ -28,137 +26,142 @@
     }
 </div>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+<div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="ep-schedule-form" asp-action="ExteriorPaintSchedule" method="post" enctype="multipart/form-data" novalidate>
-        <input type="hidden" asp-for="SolicitudId" />
-        <input type="hidden" asp-for="HomeCarePriorityId" />
-        <input type="hidden" asp-for="NumeroPisos" id="NumeroPisos" />
-        <input type="hidden" asp-for="TimingPreferido" id="TimingPreferido" />
+<form id="ep-schedule-form" asp-action="ExteriorPaintSchedule" method="post" enctype="multipart/form-data" novalidate>
+    <input type="hidden" asp-for="SolicitudId" />
+    <input type="hidden" asp-for="HomeCarePriorityId" />
+    <input type="hidden" asp-for="NumeroPisos" id="NumeroPisos" />
+    <input type="hidden" asp-for="TimingPreferido" id="TimingPreferido" />
 
-        <div class="field-card" data-svc-required="NumeroPisos">
-            <div class="question-num">1</div>
-            <div class="field-head"><i class="fas fa-building"></i><span>@L["How many stories is the home?"]</span></div>
-            <div class="stories-grid">
-                <button type="button" class="story-card" data-stories="One"><i class="fas fa-house main"></i><span class="label">@L["1 story"]</span></button>
-                <button type="button" class="story-card" data-stories="Two"><i class="fas fa-building main"></i><span class="label">@L["2 stories"]</span></button>
-                <button type="button" class="story-card" data-stories="ThreePlus"><i class="fas fa-city main"></i><span class="label">@L["3+ stories"]</span></button>
+    <div class="field-card" data-svc-required="NumeroPisos">
+        <div class="question-num">1</div>
+        <div class="field-head"><i class="fas fa-building"></i><span>@L["How many stories is the home?"]</span></div>
+        <div class="stories-grid" id="storiesGroup">
+            <button type="button" class="story-card" data-stories="One"><i class="fas fa-house main"></i><span class="label">@L["1 story"]</span></button>
+            <button type="button" class="story-card" data-stories="Two"><i class="fas fa-building main"></i><span class="label">@L["2 stories"]</span></button>
+            <button type="button" class="story-card" data-stories="ThreePlus"><i class="fas fa-city main"></i><span class="label">@L["3+ stories"]</span></button>
+        </div>
+    </div>
+
+    <div class="field-card" data-svc-optional>
+        <div class="question-num">2</div>
+        <div class="field-head"><i class="fas fa-camera"></i><span>@L["Add photos"]</span></div>
+        <p style="font-size:0.74rem;color:#64748B;margin-bottom:12px;">@L["Add a few photos to help our pros prepare."]</p>
+        <div class="photo-grid">
+            <div class="photo-slot">
+                <label class="photo-upload" for="frontPhoto">
+                    @if (!string.IsNullOrWhiteSpace(frontPhoto))
+                    {
+                        <img src="@Url.Content("~" + frontPhoto)" alt="Front" id="frontPreview" />
+                    }
+                    else
+                    {
+                        <i class="fas fa-camera" id="frontPreviewIcon"></i>
+                    }
+                </label>
+                <input type="file" name="frontPhoto" id="frontPhoto" accept=".jpg,.jpeg,.png" style="display:none;" />
+                <span>@L["Front"]</span>
+            </div>
+            <div class="photo-slot">
+                <label class="photo-upload" for="backPhoto">
+                    @if (!string.IsNullOrWhiteSpace(backPhoto))
+                    {
+                        <img src="@Url.Content("~" + backPhoto)" alt="Back" id="backPreview" />
+                    }
+                    else
+                    {
+                        <i class="fas fa-camera" id="backPreviewIcon"></i>
+                    }
+                </label>
+                <input type="file" name="backPhoto" id="backPhoto" accept=".jpg,.jpeg,.png" style="display:none;" />
+                <span>@L["Back"]</span>
+            </div>
+            <div class="photo-slot">
+                <label class="photo-upload" for="problemPhoto">
+                    @if (!string.IsNullOrWhiteSpace(problemPhoto))
+                    {
+                        <img src="@Url.Content("~" + problemPhoto)" alt="Problem area" id="problemPreview" />
+                    }
+                    else
+                    {
+                        <i class="fas fa-camera" id="problemPreviewIcon"></i>
+                    }
+                </label>
+                <input type="file" name="problemPhoto" id="problemPhoto" accept=".jpg,.jpeg,.png" style="display:none;" />
+                <span>@L["Problem area"]</span>
             </div>
         </div>
+    </div>
 
-        <div class="field-card" data-svc-optional>
-            <div class="question-num">2</div>
-            <div class="field-head"><i class="fas fa-camera"></i><span>@L["Add photos"]</span></div>
-            <p style="font-size:0.74rem;color:#64748B;margin-bottom:12px;">@L["Add a few photos to help our pros prepare."]</p>
-            <div class="photo-grid">
-                <div class="photo-slot">
-                    <label class="photo-upload" for="frontPhoto">
-                        @if (!string.IsNullOrWhiteSpace(frontPhoto))
-                        {
-                            <img src="@Url.Content("~" + frontPhoto)" alt="Front" id="frontPreview" />
-                        }
-                        else
-                        {
-                            <i class="fas fa-camera" id="frontPreviewIcon"></i>
-                        }
-                    </label>
-                    <input type="file" name="frontPhoto" id="frontPhoto" accept=".jpg,.jpeg,.png" style="display:none;" />
-                    <span>@L["Front"]</span>
-                </div>
-                <div class="photo-slot">
-                    <label class="photo-upload" for="backPhoto">
-                        @if (!string.IsNullOrWhiteSpace(backPhoto))
-                        {
-                            <img src="@Url.Content("~" + backPhoto)" alt="Back" id="backPreview" />
-                        }
-                        else
-                        {
-                            <i class="fas fa-camera" id="backPreviewIcon"></i>
-                        }
-                    </label>
-                    <input type="file" name="backPhoto" id="backPhoto" accept=".jpg,.jpeg,.png" style="display:none;" />
-                    <span>@L["Back"]</span>
-                </div>
-                <div class="photo-slot">
-                    <label class="photo-upload" for="problemPhoto">
-                        @if (!string.IsNullOrWhiteSpace(problemPhoto))
-                        {
-                            <img src="@Url.Content("~" + problemPhoto)" alt="Problem area" id="problemPreview" />
-                        }
-                        else
-                        {
-                            <i class="fas fa-camera" id="problemPreviewIcon"></i>
-                        }
-                    </label>
-                    <input type="file" name="problemPhoto" id="problemPhoto" accept=".jpg,.jpeg,.png" style="display:none;" />
-                    <span>@L["Problem area"]</span>
-                </div>
-            </div>
+    <div class="field-card" data-svc-required="TimingPreferido">
+        <div class="question-num">3</div>
+        <div class="field-head"><i class="fas fa-clock"></i><span>@L["When would you like help?"]</span></div>
+        <div class="timing-row" id="timingGroup">
+            <button type="button" class="timing-card" data-timing="AsSoonAsPossible">
+                <span class="radio"></span>
+                <i class="fas fa-bolt main"></i><span class="label">@L["As soon as possible"]</span>
+            </button>
+            <button type="button" class="timing-card" data-timing="ThisMonth">
+                <span class="radio"></span>
+                <i class="fas fa-calendar main"></i><span class="label">@L["This month"]</span>
+            </button>
+            <button type="button" class="timing-card" data-timing="JustEstimate">
+                <span class="radio"></span>
+                <i class="fas fa-file-lines main"></i><span class="label">@L["Just getting an estimate"]</span>
+            </button>
         </div>
+    </div>
 
-        <div class="field-card" data-svc-required="TimingPreferido">
-            <div class="question-num">3</div>
-            <div class="field-head"><i class="fas fa-clock"></i><span>@L["When would you like help?"]</span></div>
-            <div class="timing-row">
-                <button type="button" class="timing-card" data-timing="AsSoonAsPossible">
-                    <span class="radio"></span>
-                    <i class="fas fa-bolt main"></i><span class="label">@L["As soon as possible"]</span>
-                </button>
-                <button type="button" class="timing-card" data-timing="ThisMonth">
-                    <span class="radio"></span>
-                    <i class="fas fa-calendar main"></i><span class="label">@L["This month"]</span>
-                </button>
-                <button type="button" class="timing-card" data-timing="JustEstimate">
-                    <span class="radio"></span>
-                    <i class="fas fa-file-lines main"></i><span class="label">@L["Just getting an estimate"]</span>
-                </button>
-            </div>
+    <div class="review-so-far">
+        <h4><i class="fas fa-clipboard-list"></i> @L["Review so far"]</h4>
+        <div class="review-mini-grid">
+            <div class="review-mini"><i class="fas fa-layer-group"></i><div class="lbl">@L["Surface"]</div><div class="val">@Model.SurfaceLabel</div></div>
+            <div class="review-mini"><i class="fas fa-circle-exclamation"></i><div class="lbl">@L["Issues"]</div><div class="val">@Model.IssuesLabel</div></div>
+            <div class="review-mini"><i class="fas fa-calendar"></i><div class="lbl">@L["Last painted"]</div><div class="val">@Model.LastPaintedLabel</div></div>
+            <div class="review-mini"><i class="fas fa-location-dot"></i><div class="lbl">@L["Scope"]</div><div class="val">@Model.ScopeLabel</div></div>
         </div>
+    </div>
 
-        <div class="review-so-far">
-            <h4><i class="fas fa-clipboard-list"></i> @L["Review so far"]</h4>
-            <div class="review-mini-grid">
-                <div class="review-mini"><i class="fas fa-layer-group"></i><div class="lbl">@L["Surface"]</div><div class="val">@Model.SurfaceLabel</div></div>
-                <div class="review-mini"><i class="fas fa-circle-exclamation"></i><div class="lbl">@L["Issues"]</div><div class="val">@Model.IssuesLabel</div></div>
-                <div class="review-mini"><i class="fas fa-calendar"></i><div class="lbl">@L["Last painted"]</div><div class="val">@Model.LastPaintedLabel</div></div>
-                <div class="review-mini"><i class="fas fa-location-dot"></i><div class="lbl">@L["Scope"]</div><div class="val">@Model.ScopeLabel</div></div>
-            </div>
-        </div>
+    <div class="field-card" data-svc-optional>
+        <div class="field-head"><i class="fas fa-note-sticky"></i><span>@L["Notes (optional)"]</span></div>
+        <textarea asp-for="Notas" placeholder="@L["Add any details"]" maxlength="300"></textarea>
+    </div>
 
-        <div class="field-card" data-svc-optional>
-            <div class="field-head"><i class="fas fa-note-sticky"></i><span>@L["Notes (optional)"]</span></div>
-            <textarea asp-for="Notas" placeholder="@L["Add any details"]" maxlength="300"></textarea>
-        </div>
+    <button type="submit" name="action" value="continue" class="btn-primary">
+        <i class="fas fa-paint-roller"></i> @L["Request paint review"] <i class="fas fa-chevron-right"></i>
+    </button>
+</form>
 
-        <button type="submit" name="action" value="continue" class="btn-primary">
-            <i class="fas fa-paint-roller"></i> @L["Request paint review"] <i class="fas fa-chevron-right"></i>
-        </button>
-    </form>
 @section Scripts {
 <script>
     (function () {
-        var storiesInput = document.getElementById('NumeroPisos');
-        var timingInput = document.getElementById('TimingPreferido');
+        function bindSingle(groupSelector, attr, input, initial) {
+            if (!input) return;
+            var seed = (initial && String(initial).trim()) || '';
+            if (!seed) {
+                input.value = '';
+            }
 
-        document.querySelectorAll('[data-stories]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                document.querySelectorAll('[data-stories]').forEach(function (b) { b.classList.remove('active'); });
-                btn.classList.add('active');
-                storiesInput.value = btn.getAttribute('data-stories');
+            document.querySelectorAll(groupSelector).forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll(groupSelector).forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    input.value = btn.getAttribute(attr) || '';
+                });
+                if (seed && btn.getAttribute(attr) === seed) {
+                    btn.classList.add('active');
+                }
             });
-            if (btn.getAttribute('data-stories') === storiesInput.value) btn.classList.add('active');
-        });
+            if (seed) {
+                input.value = seed;
+            }
+        }
 
-        document.querySelectorAll('[data-timing]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                document.querySelectorAll('[data-timing]').forEach(function (b) { b.classList.remove('active'); });
-                btn.classList.add('active');
-                timingInput.value = btn.getAttribute('data-timing');
-            });
-            if (btn.getAttribute('data-timing') === timingInput.value) btn.classList.add('active');
-        });
+        bindSingle('#storiesGroup [data-stories]', 'data-stories', document.getElementById('NumeroPisos'), '@Model.NumeroPisos');
+        bindSingle('#timingGroup [data-timing]', 'data-timing', document.getElementById('TimingPreferido'), '@Model.TimingPreferido');
 
-        function previewFile(inputId, labelSelector) {
+        function previewFile(inputId) {
             var input = document.getElementById(inputId);
             if (!input) return;
             input.addEventListener('change', function () {
@@ -176,6 +179,5 @@
         previewFile('backPhoto');
         previewFile('problemPhoto');
     })();
-
 </script>
 }

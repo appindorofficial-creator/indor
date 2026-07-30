@@ -66,11 +66,11 @@ public class ExteriorPaintScheduleViewModel
     public string? LandingSubtitulo { get; set; }
     public string? ImagenUrl { get; set; }
 
-    [Required]
-    public string NumeroPisos { get; set; } = "One";
+    [Required(ErrorMessage = "Select how many stories the home has.")]
+    public string NumeroPisos { get; set; } = string.Empty;
 
-    [Required]
-    public string TimingPreferido { get; set; } = "AsSoonAsPossible";
+    [Required(ErrorMessage = "Select when you would like help.")]
+    public string TimingPreferido { get; set; } = string.Empty;
 
     [MaxLength(300)]
     public string? Notas { get; set; }

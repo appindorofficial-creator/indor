@@ -2439,6 +2439,17 @@ public static class UiTranslationsFinal
             ["Recommended every 5 years"] = "Recomendado cada 5 años",
             ["Paint sooner if you see peeling, fading, or damaged caulk."] =
                 "Pinta antes si ves desprendimiento, decoloración o calafateo dañado.",
+            ["Fresh exterior paint protects siding and trim"] =
+                "La pintura exterior fresca protege el revestimiento y las molduras",
+            ["Annual visual checks help catch peeling and bad caulk early"] =
+                "Las revisiones visuales anuales ayudan a detectar a tiempo el desprendimiento y el calafateo dañado",
+            ["A full repaint is often needed about every 5 years, depending on material and weather"] =
+                "A menudo se necesita un repintado completo cada 5 años, según del material y el clima",
+            ["We'll review your photos"] = "Revisaremos tus fotos",
+            ["We'll confirm scope and surface type"] = "Confirmaremos el alcance y el tipo de superficie",
+            ["We'll help you plan timing and color options"] =
+                "Te ayudaremos a planificar el momento y las opciones de color",
+            ["Check paint condition every year"] = "Revisa el estado de la pintura cada año",
             ["Gutters should be cleaned in the spring and fall to help prevent clogs, overflow, fascia damage, foundation issues, and water intrusion."] =
                 "Las canaletas deben limpiarse en primavera y otoño para evitar obstrucciones, desbordes, daño en la fascia, problemas de cimentación e ingreso de agua.",
             ["Recommended twice a year"] = "Recomendado dos veces al año",
