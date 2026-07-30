@@ -191,7 +191,7 @@ public class RealtorInspectionUploadController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> ViewReport(int? reportPage, string? filter, string? sort)
+    public async Task<IActionResult> ViewReport(int? reportPage, int? page, string? filter, string? sort)
     {
         var draft = await wizard.GetDraftAsync();
         if (draft == null || string.IsNullOrWhiteSpace(draft.ReportFileUrl))
@@ -199,9 +199,19 @@ public class RealtorInspectionUploadController(
             return RedirectToAction(nameof(Upload));
         }
 
+        // Prefer reportPage — "page" is an ASP.NET reserved route value and often
+        // fails to bind / link-generate. Accept legacy ?page= as a fallback.
         // Do not rely on #page=N — iOS/WebView PDF viewers ignore hash fragments.
-        // Pass reportPage into the view and open it with PDF.js instead.
-        // ("page" is also an ASP.NET reserved route value and will not bind/link-generate.)
+        var startPage = reportPage is > 0
+            ? reportPage
+            : page is > 0 ? page : null;
+        if (startPage is null
+            && int.TryParse(Request.Query["reportPage"], out var qpReport)
+            && qpReport > 0)
+        {
+            startPage = qpReport;
+        }
+
         var reportUrl = Url.Content($"~{draft.ReportFileUrl}")!;
 
         var backUrl = draft.CurrentStep >= 3
@@ -213,7 +223,7 @@ public class RealtorInspectionUploadController(
         {
             ReportFileName = draft.ReportFileName ?? "Inspection Report",
             ReportUrl = reportUrl,
-            SourcePage = reportPage is > 0 ? reportPage : null,
+            SourcePage = startPage,
             BackUrl = backUrl
         });
     }

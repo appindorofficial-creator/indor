@@ -53,8 +53,15 @@
         var viewer = document.getElementById('rlReportViewer');
         var pdfUrl = (viewer && viewer.getAttribute('data-pdf-url'))
             || @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ReportUrl));
-        var startPage = parseInt((viewer && viewer.getAttribute('data-start-page')) || '@startPage', 10);
-        if (!Number.isFinite(startPage) || startPage < 1) startPage = 1;
+        // Prefer ?reportPage= from the URL so a lost/stale data attribute cannot
+        // force every finding link onto page 1.
+        var qsPage = parseInt(new URLSearchParams(window.location.search).get('reportPage')
+            || new URLSearchParams(window.location.search).get('page')
+            || '', 10);
+        var attrPage = parseInt((viewer && viewer.getAttribute('data-start-page')) || '@startPage', 10);
+        var startPage = (Number.isFinite(qsPage) && qsPage > 0) ? qsPage
+            : (Number.isFinite(attrPage) && attrPage > 0) ? attrPage
+            : 1;
 
         var pageLabelTemplate = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Page {0}"].ToString()));
         var ofTemplate = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Page {0} of {1}"].ToString()));

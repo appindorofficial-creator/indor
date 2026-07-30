@@ -2887,7 +2887,7 @@ ul.rl-next-steps li > span:first-child {
     background: #fff;
     border: 1.5px solid #E2E8F0;
     border-radius: 16px;
-    cursor: pointer;
+    cursor: default;
     transition: border-color .2s, box-shadow .2s, background .2s;
 }
 
@@ -2913,6 +2913,13 @@ ul.rl-next-steps li > span:first-child {
     box-shadow: 0 8px 22px rgba(0, 102, 204, .12);
 }
 .rl-insp-finding-card input { display: none; }
+.rl-insp-finding-card-select {
+    display: block;
+    cursor: pointer;
+}
+.rl-insp-finding-card > .rl-insp-open-page-btn {
+    margin-top: 10px;
+}
 
 .rl-insp-finding-card-head {
     display: grid;

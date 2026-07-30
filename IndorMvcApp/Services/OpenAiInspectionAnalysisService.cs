@@ -672,13 +672,15 @@ public class OpenAiInspectionAnalysisService(
                 ?? node["reportSectionNumber"]?.GetValue<string>());
 
             int? sourcePage = null;
-
-            if (node["sourcePage"] != null && int.TryParse(node["sourcePage"]?.ToString(), out var page) && page > 0)
-
+            var pageNode = node["sourcePage"]
+                ?? node["SourcePage"]
+                ?? node["page"]
+                ?? node["reportPage"];
+            if (pageNode != null
+                && int.TryParse(pageNode.ToString(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var page)
+                && page > 0)
             {
-
                 sourcePage = page;
-
             }
 
 
