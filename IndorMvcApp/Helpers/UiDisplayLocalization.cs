@@ -176,9 +176,10 @@ public static class UiDisplayLocalization
 
             // AI maintenance summary: "Given the location in Parks, AZ, …"
             // Location may include a comma (City, ST); the sentence after starts lowercase.
+            // Also accept Spanglish "en" when a prior pass already swapped in→en.
             var givenLocationMatch = Regex.Match(
                 text,
-                @"^Given the location in (.+),\s+([a-z].+)$",
+                @"^Given the location (?:in|en) (.+),\s+([a-z].+)$",
                 RegexOptions.IgnoreCase | RegexOptions.Singleline);
             if (givenLocationMatch.Success)
             {
@@ -186,6 +187,31 @@ public static class UiDisplayLocalization
                     "Given the location in {0}, {1}",
                     givenLocationMatch.Groups[1].Value.Trim(),
                     Localize(localizer, givenLocationMatch.Groups[2].Value.Trim()));
+            }
+
+            // Repair English AI copy that had "in" wrongly swapped to "en" (Spanglish),
+            // then retry catalog lookup (e.g. "batteries en smoke…").
+            if (AppearsPrimarilyEnglish(text)
+                && text.Contains(" en ", StringComparison.Ordinal)
+                && !text.Contains('á') && !text.Contains('é') && !text.Contains('í')
+                && !text.Contains('ó') && !text.Contains('ú') && !text.Contains('ñ'))
+            {
+                var repaired = text.Replace(" en ", " in ", StringComparison.Ordinal);
+                if (!string.Equals(repaired, text, StringComparison.Ordinal))
+                {
+                    var repairedHit = localizer[repaired];
+                    if (!string.Equals(repairedHit, repaired, StringComparison.Ordinal)
+                        && !string.Equals(repairedHit, repaired.Trim(), StringComparison.Ordinal))
+                    {
+                        return repairedHit;
+                    }
+
+                    if (SpanishIgnoreCase.Value.TryGetValue(repaired, out var repairedIgnore)
+                        && !string.Equals(repairedIgnore, repaired, StringComparison.OrdinalIgnoreCase))
+                    {
+                        return repairedIgnore;
+                    }
+                }
             }
         }
 

@@ -1486,6 +1486,8 @@ public static class UiTranslationsHome
                 "Programa un servicio profesional de HVAC para asegurar una refrigeración eficiente durante los meses de calor.",
             ["Service your heating and cooling systems to ensure they are operating efficiently and to extend their lifespan."] =
                 "Da servicio a tus sistemas de calefacción y refrigeración para asegurar que operen con eficiencia y prolongar su vida útil.",
+            ["Schedule a professional service for your heating and cooling systems to ensure they are operating efficiently and to extend their lifespan."] =
+                "Programa un servicio profesional de tus sistemas de calefacción y refrigeración para asegurar que operen con eficiencia y prolongar su vida útil.",
             ["Inspect and Seal Windows and Doors"] = "Inspeccionar y sellar ventanas y puertas",
             ["Check for gaps or cracks around windows and doors and apply weather stripping or caulk to improve energy efficiency."] =
                 "Busca rendijas o grietas alrededor de ventanas y puertas y aplica burletes o sellador para mejorar la eficiencia energética.",
@@ -1498,6 +1500,17 @@ public static class UiTranslationsHome
             ["Landscape Maintenance"] = "Mantenimiento del paisaje",
             ["Trim trees and shrubs, and check irrigation systems to keep landscaping healthy and prevent damage near the home."] =
                 "Poda árboles y arbustos, y revisa los sistemas de riego para mantener el paisaje saludable y prevenir daños cerca del hogar.",
+            ["Trim trees and shrubs, and check irrigation systems to promote healthy growth and prevent damage to the home."] =
+                "Poda árboles y arbustos, y revisa los sistemas de riego para promover un crecimiento saludable y prevenir daños en el hogar.",
+            ["Trim trees and shrubs and check irrigation systems to promote healthy growth and prevent damage to the home."] =
+                "Poda árboles y arbustos, y revisa los sistemas de riego para promover un crecimiento saludable y prevenir daños en el hogar.",
+            ["Service the HVAC System"] = "Dar servicio al sistema HVAC",
+            ["HVAC System Service"] = "Dar servicio al sistema HVAC",
+            ["Service HVAC"] = "Dar servicio al sistema HVAC",
+            ["Have your HVAC system serviced to ensure efficient heating and cooling and to catch issues early."] =
+                "Da mantenimiento a tu sistema HVAC para asegurar calefacción y refrigeración eficientes y detectar problemas a tiempo.",
+            ["Schedule HVAC maintenance to keep your system running efficiently through seasonal temperature swings."] =
+                "Programa el mantenimiento del HVAC para que el sistema funcione con eficiencia ante los cambios de temperatura de temporada.",
             ["Use this page to detail your site's privacy policy."] = "Usa esta página para detallar la política de privacidad de tu sitio.",
             ["Good morning"] = "Buenos días",
             ["Good afternoon"] = "Buenas tardes",
