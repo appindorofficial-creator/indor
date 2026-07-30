@@ -2586,6 +2586,15 @@ ul.rl-next-steps li > span:first-child {
     padding: 24px;
 }
 
+/* Author display:flex beats the UA [hidden] rule in this app's cascade —
+   without this, loading/error stay visible and fill the viewport with blank space. */
+.rl-insp-report-loading[hidden],
+.rl-insp-report-error[hidden],
+.rl-insp-report-canvas[hidden],
+.rl-insp-report-toolbar[hidden] {
+    display: none !important;
+}
+
 .rl-insp-report-error {
     color: #B91C1C;
 }
