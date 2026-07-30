@@ -16,7 +16,7 @@
         <i class="fas fa-house main"></i>
         <div class="meta">
             <div class="addr">@Model.DireccionPropiedad</div>
-            <a asp-action="GeneralHelpRequest" asp-route-id="@Model.MovingSetupServicioId" class="change">Change address ></a>
+            <a asp-action="GeneralHelpRequest" asp-route-id="@Model.MovingSetupServicioId" class="change">@L["Change address"] &gt;</a>
         </div>
     </div>
 
@@ -29,7 +29,7 @@
         <input type="hidden" asp-for="ContactoPreferido" id="ContactoPreferido" />
         <input type="hidden" asp-for="NotasAcceso" id="NotasAcceso" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="Descripcion">
             <span class="field-label">@L["Tell us more"]</span>
             <div class="input-wrap" style="align-items:flex-start;">
                 <i class="fas fa-note-sticky" style="margin-top:12px;"></i>
@@ -38,7 +38,7 @@
             <div class="char-count"><span id="charCount">0</span>/500</div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="ContactoPreferido">
             <span class="field-label">@L["Best contact"]</span>
             <div class="chip-scroll" id="contactGroup">
                 <button type="button" class="chip-option" data-value="Call"><i class="fas fa-phone"></i> @L["Call"]</button>
@@ -47,7 +47,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <span class="field-label">@L["Access notes"]</span>
             <div class="help-grid" id="accessGroup" style="grid-template-columns:repeat(3,1fr);">
                 <button type="button" class="help-tile" data-value="Apartment"><i class="fas fa-building"></i>@L["Apartment"]</button>
@@ -77,7 +77,7 @@
         <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["The more details you provide, the faster our team can help."]</span></div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">@L["Continue"]</button>
-        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline" formnovalidate>@L["Back"]</button>
     </form>
 </div>
 @section Scripts {

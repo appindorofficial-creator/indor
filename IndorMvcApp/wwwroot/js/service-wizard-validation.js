@@ -49,6 +49,7 @@
         '.type-card',
         '.time-btn',
         '.time-card',
+        '.time-slot',
         '.area-card',
         '.area-btn',
         '.area-pill',

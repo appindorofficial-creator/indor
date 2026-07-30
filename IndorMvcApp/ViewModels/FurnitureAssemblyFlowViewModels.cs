@@ -82,7 +82,7 @@ public class FurnitureAssemblyPreferencesViewModel : IValidatableObject
     [Required(ErrorMessage = "Select a preferred date.")]
     [DataType(DataType.Date)]
     [Display(Name = "Preferred date")]
-    public DateTime FechaServicio { get; set; }
+    public DateTime? FechaServicio { get; set; }
 
     [Required]
     public string VentanaHorario { get; set; } = "Morning";
@@ -94,7 +94,7 @@ public class FurnitureAssemblyPreferencesViewModel : IValidatableObject
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (FechaServicio.Date < DateTime.Today)
+        if (!FechaServicio.HasValue || FechaServicio.Value.Date < DateTime.Today)
         {
             yield return new ValidationResult(
                 "Please select today or a future date.",

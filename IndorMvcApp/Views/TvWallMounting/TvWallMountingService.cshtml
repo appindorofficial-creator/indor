@@ -31,7 +31,7 @@
 
         @if (Model.IncludedItems.Count > 0)
         {
-            <div class="field-card">
+            <div class="field-card" data-svc-optional>
                 <span class="field-label">@L["What's included"]</span>
                 <div class="included-inline">
                     @foreach (var item in Model.IncludedItems)
@@ -49,7 +49,7 @@
                 <div class="included-inline">
                     @foreach (var opt in Model.BestForOptions)
                     {
-                        <span><i class="fas @opt.Icon"></i> @opt.Label</span>
+                        <span><i class="fas @opt.Icon"></i> @L.Catalog(opt.Label)</span>
                     }
                 </div>
             </div>
@@ -63,13 +63,13 @@
         <div class="info-cards">
             <div class="info-card">
                 <i class="fas fa-clock"></i>
-                <div class="label">@Model.EstimatedTimeLabel</div>
-                <div class="value">@Model.EstimatedTimeValue</div>
+                <div class="label">@L.Catalog(Model.EstimatedTimeLabel)</div>
+                <div class="value">@L.Catalog(Model.EstimatedTimeValue)</div>
             </div>
             <div class="info-card">
                 <i class="fas fa-wand-magic-sparkles"></i>
-                <div class="label">@Model.BestTimingLabel</div>
-                <div class="value">@Model.BestTimingValue</div>
+                <div class="label">@L.Catalog(Model.BestTimingLabel)</div>
+                <div class="value">@L.Catalog(Model.BestTimingValue)</div>
             </div>
         </div>
 

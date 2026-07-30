@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.TvWallMountingConfirmedViewModel
 @{
     ViewData["Title"] = L["Booking Confirmed - INDOR"];
-    ViewData["WizardTitle"] = Model.NombreServicio;
+    ViewData["WizardTitle"] = L.Catalog(Model.NombreServicio);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
@@ -11,7 +11,7 @@
     <p class="page-lead" style="text-align:center;">@L["Everything is confirmed. We've reserved your appointment and sent your request."]</p>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-tv"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-tv"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.NombreServicio)</div></div></div>
         <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
         <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Date"]</div><div class="summary-value">@Model.FechaServicioLabel</div></div></div>
         <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">@L["Time"]</div><div class="summary-value">@Model.VentanaHorarioLabel</div></div></div>

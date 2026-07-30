@@ -5,78 +5,79 @@
     ViewData["WizardBackUrl"] = Url.Action("PackingService", "Packing", new { id = Model.MovingSetupServicioId });
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 3;
-
 }
 
-
 <h2 class="page-heading" style="font-size:1.15rem;">@L["Tell us about your packing job"]</h2>
-    <p class="page-lead" style="margin-top:-8px;">@L["Help us match the right crew and packing materials."]</p>
+<p class="page-lead" style="margin-top:-8px;">@L["Help us match the right crew and packing materials."]</p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+<div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="packing-about-form" asp-action="PackingAbout" method="post">
-        <input type="hidden" asp-for="SolicitudId" />
-        <input type="hidden" asp-for="MovingSetupServicioId" />
-        <input type="hidden" asp-for="NombreServicio" />
-        <input type="hidden" asp-for="TipoEmpaque" id="TipoEmpaque" />
-        <input type="hidden" asp-for="CuandoMudanza" id="CuandoMudanza" />
-        <input type="hidden" asp-for="TipoPropiedad" id="TipoPropiedad" />
-        <input type="hidden" asp-for="TamanoHogar" id="TamanoHogar" />
+<form id="packing-about-form" asp-action="PackingAbout" method="post" class="iw-step-form" novalidate>
+    <input type="hidden" asp-for="SolicitudId" />
+    <input type="hidden" asp-for="MovingSetupServicioId" />
+    <input type="hidden" asp-for="NombreServicio" />
+    <input type="hidden" asp-for="TipoEmpaque" id="TipoEmpaque" />
+    <input type="hidden" asp-for="CuandoMudanza" id="CuandoMudanza" />
+    <input type="hidden" asp-for="TipoPropiedad" id="TipoPropiedad" />
+    <input type="hidden" asp-for="TamanoHogar" id="TamanoHogar" />
 
-        <div class="address-card">
-            <div class="left"><i class="fas fa-house" style="color:#0066CC;"></i><input asp-for="DireccionPropiedad" placeholder="@L["123 Main St, Charlotte, NC 28202"]" required /></div>
-            <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">@L["Edit"]</span>
+    <div class="field-card" data-svc-required="DireccionPropiedad">
+        <span class="field-label">@L["Property"]</span>
+        <div class="input-wrap">
+            <i class="fas fa-house"></i>
+            <input asp-for="DireccionPropiedad" id="DireccionPropiedad" placeholder="@L["123 Main St, Charlotte, NC 28202"]" data-address-autocomplete autocomplete="off" />
         </div>
+    </div>
 
-        <div class="field-card">
-            <span class="field-label">@L["What kind of packing help do you need?"]</span>
-            <div class="packing-type-grid" data-target="TipoEmpaque">
-                <button type="button" class="type-card" data-value="FullPacking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box-open"></i>@L["Full packing"]</button>
-                <button type="button" class="type-card" data-value="PartialPacking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box"></i>@L["Partial packing"]</button>
-                <button type="button" class="type-card" data-value="FragileOnly"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-wine-glass"></i>@L["Fragile items only"]</button>
-                <button type="button" class="type-card" data-value="LastMinute"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-clock"></i>@L["Last-minute help"]</button>
-            </div>
+    <div class="field-card" data-svc-required="TipoEmpaque">
+        <span class="field-label">@L["What kind of packing help do you need?"]</span>
+        <div class="packing-type-grid" data-target="TipoEmpaque">
+            <button type="button" class="type-card" data-value="FullPacking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box-open"></i>@L["Full packing"]</button>
+            <button type="button" class="type-card" data-value="PartialPacking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box"></i>@L["Partial packing"]</button>
+            <button type="button" class="type-card" data-value="FragileOnly"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-wine-glass"></i>@L["Fragile items only"]</button>
+            <button type="button" class="type-card" data-value="LastMinute"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-clock"></i>@L["Last-minute help"]</button>
         </div>
+    </div>
 
-        <div class="field-card">
-            <span class="field-label">@L["When are you moving?"]</span>
-            <div class="segment-row" data-target="CuandoMudanza">
-                <button type="button" class="segment-btn" data-value="Today"><i class="fas fa-calendar-day"></i> @L["Today"]</button>
-                <button type="button" class="segment-btn" data-value="Tomorrow"><i class="fas fa-calendar-plus"></i> @L["Tomorrow"]</button>
-                <button type="button" class="segment-btn" data-value="ThisWeek"><i class="fas fa-calendar-week"></i> @L["This week"]</button>
-                <button type="button" class="segment-btn" data-value="LaterDate"><i class="fas fa-calendar"></i> @L["Later date"]</button>
-            </div>
-            <div id="laterDateWrap" style="margin-top:12px;display:none;">
-                <div class="input-wrap"><i class="fas fa-calendar"></i><input asp-for="FechaServicio" type="date" /></div>
-            </div>
+    <div class="field-card" data-svc-required="CuandoMudanza">
+        <span class="field-label">@L["When are you moving?"]</span>
+        <div class="segment-row" data-target="CuandoMudanza">
+            <button type="button" class="segment-btn" data-value="Today"><i class="fas fa-calendar-day"></i> @L["Today"]</button>
+            <button type="button" class="segment-btn" data-value="Tomorrow"><i class="fas fa-calendar-plus"></i> @L["Tomorrow"]</button>
+            <button type="button" class="segment-btn" data-value="ThisWeek"><i class="fas fa-calendar-week"></i> @L["This week"]</button>
+            <button type="button" class="segment-btn" data-value="LaterDate"><i class="fas fa-calendar"></i> @L["Later date"]</button>
         </div>
-
-        <div class="field-card">
-            <span class="field-label">@L["Property type"]</span>
-            <div class="segment-row" data-target="TipoPropiedad">
-                <button type="button" class="segment-btn" data-value="Apartment"><i class="fas fa-building"></i> @L["Apartment"]</button>
-                <button type="button" class="segment-btn" data-value="House"><i class="fas fa-house"></i> @L["House"]</button>
-                <button type="button" class="segment-btn" data-value="Townhome"><i class="fas fa-house-chimney"></i> @L["Townhome"]</button>
-                <button type="button" class="segment-btn" data-value="Office"><i class="fas fa-briefcase"></i> @L["Office"]</button>
-            </div>
+        <div id="laterDateWrap" class="field-card" style="margin-top:12px;display:none;" data-svc-required="FechaServicio">
+            <div class="input-wrap"><i class="fas fa-calendar"></i><input asp-for="FechaServicio" id="FechaServicio" type="date" /></div>
         </div>
+    </div>
 
-        <div class="field-card">
-            <span class="field-label">@L["Home size"]</span>
-            <div class="segment-row" data-target="TamanoHogar">
-                <button type="button" class="segment-btn" data-value="OneTwoRooms">@L["1-2 rooms"]</button>
-                <button type="button" class="segment-btn" data-value="ThreeFourRooms">@L["3-4 rooms"]</button>
-                <button type="button" class="segment-btn" data-value="FivePlusRooms">@L["5+ rooms"]</button>
-                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
-            </div>
+    <div class="field-card" data-svc-required="TipoPropiedad">
+        <span class="field-label">@L["Property type"]</span>
+        <div class="segment-row" data-target="TipoPropiedad">
+            <button type="button" class="segment-btn" data-value="Apartment"><i class="fas fa-building"></i> @L["Apartment"]</button>
+            <button type="button" class="segment-btn" data-value="House"><i class="fas fa-house"></i> @L["House"]</button>
+            <button type="button" class="segment-btn" data-value="Townhome"><i class="fas fa-house-chimney"></i> @L["Townhome"]</button>
+            <button type="button" class="segment-btn" data-value="Office"><i class="fas fa-briefcase"></i> @L["Office"]</button>
         </div>
+    </div>
 
-        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["The more details you provide, the better we can prepare the right crew and materials for your move."]</span></div>
+    <div class="field-card" data-svc-required="TamanoHogar">
+        <span class="field-label">@L["Home size"]</span>
+        <div class="segment-row" data-target="TamanoHogar">
+            <button type="button" class="segment-btn" data-value="OneTwoRooms">@L["1-2 rooms"]</button>
+            <button type="button" class="segment-btn" data-value="ThreeFourRooms">@L["3-4 rooms"]</button>
+            <button type="button" class="segment-btn" data-value="FivePlusRooms">@L["5+ rooms"]</button>
+            <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
+        </div>
+    </div>
 
-        <button type="submit" class="btn-primary">@L["Next"]</button>
-        <button type="submit" name="action" value="skip" class="btn-outline">@L["Skip for now"]</button>
-    </form>
-</div>
+    <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["The more details you provide, the better we can prepare the right crew and materials for your move."]</span></div>
+
+    <button type="submit" class="btn-primary">@L["Next"]</button>
+    <button type="submit" name="action" value="skip" class="btn-outline" formnovalidate>@L["Skip for now"]</button>
+</form>
+
 @section Scripts {
 <script>
     (function () {
@@ -85,13 +86,13 @@
             const container = document.querySelector(containerSelector);
             if (!container || !hidden) return;
             const buttons = container.querySelectorAll('.type-card');
+            const seed = (initial && String(initial).trim()) || (hidden.value && String(hidden.value).trim()) || '';
             function setActive(value) {
                 const normalized = value && String(value).trim() ? value : '';
                 hidden.value = normalized;
                 buttons.forEach(b => b.classList.toggle('active', normalized && b.dataset.value === normalized));
             }
             buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
-            const seed = (initial && String(initial).trim()) || (hidden.value && String(hidden.value).trim()) || '';
             setActive(seed);
         }
 
@@ -100,6 +101,7 @@
             const container = document.querySelector(containerSelector);
             if (!container || !hidden) return;
             const buttons = container.querySelectorAll('.segment-btn');
+            const seed = (initial && String(initial).trim()) || (hidden.value && String(hidden.value).trim()) || '';
             function setActive(value) {
                 const normalized = value && String(value).trim() ? value : '';
                 hidden.value = normalized;
@@ -107,7 +109,6 @@
                 if (onChange) onChange(normalized);
             }
             buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
-            const seed = (initial && String(initial).trim()) || (hidden.value && String(hidden.value).trim()) || '';
             setActive(seed);
         }
 
@@ -117,36 +118,7 @@
         initSegments('[data-target="CuandoMudanza"]', 'CuandoMudanza', '@Model.CuandoMudanza', value => {
             document.getElementById('laterDateWrap').style.display = value === 'LaterDate' ? 'block' : 'none';
         });
-
-        const form = document.getElementById('packing-about-form');
-        const requiredFields = [
-            { id: 'TipoEmpaque', message: 'Please select what kind of packing help you need.' },
-            { id: 'CuandoMudanza', message: 'Please select when you are moving.' },
-            { id: 'TipoPropiedad', message: 'Please select your property type.' },
-            { id: 'TamanoHogar', message: 'Please select your home size.' }
-        ];
-
-        form?.addEventListener('submit', function (e) {
-            if (e.submitter && e.submitter.value === 'skip') {
-                return;
-            }
-
-            var firstMissing = null;
-            requiredFields.forEach(function (field) {
-                var input = document.getElementById(field.id);
-                if (!input) return;
-                var empty = !input.value || !String(input.value).trim();
-                if (empty && !firstMissing) {
-                    firstMissing = field;
-                }
-            });
-
-            if (firstMissing) {
-                e.preventDefault();
-                alert(firstMissing.message);
-            }
-        });
     })();
-
 </script>
+@await Html.PartialAsync("_AddressAutocompleteScripts")
 }

@@ -200,7 +200,7 @@ public class FurnitureAssemblyController : Controller
             Habitacion = prefsEntered ? (solicitud.Habitacion ?? "") : "",
             DetallesAcceso = prefsEntered ? (solicitud.DetallesAcceso ?? "") : "",
             AyudaMover = prefsEntered ? (solicitud.AyudaMover ?? "") : "",
-            FechaServicio = prefsEntered ? NormalizeServiceDate(solicitud.FechaServicio) : DateTime.Today.AddDays(30),
+            FechaServicio = prefsEntered ? NormalizeServiceDate(solicitud.FechaServicio) : null,
             VentanaHorario = prefsEntered ? (solicitud.VentanaHorario ?? "") : "",
             NotaCorta = prefsEntered ? solicitud.NotaCorta : null,
             MinServiceDateIso = DateTime.Today.ToString("yyyy-MM-dd")
@@ -219,7 +219,7 @@ public class FurnitureAssemblyController : Controller
             return RedirectToAction(nameof(FurnitureAssemblyItems), new { id = solicitud.Id });
         }
 
-        if (model.FechaServicio.Date < DateTime.Today)
+        if (!model.FechaServicio.HasValue || model.FechaServicio.Value.Date < DateTime.Today)
         {
             ModelState.AddModelError(nameof(model.FechaServicio), "Please select today or a future date.");
         }
@@ -237,7 +237,7 @@ public class FurnitureAssemblyController : Controller
             solicitud.Habitacion = model.Habitacion;
             solicitud.DetallesAcceso = model.DetallesAcceso;
             solicitud.AyudaMover = model.AyudaMover;
-            solicitud.FechaServicio = model.FechaServicio.Date;
+            solicitud.FechaServicio = model.FechaServicio?.Date;
             solicitud.VentanaHorario = model.VentanaHorario;
             solicitud.NotaCorta = model.NotaCorta?.Trim();
             solicitud.Estado = "PreferencesCompleted";
@@ -435,13 +435,6 @@ public class FurnitureAssemblyController : Controller
     {
         var fechaLabel = FurnitureAssemblyDisplayLabels.FormatDate(solicitud.FechaServicio);
         var timeLabel = FurnitureAssemblyDisplayLabels.FormatTimeWindow(solicitud.VentanaHorario);
-        var windowShort = solicitud.VentanaHorario switch
-        {
-            "Morning" => "Morning",
-            "Afternoon" => "Afternoon",
-            "Evening" => "Evening",
-            _ => "Afternoon"
-        };
 
         return new FurnitureAssemblyReviewViewModel
         {
@@ -450,7 +443,7 @@ public class FurnitureAssemblyController : Controller
             NombreServicio = solicitud.MovingSetupServicio!.Nombre,
             DireccionPropiedad = solicitud.DireccionPropiedad ?? "—",
             ItemsResumen = FurnitureAssemblyDisplayLabels.FormatPipeList(solicitud.TiposMueble, FurnitureAssemblyDisplayLabels.FormatFurnitureType),
-            FechaHorarioLabel = $"{fechaLabel} - {windowShort}",
+            FechaHorarioLabel = $"{fechaLabel} - {timeLabel}",
             HabitacionLabel = FurnitureAssemblyDisplayLabels.FormatRoom(solicitud.Habitacion),
             AccesoLabel = FurnitureAssemblyDisplayLabels.FormatPipeList(solicitud.DetallesAcceso, FurnitureAssemblyDisplayLabels.FormatAccess),
             NotaCorta = solicitud.NotaCorta,

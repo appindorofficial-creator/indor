@@ -172,7 +172,7 @@ public class UtilitiesSetupController : Controller
             {
                 if (!model.ProveedorInternetId.HasValue)
                 {
-                    ModelState.AddModelError(nameof(model.ProveedorInternetId), "Please select an internet provider.");
+                    ModelState.AddModelError(nameof(model.ProveedorInternetId), DisplayLabelsLocalization.L("Please select an internet provider."));
                     return View(await RebuildInternetViewModelAsync(solicitud, model));
                 }
 

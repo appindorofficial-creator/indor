@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.UtilitiesSetupInternetViewModel
 @using IndorMvcApp.Services
 @{
-    ViewData["Title"] = L["Internet & Cable Options - INDOR"];
+    ViewData["Title"] = L.Catalog(Model.PageTitle) + " - INDOR";
     ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
     ViewData["WizardBackUrl"] = Url.Action("UtilitiesSetupAddress", "UtilitiesSetup", new { id = Model.MovingSetupServicioId });
     ViewData["WizardStep"] = 2;
@@ -28,34 +28,36 @@
         <input type="hidden" asp-for="ProveedorInternetId" id="ProveedorInternetId" />
         <input type="hidden" asp-for="OpcionCable" id="OpcionCable" />
 
-        @foreach (var provider in Model.Proveedores)
-        {
-            var badgeClass = UtilitiesSetupDisplayLabels.ProviderBadgeClass(provider.Etiqueta);
-            <div class="provider-card @(provider.Selected ? "selected" : "")" data-provider-id="@provider.Id">
-                <div class="provider-head">
-                    <strong>@provider.Nombre</strong>
-                    @if (!string.IsNullOrWhiteSpace(provider.Etiqueta))
-                    {
-                        <span class="provider-badge @badgeClass">@L[provider.Etiqueta]</span>
-                    }
+        <div class="field-card" data-svc-required="ProveedorInternetId">
+            @foreach (var provider in Model.Proveedores)
+            {
+                var badgeClass = UtilitiesSetupDisplayLabels.ProviderBadgeClass(provider.Etiqueta);
+                <div class="provider-card @(provider.Selected ? "selected" : "")" data-provider-id="@provider.Id">
+                    <div class="provider-head">
+                        <strong>@provider.Nombre</strong>
+                        @if (!string.IsNullOrWhiteSpace(provider.Etiqueta))
+                        {
+                            <span class="provider-badge @badgeClass">@L[provider.Etiqueta]</span>
+                        }
+                    </div>
+                    <div class="provider-meta">@provider.Velocidad · @provider.DetalleExtra</div>
+                    <div class="provider-price">@L["From $"]@provider.PrecioDesde.ToString("0.00") @L["/mo"]</div>
+                    <div class="provider-actions">
+                        <span class="mini">@L["View plans"]</span>
+                        @if (provider.Selected)
+                        {
+                            <span class="selected-pill"><i class="fas fa-check"></i> @L["Selected"]</span>
+                        }
+                        else
+                        {
+                            <span class="mini">@L["Choose"]</span>
+                        }
+                    </div>
                 </div>
-                <div class="provider-meta">@provider.Velocidad · @provider.DetalleExtra</div>
-                <div class="provider-price">@L["From $"]@provider.PrecioDesde.ToString("0.00") @L["/mo"]</div>
-                <div class="provider-actions">
-                    <span class="mini">@L["View plans"]</span>
-                    @if (provider.Selected)
-                    {
-                        <span class="selected-pill"><i class="fas fa-check"></i> @L["Selected"]</span>
-                    }
-                    else
-                    {
-                        <span class="mini">@L["Choose"]</span>
-                    }
-                </div>
-            </div>
-        }
+            }
+        </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <span class="field-label">@L["How would you like to get cable? (Optional)"]</span>
             <div class="cable-grid" id="cableGroup">
                 <button type="button" class="cable-card" data-value="InternetOnly"><span class="radio"></span><i class="fas fa-desktop"></i>@L["Internet only"]<span class="sub">@L["No TV service"]</span></button>
@@ -65,8 +67,8 @@
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">@L["Continue"]</button>
-        <button type="submit" name="action" value="skip" class="btn-outline">@L["Skip internet for now"]</button>
-        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
+        <button type="submit" name="action" value="skip" class="btn-outline" formnovalidate>@L["Skip internet for now"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline" formnovalidate>@L["Back"]</button>
     </form>
 </div>
 @section Scripts {
@@ -89,6 +91,7 @@
                 });
                 card.classList.add('selected');
                 providerHidden.value = card.dataset.providerId;
+                providerHidden.dispatchEvent(new Event('input', { bubbles: true }));
                 const actions = card.querySelector('.provider-actions');
                 if (actions) {
                     actions.innerHTML = '<span class="mini">' + viewPlans + '</span><span class="selected-pill"><i class="fas fa-check"></i> ' + selected + '</span>';

@@ -14,7 +14,7 @@
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-box-open"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-box-open"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.NombreServicio)</div></div></div>
         <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
         <div class="summary-row"><i class="fas fa-box"></i><div><div class="summary-label">@L["Packing type"]</div><div class="summary-value">@Model.TipoEmpaqueLabel</div></div></div>
         <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Move date"]</div><div class="summary-value">@Model.FechaServicioLabel</div></div></div>
@@ -31,7 +31,7 @@
 
     @if (!string.IsNullOrWhiteSpace(Model.DisclaimerTexto))
     {
-        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@Model.DisclaimerTexto</span></div>
+        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L.Catalog(Model.DisclaimerTexto)</span></div>
     }
 
     <form asp-action="PackingReview" method="post">

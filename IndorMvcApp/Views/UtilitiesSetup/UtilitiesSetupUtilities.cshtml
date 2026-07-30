@@ -28,7 +28,7 @@ string PhoneHref(string? phone)
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <div class="field-card">
+    <div class="field-card" data-svc-optional>
         @if (Model.Contactos.Count == 0)
         {
             <p style="font-size:0.88rem;color:#64748B;">@L["No utility contacts found for the selected services."]</p>

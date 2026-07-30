@@ -24,7 +24,7 @@
         <div class="badge-row">
             @foreach (var badge in Model.Badges)
             {
-                <span class="value-badge"><i class="fas @badge.Icon"></i> @badge.Text</span>
+                <span class="value-badge"><i class="fas @badge.Icon"></i> @L.Catalog(badge.Text)</span>
             }
         </div>
     }
@@ -51,9 +51,9 @@
         <div class="info-cards">
             <div class="info-card">
                 <i class="fas fa-clock"></i>
-                <div class="label">@Model.EstimatedTimeLabel</div>
-                <div class="value">@Model.EstimatedTimeValue</div>
-                @if (!string.IsNullOrWhiteSpace(Model.EstimatedTimeNote)) { <div class="note">@Model.EstimatedTimeNote</div> }
+                <div class="label">@L.Catalog(Model.EstimatedTimeLabel)</div>
+                <div class="value">@L.Catalog(Model.EstimatedTimeValue)</div>
+                @if (!string.IsNullOrWhiteSpace(Model.EstimatedTimeNote)) { <div class="note">@L.Catalog(Model.EstimatedTimeNote)</div> }
             </div>
             <div class="info-card">
                 <i class="fas fa-users"></i>

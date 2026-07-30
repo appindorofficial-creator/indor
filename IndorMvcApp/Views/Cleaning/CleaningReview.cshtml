@@ -12,7 +12,7 @@
 <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
 <div class="summary-card">
-    <div class="summary-row"><i class="fas fa-sparkles"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TipoLimpiezaLabel</div></div></div>
+    <div class="summary-row"><i class="fas fa-sparkles"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.NombreServicio)</div></div></div>
     <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
     <div class="summary-row"><i class="fas fa-bed"></i><div><div class="summary-label">@L["Home size"]</div><div class="summary-value">@Model.TamanoHogarLabel</div></div></div>
     <div class="summary-row"><i class="fas fa-box-open"></i><div><div class="summary-label">@L["Condition"]</div><div class="summary-value">@Model.CondicionLabel</div></div></div>
@@ -56,7 +56,7 @@
 
 @if (!string.IsNullOrWhiteSpace(Model.DisclaimerTexto))
 {
-    <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@Model.DisclaimerTexto</span></div>
+    <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L.Catalog(Model.DisclaimerTexto)</span></div>
 }
 
 <form asp-action="CleaningReview" method="post" class="cl-form-actions">

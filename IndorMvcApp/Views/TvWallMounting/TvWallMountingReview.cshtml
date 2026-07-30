@@ -15,7 +15,7 @@
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-tv"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-tv"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@L.Catalog(Model.NombreServicio)</div></div></div>
         <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
         <div class="summary-row"><i class="fas fa-screwdriver-wrench"></i><div><div class="summary-label">@L["Request"]</div><div class="summary-value">@Model.TipoSolicitudLabel</div></div></div>
         <div class="summary-row"><i class="fas fa-up-right-and-down-left-from-center"></i><div><div class="summary-label">@L["TV size"]</div><div class="summary-value">@Model.TamanoTvLabel</div></div></div>
@@ -29,7 +29,7 @@
         <div class="summary-row"><i class="fas fa-building"></i><div><div class="summary-label">@L["Access"]</div><div class="summary-value">@Model.AccesoLabel</div></div></div>
         <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">@L["Arrival"]</div><div class="summary-value">@Model.VentanaHorarioLabel</div></div></div>
         <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Date"]</div><div class="summary-value">@Model.FechaServicioLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-hourglass-half"></i><div><div class="summary-label">@L["Estimated time"]</div><div class="summary-value">@Model.TiempoEstimadoLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-hourglass-half"></i><div><div class="summary-label">@L["Estimated time"]</div><div class="summary-value">@L.Catalog(Model.TiempoEstimadoLabel)</div></div></div>
         <div class="summary-row"><i class="fas fa-dollar-sign"></i><div><div class="summary-label">@L["Starting price"]</div><div class="summary-value price-highlight">$@Model.PrecioEstimado.ToString("0")</div></div></div>
         @if (!string.IsNullOrWhiteSpace(Model.NotaCorta))
         {
@@ -62,7 +62,7 @@
 
         @if (!string.IsNullOrWhiteSpace(Model.DisclaimerTexto))
         {
-            <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@Model.DisclaimerTexto</span></div>
+            <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L.Catalog(Model.DisclaimerTexto)</span></div>
         }
 
         <button type="submit" class="btn-primary">@L["Confirm booking"] <i class="fas fa-chevron-right"></i></button>

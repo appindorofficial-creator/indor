@@ -34,8 +34,7 @@ public class GeneralHelpDetailsViewModel
     [Required]
     public string ContactoPreferido { get; set; } = "Text";
 
-    [Required]
-    public string NotasAcceso { get; set; } = "Apartment";
+    public string? NotasAcceso { get; set; }
 
     public List<ExistingGeneralHelpFileViewModel> ArchivosExistentes { get; set; } = new();
 }

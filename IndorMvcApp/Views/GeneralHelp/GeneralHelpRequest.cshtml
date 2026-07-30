@@ -10,7 +10,7 @@
 
 
 <div class="gh-hero-wrap">
-        <img src="@Url.Content("~/general-help-hero.png")" alt="Moving help" class="gh-hero-img" loading="lazy" />
+        <img src="@Url.Content("~/general-help-hero.png")" alt="@L["Moving help"]" class="gh-hero-img" loading="lazy" />
     </div>
 
     <h2 class="page-heading" style="font-size:1.1rem;text-align:center;">@L.Catalog(Model.PageTitle)</h2>
@@ -29,12 +29,12 @@
             <i class="fas fa-house main"></i>
             <div class="meta">
                 <input asp-for="DireccionPropiedad" placeholder="@L["Service address"]" required style="border:none;background:transparent;width:100%;font-family:inherit;font-weight:600;font-size:0.88rem;" />
-                <a asp-controller="Home" asp-action="Index" class="change">Change address ></a>
+                <a asp-controller="Home" asp-action="Index" class="change">@L["Change address"] &gt;</a>
             </div>
         </div>
         <span asp-validation-for="DireccionPropiedad" style="color:#B91C1C;font-size:0.82rem;display:block;margin:-8px 0 12px;"></span>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoAyuda">
             <span class="field-label">@L["What do you need help with?"]</span>
             <div class="help-grid" id="helpTypeGroup">
                 <button type="button" class="help-tile" data-value="MovingQuestion"><i class="fas fa-circle-question"></i>@L["Moving question"]</button>
@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="VentanaTiempo">
             <span class="field-label">@L["When do you need help?"]</span>
             <div class="chip-scroll" id="timingGroup">
                 <button type="button" class="chip-option" data-value="Today"><i class="fas fa-calendar-day"></i> @L["Today"]</button>
@@ -56,7 +56,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="Urgencia">
             <span class="field-label">@L["How urgent is it?"]</span>
             <div class="chip-scroll" id="urgencyGroup">
                 <button type="button" class="chip-option" data-value="Normal"><i class="fas fa-flag"></i> @L["Normal"]</button>
@@ -68,7 +68,7 @@
         <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["Choose the option that best matches your situation. You can describe the details on the next step."]</span></div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">@L["Next"]</button>
-        <button type="submit" name="action" value="back" class="btn-outline">@L["Back to Moving Setup"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline" formnovalidate>@L["Back to Moving Setup"]</button>
     </form>
 </div>
 @section Scripts {

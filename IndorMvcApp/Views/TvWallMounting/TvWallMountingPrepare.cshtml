@@ -5,7 +5,6 @@
     ViewData["WizardBackUrl"] = Url.Action("TvWallMountingProject", "TvWallMounting", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 3;
-
 }
 
 
@@ -18,12 +17,12 @@
             <div class="addr">@Model.DireccionPropiedad</div>
             <div class="room">@Model.HabitacionLabel</div>
         </div>
-        <a asp-action="TvWallMountingProject" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;white-space:nowrap;">Edit ></a>
+        <a asp-action="TvWallMountingProject" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;white-space:nowrap;">@L["Edit"]</a>
     </div>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form asp-action="TvWallMountingPrepare" method="post" enctype="multipart/form-data">
+    <form asp-action="TvWallMountingPrepare" method="post" enctype="multipart/form-data" class="iw-step-form" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MovingSetupServicioId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -35,76 +34,78 @@
         <input type="hidden" asp-for="DetallesAcceso" id="DetallesAcceso" />
         <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
 
-        <div class="upload-zone">
-            <i class="fas fa-cloud-arrow-up"></i>
-            <p><strong>@L["Upload wall or TV photos"]</strong></p>
-            <p style="font-size:0.78rem;margin-top:4px;">@L["Clear photos help us prepare the right tools and materials."]</p>
-            <input type="file" name="files" accept=".jpg,.jpeg,.png,.pdf" multiple style="margin-top:10px;width:100%;" />
+        <div class="field-card" data-svc-optional>
+            <span class="field-label">@L["Upload wall or TV photos"]</span>
+            <div class="upload-zone">
+                <i class="fas fa-cloud-arrow-up"></i>
+                <p><strong>@L["Upload wall or TV photos"]</strong></p>
+                <p style="font-size:0.78rem;margin-top:4px;">@L["Clear photos help us prepare the right tools and materials."]</p>
+                <input type="file" name="files" accept=".jpg,.jpeg,.png,.pdf" multiple style="margin-top:10px;width:100%;" />
+            </div>
+            @foreach (var file in Model.ArchivosExistentes)
+            {
+                <div class="included-row"><i class="fas fa-image"></i><span>@file.NombreArchivo</span></div>
+            }
         </div>
-        @foreach (var file in Model.ArchivosExistentes)
-        {
-            <div class="included-row"><i class="fas fa-image"></i><span>@file.NombreArchivo</span></div>
-        }
 
-        <div class="field-card">
-            <div class="picker-inline">
-                <div class="left"><i class="fas fa-plug"></i> @L["Cable setup"]</div>
-                <div class="option-row" data-target="ConfiguracionCables">
-                    <button type="button" class="option-btn" data-value="BasicVisible">@L["Basic visible cables"]</button>
-                    <button type="button" class="option-btn" data-value="HideInCover">@L["Hide cables in cover"]</button>
-                    <button type="button" class="option-btn" data-value="InWallConcealment">@L["In-wall concealment"]</button>
-                    <button type="button" class="option-btn" data-value="NotSure">@L["Not sure"]</button>
-                </div>
-            </div>
-
-            <div class="picker-inline">
-                <div class="left"><i class="fas fa-outlet"></i> @L["Is there an outlet near the TV location?"]</div>
-                <div class="option-row" data-target="TomaCercana">
-                    <button type="button" class="option-btn" data-value="Yes">@L["Yes"]</button>
-                    <button type="button" class="option-btn" data-value="No">@L["No"]</button>
-                    <button type="button" class="option-btn" data-value="NotSure">@L["Not sure"]</button>
-                </div>
-            </div>
-
-            <div class="picker-inline">
-                <div class="left"><i class="fas fa-tv"></i> @L["Has a TV been mounted on this wall before?"]</div>
-                <div class="option-row" data-target="MontajePrevio">
-                    <button type="button" class="option-btn" data-value="Yes">@L["Yes"]</button>
-                    <button type="button" class="option-btn" data-value="No">@L["No"]</button>
-                    <button type="button" class="option-btn" data-value="NotSure">@L["Not sure"]</button>
-                </div>
-            </div>
-
-            <div class="picker-inline">
-                <div class="left"><i class="fas fa-building"></i> @L["Access details"]</div>
-                <div class="option-row" data-target="DetallesAcceso">
-                    <button type="button" class="option-btn" data-value="GroundFloor">@L["Ground floor"]</button>
-                    <button type="button" class="option-btn" data-value="Stairs">@L["Stairs"]</button>
-                    <button type="button" class="option-btn" data-value="Elevator">@L["Elevator"]</button>
-                    <button type="button" class="option-btn" data-value="ParkingLimited">@L["Parking limited"]</button>
-                </div>
-            </div>
-
-            <div class="picker-inline">
-                <div class="left"><i class="fas fa-clock"></i> @L["Preferred arrival"]</div>
-                <div class="option-row" data-target="VentanaHorario">
-                    <button type="button" class="option-btn" data-value="Morning">@L["Morning"]</button>
-                    <button type="button" class="option-btn" data-value="Afternoon">@L["Afternoon"]</button>
-                    <button type="button" class="option-btn" data-value="Evening">@L["Evening"]</button>
-                    <button type="button" class="option-btn" data-value="AsSoonAsPossible">@L["As soon as possible"]</button>
-                </div>
+        <div class="field-card" data-svc-required="ConfiguracionCables">
+            <span class="field-label"><i class="fas fa-plug"></i> @L["Cable setup"]</span>
+            <div class="option-row" data-target="ConfiguracionCables">
+                <button type="button" class="option-btn" data-value="BasicVisible">@L["Basic visible cables"]</button>
+                <button type="button" class="option-btn" data-value="HideInCover">@L["Hide cables in cover"]</button>
+                <button type="button" class="option-btn" data-value="InWallConcealment">@L["In-wall concealment"]</button>
+                <button type="button" class="option-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TomaCercana">
+            <span class="field-label"><i class="fas fa-outlet"></i> @L["Is there an outlet near the TV location?"]</span>
+            <div class="option-row" data-target="TomaCercana">
+                <button type="button" class="option-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="option-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="option-btn" data-value="NotSure">@L["Not sure"]</button>
+            </div>
+        </div>
+
+        <div class="field-card" data-svc-required="MontajePrevio">
+            <span class="field-label"><i class="fas fa-tv"></i> @L["Has a TV been mounted on this wall before?"]</span>
+            <div class="option-row" data-target="MontajePrevio">
+                <button type="button" class="option-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="option-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="option-btn" data-value="NotSure">@L["Not sure"]</button>
+            </div>
+        </div>
+
+        <div class="field-card" data-svc-required="DetallesAcceso">
+            <span class="field-label"><i class="fas fa-building"></i> @L["Access details"]</span>
+            <div class="option-row" data-target="DetallesAcceso">
+                <button type="button" class="option-btn" data-value="GroundFloor">@L["Ground floor"]</button>
+                <button type="button" class="option-btn" data-value="Stairs">@L["Stairs"]</button>
+                <button type="button" class="option-btn" data-value="Elevator">@L["Elevator"]</button>
+                <button type="button" class="option-btn" data-value="ParkingLimited">@L["Parking limited"]</button>
+            </div>
+        </div>
+
+        <div class="field-card" data-svc-required="VentanaHorario">
+            <span class="field-label"><i class="fas fa-clock"></i> @L["Preferred arrival"]</span>
+            <div class="option-row" data-target="VentanaHorario">
+                <button type="button" class="option-btn" data-value="Morning">@L["Morning"]</button>
+                <button type="button" class="option-btn" data-value="Afternoon">@L["Afternoon"]</button>
+                <button type="button" class="option-btn" data-value="Evening">@L["Evening"]</button>
+                <button type="button" class="option-btn" data-value="AsSoonAsPossible">@L["As soon as possible"]</button>
+            </div>
+        </div>
+
+        <div class="field-card" data-svc-required="FechaServicio">
             <span class="field-label">@L["Preferred service date"]</span>
             <div class="input-wrap">
                 <i class="fas fa-calendar"></i>
-                <input asp-for="FechaServicio" type="date" />
+                <input asp-for="FechaServicio" type="date" min="@Model.MinServiceDateIso" />
             </div>
+            <span asp-validation-for="FechaServicio" class="field-error"></span>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <span class="field-label">@L["Notes for the installer"]</span>
             <div class="input-wrap">
                 <i class="fas fa-note-sticky"></i>
@@ -115,9 +116,8 @@
         <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["Photos and access details help your provider bring the right tools and ensure a smooth installation."]</span></div>
 
         <button type="submit" class="btn-primary">@L["Continue"] <i class="fas fa-chevron-right"></i></button>
-        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline" formnovalidate>@L["Back"]</button>
     </form>
-</div>
 @section Scripts {
 <script>
     (function () {
@@ -132,10 +132,13 @@
         document.querySelectorAll('[data-target]').forEach(group => {
             const targetId = group.dataset.target;
             const hidden = document.getElementById(targetId);
-            const current = initial[targetId] || hidden.value;
+            if (!hidden) return;
+            const seed = (initial[targetId] && String(initial[targetId]).trim())
+                || (hidden.value && String(hidden.value).trim())
+                || '';
 
             group.querySelectorAll('.option-btn').forEach(btn => {
-                if (btn.dataset.value === current) btn.classList.add('active');
+                if (seed && btn.dataset.value === seed) btn.classList.add('active');
                 btn.addEventListener('click', () => {
                     group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
@@ -143,8 +146,40 @@
                 });
             });
 
-            if (current) hidden.value = current;
+            hidden.value = seed;
         });
+
+        const serviceDateInput = document.querySelector('input[name="FechaServicio"]');
+        const minServiceDate = '@Model.MinServiceDateIso';
+        const pastDateMessage = @Json.Serialize(L["Please select today or a future date."].ToString());
+
+        function showInline(card, message) {
+            if (!card) return;
+            card.classList.add('is-invalid');
+            const existing = card.querySelector('[data-svc-error="true"]');
+            if (existing) {
+                existing.textContent = message;
+                return;
+            }
+            const msg = document.createElement('div');
+            msg.className = 'field-inline-error';
+            msg.setAttribute('data-svc-error', 'true');
+            msg.setAttribute('role', 'alert');
+            msg.textContent = message;
+            card.appendChild(msg);
+        }
+
+        document.querySelector('form')?.addEventListener('submit', function (e) {
+            if (e.submitter && (e.submitter.value === 'back' || e.submitter.getAttribute('formnovalidate') != null)) {
+                return;
+            }
+            if (!serviceDateInput || !serviceDateInput.value) return;
+            if (serviceDateInput.value >= minServiceDate) return;
+            e.preventDefault();
+            e.stopPropagation();
+            showInline(serviceDateInput.closest('.field-card'), pastDateMessage);
+            serviceDateInput.closest('.field-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, true);
     })();
 
 </script>

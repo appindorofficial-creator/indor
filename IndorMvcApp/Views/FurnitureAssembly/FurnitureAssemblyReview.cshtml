@@ -16,7 +16,7 @@
 
     <div class="summary-card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <strong><i class="fas fa-couch" style="color:#0066CC;"></i> @Model.NombreServicio</strong>
+            <strong><i class="fas fa-couch" style="color:#0066CC;"></i> @L.Catalog(Model.NombreServicio)</strong>
             <a asp-action="FurnitureAssemblyItems" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-size:0.85rem;text-decoration:none;"><i class="fas fa-pen"></i> @L["Edit"]</a>
         </div>
         <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
@@ -69,14 +69,13 @@
 
         @if (!string.IsNullOrWhiteSpace(Model.DisclaimerTexto))
         {
-            <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@Model.DisclaimerTexto</span></div>
+            <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L.Catalog(Model.DisclaimerTexto)</span></div>
         }
 
         <button type="submit" class="btn-primary"><i class="fas fa-paper-plane"></i> @L["Request service"]</button>
         <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
         <button type="submit" name="action" value="edit" class="btn-outline">@L["Edit details"]</button>
     </form>
-</div>
 @section Scripts {
 <script>
     (function () {

@@ -14,7 +14,7 @@
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="fa-items-form" asp-action="FurnitureAssemblyItems" method="post">
+    <form id="fa-items-form" asp-action="FurnitureAssemblyItems" method="post" class="iw-step-form" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MovingSetupServicioId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -23,6 +23,7 @@
         <input type="hidden" asp-for="CondicionItems" id="CondicionItems" />
         <input type="hidden" asp-for="AnclajePared" id="AnclajePared" />
 
+        <div class="field-card" data-svc-required="DireccionPropiedad">
         <div class="address-card" id="addressCard">
             <div class="left">
                 <i class="fas fa-location-dot" style="color:#0066CC;"></i>
@@ -30,11 +31,12 @@
                        placeholder="@L["123 Riverside Dr, Mount Holly, NC 28120"]" required readonly
                        data-address-autocomplete autocomplete="off" />
             </div>
-            <button type="button" class="address-edit-btn" id="editAddressBtn" aria-controls="DireccionPropiedad">Edit ></button>
+            <button type="button" class="address-edit-btn" id="editAddressBtn" aria-controls="DireccionPropiedad">@L["Edit"]</button>
         </div>
         <span asp-validation-for="DireccionPropiedad" class="field-error"></span>
+        </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TiposMueble">
             <span class="field-label">@L["What are you assembling?"]</span>
             <div class="tile-grid tile-grid-4" id="typesGroup">
                 <button type="button" class="tile-btn" data-value="BedFrame"><i class="fas fa-bed"></i>@L["Bed frame"]</button>
@@ -49,7 +51,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="CantidadItems">
             <span class="field-label">@L["How many items?"]</span>
             <div class="segment-row" data-target="CantidadItems">
                 <button type="button" class="segment-btn" data-value="One">1</button>
@@ -59,7 +61,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="CondicionItems">
             <span class="field-label">@L["What condition are the items in?"]</span>
             <div class="fa-condition-grid" data-target="CondicionItems">
                 <button type="button" class="type-card" data-value="NewInBox"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box"></i>@L["New in box"]</button>
@@ -69,7 +71,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="AnclajePared">
             <span class="field-label">@L["Will any item need wall anchoring?"]</span>
             <div class="segment-row" data-target="AnclajePared">
                 <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
@@ -81,7 +83,6 @@
         <button type="submit" class="btn-primary">@L["Next"] <i class="fas fa-chevron-right"></i></button>
         <button type="submit" name="action" value="upload" class="btn-outline"><i class="fas fa-cloud-arrow-up"></i> @L["Upload photos"]</button>
     </form>
-</div>
 @section Scripts {
 <script>
     (function () {
@@ -140,14 +141,7 @@
         const addressInput = document.getElementById('DireccionPropiedad');
         const addressCard = document.getElementById('addressCard');
         const editAddressBtn = document.getElementById('editAddressBtn');
-        const requiredFields = [
-            { id: 'TiposMueble', message: 'Select at least one item to assemble.' },
-            { id: 'CantidadItems', message: 'Select how many items need assembly.' },
-            { id: 'CondicionItems', message: 'Select the condition of your items.' },
-            { id: 'AnclajePared', message: 'Select whether any item needs wall anchoring.' }
-        ];
-
-        const addressMessage = 'Please enter a complete street address (e.g. 123 Main St, Charlotte, NC).';
+        const addressMessage = @Json.Serialize(L["Enter a complete address with city and state (e.g. 123 Main St, Charlotte, NC)."].ToString());
 
         function isValidStreetAddress(value) {
             const address = String(value || '').trim();
@@ -163,44 +157,40 @@
             return hasComma || hasZip;
         }
 
-        function addressValidity() {
-            if (!addressInput) return '';
-            const empty = !addressInput.value || !addressInput.value.trim();
-            if (empty) return 'Please enter the property address.';
-            if (!isValidStreetAddress(addressInput.value)) return addressMessage;
-            return '';
+        function showInline(card, message) {
+            if (!card) return;
+            card.classList.add('is-invalid');
+            const existing = card.querySelector('[data-svc-error="true"]');
+            if (existing) {
+                existing.textContent = message;
+                return;
+            }
+            const msg = document.createElement('div');
+            msg.className = 'field-inline-error';
+            msg.setAttribute('data-svc-error', 'true');
+            msg.setAttribute('role', 'alert');
+            msg.textContent = message;
+            card.appendChild(msg);
         }
 
-        addressInput?.addEventListener('input', function () {
-            addressInput.setCustomValidity(addressValidity());
-        });
-
         form?.addEventListener('submit', function (e) {
-            const addressError = addressValidity();
-            addressInput?.setCustomValidity(addressError);
-            if (addressError) {
-                e.preventDefault();
-                addressInput.removeAttribute('readonly');
-                addressCard?.classList.add('editing');
-                addressInput.reportValidity();
+            if (e.submitter && (e.submitter.value === 'back' || e.submitter.getAttribute('formnovalidate') != null)) {
                 return;
             }
 
-            let firstMissing = null;
-            requiredFields.forEach(function (field) {
-                const input = document.getElementById(field.id);
-                if (!input) return;
-                const empty = !input.value || !String(input.value).trim();
-                if (empty && !firstMissing) {
-                    firstMissing = field;
-                }
-            });
-
-            if (firstMissing) {
+            const addressCardWrapper = addressInput?.closest('.field-card');
+            if (addressInput && addressCardWrapper) {
+                const value = String(addressInput.value || '').trim();
+                if (value && isValidStreetAddress(value)) return;
+                if (!value) return;
                 e.preventDefault();
-                alert(firstMissing.message);
+                e.stopPropagation();
+                addressInput.removeAttribute('readonly');
+                addressCard?.classList.add('editing');
+                showInline(addressCardWrapper, addressMessage);
+                addressCardWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
-        });
+        }, true);
 
         function enableAddressEdit() {
             if (!addressInput) return;

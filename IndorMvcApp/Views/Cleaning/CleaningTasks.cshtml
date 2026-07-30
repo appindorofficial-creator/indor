@@ -17,12 +17,12 @@
         <i class="fas fa-house" style="color:#0066CC;"></i>
         <span style="font-weight:600;font-size:0.92rem;">@Model.DireccionPropiedad</span>
     </div>
-    <a asp-action="CleaningDetails" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;">Edit ></a>
+    <a asp-action="CleaningDetails" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;">@L["Edit"]</a>
 </div>
 
 <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-<form asp-action="CleaningTasks" method="post" enctype="multipart/form-data" class="iw-step-form">
+<form asp-action="CleaningTasks" method="post" enctype="multipart/form-data" class="iw-step-form" novalidate id="cleaningTasksForm">
     <input type="hidden" asp-for="SolicitudId" />
     <input type="hidden" asp-for="MovingSetupServicioId" />
     <input type="hidden" asp-for="NombreServicio" />
@@ -31,7 +31,7 @@
     <input type="hidden" asp-for="TareasExtra" id="TareasExtra" />
     <input type="hidden" asp-for="SuministrosNecesarios" id="SuministrosNecesarios" />
 
-    <div class="field-card">
+    <div class="field-card" data-svc-required="AreasPrioridad">
         <span class="field-label">@L["Priority areas"]</span>
         <div class="tile-grid" id="areasGroup">
             <button type="button" class="tile-btn" data-value="Kitchen"><i class="fas fa-kitchen-set"></i>@L["Kitchen"]</button>
@@ -43,7 +43,7 @@
         </div>
     </div>
 
-    <div class="field-card">
+    <div class="field-card" data-svc-optional>
         <span class="field-label">@L["Extra tasks"]</span>
         <div class="tile-grid" id="extrasGroup" style="grid-template-columns:repeat(4,1fr);">
             <button type="button" class="tile-btn" data-value="InsideFridge"><i class="fas fa-snowflake"></i>@L["Inside fridge"]</button>
@@ -59,7 +59,7 @@
         </div>
     </div>
 
-    <div class="field-card">
+    <div class="field-card" data-svc-required="SuministrosNecesarios">
         <span class="field-label">@L["Supplies needed?"]</span>
         <div class="segment-row" data-target="SuministrosNecesarios">
             <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
@@ -68,7 +68,7 @@
         </div>
     </div>
 
-    <div class="field-card">
+    <div class="field-card" data-svc-optional>
         <span class="field-label">@L["Special notes"]</span>
         <div class="input-wrap">
             <i class="fas fa-note-sticky"></i>
@@ -76,22 +76,24 @@
         </div>
     </div>
 
-    <div class="upload-zone">
-        <i class="fas fa-cloud-arrow-up"></i>
-        <p><strong>@L["Upload photos (optional)"]</strong></p>
-        <input type="file" name="files" accept=".jpg,.jpeg,.png" multiple style="margin-top:10px;width:100%;" />
-    </div>
-    @if (Model.ArchivosExistentes.Count > 0)
-    {
-        @foreach (var file in Model.ArchivosExistentes)
+    <div class="field-card" data-svc-optional>
+        <div class="upload-zone">
+            <i class="fas fa-cloud-arrow-up"></i>
+            <p><strong>@L["Upload photos (optional)"]</strong></p>
+            <input type="file" name="files" accept=".jpg,.jpeg,.png" multiple style="margin-top:10px;width:100%;" />
+        </div>
+        @if (Model.ArchivosExistentes.Count > 0)
         {
-            <div class="included-row"><i class="fas fa-image"></i><span>@file.NombreArchivo</span></div>
+            @foreach (var file in Model.ArchivosExistentes)
+            {
+                <div class="included-row"><i class="fas fa-image"></i><span>@file.NombreArchivo</span></div>
+            }
         }
-    }
+    </div>
 
     <div class="sticky-footer">
         <button type="submit" class="btn-primary">@L["Continue"] <i class="fas fa-chevron-right"></i></button>
-        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline" formnovalidate>@L["Back"]</button>
     </div>
 </form>
 
@@ -117,13 +119,15 @@
         initMultiSelect('extrasGroup', 'TareasExtra', '@Model.TareasExtra');
 
         const suppliesHidden = document.getElementById('SuministrosNecesarios');
-        document.querySelectorAll('[data-target="SuministrosNecesarios"] .segment-btn').forEach(btn => {
+        const suppliesButtons = document.querySelectorAll('[data-target="SuministrosNecesarios"] .segment-btn');
+        const suppliesSeed = ('@Model.SuministrosNecesarios' || suppliesHidden.value || '').trim();
+        suppliesButtons.forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('[data-target="SuministrosNecesarios"] .segment-btn').forEach(b => b.classList.remove('active'));
+                suppliesButtons.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
                 suppliesHidden.value = btn.dataset.value;
             });
-            if (btn.dataset.value === suppliesHidden.value) btn.classList.add('active');
+            if (suppliesSeed && btn.dataset.value === suppliesSeed) btn.classList.add('active');
         });
     })();
 </script>

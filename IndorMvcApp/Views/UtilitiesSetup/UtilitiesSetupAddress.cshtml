@@ -30,7 +30,7 @@
         </div>
         <span asp-validation-for="DireccionPropiedad" style="color:#B91C1C;font-size:0.82rem;display:block;margin:-8px 0 12px;"></span>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="ServiciosConectar">
             <span class="field-label">@L["What do you need to connect?"]</span>
             <div class="service-grid" id="servicesGroup">
                 <button type="button" class="service-tile" data-value="Internet"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-wifi"></i>@L["Internet"]</button>
@@ -41,15 +41,15 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="FechaServicio">
             <span class="field-label">@L["When do you need service?"]</span>
             <div class="input-wrap">
                 <i class="fas fa-calendar"></i>
-                <input asp-for="FechaServicio" type="date" required />
+                <input asp-for="FechaServicio" id="FechaServicio" type="date" required />
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="PreferenciaContacto">
             <span class="field-label">@L["Contact preference"]</span>
             <div class="pref-row" id="prefGroup">
                 <button type="button" class="pref-btn" data-value="ContactMyself"><i class="fas fa-user"></i>@L["I'll contact providers myself"]</button>
@@ -60,7 +60,7 @@
         <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["We'll show the providers that serve this address, plus phone numbers and websites so you can connect service faster."]</span></div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">@L["Continue"]</button>
-        <button type="submit" name="action" value="skip" class="btn-outline">@L["Skip for now"]</button>
+        <button type="submit" name="action" value="skip" class="btn-outline" formnovalidate>@L["Skip for now"]</button>
     </form>
 </div>
 @section Scripts {

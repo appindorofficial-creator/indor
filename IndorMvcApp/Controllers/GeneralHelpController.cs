@@ -249,9 +249,10 @@ public class GeneralHelpController : Controller
         return View(new GeneralHelpSentViewModel
         {
             SolicitudId = solicitud.Id,
+            NombreServicio = solicitud.MovingSetupServicio?.Nombre ?? "General Help",
             DireccionPropiedad = solicitud.DireccionPropiedad ?? "—",
             VentanaTiempoLabel = GeneralHelpDisplayLabels.FormatTiming(solicitud.VentanaTiempo),
-            EstadoLabel = GeneralHelpDisplayLabels.FormatPendingConfirmationStatus()
+            EstadoLabel = "Pending confirmation"
         });
     }
 

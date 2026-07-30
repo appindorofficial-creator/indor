@@ -183,6 +183,7 @@ public class TvWallMountingController : Controller
             VentanaHorario = prepareEntered ? (solicitud.VentanaHorario ?? "") : "",
             FechaServicio = prepareEntered ? solicitud.FechaServicio : null,
             NotaCorta = prepareEntered ? solicitud.NotaCorta : null,
+            MinServiceDateIso = DateTime.Today.ToString("yyyy-MM-dd"),
             ArchivosExistentes = solicitud.Archivos
                 .OrderByDescending(a => a.FechaSubida)
                 .Select(a => new ExistingTvWallMountingFileViewModel
@@ -215,6 +216,16 @@ public class TvWallMountingController : Controller
         {
             model.NombreServicio = solicitud.MovingSetupServicio!.Nombre;
             model.HabitacionLabel = TvWallMountingDisplayLabels.FormatRoom(solicitud.Habitacion);
+            model.MinServiceDateIso = DateTime.Today.ToString("yyyy-MM-dd");
+            return View(model);
+        }
+
+        if (!model.FechaServicio.HasValue || model.FechaServicio.Value.Date < DateTime.Today)
+        {
+            ModelState.AddModelError(nameof(model.FechaServicio), "Please select today or a future date.");
+            model.NombreServicio = solicitud.MovingSetupServicio!.Nombre;
+            model.HabitacionLabel = TvWallMountingDisplayLabels.FormatRoom(solicitud.Habitacion);
+            model.MinServiceDateIso = DateTime.Today.ToString("yyyy-MM-dd");
             return View(model);
         }
 
@@ -489,7 +500,8 @@ public class TvWallMountingController : Controller
             AccesoLabel = TvWallMountingDisplayLabels.FormatAccess(solicitud.DetallesAcceso),
             VentanaHorarioLabel = TvWallMountingDisplayLabels.FormatArrival(solicitud.VentanaHorario),
             FechaServicioLabel = TvWallMountingDisplayLabels.FormatDate(solicitud.FechaServicio),
-            TiempoEstimadoLabel = landing?.EstimatedTimeValue ?? "60-90 min",
+            TiempoEstimadoLabel = DisplayLabelsLocalization.L(
+                string.IsNullOrWhiteSpace(landing?.EstimatedTimeValue) ? "60-90 min" : landing.EstimatedTimeValue),
             PrecioEstimado = solicitud.PrecioEstimado ?? landing?.PrecioBaseEstimado ?? 129,
             NotaCorta = solicitud.NotaCorta,
             DisclaimerTexto = landing?.DisclaimerTexto,

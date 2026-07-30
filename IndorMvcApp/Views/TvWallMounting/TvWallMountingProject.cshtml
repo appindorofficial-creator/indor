@@ -14,16 +14,10 @@
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form asp-action="TvWallMountingProject" method="post">
+    <form asp-action="TvWallMountingProject" method="post" class="iw-step-form" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MovingSetupServicioId" />
         <input type="hidden" asp-for="NombreServicio" />
-
-        <div class="address-card">
-            <div class="left"><i class="fas fa-house" style="color:#0066CC;"></i><input asp-for="DireccionPropiedad" placeholder="@L["Service address"]" required /></div>
-            <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">@L["Edit"]</span>
-        </div>
-        <span asp-validation-for="DireccionPropiedad" style="color:#B91C1C;font-size:0.82rem;display:block;margin:-8px 0 12px;"></span>
         <input type="hidden" asp-for="TipoSolicitud" id="TipoSolicitud" />
         <input type="hidden" asp-for="TamanoTv" id="TamanoTv" />
         <input type="hidden" asp-for="CantidadTvs" id="CantidadTvs" />
@@ -31,73 +25,79 @@
         <input type="hidden" asp-for="TipoPared" id="TipoPared" />
         <input type="hidden" asp-for="TieneSoporte" id="TieneSoporte" />
 
-        <div class="field-card">
-            <div class="question-row">
-                <div class="q-label"><span class="q-num">1</span> @L["What do you need?"]</div>
-                <div class="option-row" data-target="TipoSolicitud">
-                    <button type="button" class="option-btn" data-value="MountTv">@L["Mount TV"]</button>
-                    <button type="button" class="option-btn" data-value="DismountTv">@L["Dismount TV"]</button>
-                    <button type="button" class="option-btn" data-value="RemountTv">@L["Re-mount existing TV"]</button>
-                    <button type="button" class="option-btn" data-value="AddSoundbar">@L["Add soundbar"]</button>
-                </div>
+        <div class="field-card" data-svc-required="DireccionPropiedad">
+            <span class="field-label">@L["Service address"]</span>
+            <div class="input-wrap">
+                <i class="fas fa-house"></i>
+                <input asp-for="DireccionPropiedad" id="DireccionPropiedad" placeholder="@L["Service address"]" />
             </div>
+            <span asp-validation-for="DireccionPropiedad" class="field-error"></span>
+        </div>
 
-            <div class="question-row">
-                <div class="q-label"><span class="q-num">2</span> @L["TV size"]</div>
-                <div class="option-row" data-target="TamanoTv">
-                    <button type="button" class="option-btn" data-value="Under43">@L["Under 43\""]</button>
-                    <button type="button" class="option-btn" data-value="Size43_55">43-55"</button>
-                    <button type="button" class="option-btn" data-value="Size56_64">56-64"</button>
-                    <button type="button" class="option-btn" data-value="Size65_75">65-75"</button>
-                    <button type="button" class="option-btn" data-value="Size75Plus">75"+</button>
-                </div>
+        <div class="field-card" data-svc-required="TipoSolicitud">
+            <span class="field-label"><span class="q-num">1</span> @L["What do you need?"]</span>
+            <div class="option-row" data-target="TipoSolicitud">
+                <button type="button" class="option-btn" data-value="MountTv">@L["Mount TV"]</button>
+                <button type="button" class="option-btn" data-value="DismountTv">@L["Dismount TV"]</button>
+                <button type="button" class="option-btn" data-value="RemountTv">@L["Re-mount existing TV"]</button>
+                <button type="button" class="option-btn" data-value="AddSoundbar">@L["Add soundbar"]</button>
             </div>
+        </div>
 
-            <div class="question-row">
-                <div class="q-label"><span class="q-num">3</span> @L["How many TVs?"]</div>
-                <div class="option-row" data-target="CantidadTvs">
-                    <button type="button" class="option-btn" data-value="One">1</button>
-                    <button type="button" class="option-btn" data-value="Two">2</button>
-                    <button type="button" class="option-btn" data-value="ThreePlus">3+</button>
-                </div>
+        <div class="field-card" data-svc-required="TamanoTv">
+            <span class="field-label"><span class="q-num">2</span> @L["TV size"]</span>
+            <div class="option-row" data-target="TamanoTv">
+                <button type="button" class="option-btn" data-value="Under43">@L["Under 43\""]</button>
+                <button type="button" class="option-btn" data-value="Size43_55">@L["43-55\""]</button>
+                <button type="button" class="option-btn" data-value="Size56_64">@L["56-64\""]</button>
+                <button type="button" class="option-btn" data-value="Size65_75">@L["65-75\""]</button>
+                <button type="button" class="option-btn" data-value="Size75Plus">@L["75\"+"]</button>
             </div>
+        </div>
 
-            <div class="question-row">
-                <div class="q-label"><span class="q-num">4</span> @L["Where will it be mounted?"]</div>
-                <div class="option-row" data-target="Habitacion">
-                    <button type="button" class="option-btn" data-value="LivingRoom">@L["Living room"]</button>
-                    <button type="button" class="option-btn" data-value="Bedroom">@L["Bedroom"]</button>
-                    <button type="button" class="option-btn" data-value="Office">@L["Office"]</button>
-                    <button type="button" class="option-btn" data-value="OtherRoom">@L["Other room"]</button>
-                </div>
+        <div class="field-card" data-svc-required="CantidadTvs">
+            <span class="field-label"><span class="q-num">3</span> @L["How many TVs?"]</span>
+            <div class="option-row" data-target="CantidadTvs">
+                <button type="button" class="option-btn" data-value="One">1</button>
+                <button type="button" class="option-btn" data-value="Two">2</button>
+                <button type="button" class="option-btn" data-value="ThreePlus">3+</button>
             </div>
+        </div>
 
-            <div class="question-row">
-                <div class="q-label"><span class="q-num">5</span> @L["Wall type"]</div>
-                <div class="option-row" data-target="TipoPared">
-                    <button type="button" class="option-btn" data-value="Drywall">@L["Drywall"]</button>
-                    <button type="button" class="option-btn" data-value="Brick">@L["Brick"]</button>
-                    <button type="button" class="option-btn" data-value="Concrete">@L["Concrete"]</button>
-                    <button type="button" class="option-btn" data-value="NotSure">@L["Not sure"]</button>
-                </div>
+        <div class="field-card" data-svc-required="Habitacion">
+            <span class="field-label"><span class="q-num">4</span> @L["Where will it be mounted?"]</span>
+            <div class="option-row" data-target="Habitacion">
+                <button type="button" class="option-btn" data-value="LivingRoom">@L["Living room"]</button>
+                <button type="button" class="option-btn" data-value="Bedroom">@L["Bedroom"]</button>
+                <button type="button" class="option-btn" data-value="Office">@L["Office"]</button>
+                <button type="button" class="option-btn" data-value="OtherRoom">@L["Other room"]</button>
             </div>
+        </div>
 
-            <div class="question-row" style="margin-bottom:0;">
-                <div class="q-label"><span class="q-num">6</span> @L["Do you already have the wall mount?"]</div>
-                <div class="option-row" data-target="TieneSoporte">
-                    <button type="button" class="option-btn" data-value="YesHaveIt">@L["Yes, I have it"]</button>
-                    <button type="button" class="option-btn" data-value="NeedProvided">@L["Need one provided"]</button>
-                    <button type="button" class="option-btn" data-value="NotSure">@L["Not sure"]</button>
-                </div>
+        <div class="field-card" data-svc-required="TipoPared">
+            <span class="field-label"><span class="q-num">5</span> @L["Wall type"]</span>
+            <div class="option-row" data-target="TipoPared">
+                <button type="button" class="option-btn" data-value="Drywall">@L["Drywall"]</button>
+                <button type="button" class="option-btn" data-value="Brick">@L["Brick"]</button>
+                <button type="button" class="option-btn" data-value="Concrete">@L["Concrete"]</button>
+                <button type="button" class="option-btn" data-value="NotSure">@L["Not sure"]</button>
+            </div>
+        </div>
+
+        <div class="field-card" data-svc-required="TieneSoporte">
+            <span class="field-label"><span class="q-num">6</span> @L["Do you already have the wall mount?"]</span>
+            <div class="option-row" data-target="TieneSoporte">
+                <button type="button" class="option-btn" data-value="YesHaveIt">@L["Yes, I have it"]</button>
+                <button type="button" class="option-btn" data-value="NeedProvided">@L["Need one provided"]</button>
+                <button type="button" class="option-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["Final price may vary based on wall type and hardware."]</span></div>
 
         <button type="submit" class="btn-primary">@L["Next"] <i class="fas fa-chevron-right"></i></button>
-        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline" formnovalidate>@L["Back"]</button>
     </form>
-</div>
 @section Scripts {
 <script>
     (function () {
@@ -113,10 +113,13 @@
         document.querySelectorAll('[data-target]').forEach(group => {
             const targetId = group.dataset.target;
             const hidden = document.getElementById(targetId);
-            const current = initial[targetId] || hidden.value;
+            if (!hidden) return;
+            const seed = (initial[targetId] && String(initial[targetId]).trim())
+                || (hidden.value && String(hidden.value).trim())
+                || '';
 
             group.querySelectorAll('.option-btn').forEach(btn => {
-                if (btn.dataset.value === current) btn.classList.add('active');
+                if (seed && btn.dataset.value === seed) btn.classList.add('active');
                 btn.addEventListener('click', () => {
                     group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
@@ -124,7 +127,7 @@
                 });
             });
 
-            if (current) hidden.value = current;
+            hidden.value = seed;
         });
     })();
 

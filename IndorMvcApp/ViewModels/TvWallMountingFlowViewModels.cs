@@ -91,10 +91,13 @@ public class TvWallMountingPrepareViewModel
     [Required]
     public string VentanaHorario { get; set; } = "Afternoon";
 
+    [Required(ErrorMessage = "Please select a service date.")]
     public DateTime? FechaServicio { get; set; }
 
     [MaxLength(250)]
     public string? NotaCorta { get; set; }
+
+    public string MinServiceDateIso { get; set; } = DateTime.Today.ToString("yyyy-MM-dd");
 
     public List<ExistingTvWallMountingFileViewModel> ArchivosExistentes { get; set; } = new();
 }
