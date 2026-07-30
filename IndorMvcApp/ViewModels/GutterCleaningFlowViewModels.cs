@@ -21,8 +21,8 @@ public class GutterCleaningServiceViewModel
     public List<GutterCleaningFeatureItemViewModel> WhyItMattersItems { get; set; } = new();
     public string CtaTexto { get; set; } = "Continue";
 
-    [Required]
-    public string TipoAccionInicial { get; set; } = "Reminder";
+    [Required(ErrorMessage = "Select what you would like to do.")]
+    public string TipoAccionInicial { get; set; } = string.Empty;
 }
 
 public class GutterCleaningSetupViewModel

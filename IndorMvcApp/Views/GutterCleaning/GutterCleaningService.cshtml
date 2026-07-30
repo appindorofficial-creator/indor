@@ -7,39 +7,39 @@
     ViewData["WizardTotalSteps"] = 4;
 }
 
-
 <div class="gc-title-row">
-        <div class="left">
-            <h1 class="page-heading" style="margin-bottom:4px;font-size:1.2rem;">@L.Catalog(Model.LandingTitulo)</h1>
-            @if (!string.IsNullOrWhiteSpace(Model.LandingTagline))
-            {
-                <div class="tagline">@L.Catalog(Model.LandingTagline)</div>
-            }
-        </div>
+    <div class="left">
+        <h1 class="page-heading" style="margin-bottom:4px;font-size:1.2rem;">@L.Catalog(Model.LandingTitulo)</h1>
+        @if (!string.IsNullOrWhiteSpace(Model.LandingTagline))
+        {
+            <div class="tagline">@L.Catalog(Model.LandingTagline)</div>
+        }
     </div>
+</div>
 
-    @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
-    {
-        <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@L.Catalog(Model.LandingTitulo)" class="gc-hero" />
-    }
+@if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+{
+    <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@L.Catalog(Model.LandingTitulo)" class="gc-hero" />
+}
 
-    @if (!string.IsNullOrWhiteSpace(Model.InfoBoxTexto))
-    {
-        <div class="info-box-blue">
-            <i class="fas fa-house-chimney"></i>
-            <span>@L.Catalog(Model.InfoBoxTexto)</span>
-        </div>
-    }
+@if (!string.IsNullOrWhiteSpace(Model.InfoBoxTexto))
+{
+    <div class="info-box-blue">
+        <i class="fas fa-house-chimney"></i>
+        <span>@L.Catalog(Model.InfoBoxTexto)</span>
+    </div>
+}
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+<div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="gc-service-form" asp-action="GutterCleaningService" method="post">
-        <input type="hidden" asp-for="HomeCarePriorityId" />
-        <input type="hidden" asp-for="SolicitudId" />
-        <input type="hidden" asp-for="TipoAccionInicial" id="TipoAccionInicial" />
+<form id="gc-service-form" asp-action="GutterCleaningService" method="post" novalidate>
+    <input type="hidden" asp-for="HomeCarePriorityId" />
+    <input type="hidden" asp-for="SolicitudId" />
+    <input type="hidden" asp-for="TipoAccionInicial" id="TipoAccionInicial" />
 
-        <div class="field-card">
-            <div class="field-head"><i class="fas fa-list-check"></i><span>@L["What would you like to do?"]</span></div>
+    <div class="field-card" data-svc-required="TipoAccionInicial">
+        <div class="field-head"><i class="fas fa-list-check"></i><span>@L["What would you like to do?"]</span></div>
+        <div id="actionGroup">
             <button type="button" class="action-card" data-action="Reminder">
                 <span class="radio"></span>
                 <i class="fas fa-bell main"></i>
@@ -56,38 +56,52 @@
                 <div><strong>@L["I already did it"]</strong><span>@L["Mark this task as complete"]</span></div>
             </button>
         </div>
+    </div>
 
-        @if (Model.WhyItMattersItems.Count > 0)
-        {
-            <div class="why-checklist">
-                <h4>@L["Why this matters"]</h4>
-                <ul>
-                    @foreach (var item in Model.WhyItMattersItems)
-                    {
-                        <li><i class="fas @item.Icon"></i><span>@L.Catalog(item.Text)</span></li>
-                    }
-                </ul>
-            </div>
-        }
+    @if (Model.WhyItMattersItems.Count > 0)
+    {
+        <div class="why-checklist">
+            <h4>@L["Why this matters"]</h4>
+            <ul>
+                @foreach (var item in Model.WhyItMattersItems)
+                {
+                    <li><i class="fas @item.Icon"></i><span>@L.Catalog(item.Text)</span></li>
+                }
+            </ul>
+        </div>
+    }
 
-        <button type="submit" name="action" value="continue" class="btn-primary">
-            @L.Catalog(Model.CtaTexto) <i class="fas fa-chevron-right"></i>
-        </button>
-    </form>
+    <button type="submit" name="action" value="continue" class="btn-primary">
+        @L.Catalog(Model.CtaTexto) <i class="fas fa-chevron-right"></i>
+    </button>
+</form>
 
 @section Scripts {
 <script>
     (function () {
         var input = document.getElementById('TipoAccionInicial');
-        document.querySelectorAll('[data-action]').forEach(function (btn) {
-            btn.addEventListener('click', function () {
-                document.querySelectorAll('[data-action]').forEach(function (b) { b.classList.remove('active'); });
-                btn.classList.add('active');
-                input.value = btn.getAttribute('data-action');
-            });
-            if (btn.getAttribute('data-action') === input.value) btn.classList.add('active');
-        });
-    })();
+        if (!input) return;
 
+        var seed = '@Model.TipoAccionInicial';
+        seed = (seed && String(seed).trim()) || '';
+        if (!seed) {
+            input.value = '';
+        }
+
+        document.querySelectorAll('#actionGroup [data-action]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('#actionGroup [data-action]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                input.value = btn.getAttribute('data-action') || '';
+            });
+            if (seed && btn.getAttribute('data-action') === seed) {
+                btn.classList.add('active');
+            }
+        });
+
+        if (seed) {
+            input.value = seed;
+        }
+    })();
 </script>
 }

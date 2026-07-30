@@ -354,7 +354,7 @@ public class GutterCleaningController : Controller
             ImagenUrl = ResolveImageUrl(landing.ImagenUrl ?? priority.ImagenUrl),
             WhyItMattersItems = SplitPipePairs(landing.WhyItMattersItems, landing.WhyItMattersIconos),
             CtaTexto = landing.CtaTexto,
-            TipoAccionInicial = existing?.TipoAccionInicial ?? posted?.TipoAccionInicial ?? "Reminder"
+            TipoAccionInicial = existing?.TipoAccionInicial ?? posted?.TipoAccionInicial ?? string.Empty
         };
 
     private static GutterCleaningPreferencesViewModel BuildPreferencesViewModel(SolicitudGutterCleaning solicitud) =>
@@ -541,7 +541,6 @@ public class GutterCleaningController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                TipoAccionInicial = "Reminder",
                 PreferenciaRecordatorio = "SpringFall",
                 RecordatorioPrimaveraOtono = true
             };
