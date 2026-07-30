@@ -292,7 +292,7 @@ public class CrawlspaceCheckController : Controller
             CtaTexto = landing.CtaTexto,
             CheckAreasSeleccionadas = posted?.CheckAreasSeleccionadas
                 ?? existing?.PreocupacionesSeleccionadas
-                ?? string.Join("|", SplitPipePairs(landing.IncluyeItems, landing.IncluyeIconos).Select(i => i.Value))
+                ?? string.Empty
         };
 
     private async Task<CrawlspaceCheckScheduleViewModel> BuildScheduleViewModelAsync(SolicitudCrawlspaceCheck solicitud)

@@ -5,34 +5,39 @@
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 4;
-
 }
 
-
 @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
-    {
-        <div class="hero-wrap">
-            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@L.Catalog(Model.LandingTitulo)" class="hero-img" />
-            <span class="hvac-hero-icon"><i class="fas fa-warehouse"></i></span>
-        </div>
-    }
-
-    <div class="title-row">
-        <div class="left">
-            <h1 class="page-heading" style="margin-bottom:4px;font-size:1.2rem;">@L.Catalog(Model.LandingTitulo)</h1>
-            @if (!string.IsNullOrWhiteSpace(Model.LandingTagline))
-            {
-                <div class="tagline">@L.Catalog(Model.LandingTagline)</div>
-            }
-        </div>
+{
+    <div class="hero-wrap">
+        <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@L.Catalog(Model.LandingTitulo)" class="hero-img" />
+        <span class="hvac-hero-icon"><i class="fas fa-warehouse"></i></span>
     </div>
-    <p class="page-lead">@L.Catalog(Model.LandingSubtitulo)</p>
+}
+
+<div class="title-row">
+    <div class="left">
+        <h1 class="page-heading" style="margin-bottom:4px;font-size:1.2rem;">@L.Catalog(Model.LandingTitulo)</h1>
+        @if (!string.IsNullOrWhiteSpace(Model.LandingTagline))
+        {
+            <div class="tagline">@L.Catalog(Model.LandingTagline)</div>
+        }
+    </div>
+</div>
+<p class="page-lead">@L.Catalog(Model.LandingSubtitulo)</p>
+
+<div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+<form asp-action="CrawlspaceCheckService" method="post" id="csc-service-form" novalidate>
+    <input type="hidden" asp-for="HomeCarePriorityId" />
+    <input type="hidden" asp-for="SolicitudId" />
+    <input type="hidden" asp-for="CheckAreasSeleccionadas" id="CheckAreasSeleccionadas" />
 
     @if (Model.CheckItems.Count > 0)
     {
-        <div class="includes-box">
-            <div class="includes-label">@L["What we'll check"]</div>
-            <p class="csc-check-hint">@L["Tap to choose the areas you want included in your check."]</p>
+        <div class="field-card" data-svc-required="CheckAreasSeleccionadas">
+            <div class="field-head"><i class="fas fa-list-check"></i><span>@L["What we'll check"]</span></div>
+            <p class="csc-check-hint" style="margin-top:0;margin-bottom:10px;">@L["Tap to choose the areas you want included in your check."]</p>
             <div class="csc-check-grid" id="checkAreasGroup">
                 @foreach (var item in Model.CheckItems)
                 {
@@ -43,8 +48,6 @@
                     </button>
                 }
             </div>
-            <span id="checkAreasClientError" class="field-error" hidden>@L["Select at least one area to check."]</span>
-            <span asp-validation-for="CheckAreasSeleccionadas" class="field-error"></span>
         </div>
     }
 
@@ -59,22 +62,15 @@
         </div>
     }
 
-    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+    <button type="submit" name="action" value="continue" class="btn-primary">
+        @L.Catalog(Model.CtaTexto) <i class="fas fa-chevron-right"></i>
+    </button>
+</form>
 
-    <form asp-action="CrawlspaceCheckService" method="post" id="csc-service-form">
-        <input type="hidden" asp-for="HomeCarePriorityId" />
-        <input type="hidden" asp-for="SolicitudId" />
-        <input type="hidden" asp-for="CheckAreasSeleccionadas" id="CheckAreasSeleccionadas" />
-        <button type="submit" name="action" value="continue" class="btn-primary">
-            @L.Catalog(Model.CtaTexto) <i class="fas fa-chevron-right"></i>
-        </button>
-    </form>
-</div>
 @section Scripts {
 <script>
     (function () {
         var hidden = document.getElementById('CheckAreasSeleccionadas');
-        var form = document.getElementById('csc-service-form');
         if (!hidden) return;
 
         function getSelected() {
@@ -106,30 +102,10 @@
                 }
                 setSelected(current);
                 syncButtons();
-                var clientError = document.getElementById('checkAreasClientError');
-                if (clientError) clientError.hidden = current.length > 0;
             });
         });
 
-        if (!hidden.value) {
-            var defaults = Array.from(document.querySelectorAll('[data-check]'))
-                .map(function (btn) { return btn.getAttribute('data-check'); })
-                .filter(Boolean);
-            setSelected(defaults);
-        }
-
         syncButtons();
-
-        form?.addEventListener('submit', function (e) {
-            var clientError = document.getElementById('checkAreasClientError');
-            if (getSelected().length === 0) {
-                e.preventDefault();
-                if (clientError) clientError.hidden = false;
-            } else if (clientError) {
-                clientError.hidden = true;
-            }
-        });
     })();
-
 </script>
 }

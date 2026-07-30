@@ -94,6 +94,7 @@
         '.concern-chip',
         '.check-tile',
         '.check-card',
+        '.csc-check-item',
         '.multi-chip'
     ].join(',');
 

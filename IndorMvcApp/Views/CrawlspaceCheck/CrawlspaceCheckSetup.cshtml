@@ -5,16 +5,14 @@
     ViewData["WizardBackUrl"] = Url.Action("CrawlspaceCheckService", "CrawlspaceCheck", new { id = Model.HomeCarePriorityId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;
-
 }
-
 
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Tell us about your crawlspace"]</h1>
     <p class="page-lead" style="margin-bottom:16px;">@L["A few details help us prepare the right inspection. Select an answer for each question below."]</p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="csc-setup-form" asp-action="CrawlspaceCheckSetup" method="post">
+    <form id="csc-setup-form" asp-action="CrawlspaceCheckSetup" method="post" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="Encapsulacion" id="Encapsulacion" />
@@ -23,7 +21,7 @@
         <input type="hidden" asp-for="TipoAcceso" id="TipoAcceso" />
         <input type="hidden" asp-for="UltimaRevision" id="UltimaRevision" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="Encapsulacion">
             <div class="field-head"><i class="fas fa-layer-group"></i><span>@L["Do you have encapsulation?"]</span></div>
             <div class="choice-grid-3">
                 <button type="button" class="choice-card" data-enc="Yes"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-check main"></i><span class="label">@L["Yes"]</span></button>
@@ -32,7 +30,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="Aislamiento">
             <div class="field-head"><i class="fas fa-scroll"></i><span>@L["Is there insulation?"]</span></div>
             <div class="choice-grid-3">
                 <button type="button" class="choice-card" data-ins="Yes"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-check main"></i><span class="label">@L["Yes"]</span></button>
@@ -41,7 +39,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="BarreraVapor">
             <div class="field-head"><i class="fas fa-droplet"></i><span>@L["Ground vapor barrier"]</span></div>
             <div class="choice-grid-3">
                 <button type="button" class="choice-card" data-vap="Yes"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-check main"></i><span class="label">@L["Yes"]</span></button>
@@ -50,7 +48,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoAcceso">
             <div class="field-head"><i class="fas fa-door-open"></i><span>@L["Access type"]</span></div>
             <div class="access-grid">
                 <button type="button" class="choice-card" data-access="InteriorHatch"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-square main"></i><span class="label">@L["Interior hatch"]</span></button>
@@ -59,7 +57,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="UltimaRevision">
             <div class="field-head"><i class="fas fa-calendar"></i><span>@L["Last crawlspace check"]</span></div>
             <div class="segment-row">
                 <button type="button" class="segment-btn" data-last="Within1Year"><i class="fas fa-calendar"></i> @L["Within 1 year"]</button>
@@ -78,7 +76,7 @@
             @L["Continue"] <i class="fas fa-chevron-right"></i>
         </button>
     </form>
-</div>
+
 @section Scripts {
 <script>
     (function () {
@@ -98,37 +96,6 @@
         bindSingle('[data-vap]', 'data-vap', document.getElementById('BarreraVapor'));
         bindSingle('[data-access]', 'data-access', document.getElementById('TipoAcceso'));
         bindSingle('[data-last]', 'data-last', document.getElementById('UltimaRevision'));
-
-        var form = document.getElementById('csc-setup-form');
-        var requiredFields = [
-            { id: 'Encapsulacion', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please indicate whether you have encapsulation."].ToString())) },
-            { id: 'Aislamiento', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please indicate whether there is insulation."].ToString())) },
-            { id: 'BarreraVapor', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please indicate whether you have a ground vapor barrier."].ToString())) },
-            { id: 'TipoAcceso', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please select an access type."].ToString())) },
-            { id: 'UltimaRevision', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please indicate when your crawlspace was last checked."].ToString())) }
-        ];
-
-        form?.addEventListener('submit', function (e) {
-            if (e.submitter && e.submitter.value === 'back') {
-                return;
-            }
-
-            var firstMissing = null;
-            requiredFields.forEach(function (field) {
-                var input = document.getElementById(field.id);
-                if (!input) return;
-                var empty = !input.value || !String(input.value).trim();
-                if (empty && !firstMissing) {
-                    firstMissing = field;
-                }
-            });
-
-            if (firstMissing) {
-                e.preventDefault();
-                alert(firstMissing.message);
-            }
-        });
     })();
-
 </script>
 }
