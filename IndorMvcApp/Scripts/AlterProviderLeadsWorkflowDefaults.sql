@@ -1,6 +1,16 @@
 -- Lead workflow defaults: estimate suggestions, visit scheduling, job templates (from INDOR)
 IF COL_LENGTH('dbo.IndorProveedorLeads', 'SuggestedScopeItemsJson') IS NULL
-    ALTER TABLE dbo.IndorProveedorLeads ADD SuggestedScopeItemsJson NVARCHAR(2000) NULL;
+    ALTER TABLE dbo.IndorProveedorLeads ADD SuggestedScopeItemsJson NVARCHAR(MAX) NULL;
+ELSE IF EXISTS (
+    SELECT 1
+    FROM INFORMATION_SCHEMA.COLUMNS
+    WHERE TABLE_SCHEMA = N'dbo'
+      AND TABLE_NAME = N'IndorProveedorLeads'
+      AND COLUMN_NAME = N'SuggestedScopeItemsJson'
+      AND DATA_TYPE = N'nvarchar'
+      AND CHARACTER_MAXIMUM_LENGTH > 0
+      AND CHARACTER_MAXIMUM_LENGTH < 2147483647)
+    ALTER TABLE dbo.IndorProveedorLeads ALTER COLUMN SuggestedScopeItemsJson NVARCHAR(MAX) NULL;
 
 IF COL_LENGTH('dbo.IndorProveedorLeads', 'SuggestedLaborAmount') IS NULL
     ALTER TABLE dbo.IndorProveedorLeads ADD SuggestedLaborAmount DECIMAL(12,2) NULL;

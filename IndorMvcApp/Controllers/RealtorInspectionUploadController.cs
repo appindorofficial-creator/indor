@@ -306,13 +306,14 @@ public class RealtorInspectionUploadController(
         catch (Exception ex)
         {
             logger.LogError(ex, "Create quote requests failed for realtor inspection upload");
-            var message = ex switch
+            var messageKey = ex switch
             {
                 InvalidOperationException => ex.Message,
                 DbUpdateException => "Could not save quote requests. Verify database scripts are up to date and try again.",
                 _ => "Unable to create quote requests. Please try again."
             };
-            ModelState.AddModelError(string.Empty, localizer[message]);
+            // Store the English catalog key; Review.cshtml localizes via L[] for the active culture.
+            ModelState.AddModelError(string.Empty, messageKey);
             return View("Review", await wizard.BuildReviewAsync());
         }
     }

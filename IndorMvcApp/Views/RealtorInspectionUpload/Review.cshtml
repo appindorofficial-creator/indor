@@ -85,11 +85,21 @@
 
 
 <form id="reviewForm" asp-action="CreateRequests" method="post">
-
     @Html.AntiForgeryToken()
-
-    <div asp-validation-summary="All" class="ob-summary"></div>
-
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="ob-summary">
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    var message = string.IsNullOrWhiteSpace(error.ErrorMessage)
+                        ? L["Unable to create quote requests. Please try again."]
+                        : L[error.ErrorMessage];
+                    <li>@message</li>
+                }
+            </ul>
+        </div>
+    }
 </form>
 
 
