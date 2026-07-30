@@ -92,15 +92,10 @@
 
     <a asp-controller="Home" asp-action="Index" class="btn-primary">@L["Done"]</a>
 
-    @if (Model.PropiedadId.HasValue)
-    {
-        <a asp-action="GutterCleaningService" asp-route-id="@Model.HomeCarePriorityId" class="btn-outline" style="margin-top:10px;">
-            <i class="fas fa-pen"></i> @L["Edit reminder or request"]
-        </a>
-    }
-    else
-    {
-        <a asp-action="GutterCleaningService" asp-route-id="@Model.HomeCarePriorityId" class="btn-outline" style="margin-top:10px;">
-            <i class="fas fa-pen"></i> @L["Edit reminder or request"]
-        </a>
-    }
+    <a asp-action="GutterCleaningService"
+       asp-route-id="@Model.HomeCarePriorityId"
+       asp-route-solicitudId="@Model.SolicitudId"
+       class="btn-outline"
+       style="margin-top:10px;">
+        <i class="fas fa-pen"></i> @L["Edit reminder or request"]
+    </a>

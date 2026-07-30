@@ -31,7 +31,7 @@ public class GutterCleaningController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> GutterCleaningService(int id)
+    public async Task<IActionResult> GutterCleaningService(int id, int? solicitudId = null)
     {
         var bundle = await LoadLandingBundleAsync(id);
         if (bundle == null) return NotFound();
@@ -39,7 +39,16 @@ public class GutterCleaningController : Controller
         var userId = RequireUserId();
         if (userId == null) return Challenge();
 
-        var existing = await GetActiveSolicitudAsync(userId, id);
+        SolicitudGutterCleaning? existing = null;
+        if (solicitudId.HasValue)
+        {
+            existing = await _db.SolicitudesGutterCleaning
+                .FirstOrDefaultAsync(s => s.Id == solicitudId.Value
+                                          && s.UserId == userId
+                                          && s.HomeCarePriorityId == id);
+        }
+
+        existing ??= await GetActiveSolicitudAsync(userId, id);
         return View(BuildServiceViewModel(bundle.Value.Priority, bundle.Value.Landing, existing));
     }
 
@@ -68,8 +77,12 @@ public class GutterCleaningController : Controller
             var propiedadId = await GetLatestPropertyIdAsync(userId);
             var solicitud = await GetOrCreateSolicitudAsync(userId, model.HomeCarePriorityId, model.SolicitudId);
             solicitud.PropiedadId = propiedadId;
+            if (!string.Equals(solicitud.TipoAccionInicial, model.TipoAccionInicial, StringComparison.OrdinalIgnoreCase))
+            {
+                solicitud.ObjetivoHoy = null;
+            }
+
             solicitud.TipoAccionInicial = model.TipoAccionInicial;
-            solicitud.ObjetivoHoy = null;
             solicitud.FechaActualizacion = DateTime.Now;
 
             if (string.Equals(model.TipoAccionInicial, "AlreadyDone", StringComparison.OrdinalIgnoreCase))
@@ -105,19 +118,16 @@ public class GutterCleaningController : Controller
             return RedirectToAction(nameof(GutterCleaningConfirmed), new { id = solicitud.Id });
         }
 
-        var setupEntered = string.Equals(solicitud.Estado, "SetupCompleted", StringComparison.OrdinalIgnoreCase)
-            || string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
-
         return View(new GutterCleaningSetupViewModel
         {
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = solicitud.HomeCarePriority?.Nombre ?? "Gutter Cleaning",
-            NumeroPisos = setupEntered ? (solicitud.NumeroPisos ?? string.Empty) : string.Empty,
-            TipoCanaletas = setupEntered ? (solicitud.TipoCanaletas ?? string.Empty) : string.Empty,
-            ProtectorCanaletas = setupEntered ? (solicitud.ProtectorCanaletas ?? string.Empty) : string.Empty,
-            UltimaLimpieza = setupEntered ? (solicitud.UltimaLimpieza ?? string.Empty) : string.Empty,
-            CantidadBajantes = setupEntered ? solicitud.CantidadBajantes : null
+            NumeroPisos = solicitud.NumeroPisos ?? string.Empty,
+            TipoCanaletas = solicitud.TipoCanaletas ?? string.Empty,
+            ProtectorCanaletas = solicitud.ProtectorCanaletas ?? string.Empty,
+            UltimaLimpieza = solicitud.UltimaLimpieza ?? string.Empty,
+            CantidadBajantes = solicitud.CantidadBajantes
         });
     }
 
@@ -130,7 +140,11 @@ public class GutterCleaningController : Controller
 
         if (string.Equals(action, "back", StringComparison.OrdinalIgnoreCase))
         {
-            return RedirectToAction(nameof(GutterCleaningService), new { id = solicitud.HomeCarePriorityId });
+            return RedirectToAction(nameof(GutterCleaningService), new
+            {
+                id = solicitud.HomeCarePriorityId,
+                solicitudId = solicitud.Id
+            });
         }
 
         if (!ModelState.IsValid)
@@ -165,13 +179,7 @@ public class GutterCleaningController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id, includeArchivos: true);
         if (solicitud == null) return NotFound();
 
-        var model = BuildPreferencesViewModel(solicitud);
-        model.ProblemasSeleccionados = string.Empty;
-        model.AreaProblema = string.Empty;
-        model.ObjetivoHoy = string.Empty;
-        model.PreferenciaRecordatorio = string.Empty;
-        model.FechaRecordatorioPersonalizada = null;
-        return View(model);
+        return View(BuildPreferencesViewModel(solicitud));
     }
 
     [HttpPost]
@@ -260,7 +268,11 @@ public class GutterCleaningController : Controller
 
         if (!string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase))
         {
-            return RedirectToAction(nameof(GutterCleaningService), new { id = solicitud.HomeCarePriorityId });
+            return RedirectToAction(nameof(GutterCleaningService), new
+            {
+                id = solicitud.HomeCarePriorityId,
+                solicitudId = solicitud.Id
+            });
         }
 
         var landing = await GetLandingAsync(solicitud.HomeCarePriorityId);
@@ -354,8 +366,35 @@ public class GutterCleaningController : Controller
             ImagenUrl = ResolveImageUrl(landing.ImagenUrl ?? priority.ImagenUrl),
             WhyItMattersItems = SplitPipePairs(landing.WhyItMattersItems, landing.WhyItMattersIconos),
             CtaTexto = landing.CtaTexto,
-            TipoAccionInicial = existing?.TipoAccionInicial ?? posted?.TipoAccionInicial ?? string.Empty
+            TipoAccionInicial = ResolveTipoAccionInicial(existing, posted)
         };
+
+    /// <summary>
+    /// Prefer ObjetivoHoy when editing a saved request so step 1 matches Confirmed "Need".
+    /// </summary>
+    private static string ResolveTipoAccionInicial(
+        SolicitudGutterCleaning? existing,
+        GutterCleaningServiceViewModel? posted)
+    {
+        if (!string.IsNullOrWhiteSpace(posted?.TipoAccionInicial))
+            return posted.TipoAccionInicial!;
+
+        if (existing == null)
+            return string.Empty;
+
+        if (!string.IsNullOrWhiteSpace(existing.ObjetivoHoy))
+        {
+            return existing.ObjetivoHoy switch
+            {
+                "ScheduleService" => "ScheduleService",
+                "AlreadyDone" => "AlreadyDone",
+                "ReminderOnly" or "CleaningEstimate" => "Reminder",
+                _ => existing.TipoAccionInicial ?? string.Empty
+            };
+        }
+
+        return existing.TipoAccionInicial ?? string.Empty;
+    }
 
     private static GutterCleaningPreferencesViewModel BuildPreferencesViewModel(SolicitudGutterCleaning solicitud) =>
         new()
@@ -540,9 +579,7 @@ public class GutterCleaningController : Controller
                 HomeCarePriorityId = priorityId,
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
-                FechaCreacion = DateTime.Now,
-                PreferenciaRecordatorio = "SpringFall",
-                RecordatorioPrimaveraOtono = true
+                FechaCreacion = DateTime.Now
             };
             _db.SolicitudesGutterCleaning.Add(solicitud);
             await _db.SaveChangesAsync();

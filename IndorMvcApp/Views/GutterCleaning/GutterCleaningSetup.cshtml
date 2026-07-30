@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = L["Tell us about your home - INDOR"];
     ViewData["WizardTitle"] = L.Catalog(Model.PageTitle);
-    ViewData["WizardBackUrl"] = Url.Action("GutterCleaningService", "GutterCleaning", new { id = Model.HomeCarePriorityId });
+    ViewData["WizardBackUrl"] = Url.Action("GutterCleaningService", "GutterCleaning", new { id = Model.HomeCarePriorityId, solicitudId = Model.SolicitudId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;
 }
