@@ -31,19 +31,6 @@
     <input type="hidden" asp-for="BestForNote" />
     <input type="hidden" asp-for="CtaContinueTexto" />
     <input type="hidden" asp-for="CtaEstimateTexto" />
-    <input type="hidden" asp-for="TipoMovimiento" id="TipoMovimiento" />
-
-    <div class="field-card" data-svc-required="TipoMovimiento">
-        <span class="field-label">@L["Move type"]</span>
-        <div class="chip-row" id="moveTypeGroup">
-            @foreach (var moveType in Model.MoveTypes)
-            {
-                <button type="button" class="chip-btn @(moveType.Value == Model.TipoMovimiento ? "active" : "")" data-value="@moveType.Value">
-                    <i class="fas @moveType.Icon"></i> @L.Catalog(moveType.Label)
-                </button>
-            }
-        </div>
-    </div>
 
     @if (Model.IncludedItems.Count > 0)
     {
@@ -87,19 +74,3 @@
         <button type="submit" name="action" value="estimate" class="btn-outline">@L.Catalog(Model.CtaEstimateTexto)</button>
     </div>
 </form>
-
-@section Scripts {
-<script>
-    (function () {
-        const hidden = document.getElementById('TipoMovimiento');
-        const buttons = document.querySelectorAll('#moveTypeGroup .chip-btn');
-        buttons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                buttons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                hidden.value = btn.dataset.value;
-            });
-        });
-    })();
-</script>
-}

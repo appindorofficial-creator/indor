@@ -32,12 +32,8 @@ public class MovingServiceViewModel
     public string BestForLabel { get; set; } = "Best for";
     public string BestForValue { get; set; } = string.Empty;
     public string? BestForNote { get; set; }
-    public List<MovingMoveTypeOptionViewModel> MoveTypes { get; set; } = new();
     public string CtaContinueTexto { get; set; } = "Continue";
     public string CtaEstimateTexto { get; set; } = "Get estimate";
-
-    [Required]
-    public string TipoMovimiento { get; set; } = string.Empty;
 }
 
 public class MovingDetailsViewModel

@@ -61,22 +61,22 @@ public class MovingController : Controller
         // Prefer the submit button's form value; ambient route "action" can mask it.
         var flowAction = Request.Form["action"].FirstOrDefault() ?? action;
 
-        if (string.IsNullOrWhiteSpace(model.TipoMovimiento))
-        {
-            ModelState.AddModelError(nameof(model.TipoMovimiento), "Select a move type.");
-            ModelState.AddModelError(string.Empty, "Select a move type.");
-            ModelState.LocalizeModelState(_localizer);
-            return View(BuildServiceViewModel(bundle.Value.Servicio, bundle.Value.Landing, null, model));
-        }
-
         try
         {
             var propiedadId = await GetLatestPropertyIdAsync(userId);
             var solicitud = await GetOrCreateSolicitudAsync(userId, model.MovingSetupServicioId, model.SolicitudId);
 
             solicitud.PropiedadId = propiedadId;
-            solicitud.TipoMovimiento = model.TipoMovimiento;
-            solicitud.Estado = "ServiceCompleted";
+            // Move type is collected only on MovingDetails (single screen).
+            var detailsReady = IsMovingDetailsReady(solicitud);
+            if (!detailsReady
+                && (string.IsNullOrWhiteSpace(solicitud.Estado)
+                    || string.Equals(solicitud.Estado, "InProgress", StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(solicitud.Estado, "ServiceCompleted", StringComparison.OrdinalIgnoreCase)))
+            {
+                solicitud.Estado = "ServiceCompleted";
+            }
+
             solicitud.FechaActualizacion = DateTime.Now;
 
             var landing = bundle.Value.Landing;
@@ -87,7 +87,8 @@ public class MovingController : Controller
 
             await _db.SaveChangesAsync();
 
-            if (string.Equals(flowAction, "estimate", StringComparison.OrdinalIgnoreCase))
+            // After landing, move type lives on Details — send estimate there until details exist.
+            if (string.Equals(flowAction, "estimate", StringComparison.OrdinalIgnoreCase) && detailsReady)
             {
                 return RedirectToAction(nameof(MovingReview), new { id = solicitud.Id });
             }
@@ -127,7 +128,8 @@ public class MovingController : Controller
             SolicitudId = solicitud.Id,
             MovingSetupServicioId = solicitud.MovingSetupServicioId,
             NombreServicio = solicitud.MovingSetupServicio!.Nombre,
-            // Do not carry Service-step move type into Details — user must choose here.
+            // Only pre-select options once the user has actually filled in this step (Bug 20 / Bug 12).
+            // Normalize legacy landing values (LocalMove → FullMove) when editing.
             TipoMovimiento = detailsEntered && !string.IsNullOrWhiteSpace(solicitud.TipoMovimiento)
                 ? MapLandingToDetailsMoveType(solicitud.TipoMovimiento)
                 : string.Empty,
@@ -167,7 +169,7 @@ public class MovingController : Controller
 
         try
         {
-            solicitud.TipoMovimiento = model.TipoMovimiento;
+            solicitud.TipoMovimiento = MapLandingToDetailsMoveType(model.TipoMovimiento);
             solicitud.TipoPropiedad = model.TipoPropiedad;
             solicitud.TamanoHogar = model.TamanoHogar;
             solicitud.DireccionOrigen = model.DireccionOrigen.Trim();
@@ -463,20 +465,6 @@ public class MovingController : Controller
             });
         }
 
-        var labels = SplitPipe(landing.MoveTypes);
-        var values = SplitPipe(landing.MoveTypeValues);
-        var moveIcons = SplitPipe(landing.MoveTypeIcons);
-        var moveTypes = new List<MovingMoveTypeOptionViewModel>();
-        for (var i = 0; i < labels.Length; i++)
-        {
-            moveTypes.Add(new MovingMoveTypeOptionViewModel
-            {
-                Label = labels[i],
-                Value = i < values.Length ? values[i] : labels[i].Replace(" ", ""),
-                Icon = i < moveIcons.Length && !string.IsNullOrWhiteSpace(moveIcons[i]) ? moveIcons[i] : "fa-truck"
-            });
-        }
-
         return new MovingServiceViewModel
         {
             MovingSetupServicioId = servicio.Id,
@@ -493,15 +481,8 @@ public class MovingController : Controller
             BestForLabel = landing.BestForLabel,
             BestForValue = landing.BestForValue,
             BestForNote = landing.BestForNote,
-            MoveTypes = moveTypes,
             CtaContinueTexto = landing.CtaContinueTexto,
-            CtaEstimateTexto = landing.CtaEstimateTexto,
-            TipoMovimiento = posted?.TipoMovimiento
-                ?? (existing != null
-                    && !string.Equals(existing.Estado, "InProgress", StringComparison.OrdinalIgnoreCase)
-                        ? existing.TipoMovimiento
-                        : string.Empty)
-                ?? string.Empty
+            CtaEstimateTexto = landing.CtaEstimateTexto
         };
     }
 
@@ -542,6 +523,14 @@ public class MovingController : Controller
             "LocalMove" => "FullMove",
             _ => tipoMovimiento
         };
+
+    private static bool IsMovingDetailsReady(SolicitudMoving solicitud) =>
+        string.Equals(solicitud.Estado, "DetailsCompleted", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(solicitud.Estado, "ItemsCompleted", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(solicitud.Estado, "Confirmed", StringComparison.OrdinalIgnoreCase)
+        || (!string.IsNullOrWhiteSpace(solicitud.TipoPropiedad)
+            && !string.IsNullOrWhiteSpace(solicitud.DireccionDestino)
+            && solicitud.FechaMovimiento.HasValue);
 
     private async Task<int?> GetLatestPropertyIdAsync(string userId) =>
         await _db.Propiedades
