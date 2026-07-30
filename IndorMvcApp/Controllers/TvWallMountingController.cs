@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -15,15 +16,21 @@ public class TvWallMountingController : Controller
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
+    private readonly IIndorLocalizer _localizer;
 
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png", ".pdf"];
     private const long MaxFileSize = 25_000_000;
 
-    public TvWallMountingController(AppDbContext db, UserManager<ApplicationUser> userManager, IWebHostEnvironment env)
+    public TvWallMountingController(
+        AppDbContext db,
+        UserManager<ApplicationUser> userManager,
+        IWebHostEnvironment env,
+        IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
         _env = env;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -312,6 +319,7 @@ public class TvWallMountingController : Controller
 
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             var landing = await _db.TvWallMountingServicioLanding
                 .AsNoTracking()
                 .FirstOrDefaultAsync(l => l.MovingSetupServicioId == solicitud.MovingSetupServicioId && l.Activo);
@@ -331,6 +339,7 @@ public class TvWallMountingController : Controller
         {
             ModelState.AddModelError("",
                 "Could not confirm your booking. Please ensure the TV wall mounting flow tables exist in the database and try again.");
+            ModelState.LocalizeModelState(_localizer);
             var landing = await _db.TvWallMountingServicioLanding
                 .AsNoTracking()
                 .FirstOrDefaultAsync(l => l.MovingSetupServicioId == solicitud.MovingSetupServicioId && l.Activo);

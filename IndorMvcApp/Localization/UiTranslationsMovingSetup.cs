@@ -175,6 +175,8 @@ public static class UiTranslationsMovingSetup
             ["Crew supplies:"] = "Suministros del equipo:",
             ["Includes labor, supplies, and equipment."] = "Incluye mano de obra, suministros y equipo.",
             ["Estimated total"] = "Total estimado",
+            ["Review & Request"] = "Revisar y solicitar",
+            ["Selected tasks"] = "Tareas seleccionadas",
             ["Tell us about your packing job"] = "Cuéntanos sobre tu trabajo de empaque",
             ["Help us match the right crew and packing materials."] =
                 "Ayúdanos a asignar el equipo y materiales de empaque adecuados.",
@@ -225,12 +227,18 @@ public static class UiTranslationsMovingSetup
 
             // Furniture assembly
             ["Furniture Assembly"] = "Ensamblaje de muebles",
+            ["Furniture & Assembly Details"] = "Detalles de muebles y ensamblaje",
             ["Professional assembly for beds, desks, and more."] = "Ensamblaje profesional de camas, escritorios y más.",
             ["What needs assembly?"] = "¿Qué necesita ensamblaje?",
             ["Tell us what needs assembly"] = "Cuéntanos qué necesita ensamblaje",
             ["Assembly preferences"] = "Preferencias de ensamblaje",
             ["Number of items"] = "Cantidad de artículos",
             ["Assembly location"] = "Lugar de ensamblaje",
+            ["Where will the assembly happen?"] = "¿Dónde se realizará el ensamblaje?",
+            ["Anything else we should know?"] = "¿Algo más que debamos saber?",
+            ["Heavy dresser for upstairs bedroom, assembly manual available."] =
+                "Cómoda pesada para el dormitorio de arriba; manual de ensamblaje disponible.",
+            ["Upload photos"] = "Subir fotos",
             ["Bed frame"] = "Marco de cama",
             ["Desk"] = "Escritorio",
             ["Bookshelf"] = "Estantería",
@@ -322,6 +330,21 @@ public static class UiTranslationsMovingSetup
             ["Everything is confirmed. We've reserved your appointment and sent your request."] =
                 "Todo está confirmado. Reservamos tu cita y enviamos tu solicitud.",
             ["Best recommendation"] = "Mejor recomendación",
+            ["I understand final pricing may adjust based on wall type, mount hardware, cable concealment, or on-site conditions."] =
+                "Entiendo que el precio final puede ajustarse según el tipo de pared, el soporte, el ocultamiento de cables o las condiciones en sitio.",
+            ["Please confirm you understand final pricing may adjust."] =
+                "Confirma que entiendes que el precio final puede ajustarse.",
+            ["Confirm booking"] = "Confirmar reserva",
+            ["Starting price"] = "Precio inicial",
+            ["Previous mount on wall"] = "Montaje previo en la pared",
+            ["Outlet nearby"] = "Tomacorriente cercano",
+            ["Wall mount"] = "Soporte de pared",
+            ["Quantity"] = "Cantidad",
+            ["Arrival"] = "Llegada",
+            ["Uploaded photos"] = "Fotos subidas",
+            ["Check the details before booking."] = "Revisa los detalles antes de reservar.",
+            ["Could not confirm your booking. Please ensure the TV wall mounting flow tables exist in the database and try again."] =
+                "No se pudo confirmar tu reserva. Asegúrate de que existan las tablas del flujo de montaje de TV e inténtalo de nuevo.",
 
             // Utilities setup
             ["Utilities Setup"] = "Configuración de servicios",
