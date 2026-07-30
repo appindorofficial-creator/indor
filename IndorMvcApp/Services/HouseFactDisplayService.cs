@@ -293,7 +293,10 @@ public static class HouseFactDisplayService
     private static string Humanize(string key)
     {
         if (string.IsNullOrWhiteSpace(key)) return "Field";
-        return char.ToUpper(key[0]) + key[1..].Replace('_', ' ');
+
+        // Prefer Attom label map / camelCase title case so Localize keys match the catalog.
+        var leaf = key.Split('.').Last();
+        return AttomFieldExtractor.HumanizeFieldKey(leaf);
     }
 
     private static AttomFieldGroupViewModel CreateFieldSection(string sectionId, string title, string icon, int order, JsonNode node)

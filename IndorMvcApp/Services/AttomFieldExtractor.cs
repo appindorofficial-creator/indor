@@ -33,7 +33,7 @@ public static class AttomFieldExtractor
         ["bathsfull"] = "Full bathrooms",
         ["roomsTotal"] = "Total rooms",
         ["propclass"] = "Property class",
-        ["propertyType"] = "Property type",
+        ["propertyType"] = "Property Type",
         ["proptype"] = "Property type code",
         ["propsubtype"] = "Property subtype",
         ["propLandUse"] = "Land use",
@@ -84,11 +84,16 @@ public static class AttomFieldExtractor
         ["yearBuilt"] = "Year built",
         ["yearRenovated"] = "Year renovated",
         ["livingArea"] = "Living area (sq ft)",
+        ["livingAreaSource"] = "Living Area Source",
+        ["livingAreaSourceName"] = "Living Area Source",
         ["lotSizeAcres"] = "Lot size (acres)",
         ["lotSizeSqFt"] = "Lot size (sq ft)",
         ["bedrooms"] = "Bedrooms",
+        ["bedroomsSource"] = "Bedrooms Source",
         ["bathrooms"] = "Bathrooms",
+        ["bathroomsSource"] = "Bathrooms Source",
         ["estimatedValue"] = "Estimated value",
+        ["estimatedValueSource"] = "Estimated Value Source",
         ["estimatedValueYear"] = "Estimated value year",
         ["annualTaxAmount"] = "Annual tax amount",
         ["parcelNumber"] = "Parcel number",
@@ -318,6 +323,17 @@ public static class AttomFieldExtractor
         return false;
     }
 
+    /// <summary>Map or humanize a JSON field key to an English catalog label for display-time localization.</summary>
+    public static string HumanizeFieldKey(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            return "Field";
+        }
+
+        return HumanizeGroup(key);
+    }
+
     private static string HumanizeGroup(string key)
     {
         if (TryMapLabel(key, out var mapped))
@@ -330,6 +346,16 @@ public static class AttomFieldExtractor
         {
             var parts = key.Split('_', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             return string.Join(' ', parts.Select(ToTitleWord));
+        }
+
+        // SCREAMING CASE with spaces (AI field labels) → Title Case catalog keys.
+        if (key.Contains(' ', StringComparison.Ordinal)
+            && key.Any(char.IsLetter)
+            && key.Where(char.IsLetter).All(char.IsUpper))
+        {
+            return string.Join(' ',
+                key.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                    .Select(ToTitleWord));
         }
 
         var sb = new StringBuilder();

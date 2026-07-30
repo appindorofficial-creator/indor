@@ -86,7 +86,7 @@ public static class CatalogText
             return false;
         }
 
-        key = key.Trim();
+        key = NormalizeCatalogKey(key);
 
         if (UiTranslations.Spanish.TryGetValue(key, out var ordinal)
             && !string.Equals(ordinal, key, StringComparison.Ordinal))
@@ -102,7 +102,60 @@ public static class CatalogText
             return true;
         }
 
+        // House Fact / ATTOM labels often arrive as SCREAMING CASE or camelCase.
+        var titleCase = ToTitleCaseWords(key);
+        if (!string.Equals(titleCase, key, StringComparison.Ordinal)
+            && UiSpanishIgnoreCase.Value.TryGetValue(titleCase, out var titleHit)
+            && !string.Equals(titleHit, titleCase, StringComparison.OrdinalIgnoreCase))
+        {
+            translated = titleHit;
+            return true;
+        }
+
         return false;
+    }
+
+    /// <summary>Collapse NBSP / odd whitespace so catalog keys match ATTOM / AI labels.</summary>
+    private static string NormalizeCatalogKey(string key)
+    {
+        var trimmed = key.Trim().Replace('\u00A0', ' ').Replace('\u202F', ' ');
+        return Regex.Replace(trimmed, @"\s+", " ");
+    }
+
+    private static string ToTitleCaseWords(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return text;
+        }
+
+        // camelCase / PascalCase → words
+        var spaced = Regex.Replace(text, @"([a-z])([A-Z])", "$1 $2");
+        spaced = Regex.Replace(spaced, @"([A-Z]+)([A-Z][a-z])", "$1 $2");
+        spaced = spaced.Replace('_', ' ');
+        spaced = Regex.Replace(spaced, @"\s+", " ").Trim();
+
+        var parts = spaced.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        for (var i = 0; i < parts.Length; i++)
+        {
+            var word = parts[i];
+            if (word.Length == 0)
+            {
+                continue;
+            }
+
+            // Keep known acronyms; title-case SCREAMING labels from House Facts / ATTOM.
+            if (word.Length <= 5
+                && word.All(char.IsUpper)
+                && word is "APN" or "HOA" or "HVAC" or "FIPS" or "ZIP" or "SFR" or "CO" or "ER")
+            {
+                continue;
+            }
+
+            parts[i] = char.ToUpperInvariant(word[0]) + word[1..].ToLowerInvariant();
+        }
+
+        return string.Join(' ', parts);
     }
 
     /// <summary>Shared "N day(s) before" → Spanish via "{0} days before" / "1 day before".</summary>
