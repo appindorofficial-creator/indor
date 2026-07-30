@@ -5,22 +5,21 @@
     ViewData["WizardBackUrl"] = Url.Action("RoofInspectionDetails", "RoofInspection", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 3;
-
 }
 
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Schedule roof check"]</h1>
     <p class="page-lead" style="margin-bottom:16px;">@L.Catalog(Model.ScheduleIntro)</p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="roof-schedule-form" asp-action="RoofInspectionSchedule" method="post">
+    <form id="roof-schedule-form" asp-action="RoofInspectionSchedule" method="post" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="TipoServicio" id="TipoServicio" />
         <input type="hidden" asp-for="Frecuencia" id="Frecuencia" />
         <input type="hidden" asp-for="TimingPreferido" id="TimingPreferido" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoServicio">
             <div class="field-head"><i class="fas fa-list-check"></i><span>@L["Choose service"]</span></div>
             <div class="choice-grid-2">
                 <button type="button" class="choice-card" data-service="ReminderOnly"><i class="fas fa-bell main"></i><span class="label">@L["Reminder only"]</span></button>
@@ -28,7 +27,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="Frecuencia">
             <div class="field-head"><i class="fas fa-rotate"></i><span>@L["How often?"]</span></div>
             <div class="freq-grid">
                 <button type="button" class="freq-card" data-freq="Yearly"><span class="badge">@L["Recommended"]</span><i class="fas fa-calendar"></i><span class="label">@L["Yearly"]</span></button>
@@ -38,7 +37,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TimingPreferido">
             <div class="field-head"><i class="fas fa-seedling"></i><span>@L["Preferred timing"]</span></div>
             <div class="pill-row">
                 <button type="button" class="segment-btn" data-timing="Spring"><i class="fas fa-seedling"></i> @L["Spring"]</button>
@@ -50,7 +49,7 @@
 
         @if (Model.CoverageItems.Count > 0)
         {
-            <div class="field-card">
+            <div class="field-card" data-svc-optional>
                 <div class="field-head"><i class="fas fa-clipboard-check"></i><span>@L["Inspection covers"]</span></div>
                 <div class="coverage-grid">
                     @foreach (var item in Model.CoverageItems)
@@ -61,7 +60,7 @@
             </div>
         }
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <div class="field-head"><i class="fas fa-calendar"></i><span>@L["Preferred date"]</span></div>
             <input asp-for="FechaPreferida" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
         </div>
@@ -80,7 +79,7 @@
             <div class="trust-footer"><i class="fas fa-shield-halved"></i><span>@L.Catalog(Model.TrustTexto)</span></div>
         }
     </form>
-</div>
+
 @section Scripts {
 <script>
     (function () {
@@ -98,35 +97,6 @@
         bindSingle('[data-service]', 'data-service', document.getElementById('TipoServicio'));
         bindSingle('[data-freq]', 'data-freq', document.getElementById('Frecuencia'));
         bindSingle('[data-timing]', 'data-timing', document.getElementById('TimingPreferido'));
-
-        var form = document.getElementById('roof-schedule-form');
-        var requiredFields = [
-            { id: 'TipoServicio', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please choose a service."].ToString())) },
-            { id: 'Frecuencia', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please select how often you'd like a roof check."].ToString())) },
-            { id: 'TimingPreferido', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please select your preferred timing."].ToString())) }
-        ];
-
-        form?.addEventListener('submit', function (e) {
-            if (e.submitter && e.submitter.value === 'back') {
-                return;
-            }
-
-            var firstMissing = null;
-            requiredFields.forEach(function (field) {
-                var input = document.getElementById(field.id);
-                if (!input) return;
-                var empty = !input.value || !String(input.value).trim();
-                if (empty && !firstMissing) {
-                    firstMissing = field;
-                }
-            });
-
-            if (firstMissing) {
-                e.preventDefault();
-                alert(firstMissing.message);
-            }
-        });
     })();
-
 </script>
 }

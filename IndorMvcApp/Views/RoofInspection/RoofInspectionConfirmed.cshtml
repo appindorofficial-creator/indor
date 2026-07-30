@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.RoofInspectionConfirmedViewModel
 @{
     ViewData["Title"] = L["Roof check set - INDOR"];
-    ViewData["WizardTitle"] = Model.NombreServicio;
+    ViewData["WizardTitle"] = L.Catalog(Model.NombreServicio);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }

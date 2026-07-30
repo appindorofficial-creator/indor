@@ -436,9 +436,9 @@ public static class UiTranslationsMovingSetup
             ["Preventive maintenance visit"] = "Visita de mantenimiento preventivo",
             ["Trash out service"] = "Servicio de vaciado / trash out",
             ["Asphalt shingle"] = "Teja de asfalto",
-            ["flashing, shingles, and sealant"] = "flashing, tejas y sellador",
+            ["flashing, shingles, and sealant"] = "tapajuntas, tejas y sellador",
             ["storm damage and shingles"] = "daños por tormenta y tejas",
-            ["leak signs and flashing"] = "señales de fuga y flashing",
+            ["leak signs and flashing"] = "señales de fuga y tapajuntas",
             ["shingles and sealant"] = "tejas y sellador",
 
             // Realtor quick entry

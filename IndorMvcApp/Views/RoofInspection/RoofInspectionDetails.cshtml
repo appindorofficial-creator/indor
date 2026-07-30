@@ -5,19 +5,14 @@
     ViewData["WizardBackUrl"] = Url.Action("RoofInspectionService", "RoofInspection", new { id = Model.HomeCarePriorityId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 3;
-
 }
 
-<div style="width:44px;text-align:right;color:#0066CC;"><i class="fas fa-shield-halved"></i></div>
-    </div>
-
-    
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Roof details"]</h1>
     <p class="page-lead" style="margin-bottom:16px;">@L["Help us understand your roof so we can schedule the right inspection. Select an answer for each question below."]</p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="roof-details-form" asp-action="RoofInspectionDetails" method="post" enctype="multipart/form-data">
+    <form id="roof-details-form" asp-action="RoofInspectionDetails" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="MotivoRevision" id="MotivoRevision" />
@@ -25,7 +20,7 @@
         <input type="hidden" asp-for="EdadTecho" id="EdadTecho" />
         <input type="hidden" asp-for="UltimaInspeccion" id="UltimaInspeccion" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="MotivoRevision">
             <div class="field-head"><i class="fas fa-magnifying-glass"></i><span>@L["Why do you need a roof check?"]</span></div>
             <div class="reason-grid">
                 <button type="button" class="reason-card" data-reason="RoutineInspection"><i class="fas fa-calendar main"></i><span class="label">@L["Routine inspection"]</span></button>
@@ -36,7 +31,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoTecho">
             <div class="field-head"><i class="fas fa-house-chimney"></i><span>@L["Roof type"]</span></div>
             <div class="reason-grid">
                 <button type="button" class="reason-card" data-roof="AsphaltShingle"><i class="fas fa-house-chimney main"></i><span class="label">@L["Asphalt shingle"]</span></button>
@@ -47,7 +42,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="EdadTecho">
             <div class="field-head"><i class="fas fa-clock"></i><span>@L["Approx. roof age"]</span></div>
             <div class="pill-row">
                 <button type="button" class="segment-btn" data-age="ZeroToTen">@L["0–10 yrs"]</button>
@@ -57,7 +52,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="UltimaInspeccion">
             <div class="field-head"><i class="fas fa-calendar"></i><span>@L["Last roof inspection"]</span></div>
             <div class="pill-row">
                 <button type="button" class="segment-btn" data-last="ThisYear">@L["This year"]</button>
@@ -99,7 +94,6 @@
         </button>
         <div class="trust-footer" style="margin-top:12px;"><i class="fas fa-shield-halved"></i><span>@L["Your information is secure and never shared."]</span></div>
     </form>
-</div>
 @section Scripts {
 <script>
     (function () {
@@ -118,35 +112,6 @@
         bindSingle('[data-roof]', 'data-roof', document.getElementById('TipoTecho'));
         bindSingle('[data-age]', 'data-age', document.getElementById('EdadTecho'));
         bindSingle('[data-last]', 'data-last', document.getElementById('UltimaInspeccion'));
-
-        var form = document.getElementById('roof-details-form');
-        var requiredFields = [
-            { id: 'MotivoRevision', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please select why you need a roof check."].ToString())) },
-            { id: 'TipoTecho', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please select your roof type."].ToString())) },
-            { id: 'EdadTecho', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please indicate the approximate age of your roof."].ToString())) },
-            { id: 'UltimaInspeccion', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Please indicate when your roof was last inspected."].ToString())) }
-        ];
-
-        form?.addEventListener('submit', function (e) {
-            if (e.submitter && e.submitter.value === 'back') {
-                return;
-            }
-
-            var firstMissing = null;
-            requiredFields.forEach(function (field) {
-                var input = document.getElementById(field.id);
-                if (!input) return;
-                var empty = !input.value || !String(input.value).trim();
-                if (empty && !firstMissing) {
-                    firstMissing = field;
-                }
-            });
-
-            if (firstMissing) {
-                e.preventDefault();
-                alert(firstMissing.message);
-            }
-        });
 
         var photoInput = document.getElementById('photoInput');
         var photoDropzone = document.getElementById('photoDropzone');
