@@ -437,12 +437,40 @@
         }
     </div>
 
-    <button type="button" class="hf-explore-more" data-hf-scroll-categories>
-        <span class="hf-explore-more-icon"><i class="fas fa-layer-group"></i></span>
-        <span class="hf-explore-more-copy">
-            <strong>@L["Explore more sections"]</strong>
-            <span>@L["Dive deeper into every aspect of your home"]</span>
-        </span>
-        <i class="fas fa-chevron-right"></i>
-    </button>
+    @{
+        var exploreSubtitle = L["Start with Snapshot, Systems, Roof, Permits, and HOA"].ToString();
+    }
+    @if (isPreview)
+    {
+        <a class="hf-explore-more" asp-controller="HouseFactPreview" asp-action="PropertySnapshot">
+            <span class="hf-explore-more-icon"><i class="fas fa-layer-group"></i></span>
+            <span class="hf-explore-more-copy">
+                <strong>@L["Explore more sections"]</strong>
+                <span>@exploreSubtitle</span>
+            </span>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    }
+    else if (propiedadId.HasValue)
+    {
+        <a class="hf-explore-more" asp-controller="PropertySnapshot" asp-action="Index" asp-route-id="@propiedadId.Value">
+            <span class="hf-explore-more-icon"><i class="fas fa-layer-group"></i></span>
+            <span class="hf-explore-more-copy">
+                <strong>@L["Explore more sections"]</strong>
+                <span>@exploreSubtitle</span>
+            </span>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    }
+    else
+    {
+        <button type="button" class="hf-explore-more" data-hf-scroll-categories>
+            <span class="hf-explore-more-icon"><i class="fas fa-layer-group"></i></span>
+            <span class="hf-explore-more-copy">
+                <strong>@L["Explore more sections"]</strong>
+                <span>@exploreSubtitle</span>
+            </span>
+            <i class="fas fa-arrow-up"></i>
+        </button>
+    }
 </section>

@@ -1043,9 +1043,15 @@
 }
 
 .hf-jump-row.hf-sections-spotlight,
+.hf-jump-scroll.hf-sections-spotlight,
 .hf-category-grid.hf-sections-spotlight {
     animation: hf-sections-pulse 1.4s ease;
     border-radius: 16px;
+}
+
+a.hf-explore-more {
+    text-decoration: none;
+    color: inherit;
 }
 
 @keyframes hf-sections-pulse {

@@ -359,6 +359,7 @@ public static class UiTranslationsShared
             ["View all sections"] = "Ver todas las secciones",
             ["Explore more sections"] = "Explorar más secciones",
             ["Dive deeper into every aspect of your home"] = "Profundiza en cada aspecto de tu hogar",
+            ["Start with Snapshot, Systems, Roof, Permits, and HOA"] = "Empieza por Resumen, Sistemas, Techo, Permisos y HOA",
             ["No House Fact data is available yet for this property."] = "Aún no hay datos de House Facts para esta propiedad.",
             ["Back to overview"] = "Volver al resumen",
             ["Section details"] = "Detalles de la sección",

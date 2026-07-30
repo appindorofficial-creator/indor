@@ -51,21 +51,22 @@
         function scrollToSectionCards() {
             if (!overviewScreen) return;
 
-            // Stay on overview — guide the user to dedicated section cards (not the raw details dump).
+            // Stay on overview — guide to dedicated section tabs (not the "More details" dump).
             setLayoutBackVisible(true);
             if (detailScreen) {
                 detailScreen.hidden = true;
             }
             overviewScreen.hidden = false;
 
-            var target = overviewScreen.querySelector(".hf-jump-row")
+            var target = overviewScreen.querySelector(".hf-jump-scroll")
+                || overviewScreen.querySelector(".hf-jump-row")
                 || overviewScreen.querySelector(".hf-category-grid")
                 || overviewScreen;
             target.classList.add("hf-sections-spotlight");
-            target.scrollIntoView({ behavior: "smooth", block: "start" });
+            target.scrollIntoView({ behavior: "smooth", block: "center" });
             window.setTimeout(function () {
                 target.classList.remove("hf-sections-spotlight");
-            }, 1600);
+            }, 1800);
         }
 
         function openCategory(categoryKey, title, sectionIds) {
@@ -99,6 +100,7 @@
                 section.open = false;
             });
             var scrollTarget = overviewScreen.querySelector(".hf-explore-more")
+                || overviewScreen.querySelector(".hf-category-grid")
                 || overviewScreen.querySelector("[data-hf-expand-all]")
                 || overviewScreen;
             scrollTarget.scrollIntoView({ behavior: "smooth", block: "start" });
