@@ -7,12 +7,6 @@
     string BuildFilterUrl(string filter)
     {
         var path = Url.Action("Index", "Home", new { filter, view = Model.ActiveView, q = Model.SearchQuery }) ?? "/";
-        // Ayuda rápida: anclar al hero "Ayuda rápida cercana".
-        if (string.Equals(filter, NearbyNetworkHomeownerFilters.NeighborRequests, StringComparison.OrdinalIgnoreCase))
-        {
-            return path + "#hn-quick-help-hero";
-        }
-
         return path + "#section-home";
     }
     var showQuickHelpHero = Model.ActiveFilter is NearbyNetworkHomeownerFilters.NeighborRequests;
