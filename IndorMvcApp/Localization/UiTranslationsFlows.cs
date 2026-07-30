@@ -909,7 +909,7 @@ public static class UiTranslationsFlows
             ["Not needed"] = "Not needed",
             ["Not sure"] = "No estoy seguro",
             ["Note"] = "Note",
-            ["Notes (optional)"] = "Notes (optional)",
+            ["Notes (optional)"] = "Notas (opcional)",
             ["Notes for technician"] = "Notas para el técnico",
             ["Notes for the installer"] = "Notes for the installer",
             ["Notes to your cleaner"] = "Notes to your cleaner",

@@ -86,14 +86,23 @@
                     <span class="sub">@L["Choose your date"]</span>
                 </button>
             </div>
-            <div id="customDateWrap" style="margin-top:10px;display:none;">
+            <div id="customDateWrap" class="gc-custom-date" hidden>
+                <label class="gc-custom-date-label" for="FechaRecordatorioPersonalizada">@L["Choose your date"]</label>
                 <input asp-for="FechaRecordatorioPersonalizada" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
             </div>
         </div>
 
-        <div class="field-card" data-svc-optional>
-            <div class="field-head"><i class="fas fa-note-sticky"></i><span>@L["Notes (optional)"]</span></div>
-            <textarea asp-for="Notas" placeholder="@L["Add any details"]" maxlength="300"></textarea>
+        <div class="field-card gc-notes-card" data-svc-optional>
+            <label class="field-head" for="Notas">
+                <i class="fas fa-comment-dots" aria-hidden="true"></i>
+                <span>@L["Notes (optional)"]</span>
+            </label>
+            <textarea asp-for="Notas"
+                      id="Notas"
+                      class="gc-notes-input"
+                      rows="4"
+                      placeholder="@(L["Add any details"])"
+                      maxlength="300"></textarea>
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
@@ -157,9 +166,13 @@
 
         function syncCustomDate() {
             var isCustom = reminderInput.value === 'CustomDate';
-            customWrap.style.display = isCustom ? 'block' : 'none';
-            customDateInput.required = isCustom;
-            if (!isCustom) customDateInput.value = '';
+            if (customWrap) {
+                customWrap.hidden = !isCustom;
+            }
+            if (customDateInput) {
+                customDateInput.required = isCustom;
+                if (!isCustom) customDateInput.value = '';
+            }
         }
 
         document.querySelectorAll('[data-reminder]').forEach(function (btn) {

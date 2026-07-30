@@ -62,6 +62,38 @@
     .reminder-card .sub { font-size: 0.68rem; color: #64748B; }
     .reminder-card.active { border-color: #0066CC; background: rgba(0,102,204,0.08); color: #0066CC; }
     .reminder-card.active i.main { color: #0066CC; }
+    .gc-custom-date { margin-top: 12px; }
+    .gc-custom-date[hidden] { display: none !important; }
+    .gc-custom-date-label {
+        display: block; font-size: 0.74rem; font-weight: 700; color: #334155; margin-bottom: 8px;
+    }
+    .gc-notes-card .field-head { cursor: pointer; }
+    .gc-notes-input {
+        display: block !important;
+        width: 100% !important;
+        min-height: 96px !important;
+        box-sizing: border-box;
+        color: #0A2540 !important;
+        -webkit-text-fill-color: #0A2540;
+        caret-color: #0A2540;
+        background: #F9FAFB !important;
+        border: 1.5px solid #E5E7EB !important;
+        border-radius: 12px !important;
+        padding: 12px 14px !important;
+        font-size: 16px !important;
+        line-height: 1.4;
+        font-family: inherit;
+        resize: vertical;
+        -webkit-appearance: none;
+        appearance: none;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    .gc-notes-input::placeholder {
+        color: #94A3B8 !important;
+        -webkit-text-fill-color: #94A3B8;
+        opacity: 1;
+    }
     .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
     .summary-mini { background: #FFF; border: 1px solid #E5E7EB; border-radius: 14px; padding: 14px; }
     .summary-mini i { color: #0066CC; font-size: 0.9rem; margin-bottom: 8px; display: block; }
