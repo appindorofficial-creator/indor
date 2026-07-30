@@ -508,12 +508,10 @@ body.rl-dash-page.hn-landing-active {
     flex-shrink: 0;
 }
 
+/* Badge + art + go circle already carry the visual; FA icons push the
+   subtitle into the absolute go button on non-All filters (Promotions, etc.). */
 #section-home.hn-v4 .hn-v4-tile .hn-quick-action-icon {
-    width: 34px !important;
-    height: 34px !important;
-    border-radius: 10px !important;
-    margin-bottom: 6px;
-    font-size: 0.85rem !important;
+    display: none !important;
 }
 
 #section-home.hn-v4 .hn-v4-tile .hn-quick-action-label {
@@ -538,6 +536,14 @@ body.rl-dash-page.hn-landing-active {
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+}
+
+/* Non-All filters keep a fixed tile height; match landing so subtitle clears the go circle. */
+#section-home.hn-v4:not(.hn-v4-landing) .hn-v4-tile {
+    height: 128px !important;
+    min-height: 128px !important;
+    padding: 9px 9px 32px !important;
+    padding-right: calc(var(--hn-v4-tile-art-w) + 6px) !important;
 }
 
 #section-home.hn-v4 .hn-v4-tile-art-wrap {
@@ -824,13 +830,6 @@ body.rl-dash-page:has(#section-home.hn-v4-landing.active) {
 
 #section-home.hn-v4.hn-v4-landing .hn-v4-feature-card-copy {
     max-width: calc(100% - var(--hn-v4-hero-art-w) - 4px);
-}
-
-#section-home.hn-v4.hn-v4-landing .hn-quick-action--certified-providers .hn-quick-action-icon,
-#section-home.hn-v4.hn-v4-landing .hn-quick-action--house-facts .hn-quick-action-icon,
-#section-home.hn-v4.hn-v4-landing .hn-quick-action--post-request .hn-quick-action-icon,
-#section-home.hn-v4.hn-v4-landing .hn-quick-action--my-requests .hn-quick-action-icon {
-    display: none !important;
 }
 
 #section-home.hn-v4 .hn-v4-tile-go--certified-providers { background: #2563EB !important; }
