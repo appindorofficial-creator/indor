@@ -57,9 +57,15 @@
                 <span class="pa-flow-qnum">2</span>
                 <label for="MessageBody"><i class="fas fa-comment pa-q-icon"></i> @L["Message"]</label>
                 <textarea id="MessageBody" name="MessageBody" rows="5" required maxlength="1000">@Model.MessageBody</textarea>
-                @foreach (var err in ViewData.ModelState[nameof(Model.MessageBody)]?.Errors ?? [])
+                @{
+                    var messageErrors = ViewData.ModelState[nameof(Model.MessageBody)]?.Errors;
+                }
+                @if (messageErrors != null)
                 {
-                    <div class="pa-inline-error" role="alert">@err.ErrorMessage</div>
+                    foreach (var err in messageErrors)
+                    {
+                        <div class="pa-inline-error" role="alert">@err.ErrorMessage</div>
+                    }
                 }
             </div>
 
