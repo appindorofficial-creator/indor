@@ -27,16 +27,23 @@ public static class HvacMaintenanceDisplayLabels
         if (DateTime.TryParseExact(value.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture,
                 DateTimeStyles.None, out var isoDate))
         {
-            return isoDate.ToString("MMM d, yyyy", CultureInfo.InvariantCulture);
+            return FormatDate(isoDate);
         }
 
-        if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+        if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)
+            || DateTime.TryParse(value, CultureInfo.CurrentUICulture, DateTimeStyles.None, out date))
         {
-            return date.ToString("MMM d, yyyy");
+            return FormatDate(date);
         }
 
         return value.Trim();
     }
+
+    /// <summary>UI culture date — e.g. "Aug 2, 2026" (en) / "2 ago 2026" (es).</summary>
+    public static string FormatDate(DateTime date) =>
+        date.ToString(
+            DisplayLabelsLocalization.IsSpanishUi ? "d MMM yyyy" : "MMM d, yyyy",
+            CultureInfo.CurrentUICulture);
 
     public static string FormatTimeWindow(string? code)
     {
@@ -61,7 +68,7 @@ public static class HvacMaintenanceDisplayLabels
 
     public static string FormatScheduledLabel(DateTime? date, string? window) =>
         date.HasValue
-            ? $"{date.Value.ToString(DisplayLabelsLocalization.IsSpanishUi ? "d MMM yyyy" : "MMM d, yyyy", CultureInfo.CurrentUICulture)} • {FormatTimeWindow(window)}"
+            ? $"{FormatDate(date.Value)} • {FormatTimeWindow(window)}"
             : FormatTimeWindow(window);
 
     public static string FormatPrice(decimal amount) =>
