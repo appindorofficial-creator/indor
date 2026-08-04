@@ -66,13 +66,15 @@
             <div class="field-head"><i class="fas fa-camera"></i><span>@L["Add roof photos (optional)"]</span></div>
             <p class="field-hint" style="margin-top:0;margin-bottom:10px;">@L["Add up to 5 photos to help our pros prepare."]</p>
             <div class="upload-drop-wrap">
+                @* No for= on the dropzone: iOS label→file opens the English OS sheet.
+                   The in-app IndorFileSourceChooser intercepts / opens Biblioteca / Tomar / Elegir. *@
                 <input type="file" name="files" id="photoInput" class="upload-input-hidden" multiple
                        accept="image/*,.jpg,.jpeg,.png,.webp,.heic,.heif" />
-                <label class="upload-drop" id="photoDropzone" for="photoInput">
+                <button type="button" class="upload-drop" id="photoDropzone" aria-haspopup="menu">
                     <i class="fas fa-camera"></i>
                     <strong>@L["Add photos"]</strong>
                     <span>@L["JPG or PNG, up to 10 MB each"]</span>
-                </label>
+                </button>
             </div>
             <div class="upload-selected-list" id="photoSelectedList" hidden></div>
             @if (Model.ArchivosExistentes.Count > 0)
@@ -197,6 +199,16 @@
         photoInput?.addEventListener('change', function () {
             mergePhotoFiles(this.files);
             this.value = '';
+        });
+
+        photoDropzone?.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            if (window.IndorFileSourceChooser && typeof window.IndorFileSourceChooser.openFor === 'function') {
+                window.IndorFileSourceChooser.openFor(photoInput, photoDropzone);
+                return;
+            }
+            photoInput?.click();
         });
     })();
 

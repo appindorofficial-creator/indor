@@ -289,13 +289,22 @@
         globalMenu.className = 'indor-file-source-menu indor-global-file-source-menu';
         globalMenu.setAttribute('role', 'menu');
         globalMenu.hidden = true;
+        // Seed localized label text immediately so Spanish UI never flashes English
+        // defaults before applyLabels runs (iOS WebView / late inject races).
+        var seed = labels();
         globalMenu.innerHTML =
-            '<button type="button" class="indor-file-source-item" data-indor-file-source="library" role="menuitem">'
-            + '<i class="fas fa-images" aria-hidden="true"></i><span class="indor-file-source-label"></span></button>'
-            + '<button type="button" class="indor-file-source-item" data-indor-file-source="camera" role="menuitem">'
-            + '<i class="fas fa-camera" aria-hidden="true"></i><span class="indor-file-source-label"></span></button>'
-            + '<button type="button" class="indor-file-source-item" data-indor-file-source="files" role="menuitem">'
-            + '<i class="fas fa-folder" aria-hidden="true"></i><span class="indor-file-source-label"></span></button>';
+            '<button type="button" class="indor-file-source-item" data-indor-file-source="library" data-label="'
+            + escapeAttr(seed.library) + '" role="menuitem">'
+            + '<i class="fas fa-images" aria-hidden="true"></i><span class="indor-file-source-label">'
+            + escapeHtml(seed.library) + '</span></button>'
+            + '<button type="button" class="indor-file-source-item" data-indor-file-source="camera" data-label="'
+            + escapeAttr(seed.camera) + '" role="menuitem">'
+            + '<i class="fas fa-camera" aria-hidden="true"></i><span class="indor-file-source-label">'
+            + escapeHtml(seed.camera) + '</span></button>'
+            + '<button type="button" class="indor-file-source-item" data-indor-file-source="files" data-label="'
+            + escapeAttr(seed.files) + '" role="menuitem">'
+            + '<i class="fas fa-folder" aria-hidden="true"></i><span class="indor-file-source-label">'
+            + escapeHtml(seed.files) + '</span></button>';
 
         globalCamera = document.createElement('input');
         globalCamera.type = 'file';
@@ -432,6 +441,25 @@
         globalMenu.hidden = false;
     }
 
+    function escapeHtml(value) {
+        return String(value || '')
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;');
+    }
+
+    function escapeAttr(value) {
+        return escapeHtml(value).replace(/'/g, '&#39;');
+    }
+
+    function cssEscapeIdent(value) {
+        if (window.CSS && typeof window.CSS.escape === 'function') {
+            return window.CSS.escape(value);
+        }
+        return String(value).replace(/([ !"#$%&'()*+,./:;<=>?@[\\\]^`{|}~])/g, '\\$1');
+    }
+
     function upgradePlainFileInputs() {
         document.querySelectorAll('input[type="file"]').forEach(function (input) {
             if (input.getAttribute('data-indor-plain-upgrade') === '1') {
@@ -442,6 +470,25 @@
             }
             input.setAttribute('data-indor-plain-upgrade', '1');
 
+            function findAnchorLabel() {
+                if (!input.id) {
+                    return null;
+                }
+                try {
+                    return document.querySelector('label[for="' + cssEscapeIdent(input.id) + '"]');
+                } catch (err) {
+                    return document.querySelector('label[for="' + input.id + '"]');
+                }
+            }
+
+            function openChooser(anchor, e) {
+                if (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                }
+                openGlobalMenuFor(input, anchor || findAnchorLabel() || input);
+            }
+
             input.addEventListener('click', function (e) {
                 if (input.__indorAllowNative) {
                     return;
@@ -450,17 +497,21 @@
                 if (!e.isTrusted) {
                     return;
                 }
-                e.preventDefault();
-                e.stopPropagation();
-                var anchor = input;
-                if (input.id) {
-                    var label = document.querySelector('label[for="' + input.id + '"]');
-                    if (label) {
-                        anchor = label;
-                    }
-                }
-                openGlobalMenuFor(input, anchor);
+                openChooser(findAnchorLabel() || input, e);
             }, true);
+
+            // Critical on iOS: <label for="file"> often opens the native English OS sheet
+            // without a preventable click on the hidden input. Intercept the label first.
+            var label = findAnchorLabel();
+            if (label && label.getAttribute('data-indor-plain-upgrade-label') !== '1') {
+                label.setAttribute('data-indor-plain-upgrade-label', '1');
+                label.addEventListener('click', function (e) {
+                    if (input.__indorAllowNative) {
+                        return;
+                    }
+                    openChooser(label, e);
+                }, true);
+            }
         });
     }
 
@@ -506,6 +557,7 @@
 
     window.IndorFileSourceChooser = {
         initAll: boot,
-        applyLabels: applyLabels
+        applyLabels: applyLabels,
+        openFor: openGlobalMenuFor
     };
 })();
