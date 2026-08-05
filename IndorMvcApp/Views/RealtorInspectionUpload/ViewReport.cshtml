@@ -41,146 +41,35 @@
         <p class="rl-insp-report-error" id="rlReportError" hidden>@L["Could not open this report page. Try again."]</p>
     </div>
 
-    <a href="@Model.ReportUrl" target="_blank" rel="noopener" class="rl-insp-report-open-native">
+    @* Prefer download so WebViews stay on this page with Back available. *@
+    <a href="@Model.ReportUrl" download class="rl-insp-report-open-native" rel="noopener">
         <i class="fas fa-up-right-from-square"></i> @L["Open full PDF"]
+    </a>
+    <a href="@Model.BackUrl" class="rl-insp-report-open-native rl-insp-report-open-native--secondary">
+        <i class="fas fa-chevron-left"></i> @L["Back to inspection findings"]
     </a>
 </div>
 
 @section Scripts {
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="~/lib/pdfjs/pdf.min.js" asp-append-version="true"></script>
+<script src="~/js/realtor-pdf-viewer.js" asp-append-version="true"></script>
 <script>
     (function () {
-        var viewer = document.getElementById('rlReportViewer');
-        var pdfUrl = (viewer && viewer.getAttribute('data-pdf-url'))
-            || @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ReportUrl));
-        // Prefer ?reportPage= from the URL so a lost/stale data attribute cannot
-        // force every finding link onto page 1.
         var qsPage = parseInt(new URLSearchParams(window.location.search).get('reportPage')
             || new URLSearchParams(window.location.search).get('page')
             || '', 10);
+        var viewer = document.getElementById('rlReportViewer');
         var attrPage = parseInt((viewer && viewer.getAttribute('data-start-page')) || '@startPage', 10);
         var startPage = (Number.isFinite(qsPage) && qsPage > 0) ? qsPage
             : (Number.isFinite(attrPage) && attrPage > 0) ? attrPage
             : 1;
 
-        var pageLabelTemplate = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Page {0}"].ToString()));
-        var ofTemplate = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Page {0} of {1}"].ToString()));
-
-        var canvas = document.getElementById('rlReportCanvas');
-        var loading = document.getElementById('rlReportLoading');
-        var errorEl = document.getElementById('rlReportError');
-        var toolbar = document.getElementById('rlReportToolbar');
-        var prevBtn = document.getElementById('rlReportPrev');
-        var nextBtn = document.getElementById('rlReportNext');
-        var indicator = document.getElementById('rlReportPageIndicator');
-        var titleLabel = document.getElementById('rlReportPageLabel');
-        var pdfDoc = null;
-        var currentPage = startPage;
-        var renderToken = 0;
-        var resizeTimer = null;
-
-        function format(template, a, b) {
-            return String(template || '')
-                .replace('{0}', a)
-                .replace('{1}', b == null ? '' : b);
-        }
-
-        function showError() {
-            if (loading) loading.hidden = true;
-            if (canvas) canvas.hidden = true;
-            if (errorEl) errorEl.hidden = false;
-        }
-
-        function updateChrome(pageNum, pageCount) {
-            if (indicator) {
-                indicator.textContent = format(ofTemplate, pageNum, pageCount);
-            }
-            if (titleLabel) {
-                titleLabel.textContent = format(pageLabelTemplate, pageNum);
-            }
-            if (prevBtn) prevBtn.disabled = pageNum <= 1;
-            if (nextBtn) nextBtn.disabled = pageNum >= pageCount;
-            if (toolbar) toolbar.hidden = false;
-        }
-
-        function renderPage(pageNum) {
-            if (!pdfDoc || !canvas) return;
-            var pageCount = pdfDoc.numPages || 1;
-            pageNum = parseInt(pageNum, 10);
-            if (!Number.isFinite(pageNum) || pageNum < 1) pageNum = 1;
-            if (pageNum > pageCount) pageNum = pageCount;
-            currentPage = pageNum;
-            var token = ++renderToken;
-
-            if (loading) loading.hidden = false;
-            if (errorEl) errorEl.hidden = true;
-
-            pdfDoc.getPage(pageNum).then(function (page) {
-                if (token !== renderToken) return;
-
-                var maxWidth = Math.max(280, ((viewer && viewer.clientWidth) || window.innerWidth) - 8);
-                var unscaled = page.getViewport({ scale: 1 });
-                var scale = Math.min(2.5, maxWidth / unscaled.width);
-                var viewport = page.getViewport({ scale: scale });
-
-                var outputScale = window.devicePixelRatio || 1;
-                canvas.width = Math.floor(viewport.width * outputScale);
-                canvas.height = Math.floor(viewport.height * outputScale);
-                canvas.style.width = Math.floor(viewport.width) + 'px';
-                canvas.style.height = Math.floor(viewport.height) + 'px';
-
-                var context = canvas.getContext('2d');
-                var transform = outputScale !== 1 ? [outputScale, 0, 0, outputScale, 0, 0] : null;
-
-                return page.render({
-                    canvasContext: context,
-                    viewport: viewport,
-                    transform: transform
-                }).promise.then(function () {
-                    if (token !== renderToken) return;
-                    if (loading) loading.hidden = true;
-                    canvas.hidden = false;
-                    updateChrome(pageNum, pageCount);
-                });
-            }).catch(function () {
-                if (token === renderToken) showError();
-            });
-        }
-
-        function bootPdfJs() {
-            if (!window.pdfjsLib) {
-                showError();
-                return;
-            }
-
-            pdfjsLib.GlobalWorkerOptions.workerSrc =
-                'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-
-            pdfjsLib.getDocument({ url: pdfUrl, withCredentials: true }).promise
-                .then(function (doc) {
-                    pdfDoc = doc;
-                    renderPage(startPage);
-                })
-                .catch(function () {
-                    showError();
-                });
-        }
-
-        bootPdfJs();
-
-        prevBtn && prevBtn.addEventListener('click', function () {
-            if (currentPage > 1) renderPage(currentPage - 1);
-        });
-        nextBtn && nextBtn.addEventListener('click', function () {
-            if (pdfDoc && currentPage < pdfDoc.numPages) renderPage(currentPage + 1);
-        });
-
-        window.addEventListener('resize', function () {
-            if (!pdfDoc) return;
-            window.clearTimeout(resizeTimer);
-            resizeTimer = window.setTimeout(function () {
-                renderPage(currentPage);
-            }, 150);
+        IndorRealtorPdfViewer.boot({
+            pdfUrl: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ReportUrl)),
+            workerSrc: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Url.Content("~/lib/pdfjs/pdf.worker.min.js"))),
+            startPage: startPage,
+            pageLabelTemplate: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Page {0}"].ToString())),
+            ofTemplate: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Page {0} of {1}"].ToString()))
         });
     })();
 </script>

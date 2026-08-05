@@ -10,7 +10,8 @@ public class RealtorPropertyFileWizardService(
     AppDbContext db,
     IHttpContextAccessor httpContextAccessor,
     IRealtorRegistrationService registration,
-    IIndorLocalizer localizer) : IRealtorPropertyFileWizardService
+    IIndorLocalizer localizer,
+    IWebHostEnvironment env) : IRealtorPropertyFileWizardService
 {
     private const string DraftIdSessionKey = "RealtorPropertyFileDraftId";
 
@@ -677,13 +678,91 @@ public class RealtorPropertyFileWizardService(
                     : localizer.T("Realtor Basic"),
             IsVerified = realtor.RegistrationStatus == RealtorRegistrationStatuses.Verified,
             PropertyFileId = file.Id,
+            ItemId = item.Id,
             FileName = string.IsNullOrWhiteSpace(item.ItemLabel) ? localizer.T("Document") : item.ItemLabel,
             FileUrl = url,
+            DocumentFileUrl = $"/RealtorPropertyFile/DocumentFile?id={file.Id}&itemId={item.Id}",
             BackUrl = $"/RealtorPropertyFile/View?id={file.Id}",
             IsImage = isImage,
             IsPdf = isPdf,
             IsVideo = isVideo
         };
+    }
+
+    public async Task<RealtorPropertyFileResolvedDocument?> ResolveDocumentFileAsync(
+        int propertyFileId,
+        int itemId,
+        CancellationToken cancellationToken = default)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Realtor profile not found.");
+
+        var file = await db.IndorRealtorPropertyFiles
+            .AsNoTracking()
+            .Include(f => f.Items)
+            .FirstOrDefaultAsync(f => f.Id == propertyFileId && f.RealtorId == realtor.Id, cancellationToken)
+            ?? throw new InvalidOperationException("Property file not found.");
+
+        var item = file.Items.FirstOrDefault(i => i.Id == itemId)
+            ?? throw new InvalidOperationException("Document not found.");
+
+        if (string.IsNullOrWhiteSpace(item.FileUrl))
+        {
+            return null;
+        }
+
+        var relative = item.FileUrl.Trim().Replace('\\', '/');
+        if (relative.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+            || relative.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        if (!relative.StartsWith("/uploads/", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var webRoot = Path.GetFullPath(env.WebRootPath);
+        var candidate = Path.GetFullPath(Path.Combine(
+            webRoot,
+            relative.TrimStart('/').Replace('/', Path.DirectorySeparatorChar)));
+
+        if (!candidate.StartsWith(webRoot, StringComparison.OrdinalIgnoreCase)
+            || !System.IO.File.Exists(candidate))
+        {
+            return null;
+        }
+
+        var downloadName = string.IsNullOrWhiteSpace(item.ItemLabel)
+            ? Path.GetFileName(candidate)
+            : item.ItemLabel.Trim();
+        if (string.IsNullOrWhiteSpace(Path.GetExtension(downloadName)))
+        {
+            downloadName += Path.GetExtension(candidate);
+        }
+
+        return new RealtorPropertyFileResolvedDocument
+        {
+            PhysicalPath = candidate,
+            DownloadFileName = downloadName,
+            ContentType = GuessContentType(candidate)
+        };
+    }
+
+    private static string GuessContentType(string path)
+    {
+        var ext = Path.GetExtension(path);
+        if (ext.Equals(".pdf", StringComparison.OrdinalIgnoreCase)) return "application/pdf";
+        if (ext.Equals(".png", StringComparison.OrdinalIgnoreCase)) return "image/png";
+        if (ext.Equals(".jpg", StringComparison.OrdinalIgnoreCase) || ext.Equals(".jpeg", StringComparison.OrdinalIgnoreCase))
+            return "image/jpeg";
+        if (ext.Equals(".webp", StringComparison.OrdinalIgnoreCase)) return "image/webp";
+        if (ext.Equals(".gif", StringComparison.OrdinalIgnoreCase)) return "image/gif";
+        if (ext.Equals(".mp4", StringComparison.OrdinalIgnoreCase)) return "video/mp4";
+        if (ext.Equals(".mov", StringComparison.OrdinalIgnoreCase)) return "video/quicktime";
+        if (ext.Equals(".webm", StringComparison.OrdinalIgnoreCase)) return "video/webm";
+        return "application/octet-stream";
     }
 
     private static RealtorPropertyPickerViewModel MapPropertyPicker(IndorRealtorPropertyFile p) =>

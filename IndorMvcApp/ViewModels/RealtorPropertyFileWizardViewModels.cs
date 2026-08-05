@@ -138,10 +138,22 @@ public class RealtorPropertyFileViewItemViewModel
 public class RealtorPropertyFileDocumentViewModel : RealtorPortalShellViewModel
 {
     public int PropertyFileId { get; set; }
+    public int ItemId { get; set; }
     public string FileName { get; set; } = "";
     public string FileUrl { get; set; } = "";
+    /// <summary>Authenticated stream URL used by PDF.js / native embed (avoids direct static 404s).</summary>
+    public string DocumentFileUrl { get; set; } = "";
     public string BackUrl { get; set; } = "";
     public bool IsImage { get; set; }
     public bool IsPdf { get; set; }
     public bool IsVideo { get; set; }
+    /// <summary>When true, prefer &lt;object&gt;/iframe embed with chrome instead of leaving the WebView.</summary>
+    public bool PreferNativeEmbed { get; set; }
+}
+
+public sealed class RealtorPropertyFileResolvedDocument
+{
+    public required string PhysicalPath { get; init; }
+    public required string DownloadFileName { get; init; }
+    public required string ContentType { get; init; }
 }

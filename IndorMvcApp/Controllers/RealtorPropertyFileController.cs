@@ -306,15 +306,42 @@ public class RealtorPropertyFileController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> OpenDocument(int id, int itemId)
+    public async Task<IActionResult> OpenDocument(int id, int itemId, string? mode)
     {
         try
         {
-            return View(await wizard.BuildOpenDocumentAsync(id, itemId));
+            var model = await wizard.BuildOpenDocumentAsync(id, itemId);
+            model.PreferNativeEmbed = string.Equals(mode, "full", StringComparison.OrdinalIgnoreCase)
+                                      || string.Equals(mode, "embed", StringComparison.OrdinalIgnoreCase);
+            return View(model);
         }
         catch (InvalidOperationException)
         {
             return RedirectToAction(nameof(View), new { id });
+        }
+    }
+
+    /// <summary>Streams an owned property-file document with auth (used by PDF.js / in-app open).</summary>
+    [HttpGet]
+    public async Task<IActionResult> DocumentFile(int id, int itemId)
+    {
+        try
+        {
+            var resolved = await wizard.ResolveDocumentFileAsync(id, itemId);
+            if (resolved == null)
+            {
+                return NotFound();
+            }
+
+            return PhysicalFile(
+                resolved.PhysicalPath,
+                resolved.ContentType,
+                fileDownloadName: null,
+                enableRangeProcessing: false);
+        }
+        catch (InvalidOperationException)
+        {
+            return NotFound();
         }
     }
 

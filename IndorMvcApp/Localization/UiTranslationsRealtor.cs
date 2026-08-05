@@ -615,6 +615,8 @@ public static class UiTranslationsRealtor
             ["Loading report page…"] = "Cargando página del informe…",
             ["Could not open this report page. Try again."] = "No se pudo abrir esta página del informe. Inténtalo de nuevo.",
             ["Open full PDF"] = "Abrir PDF completo",
+            ["Try page preview"] = "Probar vista por página",
+            ["Full document"] = "Documento completo",
             ["Your browser cannot play this video."] = "Tu navegador no puede reproducir este video.",
             ["This file type cannot be previewed here. Open it with your device viewer."] =
                 "Este tipo de archivo no se puede previsualizar aquí. Ábrelo con el visor de tu dispositivo.",

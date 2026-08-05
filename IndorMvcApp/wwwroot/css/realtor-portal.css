@@ -2612,6 +2612,44 @@ ul.rl-next-steps li > span:first-child {
     text-decoration: none;
 }
 
+.rl-insp-report-open-native--secondary {
+    color: #475569;
+    font-weight: 600;
+}
+
+.rl-insp-report-open-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.rl-insp-report-viewer--embed {
+    padding: 0;
+    overflow: hidden;
+}
+
+.rl-insp-report-embed {
+    width: 100%;
+    min-height: 65dvh;
+    border: 0;
+    border-radius: 14px;
+    background: #fff;
+}
+
+.rl-insp-report-all-pages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.rl-insp-report-all-pages .rl-insp-report-canvas {
+    margin: 0;
+}
+
 .rl-file-doc-image-wrap {
     flex: 1;
     display: flex;

@@ -29,4 +29,6 @@ public interface IRealtorPropertyFileWizardService
     Task<RealtorPropertyFileSuccessViewModel> BuildSuccessAsync(int propertyFileId, CancellationToken cancellationToken = default);
     Task<RealtorPropertyFileViewViewModel> BuildViewAsync(int propertyFileId, CancellationToken cancellationToken = default);
     Task<RealtorPropertyFileDocumentViewModel> BuildOpenDocumentAsync(int propertyFileId, int itemId, CancellationToken cancellationToken = default);
+    /// <summary>Resolves an owned property-file item to a local upload path for streaming.</summary>
+    Task<RealtorPropertyFileResolvedDocument?> ResolveDocumentFileAsync(int propertyFileId, int itemId, CancellationToken cancellationToken = default);
 }

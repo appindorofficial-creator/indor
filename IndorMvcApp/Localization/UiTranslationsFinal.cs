@@ -968,6 +968,8 @@ public static class UiTranslationsFinal
             ["{0} realtor serving local buyers and sellers through INDOR."] =
                 "{0}, agente inmobiliario que atiende a compradores y vendedores locales a través de INDOR.",
             ["Back to property file"] = "Volver al expediente",
+            ["Try page preview"] = "Probar vista por página",
+            ["Full document"] = "Documento completo",
             ["Property file document"] = "Documento del expediente",
             ["Document"] = "Documento",
             ["If the document does not appear, open it with your device viewer."] =
