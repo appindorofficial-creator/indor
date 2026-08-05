@@ -110,5 +110,16 @@ public static class UiTranslationsValidation
             ["Passwords do not match"] = "Las contraseñas no coinciden",
             ["Password must be at least 8 characters"] = "La contraseña debe tener al menos 8 caracteres",
             ["Password must be at least {2} characters."] = "La contraseña debe tener al menos {2} caracteres.",
+
+            // Homeowner inspection report upload
+            ["Enter a document title."] = "Ingresa un título del documento.",
+            ["Select an inspection date."] = "Selecciona una fecha de inspección.",
+            ["Select a category."] = "Selecciona una categoría.",
+            ["Select a PDF, JPG, or PNG file to continue."] = "Selecciona un archivo PDF, JPG o PNG para continuar.",
+            ["Only PDF, JPG, and PNG files are supported."] = "Solo se admiten archivos PDF, JPG y PNG.",
+            ["File size must be 25 MB or less."] = "El archivo debe pesar 25 MB o menos.",
+            ["Could not process the file. Please try again."] = "No se pudo procesar el archivo. Inténtalo de nuevo.",
+            ["Could not upload the report. Please try again."] = "No se pudo subir el informe. Inténtalo de nuevo.",
+            ["The selected file expired. Please choose it again."] = "El archivo seleccionado expiró. Elige uno de nuevo.",
         };
 }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -27,17 +28,20 @@ public class InspectionReportUploadController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
     private readonly ILogger<InspectionReportUploadController> _logger;
+    private readonly IIndorLocalizer _localizer;
 
     public InspectionReportUploadController(
         AppDbContext db,
         UserManager<ApplicationUser> userManager,
         IWebHostEnvironment env,
-        ILogger<InspectionReportUploadController> logger)
+        ILogger<InspectionReportUploadController> logger,
+        IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
         _env = env;
         _logger = logger;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -86,6 +90,7 @@ public class InspectionReportUploadController : Controller
 
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             model.Address = info?.FormattedAddress ?? propiedad.Direccion ?? "—";
             model.SelectedFileName = pending?.OriginalFileName;
             model.SelectedFileSizeLabel = pending != null ? FormatFileSize(pending.SizeBytes) : null;
@@ -125,6 +130,7 @@ public class InspectionReportUploadController : Controller
         {
             _logger.LogError(ex, "Failed to stage inspection report upload");
             ModelState.AddModelError(string.Empty, "Could not process the file. Please try again.");
+            ModelState.LocalizeModelState(_localizer);
             model.Address = info?.FormattedAddress ?? propiedad.Direccion ?? "—";
             return View(model);
         }
@@ -227,6 +233,7 @@ public class InspectionReportUploadController : Controller
         {
             _logger.LogError(ex, "Failed to save inspection report for propiedad {PropiedadId}", id);
             ModelState.AddModelError(string.Empty, "Could not upload the report. Please try again.");
+            ModelState.LocalizeModelState(_localizer);
             var info = MyHomeDisplayService.DeserializeProperty(propiedad);
             model.Address = info?.FormattedAddress ?? propiedad.Direccion ?? "—";
             model.OriginalFileName = pending.OriginalFileName;

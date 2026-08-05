@@ -32,7 +32,7 @@
         </div>
         @if (TempData["UploadError"] is string uploadError)
         {
-            <div class="text-danger" style="margin-bottom:12px;">@uploadError</div>
+            <div class="text-danger" style="margin-bottom:12px;">@L[uploadError]</div>
         }
 
         <form asp-action="Upload" method="post" enctype="multipart/form-data" id="uploadForm">
