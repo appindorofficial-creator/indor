@@ -57,6 +57,21 @@
         </form>
     </div>
 
+    @if (TempData["QuoteCancelOk"] is string cancelOk && !string.IsNullOrWhiteSpace(cancelOk))
+    {
+        <div class="rl-info-box" role="status">
+            <i class="fas fa-circle-check"></i>
+            <p>@cancelOk</p>
+        </div>
+    }
+    else if (TempData["QuoteCancelError"] is string cancelErr && !string.IsNullOrWhiteSpace(cancelErr))
+    {
+        <div class="rl-info-box rl-info-box--muted" role="alert">
+            <i class="fas fa-circle-exclamation"></i>
+            <p>@cancelErr</p>
+        </div>
+    }
+
     @{
         IReadOnlyList<IndorMvcApp.ViewModels.RealtorStatItemViewModel> visibleQuoteStats =
             Model.ActiveFilter == "All"

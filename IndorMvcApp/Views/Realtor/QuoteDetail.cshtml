@@ -76,6 +76,13 @@
         <a href="@Model.EditRequestUrl" class="rl-btn-outline rl-qreq-btn">
             <i class="fas fa-pen"></i> @L["Edit Request"]
         </a>
-        <a asp-controller="Realtor" asp-action="Quotes" class="rl-qreq-cancel">@L["Cancel Request"]</a>
+        <form asp-controller="Realtor" asp-action="CancelQuoteRequest" asp-route-id="@Model.QuoteId" method="post" class="rl-qreq-cancel-form">
+            @Html.AntiForgeryToken()
+            <button type="submit"
+                    class="rl-qreq-cancel"
+                    onclick="return confirm(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Cancel this quote request?"].ToString())));">
+                @L["Cancel Request"]
+            </button>
+        </form>
     </div>
 </div>

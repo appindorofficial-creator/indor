@@ -4786,13 +4786,26 @@ button.rl-profile-nav-item {
     justify-content: center;
     text-align: center;
 }
+.rl-qreq-cancel-form {
+    width: 100%;
+    margin: 0;
+}
 .rl-qreq-cancel {
+    display: block;
+    width: 100%;
     text-align: center;
     color: #0066CC;
     font-size: .78rem;
     font-weight: 700;
     text-decoration: none;
     padding: 8px;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+}
+.rl-qreq-cancel:hover {
+    text-decoration: underline;
 }
 
 /* View quote */

@@ -148,6 +148,24 @@ public class RealtorController(
         }
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CancelQuoteRequest(int id, CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var cancelled = await portalService.CancelQuoteRequestAsync(realtor, id, cancellationToken);
+        TempData[cancelled ? "QuoteCancelOk" : "QuoteCancelError"] = cancelled
+            ? localizer["Request cancelled."]
+            : localizer["This quote request could not be cancelled."];
+
+        return RedirectToAction(nameof(Quotes));
+    }
+
     [HttpGet]
     public async Task<IActionResult> ViewQuote(int id, int? bidId, CancellationToken cancellationToken)
     {

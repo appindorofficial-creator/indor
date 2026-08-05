@@ -472,7 +472,7 @@ public class RealtorPortalService(
         var activeFilter = NormalizeQuoteFilter(filter);
 
         var query = db.IndorRealtorQuotes.AsNoTracking()
-            .Where(q => q.RealtorId == realtor.Id);
+            .Where(q => q.RealtorId == realtor.Id && q.Status != "Cancelled");
 
         if (!string.IsNullOrWhiteSpace(search))
         {
@@ -2045,7 +2045,7 @@ public class RealtorPortalService(
         }
 
         var requested = all.Count(q => q.ProviderQuotesReceived == 0 && q.Status == "Pending");
-        var received = all.Count(q => q.ProviderQuotesReceived > 0 && q.Status != "Accepted");
+        var received = all.Count(q => q.ProviderQuotesReceived > 0 && q.Status != "Accepted" && q.Status != "Cancelled");
         var compare = all.Count(q => q.Status == "Compare");
         var selected = all.Count(q => q.Status == "Accepted");
         var urgent = all.Count(q => q.Status == "Pending" &&
@@ -2520,6 +2520,7 @@ public class RealtorPortalService(
     private static (string Label, string Css) DeriveQuoteStatus(IndorRealtorQuote quote) =>
         quote.Status switch
         {
+            "Cancelled" => ("Cancelled", "cancelled"),
             "Compare" => ($"{quote.ProviderQuotesReceived} Quotes Received", "compare"),
             "Accepted" => ("Quote Selected", "selected"),
             "Received" => ($"{quote.ProviderQuotesReceived} Quote{(quote.ProviderQuotesReceived == 1 ? "" : "s")} Received", "received"),
@@ -2527,6 +2528,53 @@ public class RealtorPortalService(
             _ when quote.ProviderQuotesReceived == 1 => ("1 Quote Received", "received"),
             _ => ("Waiting for Providers", "pending")
         };
+
+    /// <summary>
+    /// Soft-cancels a realtor-owned quote request. Accepted quotes cannot be cancelled.
+    /// </summary>
+    public async Task<bool> CancelQuoteRequestAsync(IndorRealtor realtor, int quoteId, CancellationToken ct = default)
+    {
+        var quote = await db.IndorRealtorQuotes
+            .FirstOrDefaultAsync(q => q.Id == quoteId && q.RealtorId == realtor.Id, ct);
+        if (quote == null)
+        {
+            return false;
+        }
+
+        if (string.Equals(quote.Status, "Cancelled", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(quote.Status, "Accepted", StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        quote.Status = "Cancelled";
+        quote.UpdatedUtc = DateTime.UtcNow;
+
+        db.IndorRealtorActivities.Add(new IndorRealtorActivity
+        {
+            RealtorId = realtor.Id,
+            ActivityType = "quote",
+            Description = TruncateActivity(
+                $"Quote request {quote.QuoteCode} cancelled for {quote.Address}",
+                300) ?? "Quote request cancelled",
+            CategoryTag = "Quotes",
+            OccurredUtc = DateTime.UtcNow
+        });
+
+        await db.SaveChangesAsync(ct);
+        return true;
+    }
+
+    private static string? TruncateActivity(string? value, int maxLen)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        var trimmed = value.Trim();
+        return trimmed.Length <= maxLen ? trimmed : trimmed[..maxLen];
+    }
 
     private async Task<IndorRealtorQuote?> LoadOwnedQuoteAsync(int realtorId, int quoteId, CancellationToken ct) =>
         await db.IndorRealtorQuotes.AsNoTracking()
