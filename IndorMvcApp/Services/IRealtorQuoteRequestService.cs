@@ -8,6 +8,14 @@ public interface IRealtorQuoteRequestService
     Task<IndorRealtorQuoteRequestDraft> EnsureDraftAsync(CancellationToken cancellationToken = default);
     Task<IndorRealtorQuoteRequestDraft?> GetDraftAsync(CancellationToken cancellationToken = default);
     Task CancelDraftAsync(CancellationToken cancellationToken = default);
+    /// <summary>Seeds a draft from an existing pending quote and marks the session as editing that quote.</summary>
+    Task BeginEditExistingQuoteAsync(int quoteId, CancellationToken cancellationToken = default);
+    int? GetEditingQuoteId();
+    /// <summary>
+    /// When editing an existing quote, persists request-details changes and clears the draft.
+    /// Returns the quote id; otherwise returns null so the normal wizard can continue.
+    /// </summary>
+    Task<int?> TryFinishEditAfterRequestDetailsAsync(CancellationToken cancellationToken = default);
     string ResolveResumeAction(int currentStep);
     Task PrepareBackToPropertyAsync(CancellationToken cancellationToken = default);
     Task PrepareBackToRequestDetailsAsync(CancellationToken cancellationToken = default);

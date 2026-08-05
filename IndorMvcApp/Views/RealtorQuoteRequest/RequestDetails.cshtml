@@ -88,8 +88,16 @@
 </form>
 
 <div class="rl-invite-actions">
-    <a asp-action="BackToProperty" class="rl-invite-cancel">@L["Back"]</a>
-    <button type="submit" form="quoteDetailsForm" class="ob-btn ob-btn-primary">@L["Next"]</button>
+    @if (Model.IsEditingExisting)
+    {
+        <a asp-action="CancelEdit" class="rl-invite-cancel">@L["Back"]</a>
+        <button type="submit" form="quoteDetailsForm" class="ob-btn ob-btn-primary">@L["Save"]</button>
+    }
+    else
+    {
+        <a asp-action="BackToProperty" class="rl-invite-cancel">@L["Back"]</a>
+        <button type="submit" form="quoteDetailsForm" class="ob-btn ob-btn-primary">@L["Next"]</button>
+    }
 </div>
 
 @section Scripts {

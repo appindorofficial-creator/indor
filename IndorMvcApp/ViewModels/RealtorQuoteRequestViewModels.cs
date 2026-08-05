@@ -35,6 +35,8 @@ public class RealtorQuoteRequestDetailsViewModel : RealtorQuoteRequestStepViewMo
     public bool ShareRepairItems { get; set; } = true;
     public bool ShareNotes { get; set; } = true;
     public int ResponseDeadlineHours { get; set; } = 48;
+    public bool IsEditingExisting { get; set; }
+    public int? EditingQuoteId { get; set; }
     public IReadOnlyList<(string Value, string Label, string Description, string Icon)> RequestTypeOptions { get; set; } = [];
     public IReadOnlyList<int> DeadlineOptions { get; set; } = [24, 48, 72];
 }

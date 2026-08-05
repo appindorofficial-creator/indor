@@ -89,6 +89,33 @@ public class RealtorQuoteRequestController(
         }
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        try
+        {
+            await quoteRequest.BeginEditExistingQuoteAsync(id);
+            return RedirectToAction(nameof(RequestDetails));
+        }
+        catch
+        {
+            return RedirectToAction("QuoteDetail", "Realtor", new { id });
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> CancelEdit()
+    {
+        var editId = quoteRequest.GetEditingQuoteId();
+        await quoteRequest.CancelDraftAsync();
+        if (editId is > 0)
+        {
+            return RedirectToAction("QuoteDetail", "Realtor", new { id = editId });
+        }
+
+        return RedirectToAction(nameof(Property));
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Property(
@@ -179,6 +206,14 @@ public class RealtorQuoteRequestController(
             await quoteRequest.SaveRequestDetailsAsync(
                 requestType, sharePhotosVideos, shareInspectionReport,
                 shareRepairItems, shareNotes, responseDeadlineHours);
+
+            var editedQuoteId = await quoteRequest.TryFinishEditAfterRequestDetailsAsync();
+            if (editedQuoteId is > 0)
+            {
+                TempData["QuoteEditOk"] = localizer["Request updated."];
+                return RedirectToAction("QuoteDetail", "Realtor", new { id = editedQuoteId.Value });
+            }
+
             return RedirectToAction(nameof(Providers));
         }
         catch

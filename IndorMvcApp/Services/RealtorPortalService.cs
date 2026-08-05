@@ -442,7 +442,7 @@ public class RealtorPortalService(
                 : $"{responsesSoFar} response{(responsesSoFar == 1 ? "" : "s")} so far",
             RequestedServices = requestedServices,
             InviteProvidersUrl = BuildInviteProvidersUrl(quote),
-            EditRequestUrl = $"/Realtor/QuoteDetail/{quote.Id}",
+            EditRequestUrl = $"/RealtorQuoteRequest/Edit/{quote.Id}",
             Bids = bids.Select(b => new RealtorQuoteDetailBidViewModel
             {
                 Id = b.Id,

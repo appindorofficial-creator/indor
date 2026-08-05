@@ -12,6 +12,7 @@ public class RealtorQuoteRequestService(
     IRealtorProviderBridgeService providerBridge) : IRealtorQuoteRequestService
 {
     private const string DraftIdSessionKey = "RealtorQuoteRequestDraftId";
+    private const string EditingQuoteIdSessionKey = "RealtorQuoteRequestEditingQuoteId";
 
     private const string DefaultOptionalMessage =
         "Please review the attached repairs and send your best quote.";
@@ -78,13 +79,98 @@ public class RealtorQuoteRequestService(
         var draft = await GetDraftAsync(cancellationToken);
         if (draft == null)
         {
-            httpContextAccessor.HttpContext?.Session.Remove(DraftIdSessionKey);
+            ClearDraftSession();
             return;
         }
 
         db.IndorRealtorQuoteRequestDrafts.Remove(draft);
         await db.SaveChangesAsync(cancellationToken);
-        httpContextAccessor.HttpContext?.Session.Remove(DraftIdSessionKey);
+        ClearDraftSession();
+    }
+
+    public int? GetEditingQuoteId()
+    {
+        var id = httpContextAccessor.HttpContext?.Session.GetInt32(EditingQuoteIdSessionKey);
+        return id is > 0 ? id : null;
+    }
+
+    public async Task BeginEditExistingQuoteAsync(int quoteId, CancellationToken cancellationToken = default)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Realtor profile not found.");
+
+        var quote = await db.IndorRealtorQuotes.AsNoTracking()
+            .FirstOrDefaultAsync(q => q.Id == quoteId && q.RealtorId == realtor.Id, cancellationToken)
+            ?? throw new InvalidOperationException("Quote not found.");
+
+        if (string.Equals(quote.Status, "Cancelled", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("This quote request could not be edited.");
+        }
+
+        await CancelDraftAsync(cancellationToken);
+
+        var draft = await EnsureDraftAsync(cancellationToken);
+        draft.PropertyFileId = quote.PropertyFileId;
+        draft.Address = quote.Address;
+        draft.ClientName = quote.ClientName;
+        draft.PhotoUrl = quote.PhotoUrl;
+        draft.ServiceType = quote.ServiceType;
+        draft.RequestType = string.IsNullOrWhiteSpace(quote.RequestType)
+            ? RealtorQuoteRequestTypes.EntireFile
+            : quote.RequestType;
+        draft.ResponseDeadlineHours = quote.ResponseDeadlineHours is 24 or 48 or 72
+            ? quote.ResponseDeadlineHours.Value
+            : 48;
+        draft.ProviderSelectionMode = string.IsNullOrWhiteSpace(quote.ProviderSelectionMode)
+            ? RealtorQuoteProviderSelectionModes.Manual
+            : quote.ProviderSelectionMode;
+        draft.OptionalMessage = quote.OptionalMessage;
+        draft.CurrentStep = 2;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+
+        var session = httpContextAccessor.HttpContext?.Session
+            ?? throw new InvalidOperationException("Session is not available.");
+        session.SetInt32(EditingQuoteIdSessionKey, quote.Id);
+    }
+
+    public async Task<int?> TryFinishEditAfterRequestDetailsAsync(CancellationToken cancellationToken = default)
+    {
+        var editId = GetEditingQuoteId();
+        if (editId is not > 0)
+        {
+            return null;
+        }
+
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Realtor profile not found.");
+        var draft = await GetDraftAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Complete property selection first.");
+
+        var quote = await db.IndorRealtorQuotes
+            .FirstOrDefaultAsync(q => q.Id == editId && q.RealtorId == realtor.Id, cancellationToken)
+            ?? throw new InvalidOperationException("Quote not found.");
+
+        if (string.Equals(quote.Status, "Cancelled", StringComparison.OrdinalIgnoreCase))
+        {
+            throw new InvalidOperationException("This quote request could not be edited.");
+        }
+
+        quote.RequestType = draft.RequestType;
+        quote.ResponseDeadlineHours = draft.ResponseDeadlineHours;
+        quote.UpdatedUtc = DateTime.UtcNow;
+
+        await db.SaveChangesAsync(cancellationToken);
+        await CancelDraftAsync(cancellationToken);
+        return editId;
+    }
+
+    private void ClearDraftSession()
+    {
+        var session = httpContextAccessor.HttpContext?.Session;
+        session?.Remove(DraftIdSessionKey);
+        session?.Remove(EditingQuoteIdSessionKey);
     }
 
     public string ResolveResumeAction(int currentStep) => currentStep switch
@@ -270,17 +356,22 @@ public class RealtorQuoteRequestService(
         var draft = await GetDraftAsync(cancellationToken)
             ?? throw new InvalidOperationException("Complete property selection first.");
 
+        var editingQuoteId = GetEditingQuoteId();
         return new RealtorQuoteRequestDetailsViewModel
         {
             DisplayStep = 2,
-            Title = "Request Details",
-            Subtitle = "Choose how you want to ask for quotes.",
+            Title = editingQuoteId is > 0 ? "Edit Request" : "Request Details",
+            Subtitle = editingQuoteId is > 0
+                ? "Update how providers should receive this request."
+                : "Choose how you want to ask for quotes.",
             RequestType = draft.RequestType,
             SharePhotosVideos = draft.SharePhotosVideos,
             ShareInspectionReport = draft.ShareInspectionReport,
             ShareRepairItems = draft.ShareRepairItems,
             ShareNotes = draft.ShareNotes,
             ResponseDeadlineHours = draft.ResponseDeadlineHours,
+            IsEditingExisting = editingQuoteId is > 0,
+            EditingQuoteId = editingQuoteId,
             RequestTypeOptions = RealtorQuoteRequestTypes.Options
         };
     }
@@ -678,7 +769,7 @@ public class RealtorQuoteRequestService(
         await db.SaveChangesAsync(cancellationToken);
         db.IndorRealtorQuoteRequestDrafts.Remove(draft);
         await db.SaveChangesAsync(cancellationToken);
-        httpContextAccessor.HttpContext?.Session.Remove(DraftIdSessionKey);
+        ClearDraftSession();
 
         return quote.Id;
     }

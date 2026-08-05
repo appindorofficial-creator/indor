@@ -20,6 +20,13 @@
             <p>@inviteOk</p>
         </div>
     }
+    else if (TempData["QuoteEditOk"] is string editOk && !string.IsNullOrWhiteSpace(editOk))
+    {
+        <div class="rl-info-box" role="status">
+            <i class="fas fa-circle-check"></i>
+            <p>@editOk</p>
+        </div>
+    }
 
     <div class="rl-qreq-hero">
         <img src="@Model.PhotoUrl" alt="" />
