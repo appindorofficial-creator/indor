@@ -1068,7 +1068,8 @@ public class RealtorInspectionUploadWizardService(
                 QuotesCreated = quoteCodes.Count,
                 FindingsAdded = selectedFindings.Count,
                 TradesSummary = string.Join(", ", trades.Select(LocalizeTradeShortName)),
-                QuoteCodes = quoteCodes.Select(c => $"Quote #{c}").ToList()
+                // Raw codes — Success view localizes via L.T("Quote #{0}", code).
+                QuoteCodes = quoteCodes.ToList()
             };
 
             db.IndorRealtorInspectionUploadDrafts.Remove(draft);

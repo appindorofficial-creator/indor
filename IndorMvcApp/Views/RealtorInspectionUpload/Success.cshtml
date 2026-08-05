@@ -1,98 +1,58 @@
 @model IndorMvcApp.ViewModels.RealtorInspectionSuccessViewModel
-
 @{
-
     Layout = "_RealtorLayout";
-
     ViewData["Title"] = L["Inspection Analyzed"];
-
     ViewBag.NavActive = "home";
-
+    var quotesCreatedLabel = Model.QuotesCreated == 1
+        ? L.T("{0} quote request created", Model.QuotesCreated)
+        : L.T("{0} quote requests created", Model.QuotesCreated);
+    var findingsLabel = Model.FindingsAdded == 1
+        ? L.T("{0} repair item", Model.FindingsAdded)
+        : L.T("{0} repair items", Model.FindingsAdded);
 }
 
-
-
 <div class="rl-dash-shell">
-
     @await Html.PartialAsync("~/Views/Realtor/_RealtorTopbar.cshtml", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel { HideNotifications = true })
 
-
-
     <section class="rl-success-hero">
-
         <div class="rl-success-icon-wrap">
-
             <span class="rl-success-icon"><i class="fas fa-check"></i></span>
-
         </div>
-
         <h1>@L["Quote Requests Created"]</h1>
-
         <p>@L["Your inspection report was analyzed and quote requests were sent."]</p>
-
     </section>
 
-
-
     <div class="rl-success-card rl-success-card--quote">
-
         <div class="rl-success-quote-head">
-
             <i class="fas fa-circle-check"></i>
-
-            <strong>@Model.QuotesCreated quote request@(Model.QuotesCreated == 1 ? "" : "s") created</strong>
-
+            <strong>@quotesCreatedLabel</strong>
         </div>
-
         <div class="rl-success-detail"><strong>@L["Property:"]</strong> @Model.PropertyAddress</div>
-
         @if (!string.IsNullOrWhiteSpace(Model.ClientName))
-
         {
-
             <div class="rl-success-detail"><strong>@L["Client:"]</strong> @Model.ClientName</div>
-
         }
-
-        <div class="rl-success-detail"><strong>@L["Findings added:"]</strong> @Model.FindingsAdded repair items</div>
-
+        <div class="rl-success-detail"><strong>@L["Findings added:"]</strong> @findingsLabel</div>
         <div class="rl-success-detail"><strong>@L["Trades:"]</strong> @Model.TradesSummary</div>
-
         @foreach (var code in Model.QuoteCodes)
-
         {
-
-            <div class="rl-success-detail"><i class="fas fa-file-invoice"></i> @code</div>
-
+            var displayCode = code.StartsWith("Quote #", StringComparison.OrdinalIgnoreCase)
+                ? code["Quote #".Length..]
+                : code;
+            <div class="rl-success-detail"><i class="fas fa-file-invoice"></i> @L.T("Quote #{0}", displayCode)</div>
         }
-
     </div>
-
-
 
     <div class="rl-review-card">
-
         <h2 class="rl-invite-section-title">@L["What happens next?"]</h2>
-
         <ol class="rl-next-steps">
-
             <li><span>1</span> @L["Providers receive trade-specific requests in INDOR Pro."]</li>
-
             <li><span>2</span> @L["They review relevant findings and inspection pages."]</li>
-
             <li><span>3</span> @L["They send itemized quotes back."]</li>
-
             <li><span>4</span> @L["You compare quotes and choose the best options."]</li>
-
         </ol>
-
     </div>
 
-
-
     <a asp-controller="Realtor" asp-action="Quotes" class="ob-btn ob-btn-primary rl-done-btn">@L["Track Quotes"]</a>
-
     <a asp-controller="Realtor" asp-action="Dashboard" class="rl-later-link">@L["Done"]</a>
-
 </div>
-
