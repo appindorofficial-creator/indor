@@ -110,7 +110,7 @@ else
     <a asp-controller="HouseFactPreview" asp-action="RoofExteriorCarePlan" class="re-btn-primary">
         <i class="fas fa-file-lines"></i> @L["View full section"]
     </a>
-    <a asp-controller="Propietario" asp-action="PropertyDetails" class="re-btn-secondary">
+    <a asp-controller="MyHome" asp-action="DocumentCreate" asp-route-from="housefacts" class="re-btn-secondary">
         <i class="fas fa-camera"></i> @L["Add documents"]
     </a>
 }
@@ -119,7 +119,7 @@ else
     <a asp-action="CarePlan" asp-route-id="@Model.PropiedadId" class="re-btn-primary">
         <i class="fas fa-file-lines"></i> @L["View full section"]
     </a>
-    <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="re-btn-secondary">
+    <a asp-controller="MyHome" asp-action="DocumentCreate" asp-route-id="@Model.PropiedadId" asp-route-from="housefacts" class="re-btn-secondary">
         <i class="fas fa-camera"></i> @L["Add documents"]
     </a>
 }

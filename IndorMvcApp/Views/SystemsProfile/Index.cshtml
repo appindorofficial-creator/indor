@@ -102,14 +102,21 @@ else
 @if (hfPreview)
 {
     <a asp-controller="HouseFactPreview" asp-action="SystemsVerification" class="sp-btn-primary">@L["View full systems"]</a>
-    <a asp-controller="Propietario" asp-action="PropertyDetails" class="sp-btn-secondary">
+    <a asp-controller="MyHome"
+       asp-action="DocumentCreate"
+       asp-route-from="housefacts"
+       class="sp-btn-secondary">
         <i class="fas fa-file-circle-plus"></i> @L["Add documents"]
     </a>
 }
 else
 {
     <a asp-action="Verification" asp-route-id="@Model.PropiedadId" class="sp-btn-primary">@L["View full systems"]</a>
-    <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="sp-btn-secondary">
+    <a asp-controller="MyHome"
+       asp-action="DocumentCreate"
+       asp-route-id="@Model.PropiedadId"
+       asp-route-from="housefacts"
+       class="sp-btn-secondary">
         <i class="fas fa-file-circle-plus"></i> @L["Add documents"]
     </a>
 }

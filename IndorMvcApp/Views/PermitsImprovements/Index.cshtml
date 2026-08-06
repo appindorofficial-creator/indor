@@ -192,12 +192,16 @@ else
 <div class="pi-btn-row">
     @if (hfPreview)
     {
-        <a asp-controller="Propietario" asp-action="PropertyDetails" class="pi-btn-primary">
+        <a asp-controller="MyHome"
+           asp-action="DocumentCreate"
+           asp-route-category="Permits"
+           asp-route-from="housefacts"
+           class="pi-btn-primary">
             <i class="fas fa-file-circle-plus"></i> @L["Add documents"]
         </a>
         @if (Model.ActiveTab == "improvements")
         {
-            <a asp-controller="Propietario" asp-action="PropertyDetails" class="pi-btn-secondary">
+            <a asp-controller="MyHome" asp-action="Documents" asp-route-from="housefacts" class="pi-btn-secondary">
                 <i class="fas fa-folder-open"></i> @L["Open documents"]
             </a>
         }
@@ -216,12 +220,17 @@ else
     }
     else
     {
-        <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="pi-btn-primary">
+        <a asp-controller="MyHome"
+           asp-action="DocumentCreate"
+           asp-route-id="@Model.PropiedadId"
+           asp-route-category="Permits"
+           asp-route-from="housefacts"
+           class="pi-btn-primary">
             <i class="fas fa-file-circle-plus"></i> @L["Add documents"]
         </a>
         @if (Model.ActiveTab == "improvements")
         {
-            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="pi-btn-secondary">
+            <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@Model.PropiedadId" asp-route-from="housefacts" class="pi-btn-secondary">
                 <i class="fas fa-folder-open"></i> @L["Open documents"]
             </a>
         }

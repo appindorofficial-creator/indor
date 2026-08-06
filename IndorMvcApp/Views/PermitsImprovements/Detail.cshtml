@@ -89,7 +89,7 @@
     <div class="pi-btn-row">
         @if (hfPreview)
         {
-            <a asp-controller="Propietario" asp-action="PropertyDetails" class="pi-btn-primary">
+            <a asp-controller="MyHome" asp-action="DocumentCreate" asp-route-category="Permits" asp-route-from="housefacts" class="pi-btn-primary">
                 <i class="fas fa-file-circle-plus"></i> @L["Add documents"]
             </a>
             <a asp-controller="HouseFactPreview" asp-action="PermitsImprovements" asp-route-tab="missing-docs" class="pi-btn-secondary">
@@ -98,7 +98,7 @@
         }
         else
         {
-            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="pi-btn-primary">
+            <a asp-controller="MyHome" asp-action="DocumentCreate" asp-route-id="@Model.PropiedadId" asp-route-category="Permits" asp-route-from="housefacts" class="pi-btn-primary">
                 <i class="fas fa-file-circle-plus"></i> @L["Add documents"]
             </a>
             <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="missing-docs" class="pi-btn-secondary">
