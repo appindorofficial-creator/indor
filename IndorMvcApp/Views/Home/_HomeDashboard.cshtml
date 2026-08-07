@@ -188,7 +188,7 @@ else
             <p>@L["Our team can help connect you with a trusted real estate professional."]</p>
             <div class="hd-realtor-actions">
                 <a asp-controller="RealtorRequest" asp-action="Request" asp-route-propiedadId="@Model.PropiedadId" class="hd-btn-primary-sm">@L["Request"]</a>
-                <button type="button" class="hd-btn-outline-sm nav-jump" data-target="section-more">@L["Contact Support"]</button>
+                <a asp-controller="Perfil" asp-action="Soporte" class="hd-btn-outline-sm">@L["Contact Support"]</a>
             </div>
         </div>
         <div class="hd-realtor-art" aria-hidden="true">
