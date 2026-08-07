@@ -258,9 +258,12 @@ public class InspectionReportUploadController : Controller
 
         if (document == null)
         {
+            // Avoid string.Contains(..., StringComparison) — not translatable by EF Core / SQL Server.
             document = await _db.PropiedadDocumentos
                 .Where(d => d.PropiedadId == propiedad.Id
-                            && (d.Category.Contains("Inspection") || d.Title.Contains("inspection", StringComparison.OrdinalIgnoreCase)))
+                            && (d.Category.Contains("Inspection")
+                                || d.Title.ToLower().Contains("inspection")
+                                || d.Title.ToLower().Contains("inspecci")))
                 .OrderByDescending(d => d.FechaCreacion)
                 .FirstOrDefaultAsync();
         }
