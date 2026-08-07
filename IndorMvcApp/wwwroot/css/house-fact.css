@@ -908,8 +908,10 @@
     font-weight: 800;
     color: #0A2540;
     line-height: 1.25;
-    overflow-wrap: anywhere;
-    word-break: break-word;
+    /* Keep Spanish titles like "Aeropuertos cercanos" from splitting mid-word */
+    overflow-wrap: break-word;
+    word-break: normal;
+    hyphens: manual;
 }
 
 .hf-category-subtitle {
@@ -917,8 +919,9 @@
     color: #64748B;
     margin-top: 3px;
     line-height: 1.35;
-    overflow-wrap: anywhere;
-    word-break: break-word;
+    overflow-wrap: break-word;
+    word-break: normal;
+    hyphens: manual;
 }
 
 .hf-category-badge {
