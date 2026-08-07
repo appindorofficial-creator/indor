@@ -196,6 +196,9 @@ public static class HomeDashboardDisplayService
         var documentsUrl = propiedadId.HasValue && url != null
             ? url.Action("Documents", "MyHome", new { id = propiedadId.Value, from = "housefacts" })
             : null;
+        var inspectionUploadUrl = propiedadId.HasValue && url != null
+            ? url.Action("Upload", "InspectionReportUpload", new { propiedadId = propiedadId.Value })
+            : null;
 
         return
         [
@@ -214,6 +217,13 @@ public static class HomeDashboardDisplayService
                 TargetSection = "section-services",
                 ScrollTarget = "emergency-services",
                 Tone = "red"
+            },
+            new()
+            {
+                Icon = "fa-file-circle-plus",
+                Label = "Upload inspection report",
+                TargetSection = "section-myhome",
+                Url = inspectionUploadUrl
             },
             new()
             {
