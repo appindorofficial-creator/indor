@@ -1647,6 +1647,21 @@ public static class UiTranslationsHome
             ["Inspection Report"] = "Informe de inspección",
             ["Add any notes about this report..."] = "Agrega notas sobre este informe...",
 
+            // Homeowner inspection report — review + success
+            ["Review Upload"] = "Revisar carga",
+            ["Replace File"] = "Reemplazar archivo",
+            ["Report Uploaded"] = "Informe subido",
+            ["Your inspection report has been uploaded."] = "Tu informe de inspección se ha subido.",
+            ["Your home records are now up to date."] = "Los registros de tu hogar ya están al día.",
+            ["Saved to Documents"] = "Guardado en Documentos",
+            ["Your report is securely stored."] = "Tu informe está almacenado de forma segura.",
+            ["Available from Home"] = "Disponible desde Inicio",
+            ["Access it anytime from your home."] = "Accede a él cuando quieras desde tu hogar.",
+            ["Ready for future reminders"] = "Listo para recordatorios futuros",
+            ["We'll use it to keep you on track."] = "Lo usaremos para ayudarte a mantenerte al día.",
+            ["Uploaded document"] = "Documento subido",
+            ["Uploaded {0}"] = "Subido el {0}",
+
             // INDOR Neighborhood (ZIP-based feed)
             ["INDOR Neighborhood"] = "Vecindario INDOR",
             ["Help, updates, and services from homeowners in your ZIP code."] = "Ayuda, novedades y servicios de homeowners en tu mismo ZIP code.",

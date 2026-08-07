@@ -1,11 +1,15 @@
 @model IndorMvcApp.ViewModels.ReviewInspectionReportViewModel
+@using System.Globalization
+@using IndorMvcApp.Localization
+@inject IIndorLocalizer L
 @{
-    ViewData["Title"] = "Review Upload";
+    ViewData["Title"] = L["Review Upload"];
     Layout = null;
-    var inspectionLabel = Model.InspectionDate?.ToString("MMM d, yyyy") ?? "—";
+    var culture = UiCulture.ToCultureInfo(L.CurrentCulture);
+    var inspectionLabel = Model.InspectionDate?.ToString("MMM d, yyyy", culture) ?? "—";
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -19,14 +23,14 @@
 <body>
 <div class="hvac-page">
     <div class="hvac-top">
-        <a asp-action="Upload" asp-route-propiedadId="@Model.PropiedadId" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
-        <div class="hvac-title">Review Upload</div>
+        <a asp-action="Upload" asp-route-propiedadId="@Model.PropiedadId" class="hvac-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
+        <div class="hvac-title">@L["Review Upload"]</div>
         <div style="width:40px;"></div>
     </div>
 
     <div class="hvac-content">
         <div class="hvac-prop-card">
-            <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Your home" />
+            <img src="@Url.Content($"~{Model.ImageUrl}")" alt="@L["Your home"]" />
             <p>@Model.Address</p>
         </div>
 
@@ -45,34 +49,34 @@
 
             <div class="hvac-form-card">
                 <div class="ir-field">
-                    <label>Document title</label>
+                    <label>@L["Document title"]</label>
                     <div class="ir-readonly-field"><i class="fas fa-file-lines"></i><span>@Model.Title</span></div>
                 </div>
 
                 <div class="ir-field">
-                    <label>Inspection date</label>
+                    <label>@L["Inspection date"]</label>
                     <div class="ir-readonly-field"><i class="far fa-calendar"></i><span>@inspectionLabel</span></div>
                 </div>
 
                 <div class="ir-field">
-                    <label>Document category</label>
-                    <div class="ir-readonly-field"><i class="fas fa-folder-open"></i><span>@Model.CategoryLabel</span></div>
+                    <label>@L["Document category"]</label>
+                    <div class="ir-readonly-field"><i class="fas fa-folder-open"></i><span>@L[Model.CategoryLabel]</span></div>
                 </div>
 
                 @if (!string.IsNullOrWhiteSpace(Model.Notes))
                 {
                     <div class="ir-field">
-                        <label>Notes</label>
+                        <label>@L["Notes"]</label>
                         <div class="ir-readonly-field" style="align-items:flex-start;white-space:normal;"><i class="fas fa-note-sticky"></i><span style="white-space:normal;">@Model.Notes</span></div>
                     </div>
                 }
             </div>
 
             <a asp-action="Upload" asp-route-propiedadId="@Model.PropiedadId" class="ir-replace-link">
-                <i class="fas fa-arrow-up-from-bracket"></i> Replace File
+                <i class="fas fa-arrow-up-from-bracket"></i> @L["Replace File"]
             </a>
 
-            <button type="submit" class="hvac-save-btn">Upload Report</button>
+            <button type="submit" class="hvac-save-btn">@L["Upload Report"]</button>
         </form>
     </div>
 

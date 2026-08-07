@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -276,7 +275,7 @@ public class InspectionReportUploadController : Controller
         {
             PropiedadId = propiedad.Id,
             Title = document.Title,
-            UploadedDateLabel = displayDate.ToString("MMM d, yyyy", CultureInfo.GetCultureInfo("en-US")),
+            UploadedDateLabel = displayDate.ToString("MMM d, yyyy", UiCulture.ToCultureInfo(_localizer.CurrentCulture)),
             FileTypeLabel = FileTypeLabel(document.FileName, document.ContentType)
         });
     }
