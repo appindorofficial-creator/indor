@@ -1650,6 +1650,7 @@ public static class UiTranslationsHome
             // Homeowner inspection report — review + success
             ["Review Upload"] = "Revisar carga",
             ["Replace File"] = "Reemplazar archivo",
+            ["Upload Report"] = "Subir informe",
             ["Report Uploaded"] = "Informe subido",
             ["Your inspection report has been uploaded."] = "Tu informe de inspección se ha subido.",
             ["Your home records are now up to date."] = "Los registros de tu hogar ya están al día.",

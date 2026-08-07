@@ -60,19 +60,21 @@
             <div class="hvac-form-card">
                 <div class="ir-field">
                     <label asp-for="Title">@L["Document title"]</label>
-                    <input asp-for="Title" class="hvac-input" placeholder="@L["Annual Home Inspection Report"]" />
+                    <input asp-for="Title" class="hvac-input" placeholder="@L["Annual Home Inspection Report"]"
+                           data-val-required="@L["Enter a document title."]" />
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
 
                 <div class="ir-field">
                     <label asp-for="InspectionDate">@L["Inspection date"]</label>
-                    <input asp-for="InspectionDate" type="date" class="hvac-input" placeholder="@L["Select date"]" />
+                    <input asp-for="InspectionDate" type="date" class="hvac-input" placeholder="@L["Select date"]"
+                           data-val-required="@L["Select an inspection date."]" />
                     <span asp-validation-for="InspectionDate" class="text-danger"></span>
                 </div>
 
                 <div class="ir-field">
                     <label asp-for="Category">@L["Document category"]</label>
-                    <select asp-for="Category" class="hvac-select">
+                    <select asp-for="Category" class="hvac-select" data-val-required="@L["Select a category."]">
                         <option value="Inspections">@L["Inspection Report"]</option>
                     </select>
                 </div>
