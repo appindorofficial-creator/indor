@@ -23,9 +23,12 @@
         ? "Your plumbing inspection has been scheduled"
         : Model.FlowType == "complete"
         ? "Your complete home inspection has been scheduled"
+        : Model.FlowType == "purchase"
+            || Model.NombreServicio.Contains("Pre-Purchase", StringComparison.OrdinalIgnoreCase)
+        ? "Your pre-purchase home inspection has been scheduled"
         : Model.NombreServicio.Contains("Electrical", StringComparison.OrdinalIgnoreCase)
             ? "Your electrical inspection has been scheduled"
-            : $"Your {Model.NombreServicio.ToLowerInvariant()} has been scheduled";
+            : "Your inspection has been scheduled";
     var subtext = Model.FlowType == "complete"
         ? "Everything is confirmed. We've reserved your appointment and sent your request."
         : "Everything is confirmed. We've sent your request and reserved your appointment.";

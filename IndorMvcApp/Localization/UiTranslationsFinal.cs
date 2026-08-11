@@ -3140,6 +3140,10 @@ public static class UiTranslationsFinal
             ["Your plumbing inspection has been scheduled"] = "Tu inspección de plomería ha sido programada",
             ["Your complete home inspection has been scheduled"] = "Tu inspección completa del hogar ha sido programada",
             ["Your electrical inspection has been scheduled"] = "Tu inspección eléctrica ha sido programada",
+            ["Your pre-purchase home inspection has been scheduled"] = "Tu inspección pre-compra ha sido programada",
+            ["Your inspection has been scheduled"] = "Tu inspección ha sido programada",
+            ["You'll receive updates at every step. Your provider will review your photos and comments before arriving."] =
+                "Recibirás actualizaciones en cada paso. Tu proveedor revisará tus fotos y comentarios antes de llegar.",
             ["Everything is confirmed. We've sent your request and reserved your appointment."] = "Todo está confirmado. Enviamos tu solicitud y reservamos tu cita.",
             ["Everything is confirmed. We've reserved your appointment and sent your request."] = "Todo está confirmado. Reservamos tu cita y enviamos tu solicitud.",
             ["Your provider will review your selected investment concerns and any uploaded files before arriving."] = "Tu proveedor revisará tus inquietudes de inversión seleccionadas y cualquier archivo subido antes de llegar.",
