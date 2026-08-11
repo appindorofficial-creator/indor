@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -15,6 +16,7 @@ public class PowerWashController : Controller
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
+    private readonly IIndorLocalizer _localizer;
 
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png"];
     private const long MaxFileSize = 10_000_000;
@@ -23,11 +25,13 @@ public class PowerWashController : Controller
     public PowerWashController(
         AppDbContext db,
         UserManager<ApplicationUser> userManager,
-        IWebHostEnvironment env)
+        IWebHostEnvironment env,
+        IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
         _env = env;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -123,6 +127,7 @@ public class PowerWashController : Controller
 
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             return View(model);
         }
 
@@ -172,6 +177,7 @@ public class PowerWashController : Controller
 
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             var vm = await BuildConditionViewModelAsync(solicitud);
             vm.ProblemasSeleccionados = model.ProblemasSeleccionados;
             vm.AreasDelicadas = model.AreasDelicadas;

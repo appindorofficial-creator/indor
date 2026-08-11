@@ -12,16 +12,16 @@
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Property & Surface Details"]</h1>
     <p class="page-lead" style="margin-bottom:16px;"><span class="tagline">@L["Tell us what needs to be cleaned."]</span></p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="pw-details-form" asp-action="PowerWashDetails" method="post">
+    <form id="pw-details-form" asp-action="PowerWashDetails" method="post" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="AreasSeleccionadas" id="AreasSeleccionadas" />
         <input type="hidden" asp-for="MaterialExterior" id="MaterialExterior" />
         <input type="hidden" asp-for="NumeroPisos" id="NumeroPisos" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="AreasSeleccionadas">
             <div class="field-head"><i class="fas fa-house"></i><span>@L["What area needs washing?"]</span></div>
             <div class="area-grid">
                 <button type="button" class="area-card" data-area="FullExterior"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house main"></i><span class="label">@L["Full exterior"]</span></button>
@@ -31,10 +31,9 @@
                 <button type="button" class="area-card" data-area="PatioDeck"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-umbrella-beach main"></i><span class="label">@L["Patio / deck"]</span></button>
                 <button type="button" class="area-card" data-area="Fence"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-grip-lines main"></i><span class="label">@L["Fence"]</span></button>
             </div>
-            <span asp-validation-for="AreasSeleccionadas" class="text-danger"></span>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="MaterialExterior">
             <div class="field-head"><i class="fas fa-layer-group"></i><span>@L["Main exterior material"]</span></div>
             <div class="material-grid">
                 <button type="button" class="material-card" data-material="VinylSiding"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-grip-lines-vertical main"></i><span class="label">@L["Vinyl siding"]</span></button>
@@ -44,24 +43,21 @@
                 <button type="button" class="material-card" data-material="PaintedWood"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-tree main"></i><span class="label">@L["Painted wood"]</span></button>
                 <button type="button" class="material-card" data-material="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">@L["Not sure"]</span></button>
             </div>
-            <span asp-validation-for="MaterialExterior" class="text-danger"></span>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="NumeroPisos">
             <div class="field-head"><i class="fas fa-building"></i><span>@L["Home size"]</span></div>
             <div class="stories-row">
                 <button type="button" class="story-pill" data-stories="One"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house main"></i><span class="label">@L["1 story"]</span></button>
                 <button type="button" class="story-pill" data-stories="Two"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-building main"></i><span class="label">@L["2 stories"]</span></button>
                 <button type="button" class="story-pill" data-stories="ThreePlus"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-city main"></i><span class="label">@L["3+ stories"]</span></button>
             </div>
-            <span asp-validation-for="NumeroPisos" class="text-danger"></span>
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
             @L["Continue"] <i class="fas fa-chevron-right"></i>
         </button>
     </form>
-</div>
 @section Scripts {
 <script>
     (function () {
@@ -135,34 +131,6 @@
 
         bindSingle('[data-material]', 'data-material', document.getElementById('MaterialExterior'));
         bindSingle('[data-stories]', 'data-stories', document.getElementById('NumeroPisos'));
-
-        var form = document.getElementById('pw-details-form');
-        var requiredFields = [
-            { id: 'AreasSeleccionadas', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select at least one area to wash."].ToString())) },
-            { id: 'MaterialExterior', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select the main exterior material."].ToString())) },
-            { id: 'NumeroPisos', message: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select your home size."].ToString())) }
-        ];
-
-        form?.addEventListener('submit', function (e) {
-            if (e.submitter && e.submitter.value === 'back') {
-                return;
-            }
-
-            var firstMissing = null;
-            requiredFields.forEach(function (field) {
-                var input = document.getElementById(field.id);
-                if (!input) return;
-                var empty = !input.value || !String(input.value).trim();
-                if (empty && !firstMissing) {
-                    firstMissing = field;
-                }
-            });
-
-            if (firstMissing) {
-                e.preventDefault();
-                alert(firstMissing.message);
-            }
-        });
     })();
 
 </script>

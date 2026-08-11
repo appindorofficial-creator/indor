@@ -28,6 +28,7 @@ public class PowerWashDetailsViewModel
     public int HomeCarePriorityId { get; set; }
     public string PageTitle { get; set; } = "Power Wash Exterior";
 
+    [Required(ErrorMessage = "Select at least one area to wash.")]
     public string AreasSeleccionadas { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Select the main exterior material.")]
@@ -51,16 +52,19 @@ public class PowerWashConditionViewModel
     public string PageTitle { get; set; } = "Power Wash Exterior";
     public string? InfoCondicionTexto { get; set; }
 
+    [Required(ErrorMessage = "Please choose one of these options.")]
     public string ProblemasSeleccionados { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Please choose one of these options.")]
     public string AreasDelicadas { get; set; } = string.Empty;
 
-    [Required]
+    [Required(ErrorMessage = "Please choose one of these options.")]
     public string AccesoGrifo { get; set; } = "";
 
-    [Required]
+    [Required(ErrorMessage = "Please choose one of these options.")]
     public string TimingPreferido { get; set; } = "";
 
-    [Required]
+    [Required(ErrorMessage = "Please choose one of these options.")]
     public string VentanaHorario { get; set; } = "";
 
     [MaxLength(300)]

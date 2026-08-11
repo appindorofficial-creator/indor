@@ -90,6 +90,8 @@
 
     var MULTI_CHOICE = [
         '.sign-card',
+        '.area-card',
+        '.issue-card',
         '.area-chip',
         '.symptom-pill',
         '.concern-chip',

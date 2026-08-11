@@ -125,5 +125,8 @@ public static class UiTranslationsValidation
             ["Please indicate whether you already have a home inspection report."] = "Indica si ya tienes un informe de inspección del hogar.",
             ["Please select who you are."] = "Selecciona quién eres.",
             ["Please select your main goal."] = "Selecciona tu objetivo principal.",
+            ["Select at least one area to wash."] = "Selecciona al menos un área para lavar.",
+            ["Select the main exterior material."] = "Selecciona el material exterior principal.",
+            ["Select your home size."] = "Selecciona el tamaño de tu hogar.",
         };
 }

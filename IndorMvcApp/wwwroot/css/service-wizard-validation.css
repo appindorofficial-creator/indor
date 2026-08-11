@@ -34,6 +34,12 @@
 .iw-wizard-page .field-card.is-invalid .segment-btn,
 .iw-wizard-page .field-card.is-invalid .chip-btn,
 .iw-wizard-page .field-card.is-invalid .goal-btn,
+.iw-wizard-page .field-card.is-invalid .area-card,
+.iw-wizard-page .field-card.is-invalid .material-card,
+.iw-wizard-page .field-card.is-invalid .story-pill,
+.iw-wizard-page .field-card.is-invalid .issue-card,
+.iw-wizard-page .field-card.is-invalid .spigot-card,
+.iw-wizard-page .field-card.is-invalid .time-card,
 .iw-wizard-page .field-card.is-invalid .form-input {
     position: relative;
     z-index: 2;
