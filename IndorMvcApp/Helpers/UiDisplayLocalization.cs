@@ -1313,7 +1313,10 @@ public static class UiDisplayLocalization
             }
         }
 
-        var timestampAtMatch = Regex.Match(text, @"^(.+?) at (\d{1,2}:\d{2} [AP]M)$", RegexOptions.IgnoreCase);
+        var timestampAtMatch = Regex.Match(
+            text,
+            @"^(.+?) at (\d{1,2}:\d{2}\s*(?:[AP]M|a\.\s*m\.|p\.\s*m\.))$",
+            RegexOptions.IgnoreCase);
         if (timestampAtMatch.Success)
         {
             return localizer.T("{0} at {1}", timestampAtMatch.Groups[1].Value.Trim(), timestampAtMatch.Groups[2].Value.Trim());

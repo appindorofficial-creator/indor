@@ -384,5 +384,13 @@ public static class UiTranslationsHouseFact
             ["Uploaded document"] = "Documento subido",
             ["Uploaded {0}"] = "Subido el {0}",
             ["Done"] = "Listo",
+            ["Inspection report uploaded"] = "Informe de inspección subido",
+            ["Realtor request submitted"] = "Solicitud de agente inmobiliario enviada",
+            ["HVAC filter reminder configured"] = "Recordatorio de filtro HVAC configurado",
+            ["Water heater flush reminder configured"] = "Recordatorio de descarga del calentador configurado",
+            ["HVAC system added"] = "Sistema HVAC agregado",
+            ["Water heater added"] = "Calentador de agua agregado",
+            ["Area not specified"] = "Área no especificada",
+            ["Updated in your home profile."] = "Actualizado en el perfil de tu hogar.",
         };
 }
