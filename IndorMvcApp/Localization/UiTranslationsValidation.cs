@@ -113,6 +113,8 @@ public static class UiTranslationsValidation
 
             // Homeowner inspection report upload
             ["Enter a document title."] = "Ingresa un título del documento.",
+            ["Document title must be 200 characters or less."] = "El título del documento debe tener 200 caracteres o menos.",
+            ["The field Document title must be a string or array type with a maximum length of '200'."] = "El título del documento debe tener 200 caracteres o menos.",
             ["Select an inspection date."] = "Selecciona una fecha de inspección.",
             ["Select a category."] = "Selecciona una categoría.",
             ["Select a PDF, JPG, or PNG file to continue."] = "Selecciona un archivo PDF, JPG o PNG para continuar.",

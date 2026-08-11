@@ -11,7 +11,7 @@ public class UploadInspectionReportViewModel
     public string ImageUrl { get; set; } = "/welcome-house.png";
 
     [Required(ErrorMessage = "Enter a document title.")]
-    [MaxLength(200)]
+    [MaxLength(200, ErrorMessage = "Document title must be 200 characters or less.")]
     [Display(Name = "Document title")]
     public string Title { get; set; } = string.Empty;
 

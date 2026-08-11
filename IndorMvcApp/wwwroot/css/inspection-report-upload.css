@@ -132,6 +132,22 @@
     border-bottom: 1px solid #F1F5F9;
 }
 
+.ir-field .text-danger,
+.ir-field .field-validation-error {
+    display: block;
+    margin-top: 8px;
+    font-weight: 600;
+    color: #B91C1C;
+}
+
+.ir-field .field-validation-valid:empty {
+    display: none;
+}
+
+.ir-field .input-validation-error {
+    border-color: #F87171;
+}
+
 .ir-field:last-child {
     border-bottom: none;
 }

@@ -89,6 +89,7 @@ public class InspectionReportUploadController : Controller
 
         if (!ModelState.IsValid)
         {
+            LocalizeUploadFieldErrors(model);
             ModelState.LocalizeModelState(_localizer);
             model.Address = info?.FormattedAddress ?? propiedad.Direccion ?? "—";
             model.SelectedFileName = pending?.OriginalFileName;
@@ -281,6 +282,33 @@ public class InspectionReportUploadController : Controller
             UploadedDateLabel = displayDate.ToString("MMM d, yyyy", UiCulture.ToCultureInfo(_localizer.CurrentCulture)),
             FileTypeLabel = FileTypeLabel(document.FileName, document.ContentType)
         });
+    }
+
+    private void LocalizeUploadFieldErrors(UploadInspectionReportViewModel model)
+    {
+        if (string.IsNullOrWhiteSpace(model.Title))
+        {
+            ReplaceFieldError(nameof(model.Title), "Enter a document title.");
+        }
+
+        if (!model.InspectionDate.HasValue)
+        {
+            ReplaceFieldError(nameof(model.InspectionDate), "Select an inspection date.");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Category))
+        {
+            ReplaceFieldError(nameof(model.Category), "Select a category.");
+        }
+    }
+
+    private void ReplaceFieldError(string key, string english)
+    {
+        if (ModelState[key]?.Errors.Count > 0)
+        {
+            ModelState.Remove(key);
+            ModelState.AddModelError(key, _localizer[english]);
+        }
     }
 
     private async Task<Propiedad?> LoadPropertyAsync(int? id)

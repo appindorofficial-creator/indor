@@ -35,9 +35,9 @@
             <div class="text-danger" style="margin-bottom:12px;">@L[uploadError]</div>
         }
 
-        <form asp-action="Upload" method="post" enctype="multipart/form-data" id="uploadForm">
+        <form asp-action="Upload" method="post" enctype="multipart/form-data" id="uploadForm" novalidate>
             <input type="hidden" asp-for="PropiedadId" />
-            <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
+            <div asp-validation-summary="ModelOnly" class="text-danger" id="uploadFormSummary" style="margin-bottom:12px;"></div>
 
             <div class="ir-upload-panel">
                 <p class="ir-upload-lead">@L["Keep your home records up to date."]</p>
@@ -61,20 +61,24 @@
                 <div class="ir-field">
                     <label asp-for="Title">@L["Document title"]</label>
                     <input asp-for="Title" class="hvac-input" placeholder="@L["Annual Home Inspection Report"]"
-                           data-val-required="@L["Enter a document title."]" />
+                           data-val-required="@L["Enter a document title."]"
+                           data-ir-required="@L["Enter a document title."]" />
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
 
                 <div class="ir-field">
                     <label asp-for="InspectionDate">@L["Inspection date"]</label>
                     <input asp-for="InspectionDate" type="date" class="hvac-input" placeholder="@L["Select date"]"
-                           data-val-required="@L["Select an inspection date."]" />
+                           data-val-required="@L["Select an inspection date."]"
+                           data-ir-required="@L["Select an inspection date."]" />
                     <span asp-validation-for="InspectionDate" class="text-danger"></span>
                 </div>
 
                 <div class="ir-field">
                     <label asp-for="Category">@L["Document category"]</label>
-                    <select asp-for="Category" class="hvac-select" data-val-required="@L["Select a category."]">
+                    <select asp-for="Category" class="hvac-select"
+                            data-val-required="@L["Select a category."]"
+                            data-ir-required="@L["Select a category."]">
                         <option value="Inspections">@L["Inspection Report"]</option>
                     </select>
                 </div>
@@ -140,6 +144,96 @@
         notesCount.textContent = (notesField.value || '').length;
     });
     notesCount.textContent = (notesField.value || '').length;
+
+    (function () {
+        var form = document.getElementById('uploadForm');
+        if (!form) return;
+
+        var titleMsg = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Enter a document title."].ToString()));
+        var dateMsg = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select an inspection date."].ToString()));
+        var categoryMsg = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select a category."].ToString()));
+        var fileMissingMsg = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select a PDF, JPG, or PNG file to continue."].ToString()));
+        var hasPendingFile = @((!string.IsNullOrEmpty(Model.SelectedFileName)).ToString().ToLowerInvariant());
+
+        function requiredMessage(field, fallback) {
+            return (field && (field.getAttribute('data-ir-required') || field.getAttribute('data-val-required'))) || fallback || '';
+        }
+
+        function errorSpan(field) {
+            if (!field || !field.name) return null;
+            return form.querySelector('[data-valmsg-for="' + field.name + '"]');
+        }
+
+        function showError(field, message) {
+            if (!field || !message) return;
+            field.classList.add('input-validation-error');
+            var span = errorSpan(field);
+            if (!span) return;
+            span.textContent = message;
+            span.classList.remove('field-validation-valid');
+            span.classList.add('field-validation-error');
+        }
+
+        function clearError(field) {
+            if (!field) return;
+            field.classList.remove('input-validation-error');
+            var span = errorSpan(field);
+            if (!span) return;
+            span.textContent = '';
+            span.classList.remove('field-validation-error');
+            span.classList.add('field-validation-valid');
+        }
+
+        form.addEventListener('submit', function (e) {
+            var title = document.getElementById('Title');
+            var date = document.getElementById('InspectionDate');
+            var category = document.getElementById('Category');
+            var firstInvalid = null;
+
+            [title, date, category].forEach(clearError);
+
+            if (title && !String(title.value || '').trim()) {
+                showError(title, requiredMessage(title, titleMsg));
+                firstInvalid = firstInvalid || title;
+            }
+            if (date && !String(date.value || '').trim()) {
+                showError(date, requiredMessage(date, dateMsg));
+                firstInvalid = firstInvalid || date;
+            }
+            if (category && !String(category.value || '').trim()) {
+                showError(category, requiredMessage(category, categoryMsg));
+                firstInvalid = firstInvalid || category;
+            }
+
+            var hasFile = hasPendingFile
+                || (reportFile && reportFile.files && reportFile.files.length > 0)
+                || (dropzone && dropzone.classList.contains('has-file'));
+            if (!hasFile) {
+                var summary = document.getElementById('uploadFormSummary');
+                if (summary) {
+                    summary.textContent = fileMissingMsg;
+                    summary.style.display = 'block';
+                }
+                firstInvalid = firstInvalid || dropzone || reportFile;
+            }
+
+            if (!firstInvalid) return;
+            e.preventDefault();
+            if (typeof firstInvalid.scrollIntoView === 'function') {
+                firstInvalid.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            }
+            if (typeof firstInvalid.focus === 'function' && firstInvalid !== dropzone) {
+                firstInvalid.focus({ preventScroll: true });
+            }
+        });
+
+        ['Title', 'InspectionDate', 'Category'].forEach(function (id) {
+            var field = document.getElementById(id);
+            if (!field) return;
+            field.addEventListener('input', function () { clearError(field); });
+            field.addEventListener('change', function () { clearError(field); });
+        });
+    })();
 </script>
 </body>
 </html>
