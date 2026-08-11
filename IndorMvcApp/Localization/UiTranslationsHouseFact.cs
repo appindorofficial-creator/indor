@@ -383,5 +383,6 @@ public static class UiTranslationsHouseFact
             ["We'll use it to keep you on track."] = "Lo usaremos para ayudarte a mantenerte al día.",
             ["Uploaded document"] = "Documento subido",
             ["Uploaded {0}"] = "Subido el {0}",
+            ["Done"] = "Listo",
         };
 }

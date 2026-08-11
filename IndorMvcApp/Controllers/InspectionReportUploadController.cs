@@ -156,7 +156,7 @@ public class InspectionReportUploadController : Controller
             Title = pending.Title,
             InspectionDate = pending.InspectionDate,
             Category = pending.Category,
-            CategoryLabel = _localizer[CategoryLabel(pending.Category)],
+            CategoryLabel = LocalizedCategoryLabel(pending.Category),
             Notes = pending.Notes,
             OriginalFileName = pending.OriginalFileName,
             FileSizeLabel = FormatFileSize(pending.SizeBytes),
@@ -239,7 +239,7 @@ public class InspectionReportUploadController : Controller
             model.OriginalFileName = pending.OriginalFileName;
             model.FileSizeLabel = FormatFileSize(pending.SizeBytes);
             model.FileTypeLabel = FileTypeLabel(pending.OriginalFileName, pending.ContentType);
-            model.CategoryLabel = _localizer[CategoryLabel(pending.Category)];
+            model.CategoryLabel = LocalizedCategoryLabel(pending.Category);
             return View(model);
         }
     }
@@ -275,11 +275,19 @@ public class InspectionReportUploadController : Controller
         }
 
         var displayDate = document.InspectionDate ?? document.FechaCreacion.ToLocalTime().Date;
+        var dateCulture = UiCulture.ToCultureInfo(_localizer.IsSpanish ? UiCulture.Spanish : UiCulture.English);
+        var dateText = displayDate.ToString("MMM d, yyyy", dateCulture);
+        var uploadedLabel = _localizer.T("Uploaded {0}", dateText);
+        if (_localizer.IsSpanish && uploadedLabel.StartsWith("Uploaded ", StringComparison.Ordinal))
+        {
+            uploadedLabel = $"Subido el {dateText}";
+        }
+
         return View(new InspectionReportUploadedViewModel
         {
             PropiedadId = propiedad.Id,
             Title = document.Title,
-            UploadedDateLabel = displayDate.ToString("MMM d, yyyy", UiCulture.ToCultureInfo(_localizer.CurrentCulture)),
+            UploadedDateLabel = uploadedLabel,
             FileTypeLabel = FileTypeLabel(document.FileName, document.ContentType)
         });
     }
@@ -419,6 +427,18 @@ public class InspectionReportUploadController : Controller
 
     private static string CategoryLabel(string category) =>
         category.Contains("Inspection", StringComparison.OrdinalIgnoreCase) ? "Inspection Report" : category;
+
+    private string LocalizedCategoryLabel(string category)
+    {
+        var english = CategoryLabel(category);
+        var translated = _localizer[english];
+        if (_localizer.IsSpanish && string.Equals(translated, english, StringComparison.Ordinal))
+        {
+            return english == "Inspection Report" ? "Informe de inspección" : translated;
+        }
+
+        return translated;
+    }
 
     private static string FileTypeLabel(string? fileName, string? contentType)
     {

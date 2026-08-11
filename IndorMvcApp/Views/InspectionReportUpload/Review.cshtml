@@ -3,9 +3,20 @@
 @using IndorMvcApp.Localization
 @inject IIndorLocalizer L
 @{
-    ViewData["Title"] = L["Review Upload"];
+    string Tx(string key, string spanish)
+    {
+        if (!L.IsSpanish)
+        {
+            return key;
+        }
+
+        var translated = L[key];
+        return string.IsNullOrEmpty(translated) || translated == key ? spanish : translated;
+    }
+
+    ViewData["Title"] = Tx("Review Upload", "Revisar carga");
     Layout = null;
-    var culture = UiCulture.ToCultureInfo(L.CurrentCulture);
+    var culture = UiCulture.ToCultureInfo(L.IsSpanish ? UiCulture.Spanish : L.CurrentCulture);
     var inspectionLabel = Model.InspectionDate?.ToString("MMM d, yyyy", culture) ?? "—";
 }
 <!DOCTYPE html>
@@ -24,7 +35,7 @@
 <div class="hvac-page">
     <div class="hvac-top">
         <a asp-action="Upload" asp-route-propiedadId="@Model.PropiedadId" class="hvac-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
-        <div class="hvac-title">@L["Review Upload"]</div>
+        <div class="hvac-title">@Tx("Review Upload", "Revisar carga")</div>
         <div style="width:40px;"></div>
     </div>
 
@@ -49,17 +60,17 @@
 
             <div class="hvac-form-card">
                 <div class="ir-field">
-                    <label>@L["Document title"]</label>
+                    <label>@Tx("Document title", "Título del documento")</label>
                     <div class="ir-readonly-field"><i class="fas fa-file-lines"></i><span>@Model.Title</span></div>
                 </div>
 
                 <div class="ir-field">
-                    <label>@L["Inspection date"]</label>
+                    <label>@Tx("Inspection date", "Fecha de inspección")</label>
                     <div class="ir-readonly-field"><i class="far fa-calendar"></i><span>@inspectionLabel</span></div>
                 </div>
 
                 <div class="ir-field">
-                    <label>@L["Document category"]</label>
+                    <label>@Tx("Document category", "Categoría del documento")</label>
                     <div class="ir-readonly-field"><i class="fas fa-folder-open"></i><span>@Model.CategoryLabel</span></div>
                 </div>
 
@@ -73,10 +84,10 @@
             </div>
 
             <a asp-action="Upload" asp-route-propiedadId="@Model.PropiedadId" class="ir-replace-link">
-                <i class="fas fa-arrow-up-from-bracket"></i> @L["Replace File"]
+                <i class="fas fa-arrow-up-from-bracket"></i> @Tx("Replace File", "Reemplazar archivo")
             </a>
 
-            <button type="submit" class="hvac-save-btn">@L["Upload Report"]</button>
+            <button type="submit" class="hvac-save-btn">@Tx("Upload Report", "Subir informe")</button>
         </form>
     </div>
 
