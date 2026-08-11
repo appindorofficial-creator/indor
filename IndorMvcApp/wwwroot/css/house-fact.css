@@ -903,15 +903,20 @@
 .hf-tone-orange .hf-category-icon { background: #FFF7ED; color: #EA580C; }
 .hf-tone-red .hf-category-icon { background: #FEF2F2; color: #DC2626; }
 
+.hf-category-body {
+    min-width: 0;
+}
+
 .hf-category-title {
-    font-size: 0.84rem;
+    font-size: 0.78rem;
     font-weight: 800;
     color: #0A2540;
     line-height: 1.25;
-    /* Keep Spanish titles like "Aeropuertos cercanos" from splitting mid-word */
-    overflow-wrap: break-word;
-    word-break: normal;
-    hyphens: manual;
+    /* Wrap only at spaces so "Aeropuertos" / "Hospitales" stay intact */
+    overflow-wrap: normal;
+    word-break: keep-all;
+    hyphens: none;
+    -webkit-hyphens: none;
 }
 
 .hf-category-subtitle {
@@ -919,9 +924,10 @@
     color: #64748B;
     margin-top: 3px;
     line-height: 1.35;
-    overflow-wrap: break-word;
-    word-break: normal;
-    hyphens: manual;
+    overflow-wrap: normal;
+    word-break: keep-all;
+    hyphens: none;
+    -webkit-hyphens: none;
 }
 
 .hf-category-badge {
@@ -1142,6 +1148,24 @@ a.hf-explore-more {
 .hf-mgmt-card > .fa-chevron-right {
     color: #CBD5E1;
     font-size: 0.75rem;
+}
+
+@media (max-width: 400px) {
+    .hf-category-card {
+        grid-template-columns: 36px minmax(0, 1fr) 12px;
+        gap: 8px;
+        padding: 12px 10px;
+    }
+
+    .hf-category-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
+    }
+
+    .hf-category-title {
+        font-size: 0.74rem;
+    }
 }
 
 @media (max-width: 380px) {
