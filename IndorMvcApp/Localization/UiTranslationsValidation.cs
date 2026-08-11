@@ -121,5 +121,9 @@ public static class UiTranslationsValidation
             ["Could not process the file. Please try again."] = "No se pudo procesar el archivo. Inténtalo de nuevo.",
             ["Could not upload the report. Please try again."] = "No se pudo subir el informe. Inténtalo de nuevo.",
             ["The selected file expired. Please choose it again."] = "El archivo seleccionado expiró. Elige uno de nuevo.",
+            ["Please indicate whether you are under contract."] = "Indica si estás bajo contrato.",
+            ["Please indicate whether you already have a home inspection report."] = "Indica si ya tienes un informe de inspección del hogar.",
+            ["Please select who you are."] = "Selecciona quién eres.",
+            ["Please select your main goal."] = "Selecciona tu objetivo principal.",
         };
 }

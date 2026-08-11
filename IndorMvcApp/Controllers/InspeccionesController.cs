@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -93,6 +94,7 @@ public partial class InspeccionesController : Controller
 
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             model.NombreInspeccion = inspeccion.Nombre;
             model.SubtituloInspeccion = inspeccion.Subtitulo;
             return View(model);

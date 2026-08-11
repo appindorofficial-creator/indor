@@ -28,15 +28,16 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
             <input type="hidden" asp-for="RolComprador" id="RolComprador" />
             <input type="hidden" asp-for="ObjetivoPrincipal" id="ObjetivoPrincipal" />
 
-            <div class="field-card">
+            <div class="field-card" data-svc-required="DireccionPropiedad">
                 <div class="field-head">
                     <div class="field-icon"><i class="fas fa-house"></i></div>
                     <div class="field-label">@L["Property address"]</div>
                 </div>
                 <input asp-for="DireccionPropiedad" class="form-input" placeholder="@L["123 Main St, Charlotte, NC 28202"]" required />
+                <span asp-validation-for="DireccionPropiedad" class="field-inline-error"></span>
             </div>
 
-            <div class="field-card">
+            <div class="field-card" data-svc-required="BajoContrato">
                 <div class="field-head">
                     <div class="field-icon"><i class="fas fa-file-signature"></i></div>
                     <div class="field-label">@L["Are you under contract?"]</div>
@@ -45,9 +46,10 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
                     <button type="button" class="segment-btn" data-value="true"><i class="fas fa-check"></i> @L["Yes"]</button>
                     <button type="button" class="segment-btn" data-value="false">@L["No"]</button>
                 </div>
+                <span asp-validation-for="BajoContrato" class="field-inline-error"></span>
             </div>
 
-            <div class="field-card">
+            <div class="field-card" data-svc-optional>
                 <div class="field-head">
                     <div class="field-icon"><i class="fas fa-calendar-day"></i></div>
                     <div class="field-label">@L["Estimated closing date"]</div>
@@ -55,7 +57,7 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
                 <input type="date" class="form-input" id="FechaCierreEstimada" name="FechaCierreEstimada" value="@closingDateValue" />
             </div>
 
-            <div class="field-card">
+            <div class="field-card" data-svc-required="TieneReporteExistente">
                 <div class="field-head">
                     <div class="field-icon"><i class="fas fa-clipboard-list"></i></div>
                     <div class="field-label">@L["Do you already have a home inspection report?"]</div>
@@ -64,9 +66,10 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
                     <button type="button" class="segment-btn" data-value="true">@L["Yes"]</button>
                     <button type="button" class="segment-btn" data-value="false">@L["No"]</button>
                 </div>
+                <span asp-validation-for="TieneReporteExistente" class="field-inline-error"></span>
             </div>
 
-            <div class="field-card">
+            <div class="field-card" data-svc-required="RolComprador">
                 <div class="field-head">
                     <div class="field-icon"><i class="fas fa-user"></i></div>
                     <div class="field-label">@L["Who are you?"]</div>
@@ -76,9 +79,10 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
                     <button type="button" class="chip-btn" data-value="Realtor">@L["Realtor"]</button>
                     <button type="button" class="chip-btn" data-value="Investor">@L["Investor"]</button>
                 </div>
+                <span asp-validation-for="RolComprador" class="field-inline-error"></span>
             </div>
 
-            <div class="field-card">
+            <div class="field-card" data-svc-required="ObjetivoPrincipal">
                 <div class="field-head">
                     <div class="field-icon"><i class="fas fa-bullseye"></i></div>
                     <div class="field-label">@L["Main goal"]</div>
@@ -101,12 +105,13 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
                         <i class="fas fa-comments"></i><span>@L["Get a second opinion"]</span>
                     </button>
                 </div>
+                <span asp-validation-for="ObjetivoPrincipal" class="field-inline-error"></span>
             </div>
 
             <button type="submit" class="btn-primary" name="action" value="next">
                 <i class="fas fa-arrow-right"></i> @L["Continue"]
             </button>
-            <button type="submit" class="btn-secondary" name="action" value="skip">@L["Skip for now"]</button>
+            <button type="submit" class="btn-secondary" name="action" value="skip" formnovalidate>@L["Skip for now"]</button>
         </form>
 
 @section Scripts {

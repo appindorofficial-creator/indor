@@ -22,9 +22,12 @@
 .btn-primary, .btn-secondary { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; }
 .btn-secondary { margin-top: 10px; border: none; background: transparent; color: #0066CC; }
-.field-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 14px; border: 1px solid rgba(229, 231, 235, 0.9); }
+.iw-wizard-page,
+.iw-wizard-page * { box-sizing: border-box; }
+.field-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 14px; border: 1px solid rgba(229, 231, 235, 0.9); min-width: 0; max-width: 100%; overflow: hidden; }
 .field-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 10px; display: block; }
-.form-input { width: 100%; padding: 14px 16px; border: 1.5px solid #E5E7EB; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.95rem; background: #F9FAFB; }
+.form-input { width: 100%; max-width: 100%; min-width: 0; padding: 14px 16px; border: 1.5px solid #E5E7EB; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.95rem; background: #F9FAFB; box-sizing: border-box; }
+.form-input[type="date"] { min-width: 0; max-width: 100%; }
 .input-wrap { position: relative; }
 .input-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #0066CC; }
 .form-input:focus { outline: none; border-color: #0066CC; background: #FFF; box-shadow: 0 0 0 4px rgba(0,102,204,0.1); }
@@ -67,7 +70,7 @@
 .file-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #F8FAFC; border-radius: 10px; padding: 10px 12px; font-size: 0.85rem; }
 .hidden-input { display: none; }
 .summary-row.issue i { color: #DC2626; }
-.form-textarea, .form-input { width: 100%; padding: 14px; border: 1.5px solid #E5E7EB; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.92rem; background: #F9FAFB; }
+.form-textarea, .form-input { width: 100%; max-width: 100%; min-width: 0; padding: 14px; border: 1.5px solid #E5E7EB; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.92rem; background: #F9FAFB; box-sizing: border-box; }
 .input-wrap .form-input { padding-left: 42px; }
 .toggle-row { display: flex; align-items: center; justify-content: space-between; background: #FFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; font-weight: 600; font-size: 0.9rem; }
 .toggle { width: 48px; height: 28px; border-radius: 999px; background: #CBD5E1; position: relative; cursor: pointer; border: none; }
@@ -127,7 +130,7 @@
 .arrival-badge i { color: #16A34A; font-size: 0.9rem; }
 .arrival-badge .label { font-size: 0.68rem; color: #64748B; margin-top: 4px; }
 .arrival-badge .value { font-size: 0.95rem; font-weight: 800; color: #16A34A; }
-.form-input, .form-textarea { width: 100%; padding: 14px; border: 1.5px solid #E5E7EB; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.92rem; background: #F9FAFB; }
+.form-input, .form-textarea { width: 100%; max-width: 100%; min-width: 0; padding: 14px; border: 1.5px solid #E5E7EB; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.92rem; background: #F9FAFB; box-sizing: border-box; }
 .issue-btn.active i.issue-icon { color: #0066CC; }
 .urgency-btn i { display: block; font-size: 1rem; margin-bottom: 6px; }
 .urgency-btn.active[data-value="Today"] { border-color: #16A34A; color: #16A34A; background: rgba(22,163,74,0.08); }
@@ -251,7 +254,7 @@
 .area-group { display: flex; flex-wrap: wrap; gap: 10px; }
 .area-btn { flex: 1 1 calc(50% - 10px); min-width: 130px; font-size: 0.82rem; }
 .btn-primary, .btn-outline, .btn-secondary { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-.service-card, .field-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(229,231,235,0.9); }
+.service-card, .field-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(229,231,235,0.9); min-width: 0; max-width: 100%; }
 .section-title { font-size: 0.92rem; font-weight: 700; margin-bottom: 12px; }
 .detail-row { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #E5E7EB; }
 .detail-row:last-child { border-bottom: none; }
@@ -269,4 +272,19 @@
 .iw-wizard-shell .btn-primary { background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC)); border: none; }
 .iw-wizard-shell .page-heading { color: var(--indor-navy, #0A2540); }
 .iw-wizard-shell .chip-btn.active, .iw-wizard-shell .option-btn.active, .iw-wizard-shell .segment-btn.active { border-color: #0066CC; }
+
+/* Keep text/date inputs inside white field cards (mobile WebKit date min-width). */
+.iw-wizard-page .field-card {
+    min-width: 0;
+    max-width: 100%;
+    overflow: hidden;
+}
+.iw-wizard-page .field-card .form-input,
+.iw-wizard-page .field-card input[type="text"],
+.iw-wizard-page .field-card input[type="date"] {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
 

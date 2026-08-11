@@ -14,3 +14,12 @@
     font-weight: 600;
     margin-top: 8px;
 }
+
+.iw-wizard-page .field-validation-valid:empty {
+    display: none !important;
+}
+
+.iw-wizard-page .svc-form-error {
+    margin: 4px 0 12px;
+    text-align: center;
+}

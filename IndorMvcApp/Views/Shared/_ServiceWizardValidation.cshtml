@@ -5,7 +5,8 @@
 <script>
     window.IndorSvcWizardMsgs = {
         selectOne: @Html.Raw(JsonSerializer.Serialize(L["Please choose one of these options."].ToString())),
-        enterField: @Html.Raw(JsonSerializer.Serialize(L["Please fill out this field."].ToString()))
+        enterField: @Html.Raw(JsonSerializer.Serialize(L["Please fill out this field."].ToString())),
+        completeFields: @Html.Raw(JsonSerializer.Serialize(L["Please complete the highlighted fields to continue."].ToString()))
     };
 </script>
 <script src="~/js/service-wizard-validation.js" asp-append-version="true"></script>

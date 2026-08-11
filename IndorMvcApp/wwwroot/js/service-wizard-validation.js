@@ -118,6 +118,42 @@
         return isSpanishUi() ? 'Completa este campo.' : 'Please fill out this field.';
     }
 
+    function completeFieldsMessage() {
+        if (window.IndorSvcWizardMsgs && window.IndorSvcWizardMsgs.completeFields) {
+            return window.IndorSvcWizardMsgs.completeFields;
+        }
+        return isSpanishUi()
+            ? 'Completa los campos marcados para continuar.'
+            : 'Please complete the highlighted fields to continue.';
+    }
+
+    function clearFormError(form) {
+        if (!form) return;
+        form.querySelectorAll('[data-svc-form-error="true"]').forEach(function (el) {
+            el.remove();
+        });
+    }
+
+    function showFormError(form, message) {
+        if (!form) return;
+        var existing = form.querySelector('[data-svc-form-error="true"]');
+        if (!existing) {
+            existing = document.createElement('div');
+            existing.className = 'field-inline-error svc-form-error';
+            existing.setAttribute('data-svc-form-error', 'true');
+            existing.setAttribute('role', 'alert');
+            var btn = form.querySelector('.btn-primary, button[type="submit"]');
+            if (btn && btn.parentElement === form) {
+                form.insertBefore(existing, btn);
+            } else if (btn) {
+                btn.parentElement.insertBefore(existing, btn);
+            } else {
+                form.appendChild(existing);
+            }
+        }
+        existing.textContent = message;
+    }
+
     function clearCardError(card) {
         if (!card) return;
         card.classList.remove('is-invalid');
@@ -231,6 +267,7 @@
 
     function validateForm(form) {
         var firstInvalid = null;
+        clearFormError(form);
 
         form.querySelectorAll('.field-card').forEach(function (card) {
             clearCardError(card);
@@ -279,13 +316,18 @@
             if (e.submitter && e.submitter.getAttribute('formnovalidate') != null) return;
             if (e.submitter && String(e.submitter.value || '').toLowerCase() === 'back') return;
             if (e.submitter && String(e.submitter.getAttribute('name') || '') === 'action'
-                && String(e.submitter.value || '').toLowerCase() === 'back') return;
+                && ['back', 'skip'].includes(String(e.submitter.value || '').toLowerCase())) return;
 
             var firstInvalid = validateForm(form);
             if (firstInvalid) {
                 e.preventDefault();
                 e.stopPropagation();
+                showFormError(form, completeFieldsMessage());
                 firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                var focusable = firstInvalid.querySelector('input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])');
+                if (focusable && typeof focusable.focus === 'function') {
+                    try { focusable.focus({ preventScroll: true }); } catch (err) { focusable.focus(); }
+                }
             }
         }, true);
 
