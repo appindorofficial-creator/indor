@@ -28,6 +28,13 @@ html, body {
   scroll-behavior: smooth;
 }
 
+/* iOS WKWebView ignores user-scalable=no and waits ~300ms for a second tap
+   (double-tap zoom). manipulation makes the first tap activate immediately. */
+a, button, input, select, textarea, label, summary,
+[role="button"], .nav-item {
+  touch-action: manipulation;
+}
+
 body {
   background: var(--indor-bg-sky, linear-gradient(180deg, #E9F2FE 0%, #F7FBFF 48%, #FFFFFF 100%));
   background-attachment: fixed;

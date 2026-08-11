@@ -333,12 +333,11 @@
         // this page mounted — never force a stuck spinner for those.
         if (!isSameOrigin(href)) { markSuppressUnload(); return; }
 
-        // Defer the cover until after the browser commits the link's default
-        // navigation. Showing it synchronously in capture can cancel navigation
-        // in mobile WebViews and leave Cargando stuck on the same form.
-        window.setTimeout(function () {
-            showNavigationLoading();
-        }, 0);
+        // Do not paint the full-screen cover during the click itself.
+        // In WKWebView / Android WebView a cover inserted mid-gesture (even with
+        // pointer-events:none and setTimeout 0) can cancel the <a> default action,
+        // so the first tap only flashes "Cargando..." and a second tap is needed.
+        // beforeunload / pagehide show the overlay once navigation actually starts.
     }, true);
 
     document.addEventListener("submit", function (e) {
@@ -364,7 +363,15 @@
         if (suppressUnloadOverlay) return;
         var overlay = document.getElementById(OVERLAY_ID);
         if (!overlay || !overlay.classList.contains("is-visible")) {
-            showNavigationLoading();
+            showNavigationLoading({ failsafeSameUrl: false });
+        }
+    });
+
+    window.addEventListener("pagehide", function () {
+        if (suppressUnloadOverlay) return;
+        var overlay = document.getElementById(OVERLAY_ID);
+        if (!overlay || !overlay.classList.contains("is-visible")) {
+            showNavigationLoading({ failsafeSameUrl: false });
         }
     });
 
