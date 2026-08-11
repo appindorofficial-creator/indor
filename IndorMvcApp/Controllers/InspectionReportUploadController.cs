@@ -156,7 +156,7 @@ public class InspectionReportUploadController : Controller
             Title = pending.Title,
             InspectionDate = pending.InspectionDate,
             Category = pending.Category,
-            CategoryLabel = CategoryLabel(pending.Category),
+            CategoryLabel = _localizer[CategoryLabel(pending.Category)],
             Notes = pending.Notes,
             OriginalFileName = pending.OriginalFileName,
             FileSizeLabel = FormatFileSize(pending.SizeBytes),
@@ -239,7 +239,7 @@ public class InspectionReportUploadController : Controller
             model.OriginalFileName = pending.OriginalFileName;
             model.FileSizeLabel = FormatFileSize(pending.SizeBytes);
             model.FileTypeLabel = FileTypeLabel(pending.OriginalFileName, pending.ContentType);
-            model.CategoryLabel = CategoryLabel(pending.Category);
+            model.CategoryLabel = _localizer[CategoryLabel(pending.Category)];
             return View(model);
         }
     }

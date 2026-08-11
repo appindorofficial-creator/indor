@@ -360,5 +360,28 @@ public static class UiTranslationsHouseFact
                 "No se confirmaron escuelas asignadas en los datos guardados de la propiedad.",
             ["School assignments are based on your home address and public data saved from OpenAI research. Boundaries may change. Please verify with your district."] =
                 "Las asignaciones escolares se basan en la dirección de tu hogar y datos públicos guardados de la investigación. Los límites pueden cambiar. Verifica con tu distrito.",
+
+            // Homeowner inspection upload review / success (must win last)
+            ["Review Upload"] = "Revisar carga",
+            ["Review upload"] = "Revisar carga",
+            ["Document title"] = "Título del documento",
+            ["Inspection date"] = "Fecha de inspección",
+            ["Document category"] = "Categoría del documento",
+            ["Inspection Report"] = "Informe de inspección",
+            ["Replace File"] = "Reemplazar archivo",
+            ["Replace file"] = "Reemplazar archivo",
+            ["Upload Report"] = "Subir informe",
+            ["Upload report"] = "Subir informe",
+            ["Report Uploaded"] = "Informe subido",
+            ["Your inspection report has been uploaded."] = "Tu informe de inspección se ha subido.",
+            ["Your home records are now up to date."] = "Los registros de tu hogar ya están al día.",
+            ["Saved to Documents"] = "Guardado en Documentos",
+            ["Your report is securely stored."] = "Tu informe está almacenado de forma segura.",
+            ["Available from Home"] = "Disponible desde Inicio",
+            ["Access it anytime from your home."] = "Accede a él cuando quieras desde tu hogar.",
+            ["Ready for future reminders"] = "Listo para recordatorios futuros",
+            ["We'll use it to keep you on track."] = "Lo usaremos para ayudarte a mantenerte al día.",
+            ["Uploaded document"] = "Documento subido",
+            ["Uploaded {0}"] = "Subido el {0}",
         };
 }
