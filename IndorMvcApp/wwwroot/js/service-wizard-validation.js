@@ -142,10 +142,11 @@
             existing.className = 'field-inline-error svc-form-error';
             existing.setAttribute('data-svc-form-error', 'true');
             existing.setAttribute('role', 'alert');
+            var footer = form.querySelector('.sticky-footer');
             var btn = form.querySelector('.btn-primary, button[type="submit"]');
-            if (btn && btn.parentElement === form) {
-                form.insertBefore(existing, btn);
-            } else if (btn) {
+            if (footer) {
+                footer.insertBefore(existing, footer.firstChild);
+            } else if (btn && btn.parentElement) {
                 btn.parentElement.insertBefore(existing, btn);
             } else {
                 form.appendChild(existing);
@@ -322,9 +323,10 @@
             if (firstInvalid) {
                 e.preventDefault();
                 e.stopPropagation();
-                showFormError(form, completeFieldsMessage());
-                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                var focusable = firstInvalid.querySelector('input:not([type="hidden"]):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])');
+                firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                var focusable = firstInvalid.querySelector(
+                    'input:not([type="hidden"]):not([type="button"]):not([type="submit"]):not([disabled]), select:not([disabled]), textarea:not([disabled])'
+                );
                 if (focusable && typeof focusable.focus === 'function') {
                     try { focusable.focus({ preventScroll: true }); } catch (err) { focusable.focus(); }
                 }
@@ -341,6 +343,10 @@
             setTimeout(function () {
                 if (isChoiceComplete(card) || isOptionalCard(card)) {
                     clearCardError(card);
+                }
+                var hostForm = card.closest('form');
+                if (hostForm && !hostForm.querySelector('.field-card.is-invalid')) {
+                    clearFormError(hostForm);
                 }
             }, 0);
         });

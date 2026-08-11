@@ -24,7 +24,7 @@
 .btn-secondary { margin-top: 10px; border: none; background: transparent; color: #0066CC; }
 .iw-wizard-page,
 .iw-wizard-page * { box-sizing: border-box; }
-.field-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 14px; border: 1px solid rgba(229, 231, 235, 0.9); min-width: 0; max-width: 100%; overflow: hidden; }
+.field-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 14px; border: 1px solid rgba(229, 231, 235, 0.9); min-width: 0; max-width: 100%; overflow-x: clip; overflow-y: visible; }
 .field-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 10px; display: block; }
 .form-input { width: 100%; max-width: 100%; min-width: 0; padding: 14px 16px; border: 1.5px solid #E5E7EB; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.95rem; background: #F9FAFB; box-sizing: border-box; }
 .form-input[type="date"] { min-width: 0; max-width: 100%; }
@@ -277,7 +277,8 @@
 .iw-wizard-page .field-card {
     min-width: 0;
     max-width: 100%;
-    overflow: hidden;
+    overflow-x: clip;
+    overflow-y: visible;
 }
 .iw-wizard-page .field-card .form-input,
 .iw-wizard-page .field-card input[type="text"],

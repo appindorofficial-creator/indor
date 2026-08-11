@@ -3,22 +3,17 @@
 @{
     ViewData["Title"] = L["Purchase Details - INDOR"];
     ViewData["WizardTitle"] = L["Purchase Details"];
-var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+    var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
                            ?? DateTime.Today.AddDays(21).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
     ViewData["WizardBackUrl"] = HomeNavigationUrls.ServicesTab(Url, "inspections");
-
 }
-
 
         <h1 class="page-heading">@L["Tell us about this home purchase"]</h1>
         <p class="page-lead">@L["We&apos;ll use this information to prepare the right inspection flow."]</p>
 
-        @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
-        {
-            <div asp-validation-summary="All" class="validation-summary"></div>
-        }
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-        <form asp-controller="Inspecciones" asp-action="PurchaseDetails" method="post" id="purchaseForm">
+        <form asp-controller="Inspecciones" asp-action="PurchaseDetails" method="post" id="purchaseForm" novalidate>
             <input type="hidden" asp-for="InspeccionId" />
             <input type="hidden" asp-for="SolicitudId" />
             <input type="hidden" asp-for="NombreInspeccion" />
@@ -33,8 +28,7 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
                     <div class="field-icon"><i class="fas fa-house"></i></div>
                     <div class="field-label">@L["Property address"]</div>
                 </div>
-                <input asp-for="DireccionPropiedad" class="form-input" placeholder="@L["123 Main St, Charlotte, NC 28202"]" required />
-                <span asp-validation-for="DireccionPropiedad" class="field-inline-error"></span>
+                <input asp-for="DireccionPropiedad" id="DireccionPropiedad" class="form-input" placeholder="@L["123 Main St, Charlotte, NC 28202"]" />
             </div>
 
             <div class="field-card" data-svc-required="BajoContrato">
@@ -46,7 +40,6 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
                     <button type="button" class="segment-btn" data-value="true"><i class="fas fa-check"></i> @L["Yes"]</button>
                     <button type="button" class="segment-btn" data-value="false">@L["No"]</button>
                 </div>
-                <span asp-validation-for="BajoContrato" class="field-inline-error"></span>
             </div>
 
             <div class="field-card" data-svc-optional>
@@ -66,7 +59,6 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
                     <button type="button" class="segment-btn" data-value="true">@L["Yes"]</button>
                     <button type="button" class="segment-btn" data-value="false">@L["No"]</button>
                 </div>
-                <span asp-validation-for="TieneReporteExistente" class="field-inline-error"></span>
             </div>
 
             <div class="field-card" data-svc-required="RolComprador">
@@ -79,7 +71,6 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
                     <button type="button" class="chip-btn" data-value="Realtor">@L["Realtor"]</button>
                     <button type="button" class="chip-btn" data-value="Investor">@L["Investor"]</button>
                 </div>
-                <span asp-validation-for="RolComprador" class="field-inline-error"></span>
             </div>
 
             <div class="field-card" data-svc-required="ObjetivoPrincipal">
@@ -105,7 +96,6 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
                         <i class="fas fa-comments"></i><span>@L["Get a second opinion"]</span>
                     </button>
                 </div>
-                <span asp-validation-for="ObjetivoPrincipal" class="field-inline-error"></span>
             </div>
 
             <button type="submit" class="btn-primary" name="action" value="next">

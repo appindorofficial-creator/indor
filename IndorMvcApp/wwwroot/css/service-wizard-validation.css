@@ -22,4 +22,20 @@
 .iw-wizard-page .svc-form-error {
     margin: 4px 0 12px;
     text-align: center;
+    pointer-events: none;
+}
+
+/* Keep invalid choice cards above the fixed Continuar/Omitir bar so taps hit the options. */
+.iw-wizard-page .field-card {
+    scroll-margin-top: 12px;
+    scroll-margin-bottom: calc(var(--indor-page-footer-scroll, 160px) + var(--indor-action-h, 52px) + var(--indor-action-gap, 10px) + 56px);
+}
+
+.iw-wizard-page .field-card.is-invalid .segment-btn,
+.iw-wizard-page .field-card.is-invalid .chip-btn,
+.iw-wizard-page .field-card.is-invalid .goal-btn,
+.iw-wizard-page .field-card.is-invalid .form-input {
+    position: relative;
+    z-index: 2;
+    pointer-events: auto;
 }
