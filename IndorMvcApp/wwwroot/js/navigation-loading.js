@@ -359,11 +359,14 @@
     // programmatic redirects, etc. that the click/submit handlers can't detect.
     // Skipped links/forms call preventDefault so they never unload -> no false
     // spinner. The app defines no beforeunload confirm dialogs, so this is safe.
+    // Use same-URL failsafe: WKWebView often fires beforeunload/pagehide and then
+    // cancels navigation (validation, keyboard, cover). Without failsafe the dark
+    // "Cargando..." cover can sit forever until MAX_VISIBLE_MS.
     window.addEventListener("beforeunload", function () {
         if (suppressUnloadOverlay) return;
         var overlay = document.getElementById(OVERLAY_ID);
         if (!overlay || !overlay.classList.contains("is-visible")) {
-            showNavigationLoading({ failsafeSameUrl: false });
+            showNavigationLoading({ failsafeMs: NAV_FAILSAFE_MS });
         }
     });
 
@@ -371,7 +374,7 @@
         if (suppressUnloadOverlay) return;
         var overlay = document.getElementById(OVERLAY_ID);
         if (!overlay || !overlay.classList.contains("is-visible")) {
-            showNavigationLoading({ failsafeSameUrl: false });
+            showNavigationLoading({ failsafeMs: NAV_FAILSAFE_MS });
         }
     });
 

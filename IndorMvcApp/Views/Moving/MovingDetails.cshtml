@@ -34,6 +34,7 @@
             <button type="button" class="tile-btn" data-value="MoveOut"><i class="fas fa-house-circle-xmark"></i>@L["Move-Out"]</button>
             <button type="button" class="tile-btn" data-value="FullMove"><i class="fas fa-truck-moving"></i>@L["Full Move"]</button>
         </div>
+        <span asp-validation-for="TipoMovimiento"></span>
     </div>
 
     <div class="field-card" data-svc-required="TipoPropiedad">
@@ -44,6 +45,7 @@
             <button type="button" class="tile-btn" data-value="Condo"><i class="fas fa-city"></i>@L["Condo"]</button>
             <button type="button" class="tile-btn" data-value="Townhome"><i class="fas fa-house-chimney"></i>@L["Townhome"]</button>
         </div>
+        <span asp-validation-for="TipoPropiedad"></span>
     </div>
 
     <div class="field-card" data-svc-required="TamanoHogar">
@@ -53,24 +55,27 @@
             <button type="button" class="tile-btn" data-value="OneTwoBedrooms"><i class="fas fa-door-open"></i>@L["1-2 Bedrooms"]</button>
             <button type="button" class="tile-btn" data-value="ThreePlusBedrooms"><i class="fas fa-house-user"></i>@L["3+ Bedrooms"]</button>
         </div>
+        <span asp-validation-for="TamanoHogar"></span>
     </div>
 
-    <div class="field-card" data-svc-required="DireccionOrigen">
+    <div class="field-card" data-svc-required="DireccionOrigen" data-svc-address>
         <span class="field-label">@L["From"]</span>
         <div class="input-wrap">
             <i class="fas fa-location-dot"></i>
             <input asp-for="DireccionOrigen" id="DireccionOrigen" placeholder="@L["Pick up address"]" data-address-autocomplete autocomplete="off" />
         </div>
         <p class="field-hint">@addressHint</p>
+        <span asp-validation-for="DireccionOrigen"></span>
     </div>
 
-    <div class="field-card" data-svc-required="DireccionDestino">
+    <div class="field-card" data-svc-required="DireccionDestino" data-svc-address>
         <span class="field-label">@L["To"]</span>
         <div class="input-wrap">
             <i class="fas fa-location-dot"></i>
             <input asp-for="DireccionDestino" id="DireccionDestino" placeholder="@L["Drop off address"]" data-address-autocomplete autocomplete="off" />
         </div>
         <p class="field-hint">@addressHint</p>
+        <span asp-validation-for="DireccionDestino"></span>
     </div>
 
     <div class="field-card" data-svc-required="FechaMovimiento">
@@ -79,6 +84,7 @@
             <i class="fas fa-calendar"></i>
             <input type="date" id="FechaMovimientoInput" value="@fechaValue" min="@fechaMin" />
         </div>
+        <span asp-validation-for="FechaMovimiento"></span>
     </div>
 
     <div class="field-card" data-svc-required="VentanaHorario">
@@ -93,6 +99,7 @@
                 <option value="Evening">@L["4:00 PM – 6:00 PM"]</option>
             </select>
         </div>
+        <span asp-validation-for="VentanaHorario"></span>
     </div>
 
     <div class="field-card" data-svc-required="TipoServicio">
@@ -105,6 +112,7 @@
             <strong>@L["Truck + Movers"]</strong>
             <span>@L["We bring the truck."]</span>
         </div>
+        <span asp-validation-for="TipoServicio"></span>
     </div>
 
     <div class="cl-form-actions">
@@ -236,6 +244,9 @@
             if (firstInvalid) {
                 e.preventDefault();
                 e.stopPropagation();
+                if (typeof window.indorHideNavigationLoading === 'function') {
+                    window.indorHideNavigationLoading();
+                }
                 firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         }, true);

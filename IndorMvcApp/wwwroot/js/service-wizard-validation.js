@@ -6,10 +6,11 @@
  * - .field-card with single-choice controls: require one .active unless data-svc-optional
  * - Multi-select cards: optional unless data-svc-required-group
  * - Explicit: data-svc-required="inputId" / data-whf-required forces non-empty #inputId
- * - data-svc-or-unknown="hiddenId": complete if hidden is "true", else require filled visible inputs
+ * - data-svc-address: required street address must include city/state hint (comma or ZIP)
  * - Skips cards that are hidden / display:none
  * - Visible [required] inputs/selects/textareas: must be filled
  * - Errors render under each .field-card only (no top summary)
+ * - Server ModelState field errors (asp-validation-for) are promoted to .field-card.is-invalid
  */
 (function () {
     var SINGLE_CHOICE = [
@@ -163,12 +164,29 @@
         card.querySelectorAll('[data-svc-error="true"]').forEach(function (el) {
             el.remove();
         });
+        card.querySelectorAll('.field-validation-error').forEach(function (el) {
+            el.classList.remove('field-validation-error');
+            el.classList.add('field-validation-valid');
+            el.textContent = '';
+        });
     }
 
     function showCardError(card, message) {
         if (!card) return;
         card.classList.add('is-invalid');
-        if (card.querySelector('[data-svc-error="true"]')) return;
+        var existing = card.querySelector('[data-svc-error="true"]');
+        if (existing) {
+            existing.textContent = message;
+            return;
+        }
+        var serverMsg = card.querySelector('[data-valmsg-for]');
+        if (serverMsg) {
+            serverMsg.classList.remove('field-validation-valid');
+            serverMsg.classList.add('field-validation-error', 'field-inline-error');
+            serverMsg.setAttribute('role', 'alert');
+            serverMsg.textContent = message;
+            return;
+        }
         var msg = document.createElement('div');
         msg.className = 'field-inline-error';
         msg.setAttribute('data-svc-error', 'true');
@@ -202,7 +220,43 @@
         return false;
     }
 
+    function addressMessage() {
+        if (window.IndorSvcWizardMsgs && window.IndorSvcWizardMsgs.address) {
+            return window.IndorSvcWizardMsgs.address;
+        }
+        return isSpanishUi()
+            ? 'Ingresa una dirección completa con ciudad y estado (p. ej. 123 Main St, Charlotte, NC).'
+            : 'Enter a complete address with city and state (e.g. 123 Main St, Charlotte, NC).';
+    }
+
+    function isValidStreetAddress(value) {
+        var address = String(value || '').trim();
+        if (address.length < 5) return false;
+        if (!/\p{L}/u.test(address)) return false;
+        if (/^[\d\s.,#-]+$/.test(address)) return false;
+        var tokens = address.split(/\s+/).filter(Boolean);
+        var hasDigit = /\d/.test(address);
+        var wordParts = tokens.filter(function (part) { return /\p{L}/u.test(part); }).length;
+        if (!hasDigit || wordParts < 2) return false;
+        var hasComma = address.indexOf(',') >= 0;
+        var hasZip = tokens.slice(1).some(function (t) {
+            return /^\d{5}(-\d{4})?$/.test(String(t).replace(/[.,]+$/, ''));
+        });
+        return hasComma || hasZip;
+    }
+
+    function requiredInputForCard(card) {
+        var id = card.getAttribute('data-svc-required') || card.getAttribute('data-whf-required');
+        return id ? document.getElementById(id) : null;
+    }
+
     function incompleteCardMessage(card) {
+        if (card.hasAttribute('data-svc-address')) {
+            var input = requiredInputForCard(card);
+            if (input && String(input.value || '').trim() && !isValidStreetAddress(input.value)) {
+                return addressMessage();
+            }
+        }
         if (card.hasAttribute('data-svc-or-unknown') || isTextLikeRequiredTarget(card)) {
             return enterMessage();
         }
@@ -253,7 +307,13 @@
         if (card.hasAttribute('data-svc-required') || card.hasAttribute('data-whf-required')) {
             var id = card.getAttribute('data-svc-required') || card.getAttribute('data-whf-required');
             var input = document.getElementById(id);
-            return !!(input && String(input.value || '').trim());
+            if (!(input && String(input.value || '').trim())) {
+                return false;
+            }
+            if (card.hasAttribute('data-svc-address') && !isValidStreetAddress(input.value)) {
+                return false;
+            }
+            return true;
         }
 
         var hasMulti = !!card.querySelector(MULTI_CHOICE);
@@ -308,6 +368,20 @@
         return firstInvalid;
     }
 
+    function promoteServerFieldErrors(root) {
+        root.querySelectorAll('.field-card .field-validation-error').forEach(function (el) {
+            var text = String(el.textContent || '').trim();
+            if (!text) return;
+            var card = el.closest('.field-card');
+            if (!card) return;
+            card.classList.add('is-invalid');
+            el.setAttribute('role', 'alert');
+            if (!el.classList.contains('field-inline-error')) {
+                el.classList.add('field-inline-error');
+            }
+        });
+    }
+
     function hideTopSummaries(root) {
         root.querySelectorAll('.validation-summary').forEach(function (summary) {
             summary.setAttribute('hidden', 'hidden');
@@ -330,6 +404,11 @@
             if (firstInvalid) {
                 e.preventDefault();
                 e.stopPropagation();
+                // Continuar can flash the full-screen "Cargando..." cover before submit
+                // is cancelled (esp. WKWebView). Always clear it when staying on-page.
+                if (typeof window.indorHideNavigationLoading === 'function') {
+                    window.indorHideNavigationLoading();
+                }
                 firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 var focusable = firstInvalid.querySelector(
                     'input:not([type="hidden"]):not([type="button"]):not([type="submit"]):not([disabled]), select:not([disabled]), textarea:not([disabled])'
@@ -381,8 +460,12 @@
     function boot() {
         var root = document.querySelector('.iw-wizard-page') || document;
         hideTopSummaries(root);
+        promoteServerFieldErrors(root);
         root.querySelectorAll('form').forEach(bindForm);
-        setTimeout(function () { hideTopSummaries(root); }, 0);
+        setTimeout(function () {
+            hideTopSummaries(root);
+            promoteServerFieldErrors(root);
+        }, 0);
     }
 
     if (document.readyState === 'loading') {
