@@ -3,6 +3,7 @@
     ViewData["Title"] = L["You're all set - INDOR"];
     ViewData["WizardTitle"] = Model.NombreServicio;
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
+    var homeCareGuideUrl = Url.Action("HomeCareGuide", "Home");
 }
 
 
@@ -33,7 +34,7 @@
         </div>
     }
 
-    <a asp-controller="Home" asp-action="Index" class="btn-primary">
+    <a href="@homeCareGuideUrl" class="btn-primary">
         @L["Back to Home Care Guide"] <i class="fas fa-chevron-right"></i>
     </a>
     <a asp-controller="PestControl" asp-action="PestControlPlan" asp-route-id="@Model.SolicitudId" class="btn-outline" style="margin-top:10px;">

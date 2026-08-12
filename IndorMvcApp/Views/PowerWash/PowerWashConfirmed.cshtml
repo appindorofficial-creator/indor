@@ -3,7 +3,7 @@
     ViewData["Title"] = L["Power Wash Request Confirmed - INDOR"];
     ViewData["WizardTitle"] = L.Catalog(Model.NombreServicio);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
-
+    var homeCareGuideUrl = Url.Action("HomeCareGuide", "Home");
 }
 
 
@@ -30,7 +30,7 @@
         </div>
     }
 
-    <a asp-controller="Home" asp-action="Index" class="btn-primary">
+    <a href="@homeCareGuideUrl" class="btn-primary">
         <i class="fas fa-house"></i> @L["Back to Home Care Guide"]
     </a>
 
