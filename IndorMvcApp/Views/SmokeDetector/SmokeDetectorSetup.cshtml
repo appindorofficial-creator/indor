@@ -11,9 +11,9 @@
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Tell us about your alarms"]</h1>
     <p class="page-lead" style="margin-bottom:16px;">@L["A few quick details to help us recommend the right care. Select an answer for each question below."]</p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="sd-setup-form" asp-action="SmokeDetectorSetup" method="post">
+    <form id="sd-setup-form" asp-action="SmokeDetectorSetup" method="post" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="CantidadAlarmas" id="CantidadAlarmas" />
@@ -23,7 +23,7 @@
         <input type="hidden" asp-for="UltimoCambioBateria" id="UltimoCambioBateria" />
         <input type="hidden" asp-for="AnioInstalacionDesconocido" id="AnioInstalacionDesconocido" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="CantidadAlarmas">
             <div class="field-head"><span class="question-num">1</span><span>@L["How many smoke alarms are in your home?"]</span></div>
             <div class="count-grid">
                 <button type="button" class="count-btn" data-count="One">1</button>
@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <div class="field-head"><span class="question-num">2</span><span>@L["Where are they located?"]</span></div>
             <div class="area-grid">
                 <button type="button" class="area-chip" data-area="Bedrooms"><i class="fas fa-bed"></i> @L["Bedrooms"]</button>
@@ -47,7 +47,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <div class="field-head"><span class="question-num">3</span><span>@L["What type of alarms do you have?"]</span></div>
             <div class="sign-grid">
                 <button type="button" class="sign-card" data-type="Battery"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-battery-full main"></i><span class="label">@L["Battery"]</span></button>
@@ -58,7 +58,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="UltimaPrueba">
             <div class="field-head"><span class="question-num">4</span><span>@L["When were they last tested?"]</span></div>
             <div class="segment-row">
                 <button type="button" class="segment-btn" data-test="WithinLastMonth"><i class="fas fa-calendar"></i> @L["Within last month"]</button>
@@ -68,7 +68,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="UltimoCambioBateria">
             <div class="field-head"><span class="question-num">5</span><span>@L["When was the battery last changed?"]</span></div>
             <div class="segment-row">
                 <button type="button" class="segment-btn" data-battery="WithinLast6Months">@L["Within last 6 months"]</button>
@@ -78,7 +78,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <div class="field-head"><span class="question-num">6</span><span>@L["What year were the alarms installed?"]</span></div>
             <div class="year-row">
                 <input asp-for="AnioInstalacion" type="number" min="1990" max="@DateTime.Today.Year" placeholder="@L["Select year or enter age"]" id="AnioInstalacion" />
@@ -87,7 +87,7 @@
             <span asp-validation-for="AnioInstalacion" class="text-danger"></span>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <div class="field-head"><span class="question-num">7</span><span>@L["Are you experiencing any issues with your alarms?"]</span></div>
             <div class="sign-grid">
                 <button type="button" class="sign-card" data-issue="Chirping"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-volume-high main"></i><span class="label">@L["Chirping"]</span></button>
@@ -108,6 +108,10 @@
 <script>
     (function () {
         function bindSingle(groupSelector, attr, input) {
+            if (!input) return;
+            if (!String(input.value || '').trim()) {
+                input.value = '';
+            }
             document.querySelectorAll(groupSelector).forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     document.querySelectorAll(groupSelector).forEach(function (b) { b.classList.remove('active'); });
@@ -119,6 +123,7 @@
         }
 
         function bindMulti(groupSelector, attr, input) {
+            if (!input) return;
             function getValues() {
                 return input.value ? input.value.split('|').filter(Boolean) : [];
             }
@@ -170,34 +175,6 @@
         });
 
         if (yearUnknownInput.value === 'true') syncYearUnknown(true);
-
-        var form = document.getElementById('sd-setup-form');
-        var requiredFields = [
-            { id: 'CantidadAlarmas', message: 'Please select how many smoke alarms are in your home.' },
-            { id: 'UltimaPrueba', message: 'Please indicate when the alarms were last tested.' },
-            { id: 'UltimoCambioBateria', message: 'Please indicate when the battery was last changed.' }
-        ];
-
-        form?.addEventListener('submit', function (e) {
-            if (e.submitter && e.submitter.value === 'back') {
-                return;
-            }
-
-            var firstMissing = null;
-            requiredFields.forEach(function (field) {
-                var input = document.getElementById(field.id);
-                if (!input) return;
-                var empty = !input.value || !String(input.value).trim();
-                if (empty && !firstMissing) {
-                    firstMissing = field;
-                }
-            });
-
-            if (firstMissing) {
-                e.preventDefault();
-                alert(firstMissing.message);
-            }
-        });
     })();
 
 </script>

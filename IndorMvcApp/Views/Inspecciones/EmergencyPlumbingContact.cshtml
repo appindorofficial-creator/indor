@@ -13,10 +13,10 @@
 
     @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
     {
-        <div asp-validation-summary="All" class="validation-summary"></div>
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
     }
 
-    <form asp-controller="Inspecciones" asp-action="EmergencyPlumbingContact" method="post" enctype="multipart/form-data">
+    <form asp-controller="Inspecciones" asp-action="EmergencyPlumbingContact" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="ServicioEmergenciaId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -73,12 +73,12 @@
 
         <div id="selectedFiles" class="file-list"></div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <label asp-for="NotaCorta" class="field-label">@L["Short note (optional)"]</label>
             <textarea asp-for="NotaCorta" class="form-textarea" maxlength="500" placeholder="@L["Pipe leaking under sink near kitchen..."]"></textarea>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TelefonoContacto">
             <label asp-for="TelefonoContacto" class="field-label">@L["Best number to reach you"]</label>
             <div class="input-wrap">
                 <i class="fas fa-phone"></i>
@@ -86,7 +86,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="AccesoSiAusente">
             <span class="field-label">@L["Can we enter if you are not home?"]</span>
             <div class="segmented-3" data-target="AccesoSiAusente">
                 <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>

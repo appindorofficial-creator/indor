@@ -11,7 +11,7 @@
 <h1 class="page-heading">@L["Tell us what's happening"]</h1>
     <p class="page-lead">@L["Tell us what's happening so we can send the right help fast."]</p>
 
-    <form asp-controller="Inspecciones" asp-action="EmergencyElectricalProblem" method="post">
+    <form asp-controller="Inspecciones" asp-action="EmergencyElectricalProblem" method="post" novalidate>
         <input type="hidden" asp-for="ServicioEmergenciaId" />
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -20,7 +20,7 @@
         <input type="hidden" asp-for="Urgencia" id="Urgencia" />
         <input type="hidden" asp-for="PuedeApagarBreaker" id="PuedeApagarBreaker" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="DireccionPropiedad">
             <div class="address-display">
                 <div class="left">
                     <i class="fas fa-house"></i>
@@ -30,7 +30,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoProblema">
             <span class="field-label">@L["What best describes the problem?"]</span>
             <div class="issue-grid" id="issueGroup">
                 <button type="button" class="issue-btn" data-value="NoPower"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-bolt issue-icon"></i>@L["No power"]</button>
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="Urgencia">
             <span class="field-label">@L["How urgent is it?"]</span>
             <div class="urgency-grid" data-target="Urgencia">
                 <button type="button" class="urgency-btn" data-value="Priority">@L["Priority"]</button>
@@ -53,7 +53,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="PuedeApagarBreaker">
             <span class="field-label">@L["Can you safely turn off the breaker?"]</span>
             <div class="segmented-3" data-target="PuedeApagarBreaker">
                 <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>

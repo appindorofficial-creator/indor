@@ -18,14 +18,14 @@
         <div class="row"><span class="label">@L["Installed"]</span><span class="value">@Model.InstalledLabel</span></div>
     </div>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="sd-reminders-form" asp-action="SmokeDetectorReminders" method="post">
+    <form id="sd-reminders-form" asp-action="SmokeDetectorReminders" method="post" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="TipoAccionAyuda" id="TipoAccionAyuda" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <div class="toggle-row">
                 <div class="left">
                     <strong>@L["Monthly test reminder"]</strong>
@@ -72,14 +72,14 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoAccionAyuda">
             <div class="field-head"><span>@L["Need help now?"]</span></div>
             <div class="help-grid">
                 <button type="button" class="help-btn" data-help="ReminderOnly">
-                    <i class="fas fa-bell"></i> Reminder only
+                    <i class="fas fa-bell"></i> @L["Reminder only"]
                 </button>
                 <button type="button" class="help-btn" data-help="ScheduleSafetyCheck">
-                    <i class="fas fa-user-check"></i> Schedule safety check
+                    <i class="fas fa-user-check"></i> @L["Schedule safety check"]
                 </button>
             </div>
         </div>
@@ -93,6 +93,10 @@
 <script>
     (function () {
         var helpInput = document.getElementById('TipoAccionAyuda');
+        if (!helpInput) return;
+        if (!String(helpInput.value || '').trim()) {
+            helpInput.value = '';
+        }
         document.querySelectorAll('[data-help]').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 document.querySelectorAll('[data-help]').forEach(function (b) { b.classList.remove('active'); });

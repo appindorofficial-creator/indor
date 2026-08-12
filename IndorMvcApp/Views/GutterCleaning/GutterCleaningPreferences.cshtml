@@ -11,9 +11,9 @@
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L.Catalog(Model.PageTitle)</h1>
     <p class="page-lead" style="margin-bottom:16px;"><span class="tagline">@L["Condition & service preferences"]</span></p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="gc-prefs-form" asp-action="GutterCleaningPreferences" method="post" enctype="multipart/form-data">
+    <form id="gc-prefs-form" asp-action="GutterCleaningPreferences" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="ProblemasSeleccionados" id="ProblemasSeleccionados" />

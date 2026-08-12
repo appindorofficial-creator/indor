@@ -13,10 +13,10 @@
 
     @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
     {
-        <div asp-validation-summary="All" class="validation-summary"></div>
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
     }
 
-    <form asp-controller="Inspecciones" asp-action="EmergencyHvacContact" method="post" enctype="multipart/form-data">
+    <form asp-controller="Inspecciones" asp-action="EmergencyHvacContact" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="ServicioEmergenciaId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -74,12 +74,12 @@
 
         <div id="selectedFiles" class="file-list"></div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <label asp-for="NotaCorta" class="field-label">@L["Short note (optional)"]</label>
             <textarea asp-for="NotaCorta" class="form-textarea" maxlength="500" placeholder="@L["Outdoor unit is running but the house is warm. Thermostat set to 68. No cool air coming out."]"></textarea>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TelefonoContacto">
             <label asp-for="TelefonoContacto" class="field-label">@L["Best contact number"]</label>
             <div class="input-wrap">
                 <i class="fas fa-phone"></i>
@@ -87,7 +87,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="PuedeLlamarYa">
             <span class="field-label">@L["Can we call you right away?"]</span>
             <div class="segmented-3" data-target="PuedeLlamarYa">
                 <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
@@ -96,7 +96,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="EnCasaAhora">
             <span class="field-label">@L["Are you home now?"]</span>
             <div class="segmented-3" data-target="EnCasaAhora">
                 <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>

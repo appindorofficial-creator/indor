@@ -15,7 +15,7 @@
 
     <h2 class="page-heading">@L["Location &amp; safety"]</h2>
 
-    <form asp-controller="Inspecciones" asp-action="EmergencyElectricalLocation" method="post">
+    <form asp-controller="Inspecciones" asp-action="EmergencyElectricalLocation" method="post" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="ServicioEmergenciaId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -27,7 +27,7 @@
         <input type="hidden" asp-for="EnergiaEncendida" id="EnergiaEncendida" />
         <input type="hidden" asp-for="PuedeAlejarse" id="PuedeAlejarse" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="UbicacionProblema">
             <span class="field-label">@L["Where is the problem?"]</span>
             <div class="option-grid" data-target="UbicacionProblema" data-single="true">
                 <button type="button" class="option-btn" data-value="WholeHouse">@L["Whole house"]</button>
@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="SintomasNotados">
             <span class="field-label">@L["What do you notice right now? (Select all that apply)"]</span>
             <div class="symptom-list" id="symptomGroup">
                 <button type="button" class="symptom-btn" data-value="NoPower">@L["No power"] <i class="fas fa-check check"></i></button>
@@ -53,7 +53,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="EnergiaEncendida">
             <span class="field-label">@L["Is power still on in that area?"]</span>
             <div class="choice-row" data-target="EnergiaEncendida">
                 <button type="button" class="choice-btn" data-value="Yes"><i class="fas fa-check" style="color:#16A34A;"></i>@L["Yes"]</button>
@@ -62,7 +62,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="PuedeAlejarse">
             <span class="field-label">@L["Can you stay safely away from the affected area?"]</span>
             <div class="choice-row cols-2" data-target="PuedeAlejarse">
                 <button type="button" class="choice-btn" data-value="Yes"><i class="fas fa-check" style="color:#16A34A;"></i>@L["Yes"]</button>

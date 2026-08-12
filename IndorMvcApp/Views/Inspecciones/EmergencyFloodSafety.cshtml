@@ -26,7 +26,7 @@
         </div>
     </div>
 
-    <form asp-controller="Inspecciones" asp-action="EmergencyFloodSafety" method="post">
+    <form asp-controller="Inspecciones" asp-action="EmergencyFloodSafety" method="post" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="ServicioEmergenciaId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -37,7 +37,7 @@
         <input type="hidden" asp-for="PuedeApagarElectricidad" id="PuedeApagarElectricidad" />
         <input type="hidden" asp-for="CantidadAgua" id="CantidadAgua" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="PuedeCerrarAgua">
             <span class="field-label"><i class="fas fa-faucet-drip"></i> @L["Can you shut off the water right now?"]</span>
             <div class="segmented-3" data-target="PuedeCerrarAgua">
                 <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
@@ -46,7 +46,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="UbicacionCierreAgua">
             <span class="field-label"><i class="fas fa-gauge-high"></i> @L["Where is the main shutoff?"]</span>
             <div class="segmented-3" data-target="UbicacionCierreAgua">
                 <button type="button" class="segment-btn" data-value="InsideHome">@L["Inside home"]</button>
@@ -55,7 +55,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="PuedeApagarElectricidad">
             <span class="field-label"><i class="fas fa-bolt"></i> @L["Can you safely turn off power near the water?"]</span>
             <div class="segmented-3" data-target="PuedeApagarElectricidad">
                 <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
@@ -64,7 +64,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="CantidadAgua">
             <span class="field-label"><i class="fas fa-water"></i> @L["How much water is there?"]</span>
             <div class="segmented-3" data-target="CantidadAgua">
                 <button type="button" class="segment-btn" data-value="SmallArea">@L["Small area"]</button>

@@ -17,7 +17,7 @@
     
 <h2 class="page-heading">@L["Tell us about the flooding"]</h2>
 
-    <form asp-controller="Inspecciones" asp-action="EmergencyFloodDetails" method="post">
+    <form asp-controller="Inspecciones" asp-action="EmergencyFloodDetails" method="post" novalidate>
         <input type="hidden" asp-for="ServicioEmergenciaId" />
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -26,7 +26,7 @@
         <input type="hidden" asp-for="UbicacionAgua" id="UbicacionAgua" />
         <input type="hidden" asp-for="AguaActiva" id="AguaActiva" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="DireccionPropiedad">
             <div class="address-display">
                 <div class="left">
                     <i class="fas fa-house"></i>
@@ -35,7 +35,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="CausaAgua">
             <span class="field-label">@L["What is causing the water?"]</span>
             <div class="option-grid" data-target="CausaAgua">
                 <button type="button" class="option-btn" data-value="BurstPipe">@L["Burst pipe"]</button>
@@ -47,7 +47,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="UbicacionAgua">
             <span class="field-label">@L["Where is the water?"]</span>
             <div class="option-grid" data-target="UbicacionAgua">
                 <button type="button" class="option-btn" data-value="Basement">@L["Basement"]</button>
@@ -61,7 +61,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="AguaActiva">
             <span class="field-label">@L["Is water still active right now?"]</span>
             <div class="segmented-3" data-target="AguaActiva">
                 <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>

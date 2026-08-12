@@ -11,7 +11,7 @@
 <h1 class="page-heading">@L["What's happening with your system?"]</h1>
     <p class="page-lead">@L["Tell us what's going on so we can send the right pro."]</p>
 
-    <form asp-controller="Inspecciones" asp-action="EmergencyHvacDetails" method="post">
+    <form asp-controller="Inspecciones" asp-action="EmergencyHvacDetails" method="post" novalidate>
         <input type="hidden" asp-for="ServicioEmergenciaId" />
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -20,7 +20,7 @@
         <input type="hidden" asp-for="SucedeAhora" id="SucedeAhora" />
         <input type="hidden" asp-for="Urgencia" id="Urgencia" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="DireccionPropiedad">
             <div class="address-display">
                 <div class="left">
                     <i class="fas fa-house"></i>
@@ -30,7 +30,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoProblema">
             <span class="field-label">@L["What's the main issue?"]</span>
             <div class="issue-grid" id="issueGroup">
                 <button type="button" class="issue-btn" data-value="NotCooling"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-snowflake issue-icon"></i>@L["Not cooling"]</button>
@@ -44,7 +44,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="SucedeAhora">
             <span class="field-label">@L["Is it happening now?"]</span>
             <div class="segmented-3" data-target="SucedeAhora">
                 <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
@@ -53,7 +53,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="Urgencia">
             <span class="field-label">@L["Urgency"]</span>
             <div class="urgency-grid" data-target="Urgencia">
                 <button type="button" class="urgency-btn" data-value="Emergency"><i class="fas fa-bell"></i>@L["Emergency"]</button>

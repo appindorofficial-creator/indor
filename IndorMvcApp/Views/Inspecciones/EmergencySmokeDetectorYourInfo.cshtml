@@ -16,13 +16,13 @@
 
     @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
     {
-        <div asp-validation-summary="All" class="validation-summary"></div>
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
     }
 
     <div class="summary-row"><i class="fas fa-house"></i> @Model.DireccionPropiedad</div>
     <div class="summary-row"><i class="fas fa-bell"></i> @L.Catalog(Model.ProblemaResumen)</div>
 
-    <form asp-controller="Inspecciones" asp-action="EmergencySmokeDetectorYourInfo" method="post">
+    <form asp-controller="Inspecciones" asp-action="EmergencySmokeDetectorYourInfo" method="post" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="ServicioEmergenciaId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -31,7 +31,7 @@
         <input type="hidden" asp-for="ProblemaResumen" />
         <input type="hidden" asp-for="AccesoPropiedad" id="AccesoPropiedad" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="AccesoPropiedad">
             <span class="field-label">@L["Who is at the property?"]</span>
             <div class="access-grid" data-target="AccesoPropiedad">
                 <button type="button" class="access-btn" data-value="AdultHomeNow">@L["Adult home now"]</button>
@@ -42,7 +42,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TelefonoContacto">
             <label asp-for="TelefonoContacto" class="field-label">@L["Best callback number"]</label>
             <div class="input-wrap">
                 <i class="fas fa-phone"></i>

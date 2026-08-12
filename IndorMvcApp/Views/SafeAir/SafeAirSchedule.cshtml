@@ -10,9 +10,9 @@
 <h2 class="page-heading" style="font-size:1.1rem;">@L["Photos & schedule"]</h2>
     <p class="page-lead" style="margin-top:-8px;">@L["Add context so the provider arrives prepared."]</p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form asp-action="SafeAirSchedule" method="post" enctype="multipart/form-data">
+    <form asp-action="SafeAirSchedule" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MicroservicioId" />
         <input type="hidden" asp-for="TipoNecesidad" />

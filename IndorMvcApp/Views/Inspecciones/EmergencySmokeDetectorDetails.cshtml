@@ -13,10 +13,10 @@
 
     @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
     {
-        <div asp-validation-summary="All" class="validation-summary"></div>
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
     }
 
-    <form asp-controller="Inspecciones" asp-action="EmergencySmokeDetectorDetails" method="post">
+    <form asp-controller="Inspecciones" asp-action="EmergencySmokeDetectorDetails" method="post" novalidate>
         <input type="hidden" asp-for="ServicioEmergenciaId" />
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -27,7 +27,7 @@
         <input type="hidden" asp-for="PuedePermanecerAdentro" id="PuedePermanecerAdentro" />
         <input type="hidden" asp-for="Urgencia" id="Urgencia" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="DireccionPropiedad">
             <div class="address-display">
                 <div class="left">
                     <i class="fas fa-house"></i>
@@ -37,7 +37,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TiposProblema">
             <span class="field-label">@L["What is the issue?"]</span>
             <div class="issue-grid" id="issueGroup">
                 <button type="button" class="issue-btn" data-value="SmokeDetectorBeeping"><i class="fas fa-bell"></i>@L["Smoke detector beeping"]</button>
@@ -49,7 +49,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="UbicacionesDetectores">
             <span class="field-label">@L["Where is the detector?"]</span>
             <div class="loc-grid" id="locationGroup">
                 <button type="button" class="loc-btn" data-value="Bedroom">@L["Bedroom"]</button>
@@ -61,7 +61,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="SituacionActual">
             <span class="field-label">@L["What is happening right now?"]</span>
             <div class="segmented-5" data-target="SituacionActual">
                 <button type="button" class="segment-btn" data-value="AlarmSounding">@L["Alarm sounding"]</button>
@@ -72,7 +72,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="PuedePermanecerAdentro">
             <span class="field-label">@L["Can you stay inside safely?"]</span>
             <div class="segmented-3" data-target="PuedePermanecerAdentro">
                 <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>

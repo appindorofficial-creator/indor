@@ -15,9 +15,9 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Tell us about your system"]</h1>
     <p class="page-lead" style="margin-bottom:16px;">@L["A few details help us prepare the right tune-up."]</p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="hvac-details-form" asp-action="HvacMaintenanceDetails" method="post" enctype="multipart/form-data">
+    <form id="hvac-details-form" asp-action="HvacMaintenanceDetails" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
 
@@ -41,7 +41,7 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <div class="field-head"><i class="fas fa-camera"></i><span>@L["Photo of model / serial label"]</span></div>
             <div class="upload-drop-wrap">
                 <input type="file" name="files" id="photoInput" class="upload-input-hidden" multiple
@@ -67,7 +67,7 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
             }
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-or-unknown="maintenanceToggle">
             <div class="field-head"><i class="fas fa-calendar"></i><span>@L["Last maintenance"]</span></div>
             <input asp-for="FechaUltimoMantenimiento"
                    type="date"
@@ -90,7 +90,7 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
             <input asp-for="TamanioFiltro" placeholder="@L["16x20x1 or I don't know"]" />
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-optional>
             <div class="field-head"><i class="fas fa-note-sticky"></i><span>@L["Notes for technician"]</span></div>
             <textarea asp-for="NotasTecnico" placeholder="@L["Tell us anything helpful (e.g., weak cooling, strange noise, etc.)"]"></textarea>
         </div>
@@ -99,7 +99,6 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
             <i class="fas fa-calendar"></i> @L["Continue"] <i class="fas fa-chevron-right"></i>
         </button>
     </form>
-</div>
 @section Scripts {
 <script>
     (function () {

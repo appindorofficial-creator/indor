@@ -14,7 +14,7 @@
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="remodeling-details-form" asp-action="RemodelingDetails" method="post" enctype="multipart/form-data">
+    <form id="remodeling-details-form" asp-action="RemodelingDetails" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="ServicioId" />
         <input type="hidden" asp-for="AlcanceProyecto" id="AlcanceProyecto" />
@@ -22,12 +22,12 @@
         <input type="hidden" asp-for="PresupuestoEstimado" id="PresupuestoEstimado" />
         <input type="hidden" asp-for="ContactoPreferido" id="ContactoPreferido" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="DireccionPropiedad">
             <span class="field-label">@L["Project address"]</span>
             <div class="location-card">
                 <i class="fas fa-house main"></i>
                 <div class="meta">
-                    <input asp-for="DireccionPropiedad" placeholder="@L["Project address"]" required style="border:none;background:transparent;width:100%;font-family:inherit;font-weight:600;font-size:0.88rem;" />
+                    <input asp-for="DireccionPropiedad" id="DireccionPropiedad" placeholder="@L["Project address"]" required style="border:none;background:transparent;width:100%;font-family:inherit;font-weight:600;font-size:0.88rem;" />
                 </div>
             </div>
         </div>
@@ -62,9 +62,9 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="Descripcion">
             <span class="field-label">@L["Describe your project"]</span>
-            <textarea asp-for="Descripcion" rows="4" maxlength="500" required placeholder="@L["Size, materials, goals, anything we should know..."]" style="width:100%;border:1.5px solid #E5E7EB;border-radius:12px;padding:12px;font-family:inherit;font-size:0.88rem;"></textarea>
+            <textarea asp-for="Descripcion" id="Descripcion" rows="4" maxlength="500" required placeholder="@L["Size, materials, goals, anything we should know..."]" style="width:100%;border:1.5px solid #E5E7EB;border-radius:12px;padding:12px;font-family:inherit;font-size:0.88rem;"></textarea>
         </div>
 
         <div class="field-card" data-svc-required="ContactoPreferido">

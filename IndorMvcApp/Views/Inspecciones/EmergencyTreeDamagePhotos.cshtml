@@ -17,10 +17,10 @@
 
     @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
     {
-        <div asp-validation-summary="All" class="validation-summary"></div>
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
     }
 
-    <form asp-controller="Inspecciones" asp-action="EmergencyTreeDamagePhotos" method="post" enctype="multipart/form-data">
+    <form asp-controller="Inspecciones" asp-action="EmergencyTreeDamagePhotos" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="ServicioEmergenciaId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -61,7 +61,7 @@
         }
         <div id="selectedFiles" class="file-list"></div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="AccesoCasa">
             <span class="field-label">@L["Can you access the home?"]</span>
             <div class="choice-row" data-target="AccesoCasa">
                 <button type="button" class="choice-btn" data-value="Yes">@L["Yes"]</button>
@@ -70,7 +70,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="EntradaBloqueada">
             <span class="field-label">@L["Is the driveway blocked?"]</span>
             <div class="choice-row" data-target="EntradaBloqueada">
                 <button type="button" class="choice-btn" data-value="Yes">@L["Yes"]</button>
@@ -79,7 +79,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="PuedeAlejarse">
             <span class="field-label">@L["Can you stay away from the damaged area?"]</span>
             <div class="choice-row cols-2" data-target="PuedeAlejarse">
                 <button type="button" class="choice-btn" data-value="Yes">@L["Yes"]</button>

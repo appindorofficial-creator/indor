@@ -11,7 +11,7 @@
 <h1 class="page-heading">@L["What plumbing emergency is happening?"]</h1>
     <p class="page-lead">@L["A quick check helps us send the right pro faster."]</p>
 
-    <form asp-controller="Inspecciones" asp-action="EmergencyPlumbingDetails" method="post">
+    <form asp-controller="Inspecciones" asp-action="EmergencyPlumbingDetails" method="post" novalidate>
         <input type="hidden" asp-for="ServicioEmergenciaId" />
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -21,7 +21,7 @@
         <input type="hidden" asp-for="PuedeCerrarAgua" id="PuedeCerrarAgua" />
         <input type="hidden" asp-for="Urgencia" id="Urgencia" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="DireccionPropiedad">
             <div class="address-display">
                 <div class="left">
                     <i class="fas fa-house"></i>
@@ -31,7 +31,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoProblema">
             <span class="field-label">@L["What's the issue?"]</span>
             <div class="issue-grid" id="issueGroup">
                 <button type="button" class="issue-btn" data-value="BurstPipe"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-burst issue-icon"></i>@L["Burst pipe"]</button>
@@ -45,7 +45,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="AguaFluyendo">
             <span class="field-label">@L["Is water actively flowing?"]</span>
             <div class="segmented-3" data-target="AguaFluyendo">
                 <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
@@ -54,7 +54,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="PuedeCerrarAgua">
             <span class="field-label">@L["Can you shut off the water?"]</span>
             <div class="segmented-3" data-target="PuedeCerrarAgua">
                 <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
@@ -63,7 +63,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="Urgencia">
             <span class="field-label">@L["How urgent is it?"]</span>
             <div class="urgency-grid" data-target="Urgencia">
                 <button type="button" class="urgency-btn" data-value="Emergency"><i class="fas fa-bell"></i>@L["Emergency"]</button>

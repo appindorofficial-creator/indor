@@ -21,10 +21,10 @@
 
     @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
     {
-        <div asp-validation-summary="All" class="validation-summary"></div>
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
     }
 
-    <form asp-controller="Inspecciones" asp-action="EmergencyWaterHeaterUpload" method="post" enctype="multipart/form-data">
+    <form asp-controller="Inspecciones" asp-action="EmergencyWaterHeaterUpload" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="ServicioEmergenciaId" />
         <input type="hidden" asp-for="NombreServicio" />

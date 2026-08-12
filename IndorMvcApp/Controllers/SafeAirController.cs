@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -173,6 +174,7 @@ public class SafeAirController : Controller
 
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             return View(model);
         }
 
@@ -255,6 +257,7 @@ public class SafeAirController : Controller
 
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             return View(MergeScheduleViewModel(solicitud, model));
         }
 

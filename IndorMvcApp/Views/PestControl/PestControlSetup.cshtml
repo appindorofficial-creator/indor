@@ -11,9 +11,9 @@
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Tell us about your home"]</h1>
     <p class="page-lead" style="margin-bottom:16px;">@L["A few details help us recommend the right pest control approach."]</p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="pc-setup-form" asp-action="PestControlSetup" method="post">
+    <form id="pc-setup-form" asp-action="PestControlSetup" method="post" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="UltimoServicio" id="UltimoServicio" />
@@ -21,7 +21,7 @@
         <input type="hidden" asp-for="AreasPreocupacion" id="AreasPreocupacion" />
         <input type="hidden" asp-for="MascotasONinos" id="MascotasONinos" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="UltimoServicio">
             <div class="field-head"><span class="question-num">1</span><span>@L["When was your last pest service?"]</span></div>
             <div class="segment-row">
                 <button type="button" class="segment-btn" data-last="Within12Months">@L["Within 12 months"]</button>
@@ -55,7 +55,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="MascotasONinos">
             <div class="field-head"><span class="question-num">4</span><span>@L["Do you have pets or children at home?"]</span></div>
             <div class="yesno-row">
                 <button type="button" class="yesno-btn" data-pets="Yes">@L["Yes"]</button>
@@ -77,6 +77,10 @@
 <script>
     (function () {
         function bindSingle(groupSelector, attr, input) {
+            if (!input) return;
+            if (!String(input.value || '').trim()) {
+                input.value = '';
+            }
             document.querySelectorAll(groupSelector).forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     document.querySelectorAll(groupSelector).forEach(function (b) { b.classList.remove('active'); });
@@ -88,6 +92,7 @@
         }
 
         function bindMulti(groupSelector, attr, input) {
+            if (!input) return;
             function getValues() {
                 return input.value ? input.value.split('|').filter(Boolean) : [];
             }
@@ -117,24 +122,6 @@
         bindMulti('[data-sign]', 'data-sign', document.getElementById('SignosSeleccionados'));
         bindMulti('[data-area]', 'data-area', document.getElementById('AreasPreocupacion'));
         bindSingle('[data-pets]', 'data-pets', document.getElementById('MascotasONinos'));
-
-        var form = document.getElementById('pc-setup-form');
-        form?.addEventListener('submit', function (e) {
-            if (e.submitter && e.submitter.value === 'back') return;
-
-            var last = document.getElementById('UltimoServicio');
-            var pets = document.getElementById('MascotasONinos');
-            if (!last.value || !last.value.trim()) {
-                e.preventDefault();
-                alert(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select when your last pest service was."].ToString())));
-                return;
-            }
-            if (!pets.value || !pets.value.trim()) {
-                e.preventDefault();
-                alert(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select whether you have pets or children at home."].ToString())));
-            }
-        });
     })();
-
 </script>
 }

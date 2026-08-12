@@ -12,7 +12,7 @@
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Tell us about your water heater"]</h1>
     <p class="page-lead" style="margin-bottom:16px;">@L["A few details help us bring the right maintenance plan."]</p>
 
-    <form id="whf-setup-form" asp-action="WaterHeaterFlushSetup" method="post" enctype="multipart/form-data">
+    <form id="whf-setup-form" asp-action="WaterHeaterFlushSetup" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="TipoCalentador" id="TipoCalentador" />

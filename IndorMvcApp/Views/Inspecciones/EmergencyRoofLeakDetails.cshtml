@@ -14,10 +14,10 @@
     
 @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
     {
-        <div asp-validation-summary="All" class="validation-summary"></div>
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
     }
 
-    <form asp-controller="Inspecciones" asp-action="EmergencyRoofLeakDetails" method="post" enctype="multipart/form-data">
+    <form asp-controller="Inspecciones" asp-action="EmergencyRoofLeakDetails" method="post" enctype="multipart/form-data" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="ServicioEmergenciaId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -61,7 +61,7 @@
         <textarea asp-for="NotaCorta" id="NotaCorta" class="form-textarea" maxlength="500" placeholder="@L["Water dripping through ceiling in upstairs hallway after heavy rain. Stain is spreading near the vent."]"></textarea>
         <div class="char-count"><span id="charCount">0</span>/500</div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="PuedeColocarCubeta">
             <span class="field-label">@L["Can you safely place a bucket or move items away from the leak?"]</span>
             <div class="choice-row" data-target="PuedeColocarCubeta">
                 <button type="button" class="choice-btn" data-value="Yes"><i class="fas fa-check" style="color:#16A34A;"></i>@L["Yes"]</button>

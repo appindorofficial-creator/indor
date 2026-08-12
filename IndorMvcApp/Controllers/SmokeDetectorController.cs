@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -14,11 +15,13 @@ public class SmokeDetectorController : Controller
 {
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IIndorLocalizer _localizer;
 
-    public SmokeDetectorController(AppDbContext db, UserManager<ApplicationUser> userManager)
+    public SmokeDetectorController(AppDbContext db, UserManager<ApplicationUser> userManager, IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -113,6 +116,7 @@ public class SmokeDetectorController : Controller
 
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             return View(model);
         }
 
@@ -163,6 +167,7 @@ public class SmokeDetectorController : Controller
 
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             var vm = BuildRemindersViewModel(solicitud);
             vm.RecordatorioMensual = model.RecordatorioMensual;
             vm.RecordatorioBateriaAnual = model.RecordatorioBateriaAnual;

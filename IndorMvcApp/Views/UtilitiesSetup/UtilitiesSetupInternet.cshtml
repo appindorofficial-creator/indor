@@ -21,7 +21,7 @@
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form asp-action="UtilitiesSetupInternet" method="post">
+    <form asp-action="UtilitiesSetupInternet" method="post" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MovingSetupServicioId" />
         <input type="hidden" asp-for="DireccionPropiedad" />

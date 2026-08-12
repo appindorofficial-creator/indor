@@ -55,12 +55,12 @@
             <div class="trust-badge"><i class="fas fa-shield-halved"></i> @L["All cleaners are background-checked & professional."]</div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="DireccionPropiedad">
             <div class="section-num">@L["3. Where do you need cleaning?"]</div>
             <div class="address-card">
                 <div class="left">
                     <i class="fas fa-location-dot" style="color:#0066CC;"></i>
-                    <input asp-for="DireccionPropiedad" required placeholder="@L["Enter your full address"]" autocomplete="street-address" />
+                    <input asp-for="DireccionPropiedad" id="DireccionPropiedad" required placeholder="@L["Enter your full address"]" autocomplete="street-address" />
                 </div>
                 <i class="fas fa-chevron-right" style="color:#94A3B8;font-size:0.8rem;"></i>
             </div>

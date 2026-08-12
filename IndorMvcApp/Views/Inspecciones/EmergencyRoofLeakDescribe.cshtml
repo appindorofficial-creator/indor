@@ -14,7 +14,7 @@
 <h2 class="page-heading">@L["Describe the roof leak"]</h2>
     <p class="page-lead">@L["A few quick answers help us send the right crew faster."]</p>
 
-    <form asp-controller="Inspecciones" asp-action="EmergencyRoofLeakDescribe" method="post">
+    <form asp-controller="Inspecciones" asp-action="EmergencyRoofLeakDescribe" method="post" novalidate>
         <input type="hidden" asp-for="ServicioEmergenciaId" />
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -23,7 +23,7 @@
         <input type="hidden" asp-for="UbicacionFuga" id="UbicacionFuga" />
         <input type="hidden" asp-for="Urgencia" id="Urgencia" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="DireccionPropiedad">
             <div class="address-display">
                 <div class="left">
                     <i class="fas fa-house"></i>
@@ -33,7 +33,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoProblema">
             <span class="field-label">@L["1. What are you seeing?"]</span>
             <div class="issue-grid" id="issueGroup">
                 <button type="button" class="issue-btn" data-value="ActiveDripping"><i class="fas fa-droplet"></i>@L["Active dripping"]</button>
@@ -45,7 +45,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="UbicacionFuga">
             <span class="field-label">@L["2. Where is it showing up?"]</span>
             <div class="loc-grid" data-target="UbicacionFuga">
                 <button type="button" class="loc-btn" data-value="Attic"><i class="fas fa-warehouse"></i>@L["Attic"]</button>
@@ -57,7 +57,7 @@
             </div>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="Urgencia">
             <span class="field-label">@L["3. How urgent is it?"]</span>
             <div class="urgency-grid" data-target="Urgencia">
                 <button type="button" class="urgency-btn" data-value="Normal"><i class="fas fa-clock" style="color:#16A34A;"></i>@L["Normal"]</button>

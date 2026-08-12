@@ -11,15 +11,15 @@
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Choose reminder or service"]</h1>
     <p class="page-lead" style="margin-bottom:16px;">@L["You can set a yearly reminder or schedule protection now."]</p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form id="pc-plan-form" asp-action="PestControlPlan" method="post">
+    <form id="pc-plan-form" asp-action="PestControlPlan" method="post" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="TipoServicio" id="TipoServicio" />
         <input type="hidden" asp-for="TimingPreferido" id="TimingPreferido" />
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TipoServicio">
             <button type="button" class="service-option" data-service="ReminderOnly">
                 <span class="radio"></span>
                 <i class="fas fa-calendar main"></i>
@@ -49,7 +49,7 @@
             </button>
         </div>
 
-        <div class="field-card">
+        <div class="field-card" data-svc-required="TimingPreferido">
             <div class="field-head"><i class="fas fa-clock"></i><span>@L["Preferred timing"]</span></div>
             <div class="timing-chips">
                 <button type="button" class="timing-chip" data-timing="ThisMonth"><i class="fas fa-calendar"></i> @L["This month"]</button>
@@ -76,6 +76,10 @@
 <script>
     (function () {
         function bindSingle(groupSelector, attr, input) {
+            if (!input) return;
+            if (!String(input.value || '').trim()) {
+                input.value = '';
+            }
             document.querySelectorAll(groupSelector).forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     document.querySelectorAll(groupSelector).forEach(function (b) { b.classList.remove('active'); });

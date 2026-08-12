@@ -224,8 +224,13 @@
     function isUnknownOrFilledComplete(card) {
         var unknownId = card.getAttribute('data-svc-or-unknown');
         var unknown = unknownId ? document.getElementById(unknownId) : null;
-        if (unknown && String(unknown.value || '').toLowerCase() === 'true') {
-            return true;
+        if (unknown) {
+            var type = String(unknown.type || '').toLowerCase();
+            if (type === 'checkbox' || type === 'radio') {
+                if (unknown.checked) return true;
+            } else if (String(unknown.value || '').toLowerCase() === 'true') {
+                return true;
+            }
         }
 
         var inputs = card.querySelectorAll('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not(:disabled), textarea:not(:disabled)');

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -14,11 +15,13 @@ public class PestControlController : Controller
 {
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IIndorLocalizer _localizer;
 
-    public PestControlController(AppDbContext db, UserManager<ApplicationUser> userManager)
+    public PestControlController(AppDbContext db, UserManager<ApplicationUser> userManager, IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -111,6 +114,7 @@ public class PestControlController : Controller
 
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             return View(model);
         }
 
@@ -158,6 +162,7 @@ public class PestControlController : Controller
 
         if (!ModelState.IsValid)
         {
+            ModelState.LocalizeModelState(_localizer);
             var vm = await BuildPlanViewModelAsync(solicitud);
             vm.TipoServicio = model.TipoServicio;
             vm.TimingPreferido = model.TimingPreferido;

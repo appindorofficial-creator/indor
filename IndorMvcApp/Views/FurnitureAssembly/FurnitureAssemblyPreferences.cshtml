@@ -11,7 +11,7 @@
 <h2 class="page-heading" style="font-size:1.1rem;">@L["Access, room and schedule"]</h2>
     <p class="page-lead" style="margin-top:-8px;">@L["Tell us where the items are and when you need help."]</p>
 
-    <div asp-validation-summary="All" class="validation-summary"></div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
     <form asp-action="FurnitureAssemblyPreferences" method="post" class="iw-step-form" novalidate>
         <input type="hidden" asp-for="SolicitudId" />
