@@ -1096,17 +1096,17 @@ public class HomeownerNearbyNetworkService(
             [
                 new()
                 {
-                    Label = "Homes for sale",
-                    Subtitle = "Browse nearby listings",
-                    Icon = "fa-house",
-                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.Homes, searchQuery)
-                },
-                new()
-                {
                     Label = "House Facts",
                     Subtitle = "Property overview and details",
                     Icon = "fa-house-circle-check",
                     Url = houseFactsUrl
+                },
+                new()
+                {
+                    Label = "Certified Providers",
+                    Subtitle = "Verified professionals nearby",
+                    Icon = "fa-shield-halved",
+                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.Providers, searchQuery)
                 },
                 new()
                 {
@@ -1117,10 +1117,10 @@ public class HomeownerNearbyNetworkService(
                 },
                 new()
                 {
-                    Label = "Certified Providers",
-                    Subtitle = "Verified professionals nearby",
-                    Icon = "fa-shield-halved",
-                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.Providers, searchQuery)
+                    Label = "View all nearby",
+                    Subtitle = "Listings, help, and more",
+                    Icon = "fa-border-all",
+                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.All, searchQuery)
                 }
             ],
             NearbyNetworkHomeownerFilters.Providers =>
@@ -1134,10 +1134,10 @@ public class HomeownerNearbyNetworkService(
                 },
                 new()
                 {
-                    Label = "Certified Providers",
-                    Subtitle = "Verified professionals in your area",
-                    Icon = "fa-shield-halved",
-                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.Providers, searchQuery)
+                    Label = "House Facts",
+                    Subtitle = "Property overview and details",
+                    Icon = "fa-house-circle-check",
+                    Url = houseFactsUrl
                 },
                 new()
                 {
@@ -1158,10 +1158,10 @@ public class HomeownerNearbyNetworkService(
             [
                 new()
                 {
-                    Label = "Nearby promotions",
-                    Subtitle = "Deals and offers in your area",
-                    Icon = "fa-tags",
-                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.Promotions, searchQuery)
+                    Label = "Certified Providers",
+                    Subtitle = "Verified professionals nearby",
+                    Icon = "fa-shield-halved",
+                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.Providers, searchQuery)
                 },
                 new()
                 {
