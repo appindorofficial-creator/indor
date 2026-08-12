@@ -1,4 +1,5 @@
-﻿@{
+﻿@using System.Text.Json
+@{
     var wizardModel = Model as IndorMvcApp.ViewModels.NeighborRequestWizardShellViewModel;
     var pageTitleKey = wizardModel?.PageTitle ?? ViewData["Title"] as string ?? "Post a Request";
     var pageTitle = L[pageTitleKey];
@@ -24,6 +25,22 @@
         @RenderBody()
     </div>
     @RenderSection("WizardFooter", required: false)
+    <script>
+        window.IndorNrWizardMsgs = {
+            selectOne: @Html.Raw(JsonSerializer.Serialize(L["Please choose one of these options."].ToString())),
+            enterField: @Html.Raw(JsonSerializer.Serialize(L["Please fill out this field."].ToString())),
+            selectItem: @Html.Raw(JsonSerializer.Serialize(L["Please select an item in the list."].ToString())),
+            checkBox: @Html.Raw(JsonSerializer.Serialize(L["Please check this box if you want to proceed."].ToString())),
+            enterNumber: @Html.Raw(JsonSerializer.Serialize(L["Please enter a number."].ToString())),
+            chooseDate: @Html.Raw(JsonSerializer.Serialize(L["Please choose a date."].ToString())),
+            dateMin: @Html.Raw(JsonSerializer.Serialize(L["Choose today or a future date."].ToString())),
+            validEmail: @Html.Raw(JsonSerializer.Serialize(L["Please enter a valid email address."].ToString())),
+            validValue: @Html.Raw(JsonSerializer.Serialize(L["Please enter a valid value."].ToString())),
+            shortenText: @Html.Raw(JsonSerializer.Serialize(L["Please shorten this text."].ToString())),
+            higherValue: @Html.Raw(JsonSerializer.Serialize(L["Please enter a higher value."].ToString())),
+            lowerValue: @Html.Raw(JsonSerializer.Serialize(L["Please enter a lower value."].ToString()))
+        };
+    </script>
     <script src="~/js/neighbor-request-wizard.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>

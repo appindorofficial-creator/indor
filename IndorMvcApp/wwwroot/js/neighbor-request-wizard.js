@@ -1,5 +1,19 @@
 (function () {
-    var DATE_MIN_MESSAGE = 'Choose today or a future date.';
+    function isSpanishUi() {
+        return (document.documentElement.lang || '').toLowerCase().indexOf('es') === 0;
+    }
+
+    function msg(key, en, es) {
+        var bag = window.IndorNrWizardMsgs;
+        if (bag && bag[key]) {
+            return bag[key];
+        }
+        return isSpanishUi() ? es : en;
+    }
+
+    function dateMinMessage() {
+        return msg('dateMin', 'Choose today or a future date.', 'Elige hoy o una fecha futura.');
+    }
 
     function isPlainLeftClick(e) {
         return !e.defaultPrevented && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
@@ -17,52 +31,52 @@
         });
     }
 
-    function englishValidityMessage(field) {
+    function validityMessage(field) {
         if (field.validity.valueMissing) {
             if (field.type === 'radio') {
-                return 'Please choose one of these options.';
+                return msg('selectOne', 'Please choose one of these options.', 'Elige una de estas opciones.');
             }
 
             if (field.type === 'checkbox') {
-                return 'Please check this box if you want to proceed.';
+                return msg('checkBox', 'Please check this box if you want to proceed.', 'Marca esta casilla si quieres continuar.');
             }
 
             if (field.tagName === 'SELECT') {
-                return 'Please select an item in the list.';
+                return msg('selectItem', 'Please select an item in the list.', 'Selecciona un elemento de la lista.');
             }
 
             if (field.type === 'number') {
-                return 'Please enter a number.';
+                return msg('enterNumber', 'Please enter a number.', 'Ingresa un número.');
             }
 
             if (field.type === 'date') {
-                return 'Please choose a date.';
+                return msg('chooseDate', 'Please choose a date.', 'Elige una fecha.');
             }
 
-            return 'Please fill out this field.';
+            return msg('enterField', 'Please fill out this field.', 'Completa este campo.');
         }
 
         if (field.validity.typeMismatch) {
             return field.type === 'email'
-                ? 'Please enter a valid email address.'
-                : 'Please enter a valid value.';
+                ? msg('validEmail', 'Please enter a valid email address.', 'Ingresa un correo electrónico válido.')
+                : msg('validValue', 'Please enter a valid value.', 'Ingresa un valor válido.');
         }
 
         if (field.validity.tooLong) {
-            return 'Please shorten this text.';
+            return msg('shortenText', 'Please shorten this text.', 'Acorta este texto.');
         }
 
         if (field.validity.rangeUnderflow || field.validity.rangeOverflow) {
             if (field.type === 'date') {
-                return DATE_MIN_MESSAGE;
+                return dateMinMessage();
             }
 
             return field.validity.rangeUnderflow
-                ? 'Please enter a higher value.'
-                : 'Please enter a lower value.';
+                ? msg('higherValue', 'Please enter a higher value.', 'Ingresa un valor más alto.')
+                : msg('lowerValue', 'Please enter a lower value.', 'Ingresa un valor más bajo.');
         }
 
-        return 'Please enter a valid value.';
+        return msg('validValue', 'Please enter a valid value.', 'Ingresa un valor válido.');
     }
 
     function clearFieldValidity(field) {
@@ -77,10 +91,10 @@
 
     function resolveDateMinMessage(input, minDate) {
         if (minDate && input.value && input.value < minDate) {
-            return DATE_MIN_MESSAGE;
+            return dateMinMessage();
         }
 
-        return englishValidityMessage(input);
+        return validityMessage(input);
     }
 
     function bindSingleDateInput(input) {
@@ -103,7 +117,7 @@
                 return;
             }
 
-            input.setCustomValidity(minDate && input.value < minDate ? DATE_MIN_MESSAGE : '');
+            input.setCustomValidity(minDate && input.value < minDate ? dateMinMessage() : '');
         }
 
         input.addEventListener('invalid', function (event) {
@@ -125,7 +139,7 @@
         form.querySelectorAll('input[type="date"]').forEach(bindSingleDateInput);
     }
 
-    function bindEnglishFormValidation(form) {
+    function bindFormValidation(form) {
         if (form.dataset.nrEnglishValidation === 'true') {
             return;
         }
@@ -146,7 +160,7 @@
             form.querySelectorAll('input[type="date"][data-min-date]').forEach(function (input) {
                 var minDate = input.getAttribute('data-min-date');
                 if (input.value && minDate && input.value < minDate) {
-                    input.setCustomValidity(DATE_MIN_MESSAGE);
+                    input.setCustomValidity(dateMinMessage());
                 }
             });
 
@@ -166,7 +180,7 @@
                 var minDate = firstInvalid.getAttribute('data-min-date') || '';
                 firstInvalid.setCustomValidity(resolveDateMinMessage(firstInvalid, minDate));
             } else {
-                firstInvalid.setCustomValidity(englishValidityMessage(firstInvalid));
+                firstInvalid.setCustomValidity(validityMessage(firstInvalid));
             }
             firstInvalid.reportValidity();
             if (typeof firstInvalid.focus === 'function') {
@@ -243,7 +257,7 @@
     }
 
     initDateInputs();
-    document.querySelectorAll('.nr-step-form, .nr-edit-form').forEach(bindEnglishFormValidation);
+    document.querySelectorAll('.nr-step-form, .nr-edit-form').forEach(bindFormValidation);
     bindWizardFooterSubmitButtons();
 
     // When HTML5 / custom validation cancels submit, never leave INDOR loader up.
