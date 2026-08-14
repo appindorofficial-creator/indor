@@ -187,9 +187,9 @@ public class ProviderProQuickEstimateViewModel : ProviderProPageBaseViewModel
 
     public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
 
-    public int StepNumber { get; set; } = 4;
+    public int StepNumber { get; set; } = 3;
 
-    public int TotalSteps { get; set; } = 5;
+    public int TotalSteps { get; set; } = 4;
 
     public string StatusClass { get; set; } = "needs-review";
 
@@ -299,9 +299,9 @@ public class ProviderProReviewEstimateViewModel : ProviderProPageBaseViewModel
 
     public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
 
-    public int StepNumber { get; set; } = 3;
+    public int StepNumber { get; set; } = 2;
 
-    public int TotalSteps { get; set; } = 5;
+    public int TotalSteps { get; set; } = 4;
 
     public string Title { get; set; } = "";
 
@@ -345,9 +345,9 @@ public class ProviderProPendingEstimatesPageViewModel : ProviderProPageBaseViewM
 
     public int NeedsReviewCount { get; set; }
 
-    public int StepNumber { get; set; } = 2;
+    public int StepNumber { get; set; } = 1;
 
-    public int TotalSteps { get; set; } = 5;
+    public int TotalSteps { get; set; } = 4;
 
     public List<ProviderProPendingEstimateCardViewModel> Estimates { get; set; } = [];
 
@@ -566,8 +566,8 @@ public class ProviderProSendEstimateInput
 
 public class ProviderProSendEstimatePageViewModel : ProviderProPageBaseViewModel
 {
-    public int StepNumber { get; set; } = 5;
-    public int TotalSteps { get; set; } = 5;
+    public int StepNumber { get; set; } = 4;
+    public int TotalSteps { get; set; } = 4;
     public int EstimateId { get; set; }
     public string Title { get; set; } = "";
     public string CustomerName { get; set; } = "";

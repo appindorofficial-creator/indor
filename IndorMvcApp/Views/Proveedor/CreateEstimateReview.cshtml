@@ -31,7 +31,7 @@
             <div><dt><i class="fas fa-location-dot"></i> @L["Address"]</dt><dd>@Model.Address</dd></div>
             <div><dt><i class="fas fa-list"></i> @L["Scope"]</dt><dd>@Model.Description</dd></div>
             <div><dt><i class="fas fa-dollar-sign"></i> @L["Total"]</dt><dd>@Model.TotalAmount.ToString("C2", money)</dd></div>
-            <div><dt><i class="fas fa-shield"></i> @L["Warranty"]</dt><dd>@Model.Warranty</dd></div>
+            <div><dt><i class="fas fa-shield"></i> @L["Warranty"]</dt><dd>@UiDisplayLocalization.Localize(L, Model.Warranty)</dd></div>
             <div><dt><i class="fas fa-calendar"></i> @L["Timeline"]</dt><dd>@Model.TimelineLabel</dd></div>
         </dl>
     </section>

@@ -70,11 +70,10 @@ public class ProviderProDashboardService(IProviderProDataService dataService, II
         model.ShowEstimateTutorial = workspace.PendingEstimatesCount > 0;
         model.EstimateWizardSteps =
         [
-            new() { Number = 1, Label = localizer.T("Home"), IsCurrent = true },
-            new() { Number = 2, Label = localizer.T("Pending Estimates") },
-            new() { Number = 3, Label = localizer.T("Estimate Review") },
-            new() { Number = 4, Label = localizer.T("Edit Estimate") },
-            new() { Number = 5, Label = localizer.T("Send Estimate") }
+            new() { Number = 1, Label = localizer.T("Pending Estimates") },
+            new() { Number = 2, Label = localizer.T("Estimate Review") },
+            new() { Number = 3, Label = localizer.T("Edit Estimate") },
+            new() { Number = 4, Label = localizer.T("Send Estimate") }
         ];
 
         return model;

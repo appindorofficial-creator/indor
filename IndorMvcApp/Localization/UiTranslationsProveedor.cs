@@ -6,7 +6,12 @@ public static class UiTranslationsProveedor
     public static IEnumerable<KeyValuePair<string, string>> Entries =>
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
+            ["1 Year Parts & Labor"] = "1 año en partes y mano de obra",
+            ["10-Year Parts & Labor Warranty"] = "Garantía de 10 años en partes y mano de obra",
             ["10:30 AM"] = "10:30 AM",
+            ["2 Year Parts & Labor"] = "2 años en partes y mano de obra",
+            ["5 Year Parts & Labor"] = "5 años en partes y mano de obra",
+            ["90 Day Labor Warranty"] = "Garantía de 90 días en mano de obra",
             ["123 Maple St, Austin, TX 78704"] = "123 Maple St, Austin, TX 78704",
             ["A few business details help our insurance partner prepare the quote."] = "A few business details help our insurance partner prepare the quote.",
             ["Access Notes"] = "Notas de acceso",

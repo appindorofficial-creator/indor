@@ -1716,7 +1716,7 @@ public partial class ProviderProDataService(
             NeedsReviewCount = needsReviewCount,
             Estimates = cards,
             FlowSteps = PendingEstimatesFlowSteps(),
-            WizardSteps = BuildEstimateWizardSteps(2)
+            WizardSteps = BuildEstimateWizardSteps(1)
         };
     }
 
@@ -1774,7 +1774,7 @@ public partial class ProviderProDataService(
             HasEstimatePdf = true,
             HasAiSummary = !string.IsNullOrWhiteSpace(estimate.Description) || !string.IsNullOrWhiteSpace(estimate.ScopeItemsJson),
             HasVoiceTranscript = !string.IsNullOrWhiteSpace(lead?.ProblemDescription),
-            WizardSteps = BuildEstimateWizardSteps(5)
+            WizardSteps = BuildEstimateWizardSteps(4)
         };
     }
 
@@ -1854,7 +1854,7 @@ public partial class ProviderProDataService(
             HomeownerNotes = estimate.HomeownerNotes ?? "",
             BackUrl = lead != null ? $"/Proveedor/LeadDetails/{lead.Id}" : "/Proveedor/PendingEstimates",
             FlowSteps = EditEstimateFlowSteps(estimate.Id),
-            WizardSteps = BuildEstimateWizardSteps(4),
+            WizardSteps = BuildEstimateWizardSteps(3),
             LeadCode = lead != null
                 ? (!string.IsNullOrWhiteSpace(lead.LeadCode)
                     ? lead.LeadCode.StartsWith('#') ? lead.LeadCode : $"#{lead.LeadCode}"
@@ -2136,7 +2136,7 @@ public partial class ProviderProDataService(
             SaveCopyToLeads = estimate.SaveCopyToLeads,
             CanSend = estimate.Status is ProviderEstimateStatuses.Draft or ProviderEstimateStatuses.Ready,
             FlowSteps = ReviewEstimateFlowSteps(estimate.Id),
-            WizardSteps = BuildEstimateWizardSteps(3)
+            WizardSteps = BuildEstimateWizardSteps(2)
         };
     }
 
@@ -2260,11 +2260,10 @@ public partial class ProviderProDataService(
 
     private static List<ProviderProWizardStepViewModel> BuildEstimateWizardSteps(int currentStep) =>
     [
-        new() { Number = 1, Label = "Home", IsComplete = currentStep > 1, IsCurrent = currentStep == 1 },
-        new() { Number = 2, Label = "Pending Estimates", IsComplete = currentStep > 2, IsCurrent = currentStep == 2 },
-        new() { Number = 3, Label = "Estimate Review", IsComplete = currentStep > 3, IsCurrent = currentStep == 3 },
-        new() { Number = 4, Label = "Edit Estimate", IsComplete = currentStep > 4, IsCurrent = currentStep == 4 },
-        new() { Number = 5, Label = "Send Estimate", IsComplete = currentStep > 5, IsCurrent = currentStep == 5 }
+        new() { Number = 1, Label = "Pending Estimates", IsComplete = currentStep > 1, IsCurrent = currentStep == 1 },
+        new() { Number = 2, Label = "Estimate Review", IsComplete = currentStep > 2, IsCurrent = currentStep == 2 },
+        new() { Number = 3, Label = "Edit Estimate", IsComplete = currentStep > 3, IsCurrent = currentStep == 3 },
+        new() { Number = 4, Label = "Send Estimate", IsComplete = currentStep > 4, IsCurrent = currentStep == 4 }
     ];
 
     private static (string Label, string Class, string FilterKey) MapEstimateHubStatus(IndorProveedorEstimate estimate)
