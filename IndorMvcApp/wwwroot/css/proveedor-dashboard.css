@@ -351,6 +351,12 @@ a.prv-pro-estimate-row:hover { background: #F8FAFC; }
 .prv-pro-btn--success { border: none; background: #16A34A; color: #fff; }
 .prv-pro-btn--teal { border: none; background: #0D9488; color: #fff; }
 .prv-pro-btn--ghost { border: 1px solid #CBD5E1; background: #fff; color: #334155; }
+.prv-pro-btn--ghost:disabled,
+.prv-pro-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+    pointer-events: none;
+}
 
 a.prv-pro-btn {
     display: inline-flex;

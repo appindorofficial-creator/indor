@@ -1,3 +1,5 @@
+using System.Globalization;
+using System.Text;
 using System.Text.Json;
 
 using IndorMvcApp.Helpers;
@@ -2588,6 +2590,33 @@ public partial class ProveedorController(
     }
 
     [HttpGet]
+    public async Task<IActionResult> StartCreateInvoice(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null) return proveedor.Result;
+
+        var estimates = await proData.GetEstimatesReadyToInvoiceAsync(proveedor.Entity!, cancellationToken);
+        if (estimates.Count == 0)
+        {
+            TempData["InvoiceNeedsApprovedEstimate"] = true;
+            return RedirectToAction(nameof(PendingEstimates));
+        }
+
+        if (estimates.Count == 1)
+        {
+            return RedirectToAction(nameof(CreateInvoice), new { estimateId = estimates[0].EstimateId });
+        }
+
+        return View("SelectEstimateForInvoice", new ProviderProSelectEstimateForInvoiceViewModel
+        {
+            CompanyName = !string.IsNullOrWhiteSpace(proveedor.Entity!.DbaName)
+                ? proveedor.Entity.DbaName
+                : proveedor.Entity.BusinessName ?? "",
+            Estimates = estimates
+        });
+    }
+
+    [HttpGet]
     public async Task<IActionResult> CreateInvoice(int estimateId, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
@@ -2657,6 +2686,28 @@ public partial class ProveedorController(
 
         var model = await proData.GetInvoicesPageAsync(proveedor.Entity!, tab, q, cancellationToken);
         return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ExportInvoices(string? tab, string? q, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await proData.GetInvoicesPageAsync(proveedor.Entity!, tab, q, cancellationToken);
+        if (model.Invoices.Count == 0)
+        {
+            TempData["InvoiceExportEmpty"] = true;
+            return RedirectToAction(nameof(Invoices), new { tab = model.ActiveTab, q });
+        }
+
+        var csv = BuildInvoicesCsv(model.Invoices);
+        var stamp = DateTime.Today.ToString("yyyyMMdd");
+        var fileName = $"invoices-{model.ActiveTab}-{stamp}.csv";
+        return File(Encoding.UTF8.GetPreamble().Concat(Encoding.UTF8.GetBytes(csv)).ToArray(), "text/csv; charset=utf-8", fileName);
     }
 
     [HttpGet]
@@ -3629,6 +3680,37 @@ public partial class ProveedorController(
         HttpContext.Session.Remove(UploadPhotosDraftSessionKey);
 
     private const string ExportReportDraftSessionKey = "ProviderProExportReportDraft";
+
+    private static string BuildInvoicesCsv(IReadOnlyList<ProviderProInvoiceCardViewModel> invoices)
+    {
+        var money = CultureInfo.GetCultureInfo("en-US");
+        var sb = new StringBuilder();
+        sb.AppendLine("Invoice,Customer,Address,Service,Status,Amount,DueDate");
+        foreach (var inv in invoices)
+        {
+            sb.Append(Csv(inv.InvoiceCode)).Append(',')
+                .Append(Csv(inv.CustomerName)).Append(',')
+                .Append(Csv(inv.Address)).Append(',')
+                .Append(Csv(inv.ServiceType)).Append(',')
+                .Append(Csv(inv.Status)).Append(',')
+                .Append(inv.Amount.ToString("0.00", money)).Append(',')
+                .Append(inv.DueDate.HasValue ? inv.DueDate.Value.ToString("yyyy-MM-dd") : "")
+                .AppendLine();
+        }
+
+        return sb.ToString();
+    }
+
+    private static string Csv(string? value)
+    {
+        var text = value ?? "";
+        if (text.Contains('"') || text.Contains(',') || text.Contains('\n') || text.Contains('\r'))
+        {
+            return "\"" + text.Replace("\"", "\"\"") + "\"";
+        }
+
+        return text;
+    }
 
     private ProviderProExportReportDraft GetExportReportDraft()
     {

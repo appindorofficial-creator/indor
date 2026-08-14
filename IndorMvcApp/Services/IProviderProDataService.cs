@@ -56,6 +56,7 @@ public interface IProviderProDataService
     Task<ProviderProEstimateAcceptedViewModel?> GetEstimateAcceptedAsync(IndorProveedor proveedor, int estimateId, CancellationToken cancellationToken = default);
     Task<bool> ApproveEstimateAsync(int proveedorId, int estimateId, CancellationToken cancellationToken = default);
     Task<int?> ConvertEstimateToJobAsync(int proveedorId, int estimateId, CancellationToken cancellationToken = default);
+    Task<List<ProviderProEstimateInvoiceSourceViewModel>> GetEstimatesReadyToInvoiceAsync(IndorProveedor proveedor, CancellationToken cancellationToken = default);
     Task<ProviderProCreateInvoiceViewModel?> GetCreateInvoiceAsync(IndorProveedor proveedor, int estimateId, CancellationToken cancellationToken = default);
     Task<int?> SaveCreateInvoiceAsync(int proveedorId, ProviderProCreateInvoiceInput input, CancellationToken cancellationToken = default);
     Task<ProviderProReviewInvoiceViewModel?> GetReviewInvoiceAsync(IndorProveedor proveedor, int invoiceId, CancellationToken cancellationToken = default);

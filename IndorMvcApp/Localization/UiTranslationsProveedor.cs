@@ -242,6 +242,7 @@ public static class UiTranslationsProveedor
             ["Create Estimate"] = "Crear Cotización",
             ["Create House Facts Record"] = "Crear registro de Datos del hogar",
             ["Create Invoice"] = "Crear Factura",
+            ["Create Invoice - INDOR PRO"] = "Crear factura - INDOR PRO",
             ["Create Job"] = "Crear trabajo",
             ["Create job"] = "Crear Trabajo",
             ["Create job &amp; send quote"] = "Crear trabajo y enviar cotización",
@@ -591,6 +592,9 @@ public static class UiTranslationsProveedor
             ["No provider activation required to start using these tools."] = "No se requiere activación de proveedor para empezar a usar estas herramientas.",
             ["No guessing — every key detail is visible before you hire."] = "No guessing — every key detail is visible before you hire.",
             ["No invoices in this view yet."] = "Aún no hay facturas en esta vista.",
+            ["No approved estimates are ready to invoice. Approve an estimate first."] = "No hay cotizaciones aprobadas listas para facturar. Aprueba una cotización primero.",
+            ["There are no invoices to export in this view."] = "No hay facturas para exportar en esta vista.",
+            ["Select an approved estimate to create an invoice."] = "Selecciona una cotización aprobada para crear la factura.",
             ["No items in this view yet. Jobs, leads, and estimates from your account will appear here."] = "No items in this view yet. Trabajos, leads, y estimates from tu account will appear here.",
             ["No jobs found. Create a job first, then come back to build a report."] =
                 "No se encontraron trabajos. Crea un trabajo primero y vuelve para armar un informe.",

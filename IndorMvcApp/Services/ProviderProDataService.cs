@@ -5979,7 +5979,8 @@ public partial class ProviderProDataService(
 
         var rows = await db.IndorProveedorInvoices
             .AsNoTracking()
-            .Include(i => i.Job)
+            .Include(i => i.Job!)
+                .ThenInclude(j => j.Cliente)
             .Where(i => i.ProveedorId == proveedor.Id)
             .OrderByDescending(i => i.DueDate ?? i.FechaCreacion)
             .ToListAsync(cancellationToken);
@@ -6400,6 +6401,7 @@ public partial class ProviderProDataService(
             Id = invoice.Id,
             InvoiceCode = FormatInvoiceCode(invoice.InvoiceCode, invoice.Id),
             Address = invoice.Address ?? invoice.Job?.Address ?? "",
+            CustomerName = invoice.CustomerName ?? invoice.Job?.Cliente?.Name ?? "",
             ServiceType = invoice.ServiceType ?? invoice.Job?.Title ?? "",
             Amount = invoice.Amount,
             Status = invoice.Status,
@@ -6408,6 +6410,7 @@ public partial class ProviderProDataService(
             DueDateLabel = invoice.DueDate.HasValue
                 ? $"Due: {invoice.DueDate.Value.ToLocalTime():MMM d, yyyy}"
                 : null,
+            DueDate = invoice.DueDate,
             DaysLateLabel = daysLate,
             ShowReminderAction = showReminder,
             ShowMarkPaidAction = showMarkPaid
@@ -6610,6 +6613,33 @@ public partial class ProviderProDataService(
         await db.SaveChangesAsync(cancellationToken);
         await realtorBridge.SyncBidFromEstimateAsync(estimate, cancellationToken);
         return true;
+    }
+
+    public async Task<List<ProviderProEstimateInvoiceSourceViewModel>> GetEstimatesReadyToInvoiceAsync(
+        IndorProveedor proveedor,
+        CancellationToken cancellationToken = default)
+    {
+        var invoicedEstimateIds = await db.IndorProveedorInvoices
+            .AsNoTracking()
+            .Where(i => i.ProveedorId == proveedor.Id && i.EstimateId != null)
+            .Select(i => i.EstimateId!.Value)
+            .ToListAsync(cancellationToken);
+
+        return await db.IndorProveedorEstimates
+            .AsNoTracking()
+            .Where(e => e.ProveedorId == proveedor.Id
+                && e.Status == ProviderEstimateStatuses.Approved
+                && !invoicedEstimateIds.Contains(e.Id))
+            .OrderByDescending(e => e.ApprovedUtc ?? e.FechaCreacion)
+            .Select(e => new ProviderProEstimateInvoiceSourceViewModel
+            {
+                EstimateId = e.Id,
+                Address = e.Address ?? "",
+                CustomerName = e.CustomerName ?? "Customer",
+                ServiceType = e.ServiceType ?? "",
+                Amount = e.Amount
+            })
+            .ToListAsync(cancellationToken);
     }
 
     public async Task<ProviderProCreateInvoiceViewModel?> GetCreateInvoiceAsync(

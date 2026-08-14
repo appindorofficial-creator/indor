@@ -37,6 +37,12 @@
             <i class="fas fa-circle-check"></i> @L["Payment recorded successfully. The invoice has moved to the Paid tab."]
         </div>
     }
+    @if (TempData["InvoiceExportEmpty"] as bool? == true)
+    {
+        <div class="prv-pro-alert">
+            <i class="fas fa-circle-info"></i> @L["There are no invoices to export in this view."]
+        </div>
+    }
 
     <form method="get" asp-controller="Proveedor" asp-action="Invoices" class="prv-pro-jobs-search">
         <input type="hidden" name="tab" value="@Model.ActiveTab" />
@@ -44,7 +50,7 @@
             <i class="fas fa-magnifying-glass"></i>
             <input type="search" name="q" value="@Model.SearchQuery" placeholder="@UiDisplayLocalization.Localize(L, Model.SearchPlaceholder)" />
         </div>
-        <button type="button" class="prv-pro-filter-btn" title="@L["Filters"]"><i class="fas fa-sliders"></i></button>
+        <button type="submit" class="prv-pro-filter-btn" title="@L["Search"]"><i class="fas fa-magnifying-glass"></i></button>
     </form>
 
     <nav class="prv-pro-leads-filters" aria-label="@L["Invoice filters"]">
@@ -183,8 +189,14 @@
     </section>
 
     <footer class="prv-pro-invoices-footer">
-        <button type="button" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-plus"></i> @L["Create Invoice"]</button>
-        <button type="button" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-filter"></i> @L["Filter"]</button>
-        <button type="button" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-download"></i> @L["Export"]</button>
+        <a asp-controller="Proveedor" asp-action="StartCreateInvoice" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-plus"></i> @L["Create Invoice"]</a>
+        @if (Model.Invoices.Count > 0)
+        {
+            <a asp-controller="Proveedor" asp-action="ExportInvoices" asp-route-tab="@Model.ActiveTab" asp-route-q="@Model.SearchQuery" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-download"></i> @L["Export"]</a>
+        }
+        else
+        {
+            <button type="button" class="prv-pro-btn prv-pro-btn--ghost" disabled title="@L["There are no invoices to export in this view."]"><i class="fas fa-download"></i> @L["Export"]</button>
+        }
     </footer>
 </div>

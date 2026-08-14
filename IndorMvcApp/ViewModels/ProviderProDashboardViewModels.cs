@@ -187,6 +187,20 @@ public class ProviderProEstimateAcceptedViewModel : ProviderProPageBaseViewModel
     public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
 }
 
+public class ProviderProEstimateInvoiceSourceViewModel
+{
+    public int EstimateId { get; set; }
+    public string Address { get; set; } = "";
+    public string CustomerName { get; set; } = "";
+    public string ServiceType { get; set; } = "";
+    public decimal Amount { get; set; }
+}
+
+public class ProviderProSelectEstimateForInvoiceViewModel : ProviderProPageBaseViewModel
+{
+    public List<ProviderProEstimateInvoiceSourceViewModel> Estimates { get; set; } = [];
+}
+
 public class ProviderProCreateInvoiceViewModel : ProviderProPageBaseViewModel
 {
     public int EstimateId { get; set; }

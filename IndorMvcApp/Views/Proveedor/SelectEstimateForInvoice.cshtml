@@ -1,0 +1,51 @@
+@model IndorMvcApp.ViewModels.ProviderProSelectEstimateForInvoiceViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = L["Create Invoice - INDOR PRO"];
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+    var money = CultureInfo.GetCultureInfo("en-US");
+}
+
+<div class="prv-pro-shell prv-pro-shell--invoices">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <header class="prv-pro-new-leads-head">
+        <a asp-controller="Proveedor" asp-action="Invoices" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
+        <div>
+            <h1>@L["Create Invoice"]</h1>
+            <small>@L["Select an approved estimate to create an invoice."]</small>
+        </div>
+    </header>
+
+    <section class="prv-pro-invoices-list">
+        @foreach (var estimate in Model.Estimates)
+        {
+            <article class="prv-pro-invoice-card">
+                <div class="prv-pro-invoice-card-icon prv-pro-invoice-card-icon--pending">
+                    <i class="fas fa-file-invoice"></i>
+                </div>
+                <div class="prv-pro-invoice-card-body">
+                    <div class="prv-pro-invoice-card-top">
+                        <div>
+                            <strong>@estimate.CustomerName</strong>
+                            <small>@estimate.Address</small>
+                            @if (!string.IsNullOrWhiteSpace(estimate.ServiceType))
+                            {
+                                <small class="prv-pro-invoice-service">@UiDisplayLocalization.Localize(L, estimate.ServiceType)</small>
+                            }
+                        </div>
+                        <div class="prv-pro-invoice-card-meta">
+                            <strong>@estimate.Amount.ToString("C0", money)</strong>
+                        </div>
+                    </div>
+                    <div class="prv-pro-invoice-card-actions">
+                        <a asp-controller="Proveedor" asp-action="CreateInvoice" asp-route-estimateId="@estimate.EstimateId" class="prv-pro-btn prv-pro-btn--primary">
+                            @L["Create Invoice"]
+                        </a>
+                    </div>
+                </div>
+            </article>
+        }
+    </section>
+</div>

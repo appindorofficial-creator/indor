@@ -24,6 +24,13 @@
         </div>
     </header>
 
+    @if (TempData["InvoiceNeedsApprovedEstimate"] as bool? == true)
+    {
+        <div class="prv-pro-alert">
+            <i class="fas fa-circle-info"></i> @L["No approved estimates are ready to invoice. Approve an estimate first."]
+        </div>
+    }
+
     @await Html.PartialAsync("_ProviderProEstimateTutorialCard", (
         Model.StepNumber,
         Model.TotalSteps,

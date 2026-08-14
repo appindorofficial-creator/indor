@@ -32,12 +32,14 @@ public class ProviderProInvoiceCardViewModel
     public int Id { get; set; }
     public string InvoiceCode { get; set; } = "";
     public string Address { get; set; } = "";
+    public string CustomerName { get; set; } = "";
     public string ServiceType { get; set; } = "";
     public decimal Amount { get; set; }
     public string Status { get; set; } = "";
     public string StatusClass { get; set; } = "pending";
     public string StatusIcon { get; set; } = "fa-clock";
     public string? DueDateLabel { get; set; }
+    public DateTime? DueDate { get; set; }
     public string? DaysLateLabel { get; set; }
     public bool ShowReminderAction { get; set; }
     public bool ShowMarkPaidAction { get; set; }
