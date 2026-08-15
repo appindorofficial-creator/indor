@@ -1024,7 +1024,8 @@ public partial class ProviderProDataService(
                 ? "Use a verification visit when photos are not enough to create an accurate estimate."
                 : null,
             ScheduleDateLabel = visitDate?.ToString("dddd, MMM d") ?? "",
-            VisitDate = visitDate?.ToString("yyyy-MM-dd") ?? "",
+            VisitDate = ClampVisitDateIso(visitDate?.ToString("yyyy-MM-dd")),
+            MinVisitDateIso = DateTime.Today.ToString("yyyy-MM-dd"),
             TimeLabel = lead.DefaultVisitTimeLabel ?? "",
             AssignedTechnician = lead.DefaultAssignedTechnician ?? "",
             Priority = lead.Urgency.Contains("High", StringComparison.OrdinalIgnoreCase) ? "High" : "Medium",
@@ -1042,6 +1043,11 @@ public partial class ProviderProDataService(
             .FirstOrDefaultAsync(l => l.Id == input.LeadId && l.ProveedorId == proveedorId, cancellationToken);
 
         if (lead == null || lead.Status == ProviderLeadStatuses.Declined)
+        {
+            return null;
+        }
+
+        if (IsVisitDateInThePast(input.VisitDate))
         {
             return null;
         }
@@ -2903,6 +2909,27 @@ public partial class ProviderProDataService(
         }
 
         return date;
+    }
+
+    private static bool IsVisitDateInThePast(string? visitDate)
+    {
+        if (string.IsNullOrWhiteSpace(visitDate) || !DateTime.TryParse(visitDate, out var date))
+        {
+            return false;
+        }
+
+        return date.Date < DateTime.Today;
+    }
+
+    private static string ClampVisitDateIso(string? visitDateIso)
+    {
+        var todayIso = DateTime.Today.ToString("yyyy-MM-dd");
+        if (string.IsNullOrWhiteSpace(visitDateIso))
+        {
+            return "";
+        }
+
+        return string.CompareOrdinal(visitDateIso, todayIso) < 0 ? todayIso : visitDateIso;
     }
 
     /// <summary>

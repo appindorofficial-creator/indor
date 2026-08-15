@@ -73,6 +73,7 @@
     <form asp-controller="Proveedor" asp-action="ScheduleVisit" method="post" class="prv-pro-create-form">
         @Html.AntiForgeryToken()
         <input type="hidden" name="LeadId" value="@Model.LeadId" />
+        <input type="hidden" name="Kind" value="@(Model.IsVerificationVisit ? "verification" : "")" />
 
         <label class="prv-pro-create-field">
             <i class="fas fa-clipboard-list"></i>
@@ -87,9 +88,13 @@
         <label class="prv-pro-create-field">
             <i class="fas fa-calendar"></i>
             <span>@L["Schedule Date"]</span>
-            <input type="date" name="VisitDate" value="@Model.VisitDate" />
+            <input type="date" name="VisitDate" value="@Model.VisitDate" min="@Model.MinVisitDateIso" />
             <i class="fas fa-chevron-right"></i>
         </label>
+        @if (ViewData.ModelState["VisitDate"]?.Errors.Count > 0)
+        {
+            <p class="prv-pro-form-error-banner" role="alert">@ViewData.ModelState["VisitDate"]!.Errors[0].ErrorMessage</p>
+        }
         <label class="prv-pro-create-field">
             <i class="fas fa-clock"></i>
             <span>@L["Time"]</span>
@@ -166,3 +171,21 @@
         </footer>
     </form>
 </div>
+
+@section Scripts {
+<script>
+(function () {
+    var input = document.querySelector('input[name="VisitDate"]');
+    if (!input) return;
+    var min = input.getAttribute('min');
+    function clampPastDate() {
+        if (min && input.value && input.value < min) {
+            input.value = min;
+        }
+    }
+    input.addEventListener('change', clampPastDate);
+    input.addEventListener('input', clampPastDate);
+    clampPastDate();
+})();
+</script>
+}

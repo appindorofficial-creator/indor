@@ -1175,6 +1175,7 @@ public static class UiTranslationsProveedor
             ["View Request"] = "Ver solicitud",
             ["Visit confirmed and added to your schedule."] = "Visita confirmada y agregada a tu agenda.",
             ["Visit Type"] = "Tipo de visita",
+            ["Visit date cannot be in the past."] = "La fecha de la visita no puede ser anterior a hoy.",
             ["Voice transcript"] = "Voice transcript",
             ["W-9 / Tax form"] = "Formulario W-9 / impuestos",
             ["W-9 / tax form"] = "Formulario W-9 / impuestos",

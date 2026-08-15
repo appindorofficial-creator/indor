@@ -2898,6 +2898,27 @@ public partial class ProveedorController(
             return proveedor.Result;
         }
 
+        if (DateTime.TryParse(input.VisitDate, out var visitDay) && visitDay.Date < DateTime.Today)
+        {
+            ModelState.AddModelError(nameof(input.VisitDate), localizer["Visit date cannot be in the past."]);
+            var invalidModel = await proData.GetScheduleVisitAsync(proveedor.Entity!, input.LeadId, input.Kind, cancellationToken);
+            if (invalidModel == null)
+            {
+                return NotFound();
+            }
+
+            invalidModel.VisitType = input.VisitType;
+            invalidModel.VisitDate = input.VisitDate ?? "";
+            invalidModel.TimeLabel = input.TimeLabel;
+            invalidModel.AssignedTechnician = input.AssignedTechnician;
+            invalidModel.Priority = input.Priority;
+            invalidModel.Reminder = input.Reminder;
+            invalidModel.Notes = input.Notes;
+            invalidModel.NotifyHomeowner = input.NotifyHomeowner;
+            invalidModel.AddToCalendar = input.AddToCalendar;
+            return View(invalidModel);
+        }
+
         var jobId = await proData.ConfirmScheduleVisitAsync(proveedor.Entity!.Id, input, cancellationToken);
         if (!jobId.HasValue)
         {

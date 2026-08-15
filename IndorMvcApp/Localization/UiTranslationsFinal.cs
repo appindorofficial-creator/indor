@@ -4233,5 +4233,6 @@ public static class UiTranslationsFinal
             ["Pressed: Schedule Visit"] = "Pulsado: Programar visita",
             ["Now: Verification Visit"] = "Ahora: Visita de verificación",
             ["Now: Schedule Visit"] = "Ahora: Programar visita",
+            ["Visit date cannot be in the past."] = "La fecha de la visita no puede ser anterior a hoy.",
         };
 }

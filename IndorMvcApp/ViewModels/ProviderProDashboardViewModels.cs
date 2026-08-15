@@ -280,6 +280,7 @@ public class ProviderProScheduleVisitViewModel : ProviderProPageBaseViewModel
     public string? InfoBanner { get; set; }
     public string ScheduleDateLabel { get; set; } = "";
     public string VisitDate { get; set; } = "";
+    public string MinVisitDateIso { get; set; } = DateTime.Today.ToString("yyyy-MM-dd");
     public string TimeLabel { get; set; } = "10:30 AM";
     public string AssignedTechnician { get; set; } = "";
     public string Priority { get; set; } = "High";
@@ -295,6 +296,7 @@ public class ProviderProScheduleVisitInput
     public int LeadId { get; set; }
     public string VisitType { get; set; } = "Estimate Visit";
     public string? VisitDate { get; set; }
+    public string? Kind { get; set; }
     public string TimeLabel { get; set; } = "10:30 AM";
     public string AssignedTechnician { get; set; } = "";
     public string Priority { get; set; } = "High";
