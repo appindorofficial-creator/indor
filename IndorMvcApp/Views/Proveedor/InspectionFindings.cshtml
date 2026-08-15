@@ -19,8 +19,9 @@
 
     @if (!string.IsNullOrWhiteSpace(Model.InspectionReportUrl))
     {
-        <a href="@Url.Content($"~{Model.InspectionReportUrl}")" target="_blank" rel="noopener"
-           class="prv-pro-btn prv-pro-btn--ghost prv-pro-inspection-pdf-btn">
+        <a asp-controller="Proveedor" asp-action="ViewInspectionReport"
+           asp-route-id="@Model.LeadId" asp-route-from="findings"
+           class="prv-pro-btn prv-pro-btn--ghost prv-pro-inspection-pdf-btn" data-no-nav-loading>
             <i class="fas fa-file-pdf"></i> @L["View Full Inspection Report PDF"]</a>
     }
 
@@ -71,8 +72,10 @@
                         <div class="prv-pro-finding-actions">
                             @if (!string.IsNullOrWhiteSpace(Model.InspectionReportUrl) && item.SourcePage.HasValue)
                             {
-                                <a href="@($"{Url.Content($"~{Model.InspectionReportUrl}")}#page={item.SourcePage}")"
-                                   target="_blank" rel="noopener" class="prv-pro-btn prv-pro-btn--ghost prv-pro-btn--sm">
+                                <a asp-controller="Proveedor" asp-action="ViewInspectionReport"
+                                   asp-route-id="@Model.LeadId" asp-route-from="findings"
+                                   asp-route-reportPage="@item.SourcePage"
+                                   class="prv-pro-btn prv-pro-btn--ghost prv-pro-btn--sm" data-no-nav-loading>
                                     <i class="fas fa-file-pdf"></i> @L["View in PDF"]</a>
                             }
                         </div>

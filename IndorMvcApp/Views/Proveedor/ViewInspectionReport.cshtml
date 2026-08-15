@@ -1,0 +1,75 @@
+@model IndorMvcApp.ViewModels.ProviderProInspectionReportViewModel
+@{
+    Layout = "_ProviderProLayout";
+    ViewData["Title"] = L["Inspection Report"];
+    ViewBag.NavActive = "home";
+    ViewBag.HideBottomNav = true;
+    var startPage = Model.SourcePage is > 0 ? Model.SourcePage.Value : 1;
+}
+
+<div class="prv-pro-shell prv-pro-shell--insp-report">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <header class="prv-pro-lead-details-head">
+        <a href="@Model.BackUrl" class="prv-pro-lead-back" data-no-nav-loading aria-label="@Model.BackLabel">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <div>
+            <h1>@Model.ReportFileName</h1>
+            <small id="rlReportPageLabel">
+                @(Model.SourcePage is > 0 ? L.T("Page {0}", Model.SourcePage.Value) : L["Inspection report"])
+            </small>
+        </div>
+    </header>
+
+    <div class="prv-pro-insp-report-toolbar" id="rlReportToolbar" hidden>
+        <button type="button" class="prv-pro-insp-report-nav-btn" id="rlReportPrev" aria-label="@L["Previous page"]">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <span class="prv-pro-insp-report-page-indicator" id="rlReportPageIndicator"></span>
+        <button type="button" class="prv-pro-insp-report-nav-btn" id="rlReportNext" aria-label="@L["Next page"]">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <div class="prv-pro-insp-report-viewer"
+         id="rlReportViewer"
+         data-pdf-url="@Model.ReportUrl"
+         data-start-page="@startPage">
+        <div class="prv-pro-insp-report-loading" id="rlReportLoading">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>@L["Loading report page…"]</span>
+        </div>
+        <canvas id="rlReportCanvas" class="prv-pro-insp-report-canvas" hidden></canvas>
+        <p class="prv-pro-insp-report-error" id="rlReportError" hidden>@L["Could not open this report page. Try again."]</p>
+    </div>
+
+    <a href="@Model.BackUrl" class="prv-pro-insp-report-back-link" data-no-nav-loading>
+        <i class="fas fa-chevron-left"></i> @Model.BackLabel
+    </a>
+</div>
+
+@section Scripts {
+<script src="~/lib/pdfjs/pdf.min.js" asp-append-version="true"></script>
+<script src="~/js/realtor-pdf-viewer.js" asp-append-version="true"></script>
+<script>
+    (function () {
+        var qsPage = parseInt(new URLSearchParams(window.location.search).get('reportPage')
+            || new URLSearchParams(window.location.search).get('page')
+            || '', 10);
+        var viewer = document.getElementById('rlReportViewer');
+        var attrPage = parseInt((viewer && viewer.getAttribute('data-start-page')) || '@startPage', 10);
+        var startPage = (Number.isFinite(qsPage) && qsPage > 0) ? qsPage
+            : (Number.isFinite(attrPage) && attrPage > 0) ? attrPage
+            : 1;
+
+        IndorRealtorPdfViewer.boot({
+            pdfUrl: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ReportUrl)),
+            workerSrc: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Url.Content("~/lib/pdfjs/pdf.worker.min.js"))),
+            startPage: startPage,
+            pageLabelTemplate: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Page {0}"].ToString())),
+            ofTemplate: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Page {0} of {1}"].ToString()))
+        });
+    })();
+</script>
+}

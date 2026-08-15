@@ -16,7 +16,8 @@
             <span>@Model.SourceBadge</span>
             @if (!string.IsNullOrWhiteSpace(Model.InspectionReportUrl))
             {
-                <a href="@Url.Content($"~{Model.InspectionReportUrl}")" target="_blank" rel="noopener">@L["View inspection PDF"]</a>
+                <a asp-controller="Proveedor" asp-action="ViewInspectionReport"
+                   asp-route-id="@Model.LeadId" asp-route-from="estimate" data-no-nav-loading>@L["View inspection PDF"]</a>
             }
         </div>
     }

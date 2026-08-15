@@ -2088,6 +2088,68 @@ public partial class ProveedorController(
         return model == null ? NotFound() : View(model);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> ViewInspectionReport(
+        int id,
+        int? reportPage,
+        int? page,
+        string? from,
+        CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var lead = await proData.GetLeadDetailsAsync(proveedor.Entity!, id, cancellationToken);
+        if (lead == null || string.IsNullOrWhiteSpace(lead.InspectionReportUrl))
+        {
+            return NotFound();
+        }
+
+        // Prefer reportPage — "page" is reserved. Do not use #page=N (WebView PDF viewers ignore it).
+        var startPage = reportPage is > 0
+            ? reportPage
+            : page is > 0 ? page : null;
+        if (startPage is null
+            && int.TryParse(Request.Query["reportPage"], out var qpReport)
+            && qpReport > 0)
+        {
+            startPage = qpReport;
+        }
+
+        var storedUrl = lead.InspectionReportUrl.Trim();
+        var reportUrl = storedUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+            ? storedUrl
+            : Url.Content($"~{storedUrl}")!;
+
+        var fromKey = (from ?? "").Trim().ToLowerInvariant();
+        var backUrl = fromKey switch
+        {
+            "findings" => Url.Action(nameof(InspectionFindings), new { id })!,
+            "estimate" => Url.Action(nameof(QuickEstimate), new { id })!,
+            _ => Url.Action(nameof(LeadDetails), new { id })!
+        };
+        var backLabel = fromKey switch
+        {
+            "findings" => localizer["Back to inspection findings"].ToString(),
+            "estimate" => localizer["Back to estimate"].ToString(),
+            _ => localizer["Back to lead details"].ToString()
+        };
+
+        return View(new ProviderProInspectionReportViewModel
+        {
+            CompanyName = lead.CompanyName,
+            LeadId = id,
+            ReportFileName = localizer["Inspection Report"].ToString(),
+            ReportUrl = reportUrl,
+            SourcePage = startPage,
+            BackUrl = backUrl,
+            BackLabel = backLabel
+        });
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> InspectionFindings(int id, int[] selectedFindingIndices, string? action, CancellationToken cancellationToken)

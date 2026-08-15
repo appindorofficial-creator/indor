@@ -338,3 +338,13 @@ public class ProviderProCalendarDayViewModel
     public string DateIso { get; set; } = "";
     public int JobCount { get; set; }
 }
+
+public class ProviderProInspectionReportViewModel : ProviderProPageBaseViewModel
+{
+    public int LeadId { get; set; }
+    public string ReportFileName { get; set; } = "Inspection Report";
+    public string ReportUrl { get; set; } = "";
+    public int? SourcePage { get; set; }
+    public string BackUrl { get; set; } = "";
+    public string BackLabel { get; set; } = "Back";
+}

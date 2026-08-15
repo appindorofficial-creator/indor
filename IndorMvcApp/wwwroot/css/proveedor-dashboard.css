@@ -7600,3 +7600,94 @@ a.prv-pro-notify-item:hover { background: #F8FAFC; }
     text-decoration: none;
 }
 .prv-pro-notify-settings-link:hover { text-decoration: underline; }
+
+.prv-pro-shell--insp-report {
+    display: flex;
+    flex-direction: column;
+    min-height: 100dvh;
+    padding-bottom: 16px;
+}
+.prv-pro-insp-report-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin: 0 0 10px;
+}
+.prv-pro-insp-report-nav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid #E2E8F0;
+    background: #fff;
+    color: #0066CC;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+.prv-pro-insp-report-nav-btn:disabled {
+    opacity: .4;
+    cursor: default;
+}
+.prv-pro-insp-report-page-indicator {
+    font-size: .82rem;
+    font-weight: 700;
+    color: #0F172A;
+    min-width: 7rem;
+    text-align: center;
+}
+.prv-pro-insp-report-viewer {
+    flex: 1;
+    width: 100%;
+    min-height: 60dvh;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    background: #F8FAFC;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    box-sizing: border-box;
+}
+.prv-pro-insp-report-canvas {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    background: #fff;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, .08);
+    border-radius: 4px;
+}
+.prv-pro-insp-report-loading,
+.prv-pro-insp-report-error {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 40dvh;
+    color: #64748B;
+    font-size: .9rem;
+    font-weight: 600;
+    text-align: center;
+    padding: 24px;
+}
+.prv-pro-insp-report-loading[hidden],
+.prv-pro-insp-report-error[hidden],
+.prv-pro-insp-report-canvas[hidden],
+.prv-pro-insp-report-toolbar[hidden] {
+    display: none !important;
+}
+.prv-pro-insp-report-error { color: #B91C1C; }
+.prv-pro-insp-report-back-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin: 12px auto 8px;
+    padding: 10px 14px;
+    color: #475569;
+    font-size: .82rem;
+    font-weight: 600;
+    text-decoration: none;
+}
