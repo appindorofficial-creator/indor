@@ -473,10 +473,19 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
         var notes = string.IsNullOrWhiteSpace(draft.QuoteRequestNotes)
             ? BuildDefaultQuoteRequestNotes(draft)
             : draft.QuoteRequestNotes;
+        if (NeedsDefaultQuoteNotes(notes))
+        {
+            notes = BuildDefaultQuoteRequestNotes(draft);
+            draft.QuoteRequestNotes = notes;
+        }
 
         if (draft.Attachments.Count == 0)
         {
             draft.Attachments = BuildDefaultQuoteAttachments();
+        }
+        else
+        {
+            LocalizeDefaultQuoteAttachments(draft.Attachments);
         }
 
         return Task.FromResult<ProviderProCreateJobQuoteViewModel?>(new ProviderProCreateJobQuoteViewModel
@@ -491,6 +500,8 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
             CustomerTone = DeriveAvatarTone(draft.ClienteId ?? draft.CustomerName.GetHashCode()),
             SendQuote = draft.SendQuote,
             QuoteRequestNotes = notes,
+            HasVoiceRecording = draft.HasVoiceRecording,
+            VoiceTranscript = draft.VoiceTranscript,
             Attachments = draft.Attachments,
             StepSubtitle = "Create quote request",
             WizardSteps = BuildCreateJobWizardSteps(3)
@@ -1355,6 +1366,22 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
         return match == default ? ("fa-wrench", "blue") : (match.Icon, match.Tone);
     }
 
+    private static bool NeedsDefaultQuoteNotes(string? notes)
+    {
+        if (string.IsNullOrWhiteSpace(notes))
+        {
+            return true;
+        }
+
+        if (!DisplayLabelsLocalization.IsSpanishUi)
+        {
+            return false;
+        }
+
+        return notes.StartsWith("Please review the requested", StringComparison.OrdinalIgnoreCase)
+            || notes.StartsWith("Please inspect the water damage", StringComparison.OrdinalIgnoreCase);
+    }
+
     private string BuildDefaultQuoteRequestNotes(ProviderProCreateJobDraft draft)
     {
         if (draft.ServiceCategoryId.Equals("inspection", StringComparison.OrdinalIgnoreCase)
@@ -1366,19 +1393,33 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
                 "Please inspect the water damage in the kitchen ceiling and adjacent living room. Identify the source, document affected areas, and provide a repair estimate. Include minor drywall repair and repaint as needed.");
         }
 
-        var category = localizer.T(draft.ServiceCategoryLabel).ToLowerInvariant();
+        var category = localizer.T(draft.ServiceCategoryLabel);
         return localizer.T(
             "Please review the requested {0} work at {1}. Document findings and provide a repair estimate with recommended next steps.",
             category,
             draft.Address);
     }
 
-    private static List<ProviderProCreateJobAttachmentViewModel> BuildDefaultQuoteAttachments() =>
+    private List<ProviderProCreateJobAttachmentViewModel> BuildDefaultQuoteAttachments() =>
     [
-        new() { Id = "ceiling", Name = "Ceiling Damage.jpg", SizeLabel = "2.4 MB", Kind = "image", ThumbnailUrl = "/welcome-house.png" },
-        new() { Id = "kitchen", Name = "Kitchen Area.jpg", SizeLabel = "1.8 MB", Kind = "image", ThumbnailUrl = "/welcome-house.png" },
-        new() { Id = "notes", Name = "Notes.docx", SizeLabel = "412 KB", Kind = "document" }
+        new() { Id = "ceiling", Name = localizer.T("Ceiling Damage.jpg"), SizeLabel = "2.4 MB", Kind = "image", ThumbnailUrl = "/welcome-house.png" },
+        new() { Id = "kitchen", Name = localizer.T("Kitchen Area.jpg"), SizeLabel = "1.8 MB", Kind = "image", ThumbnailUrl = "/welcome-house.png" },
+        new() { Id = "notes", Name = localizer.T("Notes.docx"), SizeLabel = "412 KB", Kind = "document" }
     ];
+
+    private void LocalizeDefaultQuoteAttachments(List<ProviderProCreateJobAttachmentViewModel> attachments)
+    {
+        foreach (var file in attachments)
+        {
+            file.Name = file.Id switch
+            {
+                "ceiling" => localizer.T("Ceiling Damage.jpg"),
+                "kitchen" => localizer.T("Kitchen Area.jpg"),
+                "notes" => localizer.T("Notes.docx"),
+                _ => localizer.T(file.Name)
+            };
+        }
+    }
 
     private static string BuildAiCustomerNeeds(ProviderProCreateJobDraft draft, string notes)
     {

@@ -119,6 +119,8 @@ public class ProviderProCreateJobQuoteViewModel : ProviderProPageBaseViewModel
     public string CustomerTone { get; set; } = "green";
     public bool SendQuote { get; set; } = true;
     public string QuoteRequestNotes { get; set; } = "";
+    public bool HasVoiceRecording { get; set; }
+    public string? VoiceTranscript { get; set; }
     public int MaxCharacters { get; set; } = 1000;
     public List<ProviderProCreateJobAttachmentViewModel> Attachments { get; set; } = [];
     public List<ProviderProWizardStepViewModel> WizardSteps { get; set; } = [];
@@ -200,6 +202,7 @@ public class ProviderProCreateJobDraft
     public bool SendQuote { get; set; } = true;
     public string QuoteRequestNotes { get; set; } = "";
     public bool HasVoiceRecording { get; set; }
+    public string? VoiceTranscript { get; set; }
     public bool AiDraftGenerated { get; set; }
     public string AiCustomerNeeds { get; set; } = "";
     public List<string> AiRecommendedScope { get; set; } = [];
@@ -343,6 +346,7 @@ public class ProviderProCreateJobQuoteInput
     public bool SendQuote { get; set; } = true;
     public string QuoteRequestNotes { get; set; } = "";
     public bool HasVoiceRecording { get; set; }
+    public string? VoiceTranscript { get; set; }
     public string SubmitAction { get; set; } = "ai";
 }
 

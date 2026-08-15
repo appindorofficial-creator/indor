@@ -33,7 +33,7 @@
         @Html.AntiForgeryToken()
         <input type="hidden" name="SendQuote" id="createJobSendQuote" value="@(Model.SendQuote ? "true" : "false")" />
         <input type="hidden" name="SubmitAction" id="createJobQuoteAction" value="ai" />
-        <input type="hidden" name="HasVoiceRecording" id="createJobHasVoice" value="false" />
+        <input type="hidden" name="HasVoiceRecording" id="createJobHasVoice" value="@(Model.HasVoiceRecording ? "true" : "false")" />
 
         <section class="prv-pro-wizard-card">
             <h2>@L["Would you like to send a quote from INDOR?"]</h2>
@@ -55,26 +55,51 @@
             </label>
             <div class="prv-pro-quote-charcount"><span id="createJobQuoteCount">@charCount</span> / @Model.MaxCharacters</div>
 
-            <div class="prv-pro-quote-audio"
+            <div class="prv-pro-quote-audio @(Model.HasVoiceRecording ? "is-recorded" : "")"
                  id="createJobQuoteAudio"
                  data-label-record="@L["Record audio"]"
                  data-label-stop="@L["Stop recording"]"
                  data-label-recorded="@L["Audio recorded"]"
+                 data-label-play="@L["Play recording"]"
+                 data-label-pause="@L["Pause recording"]"
+                 data-label-delete="@L["Delete recording"]"
+                 data-label-transcribing="@L["Transcribing…"]"
+                 data-label-no-transcript="@L["Could not transcribe this recording."]"
+                 data-speech-lang="@(L.IsSpanish ? "es-US" : "en-US")"
                  data-msg-mic-denied="@L["Microphone permission is required to record audio."]"
                  data-msg-mic-unavailable="@L["Microphone is not available in this browser."]">
                 <button type="button" class="prv-pro-quote-mic" id="createJobQuoteMic" title="@L["Record audio"]" aria-pressed="false">
                     <i class="fas fa-microphone"></i>
                 </button>
                 <div class="prv-pro-quote-audio-body">
-                    <button type="button" class="prv-pro-quote-record-btn" id="createJobQuoteRecord">@L["Record audio"]</button>
-                    <div class="prv-pro-quote-wave" id="createJobQuoteWave" aria-hidden="true">
+                    <button type="button" class="prv-pro-quote-record-btn" id="createJobQuoteRecord">
+                        @(Model.HasVoiceRecording ? L["Audio recorded"] : L["Record audio"])
+                    </button>
+                    <div class="prv-pro-quote-wave @(Model.HasVoiceRecording ? "is-recorded" : "")" id="createJobQuoteWave" aria-hidden="true">
                         @for (var i = 0; i < 24; i++) { <span></span> }
                     </div>
                     <small id="createJobQuoteTimer">00:00</small>
+                    <div class="prv-pro-quote-audio-actions @(Model.HasVoiceRecording ? "" : "is-hidden")" id="createJobQuoteAudioActions">
+                        <button type="button" class="prv-pro-quote-audio-icon-btn" id="createJobQuotePlay"
+                                aria-label="@L["Play recording"]" title="@L["Play recording"]">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button type="button" class="prv-pro-quote-audio-icon-btn prv-pro-quote-audio-icon-btn--danger" id="createJobQuoteDelete"
+                                aria-label="@L["Delete recording"]" title="@L["Delete recording"]">
+                            <i class="fas fa-xmark"></i>
+                        </button>
+                    </div>
                 </div>
+                <audio id="createJobQuotePlayer" preload="metadata" playsinline></audio>
             </div>
             <p class="prv-pro-quote-audio-error is-hidden" id="createJobQuoteAudioError" role="alert"></p>
             <small class="prv-pro-wizard-hint">@L["AI will transcribe audio automatically"]</small>
+            <input type="hidden" name="VoiceTranscript" id="createJobVoiceTranscript" value="@Model.VoiceTranscript" />
+            <div class="prv-pro-quote-transcript @(string.IsNullOrWhiteSpace(Model.VoiceTranscript) && !Model.HasVoiceRecording ? "is-hidden" : "")"
+                 id="createJobQuoteTranscript">
+                <strong>@L["Voice transcript"]</strong>
+                <p id="createJobQuoteTranscriptText">@(string.IsNullOrWhiteSpace(Model.VoiceTranscript) ? "" : Model.VoiceTranscript)</p>
+            </div>
 
             <div class="prv-pro-quote-attachments">
                 <h3>@L["Add photos or inspection notes (optional)"]</h3>
@@ -131,9 +156,19 @@
             var timerEl = document.getElementById('createJobQuoteTimer');
             var errorEl = document.getElementById('createJobQuoteAudioError');
             var hasVoiceInput = document.getElementById('createJobHasVoice');
+            var actionsEl = document.getElementById('createJobQuoteAudioActions');
+            var playBtn = document.getElementById('createJobQuotePlay');
+            var deleteBtn = document.getElementById('createJobQuoteDelete');
+            var player = document.getElementById('createJobQuotePlayer');
+            var transcriptBox = document.getElementById('createJobQuoteTranscript');
+            var transcriptText = document.getElementById('createJobQuoteTranscriptText');
+            var transcriptInput = document.getElementById('createJobVoiceTranscript');
             var mediaRecorder = null;
             var mediaStream = null;
             var recordedChunks = [];
+            var audioUrl = null;
+            var speechRec = null;
+            var transcriptParts = [];
             var timerId = null;
             var startedAt = 0;
             var recording = false;
@@ -177,15 +212,40 @@
                 errorEl.classList.toggle('is-hidden', !message);
             }
 
+            function hasRecording() {
+                return hasVoiceInput && hasVoiceInput.value === 'true';
+            }
+
+            function setPlayIcon(playing) {
+                if (!playBtn) return;
+                var icon = playBtn.querySelector('i');
+                if (icon) icon.className = playing ? 'fas fa-pause' : 'fas fa-play';
+                var label = audioRoot?.getAttribute(playing ? 'data-label-pause' : 'data-label-play') || (playing ? 'Pause' : 'Play');
+                playBtn.setAttribute('aria-label', label);
+                playBtn.setAttribute('title', label);
+            }
+
+            function showTranscript(text, pending) {
+                if (!transcriptBox || !transcriptText) return;
+                transcriptText.textContent = text || '';
+                transcriptBox.classList.toggle('is-hidden', !text);
+                transcriptBox.classList.toggle('is-pending', !!pending);
+                transcriptBox.classList.remove('is-empty');
+                if (transcriptInput && !pending) transcriptInput.value = text || '';
+            }
+
             function setRecordingUi(isRecording) {
                 recording = isRecording;
+                var recorded = hasRecording();
                 audioRoot?.classList.toggle('is-recording', isRecording);
+                audioRoot?.classList.toggle('is-recorded', !isRecording && recorded);
                 micBtn?.classList.toggle('is-recording', isRecording);
                 micBtn?.setAttribute('aria-pressed', isRecording ? 'true' : 'false');
+                actionsEl?.classList.toggle('is-hidden', isRecording || !recorded);
                 if (recordBtn && audioRoot) {
                     recordBtn.textContent = isRecording
                         ? (audioRoot.getAttribute('data-label-stop') || 'Stop recording')
-                        : (hasVoiceInput && hasVoiceInput.value === 'true'
+                        : (recorded
                             ? (audioRoot.getAttribute('data-label-recorded') || 'Audio recorded')
                             : (audioRoot.getAttribute('data-label-record') || 'Record audio'));
                 }
@@ -214,10 +274,110 @@
                 }
             }
 
-            function stopRecording() {
+            function revokeAudioUrl() {
+                if (player) {
+                    player.pause();
+                    player.removeAttribute('src');
+                    player.load();
+                }
+                if (audioUrl) {
+                    URL.revokeObjectURL(audioUrl);
+                    audioUrl = null;
+                }
+                setPlayIcon(false);
+                if (playBtn) playBtn.disabled = true;
+            }
+
+            function attachRecording(blob) {
+                revokeAudioUrl();
+                if (!blob || blob.size === 0 || !player) return;
+                audioUrl = URL.createObjectURL(blob);
+                player.src = audioUrl;
+                if (playBtn) playBtn.disabled = false;
+            }
+
+            function stopSpeech() {
+                if (!speechRec) return;
+                try {
+                    speechRec.onresult = null;
+                    speechRec.onerror = null;
+                    speechRec.onend = null;
+                    speechRec.stop();
+                } catch (_) { }
+                speechRec = null;
+            }
+
+            function startSpeech() {
+                stopSpeech();
+                transcriptParts = [];
+                var Ctor = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!Ctor) return;
+                speechRec = new Ctor();
+                speechRec.continuous = true;
+                speechRec.interimResults = true;
+                speechRec.lang = audioRoot?.getAttribute('data-speech-lang') || 'en-US';
+                speechRec.onresult = function (event) {
+                    var interim = '';
+                    for (var i = event.resultIndex; i < event.results.length; i++) {
+                        var piece = event.results[i][0] && event.results[i][0].transcript
+                            ? event.results[i][0].transcript
+                            : '';
+                        if (event.results[i].isFinal) transcriptParts.push(piece);
+                        else interim += piece;
+                    }
+                    var text = (transcriptParts.join(' ') + ' ' + interim).replace(/\s+/g, ' ').trim();
+                    if (text) showTranscript(text, true);
+                };
+                speechRec.onend = function () {
+                    if (recording && speechRec) {
+                        try { speechRec.start(); } catch (_) { }
+                    }
+                };
+                try { speechRec.start(); } catch (_) { }
+            }
+
+            function finalizeTranscript(hasAudio) {
+                var finalText = transcriptParts.join(' ').replace(/\s+/g, ' ').trim();
+                if (!hasAudio) {
+                    showTranscript('', false);
+                    return;
+                }
+                if (finalText) {
+                    showTranscript(finalText, false);
+                    return;
+                }
+                if (transcriptText) {
+                    transcriptText.textContent = audioRoot?.getAttribute('data-label-no-transcript')
+                        || 'Could not transcribe this recording.';
+                }
+                if (transcriptBox) {
+                    transcriptBox.classList.remove('is-hidden');
+                    transcriptBox.classList.remove('is-pending');
+                    transcriptBox.classList.add('is-empty');
+                }
+                if (transcriptInput) transcriptInput.value = '';
+            }
+
+            function deleteRecording() {
+                if (recording) stopRecording(true);
+                stopSpeech();
+                revokeAudioUrl();
+                recordedChunks = [];
+                transcriptParts = [];
+                if (hasVoiceInput) hasVoiceInput.value = 'false';
+                if (wave) wave.classList.remove('is-recorded');
+                if (timerEl) timerEl.textContent = '00:00';
+                showTranscript('', false);
+                if (transcriptBox) transcriptBox.classList.remove('is-empty');
+                setRecordingUi(false);
+            }
+
+            function stopRecording(discard) {
                 if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                    mediaRecorder._discard = !!discard;
                     mediaRecorder.stop();
                 } else {
+                    stopSpeech();
                     cleanupStream();
                     stopTimer();
                     setRecordingUi(false);
@@ -231,8 +391,15 @@
                     return;
                 }
                 try {
-                    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    stopSpeech();
+                    revokeAudioUrl();
                     recordedChunks = [];
+                    transcriptParts = [];
+                    if (hasVoiceInput) hasVoiceInput.value = 'false';
+                    if (wave) wave.classList.remove('is-recorded');
+                    showTranscript(audioRoot?.getAttribute('data-label-transcribing') || 'Transcribing…', true);
+                    if (transcriptBox) transcriptBox.classList.remove('is-empty');
+                    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
                     var mime = MediaRecorder.isTypeSupported('audio/webm')
                         ? 'audio/webm'
                         : (MediaRecorder.isTypeSupported('audio/mp4') ? 'audio/mp4' : '');
@@ -243,31 +410,57 @@
                         if (e.data && e.data.size > 0) recordedChunks.push(e.data);
                     });
                     mediaRecorder.addEventListener('stop', function () {
+                        var discard = !!mediaRecorder._discard;
+                        stopSpeech();
                         cleanupStream();
                         stopTimer();
+                        if (discard) {
+                            recordedChunks = [];
+                            if (hasVoiceInput) hasVoiceInput.value = 'false';
+                            setRecordingUi(false);
+                            return;
+                        }
                         var hasAudio = recordedChunks.some(function (c) { return c && c.size > 0; });
-                        if (hasVoiceInput) hasVoiceInput.value = hasAudio ? 'true' : hasVoiceInput.value;
+                        if (hasVoiceInput) hasVoiceInput.value = hasAudio ? 'true' : 'false';
+                        if (hasAudio) {
+                            var type = (mediaRecorder && mediaRecorder.mimeType) ? mediaRecorder.mimeType : (mime || 'audio/webm');
+                            attachRecording(new Blob(recordedChunks, { type: type }));
+                            if (wave) wave.classList.add('is-recorded');
+                        }
                         setRecordingUi(false);
-                        if (hasAudio && wave) wave.classList.add('is-recorded');
+                        finalizeTranscript(hasAudio);
                     });
-                    mediaRecorder.start();
+                    mediaRecorder.start(250);
+                    startSpeech();
                     startTimer();
                     setRecordingUi(true);
                 } catch (_) {
+                    stopSpeech();
                     cleanupStream();
                     stopTimer();
+                    showTranscript('', false);
                     setRecordingUi(false);
                     showAudioError(audioRoot?.getAttribute('data-msg-mic-denied') || 'Microphone permission is required to record audio.');
                 }
             }
 
             function toggleRecording() {
-                if (recording) stopRecording();
+                if (recording) stopRecording(false);
                 else startRecording();
             }
 
             micBtn?.addEventListener('click', toggleRecording);
             recordBtn?.addEventListener('click', toggleRecording);
+            playBtn?.addEventListener('click', function () {
+                if (!player || !player.src) return;
+                if (player.paused) player.play();
+                else player.pause();
+            });
+            player?.addEventListener('play', function () { setPlayIcon(true); });
+            player?.addEventListener('pause', function () { setPlayIcon(false); });
+            player?.addEventListener('ended', function () { setPlayIcon(false); });
+            deleteBtn?.addEventListener('click', deleteRecording);
+            if (playBtn && (!player || !player.getAttribute('src'))) playBtn.disabled = true;
         })();
     </script>
 }

@@ -3261,9 +3261,24 @@ public partial class ProveedorController(
         draft.QuoteRequestNotes = input.QuoteRequestNotes.Trim();
         draft.Description = draft.QuoteRequestNotes;
         draft.HasVoiceRecording = input.HasVoiceRecording;
+        var transcript = (input.VoiceTranscript ?? "").Trim();
+        draft.VoiceTranscript = transcript;
         if (input.HasVoiceRecording)
         {
             draft.IncludeVoiceTranscript = true;
+            if (!string.IsNullOrWhiteSpace(transcript)
+                && draft.QuoteRequestNotes.IndexOf(transcript, StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                draft.QuoteRequestNotes = string.IsNullOrWhiteSpace(draft.QuoteRequestNotes)
+                    ? transcript
+                    : draft.QuoteRequestNotes.TrimEnd() + "\n\n" + transcript;
+                draft.Description = draft.QuoteRequestNotes;
+            }
+        }
+        else
+        {
+            draft.IncludeVoiceTranscript = false;
+            draft.VoiceTranscript = null;
         }
         draft.AiDraftGenerated = false;
         SaveCreateJobDraft(draft);
