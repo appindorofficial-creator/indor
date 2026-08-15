@@ -101,6 +101,36 @@ public static class UiDisplayLocalization
     }
 
     /// <summary>
+    /// Job notes are stored as English fragments joined by ". " (reminder, notify, calendar).
+    /// Localize each sentence so mixed stored copy still displays in Spanish.
+    /// </summary>
+    public static string LocalizeNotes(IIndorLocalizer localizer, string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return string.Empty;
+        }
+
+        var trimmed = text.Trim().TrimStart('.', ' ').Trim();
+        if (trimmed.Length == 0)
+        {
+            return string.Empty;
+        }
+
+        var hadTrailingPeriod = trimmed.EndsWith('.');
+        var body = hadTrailingPeriod ? trimmed[..^1] : trimmed;
+        var segments = body.Split(". ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        if (segments.Length <= 1)
+        {
+            return Localize(localizer, trimmed);
+        }
+
+        var localized = segments.Select(part => Localize(localizer, part).TrimEnd('.').Trim());
+        var joined = string.Join(". ", localized);
+        return hadTrailingPeriod ? joined + "." : joined;
+    }
+
+    /// <summary>
     /// If <paramref name="text"/> is a known Spanish UI value, return its English catalog key;
     /// otherwise return the trimmed original. Keeps stored job/quote titles English-keyed.
     /// </summary>
@@ -957,6 +987,11 @@ public static class UiDisplayLocalization
         if (text.StartsWith("Now: ", StringComparison.OrdinalIgnoreCase))
         {
             return localizer.T("Now: {0}", Localize(localizer, text["Now: ".Length..].Trim()));
+        }
+
+        if (text.StartsWith("Reminder: ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Reminder: {0}", Localize(localizer, text["Reminder: ".Length..].Trim()));
         }
 
         var itemsMatch = Regex.Match(text, @"^(\d+) Items?$", RegexOptions.IgnoreCase);

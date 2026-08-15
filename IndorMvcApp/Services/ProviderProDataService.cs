@@ -1075,11 +1075,28 @@ public partial class ProviderProDataService(
             await db.SaveChangesAsync(cancellationToken);
         }
 
-        var reminderNote = input.NotifyHomeowner
-            ? $"Reminder: {input.Reminder}. Homeowner notified."
-            : $"Reminder: {input.Reminder}.";
+        var noteParts = new List<string>();
+        if (!string.IsNullOrWhiteSpace(input.Notes))
+        {
+            noteParts.Add(input.Notes.Trim().TrimEnd('.'));
+        }
 
-        var calendarNote = input.AddToCalendar ? " Added to provider calendar." : "";
+        if (!string.IsNullOrWhiteSpace(input.Reminder))
+        {
+            noteParts.Add($"Reminder: {input.Reminder.Trim().TrimEnd('.')}");
+        }
+
+        if (input.NotifyHomeowner)
+        {
+            noteParts.Add("Homeowner notified");
+        }
+
+        if (input.AddToCalendar)
+        {
+            noteParts.Add("Added to provider calendar");
+        }
+
+        var jobNotes = noteParts.Count == 0 ? "" : string.Join(". ", noteParts) + ".";
 
         var linkedEstimate = await db.IndorProveedorEstimates
             .AsNoTracking()
@@ -1100,7 +1117,7 @@ public partial class ProviderProDataService(
             IsDraft = input.SaveAsDraft,
             AssignedTechnician = input.AssignedTechnician,
             Priority = input.Priority,
-            JobNotes = $"{input.Notes}. {reminderNote}{calendarNote}",
+            JobNotes = jobNotes,
             ScopeOfWork = lead.ProblemDescription ?? input.Notes,
             AccessInstructions = lead.AccessNotes,
             ImageUrl = lead.ImageUrl,

@@ -4234,5 +4234,10 @@ public static class UiTranslationsFinal
             ["Now: Verification Visit"] = "Ahora: Visita de verificación",
             ["Now: Schedule Visit"] = "Ahora: Programar visita",
             ["Visit date cannot be in the past."] = "La fecha de la visita no puede ser anterior a hoy.",
+            ["Reminder: {0}"] = "Recordatorio: {0}",
+            ["Homeowner notified"] = "Propietario notificado",
+            ["Added to provider calendar"] = "Agregada al calendario del proveedor",
+            ["Job Notes"] = "Notas del trabajo",
+            ["Work completed to satisfaction — awaiting signature."] = "Trabajo completado a satisfacción — pendiente de firma.",
         };
 }

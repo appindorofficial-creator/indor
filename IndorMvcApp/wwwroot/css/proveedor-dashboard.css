@@ -3910,7 +3910,7 @@ a.prv-pro-profile-center-action:focus-visible {
 .prv-pro-invoice-card-meta strong { display: block; font-size: .95rem; }
 .prv-pro-invoice-card-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .prv-pro-inline-form { display: inline; margin: 0; }
-.prv-pro-btn--success { color: #16A34A !important; }
+.prv-pro-btn--ghost.prv-pro-btn--success { color: #16A34A !important; }
 .prv-pro-pill--paid { background: #DCFCE7; color: #15803D; }
 .prv-pro-pill--pending { background: #DBEAFE; color: #1D4ED8; }
 .prv-pro-pill--overdue { background: #FEE2E2; color: #B91C1C; }
