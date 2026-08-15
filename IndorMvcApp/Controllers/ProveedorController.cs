@@ -2061,6 +2061,24 @@ public partial class ProveedorController(
     }
 
     [HttpGet]
+    public async Task<IActionResult> MessageLead(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var conversationId = await proData.GetOrCreateLeadConversationAsync(proveedor.Entity!.Id, id, cancellationToken);
+        if (!conversationId.HasValue)
+        {
+            return RedirectToAction(nameof(LeadDetails), new { id });
+        }
+
+        return RedirectToAction(nameof(Conversation), new { id = conversationId.Value });
+    }
+
+    [HttpGet]
     public async Task<IActionResult> InspectionFindings(int id, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);

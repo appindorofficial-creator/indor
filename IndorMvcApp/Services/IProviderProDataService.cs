@@ -34,6 +34,7 @@ public interface IProviderProDataService
     Task SaveNotificationPreferencesAsync(int proveedorId, ProviderProNotificationsInput input, CancellationToken cancellationToken = default);
     Task<ProviderProNewLeadsPageViewModel> GetNewLeadsPageAsync(IndorProveedor proveedor, string? filter = "all", string? search = null, CancellationToken cancellationToken = default);
     Task<ProviderProLeadDetailsViewModel?> GetLeadDetailsAsync(IndorProveedor proveedor, int leadId, CancellationToken cancellationToken = default);
+    Task<int?> GetOrCreateLeadConversationAsync(int proveedorId, int leadId, CancellationToken cancellationToken = default);
     Task<ProviderProInspectionFindingsViewModel?> GetInspectionFindingsAsync(IndorProveedor proveedor, int leadId, CancellationToken cancellationToken = default);
     Task SaveLeadFindingSelectionAsync(int leadId, IReadOnlyList<int> selectedIndices);
     Task<ProviderProSelectRepairItemsViewModel?> GetSelectRepairItemsAsync(IndorProveedor proveedor, int leadId, CancellationToken cancellationToken = default);

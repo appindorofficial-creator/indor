@@ -756,6 +756,40 @@ public partial class ProviderProDataService(
         };
     }
 
+    public async Task<int?> GetOrCreateLeadConversationAsync(
+        int proveedorId,
+        int leadId,
+        CancellationToken cancellationToken = default)
+    {
+        var lead = await db.IndorProveedorLeads
+            .FirstOrDefaultAsync(l => l.Id == leadId && l.ProveedorId == proveedorId, cancellationToken);
+        if (lead == null)
+        {
+            return null;
+        }
+
+        var existing = await db.IndorProveedorConversations
+            .FirstOrDefaultAsync(c => c.ProveedorId == proveedorId && c.LeadId == leadId, cancellationToken);
+        if (existing != null)
+        {
+            return existing.Id;
+        }
+
+        var now = DateTime.UtcNow;
+        var conversation = new IndorProveedorConversation
+        {
+            ProveedorId = proveedorId,
+            LeadId = leadId,
+            Category = ProviderConversationCategories.Lead,
+            Status = ProviderConversationStatuses.New,
+            LastMessageAt = now,
+            FechaCreacion = now
+        };
+        db.IndorProveedorConversations.Add(conversation);
+        await db.SaveChangesAsync(cancellationToken);
+        return conversation.Id;
+    }
+
     public async Task<ProviderProInspectionFindingsViewModel?> GetInspectionFindingsAsync(
         IndorProveedor proveedor,
         int leadId,

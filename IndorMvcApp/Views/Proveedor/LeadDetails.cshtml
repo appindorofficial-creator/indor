@@ -15,7 +15,12 @@
             <h1>@L["Lead Details"]</h1>
             <small>@Model.LeadCode</small>
         </div>
-        <button type="button" class="prv-pro-lead-share" aria-label="@L["Share"]"><i class="fas fa-share-nodes"></i></button>
+        <button type="button" id="prvProLeadShare" class="prv-pro-lead-share" data-no-nav-loading
+                aria-label="@L["Share"]"
+                data-share-title="@Model.LeadCode"
+                data-share-text="@L.T("Lead {0} · {1}", Model.LeadCode, Model.Address)"
+                data-share-copied="@L["Lead link copied."]"
+                data-share-prompt="@L["Copy lead link:"]"><i class="fas fa-share-nodes"></i></button>
     </header>
 
     @if (TempData["LeadAccepted"] as bool? == true)
@@ -30,13 +35,16 @@
     {
         <div class="prv-pro-lead-toast">@L["Estimate sent to homeowner successfully."]</div>
     }
+    <div id="prvProLeadShareToast" class="prv-pro-lead-toast" hidden></div>
 
     <section class="prv-pro-lead-summary">
         <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Property" class="prv-pro-lead-summary-img" />
         <div class="prv-pro-lead-summary-body">
             <div class="prv-pro-lead-summary-top">
                 <h2>@Model.Address</h2>
-                <button type="button" class="prv-pro-lead-map-btn" aria-label="@L["View on map"]"><i class="fas fa-location-dot"></i></button>
+                <a href="https://www.google.com/maps/search/?api=1&query=@Uri.EscapeDataString(Model.Address)"
+                   target="_blank" rel="noopener" class="prv-pro-lead-map-btn" data-no-nav-loading
+                   aria-label="@L["View on map"]"><i class="fas fa-location-dot"></i></a>
             </div>
             <div class="prv-pro-lead-badges">
                 <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @UiDisplayLocalization.Localize(L, Model.ServiceType)</span>
@@ -200,9 +208,10 @@
             </a>
         }
 
-        <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-lead-action-btn prv-pro-lead-action-btn--full prv-pro-lead-message-btn">
+        <a asp-controller="Proveedor" asp-action="MessageLead" asp-route-id="@Model.LeadId"
+           class="prv-pro-btn prv-pro-btn--ghost prv-pro-lead-action-btn prv-pro-lead-action-btn--full prv-pro-lead-message-btn">
             <i class="fas fa-message"></i> @L["Message Homeowner"]
-        </button>
+        </a>
 
         @if (Model.CanDecline)
         {
@@ -214,3 +223,41 @@
         }
     </footer>
 </div>
+
+@section Scripts {
+<script>
+(function () {
+    var btn = document.getElementById('prvProLeadShare');
+    if (!btn) return;
+    var toast = document.getElementById('prvProLeadShareToast');
+    var toastTimer = null;
+    function showToast(text) {
+        if (!toast || !text) return;
+        toast.textContent = text;
+        toast.hidden = false;
+        toast.classList.add('is-visible');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+            toast.classList.remove('is-visible');
+            toastTimer = setTimeout(function () { toast.hidden = true; }, 250);
+        }, 2400);
+    }
+    btn.addEventListener('click', async function () {
+        var payload = {
+            title: btn.getAttribute('data-share-title') || document.title,
+            text: btn.getAttribute('data-share-text') || '',
+            url: window.location.href
+        };
+        if (navigator.share) {
+            try { await navigator.share(payload); return; } catch (_) { }
+        }
+        try {
+            await navigator.clipboard.writeText(payload.url);
+            showToast(btn.getAttribute('data-share-copied') || '');
+        } catch (_) {
+            window.prompt(btn.getAttribute('data-share-prompt') || '', payload.url);
+        }
+    });
+})();
+</script>
+}
