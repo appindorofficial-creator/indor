@@ -86,10 +86,16 @@
                data-fmt-one="@L["{0} item selected"]" data-fmt-many="@L["{0} items selected"]">
                 @L.T(Model.SelectedCount == 1 ? "{0} item selected" : "{0} items selected", Model.SelectedCount)
             </p>
-            <button type="submit" name="action" value="estimate" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--full"
-                    @(Model.Findings.Count == 0 ? "disabled" : "")>
-                @L["Continue to Estimate"]
-            </button>
+            <div class="prv-pro-workflow-footer--actions">
+                <button type="submit" name="action" value="estimate" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--full"
+                        @(Model.Findings.Count == 0 ? "disabled" : "")>
+                    @L["Continue to Estimate"]
+                </button>
+                <a asp-controller="Proveedor" asp-action="MessageLead" asp-route-id="@Model.LeadId"
+                   class="prv-pro-btn prv-pro-btn--ghost prv-pro-btn--full" data-no-nav-loading>
+                    <i class="fas fa-message"></i> @L["Message Homeowner"]
+                </a>
+            </div>
         </footer>
     </form>
 </div>
