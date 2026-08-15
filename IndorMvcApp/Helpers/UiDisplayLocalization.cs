@@ -946,17 +946,17 @@ public static class UiDisplayLocalization
 
         if (text.StartsWith("From: ", StringComparison.OrdinalIgnoreCase))
         {
-            return localizer.T("From: {0}", text["From: ".Length..].Trim());
+            return localizer.T("From: {0}", Localize(localizer, text["From: ".Length..].Trim()));
         }
 
         if (text.StartsWith("Pressed: ", StringComparison.OrdinalIgnoreCase))
         {
-            return localizer.T("Pressed: {0}", text["Pressed: ".Length..].Trim());
+            return localizer.T("Pressed: {0}", Localize(localizer, text["Pressed: ".Length..].Trim()));
         }
 
         if (text.StartsWith("Now: ", StringComparison.OrdinalIgnoreCase))
         {
-            return localizer.T("Now: {0}", text["Now: ".Length..].Trim());
+            return localizer.T("Now: {0}", Localize(localizer, text["Now: ".Length..].Trim()));
         }
 
         var itemsMatch = Regex.Match(text, @"^(\d+) Items?$", RegexOptions.IgnoreCase);

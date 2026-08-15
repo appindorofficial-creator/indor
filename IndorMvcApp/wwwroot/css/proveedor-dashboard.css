@@ -4044,6 +4044,17 @@ a.prv-pro-profile-center-action:focus-visible {
 
 .prv-pro-reminder-toggles { display: flex; flex-direction: column; gap: 12px; }
 .prv-pro-toggle-row { display: flex; justify-content: space-between; align-items: center; font-size: .82rem; }
+.prv-pro-shell--schedule-visit .prv-pro-toggle-row {
+    justify-content: flex-start;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+}
+.prv-pro-shell--schedule-visit .prv-pro-toggle-row > div {
+    flex: 0 1 auto;
+    margin-left: 0;
+    text-align: left;
+}
 .prv-pro-reminder-timing { display: flex; flex-direction: column; gap: 6px; font-size: .82rem; }
 .prv-pro-reminder-timing select { border: 1px solid #CBD5E1; border-radius: 8px; padding: 8px; }
 
