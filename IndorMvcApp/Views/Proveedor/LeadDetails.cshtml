@@ -51,7 +51,7 @@
             </div>
             @if (!string.IsNullOrWhiteSpace(Model.TimelineNote))
             {
-                <p class="prv-pro-lead-timeline"><i class="fas fa-calendar-day"></i> @Model.TimelineNote</p>
+                <p class="prv-pro-lead-timeline"><i class="fas fa-calendar-day"></i> @UiDisplayLocalization.Localize(L, Model.TimelineNote)</p>
             }
         </div>
     </section>

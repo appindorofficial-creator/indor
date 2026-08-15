@@ -878,6 +878,12 @@ public static class UiDisplayLocalization
             return localizer.T(postedMins == 1 ? "Posted {0} min ago" : "Posted {0} mins ago", postedMins);
         }
 
+        var respondWithinHoursMatch = Regex.Match(text, @"^Respond within (\d+) hours?$", RegexOptions.IgnoreCase);
+        if (respondWithinHoursMatch.Success && int.TryParse(respondWithinHoursMatch.Groups[1].Value, out var respondHours))
+        {
+            return localizer.T(respondHours == 1 ? "Respond within {0} hour" : "Respond within {0} hours", respondHours);
+        }
+
         var postedHoursMatch = Regex.Match(text, @"^Posted (\d+) hours? ago$", RegexOptions.IgnoreCase);
         if (postedHoursMatch.Success && int.TryParse(postedHoursMatch.Groups[1].Value, out var postedHours))
         {
