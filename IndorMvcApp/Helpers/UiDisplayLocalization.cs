@@ -212,6 +212,8 @@ public static class UiDisplayLocalization
             return text ?? string.Empty;
         }
 
+        text = text.Trim().Replace('\u00A0', ' ');
+
         if (localizer.IsSpanish)
         {
             // Already-Spanish UI copy (e.g. ModelState pre-localized) — do not reverse to English.
@@ -532,6 +534,21 @@ public static class UiDisplayLocalization
         if (monthPrice.Success)
         {
             return localizer.T("${0} /mo", monthPrice.Groups[1].Value);
+        }
+
+        var indorFoundMatch = Regex.Match(
+            text,
+            @"^INDOR found (\d+) (.+) repair items? from the uploaded inspection report\.?$",
+            RegexOptions.IgnoreCase);
+        if (indorFoundMatch.Success && int.TryParse(indorFoundMatch.Groups[1].Value, out var foundCount))
+        {
+            var trade = Localize(localizer, indorFoundMatch.Groups[2].Value.Trim());
+            return localizer.T(
+                foundCount == 1
+                    ? "INDOR found {0} {1} repair item from the uploaded inspection report."
+                    : "INDOR found {0} {1} repair items from the uploaded inspection report.",
+                foundCount,
+                trade);
         }
 
         foreach (var (regex, key) in CountPatterns)
@@ -1058,21 +1075,6 @@ public static class UiDisplayLocalization
             return localizer.T("Page {0}", pageMatch.Groups[1].Value);
         }
 
-        var indorFoundMatch = Regex.Match(
-            text,
-            @"^INDOR found (\d+) (.+) repair items? from the uploaded inspection report\.$",
-            RegexOptions.IgnoreCase);
-        if (indorFoundMatch.Success && int.TryParse(indorFoundMatch.Groups[1].Value, out var foundCount))
-        {
-            var trade = Localize(localizer, indorFoundMatch.Groups[2].Value.Trim());
-            return localizer.T(
-                foundCount == 1
-                    ? "INDOR found {0} {1} repair item from the uploaded inspection report."
-                    : "INDOR found {0} {1} repair items from the uploaded inspection report.",
-                foundCount,
-                trade);
-        }
-
         var itemsMatch = Regex.Match(text, @"^(\d+) Items?$", RegexOptions.IgnoreCase);
         if (itemsMatch.Success && int.TryParse(itemsMatch.Groups[1].Value, out var itemsCount))
         {
@@ -1515,6 +1517,44 @@ public static class UiDisplayLocalization
         }
 
         return localizer[text];
+    }
+
+    /// <summary>
+    /// Occupancy / dwelling labels stored in English (including common misspellings).
+    /// </summary>
+    public static string LocalizePropertyType(IIndorLocalizer localizer, string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return text ?? string.Empty;
+        }
+
+        return Localize(localizer, CanonicalPropertyType(text));
+    }
+
+    public static string CanonicalPropertyType(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return string.Empty;
+        }
+
+        var trimmed = text.Trim().Replace('\u00A0', ' ');
+        if (trimmed.Equals("Single Familiy", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("Single-Family", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("Single-family", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("SingleFamily", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Single Family";
+        }
+
+        if (trimmed.Equals("Primary home", StringComparison.OrdinalIgnoreCase)
+            || trimmed.Equals("PrimaryHouse", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Primary Home";
+        }
+
+        return trimmed;
     }
 
     public static string LocalizeCommaList(IIndorLocalizer localizer, string? text)

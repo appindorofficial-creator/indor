@@ -30,7 +30,7 @@
                 <article class="prv-pro-inspection-finding">
                     <div class="prv-pro-inspection-finding-head">
                         <strong>@item.Title</strong>
-                        <span class="prv-pro-inspection-priority">@item.Priority</span>
+                        <span class="prv-pro-inspection-priority">@UiDisplayLocalization.Localize(L, item.Priority)</span>
                     </div>
                     @if (!string.IsNullOrWhiteSpace(item.ReportReference))
                     {

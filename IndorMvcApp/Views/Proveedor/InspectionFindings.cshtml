@@ -53,7 +53,7 @@
                         <div class="prv-pro-inspection-finding-head">
                             @if (!string.IsNullOrWhiteSpace(item.Priority))
                             {
-                                <span class="prv-pro-inspection-priority">@item.Priority</span>
+                                <span class="prv-pro-inspection-priority">@UiDisplayLocalization.Localize(L, item.Priority)</span>
                             }
                             <strong>@UiDisplayLocalization.Localize(L, item.Title)</strong>
                         </div>

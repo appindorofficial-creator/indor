@@ -17,6 +17,11 @@
         </div>
     </header>
 
+    @if (TempData["ActiveJobError"] is string activeJobError)
+    {
+        <div class="prv-pro-lead-toast prv-pro-lead-toast--error">@activeJobError</div>
+    }
+
     <section class="prv-pro-active-summary">
         <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Job" />
         <div>
@@ -58,16 +63,16 @@
         </ul>
     </section>
 
-    @if (Model.PhotoLabels.Count > 0)
+    @if (Model.Photos.Count > 0)
     {
         <section class="prv-pro-lead-section">
             <h3>@L["Photo Evidence"]</h3>
             <div class="prv-pro-active-photos">
-                @foreach (var label in Model.PhotoLabels)
+                @foreach (var photo in Model.Photos)
                 {
                     <div class="prv-pro-active-photo">
-                        <img src="@Url.Content($"~{Model.ImageUrl}")" alt="@UiDisplayLocalization.Localize(L, label)" />
-                        <span>@UiDisplayLocalization.Localize(L, label)</span>
+                        <img src="@Url.Content($"~{photo.Url}")" alt="@UiDisplayLocalization.Localize(L, photo.Label)" />
+                        <span>@UiDisplayLocalization.Localize(L, photo.Label)</span>
                     </div>
                 }
             </div>
@@ -109,7 +114,21 @@
     </section>
 
     <footer class="prv-pro-job-footer">
-        <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-camera"></i> @L["Add Photos"]</button>
+        <form asp-controller="Proveedor" asp-action="ActiveJobAddPhotos" method="post" enctype="multipart/form-data"
+              class="prv-pro-job-footer-form" id="prvProActiveJobPhotosForm" data-no-nav-loading>
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.JobId" />
+            <label for="prvProActiveJobPhotos" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn">
+                <i class="fas fa-camera"></i> @L["Add Photos"]
+            </label>
+            <input id="prvProActiveJobPhotos"
+                   type="file"
+                   name="photos"
+                   accept="image/jpeg,image/png,image/webp,image/*,.heic,.heif"
+                   multiple
+                   class="prv-pro-job-photo-input"
+                   onchange="if (this.files && this.files.length) this.form.requestSubmit();" />
+        </form>
         <form asp-controller="Proveedor" asp-action="CompleteJob" method="post" class="prv-pro-job-footer-form">
             @Html.AntiForgeryToken()
             <input type="hidden" name="id" value="@Model.JobId" />

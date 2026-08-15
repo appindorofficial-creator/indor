@@ -2488,6 +2488,18 @@ a.prv-pro-profile-center-action:focus-visible {
     font-weight: 600;
     margin-bottom: 12px;
 }
+.prv-pro-lead-toast--error {
+    background: #FEF2F2;
+    color: #B91C1C;
+    border-color: #FECACA;
+}
+.prv-pro-job-photo-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+    overflow: hidden;
+}
 
 .prv-pro-lead-summary {
     display: flex;
@@ -3120,7 +3132,7 @@ a.prv-pro-profile-center-action:focus-visible {
     z-index: 2;
 }
 
-.prv-pro-job-footer-form { flex: 1; min-width: 120px; }
+.prv-pro-job-footer-form { flex: 1; min-width: 120px; position: relative; }
 .prv-pro-job-action-btn { flex: 1; min-width: 120px; text-decoration: none; text-align: center; }
 
 .prv-pro-active-summary {

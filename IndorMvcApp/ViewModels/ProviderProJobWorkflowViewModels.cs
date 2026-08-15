@@ -273,6 +273,7 @@ public class ProviderProActiveJobViewModel : ProviderProPageBaseViewModel
     public string ElapsedLabel { get; set; } = "";
     public List<ProviderProJobChecklistItemViewModel> Checklist { get; set; } = [];
     public List<string> PhotoLabels { get; set; } = [];
+    public List<ProviderProJobPhotoLabelViewModel> Photos { get; set; } = [];
     public List<ProviderProJobMaterialViewModel> Materials { get; set; } = [];
     public string? JobNotes { get; set; }
     public string? HomeownerSignature { get; set; }

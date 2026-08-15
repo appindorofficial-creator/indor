@@ -900,6 +900,8 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
             Checklist = ParseChecklist(job.ChecklistJson),
 
+            Photos = ParseReportPhotos(job.PhotoUrlsJson),
+
             PhotoLabels = ParsePhotoLabels(job.PhotoUrlsJson),
 
             Materials = ParseMaterials(job.MaterialsUsedJson),
@@ -920,6 +922,69 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
         };
 
+    }
+
+
+
+    public async Task<int> AddActiveJobPhotosAsync(
+        int proveedorId,
+        int jobId,
+        IReadOnlyList<(string Url, string Label)> photos,
+        CancellationToken cancellationToken = default)
+    {
+        if (photos.Count == 0)
+        {
+            return 0;
+        }
+
+        var job = await db.IndorProveedorJobs
+            .FirstOrDefaultAsync(j => j.Id == jobId && j.ProveedorId == proveedorId, cancellationToken);
+        if (job == null || job.Status != ProviderJobStatuses.InProgress)
+        {
+            return 0;
+        }
+
+        var existing = ParseReportPhotos(job.PhotoUrlsJson);
+        var added = 0;
+        foreach (var photo in photos)
+        {
+            if (string.IsNullOrWhiteSpace(photo.Url))
+            {
+                continue;
+            }
+
+            existing.Add(new ProviderProJobPhotoLabelViewModel
+            {
+                Url = photo.Url.Trim(),
+                Label = string.IsNullOrWhiteSpace(photo.Label) ? "During" : photo.Label.Trim()
+            });
+            added++;
+        }
+
+        if (added == 0)
+        {
+            return 0;
+        }
+
+        var json = JsonSerializer.Serialize(existing, JsonOptions);
+        if (json.Length > 1000)
+        {
+            while (existing.Count > 0 && json.Length > 1000)
+            {
+                existing.RemoveAt(existing.Count - 1);
+                added--;
+                json = JsonSerializer.Serialize(existing, JsonOptions);
+            }
+
+            if (added <= 0)
+            {
+                return 0;
+            }
+        }
+
+        job.PhotoUrlsJson = json;
+        await db.SaveChangesAsync(cancellationToken);
+        return added;
     }
 
 
@@ -1278,8 +1343,11 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
         _ => "teal"
     };
 
-    private static string DerivePropertyLabel(string? propertyType) =>
-        string.IsNullOrWhiteSpace(propertyType) ? "Primary Home" : propertyType;
+    private static string DerivePropertyLabel(string? propertyType)
+    {
+        var canonical = UiDisplayLocalization.CanonicalPropertyType(propertyType);
+        return string.IsNullOrWhiteSpace(canonical) ? "Primary Home" : canonical;
+    }
 
     private static (string Icon, string Tone) ResolveWizardTypeVisuals(string categoryId)
     {
@@ -1812,7 +1880,81 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
         {
 
-            return JsonSerializer.Deserialize<List<ProviderProJobPhotoLabelViewModel>>(json, JsonOptions) ?? [];
+            using var doc = JsonDocument.Parse(json);
+
+            if (doc.RootElement.ValueKind != JsonValueKind.Array)
+
+            {
+
+                return [];
+
+            }
+
+
+
+            var photos = new List<ProviderProJobPhotoLabelViewModel>();
+
+            foreach (var node in doc.RootElement.EnumerateArray())
+
+            {
+
+                if (node.ValueKind == JsonValueKind.String)
+
+                {
+
+                    var url = node.GetString();
+
+                    if (!string.IsNullOrWhiteSpace(url))
+
+                    {
+
+                        photos.Add(new ProviderProJobPhotoLabelViewModel { Url = url, Label = "During" });
+
+                    }
+
+                    continue;
+
+                }
+
+
+
+                if (node.ValueKind != JsonValueKind.Object)
+
+                {
+
+                    continue;
+
+                }
+
+
+
+                var photoUrl = ReadJsonString(node, "url") ?? ReadJsonString(node, "Url");
+
+                if (string.IsNullOrWhiteSpace(photoUrl))
+
+                {
+
+                    continue;
+
+                }
+
+
+
+                photos.Add(new ProviderProJobPhotoLabelViewModel
+
+                {
+
+                    Url = photoUrl,
+
+                    Label = ReadJsonString(node, "label") ?? ReadJsonString(node, "Label") ?? "During"
+
+                });
+
+            }
+
+
+
+            return photos;
 
         }
 
@@ -1823,6 +1965,20 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
             return [];
 
         }
+
+    }
+
+
+
+    private static string? ReadJsonString(JsonElement node, string name)
+
+    {
+
+        return node.TryGetProperty(name, out var value) && value.ValueKind == JsonValueKind.String
+
+            ? value.GetString()?.Trim()
+
+            : null;
 
     }
 

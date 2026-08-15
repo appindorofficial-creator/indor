@@ -17,6 +17,7 @@ public interface IProviderProJobWorkflowService
     Task<ProviderProJobDetailsViewModel?> GetJobDetailsAsync(IndorProveedor proveedor, int jobId, bool fromCalendar = false, string? calendarDate = null, CancellationToken cancellationToken = default);
     Task<bool> StartJobAsync(int proveedorId, int jobId, CancellationToken cancellationToken = default);
     Task<ProviderProActiveJobViewModel?> GetActiveJobAsync(IndorProveedor proveedor, int jobId, CancellationToken cancellationToken = default);
+    Task<int> AddActiveJobPhotosAsync(int proveedorId, int jobId, IReadOnlyList<(string Url, string Label)> photos, CancellationToken cancellationToken = default);
     Task<bool> CompleteJobAsync(int proveedorId, int jobId, CancellationToken cancellationToken = default);
     Task<ProviderProJobCompletionReportViewModel?> GetJobReportAsync(IndorProveedor proveedor, int jobId, CancellationToken cancellationToken = default);
     Task<ProviderProCalendarOverviewViewModel> GetCalendarOverviewAsync(IndorProveedor proveedor, string? view = "week", string? filter = "all", string? weekStart = null, CancellationToken cancellationToken = default);

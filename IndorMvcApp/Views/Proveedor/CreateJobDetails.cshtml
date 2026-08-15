@@ -38,8 +38,9 @@
                     @foreach (var customer in Model.Customers)
                     {
                         var isSelected = customer.Id == (Model.ClienteId ?? selectedCustomer?.Id);
+                        var propertyLabel = UiDisplayLocalization.LocalizePropertyType(L, customer.PropertyLabel);
                         <label class="prv-pro-customer-pick-row @(isSelected ? "is-selected" : "")"
-                               data-search="@($"{customer.Name} {customer.Address} {customer.PropertyLabel}".ToLowerInvariant())">
+                               data-search="@($"{customer.Name} {customer.Address} {customer.PropertyLabel} {propertyLabel}".ToLowerInvariant())">
                             <input type="radio" name="ClienteId" value="@customer.Id"
                                    data-name="@customer.Name" data-address="@customer.Address"
                                    @(isSelected ? "checked" : "") required />
@@ -50,7 +51,7 @@
                                 {
                                     <small><i class="fas fa-location-dot"></i> @customer.Address</small>
                                 }
-                                <span class="prv-pro-customer-pill">@customer.PropertyLabel</span>
+                                <span class="prv-pro-customer-pill">@propertyLabel</span>
                             </span>
                             <span class="prv-pro-customer-pick-radio"></span>
                         </label>

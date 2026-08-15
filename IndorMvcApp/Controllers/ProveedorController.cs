@@ -3484,6 +3484,44 @@ public partial class ProveedorController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ActiveJobAddPhotos(int id, List<IFormFile>? photos, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var saved = new List<(string Url, string Label)>();
+        if (photos != null)
+        {
+            foreach (var file in photos.Where(f => f.Length > 0))
+            {
+                var stored = await SaveProviderReportFileAsync(proveedor.Entity!.Id, file);
+                if (stored != null)
+                {
+                    saved.Add((stored.Value.Url, "During"));
+                }
+            }
+        }
+
+        if (saved.Count == 0)
+        {
+            TempData["ActiveJobError"] = localizer["Could not add those photos. Try a JPG or PNG."];
+            return RedirectToAction(nameof(ActiveJob), new { id });
+        }
+
+        var added = await jobWorkflow.AddActiveJobPhotosAsync(proveedor.Entity!.Id, id, saved, cancellationToken);
+        if (added <= 0)
+        {
+            TempData["ActiveJobError"] = localizer["Could not add those photos. Try a JPG or PNG."];
+        }
+
+        return RedirectToAction(nameof(ActiveJob), new { id });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> CompleteJob(int id, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
@@ -3859,7 +3897,7 @@ public partial class ProveedorController(
 
     private static readonly HashSet<string> AllowedReportFileExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
-        ".pdf", ".jpg", ".jpeg", ".png"
+        ".pdf", ".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"
     };
 
     private const long MaxReportFileBytes = 10 * 1024 * 1024;
