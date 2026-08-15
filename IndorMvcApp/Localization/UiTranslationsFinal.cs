@@ -1113,6 +1113,9 @@ public static class UiTranslationsFinal
             ["Inspection findings"] = "Hallazgos de inspección",
             ["{0} inspection finding extracted from the report."] = "{0} hallazgo de inspección extraído del informe.",
             ["{0} inspection findings extracted from the report."] = "{0} hallazgos de inspección extraídos del informe.",
+            ["{0} inspection finding found"] = "{0} hallazgo de inspección encontrado",
+            ["{0} inspection findings found"] = "{0} hallazgos de inspección encontrados",
+            ["High urgency"] = "Alta urgencia",
             ["Problem Description"] = "Descripción del problema",
             ["Notes & Access Instructions"] = "Notas e instrucciones de acceso",
             ["{0} Photo"] = "{0} foto",
@@ -4239,5 +4242,17 @@ public static class UiTranslationsFinal
             ["Added to provider calendar"] = "Agregada al calendario del proveedor",
             ["Job Notes"] = "Notas del trabajo",
             ["Work completed to satisfaction — awaiting signature."] = "Trabajo completado a satisfacción — pendiente de firma.",
+            ["High urgency"] = "Alta urgencia",
+            ["{0} inspection finding found"] = "{0} hallazgo de inspección encontrado",
+            ["{0} inspection findings found"] = "{0} hallazgos de inspección encontrados",
+            ["Summary: {0}"] = "Resumen: {0}",
+            ["In report: {0}"] = "En el informe: {0}",
+            ["Inspector note: {0}"] = "Nota del inspector: {0}",
+            ["Page {0}"] = "Página {0}",
+            ["INDOR found {0} {1} repair item from the uploaded inspection report."] =
+                "INDOR encontró {0} elemento de reparación de {1} en el informe de inspección subido.",
+            ["INDOR found {0} {1} repair items from the uploaded inspection report."] =
+                "INDOR encontró {0} elementos de reparación de {1} en el informe de inspección subido.",
+            ["Moderate"] = "Moderado",
         };
 }

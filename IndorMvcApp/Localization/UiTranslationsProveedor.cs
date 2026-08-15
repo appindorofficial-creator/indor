@@ -408,6 +408,7 @@ public static class UiTranslationsProveedor
             ["Help Center"] = "Centro de ayuda",
             ["Here you can see all estimates waiting for action. Tap an estimate to review it."] = "Aquí puedes ver todas las cotizaciones que esperan acción. Toca una para revisarla.",
             ["High"] = "Alta",
+            ["High urgency"] = "Alta urgencia",
             ["Hire and schedule work"] = "Contratar y programar el trabajo",
             ["Hire the right pro fast"] = "Contrata al profesional adecuado rápido",
             ["Home"] = "Inicio",

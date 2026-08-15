@@ -50,11 +50,11 @@
                 <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @UiDisplayLocalization.Localize(L, Model.ServiceType)</span>
                 @if (Model.IsHighUrgency)
                 {
-                    <span class="prv-pro-pill prv-pro-pill--urgency"><i class="fas fa-fire"></i> @Model.Urgency</span>
+                    <span class="prv-pro-pill prv-pro-pill--urgency"><i class="fas fa-fire"></i> @UiDisplayLocalization.Localize(L, Model.Urgency)</span>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
                 {
-                    <span class="prv-pro-pill prv-pro-pill--connected"><i class="fas fa-location-crosshairs"></i> @Model.DistanceLabel</span>
+                    <span class="prv-pro-pill prv-pro-pill--connected"><i class="fas fa-location-crosshairs"></i> @UiDisplayLocalization.Localize(L, Model.DistanceLabel)</span>
                 }
             </div>
             @if (!string.IsNullOrWhiteSpace(Model.TimelineNote))
@@ -113,7 +113,7 @@
             <i class="fas fa-wand-magic-sparkles"></i>
             <div>
                 <strong>@L["AI Summary"]</strong>
-                <p>@Model.AnalysisSummary</p>
+                <p>@UiDisplayLocalization.Localize(L, Model.AnalysisSummary)</p>
             </div>
         </section>
     }
@@ -126,11 +126,41 @@
         </section>
     }
 
-    @if (!string.IsNullOrWhiteSpace(Model.ProblemDescription))
+    @if (Model.InspectionFindings.Count > 0 || !string.IsNullOrWhiteSpace(Model.ProblemDescription))
     {
         <section class="prv-pro-lead-section">
             <h3><i class="fas fa-circle-info"></i> @L["Problem Description"]</h3>
-            <p class="prv-pro-lead-description">@Model.ProblemDescription</p>
+            @if (Model.InspectionFindings.Count > 0)
+            {
+                <div class="prv-pro-inspection-findings">
+                    @foreach (var item in Model.InspectionFindings)
+                    {
+                        var inspectorNote = UiDisplayLocalization.LocalizeInspectorWording(
+                            L, item.SourceExcerpt, item.Description);
+                        <article class="prv-pro-inspection-finding">
+                            <div class="prv-pro-inspection-finding-head">
+                                @if (!string.IsNullOrWhiteSpace(item.Priority))
+                                {
+                                    <span class="prv-pro-inspection-priority">@UiDisplayLocalization.Localize(L, item.Priority)</span>
+                                }
+                                <strong>@UiDisplayLocalization.Localize(L, item.Title)</strong>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(inspectorNote))
+                            {
+                                <blockquote class="prv-pro-finding-note">@inspectorNote</blockquote>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(item.ReportReference))
+                            {
+                                <p class="prv-pro-inspection-ref"><i class="fas fa-bookmark"></i> @UiDisplayLocalization.Localize(L, item.ReportReference)</p>
+                            }
+                        </article>
+                    }
+                </div>
+            }
+            else
+            {
+                <p class="prv-pro-lead-description">@UiDisplayLocalization.LocalizeLeadProblemDescription(L, Model.ProblemDescription)</p>
+            }
             @if (Model.PhotoUrls.Count > 0)
             {
                 <div class="prv-pro-lead-photos">
@@ -151,7 +181,7 @@
             <div class="prv-pro-lead-prop-grid">
                 @if (!string.IsNullOrWhiteSpace(Model.HomeType))
                 {
-                    <div><i class="fas fa-house"></i><strong>@Model.HomeType</strong><span>@L["Home Type"]</span></div>
+                    <div><i class="fas fa-house"></i><strong>@UiDisplayLocalization.Localize(L, Model.HomeType)</strong><span>@L["Home Type"]</span></div>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.SquareFeetLabel))
                 {
@@ -173,7 +203,7 @@
     {
         <section class="prv-pro-lead-section">
             <h3><i class="fas fa-clipboard"></i> @L["Notes & Access Instructions"]</h3>
-            <p class="prv-pro-lead-description">@Model.AccessNotes</p>
+            <p class="prv-pro-lead-description">@UiDisplayLocalization.Localize(L, Model.AccessNotes)</p>
         </section>
     }
 

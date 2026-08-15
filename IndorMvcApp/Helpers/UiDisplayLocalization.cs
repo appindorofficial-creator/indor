@@ -76,6 +76,8 @@ public static class UiDisplayLocalization
         (new Regex(@"^(\d+)\s+photos$", RegexOptions.IgnoreCase), "{0} photos"),
         (new Regex(@"^(\d+)\s+attached$", RegexOptions.IgnoreCase), "{0} attached"),
         (new Regex(@"^(\d+)\s+uploaded$", RegexOptions.IgnoreCase), "{0} uploaded"),
+        (new Regex(@"^(1)\s+inspection finding found$", RegexOptions.IgnoreCase), "{0} inspection finding found"),
+        (new Regex(@"^(\d+)\s+inspection findings found$", RegexOptions.IgnoreCase), "{0} inspection findings found"),
         // Reminder lead chips (Lawn and sibling wizards)
         (new Regex(@"^(\d+)\s+days before$", RegexOptions.IgnoreCase), "{0} days before"),
     ];
@@ -128,6 +130,62 @@ public static class UiDisplayLocalization
         var localized = segments.Select(part => Localize(localizer, part).TrimEnd('.').Trim());
         var joined = string.Join(". ", localized);
         return hadTrailingPeriod ? joined + "." : joined;
+    }
+
+    /// <summary>
+    /// Provider lead problem text is stored as English finding bullets (priority, summary, report ref).
+    /// Localize labels and known fragments; leave unique inspector quotes to Localize.
+    /// </summary>
+    public static string LocalizeLeadProblemDescription(IIndorLocalizer localizer, string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return string.Empty;
+        }
+
+        if (!localizer.IsSpanish)
+        {
+            return text;
+        }
+
+        var blocks = text.Split(["\r\n\r\n", "\n\n"], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        return string.Join("\n\n", blocks.Select(block =>
+        {
+            var lines = block.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            return string.Join('\n', lines.Select(line => LocalizeProblemLine(localizer, line)));
+        }));
+    }
+
+    private static string LocalizeProblemLine(IIndorLocalizer localizer, string line)
+    {
+        var bullet = line.StartsWith("• ", StringComparison.Ordinal) ? "• " : "";
+        var body = bullet.Length > 0 ? line[2..] : line;
+
+        var tagged = Regex.Match(body, @"^\[([^\]]+)\]\s*(.*)$");
+        if (tagged.Success)
+        {
+            var priority = Localize(localizer, tagged.Groups[1].Value.Trim());
+            var title = Localize(localizer, tagged.Groups[2].Value.Trim());
+            return $"{bullet}[{priority}] {title}".Trim();
+        }
+
+        if (body.StartsWith("Summary: ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Summary: {0}", Localize(localizer, body["Summary: ".Length..].Trim()));
+        }
+
+        if (body.StartsWith("In report: ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("In report: {0}", Localize(localizer, body["In report: ".Length..].Trim()));
+        }
+
+        if (body.StartsWith("Inspector note: ", StringComparison.OrdinalIgnoreCase))
+        {
+            var note = body["Inspector note: ".Length..].Trim().Trim('"');
+            return localizer.T("Inspector note: {0}", Localize(localizer, note));
+        }
+
+        return Localize(localizer, line);
     }
 
     /// <summary>
@@ -992,6 +1050,27 @@ public static class UiDisplayLocalization
         if (text.StartsWith("Reminder: ", StringComparison.OrdinalIgnoreCase))
         {
             return localizer.T("Reminder: {0}", Localize(localizer, text["Reminder: ".Length..].Trim()));
+        }
+
+        var pageMatch = Regex.Match(text, @"^Page\s+(\d+)$", RegexOptions.IgnoreCase);
+        if (pageMatch.Success)
+        {
+            return localizer.T("Page {0}", pageMatch.Groups[1].Value);
+        }
+
+        var indorFoundMatch = Regex.Match(
+            text,
+            @"^INDOR found (\d+) (.+) repair items? from the uploaded inspection report\.$",
+            RegexOptions.IgnoreCase);
+        if (indorFoundMatch.Success && int.TryParse(indorFoundMatch.Groups[1].Value, out var foundCount))
+        {
+            var trade = Localize(localizer, indorFoundMatch.Groups[2].Value.Trim());
+            return localizer.T(
+                foundCount == 1
+                    ? "INDOR found {0} {1} repair item from the uploaded inspection report."
+                    : "INDOR found {0} {1} repair items from the uploaded inspection report.",
+                foundCount,
+                trade);
         }
 
         var itemsMatch = Regex.Match(text, @"^(\d+) Items?$", RegexOptions.IgnoreCase);
