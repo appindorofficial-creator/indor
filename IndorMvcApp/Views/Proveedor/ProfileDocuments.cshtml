@@ -65,7 +65,10 @@
 
     @if (activeSection != null)
     {
-        <form asp-controller="Proveedor" asp-action="ProfileDocuments" method="post" enctype="multipart/form-data" class="prv-flow-form prv-flow-docs-form" id="prvFlowDocsForm" novalidate>
+        <form asp-controller="Proveedor" asp-action="ProfileDocuments" method="post" enctype="multipart/form-data"
+              class="prv-flow-form prv-flow-docs-form" id="prvFlowDocsForm" novalidate
+              data-min-expiry="@DateTime.Today.ToString("yyyy-MM-dd")"
+              data-expiry-error="@L["This document has expired. Enter a current expiration date."]">
             @Html.AntiForgeryToken()
             <input type="hidden" name="documentType" id="prvFlowDocType" value="" />
             <input type="hidden" name="Section" id="prvFlowActiveSection" value="@activeSection.Id" />

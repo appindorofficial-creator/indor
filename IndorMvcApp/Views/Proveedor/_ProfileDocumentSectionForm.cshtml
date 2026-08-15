@@ -1,7 +1,14 @@
 @model IndorMvcApp.ViewModels.ProviderProfileDocumentSectionViewModel
+@using System.Globalization
 @using IndorMvcApp.ViewModels
 @{
     string F(string key) => Model.Fields.TryGetValue(key, out var v) ? v ?? "" : "";
+    var todayIso = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    bool ExpiryIsPast(string field) =>
+        !string.IsNullOrWhiteSpace(F(field))
+        && string.CompareOrdinal(F(field), todayIso) < 0;
+    var licenseExpiryPast = Model.Id == "license" && !Model.NotApplicable && !Model.Unknown && ExpiryIsPast("LicenseExpiry");
+    var insuranceExpiryPast = Model.Id == "insurance" && !Model.NotApplicable && !Model.Unknown && ExpiryIsPast("InsuranceExpiry");
 }
 
 <div class="prv-flow-detail-panel" id="section-@Model.Id">
@@ -59,7 +66,14 @@
                     }
                 </select>
             </label>
-            <label><span>@L["Expiration date"]</span><input type="date" name="LicenseExpiry" value="@F("LicenseExpiry")" /></label>
+            <label>
+                <span>@L["Expiration date"]</span>
+                <input type="date" name="LicenseExpiry" class="prv-flow-expiry-input @(licenseExpiryPast ? "is-invalid" : "")"
+                       min="@todayIso" value="@F("LicenseExpiry")" />
+                <small class="prv-flow-field-error @(licenseExpiryPast ? "" : "is-hidden")" data-expiry-error>
+                    @L["This document has expired. Enter a current expiration date."]
+                </small>
+            </label>
         </div>
         <div class="prv-flow-flags">
             <label><input type="checkbox" name="LicenseNotApplicable" value="true" @(Model.NotApplicable ? "checked" : "") /> @L["Not applicable"]</label>
@@ -72,7 +86,14 @@
             <label><span>@L["Insurance company"]</span><input type="text" name="InsuranceCompany" value="@F("InsuranceCompany")" /></label>
             <label><span>@L["Policy number"]</span><input type="text" name="PolicyNumber" value="@F("PolicyNumber")" /></label>
             <label><span>@L["Coverage amount"]</span><input type="text" name="CoverageAmount" value="@F("CoverageAmount")" placeholder="@L["$1,000,000"]" /></label>
-            <label><span>@L["Expiration date"]</span><input type="date" name="InsuranceExpiry" value="@F("InsuranceExpiry")" /></label>
+            <label>
+                <span>@L["Expiration date"]</span>
+                <input type="date" name="InsuranceExpiry" class="prv-flow-expiry-input @(insuranceExpiryPast ? "is-invalid" : "")"
+                       min="@todayIso" value="@F("InsuranceExpiry")" />
+                <small class="prv-flow-field-error @(insuranceExpiryPast ? "" : "is-hidden")" data-expiry-error>
+                    @L["This document has expired. Enter a current expiration date."]
+                </small>
+            </label>
         </div>
         <div class="prv-flow-flags">
             <label><input type="checkbox" name="InsuranceNotApplicable" value="true" @(Model.NotApplicable ? "checked" : "") /> @L["Not applicable"]</label>

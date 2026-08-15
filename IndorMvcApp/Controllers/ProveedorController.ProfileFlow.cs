@@ -1,3 +1,4 @@
+using System.Globalization;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -109,6 +110,12 @@ public partial class ProveedorController
 
         var proveedorId = proveedor.Entity!.Id;
 
+        if (ProfileDocumentExpiryIsExpired(input))
+        {
+            TempData["ProfileSectionError"] = localizer["This document has expired. Enter a current expiration date."].ToString();
+            return RedirectToAction(nameof(ProfileDocuments), new { section = input.Section ?? documentType });
+        }
+
         if (documentFile != null && documentFile.Length > 0 && !string.IsNullOrWhiteSpace(documentType))
         {
             var uploadError = await SaveProviderDocumentAsync(proveedorId, documentType.Trim(), documentFile);
@@ -133,5 +140,50 @@ public partial class ProveedorController
         }
 
         return RedirectToAction(nameof(ProfileDocuments), new { section = input.Section });
+    }
+
+    private static bool ProfileDocumentExpiryIsExpired(ProviderProfileDocumentsInput input)
+    {
+        var section = (input.Section ?? "").Trim();
+        if (section.Equals("insurance", StringComparison.OrdinalIgnoreCase)
+            || string.IsNullOrEmpty(section))
+        {
+            if (!input.InsuranceNotApplicable
+                && !input.InsuranceUnknown
+                && IsPastCalendarDate(input.InsuranceExpiry))
+            {
+                return true;
+            }
+        }
+
+        if (section.Equals("license", StringComparison.OrdinalIgnoreCase)
+            || string.IsNullOrEmpty(section))
+        {
+            if (!input.LicenseNotApplicable
+                && !input.LicenseUnknown
+                && IsPastCalendarDate(input.LicenseExpiry))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static bool IsPastCalendarDate(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return false;
+        }
+
+        var trimmed = value.Trim();
+        if (DateOnly.TryParseExact(trimmed, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var iso))
+        {
+            return iso < DateOnly.FromDateTime(DateTime.Today);
+        }
+
+        return DateOnly.TryParse(trimmed, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed)
+            && parsed < DateOnly.FromDateTime(DateTime.Today);
     }
 }
