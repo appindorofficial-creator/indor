@@ -4562,5 +4562,9 @@ public static class UiTranslationsFinal
             ["6-10 years"] = "6-10 años",
             ["{0} years"] = "{0} años",
             ["{0} employees"] = "{0} empleados",
+            ["Provider type"] = "Tipo de proveedor",
+            ["Licensed plumber"] = "Plomero con licencia",
+            ["Master plumber"] = "Maestro plomero",
+            ["Plumbing company"] = "Empresa de plomería",
         };
 }
