@@ -656,7 +656,8 @@ public static class UiTranslationsProveedor
             ["Only choose appliance types your team is qualified to repair."] = "Only choose appliance types tu team is qualified to repair.",
             ["Only choose services your business is trained and insured to perform."] = "Only choose services tu business is trained y insured to perform.",
             ["Only choose services your company is trained and licensed to perform."] = "Only choose services tu company is trained y licensed to perform.",
-            ["Only one main trade can be selected. Additional work categories require separate INDOR approval."] = "Only one main trade can be selected. Additional work categories require separate INDOR approval.",
+            ["Only one main trade can be selected. Additional work categories require separate INDOR approval."] =
+                "Solo se puede seleccionar un oficio principal. Las categorías de trabajo adicionales requieren aprobación aparte de INDOR.",
             ["Only painting-related services can be activated under this provider account."] = "Only painting-related services can be activated under this provider account.",
             ["Only select work your company is licensed, insured, and qualified to perform."] = "Only select work tu company is licensed, insured, y qualified to perform.",
             ["Only the approved handyman category will appear on your INDOR profile."] = "Only the approved handyman category will appear on tu INDOR profile.",

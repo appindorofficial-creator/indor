@@ -92,9 +92,9 @@
     else if (isCleaning)
     {
         <div class="prv-trust-badges">
-            <span><i class="fas fa-shield-halved"></i> Licensed where required</span>
-            <span><i class="fas fa-shield"></i> Insured</span>
-            <span><i class="fas fa-user-check"></i> Background checked</span>
+            <span><i class="fas fa-shield-halved"></i> @L["Licensed where required"]</span>
+            <span><i class="fas fa-shield"></i> @L["Insured"]</span>
+            <span><i class="fas fa-user-check"></i> @L["Background checked"]</span>
         </div>
         <div class="prv-rule-banner">
             <i class="fas fa-circle-info"></i>
@@ -127,6 +127,15 @@
         <div class="prv-rule-banner">
             <i class="fas fa-circle-info"></i>
             <span>@L["You will only receive HVAC jobs that match your approved specialties."]</span>
+        </div>
+    }
+    else
+    {
+        <div class="prv-rule-banner">
+            <i class="fas fa-circle-info"></i>
+            <span>@(Model.State.IsPlumbingOnly
+                ? L["You will only receive plumbing jobs that match your approved specialties."]
+                : L["You will only receive electrical jobs that match your approved specialties."])</span>
         </div>
     }
 </form>

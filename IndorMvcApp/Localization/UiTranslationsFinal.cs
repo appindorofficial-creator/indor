@@ -4566,5 +4566,94 @@ public static class UiTranslationsFinal
             ["Licensed plumber"] = "Plomero con licencia",
             ["Master plumber"] = "Maestro plomero",
             ["Plumbing company"] = "Empresa de plomería",
+            ["Only one main trade can be selected. Additional work categories require separate INDOR approval."] =
+                "Solo se puede seleccionar un oficio principal. Las categorías de trabajo adicionales requieren aprobación aparte de INDOR.",
+            ["What bathroom remodeling services do you provide?"] = "¿Qué servicios de remodelación de baño ofreces?",
+            ["What handyman services do you offer?"] = "¿Qué servicios de manitas ofreces?",
+            ["What HVAC services do you provide?"] = "¿Qué servicios de HVAC ofreces?",
+            ["What roofing services do you provide?"] = "¿Qué servicios de techado ofreces?",
+            ["What kitchen remodeling services do you provide?"] = "¿Qué servicios de remodelación de cocina ofreces?",
+            ["What painting services do you provide?"] = "¿Qué servicios de pintura ofreces?",
+            ["What flooring services do you provide?"] = "¿Qué servicios de pisos ofreces?",
+            ["What cleaning services do you offer?"] = "¿Qué servicios de limpieza ofreces?",
+            ["What landscaping services do you provide?"] = "¿Qué servicios de paisajismo ofreces?",
+            ["What pest control services do you offer?"] = "¿Qué servicios de control de plagas ofreces?",
+            ["Which appliances do you repair?"] = "¿Qué electrodomésticos reparas?",
+            ["What construction work do you perform?"] = "¿Qué trabajos de construcción realizas?",
+            ["Select the bathroom remodeling work your company is qualified to perform."] =
+                "Selecciona los trabajos de remodelación de baño que tu empresa está calificada para realizar.",
+            ["Choose the work types you are qualified to perform within the handyman category."] =
+                "Elige los tipos de trabajo que estás calificado para realizar dentro de la categoría de manitas.",
+            ["Choose the HVAC services your company is licensed or trained to perform."] =
+                "Elige los servicios de HVAC que tu empresa está licenciada o capacitada para realizar.",
+            ["Select the roofing specialties your company is qualified to perform."] =
+                "Selecciona las especialidades de techado que tu empresa está calificada para realizar.",
+            ["Select the services your company is qualified to perform within kitchen remodeling."] =
+                "Selecciona los servicios que tu empresa está calificada para realizar en remodelación de cocina.",
+            ["Choose the services your painting business is qualified to perform."] =
+                "Elige los servicios que tu negocio de pintura está calificado para realizar.",
+            ["Choose the flooring services your business performs."] =
+                "Elige los servicios de pisos que realiza tu negocio.",
+            ["Choose the cleaning services your business is qualified to provide."] =
+                "Elige los servicios de limpieza que tu negocio está calificado para ofrecer.",
+            ["Choose the landscaping services your business offers."] =
+                "Elige los servicios de paisajismo que ofrece tu negocio.",
+            ["Choose the services your company is qualified to provide."] =
+                "Elige los servicios que tu empresa está calificada para ofrecer.",
+            ["Choose the appliance types your business is qualified to service."] =
+                "Elige los tipos de electrodomésticos que tu negocio está calificado para atender.",
+            ["Choose the project types your company is qualified to handle."] =
+                "Elige los tipos de proyecto que tu empresa está calificada para manejar.",
+            ["Select the plumbing work you want to receive through INDOR."] =
+                "Selecciona los trabajos de plomería que quieres recibir a través de INDOR.",
+            ["Select the types of work you want to receive through INDOR."] =
+                "Selecciona los tipos de trabajo que quieres recibir a través de INDOR.",
+            ["Only approved plumbing providers can receive plumbing requests in INDOR."] =
+                "Solo los proveedores de plomería aprobados pueden recibir solicitudes de plomería en INDOR.",
+            ["You will only receive roofing jobs that match your selected specialties."] =
+                "Solo recibirás trabajos de techado que coincidan con tus especialidades seleccionadas.",
+            ["You can only receive kitchen remodeling jobs related to the services selected here."] =
+                "Solo puedes recibir trabajos de remodelación de cocina relacionados con los servicios seleccionados aquí.",
+            ["Only painting-related services can be activated under this provider account."] =
+                "Solo se pueden activar servicios de pintura en esta cuenta de proveedor.",
+            ["INDOR rule: only flooring-related services can be enabled on this account."] =
+                "Regla de INDOR: solo se pueden activar servicios de pisos en esta cuenta.",
+            ["INDOR rule: stay within your landscaping specialty only."] =
+                "Regla de INDOR: quédate solo dentro de tu especialidad de paisajismo.",
+            ["Only choose services your company is trained and licensed to perform."] =
+                "Elige solo los servicios que tu empresa está capacitada y licenciada para realizar.",
+            ["Only choose appliance types your team is qualified to repair."] =
+                "Elige solo los tipos de electrodomésticos que tu equipo está calificado para reparar.",
+            ["INDOR will only send cleaning jobs that match your approved service scope."] =
+                "INDOR solo enviará trabajos de limpieza que coincidan con tu alcance de servicio aprobado.",
+            ["Only choose services your business is trained and insured to perform."] =
+                "Elige solo los servicios que tu negocio está capacitado y asegurado para realizar.",
+            ["INDOR rule: Handyman providers cannot perform HVAC, plumbing, or electrical work unless separately licensed and approved."] =
+                "Regla de INDOR: los proveedores de manitas no pueden realizar trabajos de HVAC, plomería o electricidad a menos que tengan licencia y aprobación por separado.",
+            ["Only select work your company is licensed, insured, and qualified to perform."] =
+                "Selecciona solo el trabajo que tu empresa está licenciada, asegurada y calificada para realizar.",
+            ["You will only receive HVAC jobs that match your approved specialties."] =
+                "Solo recibirás trabajos de HVAC que coincidan con tus especialidades aprobadas.",
+            ["You will only receive plumbing jobs that match your approved specialties."] =
+                "Solo recibirás trabajos de plomería que coincidan con tus especialidades aprobadas.",
+            ["You will only receive electrical jobs that match your approved specialties."] =
+                "Solo recibirás trabajos eléctricos que coincidan con tus especialidades aprobadas.",
+            ["Your landscaping profile will only receive landscaping-related jobs."] =
+                "Tu perfil de paisajismo solo recibirá trabajos relacionados con paisajismo.",
+            ["Cleaning providers will only receive cleaning-related jobs."] =
+                "Los proveedores de limpieza solo recibirán trabajos relacionados con limpieza.",
+            ["Your account will only be approved for flooring-related work."] =
+                "Tu cuenta solo se aprobará para trabajos relacionados con pisos.",
+            ["You are applying as a Painting provider only."] =
+                "Estás postulándote solo como proveedor de pintura.",
+            ["INDOR reviews every provider before activation."] =
+                "INDOR revisa a cada proveedor antes de la activación.",
+            ["Only the approved handyman category will appear on your INDOR profile."] =
+                "Solo la categoría de manitas aprobada aparecerá en tu perfil de INDOR.",
+            ["Save and finish later"] = "Guardar y terminar después",
+            ["Provider type (pre-selected)"] = "Tipo de proveedor (preseleccionado)",
+            ["Licensed where required"] = "Con licencia donde se requiera",
+            ["Background checked"] = "Con verificación de antecedentes",
+            ["Selected trade:"] = "Oficio seleccionado:",
         };
 }
