@@ -78,7 +78,7 @@
     <span>@L.T("Questions {0}–{1} of {2}", qStart, qEnd, questionCount)</span>
     <span>@L.T("Page {0} of {1}", examPage, totalPages)</span>
 </p>
-<form asp-action="Exam" method="post" id="prvExamForm" class="pa-validate" novalidate>
+<form asp-action="Exam" method="post" id="prvExamForm" novalidate>
     @Html.AntiForgeryToken()
     <input type="hidden" name="page" value="@examPage" />
     @foreach (var q in questions)
@@ -117,5 +117,3 @@
         </button>
     </div>
 </form>
-
-@await Html.PartialAsync("_PropertyAdminStepValidation")

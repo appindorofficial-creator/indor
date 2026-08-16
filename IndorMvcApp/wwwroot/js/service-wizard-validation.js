@@ -86,7 +86,11 @@
         '.concern-card',
         '.cable-card',
         '.pref-btn',
-        '.service-block'
+        '.service-block',
+        '.prv-chip',
+        '.prv-entry-card',
+        '.prv-type-card',
+        '.prv-wiz-slot'
     ].join(',');
 
     var MULTI_CHOICE = [
@@ -100,7 +104,8 @@
         '.check-tile',
         '.check-card',
         '.csc-check-item',
-        '.multi-chip'
+        '.multi-chip',
+        '.prv-chip'
     ].join(',');
 
     function isSpanishUi() {
@@ -272,7 +277,7 @@
     }
 
     function cardHasActive(card, selector) {
-        return !!card.querySelector(selector + '.active');
+        return !!card.querySelector(selector + '.active, ' + selector + '.is-selected, ' + selector + ':has(input:checked)');
     }
 
     function isUnknownOrFilledComplete(card) {
@@ -307,7 +312,15 @@
         if (card.hasAttribute('data-svc-required') || card.hasAttribute('data-whf-required')) {
             var id = card.getAttribute('data-svc-required') || card.getAttribute('data-whf-required');
             var input = document.getElementById(id);
-            if (!(input && String(input.value || '').trim())) {
+            if (!input) {
+                return false;
+            }
+            var inputType = String(input.type || '').toLowerCase();
+            if (inputType === 'checkbox' || inputType === 'radio') {
+                if (!input.checked) {
+                    return false;
+                }
+            } else if (!String(input.value || '').trim()) {
                 return false;
             }
             if (card.hasAttribute('data-svc-address') && !isValidStreetAddress(input.value)) {
@@ -319,10 +332,13 @@
         var hasMulti = !!card.querySelector(MULTI_CHOICE);
         var hasSingle = !!card.querySelector(SINGLE_CHOICE);
 
+        if (card.hasAttribute('data-svc-required-group')) {
+            return !!card.querySelector('input[type="checkbox"]:checked, input[type="radio"]:checked')
+                || cardHasActive(card, MULTI_CHOICE)
+                || cardHasActive(card, SINGLE_CHOICE);
+        }
+
         if (hasMulti && !hasSingle) {
-            if (card.hasAttribute('data-svc-required-group')) {
-                return cardHasActive(card, MULTI_CHOICE);
-            }
             return true;
         }
 
@@ -383,9 +399,54 @@
     }
 
     function hideTopSummaries(root) {
-        root.querySelectorAll('.validation-summary').forEach(function (summary) {
+        root.querySelectorAll('.validation-summary, .ob-summary').forEach(function (summary) {
             summary.setAttribute('hidden', 'hidden');
             summary.setAttribute('aria-hidden', 'true');
+        });
+    }
+
+    function enhanceProviderWizardCards(root) {
+        if (!root || !root.classList || !root.classList.contains('prv-page')) {
+            return;
+        }
+
+        root.querySelectorAll('form .ob-field').forEach(function (field) {
+            if (field.classList.contains('field-card')) return;
+            var input = field.querySelector('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]), select, textarea');
+            if (!input) return;
+            if (!input.id && input.name) {
+                input.id = String(input.name).replace(/[^\w-]/g, '_');
+            }
+            field.classList.add('field-card');
+            if (input.hasAttribute('required') || input.getAttribute('data-pa-required') === 'true') {
+                field.setAttribute('data-svc-required', input.id);
+                input.removeAttribute('required');
+            } else {
+                field.setAttribute('data-svc-optional', '');
+            }
+        });
+
+        root.querySelectorAll('form .prv-exam-q').forEach(function (card) {
+            card.classList.add('field-card');
+            card.setAttribute('data-svc-required-group', '');
+            card.querySelectorAll('[required]').forEach(function (el) {
+                el.removeAttribute('required');
+            });
+        });
+
+        root.querySelectorAll('form .prv-check-row, form .prv-wiz-terms').forEach(function (row) {
+            var input = row.querySelector('input[type="checkbox"], input[type="radio"]');
+            if (!input) return;
+            row.classList.add('field-card');
+            if (!input.id) {
+                input.id = input.name ? String(input.name).replace(/[^\w-]/g, '_') : ('prvCheck' + Math.random().toString(36).slice(2, 8));
+            }
+            if (input.hasAttribute('required') || input.getAttribute('data-pa-required') === 'true') {
+                row.setAttribute('data-svc-required', input.id);
+                input.removeAttribute('required');
+            } else if (!row.hasAttribute('data-svc-optional') && !row.hasAttribute('data-svc-required')) {
+                row.setAttribute('data-svc-optional', '');
+            }
         });
     }
 
@@ -459,6 +520,7 @@
 
     function boot() {
         var root = document.querySelector('.iw-wizard-page') || document;
+        enhanceProviderWizardCards(root);
         hideTopSummaries(root);
         promoteServerFieldErrors(root);
         root.querySelectorAll('form').forEach(bindForm);

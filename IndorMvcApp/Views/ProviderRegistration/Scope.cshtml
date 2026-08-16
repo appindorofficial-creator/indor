@@ -25,7 +25,7 @@
         }
     </ul>
 </div>
-<form asp-action="Scope" method="post" id="prvScopeForm">
+<form asp-action="Scope" method="post" id="prvScopeForm" novalidate>
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
     <label class="prv-check-row">

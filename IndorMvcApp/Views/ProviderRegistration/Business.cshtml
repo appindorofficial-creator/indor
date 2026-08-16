@@ -24,7 +24,7 @@
     <h1>@Model.Title</h1>
     <p>@Model.Subtitle</p>
 </div>
-<form asp-action="Business" method="post" id="prvBusinessForm" class="ob-form-card">
+<form asp-action="Business" method="post" id="prvBusinessForm" class="ob-form-card" novalidate>
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
     <input type="hidden" name="ProviderType" id="providerType" value="@providerType" />

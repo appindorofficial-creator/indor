@@ -68,6 +68,22 @@ document.querySelectorAll('[data-chip-group]').forEach(group => {
             } else {
                 input.closest('.prv-chip')?.classList.toggle('is-selected', input.checked);
             }
+            const requiredCard = group.closest('[data-svc-required]');
+            if (requiredCard && input.checked) {
+                const hidden = document.getElementById(requiredCard.getAttribute('data-svc-required'));
+                if (hidden) hidden.value = input.value;
+            }
+        });
+    });
+});
+
+document.querySelectorAll('.field-card[data-svc-required]').forEach(card => {
+    const hidden = document.getElementById(card.getAttribute('data-svc-required'));
+    if (!hidden) return;
+    card.querySelectorAll('input[type="radio"]').forEach(radio => {
+        if (radio === hidden) return;
+        radio.addEventListener('change', () => {
+            if (radio.checked) hidden.value = radio.value;
         });
     });
 });

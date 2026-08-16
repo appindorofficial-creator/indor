@@ -17,12 +17,13 @@
     <p>@L["How do you want to enter?"]</p>
 </div>
 
-<form asp-action="Entry" method="post" id="prvEntryForm" class="prv-wiz-stack pa-validate" novalidate>
+<form asp-action="Entry" method="post" id="prvEntryForm" class="prv-wiz-stack" novalidate>
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
 
     <input type="hidden" name="path" id="prvEntryPath" value="@selectedKind" />
 
+    <div class="field-card" data-svc-required="prvEntryPath">
     <div class="prv-entry-options" role="radiogroup" aria-label="@L["How do you want to enter?"]">
         <button type="button"
                 class="prv-entry-card prv-entry-card--company @(selectedKind == "company" ? "is-selected" : "")"
@@ -56,6 +57,7 @@
             </div>
         </button>
     </div>
+    </div>
 
     <p class="prv-entry-hint">@L["Complete the rest from your profile later."]</p>
 
@@ -76,7 +78,3 @@
 <div class="prv-wiz-footer">
     <button type="submit" form="prvEntryForm" class="ob-btn ob-btn-primary">@L["Continue"]</button>
 </div>
-
-@section Scripts {
-    @await Html.PartialAsync("_PropertyAdminStepValidation")
-}

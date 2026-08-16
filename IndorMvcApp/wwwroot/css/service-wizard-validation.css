@@ -1,11 +1,20 @@
 /* Inline validation for homeowner service wizards */
-.iw-wizard-page .validation-summary {
+.iw-wizard-page .validation-summary,
+.iw-wizard-page .ob-summary {
     display: none !important;
 }
 
 .iw-wizard-page .field-card.is-invalid {
     border-color: #F87171;
     box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.12);
+}
+
+.prv-page .field-card:not(.ob-field):not(.prv-exam-q):not(.prv-wiz-terms):not(.prv-check-row) {
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 12px;
 }
 
 .iw-wizard-page .field-inline-error,

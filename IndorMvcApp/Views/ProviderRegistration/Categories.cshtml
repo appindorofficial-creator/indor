@@ -8,27 +8,32 @@
     <h1>@Model.Title</h1>
     <p>@Model.Subtitle</p>
 </div>
-<form asp-action="Categories" method="post" id="categoryForm">
+<form asp-action="Categories" method="post" id="categoryForm" novalidate>
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
-    <div class="prv-search-wrap">
-        <i class="fas fa-magnifying-glass"></i>
-        <input type="search" id="categorySearch" placeholder="@L["Search provider type"]" autocomplete="off" />
+    <input type="hidden" name="categoryId" id="categoryId" value="@selectedId" />
+    <div class="field-card" data-svc-optional>
+        <div class="prv-search-wrap" style="margin-bottom:0">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="search" id="categorySearch" placeholder="@L["Search provider type"]" autocomplete="off" />
+        </div>
     </div>
-    <div class="prv-chip-grid prv-chip-grid--single" data-chip-group data-single-select="true" id="categoryGrid">
-        @foreach (var cat in categories)
-        {
-            var isOn = selectedId.Equals(cat.Id, StringComparison.OrdinalIgnoreCase);
-            <label class="prv-chip prv-chip--radio @(isOn ? "is-selected" : "")" data-label="@UiDisplayLocalization.Localize(L, cat.Label)">
-                <input type="radio" name="categoryId" value="@cat.Id" @(isOn ? "checked" : "") />
-                <i class="fas @cat.IconClass"></i>
-                <span>@UiDisplayLocalization.Localize(L, cat.Label)</span>
-                @if (isOn)
-                {
-                    <i class="fas fa-circle-check prv-chip-check"></i>
-                }
-            </label>
-        }
+    <div class="field-card" data-svc-required="categoryId">
+        <div class="prv-chip-grid prv-chip-grid--single" data-chip-group data-single-select="true" id="categoryGrid">
+            @foreach (var cat in categories)
+            {
+                var isOn = selectedId.Equals(cat.Id, StringComparison.OrdinalIgnoreCase);
+                <label class="prv-chip prv-chip--radio @(isOn ? "is-selected" : "")" data-label="@UiDisplayLocalization.Localize(L, cat.Label)">
+                    <input type="radio" value="@cat.Id" @(isOn ? "checked" : "") />
+                    <i class="fas @cat.IconClass"></i>
+                    <span>@UiDisplayLocalization.Localize(L, cat.Label)</span>
+                    @if (isOn)
+                    {
+                        <i class="fas fa-circle-check prv-chip-check"></i>
+                    }
+                </label>
+            }
+        </div>
     </div>
     <div class="prv-rule-banner">
         <i class="fas fa-circle-info"></i>

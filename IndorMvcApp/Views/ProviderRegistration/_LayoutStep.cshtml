@@ -22,7 +22,7 @@
 
 </head>
 
-<body class="ob-page prv-page @(ViewData["PrvWizardSkin"] as string)">
+<body class="ob-page prv-page iw-wizard-page @(ViewData["PrvWizardSkin"] as string)">
 
     <div class="ob-shell">
 
@@ -40,6 +40,7 @@
 
     <script src="~/js/phone-input.js" asp-append-version="true"></script>
     <script src="~/js/provider-registration.js" asp-append-version="true"></script>
+    @await Html.PartialAsync("_ServiceWizardValidation")
 
     <script>
         (function () {
