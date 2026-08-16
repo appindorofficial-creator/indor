@@ -70,6 +70,7 @@
                value="true"
                @(s.TermsAccepted ? "checked" : null)
                data-pa-required="true"
+               data-pa-error-message="@L["Please agree to INDOR's Terms &amp; Conditions."]"
                data-field-label="@L["Please agree to INDOR's Terms &amp; Conditions."]" />
         <span>@L["I agree to INDOR's"]<a asp-controller="Account" asp-action="Terms" asp-route-from="provider-company-info">@L["Terms &amp; Conditions"]</a></span>
     </label>

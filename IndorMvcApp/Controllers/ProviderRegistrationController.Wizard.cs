@@ -239,13 +239,7 @@ public partial class ProviderRegistrationController
             return RedirectToAction(nameof(CompanyInfo));
         }
 
-        await registration.EnsureDocumentSlotsAsync();
-        ViewBag.DocumentSlots = await registration.GetDocumentSlotsAsync();
-        ViewBag.HasDocuments = await registration.HasRequiredDocumentsAsync();
-
-        return View(StepVm(3, "Access & Verification",
-            "Start using INDOR Pro now, and complete verification to receive INDOR jobs.",
-            state, Url.Action(nameof(CompanyInfo))));
+        return await VerificationStepView(state);
     }
 
     [HttpPost]
@@ -266,6 +260,11 @@ public partial class ProviderRegistrationController
             await SaveDocumentFileAsync(insuranceFile, ProviderDocumentTypes.Insurance);
             await SaveDocumentFileAsync(governmentIdFile, ProviderDocumentTypes.GovernmentId);
             await SaveDocumentFileAsync(businessRegistrationFile, ProviderDocumentTypes.BusinessRegistration);
+            if (!ModelState.IsValid)
+            {
+                return await VerificationStepView(state);
+            }
+
             return RedirectToAction(nameof(Verification));
         }
 

@@ -444,7 +444,7 @@ public partial class ProviderRegistrationController(
         else
         {
             var tradeLabel = ViewBag.TradeLabel as string ?? "your trade";
-            title = $"Tell us about your {tradeLabel.ToString()!.ToLowerInvariant()} business";
+            title = $"Tell us about your {tradeLabel.ToLowerInvariant()} business";
             subtitle = "This information appears on your provider profile.";
         }
 
@@ -720,31 +720,33 @@ public partial class ProviderRegistrationController(
 
         var examTitle = state.IsPlumbingOnly
             ? "INDOR plumbing exam"
-            : state.IsHvacOnly
-                ? "INDOR HVAC qualification exam"
-                : state.IsHandymanOnly
-                    ? "INDOR handyman exam"
-                    : state.IsConstructionOnly
-                        ? "INDOR construction qualification exam"
-                        : state.IsBathroomOnly
-                            ? "INDOR bathroom remodeling exam"
-                            : state.IsKitchenOnly
-                                ? "INDOR kitchen remodeling exam"
-                                : state.IsRoofingOnly
-                                    ? "INDOR roofing qualification"
-                                    : state.IsPaintingOnly
-                                        ? "INDOR painting qualification exam"
-                                        : state.IsFlooringOnly
-                                            ? "INDOR flooring qualification exam"
-                                            : state.IsCleaningOnly
-                                                ? "INDOR cleaning qualification"
-                                                : state.IsLandscapingOnly
-                                                    ? "INDOR landscaping exam"
-                                                    : state.IsPestOnly
-                                                        ? "INDOR pest control exam"
-                                                        : state.IsApplianceOnly
-                                                            ? "INDOR appliance repair qualification"
-                                                            : $"INDOR {tradeLabel.ToLowerInvariant()} exam";
+            : state.IsElectricianOnly
+                ? "INDOR electrical exam"
+                : state.IsHvacOnly
+                    ? "INDOR HVAC qualification exam"
+                    : state.IsHandymanOnly
+                        ? "INDOR handyman exam"
+                        : state.IsConstructionOnly
+                            ? "INDOR construction qualification exam"
+                            : state.IsBathroomOnly
+                                ? "INDOR bathroom remodeling exam"
+                                : state.IsKitchenOnly
+                                    ? "INDOR kitchen remodeling exam"
+                                    : state.IsRoofingOnly
+                                        ? "INDOR roofing qualification"
+                                        : state.IsPaintingOnly
+                                            ? "INDOR painting qualification exam"
+                                            : state.IsFlooringOnly
+                                                ? "INDOR flooring qualification exam"
+                                                : state.IsCleaningOnly
+                                                    ? "INDOR cleaning qualification"
+                                                    : state.IsLandscapingOnly
+                                                        ? "INDOR landscaping exam"
+                                                        : state.IsPestOnly
+                                                            ? "INDOR pest control exam"
+                                                            : state.IsApplianceOnly
+                                                                ? "INDOR appliance repair qualification"
+                                                                : $"INDOR {tradeLabel.ToLowerInvariant()} exam";
 
         var examSubtitle = state.IsApplianceOnly
             ? "Pass the trade qualification to unlock appliance repair jobs only."
@@ -768,7 +770,11 @@ public partial class ProviderRegistrationController(
                             ? "Pass the trade qualification to unlock kitchen remodeling jobs only."
                             : state.IsHvacOnly
                                 ? "Pass the trade qualification to unlock HVAC jobs only."
-                                : $"Pass the trade qualification to unlock {tradeLabel.ToLowerInvariant()} jobs only.";
+                                : state.IsElectricianOnly
+                                    ? "Pass the trade qualification to unlock electrical jobs only."
+                                    : state.IsPlumbingOnly
+                                        ? "Pass the trade qualification to unlock plumbing jobs only."
+                                        : $"Pass the trade qualification to unlock {tradeLabel.ToLowerInvariant()} jobs only.";
 
         ViewBag.IsHandyman = state.IsHandymanOnly;
         ViewBag.IsConstruction = state.IsConstructionOnly;
@@ -837,8 +843,8 @@ public partial class ProviderRegistrationController(
 
         var title = result.Passed ? "You passed the exam" : "You did not pass";
         var subtitle = result.Passed
-            ? $"You scored {result.ScorePercent}%. Here is the breakdown of every question."
-            : $"You scored {result.ScorePercent}%. You need {result.PassingPercent}% to pass. Review every question and try again.";
+            ? localizer.T("You scored {0}%. Here is the breakdown of every question.", result.ScorePercent)
+            : localizer.T("You scored {0}%. You need {1}% to pass. Review every question and try again.", result.ScorePercent, result.PassingPercent);
 
         return View(StepVm(4, title, subtitle, state, null));
     }
@@ -1477,7 +1483,9 @@ public partial class ProviderRegistrationController(
 
         if (!AllowedDocExtensions.Contains(ext))
         {
-            ModelState.AddModelError(string.Empty, $"File type not allowed for {documentType}. Use PDF, JPG, or PNG.");
+            ModelState.AddModelError(
+                string.Empty,
+                localizer.T("File type not allowed for {0}. Use PDF, JPG, or PNG.", DocumentTypeAlertLabel(documentType)));
             return;
         }
 
@@ -1511,6 +1519,25 @@ public partial class ProviderRegistrationController(
         var relativeUrl = $"/uploads/provider/{proveedor.Id}/{storedName}";
         await registration.RegisterDocumentUploadAsync(documentType, relativeUrl);
     }
+
+    private async Task<IActionResult> VerificationStepView(ProviderRegistrationState state)
+    {
+        await registration.EnsureDocumentSlotsAsync();
+        ViewBag.DocumentSlots = await registration.GetDocumentSlotsAsync();
+        ViewBag.HasDocuments = await registration.HasRequiredDocumentsAsync();
+        return View("Verification", StepVm(3, "Access & Verification",
+            "Start using INDOR Pro now, and complete verification to receive INDOR jobs.",
+            state, Url.Action(nameof(CompanyInfo))));
+    }
+
+    private string DocumentTypeAlertLabel(string documentType) => documentType switch
+    {
+        ProviderDocumentTypes.License => localizer["Business license"],
+        ProviderDocumentTypes.Insurance => localizer["Insurance certificate"],
+        ProviderDocumentTypes.GovernmentId => localizer["Government ID"],
+        ProviderDocumentTypes.BusinessRegistration => localizer["Business registration"],
+        _ => documentType
+    };
 
     private ProviderRegistrationStepViewModel StepVm(
         int step,

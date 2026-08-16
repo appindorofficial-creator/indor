@@ -22,6 +22,37 @@
     var isPest = Model.State.IsPestOnly;
     var isAppliance = Model.State.IsApplianceOnly;
     var isRoofing = Model.State.IsRoofingOnly;
+    var isPlumbing = Model.State.IsPlumbingOnly;
+    var isElectrical = Model.State.IsElectricianOnly;
+    var jobsNote = isRoofing
+        ? "Only providers who pass the exam and verification can receive roofing jobs."
+        : isAppliance
+            ? "Only providers who pass the exam and verification can receive appliance repair jobs."
+        : isPest
+            ? "Only providers who pass the exam and verification can receive pest control jobs."
+        : isLandscaping
+            ? "Only providers who pass the exam and verification can receive landscaping jobs."
+        : isCleaning
+            ? "Only providers who pass the exam and verification can receive cleaning jobs."
+        : isFlooring
+            ? "Only providers who pass the exam and verification can receive flooring jobs."
+        : isPainting
+            ? "Only providers who pass the exam and verification can receive painting jobs."
+        : isKitchen
+            ? "Only providers who pass the exam and verification can receive kitchen remodeling jobs."
+        : isBathroom
+            ? "Only providers who pass the exam and verification can receive bathroom remodeling jobs."
+        : isHandyman
+            ? "Only providers who pass the exam and verification can receive handyman jobs."
+        : isConstruction
+            ? "Only providers who pass the exam and verification can receive construction company jobs."
+        : isHvac
+            ? "Only providers who pass the exam and verification can receive HVAC jobs."
+        : isElectrical
+            ? "Only providers who pass the exam and verification can receive electrical jobs."
+        : isPlumbing
+            ? "Only providers who pass the exam and verification can receive plumbing jobs."
+            : "Only providers who pass the exam and verification can receive jobs.";
 }
 <div class="ob-head-block">
     <h1>@Model.Title</h1>
@@ -29,7 +60,7 @@
 </div>
 @if (failedScore.HasValue)
 {
-    <div class="prv-exam-alert">You scored @failedScore%. You need @passing% to pass. Review your answers and try again.</div>
+    <div class="prv-exam-alert">@L.T("You scored {0}%. You need {1}% to pass. Review your answers and try again.", failedScore, passing)</div>
 }
 <div class="prv-exam-stats">
     <div class="prv-exam-stat">
@@ -44,8 +75,8 @@
     </div>
 </div>
 <p class="prv-exam-page-meta">
-    <span>Questions @qStart–@qEnd of @questionCount</span>
-    <span>Page @examPage of @totalPages</span>
+    <span>@L.T("Questions {0}–{1} of {2}", qStart, qEnd, questionCount)</span>
+    <span>@L.T("Page {0} of {1}", examPage, totalPages)</span>
 </p>
 <form asp-action="Exam" method="post" id="prvExamForm" class="pa-validate" novalidate>
     @Html.AntiForgeryToken()
@@ -54,19 +85,19 @@
     {
         var selected = answers.TryGetValue(q.Number, out var a) ? a : "";
         <div class="prv-exam-q">
-            <h3><span class="prv-q-num">@q.Number</span> @q.Text</h3>
+            <h3><span class="prv-q-num">@q.Number</span> @UiDisplayLocalization.Localize(L, q.Text)</h3>
             @for (var i = 0; i < q.Options.Count; i++)
             {
                 <div class="prv-exam-opt">
                     <input type="radio" name="answers[@q.Number]" id="q@(q.Number)_@i" value="@i" @(selected == i.ToString() ? "checked" : "") required data-field-label="@L["an answer"]" />
-                    <label for="q@(q.Number)_@i">@q.Options[i]</label>
+                    <label for="q@(q.Number)_@i">@UiDisplayLocalization.Localize(L, q.Options[i])</label>
                 </div>
             }
         </div>
     }
     <div class="prv-rule-banner">
         <i class="fas fa-circle-info"></i>
-        <span>@(isRoofing ? "Only providers who pass the exam and verification can receive roofing jobs." : isAppliance ? "Only providers who pass the exam and verification can receive appliance repair jobs." : isPest ? "Only providers who pass the exam and verification can receive pest control jobs." : isLandscaping ? "Only providers who pass the exam and verification can receive landscaping jobs." : isCleaning ? "Only providers who pass the exam and verification can receive cleaning jobs." : isFlooring ? "Only providers who pass the exam and verification can receive flooring jobs." : isPainting ? "Only providers who pass the exam and verification can receive painting jobs." : isKitchen ? "Only providers who pass the exam and verification can receive kitchen remodeling jobs." : isBathroom ? "Only providers who pass the exam and verification can receive bathroom remodeling jobs." : isHandyman ? "Only providers who pass the exam and verification can receive handyman jobs." : isConstruction ? "Only providers who pass the exam and verification can receive construction company jobs." : isHvac ? "Only providers who pass the exam and verification can receive HVAC jobs." : "Only providers who pass the exam and verification can receive jobs.")</span>
+        <span>@L[jobsNote]</span>
     </div>
     @if (examPage >= totalPages && !isHandyman)
     {
@@ -74,7 +105,7 @@
     }
     @if (examPage >= totalPages && (isHandyman || isConstruction))
     {
-        <p class="prv-exam-review-hint">@(isConstruction ? "Review your answers before submitting." : "Final questions before submission.")</p>
+        <p class="prv-exam-review-hint">@(isConstruction ? L["Review your answers before submitting."] : L["Final questions before submission."])</p>
     }
     <div class="prv-exam-nav">
         @if (!string.IsNullOrEmpty(Model.BackUrl))
@@ -82,7 +113,7 @@
             <a href="@Model.BackUrl" class="ob-btn ob-btn-outline">@L["Back"]</a>
         }
         <button type="submit" class="ob-btn ob-btn-primary">
-            @(examPage >= totalPages ? "Submit exam" : "Continue exam")
+            @(examPage >= totalPages ? L["Submit exam"] : L["Continue exam"])
         </button>
     </div>
 </form>

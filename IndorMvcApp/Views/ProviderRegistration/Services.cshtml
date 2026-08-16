@@ -26,17 +26,17 @@
     {
         <div class="prv-search-wrap">
             <i class="fas fa-magnifying-glass"></i>
-            <input type="search" id="serviceSearch" placeholder="@(isRoofing ? "Search roofing service" : isAppliance ? "Search appliance type" : isPest ? "Search pest control service" : isLandscaping ? "Search landscaping service" : isCleaning ? "Search cleaning service" : isFlooring ? "Search flooring services" : isPainting ? "Search painting service" : isKitchen ? "Search kitchen service" : isBathroom ? "Search bathroom service" : isConstruction ? "Search construction work" : isHandyman ? "Search handyman service" : "Search HVAC service")" autocomplete="off" />
+            <input type="search" id="serviceSearch" placeholder="@(isRoofing ? L["Search roofing service"] : isAppliance ? L["Search appliance type"] : isPest ? L["Search pest control service"] : isLandscaping ? L["Search landscaping service"] : isCleaning ? L["Search cleaning service"] : isFlooring ? L["Search flooring services"] : isPainting ? L["Search painting service"] : isKitchen ? L["Search kitchen service"] : isBathroom ? L["Search bathroom service"] : isConstruction ? L["Search construction work"] : isHandyman ? L["Search handyman service"] : L["Search HVAC service"])" autocomplete="off" />
         </div>
     }
     <div class="prv-chip-grid" data-chip-group id="serviceGrid">
         @foreach (var item in offerings)
         {
             var isOn = selected.Contains(item.Id, StringComparer.OrdinalIgnoreCase);
-            <label class="prv-chip @(isOn ? "is-selected" : "")" data-label="@item.Label">
+            <label class="prv-chip @(isOn ? "is-selected" : "")" data-label="@UiDisplayLocalization.Localize(L, item.Label)">
                 <input type="checkbox" name="serviceIds" value="@item.Id" @(isOn ? "checked" : "") />
                 <i class="fas @item.IconClass"></i>
-                <span>@item.Label</span>
+                <span>@UiDisplayLocalization.Localize(L, item.Label)</span>
             </label>
         }
     </div>

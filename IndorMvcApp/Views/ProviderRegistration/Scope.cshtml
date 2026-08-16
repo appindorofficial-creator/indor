@@ -12,7 +12,7 @@
     <ul class="prv-scope-list prv-scope-list--allowed">
         @foreach (var item in allowed)
         {
-            <li><i class="fas fa-circle-check"></i> @item</li>
+            <li><i class="fas fa-circle-check"></i> @UiDisplayLocalization.Localize(L, item)</li>
         }
     </ul>
 </div>
@@ -21,7 +21,7 @@
     <ul class="prv-scope-list prv-scope-list--disallowed">
         @foreach (var item in disallowed)
         {
-            <li><i class="fas fa-circle-xmark"></i> @item</li>
+            <li><i class="fas fa-circle-xmark"></i> @UiDisplayLocalization.Localize(L, item)</li>
         }
     </ul>
 </div>

@@ -31,6 +31,8 @@ public static class UiTranslations
             UiTranslationsPropertySnapshot.Entries,
             // Provider profile / onboarding service catalog labels (must win over incomplete Drywall etc.).
             UiTranslationsProviderCatalog.Entries,
+            // Provider registration exam questions/options (Electrical, Plumbing, HVAC, …).
+            UiTranslationsProviderExams.Entries,
             // Bug 14 — Home Care Guide (9 priority flows); keep after catalog, before FileSource.
             UiTranslationsHomeCare.Entries,
             // Global photo/file source sheet — keep near end so every persona inherits Biblioteca/Tomar/Elegir.

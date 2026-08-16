@@ -26,7 +26,7 @@
     </div>
 </div>
 
-<form asp-action="ActivationCall" method="post" id="prvActivationCallForm" class="prv-wiz-stack">
+<form asp-action="ActivationCall" method="post" id="prvActivationCallForm" class="prv-wiz-stack" novalidate>
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
 
@@ -65,15 +65,40 @@
     </div>
 
     <label class="prv-wiz-terms">
-        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) required />
+        <input type="checkbox"
+               name="termsAccepted"
+               value="true"
+               @(s.TermsAccepted ? "checked" : null)
+               data-pa-required="true"
+               data-pa-error-message="@L["Please agree to INDOR's Terms &amp; Conditions."]"
+               data-field-label="@L["Please agree to INDOR's Terms &amp; Conditions."]" />
         <span>@L["I agree to INDOR's"]<a asp-controller="Account" asp-action="Terms" asp-route-from="provider-activation">@L["Terms &amp; Conditions"]</a></span>
     </label>
 </form>
 
 <div class="prv-wiz-footer">
     <button type="submit" form="prvActivationCallForm" class="ob-btn ob-btn-primary">@L["Schedule Call"]</button>
-    <button type="submit" form="prvActivationCallForm" name="action" value="enter-pro" class="prv-save-later">@L["Enter INDOR Pro"]</button>
+    <button type="submit" form="prvActivationCallForm" name="action" value="enter-pro" class="prv-save-later" formnovalidate>@L["Enter INDOR Pro"]</button>
 </div>
+
+@section Scripts {
+    @await Html.PartialAsync("_PropertyAdminStepValidation")
+    <script>
+        (function () {
+            var form = document.getElementById('prvActivationCallForm');
+            var scheduleBtn = document.querySelector('.prv-wiz-footer .ob-btn-primary');
+            if (!form || !scheduleBtn || typeof window.validatePaForm !== 'function') {
+                return;
+            }
+
+            scheduleBtn.addEventListener('click', function (e) {
+                if (!window.validatePaForm(form)) {
+                    e.preventDefault();
+                }
+            });
+        })();
+    </script>
+}
 
 <div class="prv-wiz-info">
     <i class="fas fa-circle-info"></i>

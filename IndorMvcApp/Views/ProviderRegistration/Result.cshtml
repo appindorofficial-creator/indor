@@ -18,7 +18,7 @@
     </div>
     <div class="prv-result-badge @statusClass">
         <i class="fas @(result.Passed ? "fa-circle-check" : "fa-circle-xmark")"></i>
-        <span>@(result.Passed ? "Passed" : "Not passed")</span>
+        <span>@(result.Passed ? L["Passed"] : L["Not passed"])</span>
     </div>
 </div>
 
@@ -43,10 +43,10 @@
         <div class="prv-result-item @(item.IsCorrect ? "is-correct" : "is-incorrect")">
             <div class="prv-result-q-head">
                 <span class="prv-q-num">@item.Number</span>
-                <p class="prv-result-q-text">@item.Text</p>
+                <p class="prv-result-q-text">@UiDisplayLocalization.Localize(L, item.Text)</p>
                 <span class="prv-result-q-flag @(item.IsCorrect ? "is-correct" : "is-incorrect")">
                     <i class="fas @(item.IsCorrect ? "fa-check" : "fa-xmark")"></i>
-                    @(item.IsCorrect ? "Correct" : "Incorrect")
+                    @(item.IsCorrect ? L["Correct"] : L["Incorrect"])
                 </span>
             </div>
             <div class="prv-result-opts">
@@ -66,7 +66,7 @@
                                 <i class="fas fa-xmark"></i>
                             }
                         </span>
-                        <span class="prv-result-opt-text">@item.Options[i]</span>
+                        <span class="prv-result-opt-text">@UiDisplayLocalization.Localize(L, item.Options[i])</span>
                         @if (isCorrectOpt)
                         {
                             <span class="prv-result-opt-tag">@L["Correct answer"]</span>

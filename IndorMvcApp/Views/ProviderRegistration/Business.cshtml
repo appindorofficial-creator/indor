@@ -57,7 +57,7 @@
                 <option value="">@L["Years of experience"]</option>
                 @foreach (var opt in new[] { "1-2", "3-5", "6-10", "10+" })
                 {
-                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt years</option>
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@L.T("{0} years", opt)</option>
                 }
             </select>
         </div>
@@ -119,7 +119,7 @@
                 <option value="">@L["Years in business"]</option>
                 @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
                 {
-                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@L[opt]</option>
                 }
             </select>
         </div>
@@ -178,7 +178,7 @@
                 <option value="">@L["Years of experience"]</option>
                 @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
                 {
-                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@L[opt]</option>
                 }
             </select>
         </div>
@@ -233,7 +233,7 @@
                 <option value="">@L["Years in business"]</option>
                 @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
                 {
-                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@L[opt]</option>
                 }
             </select>
         </div>
@@ -289,7 +289,7 @@
                 <option value="">@L["Years of experience"]</option>
                 @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
                 {
-                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@L[opt]</option>
                 }
             </select>
         </div>
@@ -340,7 +340,7 @@
                 <option value="">@L["Years of experience"]</option>
                 @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
                 {
-                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@L[opt]</option>
                 }
             </select>
         </div>
@@ -396,7 +396,7 @@
                 <option value="">@L["Years in business"]</option>
                 @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
                 {
-                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@L[opt]</option>
                 }
             </select>
         </div>
@@ -467,7 +467,7 @@
                 <option value="">@L["Years of experience"]</option>
                 @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
                 {
-                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@L[opt]</option>
                 }
             </select>
         </div>
@@ -517,7 +517,7 @@
                 <option value="">@L["Years of experience"]</option>
                 @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
                 {
-                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@L[opt]</option>
                 }
             </select>
         </div>
@@ -559,7 +559,7 @@
                 <option value="">@L["Years of experience"]</option>
                 @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
                 {
-                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@L[opt]</option>
                 }
             </select>
         </div>
@@ -644,7 +644,7 @@
                 <option value="">@L["Years in business"]</option>
                 @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
                 {
-                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@L[opt]</option>
                 }
             </select>
         </div>
@@ -654,7 +654,7 @@
                 <option value="">@L["Team size"]</option>
                 @foreach (var opt in new[] { "1-2", "3-5", "6-10", "11-25", "26+" })
                 {
-                    <option value="@opt" selected="@(s.TeamSize == opt)">@opt employees</option>
+                    <option value="@opt" selected="@(s.TeamSize == opt)">@L.T("{0} employees", opt)</option>
                 }
             </select>
         </div>
@@ -692,7 +692,7 @@
                 <option value="">@L["Select years in business"]</option>
                 @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
                 {
-                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@L[opt]</option>
                 }
             </select>
         </div>
@@ -754,7 +754,7 @@
                 <option value="">@L["Years of experience"]</option>
                 @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
                 {
-                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@L[opt]</option>
                 }
             </select>
         </div>

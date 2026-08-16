@@ -4395,6 +4395,10 @@ public static class UiTranslationsFinal
                 "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos de empresa de construcción.",
             ["Only providers who pass the exam and verification can receive HVAC jobs."] =
                 "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos de HVAC.",
+            ["Only providers who pass the exam and verification can receive electrical jobs."] =
+                "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos eléctricos.",
+            ["Only providers who pass the exam and verification can receive plumbing jobs."] =
+                "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos de plomería.",
             ["INDOR handyman qualification"] = "Calificación INDOR de manitas",
             ["Pass the trade qualification to unlock handyman jobs only."] =
                 "Aprueba la calificación del oficio para desbloquear solo trabajos de manitas.",
@@ -4431,5 +4435,132 @@ public static class UiTranslationsFinal
             ["INDOR HVAC qualification"] = "Calificación INDOR de HVAC",
             ["Pass the trade qualification to unlock HVAC jobs only."] =
                 "Aprueba la calificación del oficio para desbloquear solo trabajos de HVAC.",
+
+            // Completar activación — validation / alerts
+            ["Select at least one service category."] = "Selecciona al menos una categoría de servicio.",
+            ["Company name is required."] = "El nombre de la empresa es obligatorio.",
+            ["Contact name is required."] = "El nombre de contacto es obligatorio.",
+            ["Each file must be 10 MB or less."] = "Cada archivo debe pesar 10 MB o menos.",
+            ["File type not allowed for {0}. Use PDF, JPG, or PNG."] =
+                "Tipo de archivo no permitido para {0}. Usa PDF, JPG o PNG.",
+            ["You scored {0}%. You need {1}% to pass. Review your answers and try again."] =
+                "Obtuviste {0}%. Necesitas {1}% para aprobar. Revisa tus respuestas e inténtalo de nuevo.",
+            ["You scored {0}%. Here is the breakdown of every question."] =
+                "Obtuviste {0}%. Aquí está el desglose de cada pregunta.",
+            ["You scored {0}%. You need {1}% to pass. Review every question and try again."] =
+                "Obtuviste {0}%. Necesitas {1}% para aprobar. Revisa cada pregunta e inténtalo de nuevo.",
+            ["You passed the exam"] = "Aprobaste el examen",
+            ["You did not pass"] = "No aprobaste",
+            ["Passed"] = "Aprobado",
+            ["Not passed"] = "No aprobado",
+            ["an answer"] = "una respuesta",
+            ["Questions {0}–{1} of {2}"] = "Preguntas {0}–{1} de {2}",
+            ["Final questions before submission."] = "Últimas preguntas antes de enviar.",
+            ["Review your answers before submitting."] = "Revisa tus respuestas antes de enviar.",
+            ["Submit exam"] = "Enviar examen",
+            ["Continue exam"] = "Continuar examen",
+            ["Only providers who pass the exam and verification can receive jobs."] =
+                "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos.",
+            ["What type of provider are you?"] = "¿Qué tipo de proveedor eres?",
+            ["Choose one specialty only. INDOR providers can only apply for the trade they are licensed or qualified to perform."] =
+                "Elige una sola especialidad. Los proveedores de INDOR solo pueden postularse al oficio para el que tienen licencia o calificación.",
+            ["Choose one primary trade for your company. INDOR providers can only qualify for one main licensed category."] =
+                "Elige un oficio principal para tu empresa. Los proveedores de INDOR solo pueden calificar para una categoría con licencia.",
+            ["Choose one specialty only."] = "Elige una sola especialidad.",
+            ["Choose exactly one provider category."] = "Elige exactamente una categoría de proveedor.",
+            ["Select at least one."] = "Selecciona al menos uno.",
+            ["Select at least one service."] = "Selecciona al menos un servicio.",
+            ["Search HVAC service"] = "Buscar servicio HVAC",
+            ["Search handyman service"] = "Buscar servicio de manitas",
+            ["Search construction work"] = "Buscar trabajo de construcción",
+            ["Search bathroom service"] = "Buscar servicio de baño",
+            ["Search kitchen service"] = "Buscar servicio de cocina",
+            ["Search painting service"] = "Buscar servicio de pintura",
+            ["Search flooring services"] = "Buscar servicios de pisos",
+            ["Search cleaning service"] = "Buscar servicio de limpieza",
+            ["Search landscaping service"] = "Buscar servicio de paisajismo",
+            ["Search pest control service"] = "Buscar servicio de control de plagas",
+            ["Search appliance type"] = "Buscar tipo de electrodoméstico",
+            ["Search roofing service"] = "Buscar servicio de techado",
+            ["INDOR plumbing exam"] = "Examen INDOR de plomería",
+            ["INDOR electrical exam"] = "Examen INDOR de electricidad",
+            ["Pass the trade qualification to unlock electrical jobs only."] =
+                "Aprueba la calificación del oficio para desbloquear solo trabajos eléctricos.",
+            ["Pass the trade qualification to unlock plumbing jobs only."] =
+                "Aprueba la calificación del oficio para desbloquear solo trabajos de plomería.",
+            ["INDOR HVAC qualification exam"] = "Examen de calificación INDOR de HVAC",
+            ["INDOR handyman exam"] = "Examen INDOR de manitas",
+            ["INDOR construction qualification exam"] = "Examen de calificación INDOR de construcción",
+            ["INDOR bathroom remodeling exam"] = "Examen INDOR de remodelación de baño",
+            ["INDOR kitchen remodeling exam"] = "Examen INDOR de remodelación de cocina",
+            ["INDOR painting qualification exam"] = "Examen de calificación INDOR de pintura",
+            ["INDOR flooring qualification exam"] = "Examen de calificación INDOR de pisos",
+            ["INDOR cleaning qualification"] = "Calificación INDOR de limpieza",
+            ["INDOR landscaping exam"] = "Examen INDOR de paisajismo",
+            ["INDOR pest control exam"] = "Examen INDOR de control de plagas",
+            ["Answer the qualification questions to unlock pest control jobs only."] =
+                "Responde las preguntas de calificación para desbloquear solo trabajos de control de plagas.",
+            ["Answer the questions below to continue."] = "Responde las preguntas de abajo para continuar.",
+            ["Answer the questions below to continue your painting qualification."] =
+                "Responde las preguntas de abajo para continuar tu calificación de pintura.",
+            ["Answer the questions below to continue your qualification."] =
+                "Responde las preguntas de abajo para continuar tu calificación.",
+            ["Answer the roofing trade questions to continue your qualification."] =
+                "Responde las preguntas del oficio de techado para continuar tu calificación.",
+            ["Correct"] = "Correcta",
+            ["Incorrect"] = "Incorrecta",
+            ["Tell us about your electrical business"] = "Cuéntanos sobre tu negocio eléctrico",
+            ["Tell us about your plumbing business"] = "Cuéntanos sobre tu negocio de plomería",
+            ["Tell us about your HVAC business"] = "Cuéntanos sobre tu negocio de HVAC",
+            ["Tell us about your handyman business"] = "Cuéntanos sobre tu negocio de manitas",
+            ["Tell us about your company"] = "Cuéntanos sobre tu empresa",
+            ["Tell us about your bathroom remodeling business"] = "Cuéntanos sobre tu negocio de remodelación de baño",
+            ["Tell us about your kitchen remodeling business"] = "Cuéntanos sobre tu negocio de remodelación de cocina",
+            ["Tell us about your painting business"] = "Cuéntanos sobre tu negocio de pintura",
+            ["Tell us about your flooring business"] = "Cuéntanos sobre tu negocio de pisos",
+            ["Tell us about your cleaning business"] = "Cuéntanos sobre tu negocio de limpieza",
+            ["Tell us about your landscaping business"] = "Cuéntanos sobre tu negocio de paisajismo",
+            ["Tell us about your pest control business"] = "Cuéntanos sobre tu negocio de control de plagas",
+            ["Tell us about your appliance repair business"] = "Cuéntanos sobre tu negocio de reparación de electrodomésticos",
+            ["Tell us about your roofing business"] = "Cuéntanos sobre tu negocio de techado",
+            ["Tell us about your business"] = "Cuéntanos sobre tu negocio",
+            ["Tell us about your {0} business"] = "Cuéntanos sobre tu negocio de {0}",
+            ["This information appears on your provider profile."] =
+                "Esta información aparece en tu perfil de proveedor.",
+            ["Use your legal business information to create your provider profile."] =
+                "Usa la información legal de tu negocio para crear tu perfil de proveedor.",
+            ["Complete your provider profile to continue."] = "Completa tu perfil de proveedor para continuar.",
+            ["Add your company details to continue."] = "Agrega los datos de tu empresa para continuar.",
+            ["Enter the core details for your cleaning provider profile."] =
+                "Ingresa los datos principales de tu perfil de proveedor de limpieza.",
+            ["Add your business details to continue."] = "Agrega los datos de tu negocio para continuar.",
+            ["Add your company details to start the qualification process."] =
+                "Agrega los datos de tu empresa para iniciar el proceso de calificación.",
+            ["Enter your company details to start your appliance repair application."] =
+                "Ingresa los datos de tu empresa para iniciar tu solicitud de reparación de electrodomésticos.",
+            ["Enter your company details so INDOR can review your application."] =
+                "Ingresa los datos de tu empresa para que INDOR revise tu solicitud.",
+            ["Add your business information for construction company verification."] =
+                "Agrega la información de tu negocio para la verificación de empresa de construcción.",
+            ["Add your company and service details."] = "Agrega los datos de tu empresa y servicios.",
+            ["Add your business details so INDOR can review your profile."] =
+                "Agrega los datos de tu negocio para que INDOR revise tu perfil.",
+            ["Your profile will be reviewed for plumbing jobs only."] =
+                "Tu perfil se revisará solo para trabajos de plomería.",
+            ["This information helps INDOR verify your roofing business."] =
+                "Esta información ayuda a INDOR a verificar tu negocio de techado.",
+            ["Company"] = "Empresa",
+            ["Business / company name"] = "Nombre del negocio / empresa",
+            ["Phone"] = "Teléfono",
+            ["Years of experience"] = "Años de experiencia",
+            ["Years in business"] = "Años en el negocio",
+            ["Years in Business"] = "Años en el negocio",
+            ["Select years in business"] = "Seleccionar años en el negocio",
+            ["License number (optional)"] = "Número de licencia (opcional)",
+            ["1-2 years"] = "1-2 años",
+            ["3-5 years"] = "3-5 años",
+            ["6-10 years"] = "6-10 años",
+            ["{0} years"] = "{0} años",
+            ["{0} employees"] = "{0} empleados",
         };
 }

@@ -19,7 +19,7 @@
     <p>@Model.Subtitle</p>
 </div>
 
-<form asp-action="CategoriesAssessment" method="post" id="prvCategoriesAssessmentForm" class="prv-wiz-stack">
+<form asp-action="CategoriesAssessment" method="post" id="prvCategoriesAssessmentForm" class="prv-wiz-stack pa-validate" novalidate>
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
 
@@ -59,3 +59,45 @@
     <button type="submit" form="prvCategoriesAssessmentForm" name="action" value="take-assessment" class="ob-btn ob-btn-primary">@L["Take Assessment"]</button>
     <button type="submit" form="prvCategoriesAssessmentForm" name="action" value="skip" class="ob-btn ob-btn-outline">@L["Skip for Now"]</button>
 </div>
+
+@section Scripts {
+    @await Html.PartialAsync("_PropertyAdminStepValidation")
+    <script>
+        (function () {
+            var form = document.getElementById('prvCategoriesAssessmentForm');
+            if (!form) {
+                return;
+            }
+
+            var message = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select at least one service category."].ToString()));
+
+            function anyCategoryChecked() {
+                return form.querySelectorAll('input[name="categoryIds"]:checked').length > 0;
+            }
+
+            function showCategoryError() {
+                var summary = form.querySelector('.ob-summary');
+                if (!summary) {
+                    return;
+                }
+
+                summary.innerHTML = '<ul><li>' + message + '</li></ul>';
+                summary.setAttribute('role', 'alert');
+                summary.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            form.addEventListener('submit', function (e) {
+                if (anyCategoryChecked()) {
+                    var summary = form.querySelector('.ob-summary');
+                    if (summary) {
+                        summary.innerHTML = '';
+                    }
+                    return;
+                }
+
+                e.preventDefault();
+                showCategoryError();
+            });
+        })();
+    </script>
+}
