@@ -4262,5 +4262,174 @@ public static class UiTranslationsFinal
             ["INDOR found {0} {1} repair items from the uploaded inspection report."] =
                 "INDOR encontró {0} elementos de reparación de {1} en el informe de inspección subido.",
             ["Moderate"] = "Moderado",
+
+            // Completar activación (ProviderRegistration new wizard steps 2–5)
+            ["Your Company Information"] = "Información de tu empresa",
+            ["Tell us about your business to set up your provider profile."] =
+                "Cuéntanos sobre tu negocio para configurar tu perfil de proveedor.",
+            ["Company name"] = "Nombre de la empresa",
+            ["company name"] = "nombre de la empresa",
+            ["Contact name"] = "Nombre de contacto",
+            ["contact name"] = "nombre de contacto",
+            ["Primary service category"] = "Categoría de servicio principal",
+            ["Website (optional)"] = "Sitio web (opcional)",
+            ["This information helps set up INDOR Pro and starts your provider application."] =
+                "Esta información ayuda a configurar INDOR Pro y comienza tu solicitud de proveedor.",
+            ["I'll do this later"] = "Lo haré después",
+            ["EIN / Company Verification Number"] = "EIN / número de verificación de la empresa",
+            ["Access & Verification"] = "Acceso y verificación",
+            ["Start using INDOR Pro now, and complete verification to receive INDOR jobs."] =
+                "Empieza a usar INDOR Pro ahora y completa la verificación para recibir trabajos de INDOR.",
+            ["INDOR Pro Access"] = "Acceso a INDOR Pro",
+            ["Requirements to Receive INDOR Jobs"] = "Requisitos para recibir trabajos de INDOR",
+            ["Business license or registration"] = "Licencia comercial o registro",
+            ["Insurance (if applicable)"] = "Seguro (si aplica)",
+            ["Government ID"] = "Identificación oficial",
+            ["Activation call with INDOR"] = "Llamada de activación con INDOR",
+            ["Upload Documents"] = "Subir documentos",
+            ["Continue with Verification"] = "Continuar con la verificación",
+            ["Use Only INDOR Pro for Now"] = "Usar solo INDOR Pro por ahora",
+            ["You can start using INDOR Pro even if your provider profile is not yet activated for INDOR leads."] =
+                "Puedes empezar a usar INDOR Pro aunque tu perfil de proveedor aún no esté activado para leads de INDOR.",
+            ["Business registration"] = "Registro comercial",
+            ["Service Categories & Assessment"] = "Categorías de servicio y evaluación",
+            ["Select your service categories and complete a short assessment if you want to activate your INDOR Provider profile."] =
+                "Selecciona tus categorías de servicio y completa una evaluación breve si quieres activar tu perfil de proveedor INDOR.",
+            ["Trade Assessment"] = "Evaluación del oficio",
+            ["Take a short assessment based on your main category to help validate quality and experience."] =
+                "Completa una evaluación breve según tu categoría principal para validar calidad y experiencia.",
+            ["Optional for using the software"] = "Opcional para usar el software",
+            ["Required for INDOR Provider activation"] = "Obligatorio para activar el perfil de proveedor INDOR",
+            ["If you skip this step, you can still use the software, but your profile will not be available for INDOR jobs until you complete the assessment and activation call."] =
+                "Si omites este paso, igual puedes usar el software, pero tu perfil no estará disponible para trabajos de INDOR hasta que completes la evaluación y la llamada de activación.",
+            ["Take Assessment"] = "Hacer la evaluación",
+            ["Skip for Now"] = "Omitir por ahora",
+            ["Activation Call"] = "Llamada de activación",
+            ["Schedule a call with the INDOR team to activate your profile for INDOR job opportunities."] =
+                "Programa una llamada con el equipo de INDOR para activar tu perfil y acceder a oportunidades de trabajo.",
+            ["Your INDOR Pro access is ready. To receive INDOR jobs and leads, schedule your activation call."] =
+                "Tu acceso a INDOR Pro está listo. Para recibir trabajos y leads de INDOR, programa tu llamada de activación.",
+            ["Choose an available time"] = "Elige un horario disponible",
+            ["Monday 10:30 AM"] = "Lunes 10:30 AM",
+            ["Tuesday 2:00 PM"] = "Martes 2:00 PM",
+            ["Thursday 11:30 AM"] = "Jueves 11:30 AM",
+            ["Schedule Later"] = "Programar después",
+            ["Choose this option if you want to book your call later."] =
+                "Elige esta opción si quieres agendar tu llamada más tarde.",
+            ["Schedule Call"] = "Programar llamada",
+            ["Enter INDOR Pro"] = "Entrar a INDOR Pro",
+            ["After the call, your profile can become Active and start receiving INDOR opportunities."] =
+                "Después de la llamada, tu perfil puede quedar Activo y empezar a recibir oportunidades de INDOR.",
+            ["Assessment completed"] = "Evaluación completada",
+            ["Skipped"] = "Omitido",
+            ["Passing score"] = "Puntaje para aprobar",
+            ["Questions"] = "Preguntas",
+            ["Start exam"] = "Iniciar examen",
+            ["Review topics"] = "Revisar temas",
+            ["Topics covered"] = "Temas cubiertos",
+            ["Safety"] = "Seguridad",
+            ["Diagnostics"] = "Diagnóstico",
+            ["Electrical basics"] = "Conceptos básicos de electricidad",
+            ["Appliance parts & components"] = "Partes y componentes de electrodomésticos",
+            ["Troubleshooting"] = "Resolución de problemas",
+            ["Customer best practices"] = "Buenas prácticas con el cliente",
+            ["Chemical handling"] = "Manejo de químicos",
+            ["Pest identification"] = "Identificación de plagas",
+            ["Treatment planning"] = "Plan de tratamiento",
+            ["Equipment basics"] = "Conceptos básicos de equipo",
+            ["Plant & lawn basics"] = "Conceptos básicos de plantas y césped",
+            ["Irrigation basics"] = "Conceptos básicos de riego",
+            ["Equipment use"] = "Uso de equipo",
+            ["Hardscape basics"] = "Conceptos básicos de hardscape",
+            ["Surface care"] = "Cuidado de superficies",
+            ["Room-by-room standards"] = "Estándares habitación por habitación",
+            ["Measuring & layout"] = "Medición y distribución",
+            ["Subfloor basics"] = "Conceptos básicos de subpiso",
+            ["Material basics"] = "Conceptos básicos de materiales",
+            ["Installation methods"] = "Métodos de instalación",
+            ["Roofing systems"] = "Sistemas de techo",
+            ["Leak diagnosis"] = "Diagnóstico de fugas",
+            ["Flashing & ventilation"] = "Tapajuntas y ventilación",
+            ["Measurements & layout"] = "Medidas y distribución",
+            ["Demolition basics"] = "Conceptos básicos de demolición",
+            ["Cabinet installation"] = "Instalación de gabinetes",
+            ["Finish work"] = "Trabajos de acabado",
+            ["Surface preparation"] = "Preparación de superficies",
+            ["Paints & finishes"] = "Pinturas y acabados",
+            ["Application techniques"] = "Técnicas de aplicación",
+            ["Jobsite protection"] = "Protección del sitio de trabajo",
+            ["Waterproofing"] = "Impermeabilización",
+            ["Tile & finish installation"] = "Instalación de azulejo y acabados",
+            ["Fixture installation"] = "Instalación de accesorios",
+            ["Tool use"] = "Uso de herramientas",
+            ["Basic repairs"] = "Reparaciones básicas",
+            ["Mounting & installation"] = "Montaje e instalación",
+            ["Caulking & patching"] = "Calafateo y parches",
+            ["Site supervision"] = "Supervisión de obra",
+            ["Code awareness"] = "Conocimiento de códigos",
+            ["Estimating basics"] = "Conceptos básicos de estimación",
+            ["Project planning"] = "Planificación de proyectos",
+            ["Refrigerant basics"] = "Conceptos básicos de refrigerante",
+            ["Airflow"] = "Flujo de aire",
+            ["Only providers who pass the exam and verification can receive roofing jobs."] =
+                "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos de techado.",
+            ["Only providers who pass the exam and verification can receive appliance repair jobs."] =
+                "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos de reparación de electrodomésticos.",
+            ["Only providers who pass the exam and verification can receive pest control jobs."] =
+                "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos de control de plagas.",
+            ["Only providers who pass the exam and verification can receive landscaping jobs."] =
+                "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos de paisajismo.",
+            ["Only providers who pass the exam and verification can receive cleaning jobs."] =
+                "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos de limpieza.",
+            ["Only providers who pass the exam and verification can receive flooring jobs."] =
+                "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos de pisos.",
+            ["Only providers who pass the exam and verification can receive kitchen remodeling jobs."] =
+                "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos de remodelación de cocina.",
+            ["Only providers who pass the exam and verification can receive painting jobs."] =
+                "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos de pintura.",
+            ["Only providers who pass the exam and verification can receive bathroom remodeling jobs."] =
+                "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos de remodelación de baño.",
+            ["Only providers who pass the exam and verification can receive handyman jobs."] =
+                "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos de manitas.",
+            ["Only providers who pass the exam and verification can receive construction company jobs."] =
+                "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos de empresa de construcción.",
+            ["Only providers who pass the exam and verification can receive HVAC jobs."] =
+                "Solo los proveedores que aprueben el examen y la verificación pueden recibir trabajos de HVAC.",
+            ["INDOR handyman qualification"] = "Calificación INDOR de manitas",
+            ["Pass the trade qualification to unlock handyman jobs only."] =
+                "Aprueba la calificación del oficio para desbloquear solo trabajos de manitas.",
+            ["INDOR construction qualification"] = "Calificación INDOR de construcción",
+            ["Pass the trade qualification to unlock construction company jobs only."] =
+                "Aprueba la calificación del oficio para desbloquear solo trabajos de empresa de construcción.",
+            ["INDOR bathroom remodeling qualification"] = "Calificación INDOR de remodelación de baño",
+            ["Pass the trade qualification to unlock bathroom remodeling jobs only."] =
+                "Aprueba la calificación del oficio para desbloquear solo trabajos de remodelación de baño.",
+            ["INDOR kitchen remodeling qualification"] = "Calificación INDOR de remodelación de cocina",
+            ["Pass the trade qualification to unlock kitchen remodeling jobs only."] =
+                "Aprueba la calificación del oficio para desbloquear solo trabajos de remodelación de cocina.",
+            ["INDOR painting qualification"] = "Calificación INDOR de pintura",
+            ["Pass the trade qualification to unlock painting jobs only."] =
+                "Aprueba la calificación del oficio para desbloquear solo trabajos de pintura.",
+            ["INDOR flooring qualification"] = "Calificación INDOR de pisos",
+            ["Pass the trade qualification to unlock flooring jobs only."] =
+                "Aprueba la calificación del oficio para desbloquear solo trabajos de pisos.",
+            ["INDOR cleaning qualification"] = "Calificación INDOR de limpieza",
+            ["Pass the trade qualification to unlock cleaning jobs only."] =
+                "Aprueba la calificación del oficio para desbloquear solo trabajos de limpieza.",
+            ["INDOR landscaping qualification"] = "Calificación INDOR de paisajismo",
+            ["Pass the trade qualification to unlock landscaping jobs only."] =
+                "Aprueba la calificación del oficio para desbloquear solo trabajos de paisajismo.",
+            ["INDOR pest control qualification"] = "Calificación INDOR de control de plagas",
+            ["Pass the trade qualification to unlock pest control jobs only."] =
+                "Aprueba la calificación del oficio para desbloquear solo trabajos de control de plagas.",
+            ["INDOR appliance repair qualification"] = "Calificación INDOR de reparación de electrodomésticos",
+            ["Pass the trade qualification to unlock appliance repair jobs only."] =
+                "Aprueba la calificación del oficio para desbloquear solo trabajos de reparación de electrodomésticos.",
+            ["INDOR roofing qualification"] = "Calificación INDOR de techado",
+            ["Pass the trade qualification to unlock roofing jobs only."] =
+                "Aprueba la calificación del oficio para desbloquear solo trabajos de techado.",
+            ["INDOR HVAC qualification"] = "Calificación INDOR de HVAC",
+            ["Pass the trade qualification to unlock HVAC jobs only."] =
+                "Aprueba la calificación del oficio para desbloquear solo trabajos de HVAC.",
         };
 }

@@ -30,7 +30,7 @@
             <label class="prv-chip prv-chip--assessment @(isChecked ? "is-selected" : "")">
                 <input type="checkbox" name="categoryIds" value="@cat.Id" @(isChecked ? "checked" : null) />
                 <i class="fas @cat.IconClass"></i>
-                <span>@cat.Label</span>
+                <span>@UiDisplayLocalization.Localize(L, cat.Label)</span>
             </label>
         }
     </div>
@@ -41,8 +41,8 @@
             <strong>@L["Trade Assessment"]</strong>
             <p>@L["Take a short assessment based on your main category to help validate quality and experience."]</p>
             <div class="prv-wiz-assessment-badges">
-                <span class="prv-wiz-badge prv-wiz-badge--green"><i class="fas fa-check"></i> Optional for using the software</span>
-                <span class="prv-wiz-badge prv-wiz-badge--orange"><i class="fas fa-check"></i> Required for INDOR Provider activation</span>
+                <span class="prv-wiz-badge prv-wiz-badge--green"><i class="fas fa-check"></i> @L["Optional for using the software"]</span>
+                <span class="prv-wiz-badge prv-wiz-badge--orange"><i class="fas fa-check"></i> @L["Required for INDOR Provider activation"]</span>
             </div>
         </div>
     </div>
@@ -50,7 +50,7 @@
     <div class="prv-wiz-info">
         <i class="fas fa-circle-info"></i>
         <div>
-            <p>If you skip this step, you can still use the software, but your profile will not be available for INDOR jobs until you complete the assessment and activation call.</p>
+            <p>@L["If you skip this step, you can still use the software, but your profile will not be available for INDOR jobs until you complete the assessment and activation call."]</p>
         </div>
     </div>
 </form>

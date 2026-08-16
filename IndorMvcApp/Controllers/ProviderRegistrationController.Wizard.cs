@@ -137,7 +137,7 @@ public partial class ProviderRegistrationController
         if (!UsPhoneOptionalAttribute.IsValidOptional(phone))
         {
             ModelState.AddModelError(string.Empty,
-                "Enter a valid 10-digit US phone number (e.g. 555 123 4567).");
+                localizer["Enter a valid 10-digit US phone number (e.g. 555 123 4567)."]);
         }
 
         if (!ModelState.IsValid)

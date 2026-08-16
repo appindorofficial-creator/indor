@@ -16,7 +16,7 @@
     <div class="prv-wiz-card">
         <span class="prv-wiz-card-icon prv-wiz-icon-blue"><i class="fas fa-display"></i></span>
         <span class="prv-wiz-card-body">
-            <span class="prv-wiz-badge prv-wiz-badge--green"><i class="fas fa-check"></i> Active</span>
+            <span class="prv-wiz-badge prv-wiz-badge--green"><i class="fas fa-check"></i> @L["Active"]</span>
             <strong>@L["INDOR Pro Access"]</strong>
             <ul class="prv-wiz-bullets">
                 <li>@L["Clients &amp; CRM"]</li>
@@ -30,13 +30,13 @@
     <div class="prv-wiz-card">
         <span class="prv-wiz-card-icon prv-wiz-icon-orange"><i class="fas fa-clipboard-list"></i></span>
         <span class="prv-wiz-card-body">
-            <span class="prv-wiz-badge prv-wiz-badge--orange"><i class="fas fa-shield-halved"></i> Pending</span>
+            <span class="prv-wiz-badge prv-wiz-badge--orange"><i class="fas fa-shield-halved"></i> @L["Pending"]</span>
             <strong>@L["Requirements to Receive INDOR Jobs"]</strong>
             <ul class="prv-wiz-checklist">
-                <li><i class="far fa-circle"></i> Business license or registration</li>
-                <li><i class="far fa-circle"></i> Insurance (if applicable)</li>
-                <li><i class="far fa-circle"></i> Government ID</li>
-                <li><i class="far fa-circle"></i> Activation call with INDOR</li>
+                <li><i class="far fa-circle"></i> @L["Business license or registration"]</li>
+                <li><i class="far fa-circle"></i> @L["Insurance (if applicable)"]</li>
+                <li><i class="far fa-circle"></i> @L["Government ID"]</li>
+                <li><i class="far fa-circle"></i> @L["Activation call with INDOR"]</li>
             </ul>
         </span>
     </div>
@@ -101,7 +101,7 @@
                     </label>
                 </div>
                 <button type="submit" name="action" value="upload" class="ob-btn ob-btn-outline prv-verification-upload">
-                    <i class="fas fa-upload"></i> Upload Documents
+                    <i class="fas fa-upload"></i> @L["Upload Documents"]
                 </button>
             </div>
         }
@@ -116,7 +116,7 @@
 
     @if (hasDocuments)
     {
-        <p class="prv-wiz-note"><i class="fas fa-check text-success"></i> Documents uploaded</p>
+        <p class="prv-wiz-note"><i class="fas fa-check text-success"></i> @L["Documents uploaded"]</p>
     }
 
     <div class="prv-wiz-footer prv-verification-footer">
@@ -126,7 +126,7 @@
                 value="continue"
                 id="prvVerificationContinueBtn"
                 class="ob-btn ob-btn-primary">
-            Continue with Verification
+            @L["Continue with Verification"]
         </button>
         <button type="submit"
                 form="prvVerificationForm"
@@ -134,7 +134,7 @@
                 value="pro-only"
                 id="prvVerificationProOnlyBtn"
                 class="ob-btn ob-btn-outline">
-            Use Only INDOR Pro for Now
+            @L["Use Only INDOR Pro for Now"]
         </button>
     </div>
 </div>

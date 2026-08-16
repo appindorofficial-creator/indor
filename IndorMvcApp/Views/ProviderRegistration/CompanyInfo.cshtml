@@ -38,7 +38,7 @@
             <option value="">@L["Primary service category"]</option>
             @foreach (var cat in categories)
             {
-                <option value="@cat.Id" selected="@(primaryCategory == cat.Id)">@cat.Label</option>
+                <option value="@cat.Id" selected="@(primaryCategory == cat.Id)">@UiDisplayLocalization.Localize(L, cat.Label)</option>
             }
         </select>
     </div>

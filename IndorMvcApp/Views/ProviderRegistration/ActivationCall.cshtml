@@ -7,9 +7,9 @@
     var assessmentSkipped = ViewBag.AssessmentSkipped as bool? == true;
     var slots = new[]
     {
-        ("mon-1030", "Monday 10:30 AM"),
-        ("tue-200", "Tuesday 2:00 PM"),
-        ("thu-1130", "Thursday 11:30 AM")
+        ("mon-1030", L["Monday 10:30 AM"].ToString()),
+        ("tue-200", L["Tuesday 2:00 PM"].ToString()),
+        ("thu-1130", L["Thursday 11:30 AM"].ToString())
     };
 }
 <div class="prv-wiz-step-label">@L.T("Step {0} of {1}", Model.Step, Model.TotalSteps)</div>
@@ -50,17 +50,17 @@
         <div class="prv-wiz-status-item">
             <i class="fas @(hasDocuments ? "fa-check-circle text-success" : "fa-clock text-warning")"></i>
             <span>@L["Documents uploaded"]</span>
-            <span class="prv-wiz-status-pill @(hasDocuments ? "is-done" : "is-pending")">@(hasDocuments ? "Completed" : "Pending")</span>
+            <span class="prv-wiz-status-pill @(hasDocuments ? "is-done" : "is-pending")">@(hasDocuments ? L["Completed"] : L["Pending"])</span>
         </div>
         <div class="prv-wiz-status-item">
             <i class="fas @(assessmentComplete ? "fa-check-circle text-success" : "fa-clock text-warning")"></i>
             <span>@L["Assessment completed"]</span>
-            <span class="prv-wiz-status-pill @(assessmentComplete ? "is-done" : "is-pending")">@(assessmentComplete ? "Completed" : assessmentSkipped ? "Skipped" : "Pending")</span>
+            <span class="prv-wiz-status-pill @(assessmentComplete ? "is-done" : "is-pending")">@(assessmentComplete ? L["Completed"] : assessmentSkipped ? L["Skipped"] : L["Pending"])</span>
         </div>
         <div class="prv-wiz-status-item">
             <i class="fas @(s.ActivationCallScheduled ? "fa-check-circle text-success" : "fa-clock text-warning")"></i>
             <span>@L["Activation call"]</span>
-            <span class="prv-wiz-status-pill @(s.ActivationCallScheduled ? "is-done" : "is-pending")">@(s.ActivationCallScheduled ? "Scheduled" : "Pending")</span>
+            <span class="prv-wiz-status-pill @(s.ActivationCallScheduled ? "is-done" : "is-pending")">@(s.ActivationCallScheduled ? L["Scheduled"] : L["Pending"])</span>
         </div>
     </div>
 
