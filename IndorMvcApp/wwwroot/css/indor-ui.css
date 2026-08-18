@@ -216,7 +216,7 @@ select.form-control,
 .hf-input:focus,
 .hf-textarea:focus,
 .ob-input:focus,
-input:focus:not(.rl-field input):not(.rl-cp-input input):not(.nr-location-picker-input):not(.rl-search-bar input):not(.pa-field input):not(.pa-network-search input):not(.pa-search-bar input):not(.hn-search-bar input):not(.rl-field-icon input):not(.prv-field-icon .ob-control):not(.prv-pro-wizard-search input):not(.prv-pro-search-wrap input):not(.prv-pro-search-input),
+input:focus:not(.rl-field input):not(.rl-cp-input input):not(.nr-location-picker-input):not(.rl-search-bar input):not(.pa-field input):not(.pa-network-search input):not(.pa-search-bar input):not(.hn-search-bar input):not(.rl-field-icon input):not(.prv-field-icon .ob-control):not(.prv-pro-wizard-search input):not(.prv-pro-search-wrap input):not(.prv-pro-search-input):not(.exr-search-wrap input),
 textarea:focus:not(.rl-field textarea),
 select:focus:not(.rl-field select):not(.rl-cp-input select):not(.pa-field select):not(.prv-field-icon select.ob-control) {
     outline: none;

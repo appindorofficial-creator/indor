@@ -382,6 +382,86 @@ public partial class ProveedorController(
     }
 
     [HttpGet]
+    public async Task<IActionResult> SendReports(string? q, int? reportId, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        SetExportAvatar(proveedor.Entity);
+        var model = await proData.GetSendReportsPageAsync(proveedor.Entity!, q, reportId, cancellationToken);
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SendReports(int reportId, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        if (reportId <= 0)
+        {
+            TempData["SendReportsError"] = localizer["Choose a report to continue."].ToString();
+            return RedirectToAction(nameof(SendReports));
+        }
+
+        var review = await proData.GetSendReportReviewAsync(proveedor.Entity!, reportId, cancellationToken);
+        if (review == null)
+        {
+            TempData["SendReportsError"] = localizer["Choose a report to continue."].ToString();
+            return RedirectToAction(nameof(SendReports));
+        }
+
+        return RedirectToAction(nameof(SendReportsReview), new { id = reportId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> SendReportsReview(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await proData.GetSendReportReviewAsync(proveedor.Entity!, id, cancellationToken);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(SendReports));
+        }
+
+        SetExportAvatar(proveedor.Entity);
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SendReportsReview(ProviderProSendReportInput input, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var sent = await proData.SendReportToHomeownerAsync(proveedor.Entity!.Id, input, cancellationToken);
+        if (!sent)
+        {
+            TempData["SendReportsError"] = localizer["Could not send this report. Try again."].ToString();
+            return RedirectToAction(nameof(SendReportsReview), new { id = input.ReportId });
+        }
+
+        TempData["ProviderProToast"] = localizer["Report sent to the homeowner."].ToString();
+        return RedirectToAction(nameof(Reports), new { tab = input.RequestApproval ? "approval" : "ready" });
+    }
+
+    [HttpGet]
     public async Task<IActionResult> ReportTemplates(CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);

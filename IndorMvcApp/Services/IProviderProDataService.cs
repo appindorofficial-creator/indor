@@ -87,6 +87,9 @@ public interface IProviderProDataService
     Task<ReportTemplateView?> GetReportTemplateAsync(int proveedorId, string key, CancellationToken cancellationToken = default);
     Task<ProviderProUploadPhotosJobSummary?> GetExportJobSummaryAsync(IndorProveedor proveedor, int jobId, CancellationToken cancellationToken = default);
     Task<int?> SaveExportReportFromDraftAsync(int proveedorId, ProviderProExportReportDraft draft, bool send, CancellationToken cancellationToken = default);
+    Task<ProviderProSendReportsPageViewModel> GetSendReportsPageAsync(IndorProveedor proveedor, string? search = null, int? selectedReportId = null, CancellationToken cancellationToken = default);
+    Task<ProviderProSendReportReviewViewModel?> GetSendReportReviewAsync(IndorProveedor proveedor, int reportId, CancellationToken cancellationToken = default);
+    Task<bool> SendReportToHomeownerAsync(int proveedorId, ProviderProSendReportInput input, CancellationToken cancellationToken = default);
     Task<ProviderProMessagesInboxViewModel> GetMessagesInboxAsync(IndorProveedor proveedor, string? tab = "all", string? search = null, CancellationToken cancellationToken = default);
     Task<ProviderProConversationViewModel?> GetConversationAsync(IndorProveedor proveedor, int conversationId, CancellationToken cancellationToken = default);
     Task<bool> SendConversationMessageAsync(int proveedorId, ProviderProSendMessageInput input, CancellationToken cancellationToken = default);

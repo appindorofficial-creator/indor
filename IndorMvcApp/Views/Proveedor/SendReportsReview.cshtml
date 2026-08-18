@@ -1,0 +1,89 @@
+@model IndorMvcApp.ViewModels.ProviderProSendReportReviewViewModel
+@{
+    ViewData["Title"] = L["Send Reports - INDOR PRO"];
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+    ViewData["ProviderProExtraCss"] = "export-report.css";
+    var deliveryOptions = new (string Id, string Label, string Hint)[] {
+        ("email", L["Email"].ToString(), L["Share the report with the homeowner via email."].ToString()),
+        ("indor", L["Send in INDOR"].ToString(), L["Send securely inside the INDOR app."].ToString()),
+        ("sms", L["Text message"].ToString(), L["Send a link via SMS to the customer."].ToString())
+    };
+}
+
+<div class="prv-pro-shell prv-pro-shell--export">
+    @await Html.PartialAsync("_SendReportsHead")
+
+    <section class="exr-head">
+        <h1>@L["Send to Homeowner"]</h1>
+        <p>@L["Choose how to deliver this report to the homeowner."]</p>
+    </section>
+
+    <div class="exr-progress">
+        <span class="exr-step">@L["Step 2 of 2"]</span>
+        <span class="exr-bar"><span class="exr-bar-fill" style="width:100%"></span></span>
+    </div>
+
+    @if (TempData["SendReportsError"] is string sendError && !string.IsNullOrWhiteSpace(sendError))
+    {
+        <div class="prv-pro-form-error-banner" role="alert">@sendError</div>
+    }
+
+    <section class="exr-card">
+        <label class="exr-job is-static">
+            <span class="exr-job-icon exr-icon--blue"><i class="fas @Model.IconClass"></i></span>
+            <span class="exr-job-body">
+                <strong>@Model.Title</strong>
+                <small>@Model.CustomerName · @Model.Address</small>
+                <small>@Model.ReportCode</small>
+                <span class="exr-pill exr-pill--@Model.StatusClass">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
+            </span>
+        </label>
+        @if (!string.IsNullOrWhiteSpace(Model.CustomerEmail))
+        {
+            <p class="exr-recipient"><i class="fas fa-envelope"></i> @Model.CustomerEmail</p>
+        }
+    </section>
+
+    <form method="post" asp-controller="Proveedor" asp-action="SendReportsReview">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="ReportId" value="@Model.ReportId" />
+
+        <section class="exr-card">
+            <h2 class="exr-card-title">@L["Delivery method"]</h2>
+            <div class="exr-jobs">
+                @foreach (var (id, label, hint) in deliveryOptions)
+                {
+                    <label class="exr-job">
+                        <input type="radio" name="DeliveryMethod" value="@id" checked="@(Model.DeliveryMethod == id)" />
+                        <span class="exr-job-radio"></span>
+                        <span class="exr-job-body">
+                            <strong>@label</strong>
+                            <small>@hint</small>
+                        </span>
+                    </label>
+                }
+            </div>
+        </section>
+
+        <section class="exr-card">
+            <h2 class="exr-card-title">@L["Message to customer"]</h2>
+            <textarea class="exr-textarea" name="CustomerMessage" rows="4" maxlength="250">@L[Model.CustomerMessage]</textarea>
+        </section>
+
+        <section class="exr-card">
+            <label class="exr-toggle">
+                <span>
+                    <strong>@L["Request Approval"]</strong>
+                    <small>@L["Require homeowner approval for this report."]</small>
+                </span>
+                <input type="checkbox" name="RequestApproval" value="true" @(Model.RequestApproval ? "checked" : "") />
+            </label>
+        </section>
+
+        <div class="exr-actions">
+            <button type="submit" class="exr-btn exr-btn--primary"><i class="fas fa-paper-plane"></i> @L["Send Report"]</button>
+            <a asp-controller="Proveedor" asp-action="SendReports" asp-route-reportId="@Model.ReportId" class="exr-btn-text">@L["Back"]</a>
+        </div>
+    </form>
+</div>

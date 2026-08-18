@@ -1,0 +1,74 @@
+@model IndorMvcApp.ViewModels.ProviderProSendReportsPageViewModel
+@{
+    ViewData["Title"] = L["Send Reports - INDOR PRO"];
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+    ViewData["ProviderProExtraCss"] = "export-report.css";
+    var selectedId = Model.SelectedReportId ?? 0;
+}
+
+<div class="prv-pro-shell prv-pro-shell--export">
+    @await Html.PartialAsync("_SendReportsHead")
+
+    <section class="exr-head">
+        <h1>@L["Send Reports"]</h1>
+        <p>@L["Select the report you want to send."]</p>
+    </section>
+
+    <div class="exr-progress">
+        <span class="exr-step">@L["Step 1 of 2"]</span>
+        <span class="exr-bar"><span class="exr-bar-fill" style="width:50%"></span></span>
+    </div>
+
+    @if (TempData["SendReportsError"] is string sendError && !string.IsNullOrWhiteSpace(sendError))
+    {
+        <div class="prv-pro-form-error-banner" role="alert">@sendError</div>
+    }
+
+    <form method="get" asp-controller="Proveedor" asp-action="SendReports" class="exr-search">
+        <div class="exr-search-wrap">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search reports, jobs, or properties"]" />
+        </div>
+        <button type="submit" class="exr-filter-btn" aria-label="@L["Search"]"><i class="fas fa-magnifying-glass"></i></button>
+    </form>
+
+    <form method="post" asp-controller="Proveedor" asp-action="SendReports">
+        @Html.AntiForgeryToken()
+
+        <section class="exr-card">
+            <h2 class="exr-card-title">@L["Select Report"]</h2>
+
+            @if (Model.Reports.Count == 0)
+            {
+                <p class="exr-empty">@L["No reports are ready to send yet. Finish a report first, then come back."]</p>
+            }
+            else
+            {
+                <div class="exr-jobs">
+                    @foreach (var report in Model.Reports)
+                    {
+                        <label class="exr-job">
+                            <input type="radio" name="reportId" value="@report.ReportId" checked="@(report.ReportId == selectedId)" required />
+                            <span class="exr-job-radio"></span>
+                            <span class="exr-job-icon exr-icon--blue"><i class="fas @report.IconClass"></i></span>
+                            <span class="exr-job-body">
+                                <strong>@report.Title</strong>
+                                <small>@report.CustomerName · @report.Address</small>
+                                <span class="exr-pill exr-pill--@report.StatusClass">@UiDisplayLocalization.Localize(L, report.StatusLabel)</span>
+                            </span>
+                        </label>
+                    }
+                </div>
+            }
+        </section>
+
+        <div class="exr-actions">
+            @if (Model.Reports.Count > 0)
+            {
+                <button type="submit" class="exr-btn exr-btn--primary">@L["Continue"]</button>
+            }
+            <a asp-controller="Proveedor" asp-action="Reports" class="exr-btn-text">@L["Cancel"]</a>
+        </div>
+    </form>
+</div>

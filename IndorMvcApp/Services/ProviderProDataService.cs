@@ -3922,6 +3922,124 @@ public partial class ProviderProDataService(
         return report.Id;
     }
 
+    public async Task<ProviderProSendReportsPageViewModel> GetSendReportsPageAsync(
+        IndorProveedor proveedor,
+        string? search = null,
+        int? selectedReportId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var reports = await db.IndorProveedorReports
+            .AsNoTracking()
+            .Include(r => r.Cliente)
+            .Where(r => r.ProveedorId == proveedor.Id
+                && !r.AddedToHouseFacts
+                && (r.Status == ProviderReportStatuses.Ready || r.Status == ProviderReportStatuses.Draft))
+            .OrderByDescending(r => r.CompletedUtc ?? r.FechaCreacion)
+            .ToListAsync(cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var q = search.Trim();
+            reports = reports.Where(r =>
+                    r.Title.Contains(q, StringComparison.OrdinalIgnoreCase)
+                    || r.Address.Contains(q, StringComparison.OrdinalIgnoreCase)
+                    || (r.CustomerName ?? r.Cliente?.Name ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)
+                    || r.ReportCode.Contains(q, StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        var options = reports.Select(r =>
+        {
+            var (statusLabel, statusClass, _, _) = MapReportStatus(r.Status, r.AddedToHouseFacts);
+            return new ProviderProSendReportOptionViewModel
+            {
+                ReportId = r.Id,
+                Title = r.Title,
+                Address = r.Address,
+                CustomerName = r.CustomerName ?? r.Cliente?.Name ?? "Customer",
+                StatusLabel = statusLabel,
+                StatusClass = statusClass,
+                IconClass = MapServiceIcon(r.ServiceType ?? r.Title)
+            };
+        }).ToList();
+
+        var selected = selectedReportId
+            ?? options.FirstOrDefault(o => o.StatusClass == "ready")?.ReportId
+            ?? options.FirstOrDefault()?.ReportId;
+
+        return new ProviderProSendReportsPageViewModel
+        {
+            CompanyName = ResolveCompanyName(proveedor),
+            SearchQuery = search,
+            SelectedReportId = selected,
+            Reports = options
+        };
+    }
+
+    public async Task<ProviderProSendReportReviewViewModel?> GetSendReportReviewAsync(
+        IndorProveedor proveedor,
+        int reportId,
+        CancellationToken cancellationToken = default)
+    {
+        var report = await db.IndorProveedorReports
+            .AsNoTracking()
+            .Include(r => r.Cliente)
+            .FirstOrDefaultAsync(r => r.Id == reportId && r.ProveedorId == proveedor.Id, cancellationToken);
+
+        if (report == null || report.AddedToHouseFacts)
+        {
+            return null;
+        }
+
+        if (report.Status is not ProviderReportStatuses.Ready and not ProviderReportStatuses.Draft)
+        {
+            return null;
+        }
+
+        var (statusLabel, statusClass, _, _) = MapReportStatus(report.Status, report.AddedToHouseFacts);
+        return new ProviderProSendReportReviewViewModel
+        {
+            CompanyName = ResolveCompanyName(proveedor),
+            ReportId = report.Id,
+            Title = report.Title,
+            Address = report.Address,
+            CustomerName = report.CustomerName ?? report.Cliente?.Name ?? "Customer",
+            CustomerEmail = report.Cliente?.Email,
+            ReportCode = report.ReportCode,
+            StatusLabel = statusLabel,
+            StatusClass = statusClass,
+            IconClass = MapServiceIcon(report.ServiceType ?? report.Title),
+            RequestApproval = report.RequestApproval
+        };
+    }
+
+    public async Task<bool> SendReportToHomeownerAsync(
+        int proveedorId,
+        ProviderProSendReportInput input,
+        CancellationToken cancellationToken = default)
+    {
+        var report = await db.IndorProveedorReports
+            .FirstOrDefaultAsync(r => r.Id == input.ReportId && r.ProveedorId == proveedorId, cancellationToken);
+
+        if (report == null || report.AddedToHouseFacts)
+        {
+            return false;
+        }
+
+        if (report.Status is not ProviderReportStatuses.Ready and not ProviderReportStatuses.Draft)
+        {
+            return false;
+        }
+
+        report.SendToHomeowner = true;
+        report.RequestApproval = input.RequestApproval;
+        report.Status = input.RequestApproval ? ProviderReportStatuses.Approval : ProviderReportStatuses.Ready;
+        report.CompletedUtc ??= DateTime.UtcNow;
+
+        await db.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
     private static int? ParseEmployeeCount(string? value)
     {
         if (string.IsNullOrWhiteSpace(value)) return null;
@@ -5001,6 +5119,7 @@ public partial class ProviderProDataService(
 
         return new ProviderProReportCardViewModel
         {
+            Id = report.Id,
             Title = report.Title,
             Address = report.Address,
             CustomerJobLabel = $"{customerName} • Job {report.ReportCode}",

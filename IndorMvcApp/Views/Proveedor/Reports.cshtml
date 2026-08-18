@@ -14,7 +14,7 @@
     };
     var quickActions = new (string icon, string label, string color, string? action)[] {
         ("fa-cloud-arrow-up", "Upload Photos", "green", "UploadPhotos"),
-        ("fa-paper-plane", "Send Reports", "indigo", null),
+        ("fa-paper-plane", "Send Reports", "indigo", "SendReports"),
         ("fa-layer-group", "Templates", "purple", "Templates"),
         ("fa-file-export", "Export", "orange", "ExportReport")
     };
@@ -137,7 +137,14 @@
                             </div>
                         </div>
                         <div class="prv-pro-report-action">
-                            <button type="button" class="prv-pro-btn prv-pro-btn--@report.ActionClass">@UiDisplayLocalization.Localize(L, report.ActionLabel)</button>
+                            @if (report.StatusClass == "ready")
+                            {
+                                <a asp-controller="Proveedor" asp-action="SendReports" asp-route-reportId="@report.Id" class="prv-pro-btn prv-pro-btn--@report.ActionClass">@UiDisplayLocalization.Localize(L, report.ActionLabel)</a>
+                            }
+                            else
+                            {
+                                <button type="button" class="prv-pro-btn prv-pro-btn--@report.ActionClass">@UiDisplayLocalization.Localize(L, report.ActionLabel)</button>
+                            }
                         </div>
                     </div>
                 </article>
