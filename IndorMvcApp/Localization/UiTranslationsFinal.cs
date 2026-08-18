@@ -4049,6 +4049,28 @@ public static class UiTranslationsFinal
             ["Upload Files - INDOR PRO"] = "Subir archivos - INDOR PRO",
             ["Report Details - INDOR PRO"] = "Detalles del informe - INDOR PRO",
             ["Report Uploaded - INDOR PRO"] = "Informe subido - INDOR PRO",
+
+            // Upload Photos wizard (select job → add → review)
+            ["Upload Photos - INDOR PRO"] = "Subir fotos - INDOR PRO",
+            ["Add Photos - INDOR PRO"] = "Agregar fotos - INDOR PRO",
+            ["Review Photos - INDOR PRO"] = "Revisar fotos - INDOR PRO",
+            ["Select the job or report you want to update."] =
+                "Selecciona el trabajo o informe que quieres actualizar.",
+            ["Search jobs or reports"] = "Buscar trabajos o informes",
+            ["Recent Jobs"] = "Trabajos recientes",
+            ["Upload more photos for this job."] = "Sube más fotos para este trabajo.",
+            ["Check photos before saving the update."] = "Revisa las fotos antes de guardar la actualización.",
+            ["Photo Category"] = "Categoría de foto",
+            ["New Photos"] = "Fotos nuevas",
+            ["Uploaded Photos"] = "Fotos subidas",
+            ["Save Update"] = "Guardar actualización",
+            ["Send to Report"] = "Enviar al informe",
+            ["Drag photos here or choose a source"] = "Arrastra fotos aquí o elige un origen",
+            ["{0} photos total"] = "{0} fotos en total",
+            ["1 new photo will be added to this report"] = "Se agregará 1 foto nueva a este informe",
+            ["{0} new photos will be added to this report"] = "Se agregarán {0} fotos nuevas a este informe",
+            ["Recent Verification Visit"] = "Visita de verificación reciente",
+
             ["Choose Report Type"] = "Elegir tipo de informe",
             ["Upload Files & Photos"] = "Subir archivos y fotos",
             ["Upload Files &amp; Photos"] = "Subir archivos y fotos",

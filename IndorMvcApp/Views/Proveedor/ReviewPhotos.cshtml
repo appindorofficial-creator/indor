@@ -4,6 +4,7 @@
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
     ViewData["ProviderProExtraCss"] = "upload-photos.css";
+    ViewData["IwWizardPage"] = true;
 
     string BadgeClass(string cat) => cat switch
     {
@@ -14,7 +15,7 @@
     };
 }
 
-<div class="prv-pro-shell prv-pro-shell--photos">
+<div class="prv-pro-shell prv-pro-shell--photos iw-wizard-page">
     @await Html.PartialAsync("_UploadPhotosHead")
 
     <section class="upp-head">
@@ -37,11 +38,11 @@
             <span class="upp-job-thumb upp-job-thumb--icon"><i class="fas @Model.Job.IconClass"></i></span>
         }
         <div class="upp-job-summary-body">
-            <strong>@Model.Job.Title</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.Job.Title)</strong>
             <span class="upp-job-addr">@Model.Job.Address</span>
             <span class="upp-job-meta">
                 <span class="prv-pro-pill prv-pro-pill--@Model.Job.StatusClass">@UiDisplayLocalization.Localize(L, Model.Job.StatusLabel)</span>
-                <span class="upp-job-photos"><i class="fas fa-image"></i> @Model.TotalCount photos total</span>
+                <span class="upp-job-photos"><i class="fas fa-image"></i> @(Model.TotalCount == 1 ? L["1 photo"] : L.T("{0} photos total", Model.TotalCount))</span>
             </span>
         </div>
         <i class="fas fa-chevron-right upp-job-summary-chevron"></i>
@@ -53,22 +54,24 @@
         {
             <div class="upp-review-cell">
                 <img src="@photo.Url" alt="@photo.Category" />
-                <span class="upp-badge @BadgeClass(photo.Category)">@photo.Category</span>
+                <span class="upp-badge @BadgeClass(photo.Category)">@UiDisplayLocalization.Localize(L, photo.Category)</span>
             </div>
         }
     </div>
 
     <div class="upp-note">
         <i class="fas fa-circle-check"></i>
-        <span>@Model.NewCount new photos will be added to this report</span>
+        <span>@(Model.NewCount == 1 ? L["1 new photo will be added to this report"] : L.T("{0} new photos will be added to this report", Model.NewCount))</span>
     </div>
 
-    <form method="post" asp-controller="Proveedor" asp-action="ReviewPhotos" class="upp-review-form">
+    <form method="post" asp-controller="Proveedor" asp-action="ReviewPhotos" class="upp-review-form" novalidate>
         @Html.AntiForgeryToken()
         <input type="hidden" name="action" id="uppReviewAction" value="save" />
 
-        <h2 class="upp-section">@L["Notes"]</h2>
-        <textarea name="notes" rows="3" class="upp-notes" placeholder="@L["Add a note about this update..."]">@Model.Notes</textarea>
+        <div class="field-card" data-svc-optional>
+            <h2 class="upp-section">@L["Notes"]</h2>
+            <textarea name="notes" id="notes" rows="3" class="upp-notes" placeholder="@L["Add a note about this update..."]">@Model.Notes</textarea>
+        </div>
 
         <div class="upp-actions">
             <button type="submit" class="upp-btn upp-btn--primary" onclick="document.getElementById('uppReviewAction').value='save';">@L["Save Update"]</button>

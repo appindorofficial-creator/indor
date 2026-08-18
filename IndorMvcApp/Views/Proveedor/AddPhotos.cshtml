@@ -4,10 +4,11 @@
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
     ViewData["ProviderProExtraCss"] = "upload-photos.css";
+    ViewData["IwWizardPage"] = true;
     var categories = new[] { ("Before", "fa-camera"), ("During", "fa-clock"), ("After", "fa-wand-magic-sparkles"), ("Damage", "fa-triangle-exclamation") };
 }
 
-<div class="prv-pro-shell prv-pro-shell--photos">
+<div class="prv-pro-shell prv-pro-shell--photos iw-wizard-page">
     @await Html.PartialAsync("_UploadPhotosHead")
 
     <section class="upp-head">
@@ -30,39 +31,45 @@
             <span class="upp-job-thumb upp-job-thumb--icon"><i class="fas @Model.Job.IconClass"></i></span>
         }
         <div class="upp-job-summary-body">
-            <strong>@Model.Job.Title</strong>
+            <strong>@UiDisplayLocalization.Localize(L, Model.Job.Title)</strong>
             <span class="upp-job-addr">@Model.Job.Address</span>
             <span class="upp-job-meta">
-                <span class="prv-pro-pill prv-pro-pill--@Model.Job.StatusClass">@Model.Job.StatusLabel</span>
-                <span class="upp-job-photos"><i class="fas fa-image"></i> @Model.Job.ExistingPhotosCount photos uploaded</span>
+                <span class="prv-pro-pill prv-pro-pill--@Model.Job.StatusClass">@UiDisplayLocalization.Localize(L, Model.Job.StatusLabel)</span>
+                <span class="upp-job-photos"><i class="fas fa-image"></i> @(Model.Job.ExistingPhotosCount == 1 ? L["1 photo uploaded"] : L.T("{0} photos uploaded", Model.Job.ExistingPhotosCount))</span>
             </span>
         </div>
     </section>
 
-    <form method="post" asp-controller="Proveedor" asp-action="AddPhotos" enctype="multipart/form-data" class="upp-add-form" id="uppAddForm">
+    <form method="post" asp-controller="Proveedor" asp-action="AddPhotos" enctype="multipart/form-data" class="upp-add-form" id="uppAddForm" novalidate>
         @Html.AntiForgeryToken()
         <input type="hidden" name="action" id="uppAction" value="add" />
+        <input type="hidden" id="category" value="After" />
+        <input type="hidden" id="photosAdded" value="@(Model.NewPhotos.Count > 0 ? Model.NewPhotos.Count.ToString() : "")" />
 
-        <h2 class="upp-section">@L["Photo Category"]</h2>
-        <div class="upp-cats">
-            @foreach (var (cat, icon) in categories)
-            {
-                <label class="upp-cat">
-                    <input type="radio" name="category" value="@cat" @(cat == "After" ? "checked" : "") />
-                    <i class="fas @icon"></i> @cat
-                </label>
-            }
+        <div class="field-card" data-svc-required="category">
+            <h2 class="upp-section">@L["Photo Category"]</h2>
+            <div class="upp-cats">
+                @foreach (var (cat, icon) in categories)
+                {
+                    <label class="upp-cat">
+                        <input type="radio" name="category" value="@cat" @(cat == "After" ? "checked" : "") />
+                        <i class="fas @icon"></i> @UiDisplayLocalization.Localize(L, cat)
+                    </label>
+                }
+            </div>
         </div>
 
-        <label class="upp-dropzone">
-            <span class="upp-dropzone-icon"><i class="fas fa-images"></i></span>
-            <span class="upp-dropzone-text">@L["Drag photos here or choose a source"]</span>
-            <span class="upp-dropzone-sources">
-                <span class="upp-source"><i class="fas fa-camera"></i> @L["Camera"]</span>
-                <span class="upp-source"><i class="fas fa-image"></i> @L["Gallery"]</span>
-            </span>
-            <input type="file" name="photos" accept="image/*" multiple class="upp-file" onchange="document.getElementById('uppAddForm').submit();" />
-        </label>
+        <div class="field-card" data-svc-required="photosAdded">
+            <label class="upp-dropzone">
+                <span class="upp-dropzone-icon"><i class="fas fa-images"></i></span>
+                <span class="upp-dropzone-text">@L["Drag photos here or choose a source"]</span>
+                <span class="upp-dropzone-sources">
+                    <span class="upp-source"><i class="fas fa-camera"></i> @L["Camera"]</span>
+                    <span class="upp-source"><i class="fas fa-image"></i> @L["Gallery"]</span>
+                </span>
+                <input type="file" name="photos" accept="image/*" multiple class="upp-file" onchange="document.getElementById('uppAction').value='add'; document.getElementById('uppAddForm').submit();" />
+            </label>
+        </div>
 
         @if (Model.NewPhotos.Count > 0)
         {
@@ -78,7 +85,7 @@
                 <label class="upp-thumb upp-thumb--add">
                     <i class="fas fa-plus"></i>
                     <span>@L["Add More"]</span>
-                    <input type="file" name="photos" accept="image/*" multiple class="upp-file" onchange="document.getElementById('uppAddForm').submit();" />
+                    <input type="file" name="photos" accept="image/*" multiple class="upp-file" onchange="document.getElementById('uppAction').value='add'; document.getElementById('uppAddForm').submit();" />
                 </label>
             </div>
         }

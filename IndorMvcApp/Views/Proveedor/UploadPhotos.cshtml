@@ -4,10 +4,11 @@
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
     ViewData["ProviderProExtraCss"] = "upload-photos.css";
+    ViewData["IwWizardPage"] = true;
     var filters = new[] { ("all", "All"), ("completed", "Completed"), ("inprogress", "In Progress"), ("recent", "Recent") };
 }
 
-<div class="prv-pro-shell prv-pro-shell--photos">
+<div class="prv-pro-shell prv-pro-shell--photos iw-wizard-page">
     @await Html.PartialAsync("_UploadPhotosHead")
 
     <section class="upp-head">
@@ -22,19 +23,21 @@
 
     <form method="get" asp-controller="Proveedor" asp-action="UploadPhotos" class="upp-search">
         <input type="hidden" name="filter" value="@Model.ActiveFilter" />
-        <div class="upp-search-wrap">
-            <i class="fas fa-magnifying-glass"></i>
-            <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search jobs or reports"]" />
+        <div class="field-card" data-svc-optional>
+            <div class="upp-search-wrap">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search jobs or reports"]" />
+            </div>
         </div>
         <button type="submit" class="upp-filter-btn" aria-label="@L["Filters"]"><i class="fas fa-sliders"></i></button>
     </form>
 
     <div class="upp-filter-row">
-        @foreach (var (key, label) in filters)
-        {
-            <a asp-controller="Proveedor" asp-action="UploadPhotos" asp-route-filter="@key" asp-route-q="@Model.SearchQuery"
-               class="upp-chip @(Model.ActiveFilter == key ? "is-active" : "")">@label</a>
-        }
+            @foreach (var (key, label) in filters)
+            {
+                <a asp-controller="Proveedor" asp-action="UploadPhotos" asp-route-filter="@key" asp-route-q="@Model.SearchQuery"
+                   class="upp-chip @(Model.ActiveFilter == key ? "is-active" : "")">@UiDisplayLocalization.Localize(L, label)</a>
+            }
     </div>
 
     @if (Model.Jobs.Count == 0)
@@ -42,7 +45,7 @@
         <div class="upp-empty">
             @if (Model.HasSearchWithNoResults)
             {
-                <p>@L["No jobs matched"]<strong>@Model.SearchQuery</strong>.</p>
+                <p>@L["No jobs matched"] <strong>@Model.SearchQuery</strong>.</p>
                 <a asp-controller="Proveedor" asp-action="UploadPhotos" asp-route-filter="@Model.ActiveFilter" class="upp-btn upp-btn--outline">@L["Clear search"]</a>
             }
             else if (Model.TotalJobsAvailable == 0)
@@ -59,10 +62,12 @@
     }
     else
     {
-        <form method="post" asp-controller="Proveedor" asp-action="UploadPhotos" class="upp-select-form">
+        <form method="post" asp-controller="Proveedor" asp-action="UploadPhotos" class="upp-select-form" novalidate>
             @Html.AntiForgeryToken()
-            <h2 class="upp-section">@L["Recent Jobs"]</h2>
-            <div class="upp-jobs">
+            <input type="hidden" id="jobId" value="" />
+            <div class="field-card" data-svc-required="jobId">
+                <h2 class="upp-section">@L["Recent Jobs"]</h2>
+                <div class="upp-jobs">
                 @foreach (var job in Model.Jobs)
                 {
                     <label class="upp-job-card">
@@ -76,16 +81,17 @@
                             <span class="upp-job-thumb upp-job-thumb--icon"><i class="fas @job.IconClass"></i></span>
                         }
                         <span class="upp-job-body">
-                            <strong>@job.Title</strong>
+                            <strong>@UiDisplayLocalization.Localize(L, job.Title)</strong>
                             <span class="upp-job-addr">@job.Address</span>
                             <span class="upp-job-meta">
                                 <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@UiDisplayLocalization.Localize(L, job.StatusLabel)</span>
-                                <span class="upp-job-photos"><i class="fas fa-image"></i> @job.PhotosCount photos</span>
+                                <span class="upp-job-photos"><i class="fas fa-image"></i> @(job.PhotosCount == 1 ? L["1 photo"] : L.T("{0} photos", job.PhotosCount))</span>
                             </span>
                         </span>
                         <span class="upp-job-select">@L["Select"]<i class="fas fa-chevron-right"></i></span>
                     </label>
                 }
+                </div>
             </div>
 
             <div class="upp-actions">

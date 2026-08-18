@@ -90,7 +90,9 @@
         '.prv-chip',
         '.prv-entry-card',
         '.prv-type-card',
-        '.prv-wiz-slot'
+        '.prv-wiz-slot',
+        '.upp-job-card',
+        '.upp-cat'
     ].join(',');
 
     var MULTI_CHOICE = [
@@ -217,8 +219,8 @@
             if (type !== 'hidden' && type !== 'checkbox' && type !== 'radio' && type !== 'button' && type !== 'submit') {
                 return true;
             }
-            // Hidden value synced from a visible text/date/select control in the same card
-            if (type === 'hidden' && card.querySelector('input:not([type="hidden"]), select, textarea')) {
+            // Hidden value synced from a visible text/date/select/file control in the same card
+            if (type === 'hidden' && card.querySelector('input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]), select, textarea')) {
                 return true;
             }
         }
@@ -405,6 +407,20 @@
         });
     }
 
+    function syncRequiredHiddensFromRadios(root) {
+        root.querySelectorAll('.field-card[data-svc-required]').forEach(function (card) {
+            var hidden = document.getElementById(card.getAttribute('data-svc-required'));
+            if (!hidden) return;
+            card.querySelectorAll('input[type="radio"]').forEach(function (radio) {
+                if (radio === hidden) return;
+                if (radio.checked) hidden.value = radio.value;
+                radio.addEventListener('change', function () {
+                    if (radio.checked) hidden.value = radio.value;
+                });
+            });
+        });
+    }
+
     function enhanceProviderWizardCards(root) {
         if (!root || !root.classList || !root.classList.contains('prv-page')) {
             return;
@@ -472,7 +488,7 @@
                 }
                 firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 var focusable = firstInvalid.querySelector(
-                    'input:not([type="hidden"]):not([type="button"]):not([type="submit"]):not([disabled]), select:not([disabled]), textarea:not([disabled])'
+                    'input:not([type="hidden"]):not([type="button"]):not([type="submit"]):not([type="file"]):not([disabled]), select:not([disabled]), textarea:not([disabled])'
                 );
                 if (focusable && typeof focusable.focus === 'function') {
                     try { focusable.focus({ preventScroll: true }); } catch (err) { focusable.focus(); }
@@ -521,6 +537,7 @@
     function boot() {
         var root = document.querySelector('.iw-wizard-page') || document;
         enhanceProviderWizardCards(root);
+        syncRequiredHiddensFromRadios(root);
         hideTopSummaries(root);
         promoteServerFieldErrors(root);
         root.querySelectorAll('form').forEach(bindForm);

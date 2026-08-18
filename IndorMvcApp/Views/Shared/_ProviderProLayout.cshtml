@@ -25,7 +25,7 @@
 
 </head>
 
-<body class="prv-pro-body">
+<body class="prv-pro-body@(ViewData["IwWizardPage"] is true ? " iw-wizard-page" : "")">
 
     @RenderBody()
 
@@ -38,6 +38,10 @@
     <script src="~/js/provider-pro-form-validation.js" asp-append-version="true"></script>
     <script src="~/js/indor-greeting.js" asp-append-version="true"></script>
     <script src="~/js/provider-pro-notifications.js" asp-append-version="true"></script>
+    @if (ViewData["IwWizardPage"] is true)
+    {
+        @await Html.PartialAsync("_ServiceWizardValidation")
+    }
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>
