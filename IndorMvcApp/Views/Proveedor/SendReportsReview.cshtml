@@ -33,7 +33,7 @@
         <label class="exr-job is-static">
             <span class="exr-job-icon exr-icon--blue"><i class="fas @Model.IconClass"></i></span>
             <span class="exr-job-body">
-                <strong>@Model.Title</strong>
+                <strong>@UiDisplayLocalization.Localize(L, Model.Title)</strong>
                 <small>@Model.CustomerName · @Model.Address</small>
                 <small>@Model.ReportCode</small>
                 <span class="exr-pill exr-pill--@Model.StatusClass">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>

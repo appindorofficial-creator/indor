@@ -478,6 +478,8 @@ public static class UiTranslationsFinal
             ["Create Report"] = "Crear informe",
             ["Send Reports"] = "Enviar informes",
             ["Send Reports - INDOR PRO"] = "Enviar informes - INDOR PRO",
+            ["Photo Update"] = "Actualización de fotos",
+            ["{0} — Photo Update"] = "{0} — Actualización de fotos",
             ["Select Report"] = "Seleccionar informe",
             ["Select the report you want to send."] = "Selecciona el informe que quieres enviar.",
             ["Choose how to deliver this report to the homeowner."] =

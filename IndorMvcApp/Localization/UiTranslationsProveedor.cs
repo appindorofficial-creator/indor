@@ -737,6 +737,8 @@ public static class UiTranslationsProveedor
             ["Phone Number"] = "Número de teléfono",
             ["Phone number"] = "Número de teléfono",
             ["Photo Category"] = "Categoría de foto",
+            ["Photo Update"] = "Actualización de fotos",
+            ["{0} — Photo Update"] = "{0} — Actualización de fotos",
             ["Photo Evidence"] = "Photo Evidence",
             ["Photo ID"] = "Photo ID",
             ["Photos"] = "Fotos",

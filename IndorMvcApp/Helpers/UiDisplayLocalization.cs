@@ -1149,6 +1149,14 @@ public static class UiDisplayLocalization
                 leadsAreaCount);
         }
 
+        var photoUpdateMatch = Regex.Match(text, @"^(.+?)\s+[—–-]\s+Photo Update$", RegexOptions.IgnoreCase);
+        if (photoUpdateMatch.Success)
+        {
+            return localizer.T(
+                "{0} — Photo Update",
+                Localize(localizer, photoUpdateMatch.Groups[1].Value.Trim()));
+        }
+
         if (text.StartsWith("Scheduled — ", StringComparison.OrdinalIgnoreCase))
         {
             return localizer.T("Scheduled — {0}", text["Scheduled — ".Length..].Trim());
