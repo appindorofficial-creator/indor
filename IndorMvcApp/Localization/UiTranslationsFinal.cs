@@ -4019,6 +4019,8 @@ public static class UiTranslationsFinal
                 "Revisa las opciones y elige al profesional adecuado.",
             ["Select Pro"] = "Seleccionar profesional",
             ["No quotes yet. Check back soon."] = "Aún no hay cotizaciones. Vuelve pronto.",
+            ["Subcontractors"] = "Subcontratistas",
+            ["Sub contractors"] = "Subcontratistas",
 
             // Bug 12 — Proveedor Upload Report / Create Report wizard ES
             // Full phrases (no word-swap Spanglish). Breadcrumbs need full keys because
