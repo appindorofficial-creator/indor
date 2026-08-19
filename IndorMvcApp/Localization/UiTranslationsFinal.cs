@@ -1481,6 +1481,13 @@ public static class UiTranslationsFinal
             ["Document findings and affected areas"] = "Documentar hallazgos y áreas afectadas",
             ["Identify materials and labor needed"] = "Identificar materiales y mano de obra necesarios",
             ["Assess the requested {0} work"] = "Evaluar el trabajo de {0} solicitado",
+            ["Assess the requested repair work"] = "Evaluar el trabajo de reparación solicitado",
+            ["Assess the requested maintenance work"] = "Evaluar el trabajo de mantenimiento solicitado",
+            ["Assess the requested estimate work"] = "Evaluar el trabajo de cotización solicitado",
+            ["Assess the requested installation work"] = "Evaluar el trabajo de instalación solicitado",
+            ["Assess the requested emergency work"] = "Evaluar el trabajo de emergencia solicitado",
+            ["Assess the requested cleaning work"] = "Evaluar el trabajo de limpieza solicitado",
+            ["Assess the requested inspection work"] = "Evaluar el trabajo de inspección solicitado",
             ["Complete the requested {0} work and provide a detailed summary."] =
                 "Completar el trabajo de {0} solicitado y entregar un resumen detallado.",
             ["Customer reports water coming through the ceiling after heavy rain. They'd like an inspection to find the cause and get a repair recommendation and estimate."] =

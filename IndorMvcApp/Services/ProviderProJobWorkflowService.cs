@@ -534,12 +534,12 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
             CustomerName = draft.CustomerName,
             CustomerInitials = DeriveCustomerInitials(draft.CustomerName),
             CustomerTone = DeriveAvatarTone(draft.ClienteId ?? draft.CustomerName.GetHashCode()),
-            AiCustomerNeeds = ProviderProDisplayLocalization.L(draft.AiCustomerNeeds),
+            AiCustomerNeeds = UiDisplayLocalization.Localize(localizer, draft.AiCustomerNeeds),
             AiRecommendedScope = draft.AiRecommendedScope
-                .Select(ProviderProDisplayLocalization.L)
+                .Select(item => UiDisplayLocalization.Localize(localizer, item))
                 .ToList(),
             EstimateLines = draft.EstimateLines
-                .Select(l => Line(ProviderProDisplayLocalization.L(l.Label), l.Amount))
+                .Select(l => Line(UiDisplayLocalization.Localize(localizer, l.Label), l.Amount))
                 .ToList(),
             EstimateTotalLabel = FormatCurrency(draft.EstimateTotal),
             StepSubtitle = ProviderProDisplayLocalization.L("AI estimate assistant"),
@@ -574,7 +574,7 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
 
         // Localize catalog keys for the send screen (keeps draft English; VM shows UI language).
         var estimateLines = draft.EstimateLines
-            .Select(l => Line(ProviderProDisplayLocalization.L(l.Label), l.Amount))
+            .Select(l => Line(UiDisplayLocalization.Localize(localizer, l.Label), l.Amount))
             .ToList();
 
         var scopeSummary = LocalizeScopeSummary(draft.ScopeSummary, draft.AiRecommendedScope);
@@ -1501,36 +1501,25 @@ public class ProviderProJobWorkflowService(AppDbContext db, IIndorLocalizer loca
         }
     }
 
-    private static string LocalizeScopeSummary(string? scopeSummary, IReadOnlyList<string> bullets)
+    private string LocalizeScopeSummary(string? scopeSummary, IReadOnlyList<string> bullets)
     {
-        if (string.IsNullOrWhiteSpace(scopeSummary))
-        {
-            return string.Empty;
-        }
-
-        var direct = ProviderProDisplayLocalization.L(scopeSummary);
-        if (!string.Equals(direct, scopeSummary, StringComparison.Ordinal))
-        {
-            return direct;
-        }
-
-        // Joined AI bullets won't match a single catalog key — localize each known bullet.
-        if (bullets.Count > 0 && DisplayLabelsLocalization.IsSpanishUi)
+        if (bullets.Count > 0)
         {
             var parts = bullets
                 .Take(3)
-                .Select(ProviderProDisplayLocalization.L)
-                .Where(p => !string.IsNullOrWhiteSpace(p));
+                .Select(item => UiDisplayLocalization.Localize(localizer, item))
+                .Where(p => !string.IsNullOrWhiteSpace(p))
+                .Select(p => p.Trim().TrimEnd('.'));
             var joined = string.Join(" ", parts);
-            if (string.IsNullOrWhiteSpace(joined))
+            if (!string.IsNullOrWhiteSpace(joined))
             {
-                return direct;
+                return scopeSummary is not null && scopeSummary.TrimEnd().EndsWith('.')
+                    ? joined + "."
+                    : joined;
             }
-
-            return scopeSummary.TrimEnd().EndsWith('.') ? joined + "." : joined;
         }
 
-        return direct;
+        return UiDisplayLocalization.Localize(localizer, scopeSummary);
     }
 
     private static string BuildScopeSummary(ProviderProCreateJobDraft draft) =>

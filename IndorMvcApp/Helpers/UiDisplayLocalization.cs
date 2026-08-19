@@ -503,13 +503,21 @@ public static class UiDisplayLocalization
 
         var assessRequestedMatch = Regex.Match(
             text,
-            @"^Assess the requested (.+) work$",
+            @"^Assess the requested (.+?) work(?=\s|\.|$)",
             RegexOptions.IgnoreCase);
         if (assessRequestedMatch.Success)
         {
-            return localizer.T(
+            var localizedLead = localizer.T(
                 "Assess the requested {0} work",
                 Localize(localizer, assessRequestedMatch.Groups[1].Value.Trim()));
+            var rest = text[assessRequestedMatch.Length..].TrimStart('.', ' ');
+            if (string.IsNullOrEmpty(rest))
+            {
+                return localizedLead;
+            }
+
+            var localizedRest = Localize(localizer, rest);
+            return string.IsNullOrEmpty(localizedRest) ? localizedLead : localizedLead + " " + localizedRest;
         }
 
         var estimateMessageMatch = Regex.Match(
