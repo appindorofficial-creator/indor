@@ -84,6 +84,9 @@ public class ProviderProCustomersPageViewModel : ProviderProPageBaseViewModel
 
 public class ProviderProCustomerCardViewModel
 {
+    public int Id { get; set; }
+    public int? JobId { get; set; }
+    public int? ConversationId { get; set; }
     public string Name { get; set; } = "";
     public string Address { get; set; } = "";
     public string Phone { get; set; } = "";
@@ -100,8 +103,34 @@ public class ProviderProCustomerCardViewModel
     public string? ActivityNote { get; set; }
     public bool ShowPhotosLink { get; set; }
     public string PrimaryAction { get; set; } = "View Customer";
+    public string PrimaryActionKey { get; set; } = "View Customer";
     public string PrimaryActionClass { get; set; } = "primary";
     public string? SecondaryAction { get; set; }
+    public string? SecondaryActionKey { get; set; }
+}
+
+public class ProviderProCustomerRecordViewModel : ProviderProPageBaseViewModel
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = "";
+    public string Phone { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Address { get; set; } = "";
+    public string CustomerType { get; set; } = "";
+    public string ConnectionLabel { get; set; } = "";
+    public string ConnectionClass { get; set; } = "connected";
+    public string? InternalNotes { get; set; }
+    public List<string> Tags { get; set; } = [];
+    public List<ProviderProCustomerRecordJobViewModel> Jobs { get; set; } = [];
+}
+
+public class ProviderProCustomerRecordJobViewModel
+{
+    public int Id { get; set; }
+    public string Title { get; set; } = "";
+    public string StatusLabel { get; set; } = "";
+    public string StatusClass { get; set; } = "";
+    public string ActionKey { get; set; } = "View Details";
 }
 
 public class ProviderProReportsPageViewModel : ProviderProPageBaseViewModel

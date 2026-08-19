@@ -376,6 +376,25 @@ public partial class ProveedorController(
 
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Customer(int id, string? tab, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await proData.GetCustomerRecordAsync(proveedor.Entity!, id, cancellationToken);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Customers), new { tab });
+        }
+
+        ViewBag.CustomersTab = tab;
+        return View(model);
+    }
+
 
 
     [HttpGet]

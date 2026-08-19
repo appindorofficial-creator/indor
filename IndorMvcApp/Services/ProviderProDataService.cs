@@ -4787,8 +4787,21 @@ public partial class ProviderProDataService(
             c.ConnectionStatus == ProviderCustomerConnectionStatuses.NeedsInvite);
         var propertiesCount = customerRows.Sum(c => Math.Max(1, c.PropertiesCount));
 
+        var conversationRows = await db.IndorProveedorConversations
+            .AsNoTracking()
+            .Where(c => c.ProveedorId == proveedor.Id && c.ClienteId != null)
+            .Select(c => new { c.Id, c.ClienteId })
+            .ToListAsync(cancellationToken);
+        var conversationIds = conversationRows
+            .GroupBy(c => c.ClienteId!.Value)
+            .ToDictionary(g => g.Key, g => g.Max(x => x.Id));
+
         var cards = customerRows
-            .Select(c => MapCustomerCard(c, jobs.Where(j => j.ClienteId == c.Id).ToList(), customerIdsWithPendingApproval.Contains(c.Id)))
+            .Select(c => MapCustomerCard(
+                c,
+                jobs.Where(j => j.ClienteId == c.Id).ToList(),
+                customerIdsWithPendingApproval.Contains(c.Id),
+                conversationIds.GetValueOrDefault(c.Id)))
             .ToList();
 
         var activeHomesCount = cards.Count(c =>
@@ -4830,10 +4843,85 @@ public partial class ProviderProDataService(
         };
     }
 
+    public async Task<ProviderProCustomerRecordViewModel?> GetCustomerRecordAsync(
+        IndorProveedor proveedor,
+        int customerId,
+        CancellationToken cancellationToken = default)
+    {
+        var customer = await db.IndorProveedorClientes
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == customerId && c.ProveedorId == proveedor.Id && c.Activo, cancellationToken);
+        if (customer == null)
+        {
+            return null;
+        }
+
+        var jobs = await db.IndorProveedorJobs
+            .AsNoTracking()
+            .Where(j => j.ProveedorId == proveedor.Id && j.ClienteId == customer.Id && !j.IsDraft)
+            .OrderByDescending(j => j.FechaActualizacion ?? j.FechaCreacion)
+            .ToListAsync(cancellationToken);
+
+        var isConnected = customer.ConnectionStatus == ProviderCustomerConnectionStatuses.Connected;
+        var address = !string.IsNullOrWhiteSpace(customer.Address)
+            ? customer.Address
+            : string.Join(", ", new[] { customer.StreetAddress, customer.City, customer.State, customer.ZipCode }
+                .Where(v => !string.IsNullOrWhiteSpace(v)));
+
+        return new ProviderProCustomerRecordViewModel
+        {
+            CompanyName = ResolveCompanyName(proveedor),
+            Id = customer.Id,
+            Name = customer.Name,
+            Phone = customer.Phone ?? "",
+            Email = customer.Email ?? "",
+            Address = address,
+            CustomerType = customer.CustomerType ?? "",
+            ConnectionLabel = isConnected
+                ? ProviderProDisplayLocalization.L("Connected")
+                : ProviderProDisplayLocalization.L("Needs Invite"),
+            ConnectionClass = isConnected ? "connected" : "needsinvite",
+            InternalNotes = customer.InternalNotes,
+            Tags = ParseCustomerTags(customer.TagsJson),
+            Jobs = jobs.Select(j => new ProviderProCustomerRecordJobViewModel
+            {
+                Id = j.Id,
+                Title = j.Title,
+                StatusLabel = MapJobStatusLabel(j.Status),
+                StatusClass = j.Status == ProviderJobStatuses.Completed ? "completed"
+                    : j.Status == ProviderJobStatuses.InProgress ? "progress"
+                    : "scheduled",
+                ActionKey = j.Status == ProviderJobStatuses.Completed ? "View Record"
+                    : j.Status == ProviderJobStatuses.InProgress ? "Continue Job"
+                    : "View Details"
+            }).ToList()
+        };
+    }
+
+    private static List<string> ParseCustomerTags(string? tagsJson)
+    {
+        if (string.IsNullOrWhiteSpace(tagsJson))
+        {
+            return [];
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<List<string>>(tagsJson) ?? [];
+        }
+        catch (JsonException)
+        {
+            return tagsJson
+                .Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .ToList();
+        }
+    }
+
     private static ProviderProCustomerCardViewModel MapCustomerCard(
         IndorProveedorCliente customer,
         List<IndorProveedorJob> customerJobs,
-        bool hasPendingApproval)
+        bool hasPendingApproval,
+        int? conversationId)
     {
         var isConnected = customer.ConnectionStatus == ProviderCustomerConnectionStatuses.Connected;
         var connectionLabel = isConnected ? ProviderProDisplayLocalization.L("Connected") : ProviderProDisplayLocalization.L("Needs Invite");
@@ -4858,6 +4946,9 @@ public partial class ProviderProDataService(
 
         var card = new ProviderProCustomerCardViewModel
         {
+            Id = customer.Id,
+            JobId = activeJob?.Id ?? recentCompleted?.Id,
+            ConversationId = conversationId,
             Name = customer.Name,
             Address = displayAddress,
             Phone = customer.Phone ?? "",
@@ -4868,14 +4959,17 @@ public partial class ProviderProDataService(
             PropertiesCount = Math.Max(1, customer.PropertiesCount),
             ActivityNote = customer.LastActivityNote,
             ShowPhotosLink = isConnected,
+            PrimaryActionKey = isConnected ? "View Customer" : "Send Invite",
             PrimaryAction = isConnected ? ProviderProDisplayLocalization.L("View Customer") : ProviderProDisplayLocalization.L("Send Invite"),
             PrimaryActionClass = isConnected ? "primary" : "primary",
+            SecondaryActionKey = isConnected ? "Open Property" : "View Record",
             SecondaryAction = isConnected ? ProviderProDisplayLocalization.L("Open Property") : ProviderProDisplayLocalization.L("View Record")
         };
 
         if (activeJob != null)
         {
             card.ShowJobSection = true;
+            card.JobId = activeJob.Id;
             card.JobTitle = activeJob.Title;
             card.JobStatusLabel = activeJob.Status == ProviderJobStatuses.InProgress
                 ? ProviderProDisplayLocalization.L("In Progress")
@@ -4885,14 +4979,17 @@ public partial class ProviderProDataService(
 
             if (activeJob.Status == ProviderJobStatuses.InProgress)
             {
+                card.PrimaryActionKey = "Continue Job";
                 card.PrimaryAction = ProviderProDisplayLocalization.L("Continue Job");
                 card.PrimaryActionClass = "success";
+                card.SecondaryActionKey = "Message";
                 card.SecondaryAction = ProviderProDisplayLocalization.L("Message");
             }
         }
         else if (recentCompleted != null)
         {
             card.ShowJobSection = true;
+            card.JobId = recentCompleted.Id;
             card.JobTitle = recentCompleted.Title;
             card.JobStatusLabel = ProviderProDisplayLocalization.L("Recent Work");
             card.JobStatusClass = "completed";
@@ -4916,8 +5013,10 @@ public partial class ProviderProDataService(
                 });
             }
 
+            card.PrimaryActionKey = "View Record";
             card.PrimaryAction = ProviderProDisplayLocalization.L("View Record");
             card.PrimaryActionClass = "ghost";
+            card.SecondaryActionKey = "Message";
             card.SecondaryAction = ProviderProDisplayLocalization.L("Message");
         }
         else if (!isConnected)

@@ -20,6 +20,20 @@
     var visibleStatCards = Model.ActiveTab == "all"
         ? statCards
         : statCards.Where(card => card.Item1 == Model.ActiveTab);
+
+    string? ActionUrl(IndorMvcApp.ViewModels.ProviderProCustomerCardViewModel c, string? key) => key switch
+    {
+        "View Record" when c.JobId is > 0 => Url.Action("JobReport", "Proveedor", new { id = c.JobId }),
+        "View Record" => Url.Action("Customer", "Proveedor", new { id = c.Id, tab = Model.ActiveTab }),
+        "View Customer" => Url.Action("Customer", "Proveedor", new { id = c.Id, tab = Model.ActiveTab }),
+        "Continue Job" when c.JobId is > 0 => Url.Action("ActiveJob", "Proveedor", new { id = c.JobId }),
+        "Open Property" when c.JobId is > 0 => Url.Action("JobDetails", "Proveedor", new { id = c.JobId }),
+        "Open Property" => Url.Action("Customer", "Proveedor", new { id = c.Id, tab = Model.ActiveTab }),
+        "Message" when c.ConversationId is > 0 => Url.Action("Conversation", "Proveedor", new { id = c.ConversationId }),
+        "Message" => Url.Action("Messages", "Proveedor"),
+        "Send Invite" => Url.Action("Customer", "Proveedor", new { id = c.Id, tab = Model.ActiveTab }),
+        _ => Url.Action("Customer", "Proveedor", new { id = c.Id, tab = Model.ActiveTab })
+    };
 }
 
 <div class="prv-pro-shell prv-pro-shell--customers prv-pro-shell--customers-v2">
@@ -182,10 +196,19 @@
                     }
 
                     <div class="prv-pro-customer-card-actions">
-                        <button type="button" class="prv-pro-btn prv-pro-btn--@customer.PrimaryActionClass">@UiDisplayLocalization.Localize(L, customer.PrimaryAction)</button>
-                        @if (!string.IsNullOrWhiteSpace(customer.SecondaryAction))
+                        @{
+                            var primaryUrl = ActionUrl(customer, customer.PrimaryActionKey);
+                            var secondaryUrl = string.IsNullOrWhiteSpace(customer.SecondaryActionKey)
+                                ? null
+                                : ActionUrl(customer, customer.SecondaryActionKey);
+                        }
+                        @if (!string.IsNullOrWhiteSpace(primaryUrl))
                         {
-                            <button type="button" class="prv-pro-btn prv-pro-btn--ghost">@UiDisplayLocalization.Localize(L, customer.SecondaryAction)</button>
+                            <a href="@primaryUrl" class="prv-pro-btn prv-pro-btn--@customer.PrimaryActionClass">@UiDisplayLocalization.Localize(L, customer.PrimaryAction)</a>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(customer.SecondaryAction) && !string.IsNullOrWhiteSpace(secondaryUrl))
+                        {
+                            <a href="@secondaryUrl" class="prv-pro-btn prv-pro-btn--ghost">@UiDisplayLocalization.Localize(L, customer.SecondaryAction)</a>
                         }
                     </div>
                 </article>

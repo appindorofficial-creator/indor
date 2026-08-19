@@ -174,6 +174,7 @@ public static class UiTranslationsFinal
             ["Continue Job"] = "Continuar trabajo",
             ["Upload Photos"] = "Subir fotos",
             ["View Record"] = "Ver registro",
+            ["No jobs yet"] = "Aún no hay trabajos",
             ["Start Job"] = "Iniciar trabajo",
             ["View Details"] = "Ver detalles",
             ["miles away"] = "millas de distancia",

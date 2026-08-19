@@ -8,6 +8,7 @@ public interface IProviderProDataService
     Task<ProviderProWorkspaceData> GetWorkspaceDataAsync(int proveedorId, bool includeLeads, CancellationToken cancellationToken = default);
     Task<ProviderProJobsPageViewModel> GetJobsPageAsync(IndorProveedor proveedor, string? tab = "active", string? search = null, CancellationToken cancellationToken = default);
     Task<ProviderProCustomersPageViewModel> GetCustomersPageAsync(IndorProveedor proveedor, string? tab = "connected", string? search = null, CancellationToken cancellationToken = default);
+    Task<ProviderProCustomerRecordViewModel?> GetCustomerRecordAsync(IndorProveedor proveedor, int customerId, CancellationToken cancellationToken = default);
     ProviderProAddCustomerInfoViewModel GetAddCustomerInfoViewModel(IndorProveedor proveedor, ProviderProAddCustomerDraft? draft);
     ProviderProAddCustomerPropertyViewModel GetAddCustomerPropertyViewModel(IndorProveedor proveedor, ProviderProAddCustomerDraft draft);
     ProviderProAddCustomerPreferencesViewModel GetAddCustomerPreferencesViewModel(IndorProveedor proveedor, ProviderProAddCustomerDraft draft);

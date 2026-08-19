@@ -1,0 +1,90 @@
+@model IndorMvcApp.ViewModels.ProviderProCustomerRecordViewModel
+@{
+    ViewData["Title"] = L["View Record"] + " - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "customers";
+    var backTab = ViewBag.CustomersTab as string ?? "all";
+}
+
+<div class="prv-pro-shell prv-pro-shell--customers">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <header class="prv-pro-workflow-head">
+        <a asp-controller="Proveedor" asp-action="Customers" asp-route-tab="@backTab" class="prv-pro-lead-back" aria-label="@L["Back"]">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <div>
+            <h1>@Model.Name</h1>
+            <small>@L["View Record"]</small>
+        </div>
+        <span class="prv-pro-pill prv-pro-pill--@Model.ConnectionClass">@UiDisplayLocalization.Localize(L, Model.ConnectionLabel)</span>
+    </header>
+
+    <section class="prv-pro-lead-section">
+        @if (!string.IsNullOrWhiteSpace(Model.CustomerType))
+        {
+            <p class="prv-pro-customer-card-address">@UiDisplayLocalization.Localize(L, Model.CustomerType)</p>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Address))
+        {
+            <p><i class="fas fa-location-dot"></i> @Model.Address</p>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Phone))
+        {
+            <p><i class="fas fa-phone"></i> @Model.Phone</p>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Email))
+        {
+            <p><i class="fas fa-envelope"></i> @Model.Email</p>
+        }
+        @if (Model.Tags.Count > 0)
+        {
+            <div class="prv-pro-tag-pills">
+                @foreach (var tag in Model.Tags)
+                {
+                    <span class="prv-pro-tag-pill is-selected">@UiDisplayLocalization.Localize(L, tag)</span>
+                }
+            </div>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.InternalNotes))
+        {
+            <p class="prv-pro-customer-activity-note">@Model.InternalNotes</p>
+        }
+    </section>
+
+    <section class="prv-pro-lead-section">
+        <h3>@L["Jobs"]</h3>
+        @if (Model.Jobs.Count == 0)
+        {
+            <p class="prv-pro-count-muted">@L["No jobs yet"]</p>
+        }
+        else
+        {
+            <div class="prv-pro-customers-list">
+                @foreach (var job in Model.Jobs)
+                {
+                    var jobUrl = job.ActionKey switch
+                    {
+                        "View Record" => Url.Action("JobReport", "Proveedor", new { id = job.Id }),
+                        "Continue Job" => Url.Action("ActiveJob", "Proveedor", new { id = job.Id }),
+                        _ => Url.Action("JobDetails", "Proveedor", new { id = job.Id })
+                    };
+                    <article class="prv-pro-customer-card">
+                        <div class="prv-pro-customer-job-main">
+                            <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@UiDisplayLocalization.Localize(L, job.StatusLabel)</span>
+                            <strong>@job.Title</strong>
+                        </div>
+                        <div class="prv-pro-customer-card-actions">
+                            <a href="@jobUrl" class="prv-pro-btn prv-pro-btn--ghost">@UiDisplayLocalization.Localize(L, job.ActionKey)</a>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+
+    <div class="prv-pro-add-customer-actions">
+        <a asp-controller="Proveedor" asp-action="Customers" asp-route-tab="@backTab" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
+        <a asp-controller="Proveedor" asp-action="Messages" class="prv-pro-btn prv-pro-btn--primary">@L["Message"]</a>
+    </div>
+</div>
