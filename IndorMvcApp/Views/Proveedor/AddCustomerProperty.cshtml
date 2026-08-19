@@ -1,3 +1,4 @@
+@using System.Text.Json
 @model IndorMvcApp.ViewModels.ProviderProAddCustomerPropertyViewModel
 @{
     ViewData["Title"] = L["Property Info - INDOR PRO"];
@@ -19,31 +20,36 @@
         <span class="prv-pro-step-badge">@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</span>
     </header>
 
-    <form asp-controller="Proveedor" asp-action="AddCustomerProperty" method="post" class="prv-pro-add-customer-form">
+    <form asp-controller="Proveedor" asp-action="AddCustomerProperty" method="post" class="prv-pro-add-customer-form" id="acpForm" novalidate data-inline-validate>
         @Html.AntiForgeryToken()
 
-        <label class="prv-pro-form-label">@L["Property Address"]<span class="prv-pro-required">*</span>
-            <div class="prv-pro-form-input-wrap"><i class="fas fa-location-dot"></i><input type="text" name="StreetAddress" value="@Model.StreetAddress" placeholder="@L["Street address"]" required /></div>
+        <label class="prv-pro-form-label" data-acp-field="street">@L["Property Address"]<span class="prv-pro-required">*</span>
+            <div class="prv-pro-form-input-wrap"><i class="fas fa-location-dot"></i><input type="text" id="acp-street" name="StreetAddress" value="@Model.StreetAddress" placeholder="@L["Street address"]" autocomplete="off" required data-address-autocomplete data-ac-street-only="true" data-ac-city="acp-city" data-ac-state="acp-state" data-ac-zip="acp-zip" /></div>
+            <span class="prv-pro-field-error" data-acp-error="street" hidden></span>
         </label>
         <label class="prv-pro-form-label">@L["Apt / Unit (optional)"]<input type="text" name="AptUnit" value="@Model.AptUnit" placeholder="@L["Apt, Unit, Suite, etc."]" />
         </label>
         <div class="prv-pro-form-row-3">
-            <label class="prv-pro-form-label">@L["City"]<span class="prv-pro-required">*</span>
-                <div class="prv-pro-form-input-wrap"><i class="fas fa-city"></i><input type="text" name="City" value="@Model.City" required /></div>
+            <label class="prv-pro-form-label" data-acp-field="city">@L["City"]<span class="prv-pro-required">*</span>
+                <div class="prv-pro-form-input-wrap"><i class="fas fa-city"></i><input type="text" id="acp-city" name="City" value="@Model.City" placeholder="@L["City"]" autocomplete="off" required data-city-autocomplete data-ac-state="acp-state" data-ac-zip="acp-zip" /></div>
+                <span class="prv-pro-field-error" data-acp-error="city" hidden></span>
             </label>
-            <label class="prv-pro-form-label">@L["State"]<span class="prv-pro-required">*</span>
-                <select name="State" required>
+            <label class="prv-pro-form-label" data-acp-field="state">@L["State"]<span class="prv-pro-required">*</span>
+                <select id="acp-state" name="State" required data-ac-zip="acp-zip" data-ac-city="acp-city" data-ac-address="acp-street">
                     <option value="">@L["Select state"]</option>
                     @foreach (var st in Model.StateOptions)
                     {
                         <option value="@st" selected="@(Model.State == st)">@st</option>
                     }
                 </select>
+                <span class="prv-pro-field-error" data-acp-error="state" hidden></span>
             </label>
-            <label class="prv-pro-form-label">@L["ZIP Code"]<span class="prv-pro-required">*</span>
-                <div class="prv-pro-form-input-wrap"><i class="fas fa-location-dot"></i><input type="text" name="ZipCode" value="@Model.ZipCode" required /></div>
+            <label class="prv-pro-form-label" data-acp-field="zip">@L["ZIP Code"]<span class="prv-pro-required">*</span>
+                <div class="prv-pro-form-input-wrap"><i class="fas fa-location-dot"></i><input type="text" id="acp-zip" name="ZipCode" value="@Model.ZipCode" placeholder="@L["Enter 5-digit ZIP code"]" inputmode="numeric" autocomplete="postal-code" maxlength="10" minlength="5" pattern="\d{5}(-\d{4})?" required data-zip-input data-zip-required="true" /></div>
+                <span class="prv-pro-field-error" data-acp-error="zip" hidden></span>
             </label>
         </div>
+        <span class="prv-pro-form-hint" data-ac-zip-hint-for="acp-zip" hidden>@L["Suggested from city and state when you select a state. Change it if your property uses a different ZIP."]</span>
 
         <section class="prv-pro-add-customer-section">
             <h3>@L["Property Type"]</h3>
@@ -96,12 +102,124 @@
 </div>
 
 @section Scripts {
+    <script src="~/js/zip-input.js" asp-append-version="true"></script>
+    @await Html.PartialAsync("_AddressAutocompleteScripts")
     <script>
-        document.querySelectorAll('.prv-pro-customer-type-card').forEach(function (el) {
-            el.addEventListener('click', function () {
-                document.querySelectorAll('.prv-pro-customer-type-card').forEach(function (i) { i.classList.remove('is-selected'); });
-                el.classList.add('is-selected');
+        (function () {
+            var msgs = {
+                street: @Html.Raw(JsonSerializer.Serialize(L["Please fill out this field."].ToString())),
+                city: @Html.Raw(JsonSerializer.Serialize(L["City is required."].ToString())),
+                state: @Html.Raw(JsonSerializer.Serialize(L["State is required."].ToString())),
+                zipRequired: @Html.Raw(JsonSerializer.Serialize(L["ZIP code is required."].ToString())),
+                zipInvalid: @Html.Raw(JsonSerializer.Serialize(L["Enter a valid 5-digit ZIP code (e.g. 77002)."].ToString()))
+            };
+
+            var zipInput = document.getElementById('acp-zip');
+            if (zipInput && window.IndorZipInput) {
+                window.IndorZipInput.attach(zipInput, {
+                    required: true,
+                    requiredMessage: msgs.zipRequired,
+                    invalidMessage: msgs.zipInvalid
+                });
+            }
+
+            function setError(key, message) {
+                var field = document.querySelector('[data-acp-field="' + key + '"]');
+                var error = document.querySelector('[data-acp-error="' + key + '"]');
+                if (field) field.classList.toggle('is-error', !!message);
+                if (error) {
+                    error.textContent = message || '';
+                    error.hidden = !message;
+                }
+            }
+
+            function clearError(key) {
+                setError(key, '');
+            }
+
+            function zipMessage(value) {
+                var zip = String(value || '').trim();
+                if (!zip) return msgs.zipRequired;
+                var valid = window.IndorZipInput
+                    ? window.IndorZipInput.isValidRequired(zip)
+                    : /^\d{5}(-\d{4})?$/.test(zip);
+                return valid ? '' : msgs.zipInvalid;
+            }
+
+            function validate() {
+                var streetEl = document.getElementById('acp-street');
+                var cityEl = document.getElementById('acp-city');
+                var stateEl = document.getElementById('acp-state');
+                var zipEl = document.getElementById('acp-zip');
+                var street = streetEl ? streetEl.value : '';
+                var city = cityEl ? cityEl.value : '';
+                var state = stateEl ? stateEl.value : '';
+                var zip = zipEl ? zipEl.value : '';
+                var first = null;
+
+                if (!street.trim()) {
+                    setError('street', msgs.street);
+                    first = first || streetEl;
+                } else {
+                    clearError('street');
+                }
+
+                if (!city.trim()) {
+                    setError('city', msgs.city);
+                    first = first || cityEl;
+                } else {
+                    clearError('city');
+                }
+
+                if (!state.trim()) {
+                    setError('state', msgs.state);
+                    first = first || stateEl;
+                } else {
+                    clearError('state');
+                }
+
+                var zipError = zipMessage(zip);
+                setError('zip', zipError);
+                if (zipError) first = first || zipEl;
+
+                if (first && typeof first.focus === 'function') {
+                    first.focus({ preventScroll: true });
+                    var wrap = first.closest('[data-acp-field]');
+                    if (wrap && typeof wrap.scrollIntoView === 'function') {
+                        wrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }
+                return !first;
+            }
+
+            var form = document.getElementById('acpForm');
+            if (form) {
+                form.addEventListener('submit', function (e) {
+                    if (!validate()) e.preventDefault();
+                });
+            }
+
+            ['acp-street', 'acp-city', 'acp-zip'].forEach(function (id) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                el.addEventListener('input', function () {
+                    clearError(id.replace('acp-', ''));
+                });
+                el.addEventListener('change', function () {
+                    clearError(id.replace('acp-', ''));
+                });
             });
-        });
+            var stateEl = document.getElementById('acp-state');
+            if (stateEl) {
+                stateEl.addEventListener('change', function () { clearError('state'); });
+            }
+
+            document.querySelectorAll('.prv-pro-customer-type-card').forEach(function (el) {
+                el.addEventListener('click', function () {
+                    document.querySelectorAll('.prv-pro-customer-type-card').forEach(function (i) { i.classList.remove('is-selected'); });
+                    el.classList.add('is-selected');
+                });
+            });
+        })();
     </script>
 }

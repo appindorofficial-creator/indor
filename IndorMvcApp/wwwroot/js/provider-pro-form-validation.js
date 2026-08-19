@@ -139,6 +139,9 @@
     function shouldBindForm(form) {
         // Cover every provider POST/GET form that uses HTML5 required or phone fields.
         // This script only loads on _ProviderProLayout, so scope stays provider-pro.
+        if (form.hasAttribute('data-inline-validate')) {
+            return false;
+        }
         return !!form.querySelector('[required], [data-phone-input]');
     }
 
