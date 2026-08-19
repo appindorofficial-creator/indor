@@ -61,9 +61,9 @@
                     <div class="prv-pro-form-input-wrap"><i class="fas fa-phone"></i><input type="tel" id="acPhone" name="Phone" value="@Model.Phone" placeholder="@L["5551234567"]" autocomplete="tel" inputmode="numeric" maxlength="10" data-phone-input data-phone-required="true" /></div>
                 </label>
             </div>
-            <div class="field-card" data-svc-optional>
+            <div class="field-card" data-svc-required="acEmail">
                 <label class="prv-pro-form-label">@L["Email Address"]
-                    <div class="prv-pro-form-input-wrap"><i class="fas fa-envelope"></i><input type="email" id="acEmail" name="Email" value="@Model.Email" placeholder="@L["name@example.com"]" /></div>
+                    <div class="prv-pro-form-input-wrap"><i class="fas fa-envelope"></i><input type="email" id="acEmail" name="Email" value="@Model.Email" placeholder="@L["name@example.com"]" autocomplete="email" /></div>
                 </label>
             </div>
         </div>

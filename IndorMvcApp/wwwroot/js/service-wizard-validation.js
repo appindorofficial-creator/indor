@@ -242,6 +242,27 @@
         return !!input && (input.hasAttribute('data-phone-input') || input.dataset.phoneRequired === 'true');
     }
 
+    function emailMessage() {
+        if (window.IndorSvcWizardMsgs && window.IndorSvcWizardMsgs.validEmail) {
+            return window.IndorSvcWizardMsgs.validEmail;
+        }
+        return isSpanishUi()
+            ? 'Ingresa un correo electrónico válido (ej. nombre@email.com).'
+            : 'Enter a valid email address (e.g. name@email.com).';
+    }
+
+    function isEmailRequiredInput(input) {
+        return !!input && String(input.type || '').toLowerCase() === 'email';
+    }
+
+    function isValidRequiredEmail(value) {
+        var email = String(value || '').trim();
+        if (!email || email.length > 254) {
+            return false;
+        }
+        return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/.test(email);
+    }
+
     function isValidRequiredPhone(value) {
         var digits = window.IndorPhoneInput
             ? window.IndorPhoneInput.normalize(value)
@@ -294,6 +315,9 @@
         }
         if (input && isPhoneRequiredInput(input) && String(input.value || '').trim() && !isValidRequiredPhone(input.value)) {
             return phoneMessage();
+        }
+        if (input && isEmailRequiredInput(input) && String(input.value || '').trim() && !isValidRequiredEmail(input.value)) {
+            return emailMessage();
         }
         if (card.hasAttribute('data-svc-or-unknown') || isTextLikeRequiredTarget(card)) {
             return enterMessage();
@@ -357,6 +381,9 @@
                 return false;
             }
             if (isPhoneRequiredInput(input) && !isValidRequiredPhone(input.value)) {
+                return false;
+            }
+            if (isEmailRequiredInput(input) && !isValidRequiredEmail(input.value)) {
                 return false;
             }
             if (card.hasAttribute('data-svc-address') && !isValidStreetAddress(input.value)) {
@@ -558,6 +585,7 @@
                 var input = document.getElementById(card.getAttribute('data-svc-required'));
                 if (input && !(input.value || '').trim()) return;
                 if (input && isPhoneRequiredInput(input) && !isValidRequiredPhone(input.value)) return;
+                if (input && isEmailRequiredInput(input) && !isValidRequiredEmail(input.value)) return;
             }
             if (card.hasAttribute('data-svc-or-unknown') && !isUnknownOrFilledComplete(card)) return;
             clearCardError(card);

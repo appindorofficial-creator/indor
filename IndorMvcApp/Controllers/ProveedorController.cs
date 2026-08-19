@@ -147,13 +147,29 @@ public partial class ProveedorController(
         }
 
         var phoneValid = UsPhoneRequiredAttribute.IsValidRequired(input.Phone, out var phoneError);
+        string? emailError = null;
+        var emailValid = true;
+        if (string.IsNullOrWhiteSpace(input.Email))
+        {
+            emailValid = false;
+            emailError = "Email address is required.";
+        }
+        else if (!ValidEmailAttribute.IsValidAddress(input.Email, out emailError))
+        {
+            emailValid = false;
+            emailError ??= "Enter a valid email address.";
+        }
+
         if (string.IsNullOrWhiteSpace(input.FirstName)
             || string.IsNullOrWhiteSpace(input.LastName)
-            || !phoneValid)
+            || !phoneValid
+            || !emailValid)
         {
             TempData["AddCustomerError"] = string.IsNullOrWhiteSpace(input.FirstName) || string.IsNullOrWhiteSpace(input.LastName)
                 ? localizer["First name and last name are required."]
-                : localizer[phoneError!];
+                : !phoneValid
+                    ? localizer[phoneError!]
+                    : localizer[emailError!];
             var invalidModel = proData.GetAddCustomerInfoViewModel(proveedor.Entity!, new ProviderProAddCustomerDraft
             {
                 CustomerType = string.IsNullOrWhiteSpace(input.CustomerType) ? "Homeowner" : input.CustomerType,

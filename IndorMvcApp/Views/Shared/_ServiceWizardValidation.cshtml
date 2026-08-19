@@ -8,7 +8,8 @@
         enterField: @Html.Raw(JsonSerializer.Serialize(L["Please fill out this field."].ToString())),
         completeFields: @Html.Raw(JsonSerializer.Serialize(L["Please complete the highlighted fields to continue."].ToString())),
         address: @Html.Raw(JsonSerializer.Serialize(L["Enter a complete address with city and state (e.g. 123 Main St, Charlotte, NC)."].ToString())),
-        validPhone: @Html.Raw(JsonSerializer.Serialize(L["Enter a valid 10-digit US phone number (e.g. 555 123 4567)."].ToString()))
+        validPhone: @Html.Raw(JsonSerializer.Serialize(L["Enter a valid 10-digit US phone number (e.g. 555 123 4567)."].ToString())),
+        validEmail: @Html.Raw(JsonSerializer.Serialize(L["Enter a valid email address (e.g. name@email.com)."].ToString()))
     };
 </script>
 <script src="~/js/service-wizard-validation.js" asp-append-version="true"></script>
