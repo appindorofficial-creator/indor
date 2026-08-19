@@ -75,22 +75,24 @@
                     <button type="button" class="prv-pro-quote-record-btn" id="createJobQuoteRecord">
                         @(Model.HasVoiceRecording ? L["Audio recorded"] : L["Record audio"])
                     </button>
-                    <div class="prv-pro-quote-wave @(Model.HasVoiceRecording ? "is-recorded" : "")" id="createJobQuoteWave" aria-hidden="true">
-                        @for (var i = 0; i < 24; i++) { <span></span> }
+                    <div class="prv-pro-quote-audio-meter">
+                        <div class="prv-pro-quote-wave @(Model.HasVoiceRecording ? "is-recorded" : "")" id="createJobQuoteWave" aria-hidden="true">
+                            @for (var i = 0; i < 18; i++) { <span></span> }
+                        </div>
+                        <small id="createJobQuoteTimer">00:00</small>
                     </div>
-                    <small id="createJobQuoteTimer">00:00</small>
-                    <div class="prv-pro-quote-audio-actions @(Model.HasVoiceRecording ? "" : "is-hidden")" id="createJobQuoteAudioActions">
-                        <button type="button" class="prv-pro-quote-audio-icon-btn" id="createJobQuotePlay"
-                                aria-label="@L["Play recording"]" title="@L["Play recording"]">
+                    <audio id="createJobQuotePlayer" class="prv-pro-quote-player" preload="metadata" playsinline></audio>
+                    <div class="prv-pro-quote-audio-actions" id="createJobQuoteAudioActions">
+                        <button type="button" class="prv-pro-quote-audio-text-btn" id="createJobQuotePlay">
                             <i class="fas fa-play"></i>
+                            <span>@L["Play recording"]</span>
                         </button>
-                        <button type="button" class="prv-pro-quote-audio-icon-btn prv-pro-quote-audio-icon-btn--danger" id="createJobQuoteDelete"
-                                aria-label="@L["Delete recording"]" title="@L["Delete recording"]">
-                            <i class="fas fa-xmark"></i>
+                        <button type="button" class="prv-pro-quote-audio-text-btn prv-pro-quote-audio-text-btn--danger" id="createJobQuoteDelete">
+                            <i class="fas fa-trash"></i>
+                            <span>@L["Delete recording"]</span>
                         </button>
                     </div>
                 </div>
-                <audio id="createJobQuotePlayer" preload="metadata" playsinline></audio>
             </div>
             <p class="prv-pro-quote-audio-error is-hidden" id="createJobQuoteAudioError" role="alert"></p>
             <small class="prv-pro-wizard-hint">@L["AI will transcribe audio automatically"]</small>
@@ -221,6 +223,8 @@
                 var icon = playBtn.querySelector('i');
                 if (icon) icon.className = playing ? 'fas fa-pause' : 'fas fa-play';
                 var label = audioRoot?.getAttribute(playing ? 'data-label-pause' : 'data-label-play') || (playing ? 'Pause' : 'Play');
+                var text = playBtn.querySelector('span');
+                if (text) text.textContent = label;
                 playBtn.setAttribute('aria-label', label);
                 playBtn.setAttribute('title', label);
             }
@@ -228,10 +232,19 @@
             function showTranscript(text, pending) {
                 if (!transcriptBox || !transcriptText) return;
                 transcriptText.textContent = text || '';
-                transcriptBox.classList.toggle('is-hidden', !text);
+                transcriptBox.classList.remove('is-hidden');
                 transcriptBox.classList.toggle('is-pending', !!pending);
-                transcriptBox.classList.remove('is-empty');
+                transcriptBox.classList.toggle('is-empty', !pending && !text);
                 if (transcriptInput && !pending) transcriptInput.value = text || '';
+            }
+
+            function hideTranscript() {
+                if (!transcriptBox || !transcriptText) return;
+                transcriptText.textContent = '';
+                transcriptBox.classList.add('is-hidden');
+                transcriptBox.classList.remove('is-pending');
+                transcriptBox.classList.remove('is-empty');
+                if (transcriptInput) transcriptInput.value = '';
             }
 
             function setRecordingUi(isRecording) {
@@ -241,7 +254,7 @@
                 audioRoot?.classList.toggle('is-recorded', !isRecording && recorded);
                 micBtn?.classList.toggle('is-recording', isRecording);
                 micBtn?.setAttribute('aria-pressed', isRecording ? 'true' : 'false');
-                actionsEl?.classList.toggle('is-hidden', isRecording || !recorded);
+                if (playBtn) playBtn.disabled = isRecording || !recorded || !player || !player.src;
                 if (recordBtn && audioRoot) {
                     recordBtn.textContent = isRecording
                         ? (audioRoot.getAttribute('data-label-stop') || 'Stop recording')
@@ -346,15 +359,10 @@
                     showTranscript(finalText, false);
                     return;
                 }
-                if (transcriptText) {
-                    transcriptText.textContent = audioRoot?.getAttribute('data-label-no-transcript')
-                        || 'Could not transcribe this recording.';
-                }
-                if (transcriptBox) {
-                    transcriptBox.classList.remove('is-hidden');
-                    transcriptBox.classList.remove('is-pending');
-                    transcriptBox.classList.add('is-empty');
-                }
+                var emptyLabel = audioRoot?.getAttribute('data-label-no-transcript')
+                    || 'Could not transcribe this recording.';
+                showTranscript(emptyLabel, false);
+                transcriptBox?.classList.add('is-empty');
                 if (transcriptInput) transcriptInput.value = '';
             }
 
@@ -367,8 +375,7 @@
                 if (hasVoiceInput) hasVoiceInput.value = 'false';
                 if (wave) wave.classList.remove('is-recorded');
                 if (timerEl) timerEl.textContent = '00:00';
-                showTranscript('', false);
-                if (transcriptBox) transcriptBox.classList.remove('is-empty');
+                hideTranscript();
                 setRecordingUi(false);
             }
 
@@ -438,7 +445,7 @@
                     stopSpeech();
                     cleanupStream();
                     stopTimer();
-                    showTranscript('', false);
+                    hideTranscript();
                     setRecordingUi(false);
                     showAudioError(audioRoot?.getAttribute('data-msg-mic-denied') || 'Microphone permission is required to record audio.');
                 }

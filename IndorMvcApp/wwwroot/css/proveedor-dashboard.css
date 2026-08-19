@@ -4629,28 +4629,50 @@ a.prv-pro-profile-center-action:focus-visible {
 .prv-pro-quote-toggle-btn.is-active { background: #0066CC; border-color: #0066CC; color: #fff; }
 .prv-pro-quote-charcount { text-align: right; font-size: .72rem; color: #94A3B8; margin-top: 4px; }
 .prv-pro-quote-audio {
-    display: grid; grid-template-columns: 48px 1fr; gap: 12px; align-items: center;
-    margin-top: 14px; padding-top: 14px; border-top: 1px solid #F1F5F9;
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 12px;
+    align-items: start;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #F1F5F9;
 }
 .prv-pro-quote-mic {
     width: 48px; height: 48px; border-radius: 50%; border: 0;
     background: #0066CC; color: #fff; font-size: 1.1rem; cursor: pointer;
+    flex-shrink: 0;
 }
 .prv-pro-quote-mic.is-recording {
     background: #DC2626;
     animation: prv-pro-quote-mic-pulse 1.2s ease-in-out infinite;
 }
-.prv-pro-quote-audio-body { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.prv-pro-quote-audio-body {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    min-width: 0;
+}
 .prv-pro-quote-record-btn {
+    align-self: start;
     padding: 8px 12px; border-radius: 999px; border: 1px solid #E2E8F0;
     background: #fff; font-size: .74rem; font-weight: 700; color: #334155; cursor: pointer;
 }
 .prv-pro-quote-audio.is-recording .prv-pro-quote-record-btn {
     border-color: #FECACA; background: #FEF2F2; color: #B91C1C;
 }
-.prv-pro-quote-wave { display: flex; align-items: flex-end; gap: 2px; height: 18px; }
+.prv-pro-quote-audio-meter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+.prv-pro-quote-wave {
+    display: flex; align-items: flex-end; gap: 2px; height: 18px;
+    flex: 1; min-width: 0; overflow: hidden;
+}
 .prv-pro-quote-wave span {
-    width: 3px; height: 6px; background: #CBD5E1; border-radius: 2px;
+    width: 3px; height: 6px; background: #CBD5E1; border-radius: 2px; flex: 0 0 auto;
 }
 .prv-pro-quote-wave span:nth-child(3n) { height: 12px; }
 .prv-pro-quote-wave span:nth-child(5n) { height: 16px; }
@@ -4661,21 +4683,39 @@ a.prv-pro-profile-center-action:focus-visible {
 .prv-pro-quote-audio.is-recording .prv-pro-quote-wave span:nth-child(2n) { animation-delay: .15s; }
 .prv-pro-quote-audio.is-recording .prv-pro-quote-wave span:nth-child(3n) { animation-delay: .3s; }
 .prv-pro-quote-wave.is-recorded span { background: #22C55E; }
+.prv-pro-quote-player {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+}
 .prv-pro-quote-audio-actions {
+    display: none;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+}
+.prv-pro-quote-audio.is-recorded .prv-pro-quote-audio-actions { display: grid; }
+.prv-pro-quote-audio-text-btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    justify-content: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 8px 10px;
+    border-radius: 12px;
+    border: 1px solid #E2E8F0;
+    background: #fff;
+    color: #0066CC;
+    font-size: .78rem;
+    font-weight: 700;
+    cursor: pointer;
 }
-.prv-pro-quote-audio-actions.is-hidden { display: none; }
-.prv-pro-quote-audio-icon-btn {
-    width: 36px; height: 36px; border-radius: 50%; border: 1px solid #E2E8F0;
-    background: #fff; color: #0066CC; font-size: .85rem; cursor: pointer;
-    display: inline-flex; align-items: center; justify-content: center;
-}
-.prv-pro-quote-audio-icon-btn:disabled {
+.prv-pro-quote-audio-text-btn:disabled {
     opacity: .4; cursor: not-allowed;
 }
-.prv-pro-quote-audio-icon-btn--danger { color: #DC2626; }
+.prv-pro-quote-audio-text-btn--danger { color: #DC2626; }
 .prv-pro-quote-audio-error {
     margin: 8px 0 0; font-size: .74rem; font-weight: 600; color: #B91C1C;
 }
