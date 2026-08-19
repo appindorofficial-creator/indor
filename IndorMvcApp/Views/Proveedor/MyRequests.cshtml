@@ -33,7 +33,7 @@
         @foreach (var t in Model.Tabs)
         {
             <a asp-controller="Proveedor" asp-action="MyRequests" asp-route-tab="@t.Id" asp-route-q="@Model.Query"
-               class="prv-req-tab @(Model.ActiveTab == t.Id ? "is-active" : "")">@UiDisplayLocalization.Localize(L, t.Label)</a>
+               class="prv-req-tab @(Model.ActiveTab == t.Id ? "is-active" : "")">@(t.Id == "open" ? L["Open requests"].ToString() : UiDisplayLocalization.Localize(L, t.Label))</a>
         }
     </div>
 
@@ -55,7 +55,7 @@
                     <div class="prv-req-card-top">
                         <span class="prv-req-ico prv-req-ico--@r.IconTone"><i class="fas @r.IconClass"></i></span>
                         <div class="prv-req-card-id">
-                            <div class="prv-req-title">@r.Title</div>
+                            <div class="prv-req-title">@UiDisplayLocalization.Localize(L, r.Title)</div>
                             @if (!string.IsNullOrWhiteSpace(r.TradeLabel))
                             {
                                 <div class="prv-req-meta"><i class="fas fa-screwdriver-wrench"></i> @UiDisplayLocalization.Localize(L, r.TradeLabel)</div>
@@ -71,9 +71,9 @@
                             </span>
                             @if (!string.IsNullOrWhiteSpace(r.BudgetRange))
                             {
-                                <div class="prv-req-budget-mini"><span>@L["Budget"]</span><strong>@r.BudgetRange</strong></div>
+                                <div class="prv-req-budget-mini"><span>@L["Budget"]</span><strong>@UiDisplayLocalization.Localize(L, r.BudgetRange)</strong></div>
                             }
-                            <div class="prv-req-posted"><span>@L["Posted"]</span><strong>@r.PostedLabel</strong></div>
+                            <div class="prv-req-posted"><span>@L["Posted"]</span><strong>@UiDisplayLocalization.Localize(L, r.PostedLabel)</strong></div>
                         </div>
                     </div>
 

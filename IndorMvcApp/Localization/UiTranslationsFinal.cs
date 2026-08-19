@@ -434,6 +434,8 @@ public static class UiTranslationsFinal
             ["Post a job to start receiving quotes from verified subcontractors."] =
                 "Publica un trabajo para empezar a recibir cotizaciones de subcontratistas verificados.",
             ["Waiting for Quotes"] = "Esperando cotizaciones",
+            ["Job request"] = "Solicitud de trabajo",
+            ["1 day ago"] = "hace 1 día",
             ["Quotes Received"] = "Cotizaciones recibidas",
             ["View Request"] = "Ver solicitud",
             ["See all"] = "Ver todos",

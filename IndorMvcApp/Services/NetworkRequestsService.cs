@@ -49,7 +49,7 @@ public sealed partial class NetworkRequestsService(
             Tabs =
             [
                 new() { Id = "all", Label = "All" },
-                new() { Id = "open", Label = "Open" },
+                new() { Id = "open", Label = "Open requests" },
                 new() { Id = "quotes", Label = "Quotes" },
                 new() { Id = "inprogress", Label = "In Progress" },
                 new() { Id = "completed", Label = "Completed" }
