@@ -4898,6 +4898,20 @@ public partial class ProviderProDataService(
         };
     }
 
+    public async Task<bool> DeactivateCustomerAsync(int proveedorId, int customerId, CancellationToken cancellationToken = default)
+    {
+        var customer = await db.IndorProveedorClientes
+            .FirstOrDefaultAsync(c => c.Id == customerId && c.ProveedorId == proveedorId && c.Activo, cancellationToken);
+        if (customer == null)
+        {
+            return false;
+        }
+
+        customer.Activo = false;
+        await db.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
     private static List<string> ParseCustomerTags(string? tagsJson)
     {
         if (string.IsNullOrWhiteSpace(tagsJson))

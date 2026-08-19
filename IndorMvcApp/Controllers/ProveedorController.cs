@@ -395,6 +395,20 @@ public partial class ProveedorController(
         return View(model);
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteCustomer(int id, string? tab, string? q, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        await proData.DeactivateCustomerAsync(proveedor.Entity!.Id, id, cancellationToken);
+        return RedirectToAction(nameof(Customers), new { tab, q });
+    }
+
 
 
     [HttpGet]

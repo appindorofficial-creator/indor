@@ -131,7 +131,25 @@
             @foreach (var customer in Model.Customers)
             {
                 <article class="prv-pro-customer-card">
-                    <button type="button" class="prv-pro-job-card-menu" aria-label="@L["More options"]"><i class="fas fa-ellipsis-vertical"></i></button>
+                    <div class="prv-pro-customer-menu-wrap">
+                        <button type="button" class="prv-pro-job-card-menu" aria-label="@L["More options"]" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-ellipsis-vertical"></i>
+                        </button>
+                        <div class="prv-pro-card-menu-dropdown" role="menu" hidden>
+                            <a asp-controller="Proveedor" asp-action="Customer" asp-route-id="@customer.Id" asp-route-tab="@Model.ActiveTab" class="prv-pro-card-menu-item" role="menuitem">
+                                <i class="fas fa-file-lines"></i> @L["View Record"]
+                            </a>
+                            <form asp-controller="Proveedor" asp-action="DeleteCustomer" method="post" class="prv-pro-card-menu-form" data-confirm="@L["Delete this customer?"]">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@customer.Id" />
+                                <input type="hidden" name="tab" value="@Model.ActiveTab" />
+                                <input type="hidden" name="q" value="@Model.SearchQuery" />
+                                <button type="submit" class="prv-pro-card-menu-item prv-pro-card-menu-item--danger" role="menuitem">
+                                    <i class="fas fa-trash"></i> @L["Delete customer"]
+                                </button>
+                            </form>
+                        </div>
+                    </div>
 
                     <div class="prv-pro-customer-card-top">
                         <div class="prv-pro-customer-card-avatar"><i class="fas fa-user"></i></div>
@@ -245,26 +263,75 @@
     (function () {
         var filterBtn = document.getElementById('prvCustomersFilterBtn');
         var filterMenu = document.getElementById('prvCustomersFilterMenu');
-        if (!filterBtn || !filterMenu) {
-            return;
+
+        function closeCardMenus(except) {
+            document.querySelectorAll('.prv-pro-card-menu-dropdown:not([hidden])').forEach(function (menu) {
+                if (menu === except) {
+                    return;
+                }
+                menu.hidden = true;
+                var wrap = menu.closest('.prv-pro-customer-menu-wrap');
+                var btn = wrap && wrap.querySelector('.prv-pro-job-card-menu');
+                if (btn) {
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
         }
 
-        function closeMenu() {
+        function closeFilter() {
+            if (!filterMenu || !filterBtn) {
+                return;
+            }
             filterMenu.hidden = true;
             filterBtn.setAttribute('aria-expanded', 'false');
         }
 
-        filterBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var willOpen = filterMenu.hidden;
-            filterMenu.hidden = !willOpen;
-            filterBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        document.querySelectorAll('.prv-pro-customer-menu-wrap').forEach(function (wrap) {
+            var btn = wrap.querySelector('.prv-pro-job-card-menu');
+            var menu = wrap.querySelector('.prv-pro-card-menu-dropdown');
+            if (!btn || !menu) {
+                return;
+            }
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                var willOpen = menu.hidden;
+                closeCardMenus(willOpen ? menu : null);
+                closeFilter();
+                menu.hidden = !willOpen;
+                btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            });
+            menu.addEventListener('click', function (e) {
+                e.stopPropagation();
+            });
         });
 
-        document.addEventListener('click', closeMenu);
+        document.querySelectorAll('.prv-pro-card-menu-form').forEach(function (form) {
+            form.addEventListener('submit', function (e) {
+                var message = form.getAttribute('data-confirm');
+                if (message && !window.confirm(message)) {
+                    e.preventDefault();
+                }
+            });
+        });
+
+        if (filterBtn && filterMenu) {
+            filterBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                var willOpen = filterMenu.hidden;
+                closeCardMenus();
+                filterMenu.hidden = !willOpen;
+                filterBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            });
+        }
+
+        document.addEventListener('click', function () {
+            closeFilter();
+            closeCardMenus();
+        });
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
-                closeMenu();
+                closeFilter();
+                closeCardMenus();
             }
         });
     })();

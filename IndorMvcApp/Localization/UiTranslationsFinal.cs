@@ -174,6 +174,8 @@ public static class UiTranslationsFinal
             ["Continue Job"] = "Continuar trabajo",
             ["Upload Photos"] = "Subir fotos",
             ["View Record"] = "Ver registro",
+            ["Delete customer"] = "Eliminar cliente",
+            ["Delete this customer?"] = "¿Quieres eliminar este cliente?",
             ["No jobs yet"] = "Aún no hay trabajos",
             ["Start Job"] = "Iniciar trabajo",
             ["View Details"] = "Ver detalles",
