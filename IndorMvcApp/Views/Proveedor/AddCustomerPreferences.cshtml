@@ -115,8 +115,10 @@
         }
         bindSelectGroup('.prv-pro-customer-type-card');
         bindSelectGroup('.prv-pro-segmented label');
-        document.querySelectorAll('.prv-pro-tag-pill').forEach(function (el) {
-            el.addEventListener('click', function () { el.classList.toggle('is-selected'); });
+        document.querySelectorAll('.prv-pro-tag-pill input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                input.closest('.prv-pro-tag-pill')?.classList.toggle('is-selected', input.checked);
+            });
         });
     </script>
 }

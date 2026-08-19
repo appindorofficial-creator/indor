@@ -5016,12 +5016,23 @@ a.prv-pro-profile-center-action:focus-visible {
 .prv-pro-segmented label.is-selected { background: #fff; color: #0066CC; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
 .prv-pro-tag-pills { display: flex; flex-wrap: wrap; gap: 8px; }
 .prv-pro-tag-pill {
+    position: relative;
     display: inline-flex; align-items: center; gap: 6px;
     border: 1px solid #E2E8F0; border-radius: 999px; padding: 8px 14px;
     font-size: .76rem; font-weight: 600; cursor: pointer;
 }
-.prv-pro-tag-pill input { display: none; }
-.prv-pro-tag-pill.is-selected { border-color: #0D9488; background: #F0FDFA; color: #0F766E; }
+.prv-pro-tag-pill input {
+    position: absolute;
+    opacity: 0;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    pointer-events: none;
+}
+.prv-pro-tag-pill.is-selected,
+.prv-pro-tag-pill:has(input:checked) {
+    border-color: #0D9488; background: #F0FDFA; color: #0F766E;
+}
 .prv-pro-add-customer-actions {
     display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px;
 }
