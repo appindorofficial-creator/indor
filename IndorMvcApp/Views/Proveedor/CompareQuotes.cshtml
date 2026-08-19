@@ -23,7 +23,7 @@
         <div class="prv-req-jobcard-head">
             <span class="prv-req-ico prv-req-ico--@Model.IconTone prv-req-ico--lg"><i class="fas @Model.IconClass"></i></span>
             <div class="prv-req-card-id">
-                <div class="prv-req-title prv-req-title--lg">@Model.Title</div>
+                <div class="prv-req-title prv-req-title--lg">@UiDisplayLocalization.Localize(L, Model.Title)</div>
                 @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
                 {
                     <div class="prv-req-meta"><i class="fas fa-screwdriver-wrench"></i> @UiDisplayLocalization.Localize(L, Model.TradeLabel)</div>
@@ -36,7 +36,7 @@
             <div class="prv-req-budget">
                 <span>@L["Budget"]</span>
                 <strong>@(string.IsNullOrWhiteSpace(Model.BudgetRange) ? "—" : UiDisplayLocalization.Localize(L, Model.BudgetRange))</strong>
-                <span class="prv-req-posted-inline">@L.T("Posted {0}", Model.PostedLabel)</span>
+                <span class="prv-req-posted-inline">@L.T("Posted {0}", UiDisplayLocalization.Localize(L, Model.PostedLabel))</span>
             </div>
         </div>
     </section>
@@ -71,7 +71,7 @@
                         <span class="prv-req-ico prv-req-ico--@Model.IconTone prv-req-ico--lg"><i class="fas @qt.IconClass"></i></span>
                         <div class="prv-req-cmp-id">
                             <div class="prv-req-quote-name">
-                                @qt.Name
+                                @UiDisplayLocalization.Localize(L, qt.Name)
                                 @if (qt.IsVerified)
                                 {
                                     <i class="fas fa-circle-check prv-req-verified"></i>
@@ -99,7 +99,7 @@
 
                     @if (!string.IsNullOrWhiteSpace(qt.Message))
                     {
-                        <p class="prv-req-cmp-msg">@qt.Message</p>
+                        <p class="prv-req-cmp-msg">@UiDisplayLocalization.Localize(L, qt.Message)</p>
                     }
 
                     <div class="prv-req-badges">

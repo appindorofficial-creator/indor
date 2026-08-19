@@ -4008,6 +4008,18 @@ public static class UiTranslationsFinal
             ["We'll notify you as verified subcontractors respond to your job."] =
                 "Te avisaremos cuando subcontratistas verificados respondan a tu trabajo.",
 
+            // Compare Quotes — override Proveedor identity / Spanglish
+            ["Within budget"] = "Dentro del presupuesto",
+            ["Experienced team. Quality work and clean, reliable service you can trust."] =
+                "Equipo con experiencia. Trabajo de calidad y un servicio limpio y confiable en el que puedes confiar.",
+            ["Compare Quotes"] = "Comparar cotizaciones",
+            ["Review options and choose the right pro."] =
+                "Revisa las opciones y elige al profesional adecuado.",
+            ["Review options y choose the right pro."] =
+                "Revisa las opciones y elige al profesional adecuado.",
+            ["Select Pro"] = "Seleccionar profesional",
+            ["No quotes yet. Check back soon."] = "Aún no hay cotizaciones. Vuelve pronto.",
+
             // Bug 12 — Proveedor Upload Report / Create Report wizard ES
             // Full phrases (no word-swap Spanglish). Breadcrumbs need full keys because
             // Pressed:/Now:/From: templates do not localize the trailing English arg.
