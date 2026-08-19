@@ -3,14 +3,14 @@
     Layout = "_ProviderProLayout";
     ViewData["Title"] = L["Inspection Report"];
     ViewBag.NavActive = "home";
-    ViewBag.HideBottomNav = true;
+    ViewBag.HideBottomNav = false;
     var startPage = Model.SourcePage is > 0 ? Model.SourcePage.Value : 1;
 }
 
 <div class="prv-pro-shell prv-pro-shell--insp-report">
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
-    <header class="prv-pro-lead-details-head">
+    <header class="prv-pro-lead-details-head prv-pro-insp-report-head">
         <a href="@Model.BackUrl" class="prv-pro-lead-back" data-no-nav-loading aria-label="@Model.BackLabel">
             <i class="fas fa-chevron-left"></i>
         </a>
@@ -20,6 +20,7 @@
                 @(Model.SourcePage is > 0 ? L.T("Page {0}", Model.SourcePage.Value) : L["Inspection report"])
             </small>
         </div>
+        <a href="@Model.BackUrl" class="prv-pro-insp-report-head-back" data-no-nav-loading>@Model.BackLabel</a>
     </header>
 
     <div class="prv-pro-insp-report-toolbar" id="rlReportToolbar" hidden>
