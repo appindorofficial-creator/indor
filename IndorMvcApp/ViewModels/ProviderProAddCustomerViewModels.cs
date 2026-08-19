@@ -2,6 +2,7 @@ namespace IndorMvcApp.ViewModels;
 
 public class ProviderProAddCustomerDraft
 {
+    public int? CustomerId { get; set; }
     public string CustomerType { get; set; } = "Homeowner";
     public string FirstName { get; set; } = "";
     public string LastName { get; set; } = "";
@@ -31,6 +32,7 @@ public class ProviderProAddCustomerDraft
 
 public class ProviderProAddCustomerInfoViewModel : ProviderProPageBaseViewModel
 {
+    public int? EditingCustomerId { get; set; }
     public int StepNumber { get; set; } = 1;
     public int TotalSteps { get; set; } = 4;
     public string CustomerType { get; set; } = "Homeowner";
@@ -80,6 +82,7 @@ public class ProviderProAddCustomerPreferencesViewModel : ProviderProPageBaseVie
 
 public class ProviderProAddCustomerReviewViewModel : ProviderProPageBaseViewModel
 {
+    public int? EditingCustomerId { get; set; }
     public int StepNumber { get; set; } = 4;
     public int TotalSteps { get; set; } = 4;
     public string CustomerType { get; set; } = "";

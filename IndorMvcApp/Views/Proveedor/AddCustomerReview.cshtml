@@ -69,6 +69,6 @@
     <form asp-controller="Proveedor" asp-action="ConfirmAddCustomer" method="post" class="prv-pro-add-customer-actions">
         @Html.AntiForgeryToken()
         <a asp-controller="Proveedor" asp-action="AddCustomerPreferences" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
-        <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@L["Save Customer"]</button>
+        <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@(Model.EditingCustomerId.HasValue ? L["Save Changes"] : L["Save Customer"])</button>
     </form>
 </div>

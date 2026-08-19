@@ -1588,6 +1588,8 @@ public static class UiTranslationsFinal
             ["Customer Summary"] = "Resumen del cliente",
             ["Customer ID"] = "ID del cliente",
             ["View Customer Profile"] = "Ver perfil del cliente",
+            ["Customer Profile"] = "Perfil del cliente",
+            ["Edit Customer"] = "Editar cliente",
             ["Create Job for Customer"] = "Crear trabajo para el cliente",
             ["Name"] = "Nombre",
             ["Options"] = "Opciones",

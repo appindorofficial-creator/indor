@@ -13,9 +13,16 @@
     @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
 
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
-        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
+        @if (Model.EditingCustomerId is int editingId)
+        {
+            <a asp-controller="Proveedor" asp-action="Customer" asp-route-id="@editingId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
+        }
+        else
+        {
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
+        }
         <div>
-            <h1>@L["Customer Information"]</h1>
+            <h1>@(Model.EditingCustomerId.HasValue ? L["Edit Customer"] : L["Customer Information"])</h1>
             <small>@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</small>
         </div>
         <span class="prv-pro-step-badge">@L.T("Step {0} of {1}", Model.StepNumber, Model.TotalSteps)</span>
@@ -90,7 +97,14 @@
         </div>
 
         <div class="prv-pro-add-customer-actions">
-            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-btn prv-pro-btn--outline">@L["Cancel"]</a>
+            @if (Model.EditingCustomerId is int cancelId)
+            {
+                <a asp-controller="Proveedor" asp-action="Customer" asp-route-id="@cancelId" class="prv-pro-btn prv-pro-btn--outline">@L["Cancel"]</a>
+            }
+            else
+            {
+                <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-btn prv-pro-btn--outline">@L["Cancel"]</a>
+            }
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@L["Next"]</button>
         </div>
     </form>

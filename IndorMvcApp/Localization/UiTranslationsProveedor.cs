@@ -1213,6 +1213,8 @@ public static class UiTranslationsProveedor
             ["View all"] = "Ver todo",
             ["View all quotes"] = "Ver all quotes",
             ["View Customer Profile"] = "Ver perfil del cliente",
+            ["Customer Profile"] = "Perfil del cliente",
+            ["Edit Customer"] = "Editar cliente",
             ["View Estimate"] = "Ver Cotización",
             ["View how customers see you"] = "Mira cómo te ven los clientes",
             ["View Insurance Status"] = "Ver Seguro Status",

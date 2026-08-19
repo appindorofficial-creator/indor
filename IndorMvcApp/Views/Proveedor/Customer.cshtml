@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProCustomerRecordViewModel
 @{
-    ViewData["Title"] = L["View Record"] + " - INDOR PRO";
+    ViewData["Title"] = L["Customer Profile"] + " - INDOR PRO";
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "customers";
     var backTab = ViewBag.CustomersTab as string ?? "all";
@@ -15,7 +15,7 @@
         </a>
         <div>
             <h1>@Model.Name</h1>
-            <small>@L["View Record"]</small>
+            <small>@L["Customer Profile"]</small>
         </div>
         <span class="prv-pro-pill prv-pro-pill--@Model.ConnectionClass">@UiDisplayLocalization.Localize(L, Model.ConnectionLabel)</span>
     </header>
@@ -85,6 +85,6 @@
 
     <div class="prv-pro-add-customer-actions">
         <a asp-controller="Proveedor" asp-action="Customers" asp-route-tab="@backTab" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
-        <a asp-controller="Proveedor" asp-action="Messages" class="prv-pro-btn prv-pro-btn--primary">@L["Message"]</a>
+        <a asp-controller="Proveedor" asp-action="EditCustomer" asp-route-id="@Model.Id" class="prv-pro-btn prv-pro-btn--primary">@L["Edit"]</a>
     </div>
 </div>

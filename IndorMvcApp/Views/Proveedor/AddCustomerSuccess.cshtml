@@ -30,7 +30,7 @@
     </section>
 
     <div class="prv-pro-customer-success-actions">
-        <a asp-controller="Proveedor" asp-action="Customers" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">@L["View Customer Profile"]</a>
+        <a asp-controller="Proveedor" asp-action="Customer" asp-route-id="@Model.CustomerId" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">@L["View Customer Profile"]</a>
         <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-clienteId="@Model.CustomerId" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">@L["Create Job for Customer"]</a>
         <a asp-controller="Proveedor" asp-action="CreateEstimate" asp-route-clienteId="@Model.CustomerId" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block">@L["Create Estimate"]</a>
         <a asp-controller="Proveedor" asp-action="AddCustomer" class="prv-pro-customer-add-another">@L["+ Add Another Customer"]</a>

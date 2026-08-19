@@ -137,7 +137,10 @@
                         </button>
                         <div class="prv-pro-card-menu-dropdown" role="menu" hidden>
                             <a asp-controller="Proveedor" asp-action="Customer" asp-route-id="@customer.Id" asp-route-tab="@Model.ActiveTab" class="prv-pro-card-menu-item" role="menuitem">
-                                <i class="fas fa-file-lines"></i> @L["View Record"]
+                                <i class="fas fa-user"></i> @L["View Customer Profile"]
+                            </a>
+                            <a asp-controller="Proveedor" asp-action="EditCustomer" asp-route-id="@customer.Id" class="prv-pro-card-menu-item" role="menuitem">
+                                <i class="fas fa-pen"></i> @L["Edit"]
                             </a>
                             <form asp-controller="Proveedor" asp-action="DeleteCustomer" method="post" class="prv-pro-card-menu-form" data-confirm="@L["Delete this customer?"]">
                                 @Html.AntiForgeryToken()

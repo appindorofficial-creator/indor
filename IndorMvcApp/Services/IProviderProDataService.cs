@@ -14,6 +14,7 @@ public interface IProviderProDataService
     ProviderProAddCustomerPropertyViewModel GetAddCustomerPropertyViewModel(IndorProveedor proveedor, ProviderProAddCustomerDraft draft);
     ProviderProAddCustomerPreferencesViewModel GetAddCustomerPreferencesViewModel(IndorProveedor proveedor, ProviderProAddCustomerDraft draft);
     ProviderProAddCustomerReviewViewModel? GetAddCustomerReviewViewModel(IndorProveedor proveedor, ProviderProAddCustomerDraft draft);
+    Task<ProviderProAddCustomerDraft?> GetAddCustomerDraftFromCustomerAsync(int proveedorId, int customerId, CancellationToken cancellationToken = default);
     Task<int?> SaveAddCustomerFromDraftAsync(int proveedorId, ProviderProAddCustomerDraft draft, CancellationToken cancellationToken = default);
     Task<ProviderProAddCustomerSuccessViewModel?> GetAddCustomerSuccessAsync(IndorProveedor proveedor, int customerId, CancellationToken cancellationToken = default);
     Task<ProviderProReportsPageViewModel> GetReportsPageAsync(IndorProveedor proveedor, string? tab = "all", string? search = null, CancellationToken cancellationToken = default);

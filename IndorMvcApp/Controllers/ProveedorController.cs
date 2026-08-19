@@ -170,8 +170,9 @@ public partial class ProveedorController(
                 : !phoneValid
                     ? localizer[phoneError!]
                     : localizer[emailError!];
-            var invalidModel = proData.GetAddCustomerInfoViewModel(proveedor.Entity!, new ProviderProAddCustomerDraft
+            var invalidDraft = new ProviderProAddCustomerDraft
             {
+                CustomerId = GetAddCustomerDraft().CustomerId,
                 CustomerType = string.IsNullOrWhiteSpace(input.CustomerType) ? "Homeowner" : input.CustomerType,
                 FirstName = TrimOrEmpty(input.FirstName),
                 LastName = TrimOrEmpty(input.LastName),
@@ -179,7 +180,8 @@ public partial class ProveedorController(
                 Email = TrimOrEmpty(input.Email),
                 PreferredContactMethod = string.IsNullOrWhiteSpace(input.PreferredContactMethod) ? "SMS" : input.PreferredContactMethod,
                 CompanyName = TrimOrEmpty(input.CompanyName)
-            });
+            };
+            var invalidModel = proData.GetAddCustomerInfoViewModel(proveedor.Entity!, invalidDraft);
             ApplyAddCustomerNavigation();
             return View(invalidModel);
         }
@@ -330,8 +332,34 @@ public partial class ProveedorController(
             return RedirectToAction(nameof(AddCustomer));
         }
 
+        var editingExisting = draft.CustomerId.HasValue;
         ClearAddCustomerDraft();
+        if (editingExisting)
+        {
+            return RedirectToAction(nameof(Customer), new { id = customerId.Value });
+        }
+
         return RedirectToAction(nameof(AddCustomerSuccess), new { id = customerId.Value });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditCustomer(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = await proData.GetAddCustomerDraftFromCustomerAsync(proveedor.Entity!.Id, id, cancellationToken);
+        if (draft == null)
+        {
+            return RedirectToAction(nameof(Customers));
+        }
+
+        SaveAddCustomerDraft(draft);
+        await HttpContext.Session.CommitAsync(cancellationToken);
+        return RedirectToAction(nameof(AddCustomer));
     }
 
     [HttpGet]

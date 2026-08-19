@@ -3106,6 +3106,7 @@ public partial class ProviderProDataService(
         new()
         {
             CompanyName = ResolveCompanyName(proveedor),
+            EditingCustomerId = draft?.CustomerId,
             CustomerType = draft?.CustomerType ?? "Homeowner",
             FirstName = draft?.FirstName ?? "",
             LastName = draft?.LastName ?? "",
@@ -3167,6 +3168,7 @@ public partial class ProviderProDataService(
         return new ProviderProAddCustomerReviewViewModel
         {
             CompanyName = ResolveCompanyName(proveedor),
+            EditingCustomerId = draft.CustomerId,
             CustomerType = draft.CustomerType,
             FullName = BuildCustomerFullName(draft),
             Phone = draft.Phone,
@@ -3202,52 +3204,123 @@ public partial class ProviderProDataService(
             ? null
             : $"{draft.City}, {draft.State}";
 
-        var cliente = new IndorProveedorCliente
+        IndorProveedorCliente cliente;
+        if (draft.CustomerId is int existingId)
         {
-            ProveedorId = proveedorId,
-            CustomerCode = $"CUST-{DateTime.UtcNow:yyyyMMddHHmm}",
-            Name = fullName,
-            CustomerType = draft.CustomerType,
-            FirstName = draft.FirstName.Trim(),
-            LastName = draft.LastName.Trim(),
-            Phone = draft.Phone,
-            Email = draft.Email,
-            PreferredContactMethod = draft.PreferredContactMethod,
-            CompanyName = string.IsNullOrWhiteSpace(draft.CompanyName) ? null : draft.CompanyName.Trim(),
-            StreetAddress = draft.StreetAddress.Trim(),
-            AptUnit = string.IsNullOrWhiteSpace(draft.AptUnit) ? null : draft.AptUnit.Trim(),
-            City = draft.City.Trim(),
-            State = draft.State,
-            ZipCode = draft.ZipCode.Trim(),
-            Address = fullAddress,
-            CityState = cityState,
-            PropertyType = draft.PropertyType,
-            Bedrooms = draft.Bedrooms,
-            Bathrooms = draft.Bathrooms,
-            IsBillingAddressSame = draft.IsBillingAddressSame,
-            AccessNotes = string.IsNullOrWhiteSpace(draft.AccessNotes) ? null : draft.AccessNotes.Trim(),
-            EstimateDeliveryPref = draft.EstimateDeliveryPref,
-            InvoiceDeliveryPref = draft.InvoiceDeliveryPref,
-            PreferredLanguage = draft.PreferredLanguage,
-            CustomerSource = draft.CustomerSource,
-            TagsJson = draft.Tags.Count > 0 ? JsonSerializer.Serialize(draft.Tags) : null,
-            InternalNotes = string.IsNullOrWhiteSpace(draft.InternalNotes) ? null : draft.InternalNotes.Trim(),
-            SendIndorInvite = draft.SendIndorInvite,
-            AllowServiceUpdates = draft.AllowServiceUpdates,
-            ConnectionStatus = draft.SendIndorInvite
-                ? ProviderCustomerConnectionStatuses.NeedsInvite
-                : ProviderCustomerConnectionStatuses.Connected,
-            IsAppConnected = false,
-            PropertiesCount = 1,
-            MemberSince = DateTime.UtcNow,
-            FechaCreacion = DateTime.UtcNow
-        };
+            cliente = await db.IndorProveedorClientes
+                .FirstOrDefaultAsync(c => c.Id == existingId && c.ProveedorId == proveedorId && c.Activo, cancellationToken);
+            if (cliente == null)
+            {
+                return null;
+            }
+        }
+        else
+        {
+            cliente = new IndorProveedorCliente
+            {
+                ProveedorId = proveedorId,
+                CustomerCode = $"CUST-{DateTime.UtcNow:yyyyMMddHHmm}",
+                ConnectionStatus = draft.SendIndorInvite
+                    ? ProviderCustomerConnectionStatuses.NeedsInvite
+                    : ProviderCustomerConnectionStatuses.Connected,
+                IsAppConnected = false,
+                PropertiesCount = 1,
+                MemberSince = DateTime.UtcNow,
+                FechaCreacion = DateTime.UtcNow
+            };
+            db.IndorProveedorClientes.Add(cliente);
+        }
 
-        db.IndorProveedorClientes.Add(cliente);
+        cliente.Name = fullName;
+        cliente.CustomerType = draft.CustomerType;
+        cliente.FirstName = draft.FirstName.Trim();
+        cliente.LastName = draft.LastName.Trim();
+        cliente.Phone = draft.Phone;
+        cliente.Email = draft.Email;
+        cliente.PreferredContactMethod = draft.PreferredContactMethod;
+        cliente.CompanyName = string.IsNullOrWhiteSpace(draft.CompanyName) ? null : draft.CompanyName.Trim();
+        cliente.StreetAddress = draft.StreetAddress.Trim();
+        cliente.AptUnit = string.IsNullOrWhiteSpace(draft.AptUnit) ? null : draft.AptUnit.Trim();
+        cliente.City = draft.City.Trim();
+        cliente.State = draft.State;
+        cliente.ZipCode = draft.ZipCode.Trim();
+        cliente.Address = fullAddress;
+        cliente.CityState = cityState;
+        cliente.PropertyType = draft.PropertyType;
+        cliente.Bedrooms = draft.Bedrooms;
+        cliente.Bathrooms = draft.Bathrooms;
+        cliente.IsBillingAddressSame = draft.IsBillingAddressSame;
+        cliente.AccessNotes = string.IsNullOrWhiteSpace(draft.AccessNotes) ? null : draft.AccessNotes.Trim();
+        cliente.EstimateDeliveryPref = draft.EstimateDeliveryPref;
+        cliente.InvoiceDeliveryPref = draft.InvoiceDeliveryPref;
+        cliente.PreferredLanguage = draft.PreferredLanguage;
+        cliente.CustomerSource = draft.CustomerSource;
+        cliente.TagsJson = draft.Tags.Count > 0 ? JsonSerializer.Serialize(draft.Tags) : null;
+        cliente.InternalNotes = string.IsNullOrWhiteSpace(draft.InternalNotes) ? null : draft.InternalNotes.Trim();
+        cliente.SendIndorInvite = draft.SendIndorInvite;
+        cliente.AllowServiceUpdates = draft.AllowServiceUpdates;
+
         await db.SaveChangesAsync(cancellationToken);
-        cliente.CustomerCode = $"CUST-{1000 + cliente.Id}";
-        await db.SaveChangesAsync(cancellationToken);
+        if (draft.CustomerId is null)
+        {
+            cliente.CustomerCode = $"CUST-{1000 + cliente.Id}";
+            await db.SaveChangesAsync(cancellationToken);
+        }
+
         return cliente.Id;
+    }
+
+    public async Task<ProviderProAddCustomerDraft?> GetAddCustomerDraftFromCustomerAsync(
+        int proveedorId,
+        int customerId,
+        CancellationToken cancellationToken = default)
+    {
+        var cliente = await db.IndorProveedorClientes
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == customerId && c.ProveedorId == proveedorId && c.Activo, cancellationToken);
+        if (cliente == null)
+        {
+            return null;
+        }
+
+        var firstName = cliente.FirstName?.Trim() ?? "";
+        var lastName = cliente.LastName?.Trim() ?? "";
+        if (string.IsNullOrWhiteSpace(firstName) && !string.IsNullOrWhiteSpace(cliente.Name))
+        {
+            var parts = cliente.Name.Trim().Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+            firstName = parts.Length > 0 ? parts[0] : "";
+            lastName = parts.Length > 1 ? parts[1] : "";
+        }
+
+        return new ProviderProAddCustomerDraft
+        {
+            CustomerId = cliente.Id,
+            CustomerType = string.IsNullOrWhiteSpace(cliente.CustomerType) ? "Homeowner" : cliente.CustomerType,
+            FirstName = firstName,
+            LastName = lastName,
+            Phone = cliente.Phone ?? "",
+            Email = cliente.Email ?? "",
+            PreferredContactMethod = string.IsNullOrWhiteSpace(cliente.PreferredContactMethod) ? "SMS" : cliente.PreferredContactMethod,
+            CompanyName = cliente.CompanyName ?? "",
+            StreetAddress = cliente.StreetAddress ?? "",
+            AptUnit = cliente.AptUnit ?? "",
+            City = cliente.City ?? "",
+            State = cliente.State ?? "",
+            ZipCode = cliente.ZipCode ?? "",
+            PropertyType = string.IsNullOrWhiteSpace(cliente.PropertyType) ? "Single Family" : cliente.PropertyType,
+            Bedrooms = cliente.Bedrooms,
+            Bathrooms = cliente.Bathrooms,
+            IsBillingAddressSame = cliente.IsBillingAddressSame,
+            AccessNotes = cliente.AccessNotes ?? "",
+            EstimateDeliveryPref = string.IsNullOrWhiteSpace(cliente.EstimateDeliveryPref) ? "Email" : cliente.EstimateDeliveryPref,
+            InvoiceDeliveryPref = string.IsNullOrWhiteSpace(cliente.InvoiceDeliveryPref) ? "Email" : cliente.InvoiceDeliveryPref,
+            PreferredLanguage = string.IsNullOrWhiteSpace(cliente.PreferredLanguage) ? "English" : cliente.PreferredLanguage,
+            CustomerSource = string.IsNullOrWhiteSpace(cliente.CustomerSource) ? "Manual Entry" : cliente.CustomerSource,
+            Tags = ParseCustomerTags(cliente.TagsJson),
+            InternalNotes = cliente.InternalNotes ?? "",
+            SendIndorInvite = cliente.SendIndorInvite,
+            AllowServiceUpdates = cliente.AllowServiceUpdates
+        };
     }
 
     public async Task<ProviderProAddCustomerSuccessViewModel?> GetAddCustomerSuccessAsync(
