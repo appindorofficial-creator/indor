@@ -4021,6 +4021,11 @@ public static class UiTranslationsFinal
             ["No quotes yet. Check back soon."] = "Aún no hay cotizaciones. Vuelve pronto.",
             ["Subcontractors"] = "Subcontratistas",
             ["Sub contractors"] = "Subcontratistas",
+            ["No matches found"] = "No se encontraron coincidencias",
+            ["Try a different trade or remove some filters to see more verified subcontractors."] =
+                "Prueba otro oficio o quita algunos filtros para ver más subcontratistas verificados.",
+            ["Try a different trade o remove some filters to see more verified subcontractors."] =
+                "Prueba otro oficio o quita algunos filtros para ver más subcontratistas verificados.",
 
             // Bug 12 — Proveedor Upload Report / Create Report wizard ES
             // Full phrases (no word-swap Spanglish). Breadcrumbs need full keys because
