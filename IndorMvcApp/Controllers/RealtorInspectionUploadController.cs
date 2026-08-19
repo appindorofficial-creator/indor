@@ -191,7 +191,7 @@ public class RealtorInspectionUploadController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> ViewReport(int? reportPage, int? page, string? filter, string? sort)
+    public async Task<IActionResult> ViewReport(int? reportPage, int? page, string? filter, string? sort, string? from)
     {
         var draft = await wizard.GetDraftAsync();
         if (draft == null || string.IsNullOrWhiteSpace(draft.ReportFileUrl))
@@ -213,18 +213,22 @@ public class RealtorInspectionUploadController(
         }
 
         var reportUrl = Url.Content($"~{draft.ReportFileUrl}")!;
-
-        var backUrl = draft.CurrentStep >= 3
-                      && draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.Complete
-            ? Url.Action(nameof(Priorities), new { filter, sort })!
-            : Url.Action(nameof(Analyze))!;
+        var fromAnalyze = string.Equals(from, "analyze", StringComparison.OrdinalIgnoreCase);
+        var fromPriorities = string.Equals(from, "priorities", StringComparison.OrdinalIgnoreCase);
+        var backToAnalyze = fromAnalyze
+            || (!fromPriorities
+                && (draft.CurrentStep < 3
+                    || draft.AnalysisStatus != RealtorInspectionAnalysisStatuses.Complete));
 
         return View(new RealtorInspectionReportViewViewModel
         {
             ReportFileName = draft.ReportFileName ?? "Inspection Report",
             ReportUrl = reportUrl,
             SourcePage = startPage,
-            BackUrl = backUrl
+            BackUrl = backToAnalyze
+                ? Url.Action(nameof(Analyze))!
+                : Url.Action(nameof(Priorities), new { filter, sort })!,
+            BackLabel = localizer["Back"].ToString()
         });
     }
 

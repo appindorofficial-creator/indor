@@ -31,13 +31,19 @@
     </div>
 
     <div class="rl-analyze-meta">
-
-        <strong>@Model.ReportFileName</strong>
-
+        @if (!string.IsNullOrWhiteSpace(Model.ReportPdfUrl))
+        {
+            <a asp-action="ViewReport" asp-route-from="analyze" class="rl-analyze-report-link">
+                <strong>@Model.ReportFileName</strong>
+                <span>@L["Open full PDF"]</span>
+            </a>
+        }
+        else
+        {
+            <strong>@Model.ReportFileName</strong>
+        }
         <span>@Model.PropertyDisplay</span>
-
         <span>@Model.ReportCountLabel · @Model.UploadedLabel</span>
-
     </div>
 
 </div>

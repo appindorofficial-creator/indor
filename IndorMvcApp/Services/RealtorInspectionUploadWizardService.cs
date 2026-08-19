@@ -400,6 +400,7 @@ public class RealtorInspectionUploadWizardService(
             Subtitle = localizer.T("INDOR AI scans the inspection report to find, organize, and prioritize findings automatically."),
             PropertyDisplay = FormatDisplayAddress(draft.Address ?? "", draft.CityRegion),
             ReportFileName = draft.ReportFileName ?? localizer.T("Home Inspection Report"),
+            ReportPdfUrl = draft.ReportFileUrl,
             ReportPageCount = pageCount,
             UploadMethod = uploadMethod,
             UploadedLabel = localizer.T("Uploaded {0}", draft.FechaCreacion.ToLocalTime().ToString("d", culture)),

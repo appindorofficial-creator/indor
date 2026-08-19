@@ -46,6 +46,7 @@ public class RealtorInspectionAnalyzeViewModel : RealtorInspectionUploadStepView
     public string AnalysisRunningMessage { get; set; } = "";
     public List<RealtorInspectionAnalyzeTaskViewModel> Tasks { get; set; } = [];
     public List<RealtorInspectionCategoryChipViewModel> DetectedCategories { get; set; } = [];
+    public string? ReportPdfUrl { get; set; }
 }
 
 public class RealtorInspectionAnalyzeTaskViewModel
@@ -86,6 +87,7 @@ public class RealtorInspectionReportViewViewModel
     public string ReportFileName { get; set; } = "Inspection Report";
     public string ReportUrl { get; set; } = "";
     public string BackUrl { get; set; } = "";
+    public string BackLabel { get; set; } = "Back";
     public int? SourcePage { get; set; }
 }
 

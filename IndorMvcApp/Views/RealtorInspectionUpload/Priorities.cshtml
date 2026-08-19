@@ -5,6 +5,7 @@
 @if (!string.IsNullOrWhiteSpace(Model.ReportFileName) && !string.IsNullOrWhiteSpace(Model.ReportPdfUrl))
 {
     <a asp-action="ViewReport"
+       asp-route-from="priorities"
        asp-route-filter="@Model.ActiveFilter"
        asp-route-sort="@Model.SortBy"
        class="rl-insp-report-link">
@@ -124,6 +125,7 @@ else
                         new
                         {
                             reportPage = finding.SourcePage.Value,
+                            from = "priorities",
                             filter = Model.ActiveFilter,
                             sort = Model.SortBy
                         })
