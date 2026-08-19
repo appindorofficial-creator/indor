@@ -408,10 +408,32 @@
         // Use fixed + viewport coords so nested wizard scroll containers don't
         // push the sheet thousands of px below the visible dropzone.
         var rect = anchor.getBoundingClientRect();
-        var menuWidth = Math.max(210, Math.min(rect.width || 210, document.documentElement.clientWidth - 16));
+        var vw = document.documentElement.clientWidth || window.innerWidth;
+        var vh = window.innerHeight;
+        var invalidAnchor = !rect.width || !rect.height
+            || rect.bottom <= 0
+            || rect.top >= vh
+            || (anchor.tagName === 'INPUT' && anchor.type === 'file');
+
+        globalMenu.classList.remove('indor-global-file-source-menu--sheet');
+        globalMenu.style.position = 'fixed';
+        globalMenu.style.right = 'auto';
+
+        // Hidden file inputs (display:none) report a 0×0 rect at the top of the
+        // viewport. Pin the chooser as a bottom sheet so it never jumps there.
+        if (invalidAnchor) {
+            globalMenu.classList.add('indor-global-file-source-menu--sheet');
+            globalMenu.style.width = '';
+            globalMenu.style.left = '';
+            globalMenu.style.top = 'auto';
+            globalMenu.style.bottom = '';
+            return;
+        }
+
+        var menuWidth = Math.max(210, Math.min(rect.width || 210, vw - 16));
         var left = rect.left;
         var top = rect.bottom + 8;
-        var maxLeft = document.documentElement.clientWidth - menuWidth - 8;
+        var maxLeft = vw - menuWidth - 8;
         if (left > maxLeft) {
             left = Math.max(8, maxLeft);
         }
@@ -419,16 +441,14 @@
             left = 8;
         }
 
-        globalMenu.style.position = 'fixed';
         globalMenu.style.width = menuWidth + 'px';
         globalMenu.style.left = left + 'px';
         globalMenu.style.top = top + 'px';
-        globalMenu.style.right = 'auto';
         globalMenu.style.bottom = 'auto';
 
         // If the sheet would hang below the viewport, flip it above the anchor.
         var menuHeight = globalMenu.offsetHeight || 130;
-        if (top + menuHeight > window.innerHeight - 8 && rect.top - menuHeight - 8 > 8) {
+        if (top + menuHeight > vh - 8 && rect.top - menuHeight - 8 > 8) {
             globalMenu.style.top = Math.max(8, rect.top - menuHeight - 8) + 'px';
         }
     }
@@ -471,14 +491,20 @@
             input.setAttribute('data-indor-plain-upgrade', '1');
 
             function findAnchorLabel() {
-                if (!input.id) {
-                    return null;
+                if (input.id) {
+                    try {
+                        var byFor = document.querySelector('label[for="' + cssEscapeIdent(input.id) + '"]');
+                        if (byFor) {
+                            return byFor;
+                        }
+                    } catch (err) {
+                        var fallback = document.querySelector('label[for="' + input.id + '"]');
+                        if (fallback) {
+                            return fallback;
+                        }
+                    }
                 }
-                try {
-                    return document.querySelector('label[for="' + cssEscapeIdent(input.id) + '"]');
-                } catch (err) {
-                    return document.querySelector('label[for="' + input.id + '"]');
-                }
+                return input.closest('label, .rl-ep-upload-btn, .indor-file-source-btn, .rl-file-drop-trigger');
             }
 
             function openChooser(anchor, e) {

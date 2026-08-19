@@ -61,20 +61,22 @@
                 <small>@L["Send the request to providers right away."]</small>
             </span>
         </label>
-        <label class="rl-file-type-option @(!Model.SendNow ? "is-selected" : "")">
+        <label class="rl-file-type-option @(!Model.SendNow ? "is-selected" : "")" data-send-later>
             <input type="radio" name="sendNow" value="false" @(!Model.SendNow ? "checked" : null) data-send-radio />
             <span>
                 <strong>@L["Schedule for Later"]</strong>
                 <small>@L["Choose a date and time to send this request."]</small>
             </span>
         </label>
-    </div>
-    <div id="scheduleField" class="@(Model.SendNow ? "rl-hidden" : "")">
-        <input type="datetime-local"
-               name="scheduledSendUtc"
-               class="rl-field-select rl-field-select--full"
-               lang="en-US"
-               value="@(Model.ScheduledSendUtc?.ToString("yyyy-MM-ddTHH:mm", System.Globalization.CultureInfo.InvariantCulture))" />
+        <div id="scheduleField" class="rl-schedule-panel @(Model.SendNow ? "rl-hidden" : "")">
+            <label class="rl-review-label" for="scheduledSendUtc">@L["Date & Time"]</label>
+            <input type="datetime-local"
+                   id="scheduledSendUtc"
+                   name="scheduledSendUtc"
+                   class="rl-schedule-datetime"
+                   autocomplete="off"
+                   value="@(Model.ScheduledSendUtc?.ToString("yyyy-MM-ddTHH:mm", System.Globalization.CultureInfo.InvariantCulture))" />
+        </div>
     </div>
 
     <h2 class="rl-invite-section-title">@L["Response preferences"]</h2>
