@@ -64,15 +64,25 @@
         }
     }
 
+    function phoneRequiredMessage() {
+        return isSpanishUi()
+            ? 'El número de teléfono es obligatorio.'
+            : 'Phone number is required.';
+    }
+
     function phoneValidityMessage() {
         return isSpanishUi()
             ? 'Ingresa un teléfono de EE. UU. de 10 dígitos (p. ej., 555 123 4567).'
             : 'Enter a valid 10-digit US phone number (e.g. 555 123 4567).';
     }
 
+    function isRequiredPhoneField(field) {
+        return field.hasAttribute('required') || field.dataset.phoneRequired === 'true';
+    }
+
     function isValidPhoneField(field) {
         if (!field.value.trim()) {
-            return true;
+            return !isRequiredPhoneField(field);
         }
 
         return window.IndorPhoneInput
@@ -98,15 +108,16 @@
             });
 
             fields.forEach(function (field) {
-                if (field.getAttribute('data-phone-input') !== null && !isValidPhoneField(field)) {
-                    if (!firstInvalid) {
-                        firstInvalid = field;
-                    }
+                if (firstInvalid) {
+                    return;
                 }
-            });
 
-            fields.forEach(function (field) {
-                if (!firstInvalid && !field.checkValidity()) {
+                if (field.getAttribute('data-phone-input') !== null && !isValidPhoneField(field)) {
+                    firstInvalid = field;
+                    return;
+                }
+
+                if (!field.checkValidity()) {
                     firstInvalid = field;
                 }
             });
@@ -116,9 +127,12 @@
             }
 
             e.preventDefault();
-            var message = firstInvalid.getAttribute('data-phone-input') !== null && firstInvalid.value.trim()
-                ? phoneValidityMessage()
-                : validityMessage(firstInvalid);
+            var message;
+            if (firstInvalid.getAttribute('data-phone-input') !== null) {
+                message = firstInvalid.value.trim() ? phoneValidityMessage() : phoneRequiredMessage();
+            } else {
+                message = validityMessage(firstInvalid);
+            }
             firstInvalid.setCustomValidity(message);
             firstInvalid.reportValidity();
             if (typeof firstInvalid.focus === 'function') {

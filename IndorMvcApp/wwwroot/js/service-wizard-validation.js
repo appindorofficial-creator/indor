@@ -92,7 +92,9 @@
         '.prv-type-card',
         '.prv-wiz-slot',
         '.upp-job-card',
-        '.upp-cat'
+        '.upp-cat',
+        '.prv-pro-customer-type-card',
+        '.prv-pro-contact-method'
     ].join(',');
 
     var MULTI_CHOICE = [
@@ -227,6 +229,32 @@
         return false;
     }
 
+    function phoneMessage() {
+        if (window.IndorSvcWizardMsgs && window.IndorSvcWizardMsgs.validPhone) {
+            return window.IndorSvcWizardMsgs.validPhone;
+        }
+        return isSpanishUi()
+            ? 'Ingresa un teléfono de EE. UU. de 10 dígitos (p. ej., 555 123 4567).'
+            : 'Enter a valid 10-digit US phone number (e.g. 555 123 4567).';
+    }
+
+    function isPhoneRequiredInput(input) {
+        return !!input && (input.hasAttribute('data-phone-input') || input.dataset.phoneRequired === 'true');
+    }
+
+    function isValidRequiredPhone(value) {
+        var digits = window.IndorPhoneInput
+            ? window.IndorPhoneInput.normalize(value)
+            : (function () {
+                var raw = String(value || '').replace(/\D/g, '');
+                if (raw.length === 11 && raw.charAt(0) === '1') {
+                    raw = raw.slice(1);
+                }
+                return raw.slice(0, 10);
+            })();
+        return digits.length === 10;
+    }
+
     function addressMessage() {
         if (window.IndorSvcWizardMsgs && window.IndorSvcWizardMsgs.address) {
             return window.IndorSvcWizardMsgs.address;
@@ -258,11 +286,14 @@
     }
 
     function incompleteCardMessage(card) {
+        var input = requiredInputForCard(card);
         if (card.hasAttribute('data-svc-address')) {
-            var input = requiredInputForCard(card);
             if (input && String(input.value || '').trim() && !isValidStreetAddress(input.value)) {
                 return addressMessage();
             }
+        }
+        if (input && isPhoneRequiredInput(input) && String(input.value || '').trim() && !isValidRequiredPhone(input.value)) {
+            return phoneMessage();
         }
         if (card.hasAttribute('data-svc-or-unknown') || isTextLikeRequiredTarget(card)) {
             return enterMessage();
@@ -323,6 +354,9 @@
                     return false;
                 }
             } else if (!String(input.value || '').trim()) {
+                return false;
+            }
+            if (isPhoneRequiredInput(input) && !isValidRequiredPhone(input.value)) {
                 return false;
             }
             if (card.hasAttribute('data-svc-address') && !isValidStreetAddress(input.value)) {
@@ -523,6 +557,7 @@
             if (card.hasAttribute('data-svc-required')) {
                 var input = document.getElementById(card.getAttribute('data-svc-required'));
                 if (input && !(input.value || '').trim()) return;
+                if (input && isPhoneRequiredInput(input) && !isValidRequiredPhone(input.value)) return;
             }
             if (card.hasAttribute('data-svc-or-unknown') && !isUnknownOrFilledComplete(card)) return;
             clearCardError(card);

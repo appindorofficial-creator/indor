@@ -146,9 +146,14 @@ public partial class ProveedorController(
             return proveedor.Result;
         }
 
-        if (string.IsNullOrWhiteSpace(input.FirstName) || string.IsNullOrWhiteSpace(input.LastName))
+        var phoneValid = UsPhoneRequiredAttribute.IsValidRequired(input.Phone, out var phoneError);
+        if (string.IsNullOrWhiteSpace(input.FirstName)
+            || string.IsNullOrWhiteSpace(input.LastName)
+            || !phoneValid)
         {
-            TempData["AddCustomerError"] = localizer["First name and last name are required."];
+            TempData["AddCustomerError"] = string.IsNullOrWhiteSpace(input.FirstName) || string.IsNullOrWhiteSpace(input.LastName)
+                ? localizer["First name and last name are required."]
+                : localizer[phoneError!];
             var invalidModel = proData.GetAddCustomerInfoViewModel(proveedor.Entity!, new ProviderProAddCustomerDraft
             {
                 CustomerType = string.IsNullOrWhiteSpace(input.CustomerType) ? "Homeowner" : input.CustomerType,
@@ -167,7 +172,7 @@ public partial class ProveedorController(
         draft.CustomerType = string.IsNullOrWhiteSpace(input.CustomerType) ? "Homeowner" : input.CustomerType;
         draft.FirstName = input.FirstName.Trim();
         draft.LastName = input.LastName.Trim();
-        draft.Phone = TrimOrEmpty(input.Phone);
+        draft.Phone = UsPhoneOptionalAttribute.NormalizeToStorage(input.Phone) ?? TrimOrEmpty(input.Phone);
         draft.Email = TrimOrEmpty(input.Email);
         draft.PreferredContactMethod = string.IsNullOrWhiteSpace(input.PreferredContactMethod) ? "SMS" : input.PreferredContactMethod;
         draft.CompanyName = TrimOrEmpty(input.CompanyName);
