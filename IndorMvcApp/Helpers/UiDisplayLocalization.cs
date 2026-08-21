@@ -143,11 +143,6 @@ public static class UiDisplayLocalization
             return string.Empty;
         }
 
-        if (!localizer.IsSpanish)
-        {
-            return text;
-        }
-
         var blocks = text.Split(["\r\n\r\n", "\n\n"], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         return string.Join("\n\n", blocks.Select(block =>
         {
@@ -1532,6 +1527,16 @@ public static class UiDisplayLocalization
                 invitationAcceptedMatch.Groups[2].Value.Trim());
         }
 
+        // English UI: reverse known Spanish stored copy back to the English catalog key.
+        if (!localizer.IsSpanish)
+        {
+            var englishKey = ToCatalogKey(text);
+            if (!string.Equals(englishKey, text, StringComparison.Ordinal))
+            {
+                return englishKey;
+            }
+        }
+
         return localizer[text];
     }
 
@@ -1596,9 +1601,14 @@ public static class UiDisplayLocalization
     {
         if (!localizer.IsSpanish)
         {
-            return string.IsNullOrWhiteSpace(sourceExcerpt)
-                ? (spanishFallbackDescription ?? string.Empty)
-                : Localize(localizer, sourceExcerpt);
+            if (!string.IsNullOrWhiteSpace(sourceExcerpt))
+            {
+                return Localize(localizer, sourceExcerpt);
+            }
+
+            return string.IsNullOrWhiteSpace(spanishFallbackDescription)
+                ? string.Empty
+                : Localize(localizer, spanishFallbackDescription);
         }
 
         if (!string.IsNullOrWhiteSpace(sourceExcerpt))

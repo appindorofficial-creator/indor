@@ -168,6 +168,8 @@ public static class UiTranslationsFinal
             ["Send Estimate"] = "Enviar cotización",
             ["From realtor inspection report"] = "Desde informe de inspección del agente",
             ["Realtor inspection"] = "Inspección del agente",
+            ["The property has several maintenance and repair issues, including deterioration of the facade and the roofing system."] =
+                "La propiedad presenta varios problemas de mantenimiento y reparaciones necesarias, incluyendo deterioro en la fachada y el sistema de techado.",
             ["Schedule Visit"] = "Programar visita",
             ["Use a verification visit when photos are not enough to create an accurate estimate."] =
                 "Usa una visita de verificación cuando las fotos no bastan para crear un estimado preciso.",

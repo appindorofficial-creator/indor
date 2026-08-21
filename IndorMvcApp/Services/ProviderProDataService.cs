@@ -750,7 +750,7 @@ public partial class ProviderProDataService(
                 ? "From realtor inspection report" : null,
             AnalysisSummary = lead.AnalysisSummary,
             FindingCount = ParseInspectionFindings(lead.FindingsJson).Count,
-            HasInspectionFindings = !string.IsNullOrWhiteSpace(lead.FindingsJson),
+            HasInspectionFindings = ParseInspectionFindings(lead.FindingsJson).Count > 0,
             InspectionFindings = ParseInspectionFindings(lead.FindingsJson),
             FlowSteps = LeadDetailsFlowSteps(lead.Id)
         };
