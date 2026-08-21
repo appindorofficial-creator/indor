@@ -2841,6 +2841,7 @@ a.prv-pro-profile-center-action:focus-visible {
     font-size: .8rem;
     color: #475569;
     line-height: 1.55;
+    white-space: pre-wrap;
 }
 
 .prv-pro-lead-photos {

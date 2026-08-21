@@ -4334,6 +4334,18 @@ public static class UiTranslationsFinal
             ["In report: {0}"] = "En el informe: {0}",
             ["Inspector note: {0}"] = "Nota del inspector: {0}",
             ["Page {0}"] = "Página {0}",
+            ["Section {0}"] = "Sección {0}",
+            ["{0} (open the PDF at this section/page to view inspector photos)"] =
+                "{0} (abre el PDF en esta sección/página para ver las fotos del inspector)",
+            ["Open Closure in Kitchen Subpanel"] = "Cierre abierto en el subpanel de cocina",
+            ["Exposed wiring exists in the electrical panel due to missing closure covers."] =
+                "Hay cableado expuesto en el panel eléctrico por falta de cubiertas de cierre.",
+            ["Abandoned Knob and Tube Wiring"] = "Cableado knob-and-tube abandonado",
+            ["The property has ungrounded knob and tube wiring, which is considered unsafe."] =
+                "La propiedad tiene cableado knob-and-tube sin conexión a tierra, lo cual se considera inseguro.",
+            ["Cover Plates Missing"] = "Faltan placas de cubierta",
+            ["Cover plates were missing from junction boxes, leaving wiring exposed."] =
+                "Faltaban placas de cubierta en las cajas de empalme, dejando el cableado expuesto.",
             ["INDOR found {0} {1} repair item from the uploaded inspection report."] =
                 "INDOR encontró {0} elemento de reparación de {1} en el informe de inspección subido.",
             ["INDOR found {0} {1} repair items from the uploaded inspection report."] =

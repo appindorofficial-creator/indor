@@ -155,32 +155,88 @@ public static class UiDisplayLocalization
     {
         var bullet = line.StartsWith("• ", StringComparison.Ordinal) ? "• " : "";
         var body = bullet.Length > 0 ? line[2..] : line;
+        // FormatFindingForProvider indents Summary / In report / Inspector note with leading spaces.
+        var content = body.TrimStart();
+        var indent = body[..(body.Length - content.Length)];
 
-        var tagged = Regex.Match(body, @"^\[([^\]]+)\]\s*(.*)$");
+        var tagged = Regex.Match(content, @"^\[([^\]]+)\]\s*(.*)$");
         if (tagged.Success)
         {
             var priority = Localize(localizer, tagged.Groups[1].Value.Trim());
             var title = Localize(localizer, tagged.Groups[2].Value.Trim());
-            return $"{bullet}[{priority}] {title}".Trim();
+            return $"{bullet}{indent}[{priority}] {title}".TrimEnd();
         }
 
-        if (body.StartsWith("Summary: ", StringComparison.OrdinalIgnoreCase))
+        if (content.StartsWith("Summary: ", StringComparison.OrdinalIgnoreCase))
         {
-            return localizer.T("Summary: {0}", Localize(localizer, body["Summary: ".Length..].Trim()));
+            return bullet + indent + localizer.T(
+                "Summary: {0}",
+                Localize(localizer, content["Summary: ".Length..].Trim()));
         }
 
-        if (body.StartsWith("In report: ", StringComparison.OrdinalIgnoreCase))
+        if (content.StartsWith("In report: ", StringComparison.OrdinalIgnoreCase))
         {
-            return localizer.T("In report: {0}", Localize(localizer, body["In report: ".Length..].Trim()));
+            return bullet + indent + localizer.T(
+                "In report: {0}",
+                LocalizeInspectionReportReference(localizer, content["In report: ".Length..].Trim()));
         }
 
-        if (body.StartsWith("Inspector note: ", StringComparison.OrdinalIgnoreCase))
+        if (content.StartsWith("Inspector note: ", StringComparison.OrdinalIgnoreCase))
         {
-            var note = body["Inspector note: ".Length..].Trim().Trim('"');
-            return localizer.T("Inspector note: {0}", Localize(localizer, note));
+            var note = content["Inspector note: ".Length..].Trim().Trim('"');
+            return bullet + indent + localizer.T(
+                "Inspector note: {0}",
+                Localize(localizer, note));
         }
 
         return Localize(localizer, line);
+    }
+
+    /// <summary>
+    /// Localizes "4.3.4 · ELECTRICAL · Page 16 (open the PDF…)" style report references.
+    /// </summary>
+    public static string LocalizeInspectionReportReference(IIndorLocalizer localizer, string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return text ?? string.Empty;
+        }
+
+        text = text.Trim();
+        const string pdfHint = "(open the PDF at this section/page to view inspector photos)";
+        var hasPdfHint = text.EndsWith(pdfHint, StringComparison.OrdinalIgnoreCase);
+        if (hasPdfHint)
+        {
+            text = text[..^pdfHint.Length].TrimEnd();
+        }
+
+        var parts = text.Split(" · ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        var localizedParts = parts.Select(part =>
+        {
+            var pageMatch = Regex.Match(part, @"^Page\s+(\d+)$", RegexOptions.IgnoreCase);
+            if (pageMatch.Success)
+            {
+                return localizer.T("Page {0}", pageMatch.Groups[1].Value);
+            }
+
+            var sectionMatch = Regex.Match(part, @"^Section\s+(.+)$", RegexOptions.IgnoreCase);
+            if (sectionMatch.Success)
+            {
+                return localizer.T("Section {0}", Localize(localizer, sectionMatch.Groups[1].Value.Trim()));
+            }
+
+            return Localize(localizer, part);
+        });
+
+        var joined = string.Join(" · ", localizedParts);
+        if (!hasPdfHint)
+        {
+            return joined;
+        }
+
+        return localizer.T(
+            "{0} (open the PDF at this section/page to view inspector photos)",
+            joined);
     }
 
     /// <summary>
@@ -1525,6 +1581,17 @@ public static class UiDisplayLocalization
                 "{0} accepted the invitation for {1}",
                 invitationAcceptedMatch.Groups[1].Value.Trim(),
                 invitationAcceptedMatch.Groups[2].Value.Trim());
+        }
+
+        // Inspection report refs: "4.3.4 · ELECTRICAL · Page 16 (open the PDF…)"
+        if (Regex.IsMatch(text, @"\bPage\s+\d+\b", RegexOptions.IgnoreCase)
+            || text.Contains("open the PDF at this section/page", StringComparison.OrdinalIgnoreCase))
+        {
+            var reportRef = LocalizeInspectionReportReference(localizer, text);
+            if (!string.Equals(reportRef, text, StringComparison.Ordinal))
+            {
+                return reportRef;
+            }
         }
 
         // English UI: reverse known Spanish stored copy back to the English catalog key.

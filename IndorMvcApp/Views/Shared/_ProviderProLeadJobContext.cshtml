@@ -34,7 +34,7 @@
                     </div>
                     @if (!string.IsNullOrWhiteSpace(item.ReportReference))
                     {
-                        <p class="prv-pro-inspection-ref"><i class="fas fa-bookmark"></i> @item.ReportReference</p>
+                        <p class="prv-pro-inspection-ref"><i class="fas fa-bookmark"></i> @UiDisplayLocalization.LocalizeInspectionReportReference(L, item.ReportReference)</p>
                     }
                     @if (!string.IsNullOrWhiteSpace(item.Description))
                     {
